@@ -49,12 +49,12 @@ class RespondentReviewAppealResponseAddedUpdaterMidEventHandlerTest {
         when(callback.getEvent()).thenReturn(Event.END_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.read(END_APPEAL_OUTCOME, String.class)).thenReturn(Optional.of("ALLOWED")); // Not "WITHDRAWN"
+        when(asylumCase.read(END_APPEAL_OUTCOME, String.class)).thenReturn(Optional.of("ALLOWED"));
 
         PreSubmitCallbackResponse<AsylumCase> response = handler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
 
         assertNotNull(response);
-        verify(asylumCase).write(END_APPEAL_OUTCOME_REASON, "");  // Expect an empty write
+        verify(asylumCase).write(END_APPEAL_OUTCOME_REASON, ""); // ✅ Expect it to be cleared
     }
 
 
