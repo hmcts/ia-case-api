@@ -54,7 +54,9 @@ class RespondentReviewAppealResponseAddedUpdaterMidEventHandlerTest {
         PreSubmitCallbackResponse<AsylumCase> response = handler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
 
         assertNotNull(response);
-        verify(asylumCase).write(END_APPEAL_OUTCOME_REASON, ""); // ✅ Expect it to be cleared
+        assertEquals(asylumCase, response.getData());
+
+        verify(asylumCase).write(END_APPEAL_OUTCOME_REASON, "");
     }
 
 
