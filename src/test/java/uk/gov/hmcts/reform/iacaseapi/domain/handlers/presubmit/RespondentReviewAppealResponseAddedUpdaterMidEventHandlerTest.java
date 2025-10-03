@@ -80,4 +80,37 @@ class RespondentReviewAppealResponseAddedUpdaterMidEventHandlerTest {
         when(callback.getEvent()).thenReturn(Event.END_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.read(eq(END_APPEAL_OUTC
+        when(asylumCase.read(eq(END_APPEAL_OUTCOME), eq(String.class)))
+                .thenReturn(Optional.of("WITHDRAWN"));
+
+        handler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+
+        verify(asylumCase).write(eq(END_APPEAL_OUTCOME_REASON), contains("The Respondent has withdrawn"));
+    }
+
+    @Test
+    void should_clear_end_appeal_outcome_reason_if_not_withdrawn() {
+        when(callback.getEvent()).thenReturn(Event.END_APPEAL);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(eq(END_APPEAL_OUTCOME), eq(String.class)))
+                .thenReturn(Optional.of("ALLOWED"));
+
+        handler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+
+        verify(asylumCase).write(END_APPEAL_OUTCOME_REASON, "");
+    }
+
+    @Test
+    void should_clear_end_appeal_outcome_reason_if_outcome_is_missing() {
+        when(callback.getEvent()).thenReturn(Event.END_APPEAL);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(eq(END_APPEAL_OUTCOME), eq(String.class)))
+                .thenReturn(Optional.empty());
+
+        handler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+
+        verify(asylumCase).write(END_APPEAL_OUTCOME_REASON, "");
+    }
+}
