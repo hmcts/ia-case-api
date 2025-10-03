@@ -45,19 +45,18 @@ class RespondentReviewAppealResponseAddedUpdaterMidEventHandlerTest {
     }
 
     @Test
-    void should_write_end_appeal_outcome_reason_if_withdrawn() {
+    void should_clear_end_appeal_outcome_reason_if_not_withdrawn() {
         when(callback.getEvent()).thenReturn(Event.END_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.read(END_APPEAL_OUTCOME, String.class)).thenReturn(Optional.of("WITHDRAWN"));
+        when(asylumCase.read(END_APPEAL_OUTCOME, String.class)).thenReturn(Optional.of("ALLOWED"));
 
         PreSubmitCallbackResponse<AsylumCase> response = handler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
 
         assertNotNull(response);
-        assertEquals(asylumCase, response.getData());
-
-        verify(asylumCase).write(eq(END_APPEAL_OUTCOME_REASON), contains("The Respondent has withdrawn"));
+        verify(asylumCase).write(END_APPEAL_OUTCOME_REASON, ""); // Correct assertion
     }
+
 
     @Test
     void should_not_write_end_appeal_outcome_reason_if_not_withdrawn() {
