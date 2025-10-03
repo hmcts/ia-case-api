@@ -4,6 +4,10 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.END_APPEAL_OUTCOME;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.END_APPEAL_OUTCOME_REASON;
+
+import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -65,10 +69,15 @@ class RespondentReviewAppealResponseAddedUpdaterMidEventHandlerTest {
 
     @Test
     void should_throw_if_cannot_handle() {
-
         assertThatThrownBy(() ->
                 handler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessage("Cannot handle callback");
     }
-}
+
+    @Test
+    void should_write_end_appeal_outcome_reason_if_withdrawn() {
+        when(callback.getEvent()).thenReturn(Event.END_APPEAL);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(eq(END_APPEAL_OUTC
