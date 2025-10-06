@@ -45,13 +45,13 @@ class RequestFeeRemissionAipPreparerTest {
     @Mock
     private FeatureToggler featureToggler;
     @Mock
-    private RequestFeeRemissionAipHandler requestFeeRemissionAipPreparer;
+    private RequestFeeRemissionAipPreparer requestFeeRemissionAipPreparer;
 
     @BeforeEach
     void setUp() {
         when(featureToggler.getValue("dlrm-refund-feature-flag", false)).thenReturn(true);
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
-        requestFeeRemissionAipPreparer = new RequestFeeRemissionAipHandler(featureToggler);
+        requestFeeRemissionAipPreparer = new RequestFeeRemissionAipPreparer(featureToggler);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(Event.REQUEST_FEE_REMISSION);

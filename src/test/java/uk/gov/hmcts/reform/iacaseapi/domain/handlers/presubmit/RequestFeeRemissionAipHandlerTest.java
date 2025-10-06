@@ -128,14 +128,14 @@ class RequestFeeRemissionAipHandlerTest {
     private UserDetails userDetails;
     private RemissionDetailsAppender remissionDetailsAppender;
     private final LocalDate now = LocalDate.now();
-    private RequestFeeRemissionAipPreparer requestFeeRemissionAipHandler;
+    private RequestFeeRemissionAipHandler requestFeeRemissionAipHandler;
 
     @BeforeEach
     void setUp() {
         when(featureToggler.getValue("dlrm-refund-feature-flag", false)).thenReturn(true);
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
         remissionDetailsAppender = new RemissionDetailsAppender();
-        requestFeeRemissionAipHandler = new RequestFeeRemissionAipPreparer(featureToggler, remissionDetailsAppender, dateProvider, userDetails, userDetailsHelper);
+        requestFeeRemissionAipHandler = new RequestFeeRemissionAipHandler(featureToggler, remissionDetailsAppender, dateProvider, userDetails, userDetailsHelper);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getCaseDetailsBefore()).thenReturn(Optional.of(caseDetails));
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
