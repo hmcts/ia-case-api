@@ -4,6 +4,9 @@ import static java.util.Objects.requireNonNull;
 import static org.springframework.http.ResponseEntity.ok;
 
 import javax.validation.constraints.NotNull;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -34,11 +37,15 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.PreSubmitCallbackDispatcher;
 public class PreSubmitCallbackController {
 
     private final PreSubmitCallbackDispatcher<AsylumCase> callbackDispatcher;
+    private final ObjectMapper objectMapper;
 
     public PreSubmitCallbackController(PreSubmitCallbackDispatcher<AsylumCase> callbackDispatcher) {
         requireNonNull(callbackDispatcher, "callbackDispatcher must not be null");
 
         this.callbackDispatcher = callbackDispatcher;
+        this.objectMapper = new ObjectMapper();
+        this.objectMapper.registerModule(new JavaTimeModule());
+        this.objectMapper.registerModule(new Jdk8Module());
     }
 
     @Operation(
@@ -115,9 +122,16 @@ public class PreSubmitCallbackController {
 
 
     @PostMapping(path = "/ccdAboutToSubmit")
+
     public ResponseEntity<PreSubmitCallbackResponse<AsylumCase>> ccdAboutToSubmit(
         @Parameter(name = "Asylum case data", required = true) @NotNull @RequestBody Callback<AsylumCase> callback
     ) {
+        try {
+            log.info("Full callback content in ccdAboutToSubmit: {}", objectMapper.writeValueAsString(callback));
+        } catch (Exception e) {
+            log.warn("Failed to serialize callback to JSON: {}", e.getMessage());
+            log.info("Full callback content in ccdAboutToSubmit: {}", callback);
+        }
         return performStageRequest(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
     }
 
