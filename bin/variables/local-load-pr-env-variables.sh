@@ -29,6 +29,7 @@ export IDAM_DATA_STORE_SYSTEM_USER_PASSWORD=$(az keyvault secret show --vault-na
 export ADDRESS_LOOKUP_TOKEN=$(az keyvault secret show --vault-name ccd-aat --name postcode-info-address-lookup-token --query value -o tsv)
 
 # s2s-aat
+echo "Loading environment variables from s2s-aat keyvault"
 export DATA_STORE_S2S_KEY=$(az keyvault secret show --vault-name s2s-aat --name microservicekey-ccd-data --query value -o tsv)
 export DEFINITION_STORE_S2S_KEY=$(az keyvault secret show --vault-name s2s-aat --name microservicekey-ccd-definition --query value -o tsv)
 export API_GATEWAY_S2S_KEY=$(az keyvault secret show --vault-name s2s-aat --name microservicekey-ccd-gw --query value -o tsv)
@@ -36,10 +37,9 @@ export ADMIN_S2S_KEY=$(az keyvault secret show --vault-name s2s-aat --name micro
 export IAC_S2S_KEY=$(az keyvault secret show --vault-name s2s-aat --name microservicekey-iac --query value -o tsv)
 
 # ia-aat
+echo "Loading environment variables from ia-aat keyvault"
 export IA_CCD_ADMIN_USERNAME=$(az keyvault secret show --vault-name ia-aat --name ccd-admin-web-username --query value -o tsv)
 export IA_CCD_ADMIN_PASSWORD=$(az keyvault secret show --vault-name ia-aat --name ccd-admin-web-password --query value -o tsv)
-
-# for org roles
 export IA_WA_ADMINOFFICER_USERNAME=$(az keyvault secret show --vault-name ia-aat --name wa-test-adminofficer-username --query value -o tsv)
 export IA_WA_ADMINOFFICER_PASSWORD=$(az keyvault secret show --vault-name ia-aat --name wa-test-adminofficer-password --query value -o tsv)
 export IA_WA_CASEOFFICER_USERNAME=$(az keyvault secret show --vault-name ia-aat --name wa-test-caseofficer-a-username --query value -o tsv)
@@ -66,4 +66,5 @@ export IA_SYSTEM_USERNAME=$(az keyvault secret show --vault-name ia-aat --name s
 export IA_SYSTEM_PASSWORD=$(az keyvault secret show --vault-name ia-aat --name system-password --query value -o tsv)
 
 # rpx-aat
+echo "Loading environment variables from rpx-aat keyvault"
 export IDAM_CLIENT_SECRET=$(az keyvault secret show --vault-name rpx-aat --name mc-idam-client-secret --query value -o tsv)

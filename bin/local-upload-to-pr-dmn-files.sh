@@ -13,7 +13,7 @@ fi
 caseApiPrNumber=$1
 branchName=$2
 
-source ./bin/variables/load-dev-user-preview-environment-variables.sh $caseApiPrNumber
+source ./bin/variables/local-load-pr-env-variables.sh $caseApiPrNumber
 #Checkout specific branch pf  camunda bpmn definition
 git clone https://github.com/hmcts/ia-task-configuration.git
 cd ia-task-configuration
