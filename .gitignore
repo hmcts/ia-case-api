@@ -44,6 +44,8 @@ bin/utils/python_scripts/output_csv_files/
 bin/utils/python_scripts/output_jsons/
 bin/utils/python_scripts/__pycache__/
 
+### mirrord ###
+.mirrord/
+
 ### VS Code ###
 .vscode/
-.mirrord/
