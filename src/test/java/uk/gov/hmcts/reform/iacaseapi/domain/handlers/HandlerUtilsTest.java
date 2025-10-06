@@ -17,6 +17,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationBasedFeatureToggler;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.Organisation;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.OrganisationPolicy;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -497,6 +499,90 @@ class HandlerUtilsTest {
         when(asylumCase.read(OOC_APPEAL_ADMIN_J, OutOfCountryCircumstances.class)).thenReturn(Optional.of(outOfCountryCircumstances));
 
         assertFalse(isEntryClearanceDecision(asylumCase));
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = YesOrNo.class, names = {"YES", "NO"})
+    void should_return_whether_appeal_is_internal(YesOrNo yesOrNo) {
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(yesOrNo));
+
+        assertEquals(yesOrNo == YES, isAdmin(asylumCase));
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = YesOrNo.class, names = {"YES", "NO"})
+    void should_return_whether_legal_representative_details_added(YesOrNo yesOrNo) {
+        when(asylumCase.read(HAS_ADDED_LEGAL_REP_DETAILS, YesOrNo.class)).thenReturn(Optional.of(yesOrNo));
+
+        assertEquals(yesOrNo == YES, hasAddedLegalRepDetails(asylumCase));
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+        "LEGAL_REP_NAME, Rep Name1, Rep Name1, false",
+        "LEGAL_REP_NAME, Old Rep Name1, New Rep Name, true",
+        "LEGAL_REP_FAMILY_NAME, Rep Family Name, Rep Family Name, false",
+        "LEGAL_REP_FAMILY_NAME, Rep Family Name, New Rep Family Name, true",
+        "LEGAL_REP_COMPANY, Rep Company Name, Rep Company Name, false",
+        "LEGAL_REP_COMPANY, Rep Company Name, New Rep Company Name, true",
+        "LEGAL_REPRESENTATIVE_EMAIL_ADDRESS, rep@test.org, rep@test.org, false",
+        "LEGAL_REPRESENTATIVE_EMAIL_ADDRESS, rep@test.org, newrep@test.org, true",
+        "LEGAL_REP_MOBILE_PHONE_NUMBER, 02032032032, 02032032032, false",
+        "LEGAL_REP_MOBILE_PHONE_NUMBER, 02032032032, 02032032111, true"
+    })
+    void test_hasUpdatedLegalRepFields_for_legal_rep_name_field(
+            AsylumCaseFieldDefinition definitionField,
+            String valueBefore,
+            String value,
+            boolean expected) {
+
+        when(asylumCaseBefore.read(JOURNEY_TYPE)).thenReturn(Optional.empty());
+        when(asylumCaseBefore.read(definitionField)).thenReturn(Optional.of(valueBefore));
+        when(asylumCase.read(definitionField)).thenReturn(Optional.of(value));
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getCaseDetailsBefore()).thenReturn(Optional.of(caseDetailsBefore));
+        when(caseDetailsBefore.getCaseData()).thenReturn(asylumCaseBefore);
+
+        assertEquals(expected, hasUpdatedLegalRepFields(callback));
+    }
+
+    @ParameterizedTest
+    @MethodSource("hasRepresentationTestSource")
+    void test_hasRepresentation(
+            OrganisationPolicy organisationPolicy,
+            String journeyType,
+            boolean expected) {
+
+        when(asylumCase.read(JOURNEY_TYPE)).thenReturn(Optional.of(journeyType));
+        when(asylumCase.read(LOCAL_AUTHORITY_POLICY)).thenReturn(Optional.of(organisationPolicy));
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        assertEquals(expected, hasRepresentation(asylumCase));
+    }
+
+    private static Stream<Arguments> hasRepresentationTestSource() {
+        return Stream.of(
+                Arguments.of(OrganisationPolicy.builder().build(), "aip", false),
+                Arguments.of(OrganisationPolicy.builder().build(), "", false),
+                Arguments.of(OrganisationPolicy.builder().organisation(null).build(), "", false),
+                Arguments.of(OrganisationPolicy.builder().organisation(Organisation.builder().build()).build(), "", false),
+                Arguments.of(OrganisationPolicy.builder().organisation(Organisation.builder().organisationID(null).build()).build(), "", false),
+                Arguments.of(OrganisationPolicy.builder().organisation(Organisation.builder().organisationID("").build()).build(), "", false),
+                Arguments.of(OrganisationPolicy.builder().organisation(Organisation.builder().organisationID("Org1").build()).build(), "", true)
+        );
+    }
+
+
+    @Test
+    void hasUpdatedLegalRepFields_should_return_false_when_caseDetailsBefore_is_empty() {
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getCaseDetailsBefore()).thenReturn(Optional.empty());
+
+        assertFalse(hasUpdatedLegalRepFields(callback));
     }
 
 }
