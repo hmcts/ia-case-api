@@ -54,7 +54,6 @@ class AutomaticDirectionHandlerTest extends SpringBootIntegrationTest implements
                                 .with(SEND_DIRECTION_EXPLANATION, "some explanation")
                                 .with(SEND_DIRECTION_DATE_DUE, "2025-12-25")
                                 .with(APPEAL_REVIEW_OUTCOME, "decisionMaintained")
-                                .with(END_APPEAL_OUTCOME, "withdrawn")
                         )
                 )
         );
