@@ -104,7 +104,7 @@ class IdamServiceTest {
             expectedSurname
         );
         when(idamApi.userInfo(anyString())).thenReturn(expecteduUerInfo);
-        when(roleAssignmentService.getAmRolesFromUser(expectedId, expectedAccessToken))
+        when(roleAssignmentService.getAmRolesFromUser(expectedId))
             .thenReturn(expectedAmRoles);
         UserInfo actualUserInfo = idamService.getUserInfo(expectedAccessToken);
         verify(idamApi).userInfo(expectedAccessToken);
@@ -138,7 +138,7 @@ class IdamServiceTest {
             expectedSurname
         );
         when(idamApi.userInfo(anyString())).thenReturn(expecteduUerInfo);
-        when(roleAssignmentService.getAmRolesFromUser(expectedId, expectedAccessToken))
+        when(roleAssignmentService.getAmRolesFromUser(expectedId))
             .thenReturn(Collections.emptyList());
         UserInfo actualUserInfo = idamService.getUserInfo(expectedAccessToken);
         verify(idamApi).userInfo(expectedAccessToken);
@@ -171,7 +171,7 @@ class IdamServiceTest {
             expectedSurname
         );
         when(idamApi.userInfo(anyString())).thenReturn(expecteduUerInfo);
-        when(roleAssignmentService.getAmRolesFromUser(expectedId, expectedAccessToken))
+        when(roleAssignmentService.getAmRolesFromUser(expectedId))
             .thenReturn(expectedAmRoles);
         UserInfo actualUserInfo = idamService.getUserInfo(expectedAccessToken);
         verify(idamApi).userInfo(expectedAccessToken);
@@ -203,7 +203,7 @@ class IdamServiceTest {
             expectedSurname
         );
         when(idamApi.userInfo(anyString())).thenReturn(expecteduUerInfo);
-        when(roleAssignmentService.getAmRolesFromUser(expectedId, expectedAccessToken))
+        when(roleAssignmentService.getAmRolesFromUser(expectedId))
             .thenReturn(expectedAmRoles);
         UserInfo actualUserInfo = idamService.getUserInfo(expectedAccessToken);
         verify(idamApi).userInfo(expectedAccessToken);
@@ -241,7 +241,7 @@ class IdamServiceTest {
             expectedSurname
         );
         when(idamApi.userInfo(anyString())).thenReturn(expecteduUerInfo);
-        when(roleAssignmentService.getAmRolesFromUser(expectedId, expectedAccessToken))
+        when(roleAssignmentService.getAmRolesFromUser(expectedId))
             .thenThrow(new NullPointerException("Role assignment service failed"));
         idamService.getUserInfo(expectedAccessToken);
         List<ILoggingEvent> logEvents = listAppender.list;

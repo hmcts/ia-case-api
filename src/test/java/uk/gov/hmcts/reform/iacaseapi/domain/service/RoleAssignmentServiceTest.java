@@ -209,7 +209,7 @@ class RoleAssignmentServiceTest {
             queryRequest
         )).thenReturn(new RoleAssignmentResource(List.of(assignment1, assignment2, assignment3)));
 
-        List<String> roles = roleAssignmentService.getAmRolesFromUser(userId, accessToken);
+        List<String> roles = roleAssignmentService.getAmRolesFromUser(userId);
 
         verify(roleAssignmentApi).queryRoleAssignments(
             accessToken,

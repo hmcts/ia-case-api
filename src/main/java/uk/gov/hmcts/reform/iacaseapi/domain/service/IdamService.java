@@ -65,7 +65,7 @@ public class IdamService {
         UserInfo userInfo = idamApi.userInfo(accessToken);
         List<String> amRoles = Collections.emptyList();
         try {
-            amRoles = roleAssignmentService.getAmRolesFromUser(userInfo.getUid(), accessToken);
+            amRoles = roleAssignmentService.getAmRolesFromUser(userInfo.getUid());
         } catch (Exception e) {
             log.error("Error fetching AM roles for user: {}", userInfo.getUid(), e);
         }
