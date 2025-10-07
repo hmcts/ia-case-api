@@ -30,7 +30,8 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.outOfCo
 public class HomeOfficeReferenceHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     public static final int REQUIRED_CID_REF_LENGTH = 9;
-    public static final Pattern HOME_OFFICE_REF_PATTERN = Pattern.compile("^\\d{9}$|^\\d{4}-\\d{4}-\\d{4}-\\d{4}$");
+    public static final Pattern HOME_OFFICE_REF_PATTERN = Pattern.compile("^(([0-9]{4}\\-[0-9]{4}\\-[0-9]{4}\\-[0-9]{4})|([0-9]{1,9}))$");
+
     private static boolean homeOfficeReferenceCheckEnabled = false;
 
     private final HomeOfficeReferenceService homeOfficeReferenceService;
@@ -38,7 +39,7 @@ public class HomeOfficeReferenceHandler implements PreSubmitCallbackHandler<Asyl
     public HomeOfficeReferenceHandler(HomeOfficeReferenceService homeOfficeReferenceService) {
         this.homeOfficeReferenceService = homeOfficeReferenceService;
     }
-
+    
     public boolean canHandle(
         PreSubmitCallbackStage callbackStage,
         Callback<AsylumCase> callback
@@ -52,6 +53,7 @@ public class HomeOfficeReferenceHandler implements PreSubmitCallbackHandler<Asyl
                 || callback.getEvent() == Event.EDIT_APPEAL)
                 && (callback.getPageId().equals("homeOfficeDecision") || 
                     callback.getPageId().equals("appellantBasicDetails"))
+                //&& callback.getPageId().equals("homeOfficeDecision_TEMPORARILY_DISABLED")
                 && HandlerUtils.isRepJourney(asylumCase);
     }
 

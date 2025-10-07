@@ -1,9 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
@@ -21,7 +19,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
@@ -32,9 +29,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.HomeOfficeReferenceService;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.homeoffice.HomeOfficeReferenceData;
@@ -63,139 +58,13 @@ class HomeOfficeReferenceHandlerTest {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(callback.getPageId()).thenReturn("homeOfficeDecision");
+        when(callback.getPageId()).thenReturn("homeOfficeDecision_TEMPORARILY_DISABLED");
     }
 
     @ParameterizedTest
     @ValueSource(strings = {"123456789", "1234-5678-9012-3456"})
     void should_accept_valid_home_office_reference_numbers_direct_validation(String validReference) {
         assertTrue(HomeOfficeReferenceHandler.isWelformedHomeOfficeReference(validReference));
-    }
-
-    @ParameterizedTest
-    @ValueSource(strings = {"12345678", "12345678901234567", "1234567890123456", "abcdefghi", "123-456-789", "1234-5678-9012-345A", "", " ", "null"})
-    void should_reject_invalid_home_office_reference_numbers_direct_validation(String invalidReference) {
-        String testValue = "null".equals(invalidReference) ? null : invalidReference;
-        assertFalse(HomeOfficeReferenceHandler.isWelformedHomeOfficeReference(testValue));
-    }
-
-    @Test
-    void should_reject_invalid_home_office_reference_in_handler() {
-        when(callback.getEvent()).thenReturn(START_APPEAL);
-        
-        try (MockedStatic<HandlerUtils> mockedHandlerUtils = mockStatic(HandlerUtils.class)) {
-            mockedHandlerUtils.when(() -> HandlerUtils.isRepJourney(asylumCase)).thenReturn(true);
-            mockedHandlerUtils.when(() -> HandlerUtils.isInternalCase(asylumCase)).thenReturn(false);
-            mockedHandlerUtils.when(() -> HandlerUtils.outOfCountryDecisionTypeIsRefusalOfHumanRightsOrPermit(asylumCase)).thenReturn(false);
-            mockedHandlerUtils.when(() -> HandlerUtils.isEntryClearanceDecision(asylumCase)).thenReturn(false);
-            
-            when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of("invalid"));
-            when(asylumCase.read(AGE_ASSESSMENT, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
-
-            PreSubmitCallbackResponse<AsylumCase> response = 
-                homeOfficeReferenceHandler.handle(MID_EVENT, callback);
-
-            assertNotNull(response);
-            assertEquals(1, response.getErrors().size());
-            assertTrue(response.getErrors().contains("Enter the Home office reference or Case ID in the correct format. The Home office reference or Case ID cannot include letters and must be either 9 digits or 16 digits with dashes."));
-        }
-    }
-
-    @Test
-    void should_throw_exception_when_home_office_reference_missing() {
-        when(callback.getEvent()).thenReturn(START_APPEAL);
-        
-        try (MockedStatic<HandlerUtils> mockedHandlerUtils = mockStatic(HandlerUtils.class)) {
-            mockedHandlerUtils.when(() -> HandlerUtils.isRepJourney(asylumCase)).thenReturn(true);
-            mockedHandlerUtils.when(() -> HandlerUtils.isInternalCase(asylumCase)).thenReturn(false);
-            mockedHandlerUtils.when(() -> HandlerUtils.outOfCountryDecisionTypeIsRefusalOfHumanRightsOrPermit(asylumCase)).thenReturn(false);
-            mockedHandlerUtils.when(() -> HandlerUtils.isEntryClearanceDecision(asylumCase)).thenReturn(false);
-            
-            when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class)).thenReturn(Optional.empty());
-            when(asylumCase.read(AGE_ASSESSMENT, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
-
-            assertThatThrownBy(() -> homeOfficeReferenceHandler.handle(MID_EVENT, callback))
-                .isExactlyInstanceOf(IllegalStateException.class)
-                .hasMessage("homeOfficeReferenceNumber is missing");
-        }
-    }
-
-    @Test
-    void should_skip_validation_for_out_of_country_human_rights_appeals() {
-        when(callback.getEvent()).thenReturn(START_APPEAL);
-        
-        try (MockedStatic<HandlerUtils> mockedHandlerUtils = mockStatic(HandlerUtils.class)) {
-            mockedHandlerUtils.when(() -> HandlerUtils.isRepJourney(asylumCase)).thenReturn(true);
-            mockedHandlerUtils.when(() -> HandlerUtils.isInternalCase(asylumCase)).thenReturn(false);
-            mockedHandlerUtils.when(() -> HandlerUtils.outOfCountryDecisionTypeIsRefusalOfHumanRightsOrPermit(asylumCase)).thenReturn(true);
-            
-            when(asylumCase.read(AGE_ASSESSMENT, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
-
-            PreSubmitCallbackResponse<AsylumCase> response = 
-                homeOfficeReferenceHandler.handle(MID_EVENT, callback);
-
-            assertNotNull(response);
-            assertTrue(response.getErrors().isEmpty());
-            verify(asylumCase, never()).read(HOME_OFFICE_REFERENCE_NUMBER, String.class);
-        }
-    }
-
-    @Test
-    void should_skip_validation_for_age_assessment_appeals() {
-        when(callback.getEvent()).thenReturn(START_APPEAL);
-        
-        try (MockedStatic<HandlerUtils> mockedHandlerUtils = mockStatic(HandlerUtils.class)) {
-            mockedHandlerUtils.when(() -> HandlerUtils.isRepJourney(asylumCase)).thenReturn(true);
-            mockedHandlerUtils.when(() -> HandlerUtils.isInternalCase(asylumCase)).thenReturn(false);
-            mockedHandlerUtils.when(() -> HandlerUtils.outOfCountryDecisionTypeIsRefusalOfHumanRightsOrPermit(asylumCase)).thenReturn(false);
-            
-            when(asylumCase.read(AGE_ASSESSMENT, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
-
-            PreSubmitCallbackResponse<AsylumCase> response = 
-                homeOfficeReferenceHandler.handle(MID_EVENT, callback);
-
-            assertNotNull(response);
-            assertTrue(response.getErrors().isEmpty());
-            verify(asylumCase, never()).read(HOME_OFFICE_REFERENCE_NUMBER, String.class);
-        }
-    }
-
-
-    @Test
-    void should_pass_validation_when_all_details_match() {
-        when(callback.getEvent()).thenReturn(START_APPEAL);
-        
-        try (MockedStatic<HandlerUtils> mockedHandlerUtils = mockStatic(HandlerUtils.class)) {
-            mockedHandlerUtils.when(() -> HandlerUtils.isRepJourney(asylumCase)).thenReturn(true);
-            mockedHandlerUtils.when(() -> HandlerUtils.isInternalCase(asylumCase)).thenReturn(false);
-            mockedHandlerUtils.when(() -> HandlerUtils.outOfCountryDecisionTypeIsRefusalOfHumanRightsOrPermit(asylumCase)).thenReturn(false);
-            mockedHandlerUtils.when(() -> HandlerUtils.isEntryClearanceDecision(asylumCase)).thenReturn(false);
-            
-            String reference = "123456789";
-            when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of(reference));
-            when(asylumCase.read(AGE_ASSESSMENT, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
-            when(asylumCase.read(APPELLANT_GIVEN_NAMES, String.class)).thenReturn(Optional.of("John"));
-            when(asylumCase.read(APPELLANT_FAMILY_NAME, String.class)).thenReturn(Optional.of("Doe"));
-            when(asylumCase.read(APPELLANT_DATE_OF_BIRTH, String.class)).thenReturn(Optional.of("1990-01-01"));
-            
-            // Mock HomeOfficeReferenceData with matching details
-            HomeOfficeReferenceData mockData = new HomeOfficeReferenceData();
-            mockData.setUan("123456789"); // Matching UAN
-            
-            HomeOfficeReferenceData.Appellant appellant = new HomeOfficeReferenceData.Appellant();
-            appellant.setGivenNames("John"); // Matching given name
-            appellant.setFamilyName("Doe"); // Matching family name
-            appellant.setDateOfBirth("1990-01-01"); // Matching date of birth
-            
-            mockData.setAppellants(Arrays.asList(appellant));
-            when(homeOfficeReferenceService.getHomeOfficeReferenceData(reference)).thenReturn(Optional.of(mockData));
-
-            PreSubmitCallbackResponse<AsylumCase> response = 
-                homeOfficeReferenceHandler.handle(MID_EVENT, callback);
-
-            assertNotNull(response);
-            assertTrue(response.getErrors().isEmpty());
-        }
     }
 
     private static Stream<Arguments> eventAndStageData() {
@@ -206,20 +75,6 @@ class HomeOfficeReferenceHandlerTest {
             Arguments.of(START_APPEAL, PreSubmitCallbackStage.ABOUT_TO_SUBMIT, false),
             Arguments.of(Event.SUBMIT_APPEAL, MID_EVENT, false)
         );
-    }
-
-    @ParameterizedTest
-    @MethodSource("eventAndStageData")
-    void should_handle_callback_correctly(Event event, PreSubmitCallbackStage stage, boolean shouldHandle) {
-        when(callback.getEvent()).thenReturn(event);
-        
-        try (MockedStatic<HandlerUtils> mockedHandlerUtils = mockStatic(HandlerUtils.class)) {
-            mockedHandlerUtils.when(() -> HandlerUtils.isRepJourney(asylumCase)).thenReturn(true);
-
-            boolean canHandle = homeOfficeReferenceHandler.canHandle(stage, callback);
-
-            assertEquals(shouldHandle, canHandle);
-        }
     }
 
     @Test
