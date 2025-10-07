@@ -113,7 +113,7 @@ public class RoleAssignmentService {
     public List<String> getAmRolesFromUser(String actorId,
                                            String authorization) {
         RoleAssignmentResource roleAssignmentResource = roleAssignmentApi.queryRoleAssignments(
-            authorization,
+            userDetails.getAccessToken(),
             serviceAuthTokenGenerator.generate(),
             QueryRequest.builder()
                 .actorId(Collections.singletonList(actorId))
