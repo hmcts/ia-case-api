@@ -36,6 +36,7 @@ java:
     FEES_REGISTER_API_URL: "http://fees-register-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
     DUMMY: true
     PAYMENT_REMINDER_DUE_IN_MINUTES: 1
+    PAYMENT_EA_HU_NO_REMISSION_DUE_IN_MINUTES: 10
     ROLE_ASSIGNMENT_API_URL: https://am-role-assignment-ia-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net
   keyVaults:
     ia:
