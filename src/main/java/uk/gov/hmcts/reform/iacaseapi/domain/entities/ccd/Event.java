@@ -118,6 +118,7 @@ public enum Event {
     UPDATE_PAYMENT_STATUS("updatePaymentStatus"),
     RE_TRIGGER_WA_BULK_TASKS("reTriggerWaBulkTasks"),
     RE_TRIGGER_WA_TASKS("reTriggerWaTasks"),
+    REMOVE_CASE_MANAGER_BULK("removeCaseManagerBulk"),
     MARK_ADDENDUM_EVIDENCE_AS_REVIEWED("markAddendumEvidenceAsReviewed"),
     MARK_PAYMENT_REQUEST_SENT("markPaymentRequestSent"),
     END_APPEAL_AUTOMATICALLY("endAppealAutomatically"),
@@ -159,6 +160,7 @@ public enum Event {
     DECISION_WITHOUT_HEARING_LISTED("decisionWithoutHearingListed"),
     SAVE_NOTIFICATIONS_TO_DATA("saveNotificationsToData"),
     UPDATE_NEXT_HEARING_INFO("UpdateNextHearingInfo"),
+    APPELLANT_IN_PERSON_MANUAL("appellantInPersonManual"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");
