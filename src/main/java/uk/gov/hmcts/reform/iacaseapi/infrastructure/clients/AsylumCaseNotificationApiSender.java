@@ -27,6 +27,7 @@ public class AsylumCaseNotificationApiSender implements NotificationSender<Asylu
     private final String notificationsApiEndpoint;
     private final String aboutToSubmitPath;
     private final boolean timedEventServiceEnabled;
+    private final boolean saveNotificationToDataEnabled;
     private final int saveNotificationScheduleAtHour;
     private final int saveNotificationScheduleMaxMinutes;
     private final DateProvider dateProvider;
@@ -39,6 +40,7 @@ public class AsylumCaseNotificationApiSender implements NotificationSender<Asylu
         @Value("${notificationsApi.endpoint}") String notificationsApiEndpoint,
         @Value("${notificationsApi.aboutToSubmitPath}") String aboutToSubmitPath,
         @Value("${featureFlag.timedEventServiceEnabled}") boolean timedEventServiceEnabled,
+        @Value("${saveNotificationsData.enabled}") boolean saveNotificationToDataEnabled,
         @Value("${saveNotificationsData.scheduleAtHour}") int saveNotificationScheduleAtHour,
         @Value("${saveNotificationsData.scheduleMaxMinutes}") int saveNotificationScheduleMaxMinutes,
         DateProvider dateProvider,
@@ -49,6 +51,7 @@ public class AsylumCaseNotificationApiSender implements NotificationSender<Asylu
         this.notificationsApiEndpoint = notificationsApiEndpoint;
         this.aboutToSubmitPath = aboutToSubmitPath;
         this.timedEventServiceEnabled = timedEventServiceEnabled;
+        this.saveNotificationToDataEnabled = saveNotificationToDataEnabled;
         this.saveNotificationScheduleAtHour = saveNotificationScheduleAtHour;
         this.saveNotificationScheduleMaxMinutes = saveNotificationScheduleMaxMinutes;
         this.dateProvider = dateProvider;
@@ -61,7 +64,8 @@ public class AsylumCaseNotificationApiSender implements NotificationSender<Asylu
     ) {
         requireNonNull(callback, "callback must not be null");
 
-        if (featureToggler.getValue("save-notifications-feature", false)) {
+        if (featureToggler.getValue("save-notifications-feature", false)
+                && saveNotificationToDataEnabled) {
             scheduleSaveNotificationToData(callback);
         }
 
