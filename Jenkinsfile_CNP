@@ -209,14 +209,16 @@ enableSecurityScan()
         }
     }
 
-    afterAlways('functionalTest:preview') {
+    before('functionalTest:preview') {
         //steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
         env.IDAM_API_URL = "https://idam-api.aat.platform.hmcts.net"
         env.ROLE_ASSIGNMENT_URL = "https://am-role-assignment-ia-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
-        env.SERVICE_AUTH_PROVIDER_API_BASE_URL="http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
+        env.SERVICE_AUTH_PROVIDER_API_BASE_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
         sh """
       ./bin/add-org-roles-to-users.sh
     """
+    }
+    afterAlways('functionalTest:preview') {
         publishHTML([
                 allowMissing         : true,
                 alwaysLinkToLastBuild: true,
