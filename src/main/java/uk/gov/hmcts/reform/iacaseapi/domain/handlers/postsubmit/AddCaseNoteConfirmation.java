@@ -17,7 +17,7 @@ public class AddCaseNoteConfirmation implements PostSubmitCallbackHandler<Asylum
     ) {
         requireNonNull(callback, "callback must not be null");
 
-        return callback.getEvent() == Event.ADD_CASE_NOTE;
+        return  callback.getEvent() == Event.ADD_CASE_NOTE;
     }
 
     public PostSubmitCallbackResponse handle(
