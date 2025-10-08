@@ -573,6 +573,7 @@ security:
       - "refundConfirmation"
       - "progressMigratedCase"
       - "hearingCancelled"
+      - "editDocuments"
     ctsc:
       - "appellantInPersonManual"
       - "startAppeal"
@@ -634,6 +635,7 @@ security:
       - "refundConfirmation"
       - "progressMigratedCase"
       - "hearingCancelled"
+      - "editDocuments"
     ctsc-team-leader:
       - "appellantInPersonManual"
       - "startAppeal"
@@ -695,6 +697,7 @@ security:
       - "refundConfirmation"
       - "progressMigratedCase"
       - "hearingCancelled"
+      - "editDocuments"
     national-business-centre:
       - "appellantInPersonManual"
       - "startAppeal"
@@ -756,6 +759,7 @@ security:
       - "refundConfirmation"
       - "progressMigratedCase"
       - "hearingCancelled"
+      - "editDocuments"
     challenged-access-ctsc:
       - "appellantInPersonManual"
       - "startAppeal"
@@ -817,6 +821,7 @@ security:
       - "refundConfirmation"
       - "progressMigratedCase"
       - "hearingCancelled"
+      - "editDocuments"
     challenged-access-admin:
       - "appellantInPersonManual"
       - "startAppeal"
@@ -879,6 +884,7 @@ security:
       - "progressMigratedCase"
       - "hearingCancelled"
       - "appellantInPersonManual"
+      - "editDocuments"
     caseworker-ia-homeofficeapc:
       - "uploadHomeOfficeBundle"
       - "uploadAdditionalEvidenceHomeOffice"
