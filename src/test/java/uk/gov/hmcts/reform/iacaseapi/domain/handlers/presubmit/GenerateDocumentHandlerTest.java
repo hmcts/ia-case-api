@@ -189,7 +189,8 @@ class GenerateDocumentHandlerTest {
         "REQUEST_CASE_BUILDING",
         "ASYNC_STITCHING_COMPLETE",
         "UPDATE_TRIBUNAL_DECISION",
-        "SAVE_NOTIFICATIONS_TO_DATA"
+        "SAVE_NOTIFICATIONS_TO_DATA",
+        "MARK_APPEAL_AS_REMITTED"
     })
     void should_generate_document_and_update_the_case(Event event) {
         AsylumCase expectedUpdatedCase = mock(AsylumCase.class);
@@ -387,7 +388,8 @@ class GenerateDocumentHandlerTest {
                     SAVE_NOTIFICATIONS_TO_DATA,
                     MANAGE_FEE_UPDATE,
                     REMOVE_REPRESENTATION,
-                    REMOVE_LEGAL_REPRESENTATIVE
+                    REMOVE_LEGAL_REPRESENTATIVE,
+                    MARK_APPEAL_AS_REMITTED
                 ).contains(event)) {
 
                 assertTrue(canHandle);
@@ -540,7 +542,8 @@ class GenerateDocumentHandlerTest {
                     SAVE_NOTIFICATIONS_TO_DATA,
                     MANAGE_FEE_UPDATE,
                     REMOVE_REPRESENTATION,
-                    REMOVE_LEGAL_REPRESENTATIVE
+                    REMOVE_LEGAL_REPRESENTATIVE,
+                    MARK_APPEAL_AS_REMITTED
                 );
 
             if (callbackStage.equals(PreSubmitCallbackStage.ABOUT_TO_SUBMIT)
