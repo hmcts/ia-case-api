@@ -14,7 +14,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.HomeOfficeReferenceService;
 import java.util.regex.Pattern;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.AGE_ASSESSMENT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_DATE_OF_BIRTH;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_FAMILY_NAME;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_GIVEN_NAMES;
@@ -30,9 +29,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.outOfCo
 public class HomeOfficeReferenceHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     public static final int REQUIRED_CID_REF_LENGTH = 9;
-    public static final Pattern HOME_OFFICE_REF_PATTERN = Pattern.compile("^(([0-9]{4}\\-[0-9]{4}\\-[0-9]{4}\\-[0-9]{4})|([0-9]{1,9}))$");
-
-    private static boolean homeOfficeReferenceCheckEnabled = false;
+    public static final Pattern HOME_OFFICE_REF_PATTERN = Pattern.compile("^(([0-9]{4}\\-[0-9]{4}\\-[0-9]{4}\\-[0-9]{4})|(GWF[0-9]{9})|([0-9]{1,9}))$");
 
     private final HomeOfficeReferenceService homeOfficeReferenceService;
 
@@ -46,15 +43,13 @@ public class HomeOfficeReferenceHandler implements PreSubmitCallbackHandler<Asyl
     ) {
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
-        final AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
         return callbackStage == PreSubmitCallbackStage.MID_EVENT
                 && (callback.getEvent() == Event.START_APPEAL
                 || callback.getEvent() == Event.EDIT_APPEAL)
                 && (callback.getPageId().equals("homeOfficeDecision_TEMPORARILY_DISABLED") || 
                     callback.getPageId().equals("appellantBasicDetails_TEMPORARILY_DISABLED"))
-                && callback.getPageId().equals("homeOfficeDecision_TEMPORARILY_DISABLED")
-                && HandlerUtils.isRepJourney(asylumCase);
+                && callback.getPageId().equals("homeOfficeDecision_TEMPORARILY_DISABLED");
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
@@ -69,7 +64,6 @@ public class HomeOfficeReferenceHandler implements PreSubmitCallbackHandler<Asyl
 
         if (!isInternalCase(asylumCase)
             && !outOfCountryDecisionTypeIsRefusalOfHumanRightsOrPermit(asylumCase)
-            && !isAgeAssessmentAppealType(asylumCase)
             || isInternalCase(asylumCase)
             && !isEntryClearanceDecision(asylumCase)) {
 
@@ -79,15 +73,15 @@ public class HomeOfficeReferenceHandler implements PreSubmitCallbackHandler<Asyl
 
                 
             if (callback.getPageId().equals("homeOfficeDecision_TEMPORARILY_DISABLED")) {    
-                if (!isWelformedHomeOfficeReference(homeOfficeReferenceNumber)) {
+                if (!isWellFormedHomeOfficeReference(homeOfficeReferenceNumber)) {
                     PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
-                    response.addError("Enter the Home office reference or Case ID in the correct format. The Home office reference or Case ID cannot include letters and must be either 9 digits or 16 digits with dashes.");
+                    response.addError("Enter the Home Office reference or Case ID in the correct format. The Home Office reference or Case ID must be either GWF followed by 9 digits or 16 digits with dashes.");
                     return response;
                 }
 
                 if (!isMatchingHomeOfficeCaseNumber(homeOfficeReferenceNumber)) {
                     PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
-                    response.addError("Enter the Home office case number from your letter. The Home office case number provided does not match any existing case in home office systems.");
+                    response.addError("Enter the Home Office case number from your decision letter. The Home Office case number provided does not match any existing case in Home Office systems.");
                     return response;
                 }
             }
@@ -95,7 +89,7 @@ public class HomeOfficeReferenceHandler implements PreSubmitCallbackHandler<Asyl
             if (callback.getPageId().equals("appellantBasicDetails_TEMPORARILY_DISABLED")) {  
                 if (!isMatchingHomeOfficeCaseDetails(homeOfficeReferenceNumber, asylumCase)) {
                     PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
-                    response.addError("Enter the Home office details from the letters. The details provided does not match the case in the home office systems.");
+                    response.addError("Enter the Home Office details from the decision letter. The details provided does not match the case in the Home Office systems.");
                     return response;
                 }
             }
@@ -105,18 +99,11 @@ public class HomeOfficeReferenceHandler implements PreSubmitCallbackHandler<Asyl
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 
-    public static boolean isWelformedHomeOfficeReference(String reference) {
+    public static boolean isWellFormedHomeOfficeReference(String reference) {
         return reference != null && HOME_OFFICE_REF_PATTERN.matcher(reference).matches();
     }
 
-    private boolean isAgeAssessmentAppealType(AsylumCase asylumCase) {
-        return asylumCase.read(AGE_ASSESSMENT, YesOrNo.class).orElse(NO).equals(YES);
-    }
-
     public boolean isMatchingHomeOfficeCaseNumber(String reference) {
-        if (homeOfficeReferenceCheckEnabled == false) {
-            return true;
-        }
 
         if (reference == null) {
             return false;
@@ -125,15 +112,12 @@ public class HomeOfficeReferenceHandler implements PreSubmitCallbackHandler<Asyl
         return homeOfficeReferenceService.getHomeOfficeReferenceData(reference)
             .map(data -> {
                 String uan = data.getUan();
-                return uan != null && uan.trim().toLowerCase().equals(reference.trim().toLowerCase());
+                return uan != null && uan.trim().equals(reference.trim().toLowerCase());
             })
             .orElse(false);
     }
 
-    public boolean isMatchingHomeOfficeCaseDetails(String reference, AsylumCase asylumCase) {
-        if (homeOfficeReferenceCheckEnabled == false) {
-            return true;
-        }
+    public boolean isMatchingHomeOfficeCaseDetails(String reference, AsylumCase asylumCase) {   
 
         if (reference == null) {
             return false;
@@ -145,12 +129,10 @@ public class HomeOfficeReferenceHandler implements PreSubmitCallbackHandler<Asyl
                     return false;
                 }
                 
-                String appellantGivenNames = asylumCase.read(APPELLANT_GIVEN_NAMES, String.class).orElse("");
                 String appellantFamilyName = asylumCase.read(APPELLANT_FAMILY_NAME, String.class).orElse("");
                 String appellantDateOfBirth = asylumCase.read(APPELLANT_DATE_OF_BIRTH, String.class).orElse("");
                 
                 return data.getAppellants().stream().anyMatch(appellant ->
-                    matchesName(appellant.getGivenNames(), appellantGivenNames) &&
                     matchesName(appellant.getFamilyName(), appellantFamilyName) &&
                     matchesDateOfBirth(appellant.getDateOfBirth(), appellantDateOfBirth)
                 );

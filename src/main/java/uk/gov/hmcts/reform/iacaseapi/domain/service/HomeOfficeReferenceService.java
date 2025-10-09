@@ -16,10 +16,11 @@ public class HomeOfficeReferenceService {
         log.info("Getting Home Office reference data for: {}", homeOfficeReferenceString);
         
         if (homeOfficeReferenceString == null || homeOfficeReferenceString.trim().isEmpty()) {
-            log.warn("Home Office reference string is null or empty");
+            log.warn("Home Office reference string provided is null or empty");
             return Optional.empty();
         }
         
+        // Put there the code fetching home office data
         return Optional.empty();
     }
 
