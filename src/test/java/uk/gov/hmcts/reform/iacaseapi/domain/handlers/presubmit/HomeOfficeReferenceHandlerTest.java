@@ -35,8 +35,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.homeoffice.HomeOfficeRefere
 import static org.assertj.core.api.Assertions.assertThat;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 @SuppressWarnings("unchecked")
