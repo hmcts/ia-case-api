@@ -387,7 +387,8 @@ class GenerateDocumentHandlerTest {
                     SAVE_NOTIFICATIONS_TO_DATA,
                     MANAGE_FEE_UPDATE,
                     REMOVE_REPRESENTATION,
-                    REMOVE_LEGAL_REPRESENTATIVE
+                    REMOVE_LEGAL_REPRESENTATIVE,
+                    DECISION_WITHOUT_HEARING
                 ).contains(event)) {
 
                 assertTrue(canHandle);
