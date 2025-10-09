@@ -2831,6 +2831,14 @@ public enum AsylumCaseFieldDefinition {
     HEARING_DECISION_LIST(
             "hearingDecisionList", new TypeReference<List<IdValue<HearingDecision>>>(){}),
 
+    FASTER_CASE_STATUSES(
+      "fasterCaseStatuses", new TypeReference<List<IdValue<FasterCaseStatus>>>(){}),
+
+    FASTER_CASE_STATUS(
+        "fasterCaseStatus", new TypeReference<YesOrNo>(){}),
+
+    FASTER_CASE_STATUS_REASON(
+        "fasterCaseStatusReason", new TypeReference<String>(){}),
     ;
 
     private final String value;
