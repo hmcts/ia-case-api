@@ -64,9 +64,14 @@ public class AsylumCaseNotificationApiSender implements NotificationSender<Asylu
     ) {
         requireNonNull(callback, "callback must not be null");
 
-        if (featureToggler.getValue("save-notifications-feature", false)
-                && saveNotificationToDataEnabled) {
+        log.info("saveNotificationToDataEnabled env var value: {}", saveNotificationToDataEnabled);
+        boolean featureTogglerValue = featureToggler.getValue("save-notifications-feature", false);
+        log.info("save-notifications-feature LD flag value: {}", featureTogglerValue);
+
+        if (featureTogglerValue && saveNotificationToDataEnabled) {
             scheduleSaveNotificationToData(callback);
+        } else {
+            log.info("Skipping saveNotificationsToDate event schedule");
         }
 
         return asylumCaseCallbackApiDelegator.delegate(
