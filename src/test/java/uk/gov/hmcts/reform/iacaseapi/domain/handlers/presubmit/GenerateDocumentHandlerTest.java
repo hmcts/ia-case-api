@@ -540,7 +540,8 @@ class GenerateDocumentHandlerTest {
                     SAVE_NOTIFICATIONS_TO_DATA,
                     MANAGE_FEE_UPDATE,
                     REMOVE_REPRESENTATION,
-                    REMOVE_LEGAL_REPRESENTATIVE
+                    REMOVE_LEGAL_REPRESENTATIVE,
+                    DECISION_WITHOUT_HEARING
                 );
 
             if (callbackStage.equals(PreSubmitCallbackStage.ABOUT_TO_SUBMIT)
