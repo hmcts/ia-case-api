@@ -48,8 +48,7 @@ public class HomeOfficeReferenceHandler implements PreSubmitCallbackHandler<Asyl
                 && (callback.getEvent() == Event.START_APPEAL
                 || callback.getEvent() == Event.EDIT_APPEAL)
                 && (callback.getPageId().equals("homeOfficeDecision_TEMPORARILY_DISABLED") || 
-                    callback.getPageId().equals("appellantBasicDetails_TEMPORARILY_DISABLED"))
-                && callback.getPageId().equals("homeOfficeDecision_TEMPORARILY_DISABLED");
+                    callback.getPageId().equals("appellantBasicDetails_TEMPORARILY_DISABLED"));
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
