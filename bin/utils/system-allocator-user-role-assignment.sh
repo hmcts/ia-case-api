@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-## Usage: ./system-hearings-user-role-assignment.sh [username] [password]
+## Usage: ./system-allocator-user-role-assignment.sh [username] [password]
 ##
 
 USERNAME=${1:-system-user}
