@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.HomeOfficeReferenceService;
 
+import java.text.Normalizer;
 import java.util.regex.Pattern;
 
 import static java.util.Objects.requireNonNull;
@@ -143,7 +144,24 @@ public class HomeOfficeReferenceHandler implements PreSubmitCallbackHandler<Asyl
         if (homeOfficeName == null || appellantName == null) {
             return false;
         }
-        return homeOfficeName.trim().toLowerCase().equals(appellantName.trim().toLowerCase());
+        return normalizeName(homeOfficeName).equals(normalizeName(appellantName));
+    }
+    
+    public static String normalizeName(String name) {
+        if (name == null) {
+            return "";
+        }
+        
+        // Step 1: Normalize spaces and convert to lowercase
+        String normalized = name.trim().toLowerCase().replaceAll("\\s+", " ");
+        
+        // Step 2: Normalize to NFD (decomposed form) to separate base characters from diacritical marks
+        normalized = Normalizer.normalize(normalized, Normalizer.Form.NFD);
+        
+        // Step 3: Remove diacritical marks (accents, etc.)
+        normalized = normalized.replaceAll("\\p{M}", "");
+        
+        return normalized;
     }
     
     private boolean matchesDateOfBirth(String homeOfficeDob, String appellantDob) {

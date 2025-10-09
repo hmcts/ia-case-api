@@ -18,6 +18,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -72,6 +73,27 @@ class HomeOfficeReferenceHandlerTest {
     void should_reject_invalid_home_office_reference_numbers_direct_validation(String invalidReference) {
         String testValue = "null".equals(invalidReference) ? null : invalidReference;
         assertFalse(HomeOfficeReferenceHandler.isWellFormedHomeOfficeReference(testValue));
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideNamesWithAccents")
+    void should_normalize_names_with_accents_and_diacritics(String nameWithAccents, String expectedNormalized) {
+        String result = HomeOfficeReferenceHandler.normalizeName(nameWithAccents);
+        assertThat(result).isEqualTo(expectedNormalized.toLowerCase());
+    }
+
+    private static Stream<Arguments> provideNamesWithAccents() {
+        return Stream.of(
+            Arguments.of("Müller", "muller"),
+            Arguments.of("Muller", "muller"),
+            Arguments.of("MÜLLER", "muller"),
+            Arguments.of("José   MÜLLER", "jose muller"),
+            Arguments.of("Jose", "jose"),
+            Arguments.of("Sjöström", "sjostrom"),
+            Arguments.of("Sjostrom", "sjostrom"),
+            Arguments.of("Françoise", "francoise"),
+            Arguments.of("Francoise", "francoise")
+        );
     }
 
     @Test
