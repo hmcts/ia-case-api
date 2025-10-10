@@ -387,7 +387,8 @@ class GenerateDocumentHandlerTest {
                     SAVE_NOTIFICATIONS_TO_DATA,
                     MANAGE_FEE_UPDATE,
                     REMOVE_REPRESENTATION,
-                    REMOVE_LEGAL_REPRESENTATIVE
+                    REMOVE_LEGAL_REPRESENTATIVE,
+                    DECIDE_FTPA_APPLICATION
                 ).contains(event)) {
 
                 assertTrue(canHandle);
@@ -540,7 +541,8 @@ class GenerateDocumentHandlerTest {
                     SAVE_NOTIFICATIONS_TO_DATA,
                     MANAGE_FEE_UPDATE,
                     REMOVE_REPRESENTATION,
-                    REMOVE_LEGAL_REPRESENTATIVE
+                    REMOVE_LEGAL_REPRESENTATIVE,
+                    DECIDE_FTPA_APPLICATION
                 );
 
             if (callbackStage.equals(PreSubmitCallbackStage.ABOUT_TO_SUBMIT)
