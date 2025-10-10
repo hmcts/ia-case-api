@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-## Usage: ./system-user-role-assignment.sh [username] [password]
+## Usage: ./system-hearings-user-role-assignment.sh [username] [password]
 ##
 
 USERNAME=${1:-system-user}
@@ -12,7 +12,7 @@ USER_ID=$($BASEDIR/idam-user-id.sh $USER_TOKEN)
 SERVICE_TOKEN=$($BASEDIR/idam-lease-service-token.sh iac \
   $(docker run --rm hmctspublic.azurecr.io/imported/toolbelt/oathtool --totp -b ${IAC_S2S_KEY:-AABBCCDDEEFFGGHH}))
 
-echo "\n\nCreating role assignment: \n User: ${USER_ID}\n Role name: ${ROLE_NAME}\n ROLE_CLASSIFICATION: ${ROLE_CLASSIFICATION}\n"
+echo "\n\nCreating role assignment: \n User: ${USER_ID}\n"
 echo "\n\nROLE ASSIGNMENT URL: \n Url: ${ROLE_ASSIGNMENT_URL}\n"
 
 curl --silent --show-error -X POST "${ROLE_ASSIGNMENT_URL}/am/role-assignments" \
@@ -22,6 +22,7 @@ curl --silent --show-error -X POST "${ROLE_ASSIGNMENT_URL}/am/role-assignments" 
   -H "Content-Type: application/json" \
   -d '{
        "roleRequest": {
+        "assignerId": "'"${USER_ID}"'",
          "process": "iac-system-users",
          "reference": "iac-hearings-system-user",
          "replaceExisting": true
@@ -76,20 +77,6 @@ curl --silent --show-error -X POST "${ROLE_ASSIGNMENT_URL}/am/role-assignments" 
            "attributes": {
              "jurisdiction": "IA",
              "caseType": "Bail"
-           },
-           "actorIdType": "IDAM"
-         },
-         {
-           "actorId": "'"${USER_ID}"'",
-           "roleType": "ORGANISATION",
-           "classification": "PUBLIC",
-           "roleName": "case-allocator",
-           "roleCategory": "SYSTEM",
-           "grantType": "STANDARD",
-           "attributes": {
-             "jurisdiction": "IA",
-             "primaryLocation": "765324",
-             "substantive": "N"
            },
            "actorIdType": "IDAM"
          }
