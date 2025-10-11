@@ -189,7 +189,8 @@ class GenerateDocumentHandlerTest {
         "REQUEST_CASE_BUILDING",
         "ASYNC_STITCHING_COMPLETE",
         "UPDATE_TRIBUNAL_DECISION",
-        "SAVE_NOTIFICATIONS_TO_DATA"
+        "SAVE_NOTIFICATIONS_TO_DATA",
+        "MARK_APPEAL_AS_REMITTED"
     })
     void should_generate_document_and_update_the_case(Event event) {
         AsylumCase expectedUpdatedCase = mock(AsylumCase.class);
@@ -388,6 +389,7 @@ class GenerateDocumentHandlerTest {
                     MANAGE_FEE_UPDATE,
                     REMOVE_REPRESENTATION,
                     REMOVE_LEGAL_REPRESENTATIVE,
+                    MARK_APPEAL_AS_REMITTED,
                     DECIDE_FTPA_APPLICATION
                 ).contains(event)) {
 
@@ -542,6 +544,7 @@ class GenerateDocumentHandlerTest {
                     MANAGE_FEE_UPDATE,
                     REMOVE_REPRESENTATION,
                     REMOVE_LEGAL_REPRESENTATIVE,
+                    MARK_APPEAL_AS_REMITTED,
                     DECIDE_FTPA_APPLICATION
                 );
 
