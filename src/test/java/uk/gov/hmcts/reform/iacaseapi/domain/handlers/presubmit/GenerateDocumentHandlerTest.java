@@ -390,7 +390,8 @@ class GenerateDocumentHandlerTest {
                     REMOVE_REPRESENTATION,
                     REMOVE_LEGAL_REPRESENTATIVE,
                     MARK_APPEAL_AS_REMITTED,
-                    DECIDE_FTPA_APPLICATION
+                    DECIDE_FTPA_APPLICATION,
+                    DECISION_WITHOUT_HEARING
                 ).contains(event)) {
 
                 assertTrue(canHandle);
@@ -545,7 +546,8 @@ class GenerateDocumentHandlerTest {
                     REMOVE_REPRESENTATION,
                     REMOVE_LEGAL_REPRESENTATIVE,
                     MARK_APPEAL_AS_REMITTED,
-                    DECIDE_FTPA_APPLICATION
+                    DECIDE_FTPA_APPLICATION,
+                    DECISION_WITHOUT_HEARING
                 );
 
             if (callbackStage.equals(PreSubmitCallbackStage.ABOUT_TO_SUBMIT)
