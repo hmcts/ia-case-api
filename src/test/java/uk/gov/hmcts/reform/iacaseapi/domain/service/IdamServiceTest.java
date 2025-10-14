@@ -8,6 +8,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.service.IdamService.amOnboardedRoles;
 
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
@@ -23,7 +24,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import org.junit.jupiter.params.provider.ValueSource;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.LoggerFactory;
@@ -215,8 +216,12 @@ class IdamServiceTest {
         assertEquals(expectedSurname, actualUserInfo.getFamilyName());
     }
 
+    private static Stream<String> amOnboardedRolesProvider() {
+        return amOnboardedRoles.stream();
+    }
+
     @ParameterizedTest
-    @ValueSource(strings = {"caseworker-ia-caseofficer", "caseworker-ia-iacjudge", "caseworker-ia-admofficer"})
+    @MethodSource("amOnboardedRolesProvider")
     void getUserDetails_logs_exception_when_role_assignment_service_fails_for_onboarded_roles(String role) {
         Logger responseLogger = (Logger) LoggerFactory.getLogger(IdamService.class);
         ListAppender<ILoggingEvent> listAppender = new ListAppender<>();

@@ -24,7 +24,7 @@ public class IdamService {
     private final String idamClientSecret;
     private final IdamApi idamApi;
     private final RoleAssignmentService roleAssignmentService;
-    public final List<String> amOnboardedRoles =
+    public static final List<String> amOnboardedRoles =
         List.of("caseworker-ia-caseofficer", "caseworker-ia-iacjudge", "caseworker-ia-admofficer");
 
     public IdamService(
