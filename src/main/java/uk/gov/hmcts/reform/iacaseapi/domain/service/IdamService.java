@@ -24,6 +24,8 @@ public class IdamService {
     private final String idamClientSecret;
     private final IdamApi idamApi;
     private final RoleAssignmentService roleAssignmentService;
+    public final List<String> amOnboardedRoles =
+        List.of("caseworker-ia-caseofficer", "caseworker-ia-iacjudge", "caseworker-ia-admofficer");
 
     public IdamService(
         @Value("${idam.ia_system_user.username}") String systemUserName,
@@ -64,14 +66,16 @@ public class IdamService {
     public UserInfo getUserInfo(String accessToken) {
         UserInfo userInfo = idamApi.userInfo(accessToken);
         List<String> amRoles = Collections.emptyList();
-        try {
-            amRoles = roleAssignmentService.getAmRolesFromUser(userInfo.getUid(), accessToken);
-        } catch (Exception e) {
-            log.error("Error fetching AM roles for user: {}", userInfo.getUid(), e);
-        }
         List<String> idamRoles = userInfo.getRoles() == null ?
             Collections.emptyList() :
             userInfo.getRoles();
+        try {
+            amRoles = roleAssignmentService.getAmRolesFromUser(userInfo.getUid(), accessToken);
+        } catch (Exception e) {
+            if (idamRoles.stream().anyMatch(amOnboardedRoles::contains)) {
+                log.error("Error fetching AM roles for user: {}", userInfo.getUid(), e);
+            }
+        }
         List<String> roles = Stream.concat(amRoles.stream(), idamRoles.stream()).toList();
         userInfo.setRoles(roles);
         return userInfo;
