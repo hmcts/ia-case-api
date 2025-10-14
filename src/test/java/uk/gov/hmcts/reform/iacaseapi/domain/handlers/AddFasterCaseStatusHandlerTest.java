@@ -72,7 +72,7 @@ class AddFasterCaseStatusHandlerTest {
         when(dateProvider.now()).thenReturn(now);
 
         when(asylumCase.read(FASTER_CASE_STATUSES)).thenReturn(Optional.of(existingFasterCaseStatuses));
-        when(asylumCase.read(FASTER_CASE_STATUS, YesOrNo.class)).thenReturn(Optional.of(newFasterCaseStatus));
+        when(asylumCase.read(FASTER_CASE_STATUS_STATUS, YesOrNo.class)).thenReturn(Optional.of(newFasterCaseStatus));
         when(asylumCase.read(FASTER_CASE_STATUS_REASON, String.class)).thenReturn(Optional.of(newFasterCaseStatusReason));
 
         when(fasterCaseStatusAppender.append(any(FasterCaseStatus.class), anyList()))
@@ -99,7 +99,7 @@ class AddFasterCaseStatusHandlerTest {
 
         FasterCaseStatus capturedCaseNote = newFasterCaseStatusCaptor.getValue();
 
-        assertThat(capturedCaseNote.getFasterCaseStatus()).isEqualTo(true);
+        assertThat(capturedCaseNote.getFasterCaseStatus()).isEqualTo(YesOrNo.YES);
         assertThat(capturedCaseNote.getFasterCaseStatusReason()).isEqualTo(newFasterCaseStatusReason);
         assertThat(capturedCaseNote.getUser()).isEqualTo(forename + " " + surname);
         assertThat(capturedCaseNote.getDateAdded()).isEqualTo(now.toString());
@@ -108,7 +108,7 @@ class AddFasterCaseStatusHandlerTest {
 
         verify(asylumCase, times(1)).write(FASTER_CASE_STATUSES, allAppendedFasterCaseStatuses);
 
-        verify(asylumCase, times(1)).clear(FASTER_CASE_STATUS);
+        verify(asylumCase, times(1)).clear(FASTER_CASE_STATUS_STATUS);
         verify(asylumCase, times(1)).clear(FASTER_CASE_STATUS_REASON);
 
         assertThat(callbackResponse.getData()).isEqualTo(callbackResponse.getData());
@@ -117,7 +117,7 @@ class AddFasterCaseStatusHandlerTest {
     @Test
     void should_throw_when_case_note_subject_is_not_present() {
 
-        when(asylumCase.read(FASTER_CASE_STATUS, YesOrNo.class)).thenReturn(Optional.empty());
+        when(asylumCase.read(FASTER_CASE_STATUS_STATUS, YesOrNo.class)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> addFasterCaseStatusHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .hasMessage("fasterCaseStatus is not present")

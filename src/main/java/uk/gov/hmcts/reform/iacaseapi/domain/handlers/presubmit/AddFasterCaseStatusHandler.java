@@ -21,7 +21,6 @@ import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.ADD_FASTER_CASE_STATUS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 @Component
 public class AddFasterCaseStatusHandler implements PreSubmitCallbackHandler<AsylumCase> {
@@ -63,9 +62,8 @@ public class AddFasterCaseStatusHandler implements PreSubmitCallbackHandler<Asyl
                 .getCaseDetails()
                 .getCaseData();
 
-        Boolean fasterCaseStatus = asylumCase
-                .read(FASTER_CASE_STATUS, YesOrNo.class)
-                .map(fasterCaseStatusValue -> YES == fasterCaseStatusValue)
+        YesOrNo fasterCaseStatus = asylumCase
+                .read(FASTER_CASE_STATUS_STATUS, YesOrNo.class)
                 .orElseThrow(() -> new IllegalStateException("fasterCaseStatus is not present"));
 
         String fasterCaseStatusReason = asylumCase
@@ -87,7 +85,7 @@ public class AddFasterCaseStatusHandler implements PreSubmitCallbackHandler<Asyl
 
         asylumCase.write(FASTER_CASE_STATUSES, allFasterCaseStatuses);
 
-        asylumCase.clear(FASTER_CASE_STATUS);
+        asylumCase.clear(FASTER_CASE_STATUS_STATUS);
         asylumCase.clear(FASTER_CASE_STATUS_REASON);
 
         return new PreSubmitCallbackResponse<>(asylumCase);

@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
 import static java.util.Objects.requireNonNull;
 
@@ -9,8 +10,8 @@ import static java.util.Objects.requireNonNull;
 @ToString
 public class FasterCaseStatus {
 
-    private Boolean fasterCaseStatus;
-    private String fasterCaseStatusReason;
+    private YesOrNo status;
+    private String reason;
     private String user;
     private String dateAdded;
 
@@ -18,23 +19,23 @@ public class FasterCaseStatus {
     }
 
     public FasterCaseStatus(
-        Boolean fasterCaseStatus,
-        String fasterCaseStatusReason,
+        YesOrNo status,
+        String reason,
         String user,
         String dateAdded
     ) {
-        this.fasterCaseStatus = requireNonNull(fasterCaseStatus);
-        this.fasterCaseStatusReason = requireNonNull(fasterCaseStatusReason);
+        this.status = requireNonNull(status);
+        this.reason = requireNonNull(reason);
         this.user = requireNonNull(user);
         this.dateAdded = requireNonNull(dateAdded);
     }
 
-    public Boolean getFasterCaseStatus() {
-        return requireNonNull(fasterCaseStatus);
+    public YesOrNo getFasterCaseStatus() {
+        return requireNonNull(status);
     }
 
     public String getFasterCaseStatusReason() {
-        return requireNonNull(fasterCaseStatusReason);
+        return requireNonNull(reason);
     }
 
     public String getUser() {

@@ -2834,8 +2834,8 @@ public enum AsylumCaseFieldDefinition {
     FASTER_CASE_STATUSES(
       "fasterCaseStatuses", new TypeReference<List<IdValue<FasterCaseStatus>>>(){}),
 
-    FASTER_CASE_STATUS(
-        "fasterCaseStatus", new TypeReference<YesOrNo>(){}),
+    FASTER_CASE_STATUS_STATUS(
+        "fasterCaseStatusStatus", new TypeReference<YesOrNo>(){}),
 
     FASTER_CASE_STATUS_REASON(
         "fasterCaseStatusReason", new TypeReference<String>(){}),
