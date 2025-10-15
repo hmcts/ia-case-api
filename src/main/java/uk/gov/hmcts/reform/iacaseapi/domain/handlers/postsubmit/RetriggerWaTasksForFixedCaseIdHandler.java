@@ -57,7 +57,6 @@ public class RetriggerWaTasksForFixedCaseIdHandler implements PreSubmitCallbackH
 
     }
 
-    
     public PreSubmitCallbackResponse<AsylumCase> handle(
             PreSubmitCallbackStage callbackStage,
             Callback<AsylumCase> callback
