@@ -2,11 +2,13 @@ package uk.gov.hmcts.reform.iacaseapi.domain.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.service.IdamService.amOnboardedRoles;
 
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
@@ -22,6 +24,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.LoggerFactory;
@@ -50,21 +53,19 @@ class IdamServiceTest {
     public void setUp() {
 
         idamService = new IdamService(
-                SOME_SYSTEM_USER,
-                SYSTEM_USER_PASS,
-                REDIRECT_URL,
-                SCOPE,
-                CLIENT_ID,
-                CLIENT_SECRET,
-                idamApi,
-                roleAssignmentService
+            SOME_SYSTEM_USER,
+            SYSTEM_USER_PASS,
+            REDIRECT_URL,
+            SCOPE,
+            CLIENT_ID,
+            CLIENT_SECRET,
+            idamApi,
+            roleAssignmentService
         );
     }
 
     @Test
     void getUserToken() {
-
-
         when(idamApi.token(anyMap())).thenReturn(new Token("some user token", SCOPE));
 
         String actual = idamService.getServiceUserToken();
@@ -215,8 +216,48 @@ class IdamServiceTest {
         assertEquals(expectedSurname, actualUserInfo.getFamilyName());
     }
 
+    private static Stream<String> amOnboardedRolesProvider() {
+        return amOnboardedRoles.stream();
+    }
+
+    @ParameterizedTest
+    @MethodSource("amOnboardedRolesProvider")
+    void getUserDetails_logs_exception_when_role_assignment_service_fails_for_onboarded_roles(String role) {
+        Logger responseLogger = (Logger) LoggerFactory.getLogger(IdamService.class);
+        ListAppender<ILoggingEvent> listAppender = new ListAppender<>();
+        listAppender.start();
+        responseLogger.addAppender(listAppender);
+
+        String expectedAccessToken = "ABCDEFG";
+        String expectedId = "1234";
+        String expectedEmailAddress = "john.doe@example.com";
+        String expectedForename = "John";
+        String expectedSurname = "Doe";
+        String expectedName = expectedForename + " " + expectedSurname;
+
+        when(roleAssignmentService.getAmRolesFromUser(expectedId, expectedAccessToken))
+            .thenThrow(new NullPointerException("Role assignment service failed"));
+
+        List<String> expectedIdamRoles = Arrays.asList(role, "role-2");
+        UserInfo expecteduUerInfo = new UserInfo(
+            expectedEmailAddress,
+            expectedId,
+            expectedIdamRoles,
+            expectedName,
+            expectedForename,
+            expectedSurname
+        );
+        when(idamApi.userInfo(anyString())).thenReturn(expecteduUerInfo);
+        idamService.getUserInfo(expectedAccessToken);
+        List<ILoggingEvent> logEvents = listAppender.list;
+        assertEquals(1, logEvents.size());
+        assertEquals("Error fetching AM roles for user: 1234", logEvents.get(0).getFormattedMessage());
+
+        verify(idamApi).userInfo(expectedAccessToken);
+    }
+
     @Test
-    void getUserDetails_logs_exception_when_role_assignment_service_fails() {
+    void getUserDetails_does_not_log_exception_when_role_assignment_service_fails_for_non_onboarded_roles() {
         Logger responseLogger = (Logger) LoggerFactory.getLogger(IdamService.class);
         ListAppender<ILoggingEvent> listAppender = new ListAppender<>();
         listAppender.start();
@@ -225,8 +266,6 @@ class IdamServiceTest {
         String expectedAccessToken = "ABCDEFG";
         String expectedId = "1234";
         List<String> expectedIdamRoles = Arrays.asList("role-1", "role-2");
-        List<String> expectedAmRoles = Arrays.asList("role-3", "role-4");
-        List<String> expectedRoles = Stream.concat(expectedAmRoles.stream(), expectedIdamRoles.stream()).toList();
         String expectedEmailAddress = "john.doe@example.com";
         String expectedForename = "John";
         String expectedSurname = "Doe";
@@ -245,10 +284,8 @@ class IdamServiceTest {
             .thenThrow(new NullPointerException("Role assignment service failed"));
         idamService.getUserInfo(expectedAccessToken);
         List<ILoggingEvent> logEvents = listAppender.list;
-        assertEquals(1, logEvents.size());
-        assertEquals("Error fetching AM roles for user: 1234", logEvents.get(0).getFormattedMessage());
+        assertTrue(logEvents.isEmpty());
 
         verify(idamApi).userInfo(expectedAccessToken);
     }
-
 }
