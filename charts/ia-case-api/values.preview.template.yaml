@@ -86,7 +86,7 @@ ia-case-payments-api:
   enabled: true #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
-    image: hmctspublic.azurecr.io/ia/case-payments-api:pr-333
+    image: hmctspublic.azurecr.io/ia/case-payments-api:latest
     releaseNameOverride: ${SERVICE_NAME}-case-payments-api
     ingressHost: ${SERVICE_NAME}-payments-api.preview.platform.hmcts.net
     disableTraefikTls: true
@@ -134,7 +134,7 @@ ia-case-documents-api:
   enabled: true #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
-    image: hmctspublic.azurecr.io/ia/case-documents-api:pr-1026
+    image: hmctspublic.azurecr.io/ia/case-documents-api:latest
     releaseNameOverride: ${SERVICE_NAME}-case-documents-api
     ingressHost: ${SERVICE_NAME}-documents-api.preview.platform.hmcts.net
     devcpuRequests: 500m
@@ -207,7 +207,7 @@ ia-case-notifications-api:
   enabled: true #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
-    image: hmctspublic.azurecr.io/ia/case-notifications-api:pr-1391
+    image: hmctspublic.azurecr.io/ia/case-notifications-api:latest
     releaseNameOverride: ${SERVICE_NAME}-case-notifications-api
     ingressHost: ${SERVICE_NAME}-notifications-api.preview.platform.hmcts.net
     devcpuRequests: 500m
@@ -408,7 +408,7 @@ ia-bail-case-api:
   enabled: true
   java:
     imagePullPolicy: Always
-    image: hmctspublic.azurecr.io/ia/bail-case-api:pr-410
+    image: hmctspublic.azurecr.io/ia/bail-case-api:latest
     applicationPort: 8686
     releaseNameOverride: ${SERVICE_NAME}-bail-case-api
     ingressHost: ${SERVICE_NAME}-bail-case-api.preview.platform.hmcts.net
@@ -553,7 +553,7 @@ ia-home-office-integration-api:
 ia-case-access-api:
   enabled: true
   java:
-    image: hmctspublic.azurecr.io/ia/case-access-api:pr-133
+    image: hmctspublic.azurecr.io/ia/case-access-api:latest
     # image: hmctspublic.azurecr.io/ia/case-access-api:pr-56
     ingressHost: ${SERVICE_FQDN}-case-access-api.preview.platform.hmcts.net
     keyVaults:
