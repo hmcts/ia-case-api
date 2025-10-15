@@ -78,7 +78,7 @@ spring:
         jwt:
           jwk-set-uri: ${OPEN_ID_IDAM_URL:http://127.0.0.1:5000}/o/jwks
   cache:
-    cache-names: userInfoCache, accessTokenCache
+    cache-names: userInfoCache, accessTokenCache, homeOfficeReferenceDataCache
     caffeine:
       spec: expireAfterWrite=3600s
   datasource:
@@ -941,6 +941,37 @@ security:
       - "pipActivation"
       - "applyForFTPAAppellant"
       - "requestFeeRemission"
+    caseworker-ia-iacjudge:
+      - "generateDecisionAndReasons"
+      - "endAppeal"
+      - "reinstateAppeal"
+      - "sendDecisionAndReasons"
+      - "changeDirectionDueDate"
+      - "sendDirection"
+      - "addCaseNote"
+      - "linkAppeal"
+      - "unlinkAppeal"
+      - "editAppealAfterSubmit"
+      - "updateHearingRequirements"
+      - "updateHearingAdjustments"
+      - "leadershipJudgeFtpaDecision"
+      - "residentJudgeFtpaDecision"
+      - "decideFtpaApplication"
+      - "uploadSensitiveDocuments"
+      - "decideAnApplication"
+      - "requestNewHearingRequirements"
+      - "generateUpperTribunalBundle"
+      - "asyncStitchingComplete"
+      - "markAddendumEvidenceAsReviewed"
+      - "adaSuitabilityReview"
+      - "transferOutOfAda"
+      - "reviewHearingRequirements"
+      - "createCaseLink"
+      - "maintainCaseLinks"
+      - "createFlag"
+      - "decideCostsApplication"
+      - "considerMakingCostsOrder"
+      - "updateTribunalDecision"
     judge:
       - "generateDecisionAndReasons"
       - "endAppeal"
