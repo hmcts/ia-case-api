@@ -32,6 +32,7 @@ import org.springframework.core.env.EnumerablePropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.http.MediaType;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCase;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.State;
@@ -50,6 +51,7 @@ import uk.gov.hmcts.reform.bailcaseapi.verifiers.Verifier;
 @RunWith(SpringIntegrationSerenityRunner.class)
 @SpringBootTest
 @ActiveProfiles("functional")
+@DirtiesContext
 public class CcdScenarioRunnerTest {
 
     @Value("${targetInstance}")
@@ -227,7 +229,7 @@ public class CcdScenarioRunnerTest {
                                           )
                     );
                     break;
-                } catch (Error | RetryableException | SocketTimeoutException e) {
+                } catch (Error | Exception e) {
                     System.out.println("Scenario failed with error " + e.getMessage());
                     if (i == maxRetries - 1) {
                         this.failedScenarios.add(description);

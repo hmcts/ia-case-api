@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.bailcaseapi.domain.service;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

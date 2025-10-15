@@ -14,12 +14,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.bailcaseapi.util.AuthorizationHeadersProvider;
 import uk.gov.hmcts.reform.bailcaseapi.util.MapSerializer;
 
 @SpringBootTest
 @ActiveProfiles("functional")
+@DirtiesContext
 @SuppressWarnings("Unchecked")
 public class DataFixingTest {
 

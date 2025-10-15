@@ -12,11 +12,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.bailcaseapi.util.AuthorizationHeadersProvider;
 
 @SpringBootTest
 @ActiveProfiles("functional")
+@DirtiesContext
 public class EndpointSecurityTest {
 
     @Value("${targetInstance}") private String targetInstance;
