@@ -208,7 +208,7 @@ ia-case-notifications-api:
   java:
     imagePullPolicy: Always
 #    image: hmctspublic.azurecr.io/ia/case-notifications-api:latest
-    image: hmctspublic.azurecr.io/ia/case-notifications-api:pr-1550
+    image: hmctspublic.azurecr.io/ia/case-notifications-api:pr-1385
     releaseNameOverride: ${SERVICE_NAME}-case-notifications-api
     ingressHost: ${SERVICE_NAME}-notifications-api.preview.platform.hmcts.net
     devcpuRequests: 500m
@@ -1550,3 +1550,4 @@ postgresql:
       - name: "pr-${CHANGE_ID}-org_role_mapping"
       - name: "pr-${CHANGE_ID}-ia_timed_event_service"
       - name: "pr-${CHANGE_ID}-hmc-cft-hearing-service"
+
