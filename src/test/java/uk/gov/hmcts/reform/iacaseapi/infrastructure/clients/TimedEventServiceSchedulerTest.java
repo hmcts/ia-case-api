@@ -128,7 +128,7 @@ class TimedEventServiceSchedulerTest {
             .thenReturn(expectedTimedEvent);
 
         // When
-        timedEventServiceScheduler.scheduleTimedEvent(caseId, scheduledDate, event);
+        timedEventServiceScheduler.scheduleTimedEvent(caseId, scheduledDate, event, "");
 
         // Then
         verify(timedEventServiceApi).submitTimedEvent(eq(authToken), eq(s2sToken), any(TimedEvent.class));

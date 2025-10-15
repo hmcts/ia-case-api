@@ -80,7 +80,7 @@ public class RetriggerWaTasksForFixedCaseIdHandler implements PreSubmitCallbackH
         }
         if (caseIdList != null && caseIdList.size() > 0) {
             for (int i = 0; i < caseIdList.size(); i++) {
-                scheduler.scheduleTimedEvent(caseIdList.get(i), scheduledDate, Event.RE_TRIGGER_WA_TASKS);
+                scheduler.scheduleTimedEvent(caseIdList.get(i), scheduledDate, Event.RE_TRIGGER_WA_TASKS, "");
             }
         }
 

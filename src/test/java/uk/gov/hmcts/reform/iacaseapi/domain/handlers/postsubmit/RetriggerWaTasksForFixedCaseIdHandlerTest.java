@@ -47,6 +47,8 @@ public class RetriggerWaTasksForFixedCaseIdHandlerTest {
     private ArgumentCaptor<ZonedDateTime> scheduledDateCaptor;
     @Captor
     private ArgumentCaptor<Event> eventCaptor;
+    @Captor
+    private ArgumentCaptor<String> timedEventIdCaptor;
 
     private boolean timedEventServiceEnabled = true;
     private LocalDateTime now = LocalDateTime.now();
@@ -142,7 +144,7 @@ public class RetriggerWaTasksForFixedCaseIdHandlerTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(dateProvider.nowWithTime()).thenReturn(now);
         retriggerWaTasksForFixedCaseIdHandler.handle(callbackStage, callback);
-        verify(scheduler, times(0)).scheduleTimedEvent(anyString(), any(ZonedDateTime.class), any(Event.class));
+        verify(scheduler, times(0)).scheduleTimedEvent(anyString(), any(ZonedDateTime.class), any(Event.class), anyString());
     }
 
     @Test
@@ -160,7 +162,7 @@ public class RetriggerWaTasksForFixedCaseIdHandlerTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(dateProvider.nowWithTime()).thenReturn(now);
         retriggerWaTasksForFixedCaseIdHandler.handle(callbackStage, callback);
-        verify(scheduler, times(0)).scheduleTimedEvent(anyString(), any(ZonedDateTime.class), any(Event.class));
+        verify(scheduler, times(0)).scheduleTimedEvent(anyString(), any(ZonedDateTime.class), any(Event.class), anyString());
     }
 
     @Test
@@ -183,7 +185,8 @@ public class RetriggerWaTasksForFixedCaseIdHandlerTest {
         verify(scheduler, times(10)).scheduleTimedEvent(
                 caseIdCaptor.capture(), 
                 scheduledDateCaptor.capture(), 
-                eventCaptor.capture()
+                eventCaptor.capture(),
+                timedEventIdCaptor.capture()
         );
 
         ZonedDateTime timeToSchedule = ZonedDateTime.of(now, ZoneId.systemDefault()).plusMinutes(5);

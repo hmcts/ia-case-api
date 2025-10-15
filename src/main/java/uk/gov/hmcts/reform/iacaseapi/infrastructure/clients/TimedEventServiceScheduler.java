@@ -80,11 +80,11 @@ public class TimedEventServiceScheduler implements Scheduler {
     }
 
     @Override
-    public void scheduleTimedEvent(String caseId, ZonedDateTime scheduledDate, Event event) {
+    public void scheduleTimedEvent(String caseId, ZonedDateTime scheduledDate, Event event, String timedEventId) {
         try {
             schedule(
                     new TimedEvent(
-                            "",
+                            timedEventId,
                             event,
                             scheduledDate,
                             "IA",
@@ -101,7 +101,7 @@ public class TimedEventServiceScheduler implements Scheduler {
     @Override
     public void scheduleTimedEventNow(String caseId, Event event) {
         ZonedDateTime now = ZonedDateTime.now(ZoneId.systemDefault()); ;
-        scheduleTimedEvent(caseId, now, event);
+        scheduleTimedEvent(caseId, now, event, "");
     }
 
     

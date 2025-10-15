@@ -11,7 +11,7 @@ public interface Scheduler {
 
     boolean deleteSchedule(String timedEventId);
 
-    void scheduleTimedEvent(String caseId, ZonedDateTime scheduledDate, Event event);
+    void scheduleTimedEvent(String caseId, ZonedDateTime scheduledDate, Event event, String timedEventId);
 
     void scheduleTimedEventNow(String caseId, Event event);
 }
