@@ -94,7 +94,7 @@ public class TimedEventServiceScheduler implements Scheduler {
             );
             log.info("Scheduled event " + event + " for case ID " + caseId);
         } catch (AsylumCaseServiceResponseException e) {
-            log.info(e.getMessage());
+            log.error(e.getMessage());
         }
     }
 
