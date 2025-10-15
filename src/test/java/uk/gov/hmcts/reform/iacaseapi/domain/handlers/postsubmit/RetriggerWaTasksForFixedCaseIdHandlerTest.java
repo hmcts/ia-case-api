@@ -13,7 +13,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.ScheduleTimedEventService;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.Scheduler;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -34,7 +34,7 @@ public class RetriggerWaTasksForFixedCaseIdHandlerTest {
     @Mock
     private DateProvider dateProvider;
     @Mock
-    private ScheduleTimedEventService scheduleTimedEventService;
+    private Scheduler scheduler;
     @Mock
     private Callback<AsylumCase> callback;
     @Mock
@@ -63,7 +63,7 @@ public class RetriggerWaTasksForFixedCaseIdHandlerTest {
                 true,
                 "/retriggerWaTasksCaseList.json",
                 dateProvider,
-                scheduleTimedEventService
+                scheduler
         );
     }
 
@@ -88,7 +88,7 @@ public class RetriggerWaTasksForFixedCaseIdHandlerTest {
                         false,
                         "/retriggerWaTasksCaseList.json",
                         dateProvider,
-                        scheduleTimedEventService
+                        scheduler
                 );
         boolean canHandle = retriggerWaTasksForFixedCaseIdHandler.canHandle(callbackStage, callback);
         assertThat(canHandle).isEqualTo(false);
@@ -101,7 +101,7 @@ public class RetriggerWaTasksForFixedCaseIdHandlerTest {
                         timedEventServiceEnabled,
                         "/caseIdForRetrigger.json",
                         dateProvider,
-                        scheduleTimedEventService
+                        scheduler
                 );
         assertThatThrownBy(
                 () -> retriggerWaTasksForFixedCaseIdHandler.handle(callbackStage, callback))
@@ -116,7 +116,7 @@ public class RetriggerWaTasksForFixedCaseIdHandlerTest {
                         timedEventServiceEnabled,
                         "/retriggerWaTasksCaseList.json",
                         dateProvider,
-                        scheduleTimedEventService
+                        scheduler
                 );
         assertThatThrownBy(
                 () -> retriggerWaTasksForFixedCaseIdHandler.handle(null, callback))
@@ -135,14 +135,14 @@ public class RetriggerWaTasksForFixedCaseIdHandlerTest {
                         timedEventServiceEnabled,
                         "/",
                         dateProvider,
-                        scheduleTimedEventService
+                        scheduler
                 );
         when(callback.getEvent()).thenReturn(Event.RE_TRIGGER_WA_BULK_TASKS);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(dateProvider.nowWithTime()).thenReturn(now);
         retriggerWaTasksForFixedCaseIdHandler.handle(callbackStage, callback);
-        verify(scheduleTimedEventService, times(0)).scheduleTimedEvent(anyString(), any(ZonedDateTime.class), any(Event.class));
+        verify(scheduler, times(0)).scheduleTimedEvent(anyString(), any(ZonedDateTime.class), any(Event.class));
     }
 
     @Test
@@ -153,14 +153,14 @@ public class RetriggerWaTasksForFixedCaseIdHandlerTest {
                         timedEventServiceEnabled,
                         testFilePath,
                         dateProvider,
-                        scheduleTimedEventService
+                        scheduler
                 );
         when(callback.getEvent()).thenReturn(Event.RE_TRIGGER_WA_BULK_TASKS);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(dateProvider.nowWithTime()).thenReturn(now);
         retriggerWaTasksForFixedCaseIdHandler.handle(callbackStage, callback);
-        verify(scheduleTimedEventService, times(0)).scheduleTimedEvent(anyString(), any(ZonedDateTime.class), any(Event.class));
+        verify(scheduler, times(0)).scheduleTimedEvent(anyString(), any(ZonedDateTime.class), any(Event.class));
     }
 
     @Test
@@ -172,7 +172,7 @@ public class RetriggerWaTasksForFixedCaseIdHandlerTest {
                         timedEventServiceEnabled,
                         testFilePath,
                         dateProvider,
-                        scheduleTimedEventService
+                        scheduler
                 );
         when(callback.getEvent()).thenReturn(Event.RE_TRIGGER_WA_BULK_TASKS);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -180,7 +180,7 @@ public class RetriggerWaTasksForFixedCaseIdHandlerTest {
         when(dateProvider.nowWithTime()).thenReturn(now);
 
         retriggerWaTasksForFixedCaseIdHandler.handle(callbackStage, callback);
-        verify(scheduleTimedEventService, times(10)).scheduleTimedEvent(
+        verify(scheduler, times(10)).scheduleTimedEvent(
                 caseIdCaptor.capture(), 
                 scheduledDateCaptor.capture(), 
                 eventCaptor.capture()

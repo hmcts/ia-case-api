@@ -2,9 +2,15 @@ package uk.gov.hmcts.reform.iacaseapi.infrastructure.clients;
 
 import feign.FeignException;
 import lombok.extern.slf4j.Slf4j;
+
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
+import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.Scheduler;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.TimedEvent;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.AccessTokenProvider;
@@ -16,15 +22,18 @@ public class TimedEventServiceScheduler implements Scheduler {
     private final AuthTokenGenerator serviceAuthTokenGenerator;
     private final AccessTokenProvider accessTokenProvider;
     private final TimedEventServiceApi timedEventServiceApi;
+    private final DateProvider dateProvider;
 
     public TimedEventServiceScheduler(
         AuthTokenGenerator serviceAuthTokenGenerator,
         @Qualifier("requestUser") AccessTokenProvider accessTokenProvider,
-        TimedEventServiceApi timedEventServiceApi
+        TimedEventServiceApi timedEventServiceApi,
+        DateProvider dateProvider
     ) {
         this.serviceAuthTokenGenerator = serviceAuthTokenGenerator;
         this.accessTokenProvider = accessTokenProvider;
         this.timedEventServiceApi = timedEventServiceApi;
+        this.dateProvider = dateProvider;
     }
 
     @Override
@@ -73,4 +82,31 @@ public class TimedEventServiceScheduler implements Scheduler {
 
         return true;
     }
+
+    @Override
+    public void scheduleTimedEvent(String caseId, ZonedDateTime scheduledDate, Event event) {
+        try {
+            schedule(
+                    new TimedEvent(
+                            "",
+                            event,
+                            scheduledDate,
+                            "IA",
+                            "Asylum",
+                            Long.parseLong(caseId)
+                    )
+            );
+            log.info("Scheduled event " + event + " for case ID " + caseId);
+        } catch (AsylumCaseServiceResponseException e) {
+            log.info(e.getMessage());
+        }
+    }
+
+    @Override
+    public void scheduleTimedEventNow(String caseId, Event event) {
+        ZonedDateTime now = ZonedDateTime.of(dateProvider.nowWithTime(), ZoneId.systemDefault());
+        scheduleTimedEvent(caseId, now, event);
+    }
+
+    
 }

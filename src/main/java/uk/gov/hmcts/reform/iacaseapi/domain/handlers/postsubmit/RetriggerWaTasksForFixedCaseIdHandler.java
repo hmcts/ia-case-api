@@ -10,7 +10,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.ScheduleTimedEventService;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.Scheduler;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -26,7 +26,7 @@ public class RetriggerWaTasksForFixedCaseIdHandler implements PreSubmitCallbackH
 
     private final boolean timedEventServiceEnabled;
     private final DateProvider dateProvider;
-    private final ScheduleTimedEventService scheduleTimedEventService;
+    private final Scheduler scheduler;
     private String filePath;
 
 
@@ -34,11 +34,11 @@ public class RetriggerWaTasksForFixedCaseIdHandler implements PreSubmitCallbackH
             @Value("${featureFlag.timedEventServiceEnabled}") boolean timedEventServiceEnabled,
             @Value("${caseIdListJsonLocation}") String filePath,
             DateProvider dateProvider,
-            ScheduleTimedEventService scheduleTimedEventService
+            Scheduler scheduler
     ) {
         this.timedEventServiceEnabled = timedEventServiceEnabled;
         this.dateProvider = dateProvider;
-        this.scheduleTimedEventService = scheduleTimedEventService;
+        this.scheduler = scheduler;
         this.filePath = filePath;
     }
 
@@ -81,7 +81,7 @@ public class RetriggerWaTasksForFixedCaseIdHandler implements PreSubmitCallbackH
         }
         if (caseIdList != null && caseIdList.size() > 0) {
             for (int i = 0; i < caseIdList.size(); i++) {
-                scheduleTimedEventService.scheduleTimedEvent(caseIdList.get(i), scheduledDate, Event.RE_TRIGGER_WA_TASKS);
+                scheduler.scheduleTimedEvent(caseIdList.get(i), scheduledDate, Event.RE_TRIGGER_WA_TASKS);
             }
         }
 
