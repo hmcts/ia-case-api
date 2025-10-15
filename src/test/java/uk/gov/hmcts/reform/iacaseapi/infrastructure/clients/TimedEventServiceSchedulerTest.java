@@ -19,7 +19,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.TimedEvent;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.AccessTokenProvider;
@@ -34,8 +33,6 @@ class TimedEventServiceSchedulerTest {
     private AccessTokenProvider accessTokenProvider;
     @Mock
     private TimedEventServiceApi timedEventServiceApi;
-    @Mock
-    private DateProvider dateProvider;
     private String s2sToken = "someS2sToken";
     private String authToken = "authToken";
 
@@ -45,7 +42,7 @@ class TimedEventServiceSchedulerTest {
         when(accessTokenProvider.getAccessToken()).thenReturn(authToken);
 
         timedEventServiceScheduler =
-            new TimedEventServiceScheduler(serviceAuthTokenGenerator, accessTokenProvider, timedEventServiceApi, dateProvider);
+            new TimedEventServiceScheduler(serviceAuthTokenGenerator, accessTokenProvider, timedEventServiceApi);
     }
 
 
@@ -144,7 +141,6 @@ class TimedEventServiceSchedulerTest {
         Event event = Event.REQUEST_HEARING_REQUIREMENTS_FEATURE;
         LocalDateTime now = LocalDateTime.now();
         
-        when(dateProvider.nowWithTime()).thenReturn(now);
         when(timedEventServiceApi.submitTimedEvent(eq(authToken), eq(s2sToken), any(TimedEvent.class)))
             .thenReturn(new TimedEvent("", event, ZonedDateTime.now(), "IA", "Asylum", Long.parseLong(caseId)));
 
@@ -152,7 +148,6 @@ class TimedEventServiceSchedulerTest {
         timedEventServiceScheduler.scheduleTimedEventNow(caseId, event);
 
         // Then
-        verify(dateProvider).nowWithTime();
         verify(timedEventServiceApi).submitTimedEvent(eq(authToken), eq(s2sToken), any(TimedEvent.class));
     }
 
