@@ -157,7 +157,7 @@ noc_set_organisation_to_remove_path: "/noc/set-organisation-to-remove"
 
 pip_access_code_expiry_days: 30
 
-appealReferenceSequenceSeed: 10000
+appealReferenceSequenceSeed: 100000
 
 cache:
   appealReferenceNumbers:
