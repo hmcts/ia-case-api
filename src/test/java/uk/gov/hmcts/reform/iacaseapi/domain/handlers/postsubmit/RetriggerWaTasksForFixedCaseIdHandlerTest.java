@@ -14,14 +14,12 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.ScheduleTimedEventService;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.TimedEvent;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -44,7 +42,11 @@ public class RetriggerWaTasksForFixedCaseIdHandlerTest {
     @Mock
     private CaseDetails<AsylumCase> caseDetails;
     @Captor
-    private ArgumentCaptor<TimedEvent> timedEventArgumentCaptor;
+    private ArgumentCaptor<String> caseIdCaptor;
+    @Captor
+    private ArgumentCaptor<ZonedDateTime> scheduledDateCaptor;
+    @Captor
+    private ArgumentCaptor<Event> eventCaptor;
 
     private boolean timedEventServiceEnabled = true;
     private LocalDateTime now = LocalDateTime.now();
@@ -178,42 +180,35 @@ public class RetriggerWaTasksForFixedCaseIdHandlerTest {
         when(dateProvider.nowWithTime()).thenReturn(now);
 
         retriggerWaTasksForFixedCaseIdHandler.handle(callbackStage, callback);
-        verify(scheduleTimedEventService, times(10)).scheduleTimedEvent(anyString(), any(ZonedDateTime.class), eq(Event.RE_TRIGGER_WA_TASKS));
+        verify(scheduleTimedEventService, times(10)).scheduleTimedEvent(
+                caseIdCaptor.capture(), 
+                scheduledDateCaptor.capture(), 
+                eventCaptor.capture()
+        );
 
         ZonedDateTime timeToSchedule = ZonedDateTime.of(now, ZoneId.systemDefault()).plusMinutes(5);
-        TimedEvent finalResult = timedEventArgumentCaptor.getValue();
-        TimedEvent expectedFinalTimedEvent = new TimedEvent(
-                timedEventId,
-                Event.RE_TRIGGER_WA_TASKS,
-                timeToSchedule,
-                jurisdiction,
-                caseType,
-                caseId
-        );
-        assertEquals(expectedFinalTimedEvent.getCaseId(), finalResult.getCaseId());
-        assertEquals(expectedFinalTimedEvent.getJurisdiction(), finalResult.getJurisdiction());
-        assertEquals(expectedFinalTimedEvent.getCaseType(), finalResult.getCaseType());
-        assertEquals(expectedFinalTimedEvent.getEvent(), finalResult.getEvent());
-        assertEquals(expectedFinalTimedEvent.getId(), finalResult.getId());
-        assertEquals(expectedFinalTimedEvent.getScheduledDateTime(), finalResult.getScheduledDateTime());
+        String finalCaseId = caseIdCaptor.getValue();
+        ZonedDateTime finalScheduledDate = scheduledDateCaptor.getValue();
+        Event finalEvent = eventCaptor.getValue();
+        
+        assertEquals("1677132005196104", finalCaseId);
+        assertEquals(timeToSchedule, finalScheduledDate);
+        assertEquals(Event.RE_TRIGGER_WA_TASKS, finalEvent);
 
-        List<TimedEvent> timedEventList = timedEventArgumentCaptor.getAllValues();
-        List<Long> timedEventListCaseIds = timedEventList.stream()
-                .map(TimedEvent::getCaseId)
-                .collect(Collectors.toList());
-        List<Long> expectedCaseIds = Arrays.asList(
-                Long.parseLong("5260728023204485"),
-                Long.parseLong("7829484608979593"),
-                Long.parseLong("3007004947258233"),
-                Long.parseLong("4719620009252072"),
-                Long.parseLong("6797092066725243"),
-                Long.parseLong("9301281768878771"),
-                Long.parseLong("8509676174519453"),
-                Long.parseLong("1682542357170697"),
-                Long.parseLong("3673342967892569"),
-                Long.parseLong("1677132005196104")
+        List<String> capturedCaseIds = caseIdCaptor.getAllValues();
+        List<String> expectedCaseIds = Arrays.asList(
+                "5260728023204485",
+                "7829484608979593",
+                "3007004947258233",
+                "4719620009252072",
+                "6797092066725243",
+                "9301281768878771",
+                "8509676174519453",
+                "1682542357170697",
+                "3673342967892569",
+                "1677132005196104"
         );
 
-        assertEquals(expectedCaseIds, timedEventListCaseIds);
+        assertEquals(expectedCaseIds, capturedCaseIds);
     }
 }
