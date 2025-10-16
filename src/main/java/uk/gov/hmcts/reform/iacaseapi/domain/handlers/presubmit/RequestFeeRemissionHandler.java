@@ -299,42 +299,34 @@ public class RequestFeeRemissionHandler implements PreSubmitCallbackHandler<Asyl
                 case "Section 17":
                     Optional<Document> section17Document = asylumCase.read(SECTION17_DOCUMENT);
 
-                    if (section17Document.isPresent()) {
-                        tempPreviousRemissionDetails =
-                                remissionDetailsAppender.appendSection17RemissionDetails(
-                                        existingRemissionDetails,
-                                        feeRemissionType,
-                                        section17Document.get()
-                                );
-                    }
-
+                    tempPreviousRemissionDetails =
+                            remissionDetailsAppender.appendSection17RemissionDetails(
+                                    existingRemissionDetails,
+                                    feeRemissionType,
+                                    section17Document.orElse(null)
+                            );
                     break;
 
                 case "Section 20":
                     Optional<Document> section20Document = asylumCase.read(SECTION20_DOCUMENT);
 
-                    if (section20Document.isPresent()) {
-                        tempPreviousRemissionDetails =
-                                remissionDetailsAppender.appendSection20RemissionDetails(
-                                        existingRemissionDetails,
-                                        feeRemissionType,
-                                        section20Document.get()
-                                );
-                    }
-
+                    tempPreviousRemissionDetails =
+                            remissionDetailsAppender.appendSection20RemissionDetails(
+                                    existingRemissionDetails,
+                                    feeRemissionType,
+                                    section20Document.orElse(null)
+                            );
                     break;
 
                 case "Home Office fee waiver":
                     Optional<Document> homeOfficeWaiverDocument = asylumCase.read(HOME_OFFICE_WAIVER_DOCUMENT);
 
-                    if (homeOfficeWaiverDocument.isPresent()) {
-                        tempPreviousRemissionDetails =
-                                remissionDetailsAppender.appendHomeOfficeWaiverRemissionDetails(
-                                        existingRemissionDetails,
-                                        feeRemissionType,
-                                        homeOfficeWaiverDocument.get()
-                                );
-                    }
+                    tempPreviousRemissionDetails =
+                            remissionDetailsAppender.appendHomeOfficeWaiverRemissionDetails(
+                                    existingRemissionDetails,
+                                    feeRemissionType,
+                                    homeOfficeWaiverDocument.orElse(null)
+                            );
                     break;
 
                 case "Help with Fees":
