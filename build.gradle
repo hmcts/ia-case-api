@@ -47,6 +47,7 @@ def versions = [
 
 ext.libraries = [
   junit5: [
+    "org.junit.jupiter:junit-jupiter:${versions.jupiter}",
     "org.junit.jupiter:junit-jupiter-api:${versions.jupiter}",
     "org.junit.jupiter:junit-jupiter-engine:${versions.jupiter}",
     "org.junit.jupiter:junit-jupiter-params:${versions.jupiter}",
@@ -201,7 +202,7 @@ jacocoTestReport {
 }
 pitest {
   //print('./gradlew --version'.execute().text.trim())
-  junit5PluginVersion = '1.1.2'
+  junit5PluginVersion = '1.2.3'
   targetClasses = ['uk.gov.hmcts.reform.bailcaseapi.*']
   excludedClasses = [
     'uk.gov.hmcts.reform.bailcaseapi.infrastructure.config.*',
@@ -359,7 +360,7 @@ dependencies {
 
   testImplementation libraries.junit5
   testImplementation group: 'org.pitest', name: 'pitest', version: versions.pitest
-  testImplementation "info.solidsoft.gradle.pitest:gradle-pitest-plugin:${versions.gradlePitest}"
+  testImplementation "info.solidsoft.gradle.pitest:gradle-pitest-plugin:${versions.pitest}"
   testImplementation "org.codehaus.sonar-plugins:sonar-pitest-plugin:${versions.sonarPitest}"
 
   testImplementation group: 'com.github.hmcts', name: 'ccd-case-document-am-client', version: '1.59.2'
