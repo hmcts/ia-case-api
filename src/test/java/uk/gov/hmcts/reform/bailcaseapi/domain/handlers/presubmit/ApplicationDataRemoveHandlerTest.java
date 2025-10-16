@@ -314,6 +314,18 @@ public class ApplicationDataRemoveHandlerTest {
         verify(bailCase, times(1)).write(IS_LEGALLY_REPRESENTED_FOR_FLAG, NO);
     }
 
+    @Test
+    void should_remove_POM_details_if_not_present() {
+        setUpValuesIfValuesAreRemoved();
+        applicationDataRemoveHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+        verify(bailCase, times(1)).remove(PROBATION_OFFENDER_MANAGER_GIVEN_NAME);
+        verify(bailCase, times(1)).remove(PROBATION_OFFENDER_MANAGER_FAMILY_NAME);
+        verify(bailCase, times(1)).remove(PROBATION_OFFENDER_MANAGER_CONTACT_DETAILS);
+        verify(bailCase, times(1)).remove(PROBATION_OFFENDER_MANAGER_EMAIL_ADDRESS);
+        verify(bailCase, times(1)).remove(PROBATION_OFFENDER_MANAGER_MOBILE_NUMBER);
+        verify(bailCase, times(1)).remove(PROBATION_OFFENDER_MANAGER_TELEPHONE_NUMBER);
+    }
+
 
     @Test
     void should_remove_nationalities_if_not_present() {
@@ -513,6 +525,7 @@ public class ApplicationDataRemoveHandlerTest {
             YesOrNo.class
         )).thenReturn(Optional.of(YesOrNo.NO));
         when(bailCase.read(HAS_LEGAL_REP, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(bailCase.read(HAS_PROBATION_OFFENDER_MANAGER, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         when(bailCase.read(APPLICANT_HAS_MOBILE, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         when(bailCase.read(DISABILITY_YESNO, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         when(bailCase.read(VIDEO_HEARING_YESNO, YesOrNo.class)).thenReturn(Optional.of(YES));
@@ -539,6 +552,7 @@ public class ApplicationDataRemoveHandlerTest {
             YesOrNo.class
         )).thenReturn(Optional.of(YES));
         when(bailCase.read(HAS_LEGAL_REP, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(bailCase.read(HAS_PROBATION_OFFENDER_MANAGER, YesOrNo.class)).thenReturn(Optional.of(YES));
         when(bailCase.read(APPLICANT_HAS_MOBILE, YesOrNo.class)).thenReturn(Optional.of(YES));
         when(bailCase.read(DISABILITY_YESNO, YesOrNo.class)).thenReturn(Optional.of(YES));
         when(bailCase.read(VIDEO_HEARING_YESNO, YesOrNo.class)).thenReturn(Optional.of(YES));

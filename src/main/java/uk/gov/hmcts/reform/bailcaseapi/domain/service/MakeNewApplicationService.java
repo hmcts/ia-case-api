@@ -296,6 +296,13 @@ public class MakeNewApplicationService {
         BailCaseFieldDefinition.LOCAL_AUTHORITY_POLICY.value(),
         BailCaseFieldDefinition.LISTING_LOCATION.value(),
         BailCaseFieldDefinition.REF_DATA_LISTING_LOCATION.value(),
-        BailCaseFieldDefinition.LIST_CASE_HEARING_DATE.value()
+        BailCaseFieldDefinition.LIST_CASE_HEARING_DATE.value(),
+        BailCaseFieldDefinition.HAS_PROBATION_OFFENDER_MANAGER.value(),
+        BailCaseFieldDefinition.PROBATION_OFFENDER_MANAGER_GIVEN_NAME.value(),
+        BailCaseFieldDefinition.PROBATION_OFFENDER_MANAGER_FAMILY_NAME.value(),
+        BailCaseFieldDefinition.PROBATION_OFFENDER_MANAGER_CONTACT_DETAILS.value(),
+        BailCaseFieldDefinition.PROBATION_OFFENDER_MANAGER_TELEPHONE_NUMBER.value(),
+        BailCaseFieldDefinition.PROBATION_OFFENDER_MANAGER_MOBILE_NUMBER.value(),
+        BailCaseFieldDefinition.PROBATION_OFFENDER_MANAGER_EMAIL_ADDRESS.value()
     );
 }

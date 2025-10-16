@@ -60,6 +60,7 @@ public class ApplicationDataRemoveHandler implements PreSubmitCallbackHandler<Ba
         final Optional<YesOrNo> optionalBailEvidenceDocs = bailCase.read(
             GROUNDS_FOR_BAIL_PROVIDE_EVIDENCE_OPTION, YesOrNo.class);
         final Optional<YesOrNo> optionalLegalRepDetails = bailCase.read(HAS_LEGAL_REP, YesOrNo.class);
+        final Optional<YesOrNo> optionalProbationOffenderManagerDetails = bailCase.read(HAS_PROBATION_OFFENDER_MANAGER, YesOrNo.class);
         final Optional<String> optionalDetentionLocation = bailCase.read(APPLICANT_DETENTION_LOCATION, String.class);
         final Optional<String> optionalGender = bailCase.read(APPLICANT_GENDER, String.class);
         final Optional<YesOrNo> optionalApplicantMobileNumber = bailCase.read(APPLICANT_HAS_MOBILE, YesOrNo.class);
@@ -195,6 +196,14 @@ public class ApplicationDataRemoveHandler implements PreSubmitCallbackHandler<Ba
 
             if (legalRepDetails.equals(NO)) {
                 clearLegalRepDetails(bailCase);
+            }
+        }
+
+        if (optionalProbationOffenderManagerDetails.isPresent()) {
+            YesOrNo probationOffenderManagerDetails = optionalProbationOffenderManagerDetails.get();
+
+            if (probationOffenderManagerDetails.equals(NO)) {
+                clearProbationOffenderManagerDetails(bailCase);
             }
         }
 
@@ -516,6 +525,15 @@ public class ApplicationDataRemoveHandler implements PreSubmitCallbackHandler<Ba
         bailCase.remove(LEGAL_REP_PHONE);
         bailCase.remove(LEGAL_REP_REFERENCE);
         bailCase.write(IS_LEGALLY_REPRESENTED_FOR_FLAG, NO);
+    }
+
+    private void clearProbationOffenderManagerDetails(BailCase bailCase) {
+        bailCase.remove(PROBATION_OFFENDER_MANAGER_GIVEN_NAME);
+        bailCase.remove(PROBATION_OFFENDER_MANAGER_FAMILY_NAME);
+        bailCase.remove(PROBATION_OFFENDER_MANAGER_CONTACT_DETAILS);
+        bailCase.remove(PROBATION_OFFENDER_MANAGER_EMAIL_ADDRESS);
+        bailCase.remove(PROBATION_OFFENDER_MANAGER_MOBILE_NUMBER);
+        bailCase.remove(PROBATION_OFFENDER_MANAGER_TELEPHONE_NUMBER);
     }
 
     private void createInterpreterLanguage(BailCase bailCase, BailCaseFieldDefinition interpreterLanguage) {

@@ -21,6 +21,7 @@ import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefin
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.PREV_APP_HEARING_REQ_DETAILS;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.PREV_APP_LEGAL_REP_DETAILS;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.PREV_APP_PERSONAL_INFO_DETAILS;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.PREV_APP_PROBATION_OFFENDER_MANAGER;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.PREV_APP_SUBMISSION_DETAILS;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -77,6 +78,7 @@ public class ShowPreviousApplicationSubmitHandlerTest {
         verify(bailCase, times(1)).remove(PREV_APP_FINANCIAL_COND_SUPPORTER4);
         verify(bailCase, times(1)).remove(PREV_APP_GROUNDS_FOR_BAIL);
         verify(bailCase, times(1)).remove(PREV_APP_LEGAL_REP_DETAILS);
+        verify(bailCase, times(1)).remove(PREV_APP_PROBATION_OFFENDER_MANAGER);
     }
 
     @Test

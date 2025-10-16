@@ -33,6 +33,7 @@ import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefin
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.PREV_APP_ID;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.PREV_APP_LEGAL_REP_DETAILS;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.PREV_APP_PERSONAL_INFO_DETAILS;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.PREV_APP_PROBATION_OFFENDER_MANAGER;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.PREV_APP_SUBMISSION_DETAILS;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.PRIOR_APPLICATIONS;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.SUPPORTER_2_ADDRESS_DETAILS;
@@ -193,6 +194,8 @@ public class ShowPreviousApplicationHandler implements PreSubmitCallbackHandler<
 
         String legalRepDetails = showPreviousApplicationService.getLegalRepDetails(previousBailCase);
 
+        String probationOffenderManager = showPreviousApplicationService.getProbationOffenderManager(previousBailCase);
+
         bailCase.write(PREV_APP_SUBMISSION_DETAILS, submissionDetails);
         bailCase.write(PREV_APP_HEARING_DETAILS, hearingLabel);
         bailCase.write(PREV_APP_HEARING_REQ_DETAILS, hearingReqLabel);
@@ -208,6 +211,7 @@ public class ShowPreviousApplicationHandler implements PreSubmitCallbackHandler<
         bailCase.write(PREV_APP_FINANCIAL_COND_SUPPORTER4, financialCondSupporter4);
         bailCase.write(PREV_APP_GROUNDS_FOR_BAIL, groundsForBail);
         bailCase.write(PREV_APP_LEGAL_REP_DETAILS, legalRepDetails);
+        bailCase.write(PREV_APP_PROBATION_OFFENDER_MANAGER, probationOffenderManager);
 
         return new PreSubmitCallbackResponse<>(bailCase);
     }

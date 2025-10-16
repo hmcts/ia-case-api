@@ -46,6 +46,7 @@ import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefin
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.HAS_APPEAL_HEARING_PENDING;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.HAS_APPEAL_HEARING_PENDING_UT;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.HAS_FINANCIAL_COND_SUPPORTER;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.HAS_PROBATION_OFFENDER_MANAGER;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.HEARING_DOCUMENTS;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.HOME_OFFICE_DOCUMENTS_WITH_METADATA;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.HOME_OFFICE_REFERENCE_NUMBER;
@@ -65,6 +66,11 @@ import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefin
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.NO_TRANSFER_BAIL_MANAGEMENT_REASONS;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.OBJECTED_TRANSFER_BAIL_MANAGEMENT_REASONS;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.PRISON_NAME;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.PROBATION_OFFENDER_MANAGER_EMAIL_ADDRESS;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.PROBATION_OFFENDER_MANAGER_FAMILY_NAME;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.PROBATION_OFFENDER_MANAGER_GIVEN_NAME;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.PROBATION_OFFENDER_MANAGER_MOBILE_NUMBER;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.PROBATION_OFFENDER_MANAGER_TELEPHONE_NUMBER;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.REASONS_JUDGE_IS_MINDED_DETAILS;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.RECORD_DECISION_TYPE;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.RECORD_THE_DECISION_LIST;
@@ -339,6 +345,12 @@ public class ShowPreviousApplicationServiceTest {
 
         when(bailCase.read(LISTING_LOCATION, ListingHearingCentre.class)).thenReturn(Optional.of(ListingHearingCentre.BIRMINGHAM));
         when(bailCase.read(LIST_CASE_HEARING_DATE, String.class)).thenReturn(Optional.of("2024-04-04T08:00:00.000"));
+        when(bailCase.read(HAS_PROBATION_OFFENDER_MANAGER, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(bailCase.read(PROBATION_OFFENDER_MANAGER_GIVEN_NAME)).thenReturn(Optional.of("Jane"));
+        when(bailCase.read(PROBATION_OFFENDER_MANAGER_FAMILY_NAME)).thenReturn(Optional.of("Smith"));
+        when(bailCase.read(PROBATION_OFFENDER_MANAGER_TELEPHONE_NUMBER, String.class)).thenReturn(Optional.of("7799885544"));
+        when(bailCase.read(PROBATION_OFFENDER_MANAGER_MOBILE_NUMBER, String.class)).thenReturn(Optional.of("1122336655"));
+        when(bailCase.read(PROBATION_OFFENDER_MANAGER_EMAIL_ADDRESS, String.class)).thenReturn(Optional.of("jane.smith@test.com"));
 
     }
 
@@ -577,6 +589,22 @@ public class ShowPreviousApplicationServiceTest {
                 + "|Financial condition amount (£)|3000|"
         ));
     }
+
+    @Test
+    void check_probation_offender_manager() {
+        String label = showPreviousApplicationService.getProbationOffenderManager(
+            bailCase
+        );
+        assertTrue(label.contains(
+            "|Probation offender manager|Yes|\n"
+                + "|Given names|Jane|\n"
+                + "|Family name|Smith|\n"
+                + "|Telephone number|7799885544|\n"
+                + "|Mobile number|1122336655|\n"
+                + "|Email address|jane.smith@test.com|"
+        ));
+    }
+
 
     @Test
     void check_grounds_for_bails_label_when_transfer_not_acceptable() {
