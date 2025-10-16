@@ -3,6 +3,8 @@ package uk.gov.hmcts.reform.iacaseapi.infrastructure.clients;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
@@ -65,6 +67,7 @@ class AsylumCaseNotificationApiSenderTest {
                 ENDPOINT,
                 CCD_SUBMITTED_PATH,
                 false,
+                true,
                 SAVE_NOTIFICATIONS_DATA_SCHEDULE_HOUR,
                 SAVE_NOTIFICATIONS_DATA_SCHEDULE_MAX_MINUTES,
                 dateProvider,
@@ -119,6 +122,7 @@ class AsylumCaseNotificationApiSenderTest {
                 ENDPOINT,
                 CCD_SUBMITTED_PATH,
                 true,
+                true,
                 SAVE_NOTIFICATIONS_DATA_SCHEDULE_HOUR,
                 SAVE_NOTIFICATIONS_DATA_SCHEDULE_MAX_MINUTES,
                 dateProvider,
@@ -154,6 +158,7 @@ class AsylumCaseNotificationApiSenderTest {
                         asylumCaseCallbackApiDelegator,
                         ENDPOINT,
                         CCD_SUBMITTED_PATH,
+                        true,
                         true,
                         SAVE_NOTIFICATIONS_DATA_SCHEDULE_HOUR,
                         SAVE_NOTIFICATIONS_DATA_SCHEDULE_HOUR,
@@ -191,14 +196,28 @@ class AsylumCaseNotificationApiSenderTest {
         assertEquals(SAVE_NOTIFICATIONS_DATA_SCHEDULE_HOUR, timedEventCaptorValue.getScheduledDateTime().getHour());
     }
 
-    @Test
-    void does_not_schedule_save_notification_to_data_event_if_feature_toggle_is_disabled() {
+
+    @CsvSource({
+        "true, true, false",
+        "true, false, false",
+        "false, false, false",
+        "false, false, true",
+        "false, true, true",
+        "false, true, false",
+    })
+    @ParameterizedTest
+    void does_not_schedule_save_notification_to_data_event_if_feature_toggle_is_disabled(
+            boolean timedEventEnabled,
+            boolean saveNotificationFeatureEnabled,
+            boolean saveNotificationToDataEnvVarEnabled
+    ) {
         asylumCaseNotificationApiSender =
                 new AsylumCaseNotificationApiSender(
                         asylumCaseCallbackApiDelegator,
                         ENDPOINT,
                         CCD_SUBMITTED_PATH,
-                        true,
+                        timedEventEnabled,
+                        saveNotificationToDataEnvVarEnabled,
                         SAVE_NOTIFICATIONS_DATA_SCHEDULE_HOUR,
                         SAVE_NOTIFICATIONS_DATA_SCHEDULE_MAX_MINUTES,
                         dateProvider,
@@ -211,7 +230,8 @@ class AsylumCaseNotificationApiSenderTest {
                 .thenReturn(notifiedAsylumCase);
         LocalDateTime localDateTime =
                 LocalDateTime.of(2004, Month.FEBRUARY, 5, 10, 57, 33);
-        when(featureToggler.getValue("save-notifications-feature", false)).thenReturn(false);
+        when(featureToggler.getValue("save-notifications-feature", false))
+                .thenReturn(saveNotificationFeatureEnabled);
         when(dateProvider.nowWithTime()).thenReturn(localDateTime);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getId()).thenReturn(0L);

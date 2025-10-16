@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.StoredNotification;
@@ -39,17 +40,19 @@ public class SaveNotificationsToDataHandler implements PreSubmitCallbackHandler<
 
     private final NotificationClient notificationClient;
     private final Appender<StoredNotification> notificationAppender;
-
+    private final boolean saveNotificationToDataEnabled;
     private final FeatureToggler featureToggler;
 
     public SaveNotificationsToDataHandler(
         NotificationClient notificationClient,
         Appender<StoredNotification> notificationAppender,
+        @Value("${saveNotificationsData.enabled}") boolean saveNotificationToDataEnabled,
         FeatureToggler featureToggler
     ) {
         this.notificationClient = notificationClient;
         this.notificationAppender = notificationAppender;
         this.featureToggler = featureToggler;
+        this.saveNotificationToDataEnabled = saveNotificationToDataEnabled;
     }
 
     public boolean canHandle(
@@ -60,8 +63,9 @@ public class SaveNotificationsToDataHandler implements PreSubmitCallbackHandler<
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-               && callback.getEvent() == Event.SAVE_NOTIFICATIONS_TO_DATA
-                && featureToggler.getValue("save-notifications-feature", false);
+                && callback.getEvent() == Event.SAVE_NOTIFICATIONS_TO_DATA
+                && featureToggler.getValue("save-notifications-feature", false)
+                && saveNotificationToDataEnabled;
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
