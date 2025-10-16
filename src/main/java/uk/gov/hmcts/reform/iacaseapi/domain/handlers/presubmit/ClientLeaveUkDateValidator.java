@@ -1,13 +1,14 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DATE_ON_DECISION_LETTER;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DATE_CLIENT_LEAVE_UK;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.EDIT_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.START_APPEAL;
 
 import java.time.LocalDate;
-import java.util.Optional;
 import org.springframework.stereotype.Component;
+
+import uk.gov.hmcts.reform.iacaseapi.domain.RequiredFieldMissingException;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -16,9 +17,9 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 @Component
-public class DecisionLetterDateValidator implements PreSubmitCallbackHandler<AsylumCase> {
+public class ClientLeaveUkDateValidator implements PreSubmitCallbackHandler<AsylumCase> {
 
-    private static final String DECISION_LETTER_DETAILS_PAGE_ID = "decisionLetterDetails";
+    private static final String CLIENT_DEPARTURE_DATE_PAGE_ID = "departureDate";
 
     public boolean canHandle(
         PreSubmitCallbackStage callbackStage,
@@ -32,7 +33,7 @@ public class DecisionLetterDateValidator implements PreSubmitCallbackHandler<Asy
 
         return callbackStage == PreSubmitCallbackStage.MID_EVENT
                && (event.equals(START_APPEAL) || event.equals(EDIT_APPEAL))
-               && pageId.equals(DECISION_LETTER_DETAILS_PAGE_ID);
+               && pageId.equals(CLIENT_DEPARTURE_DATE_PAGE_ID);
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
@@ -42,22 +43,16 @@ public class DecisionLetterDateValidator implements PreSubmitCallbackHandler<Asy
         if (!canHandle(callbackStage, callback)) {
             throw new IllegalStateException("Cannot handle callback");
         }
-
-        final AsylumCase asylumCase =
-            callback
-                .getCaseDetails()
-                .getCaseData();
-
+        final AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
         PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
 
-        Optional<String> dateOnDecisionLetter = asylumCase.read(DATE_ON_DECISION_LETTER, String.class);
+        String clientDepartureFromUkDate = asylumCase.read(DATE_CLIENT_LEAVE_UK, String.class)
+                .orElseThrow(() -> new RequiredFieldMissingException("Client departure from UK date missing"));
 
-        dateOnDecisionLetter.ifPresent(date -> {
-            if (LocalDate.parse(date).isAfter(LocalDate.now())) {
-                response.addError("Date of letter must not be in the future");
-            }
-        });
-
+        if (LocalDate.parse(clientDepartureFromUkDate).isAfter(LocalDate.now())) {
+            response.addError("Client departure from UK date must not be in the future.");
+        }
+    
         return response;
     }
 }
