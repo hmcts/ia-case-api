@@ -14,6 +14,7 @@ import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.FeeRemissionType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.HelpWithFeesOption;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionOption;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
@@ -222,7 +223,7 @@ class AiPFeesHandlerTest {
         assertEquals(asylumCase, callbackResponse.getData());
 
         verify(feePayment, times(1)).aboutToSubmit(callback);
-        verify(asylumCase, times(1)).write(FEE_REMISSION_TYPE, "Home Office Waiver");
+        verify(asylumCase, times(1)).write(FEE_REMISSION_TYPE, FeeRemissionType.HO_WAIVER);
         verify(asylumCase, times(1)).clear(ASYLUM_SUPPORT_REF_NUMBER);
         verify(asylumCase, times(1)).clear(HELP_WITH_FEES_OPTION);
         verify(asylumCase, times(1)).clear(HELP_WITH_FEES_REF_NUMBER);
@@ -251,7 +252,7 @@ class AiPFeesHandlerTest {
         assertEquals(asylumCase, callbackResponse.getData());
 
         verify(feePayment, times(1)).aboutToSubmit(callback);
-        verify(asylumCase, times(1)).write(FEE_REMISSION_TYPE, "Asylum support");
+        verify(asylumCase, times(1)).write(FEE_REMISSION_TYPE, FeeRemissionType.ASYLUM_SUPPORT);
         verify(asylumCase, times(1)).clear(HELP_WITH_FEES_OPTION);
         verify(asylumCase, times(1)).clear(HELP_WITH_FEES_REF_NUMBER);
         verify(asylumCase, times(1)).clear(RP_DC_APPEAL_HEARING_OPTION);
@@ -279,7 +280,7 @@ class AiPFeesHandlerTest {
         assertEquals(asylumCase, callbackResponse.getData());
 
         verify(feePayment, times(1)).aboutToSubmit(callback);
-        verify(asylumCase, times(1)).write(FEE_REMISSION_TYPE, "Asylum support");
+        verify(asylumCase, times(1)).write(FEE_REMISSION_TYPE, FeeRemissionType.ASYLUM_SUPPORT);
         verify(asylumCase, never()).clear(HELP_WITH_FEES_OPTION);
         verify(asylumCase, never()).clear(HELP_WITH_FEES_REF_NUMBER);
         verify(asylumCase, times(1)).clear(RP_DC_APPEAL_HEARING_OPTION);
@@ -306,7 +307,7 @@ class AiPFeesHandlerTest {
         assertEquals(asylumCase, callbackResponse.getData());
 
         verify(feePayment, times(1)).aboutToSubmit(callback);
-        verify(asylumCase, times(1)).write(FEE_REMISSION_TYPE, "Local Authority Support");
+        verify(asylumCase, times(1)).write(FEE_REMISSION_TYPE, FeeRemissionType.LOCAL_AUTHORITY_SUPPORT);
         verify(asylumCase, times(1)).clear(ASYLUM_SUPPORT_REF_NUMBER);
         verify(asylumCase, times(1)).clear(HELP_WITH_FEES_OPTION);
         verify(asylumCase, times(1)).clear(HELP_WITH_FEES_REF_NUMBER);
@@ -340,7 +341,7 @@ class AiPFeesHandlerTest {
         assertEquals(asylumCase, callbackResponse.getData());
 
         verify(feePayment, times(1)).aboutToSubmit(callback);
-        verify(asylumCase, times(1)).write(FEE_REMISSION_TYPE, "Help with Fees");
+        verify(asylumCase, times(1)).write(FEE_REMISSION_TYPE, FeeRemissionType.HELP_WITH_FEES);
         verify(asylumCase, times(1)).clear(ASYLUM_SUPPORT_REF_NUMBER);
         verify(asylumCase, times(1)).clear(LOCAL_AUTHORITY_LETTERS);
         verify(asylumCase, times(1)).clear(RP_DC_APPEAL_HEARING_OPTION);
@@ -378,7 +379,7 @@ class AiPFeesHandlerTest {
 
         verify(feePayment, times(1)).aboutToSubmit(callback);
         verify(asylumCase, never()).write(REMISSION_OPTION, RemissionOption.I_WANT_TO_GET_HELP_WITH_FEES);
-        verify(asylumCase, never()).write(FEE_REMISSION_TYPE, "Help with Fees");
+        verify(asylumCase, never()).write(FEE_REMISSION_TYPE, FeeRemissionType.HELP_WITH_FEES);
         verify(asylumCase, times(1)).clear(ASYLUM_SUPPORT_REF_NUMBER);
         verify(asylumCase, times(1)).clear(LOCAL_AUTHORITY_LETTERS);
         verify(asylumCase, times(1)).clear(RP_DC_APPEAL_HEARING_OPTION);
