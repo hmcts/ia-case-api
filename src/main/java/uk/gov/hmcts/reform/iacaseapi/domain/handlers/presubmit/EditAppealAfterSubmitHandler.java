@@ -122,6 +122,7 @@ public class EditAppealAfterSubmitHandler implements PreSubmitCallbackHandler<As
                 .orElse(State.UNKNOWN);
             asylumCase.write(CURRENT_CASE_STATE_VISIBLE_TO_CASE_OFFICER, maybePreviousState);
             clearNewMatters(asylumCase);
+
             Optional<List<IdValue<DocumentWithDescription>>> maybeNoticeOfDecision =
                     asylumCase.read(UPLOAD_THE_NOTICE_OF_DECISION_DOCS);
 

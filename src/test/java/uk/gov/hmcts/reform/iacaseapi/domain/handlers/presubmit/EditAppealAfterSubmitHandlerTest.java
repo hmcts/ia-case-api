@@ -257,7 +257,6 @@ class EditAppealAfterSubmitHandlerTest {
         verify(asylumCase).write(LEGAL_REPRESENTATIVE_DOCUMENTS, finalLegalRepDocs);
     }
 
-
     @Test
     void should_set_current_case_state_visible_to_case_officer_and_clear_application_flags_when_out_of_time() {
 
