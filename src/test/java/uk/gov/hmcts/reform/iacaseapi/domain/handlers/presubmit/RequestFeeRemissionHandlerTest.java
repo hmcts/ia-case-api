@@ -110,6 +110,39 @@ class RequestFeeRemissionHandlerTest {
 
     @ParameterizedTest
     @MethodSource("remissionClaimsTestData")
+    void handle_should_return_new_and_previous_remission_details_asylum_support_no_document(
+        RemissionType remissionType,
+        String remissionClaim,
+        AppealType appealType,
+        RemissionDecision remissionDecision
+    ) {
+        when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
+
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
+
+        when(asylumCase.read(FEE_REMISSION_TYPE, String.class)).thenReturn(Optional.of("Asylum support"));
+        when(asylumCase.read(ASYLUM_SUPPORT_REFERENCE, String.class)).thenReturn(Optional.of("123456"));
+        when(asylumCase.read(ASYLUM_SUPPORT_DOCUMENT)).thenReturn(Optional.empty());
+
+        when(asylumCase.read(TEMP_PREVIOUS_REMISSION_DETAILS))
+                .thenReturn(Optional.of(singletonList(new IdValue<>("123", mock(RemissionDetails.class)))));
+
+        when(callback.getEvent()).thenReturn(Event.REQUEST_FEE_REMISSION);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        when(asylumCase.read(LATE_REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.of(remissionType));
+        when(asylumCase.read(REMISSION_CLAIM, String.class)).thenReturn(Optional.of(remissionClaim));
+
+        mockRemissionDecision(remissionDecision);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse = requestFeeRemissionHandler.handle(ABOUT_TO_SUBMIT, callback);
+
+        verifyTestResults(remissionType, remissionClaim, callbackResponse);
+    }
+
+    @ParameterizedTest
+    @MethodSource("remissionClaimsTestData")
     void handle_should_return_new_and_previous_remission_details_legal_aid(
         RemissionType remissionType,
         String remissionClaim,
@@ -174,6 +207,38 @@ class RequestFeeRemissionHandlerTest {
 
     @ParameterizedTest
     @MethodSource("remissionClaimsTestData")
+    void handle_should_return_new_and_previous_remission_details_section_17_no_document(
+        RemissionType remissionType,
+        String remissionClaim,
+        AppealType appealType,
+        RemissionDecision remissionDecision
+    ) {
+        when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
+
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
+
+        when(asylumCase.read(FEE_REMISSION_TYPE, String.class)).thenReturn(Optional.of("Section 17"));
+        when(asylumCase.read(SECTION17_DOCUMENT)).thenReturn(Optional.empty());
+
+        when(asylumCase.read(TEMP_PREVIOUS_REMISSION_DETAILS))
+                .thenReturn(Optional.of(singletonList(new IdValue<>("123", mock(RemissionDetails.class)))));
+
+        when(callback.getEvent()).thenReturn(Event.REQUEST_FEE_REMISSION);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        when(asylumCase.read(LATE_REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.of(remissionType));
+        when(asylumCase.read(REMISSION_CLAIM, String.class)).thenReturn(Optional.of(remissionClaim));
+
+        mockRemissionDecision(remissionDecision);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse = requestFeeRemissionHandler.handle(ABOUT_TO_SUBMIT, callback);
+
+        verifyTestResults(remissionType, remissionClaim, callbackResponse);
+    }
+
+    @ParameterizedTest
+    @MethodSource("remissionClaimsTestData")
     void handle_should_return_new_and_previous_remission_details_section_20(
         RemissionType remissionType,
         String remissionClaim,
@@ -206,6 +271,38 @@ class RequestFeeRemissionHandlerTest {
 
     @ParameterizedTest
     @MethodSource("remissionClaimsTestData")
+    void handle_should_return_new_and_previous_remission_details_section_20_no_document(
+        RemissionType remissionType,
+        String remissionClaim,
+        AppealType appealType,
+        RemissionDecision remissionDecision
+    ) {
+        when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
+
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
+
+        when(asylumCase.read(FEE_REMISSION_TYPE, String.class)).thenReturn(Optional.of("Section 20"));
+        when(asylumCase.read(SECTION20_DOCUMENT)).thenReturn(Optional.empty());
+
+        when(asylumCase.read(TEMP_PREVIOUS_REMISSION_DETAILS))
+                .thenReturn(Optional.of(singletonList(new IdValue<>("123", mock(RemissionDetails.class)))));
+
+        when(callback.getEvent()).thenReturn(Event.REQUEST_FEE_REMISSION);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        when(asylumCase.read(LATE_REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.of(remissionType));
+        when(asylumCase.read(REMISSION_CLAIM, String.class)).thenReturn(Optional.of(remissionClaim));
+
+        mockRemissionDecision(remissionDecision);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse = requestFeeRemissionHandler.handle(ABOUT_TO_SUBMIT, callback);
+
+        verifyTestResults(remissionType, remissionClaim, callbackResponse);
+    }
+
+    @ParameterizedTest
+    @MethodSource("remissionClaimsTestData")
     void handle_should_return_new_and_previous_remission_details_home_office_waiver(
         RemissionType remissionType,
         String remissionClaim,
@@ -218,6 +315,38 @@ class RequestFeeRemissionHandlerTest {
 
         when(asylumCase.read(FEE_REMISSION_TYPE, String.class)).thenReturn(Optional.of("Home Office fee waiver"));
         when(asylumCase.read(HOME_OFFICE_WAIVER_DOCUMENT)).thenReturn(Optional.of(document));
+
+        when(asylumCase.read(TEMP_PREVIOUS_REMISSION_DETAILS))
+                .thenReturn(Optional.of(singletonList(new IdValue<>("123", mock(RemissionDetails.class)))));
+
+        when(callback.getEvent()).thenReturn(Event.REQUEST_FEE_REMISSION);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        when(asylumCase.read(LATE_REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.of(remissionType));
+        when(asylumCase.read(REMISSION_CLAIM, String.class)).thenReturn(Optional.of(remissionClaim));
+
+        mockRemissionDecision(remissionDecision);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse = requestFeeRemissionHandler.handle(ABOUT_TO_SUBMIT, callback);
+
+        verifyTestResults(remissionType, remissionClaim, callbackResponse);
+    }
+
+    @ParameterizedTest
+    @MethodSource("remissionClaimsTestData")
+    void handle_should_return_new_and_previous_remission_details_home_office_waiver_no_document(
+        RemissionType remissionType,
+        String remissionClaim,
+        AppealType appealType,
+        RemissionDecision remissionDecision
+    ) {
+        when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
+
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
+
+        when(asylumCase.read(FEE_REMISSION_TYPE, String.class)).thenReturn(Optional.of("Home Office fee waiver"));
+        when(asylumCase.read(HOME_OFFICE_WAIVER_DOCUMENT)).thenReturn(Optional.empty());
 
         when(asylumCase.read(TEMP_PREVIOUS_REMISSION_DETAILS))
                 .thenReturn(Optional.of(singletonList(new IdValue<>("123", mock(RemissionDetails.class)))));
