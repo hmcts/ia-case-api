@@ -80,7 +80,7 @@ spring:
   cache:
     cache-names: userInfoCache, accessTokenCache, homeOfficeReferenceDataCache
     caffeine:
-      spec: expireAfterAccess=3600s
+      spec: expireAfterWrite=3600s
   datasource:
     driverClassName: org.postgresql.Driver
     url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5050}/${POSTGRES_NAME:ia_case_api}${POSTGRES_CONNECTION_OPTIONS:}
