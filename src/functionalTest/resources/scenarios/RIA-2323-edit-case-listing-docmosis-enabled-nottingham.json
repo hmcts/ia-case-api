@@ -11,7 +11,7 @@
         "template": "minimal-appeal-submitted.json",
         "replacements": {
           "listCaseHearingCentre": "nottingham",
-          "listCaseHearingCentreAddress": "Nottingham Magistrates Court, Carrington Street, NG2 1EE",
+          "listCaseHearingCentreAddress": "Nottingham Magistrates' Court, Carrington Street, NG2 1EE",
           "listCaseHearingLength": "60",
           "listCaseHearingDate": "2018-12-31T12:34:56",
           "listCaseRequirementsVulnerabilities": "something around Vulnerabilities",
