@@ -153,7 +153,7 @@ class EditAppealAfterSubmitHandlerTest {
         verify(asylumCase).clear(APPLICATION_OUT_OF_TIME_DOCUMENT);
 
         verify(asylumCase).write(eq(APPLICATIONS), applicationsCaptor.capture());
-        verify(asylumCase).write(HAS_ADDED_LEGAL_REP_DETAILS, YesOrNo.YES);
+        verify(asylumCase, times(2)).write(HAS_ADDED_LEGAL_REP_DETAILS, YesOrNo.YES);
         verify(asylumCase).clear(APPLICATION_EDIT_APPEAL_AFTER_SUBMIT_EXISTS);
         verify(asylumCase).clear(RECORDED_OUT_OF_TIME_DECISION);
         verify(asylumCase).read(CURRENT_CASE_STATE_VISIBLE_TO_HOME_OFFICE_ALL, State.class);
@@ -640,7 +640,7 @@ class EditAppealAfterSubmitHandlerTest {
             editAppealAfterSubmitHandler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
 
         assertNotNull(callbackResponse);
-        verify(asylumCase, times(1)).write(asylumExtractor.capture(), outOfTime.capture());
+        verify(asylumCase, times(2)).write(asylumExtractor.capture(), outOfTime.capture());
 
         assertThat(asylumExtractor.getValue()).isEqualTo(SUBMISSION_OUT_OF_TIME);
         assertThat(outOfTime.getValue()).isEqualTo(NO);
