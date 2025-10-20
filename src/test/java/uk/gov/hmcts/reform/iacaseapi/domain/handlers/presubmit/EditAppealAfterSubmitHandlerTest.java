@@ -39,8 +39,13 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DueDateService;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentReceiver;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.Organisation;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.OrganisationPolicy;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -68,6 +73,10 @@ class EditAppealAfterSubmitHandlerTest {
     @Captor
     private ArgumentCaptor<List<IdValue<Application>>> applicationsCaptor;
     @Mock
+    private DocumentReceiver documentReceiver;
+    @Mock
+    private DocumentsAppender documentsAppender;
+    @Mock
     private DocumentWithDescription appealWasNotSubmitted;
 
     private String applicationSupplier = "Legal representative";
@@ -83,6 +92,8 @@ class EditAppealAfterSubmitHandlerTest {
     private ArgumentCaptor<YesOrNo> outOfTime;
     @Captor
     private ArgumentCaptor<YesOrNo> recordedOutOfTimeDecision;
+    @Captor
+    private ArgumentCaptor<YesOrNo> hasAddedLegalRepDetails;
 
     private List<IdValue<Application>> applications = newArrayList(new IdValue<>("1", new Application(
         Collections.emptyList(),
@@ -100,7 +111,7 @@ class EditAppealAfterSubmitHandlerTest {
 
     @BeforeEach
     public void setUp() {
-        editAppealAfterSubmitHandler = new EditAppealAfterSubmitHandler(dateProvider,dueDateService,APPEAL_OUT_OF_TIME_DAYS_UK,APPEAL_OUT_OF_TIME_DAYS_OOC,APPEAL_OUT_OF_TIME_ADA_WORKING_DAYS);
+        editAppealAfterSubmitHandler = new EditAppealAfterSubmitHandler(dateProvider,dueDateService,APPEAL_OUT_OF_TIME_DAYS_UK,APPEAL_OUT_OF_TIME_DAYS_OOC,APPEAL_OUT_OF_TIME_ADA_WORKING_DAYS, documentReceiver, documentsAppender);
 
         when(callback.getEvent()).thenReturn(Event.EDIT_APPEAL_AFTER_SUBMIT);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -120,6 +131,16 @@ class EditAppealAfterSubmitHandlerTest {
 
         when(dateProvider.now()).thenReturn(LocalDate.parse("2020-04-08"));
         when(asylumCase.read(HOME_OFFICE_DECISION_DATE)).thenReturn(Optional.of("2020-04-08"));
+
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.empty());
+        when(asylumCase.read(LOCAL_AUTHORITY_POLICY))
+                .thenReturn(Optional.of(OrganisationPolicy.builder()
+                        .organisation(Organisation.builder().organisationID("Org1").build()).build()));
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(NO));
+        when(callback.getCaseDetailsBefore()).thenReturn(Optional.of(caseDetailsBefore));
+        when(caseDetailsBefore.getCaseData()).thenReturn(asylumCaseBefore);
+        when(asylumCaseBefore.read(LEGAL_REP_NAME)).thenReturn(Optional.empty());
+        when(asylumCase.read(LEGAL_REP_NAME)).thenReturn(Optional.of("Rep name"));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             editAppealAfterSubmitHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -170,6 +191,7 @@ class EditAppealAfterSubmitHandlerTest {
             .write(eq(CURRENT_CASE_STATE_VISIBLE_TO_CASE_OFFICER), eq(State.AWAITING_RESPONDENT_EVIDENCE));
 
         verify(asylumCase).clear(NEW_MATTERS);
+        verify(asylumCase, never()).write(HAS_ADDED_LEGAL_REP_DETAILS, YesOrNo.YES);
 
         assertEquals("Completed", applicationsCaptor.getValue().get(0).getValue().getApplicationStatus());
     }
@@ -200,6 +222,43 @@ class EditAppealAfterSubmitHandlerTest {
         verify(asylumCase).clear(NEW_MATTERS);
 
         assertEquals("Completed", applicationsCaptor.getValue().get(0).getValue().getApplicationStatus());
+    }
+
+    @Test
+    void should_append_ho_decision_letter_to_legal_rep_documents_when_present() {
+
+        DocumentWithDescription uploadedDoc = mock(DocumentWithDescription.class);
+        DocumentWithMetadata receivedMetadata = mock(DocumentWithMetadata.class);
+        List<IdValue<DocumentWithDescription>> uploadedNoticeOfDecisionDocs =
+                List.of(new IdValue<>("1", uploadedDoc));
+
+        when(asylumCase.read(UPLOAD_THE_NOTICE_OF_DECISION_DOCS)).thenReturn(Optional.of(uploadedNoticeOfDecisionDocs));
+        when(documentReceiver.tryReceive(uploadedDoc, DocumentTag.HO_DECISION_LETTER))
+                .thenReturn(Optional.of(receivedMetadata));
+
+        DocumentWithMetadata existingDoc = mock(DocumentWithMetadata.class);
+        when(existingDoc.getTag()).thenReturn(DocumentTag.APPEAL_SUBMISSION);
+
+        List<IdValue<DocumentWithMetadata>> existingLegalRepDocs =
+                List.of(new IdValue<>("2", existingDoc));
+        when(asylumCase.read(LEGAL_REPRESENTATIVE_DOCUMENTS)).thenReturn(Optional.of(existingLegalRepDocs));
+
+        List<IdValue<DocumentWithMetadata>> finalLegalRepDocs = List.of(
+                new IdValue<>("3", receivedMetadata),
+                new IdValue<>("2", existingDoc)
+        );
+        when(documentsAppender.prepend(anyList(), anyList())).thenReturn(finalLegalRepDocs);
+
+        when(dateProvider.now()).thenReturn(LocalDate.parse("2020-04-08"));
+        when(asylumCase.read(HOME_OFFICE_DECISION_DATE)).thenReturn(Optional.of("2020-04-08"));
+
+        PreSubmitCallbackResponse<AsylumCase> response =
+                editAppealAfterSubmitHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(response);
+        assertEquals(asylumCase, response.getData());
+
+        verify(asylumCase).write(LEGAL_REPRESENTATIVE_DOCUMENTS, finalLegalRepDocs);
     }
 
     @Test
@@ -581,7 +640,7 @@ class EditAppealAfterSubmitHandlerTest {
             editAppealAfterSubmitHandler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
 
         assertNotNull(callbackResponse);
-        verify(asylumCase, times(2)).write(asylumExtractor.capture(), outOfTime.capture());
+        verify(asylumCase, times(1)).write(asylumExtractor.capture(), outOfTime.capture());
 
         assertThat(asylumExtractor.getValue()).isEqualTo(SUBMISSION_OUT_OF_TIME);
         assertThat(outOfTime.getValue()).isEqualTo(NO);
@@ -609,8 +668,7 @@ class EditAppealAfterSubmitHandlerTest {
         verify(asylumCase, times(2)).write(asylumExtractor.capture(), outOfTime.capture());
         verify(asylumCase, times(2)).write(asylumExtractor.capture(), recordedOutOfTimeDecision.capture());
 
-        assertThat(asylumExtractor.getAllValues()).contains(SUBMISSION_OUT_OF_TIME);
-        assertThat(asylumExtractor.getValue()).isEqualTo(RECORDED_OUT_OF_TIME_DECISION);
+        assertThat(asylumExtractor.getAllValues()).contains(SUBMISSION_OUT_OF_TIME, RECORDED_OUT_OF_TIME_DECISION);
         assertThat(outOfTime.getValue()).usingRecursiveComparison().getRecursiveComparisonConfiguration().equals(YES);
         assertThat(recordedOutOfTimeDecision.getValue()).usingRecursiveComparison().getRecursiveComparisonConfiguration().equals(NO);
     }
@@ -642,6 +700,7 @@ class EditAppealAfterSubmitHandlerTest {
         assertNotNull(callbackResponse);
 
         verify(asylumCase).write(SUBMISSION_OUT_OF_TIME, NO);
+        verify(asylumCase).write(HAS_ADDED_LEGAL_REP_DETAILS, NO);
         verify(asylumCase).clear(APPLICATION_OUT_OF_TIME_EXPLANATION);
         verify(asylumCase).clear(APPLICATION_OUT_OF_TIME_DOCUMENT);
         verify(asylumCase).clear(RECORDED_OUT_OF_TIME_DECISION);
