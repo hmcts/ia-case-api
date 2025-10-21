@@ -376,19 +376,19 @@ public class CcdScenarioRunnerTest {
 
         return switch (Objects.requireNonNull(credentials).toLowerCase()) {
             case "legalrepresentative" ->
-                    authorizationHeadersProvider.getLegalRepresentativeAuthorization();
+                authorizationHeadersProvider.getLegalRepresentativeAuthorization();
             case "systemuser" ->
-                    authorizationHeadersProvider.getSystemUserAuthorization();
+                authorizationHeadersProvider.getSystemUserAuthorization();
             case "caseofficer" ->
-                    authorizationHeadersProvider.getCaseOfficerAuthorization();
+                authorizationHeadersProvider.getCaseOfficerAuthorization();
             case "adminofficer" ->
-                    authorizationHeadersProvider.getAdminOfficerAuthorization();
+                authorizationHeadersProvider.getAdminOfficerAuthorization();
             case "homeofficeapc" ->
-                    authorizationHeadersProvider.getHomeOfficeApcAuthorization();
+                authorizationHeadersProvider.getHomeOfficeApcAuthorization();
             case "homeofficelart" ->
-                    authorizationHeadersProvider.getHomeOfficeLartAuthorization();
+                authorizationHeadersProvider.getHomeOfficeLartAuthorization();
             case "homeofficepou" ->
-                    authorizationHeadersProvider.getHomeOfficePouAuthorization();
+                authorizationHeadersProvider.getHomeOfficePouAuthorization();
             case "homeofficegeneric" -> authorizationHeadersProvider
                     .getHomeOfficeGenericAuthorization();
             case "legalrepresentativeorga" -> authorizationHeadersProvider

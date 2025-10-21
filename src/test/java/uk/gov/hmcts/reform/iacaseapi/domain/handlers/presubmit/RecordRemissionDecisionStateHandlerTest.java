@@ -126,6 +126,36 @@ class RecordRemissionDecisionStateHandlerTest {
 
     @ParameterizedTest
     @EnumSource(value = AppealType.class, names = { "EA", "HU", "EU", "AG" })
+    void should_not_change_state_if_not_pending_payment_on_remission_approved_for_ea_hu_eu_ag(AppealType type) {
+        // and service-request tab should be hidden (no payment to take care of)
+        // and markAppealAsPaid should be hidden (no payment to take care of, case state already sorted)
+
+        when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
+
+        when(callback.getEvent()).thenReturn(Event.RECORD_REMISSION_DECISION);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getState()).thenReturn(State.LISTING);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(type));
+        when(asylumCase.read(REMISSION_DECISION, RemissionDecision.class)).thenReturn(Optional.of(APPROVED));
+
+        PreSubmitCallbackResponse<AsylumCase> returnedCallbackResponse =
+            recordRemissionDecisionStateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse);
+
+        assertThat(returnedCallbackResponse).isNotNull();
+        assertThat(returnedCallbackResponse.getData()).isEqualTo(asylumCase);
+        assertThat(returnedCallbackResponse.getState()).isEqualTo(State.LISTING);
+        verify(asylumCase, times(1)).write(PAYMENT_STATUS, PAID);
+
+        verify(feePayment, never()).aboutToSubmit(callback);
+        verify(asylumCase, times(1)).write(IS_SERVICE_REQUEST_TAB_VISIBLE_CONSIDERING_REMISSIONS, YesOrNo.NO);
+        verify(asylumCase, times(1)).write(DISPLAY_MARK_AS_PAID_EVENT_FOR_PARTIAL_REMISSION, YesOrNo.NO);
+        verify(asylumCase, never()).write(HAS_SERVICE_REQUEST_ALREADY, YesOrNo.YES);
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = AppealType.class, names = { "EA", "HU", "EU", "AG" })
     void should_return_payment_pending_on_remission_partially_approved(AppealType type) {
         // and service-request tab should be hidden (payment is handled offline, waysToPay not yet supporting partial remissions)
         // and markAppealAsPaid should be visible, to allow admins to process offline payments
