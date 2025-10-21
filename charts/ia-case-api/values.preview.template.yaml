@@ -37,6 +37,8 @@ java:
     DUMMY: true
     PAYMENT_REMINDER_DUE_IN_MINUTES: 1
     ROLE_ASSIGNMENT_API_URL: https://am-role-assignment-ia-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net
+    SAVE_NOTIFICATIONS_DATA_SCHEDULE_HOUR: 12
+    SAVE_NOTIFICATIONS_DATA_SCHEDULE_MAX_MINUTES: 3
   keyVaults:
     ia:
       resourceGroup: ia
@@ -464,7 +466,8 @@ ia-timed-event-service:
   enabled: ${ENABLE_TES}
   java:
     imagePullPolicy: Always
-    image: hmctspublic.azurecr.io/ia/timed-event-service:latest
+#    image: hmctspublic.azurecr.io/ia/timed-event-service:latest
+    image: hmctspublic.azurecr.io/ia/timed-event-service:pr-209
     releaseNameOverride: ${SERVICE_NAME}-timed-event-service
     ingressHost: ${SERVICE_NAME}-timed-event-service.preview.platform.hmcts.net
     devcpuRequests: 500m
