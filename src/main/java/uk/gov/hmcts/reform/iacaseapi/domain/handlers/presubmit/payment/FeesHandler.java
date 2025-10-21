@@ -107,12 +107,15 @@ public class FeesHandler implements PreSubmitCallbackHandler<AsylumCase> {
                 if (isRemissionsEnabled == YES && optRemissionType.isPresent()
                     && optRemissionType.get() == HO_WAIVER_REMISSION) {
                     setFeeRemissionTypeDetails(asylumCase);
+                    asylumCase.clear(PAYMENT_STATUS);
                 } else if (isRemissionsEnabled == YES && optRemissionType.isPresent()
                     && optRemissionType.get() == HELP_WITH_FEES) {
                     setHelpWithFeesDetails(asylumCase);
+                    asylumCase.clear(PAYMENT_STATUS);
                 } else if (isRemissionsEnabled == YES && optRemissionType.isPresent()
                     && optRemissionType.get() == EXCEPTIONAL_CIRCUMSTANCES_REMISSION) {
                     setExceptionalCircumstancesRemissionDetails(asylumCase);
+                    asylumCase.clear(PAYMENT_STATUS);
                 } else {
 
                     setFeePaymentDetails(asylumCase, appealType);

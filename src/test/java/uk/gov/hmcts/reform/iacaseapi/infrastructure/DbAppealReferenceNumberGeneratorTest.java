@@ -82,7 +82,7 @@ class DbAppealReferenceNumberGeneratorTest {
         )).thenReturn(expectedAppealReferenceNumber);
 
         String appealReferenceNumber =
-            dbAppealReferenceNumberGenerator.generate(caseId, appealType, false);
+            dbAppealReferenceNumberGenerator.generate(caseId, appealType);
 
         assertEquals(expectedAppealReferenceNumber, appealReferenceNumber);
 
@@ -126,64 +126,6 @@ class DbAppealReferenceNumberGeneratorTest {
     }
 
     @Test
-    void should_call_db_to_generate_new_appeal_reference_number_detained() {
-
-        expectedParameters.addValue("appealType", "DE");
-
-        when(jdbcTemplate.queryForObject(
-            and(
-                contains("SELECT"),
-                contains("FROM ia_case_api.appeal_reference_numbers")
-            ),
-            any(MapSqlParameterSource.class),
-            eq(String.class)
-        )).thenReturn(expectedDetainedAppealReferenceNumber);
-
-        String appealReferenceNumber =
-            dbAppealReferenceNumberGenerator.generate(caseId, appealType, true);
-
-        assertEquals(expectedDetainedAppealReferenceNumber, appealReferenceNumber);
-
-        verify(jdbcTemplate, times(1))
-            .update(
-                and(
-                    contains("INSERT"),
-                    contains("INTO ia_case_api.appeal_reference_numbers")
-                ),
-                insertParametersCaptor.capture()
-            );
-
-        verify(jdbcTemplate, times(1))
-            .queryForObject(
-                and(
-                    contains("SELECT"),
-                    contains("FROM ia_case_api.appeal_reference_numbers")
-                ),
-                selectParametersCaptor.capture(),
-                eq(String.class)
-            );
-
-        MapSqlParameterSource actualInsertParameters =
-            insertParametersCaptor
-                .getAllValues()
-                .get(0);
-
-        assertEquals(caseId, actualInsertParameters.getValue("caseId"));
-        assertEquals("DE", actualInsertParameters.getValue("appealType"));
-        assertEquals(currentYear, actualInsertParameters.getValue("year"));
-        assertEquals(SEQUENCE_SEED, actualInsertParameters.getValue("seed"));
-
-        MapSqlParameterSource actualSelectParameters =
-            insertParametersCaptor
-                .getAllValues()
-                .get(0);
-
-        assertEquals(caseId, actualSelectParameters.getValue("caseId"));
-        assertEquals("DE", actualSelectParameters.getValue("appealType"));
-        assertEquals(currentYear, actualSelectParameters.getValue("year"));
-    }
-
-    @Test
     void should_return_existing_appeal_reference_number_already_when_exists() {
 
         when(jdbcTemplate.queryForObject(
@@ -204,7 +146,7 @@ class DbAppealReferenceNumberGeneratorTest {
         )).thenThrow(DuplicateKeyException.class);
 
         String appealReferenceNumber =
-            dbAppealReferenceNumberGenerator.generate(caseId, appealType, false);
+            dbAppealReferenceNumberGenerator.generate(caseId, appealType);
 
         assertEquals(expectedAppealReferenceNumber, appealReferenceNumber);
     }
@@ -230,7 +172,7 @@ class DbAppealReferenceNumberGeneratorTest {
             eq(String.class)
         )).thenThrow(EmptyResultDataAccessException.class);
 
-        assertThatThrownBy(() -> dbAppealReferenceNumberGenerator.generate(caseId, appealType, false))
+        assertThatThrownBy(() -> dbAppealReferenceNumberGenerator.generate(caseId, appealType))
             .isExactlyInstanceOf(IllegalStateException.class);
     }
 }

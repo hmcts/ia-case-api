@@ -1,10 +1,10 @@
 {
-  "description": "RIA-8253 Mark Appeal as Remitted",
+  "description": "RIA-8256 Clear Mark Appeal as Remitted - ",
   "request": {
     "uri": "/asylum/ccdAboutToStart",
     "credentials": "AdminOfficer",
     "input": {
-      "id": 8253,
+      "id": 8256,
       "eventId": "markAppealAsRemitted",
       "state": "ftpaDecided",
       "caseData": {
