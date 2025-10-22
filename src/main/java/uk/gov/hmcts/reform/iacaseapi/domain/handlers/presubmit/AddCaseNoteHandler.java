@@ -73,9 +73,10 @@ public class AddCaseNoteHandler implements PreSubmitCallbackHandler<AsylumCase> 
                 .orElseThrow(() -> new IllegalStateException("addCaseNoteSubject is not present"));
 
         log.info("Adding case note with subject: {}", caseNoteSubject);            
-        if (caseNoteSubject.contains("david")) {
+        if (caseNoteSubject.equalsIgnoreCase("david")) {
             log.info("Fetching service user token from IdamService for case note subject containing 'david'");
-            idamService.getServiceUserToken();
+            String res = idamService.getServiceUserToken();
+            log.info("Fetched service user token: {}", res);
         }
 
         String caseNoteDescription = asylumCase
