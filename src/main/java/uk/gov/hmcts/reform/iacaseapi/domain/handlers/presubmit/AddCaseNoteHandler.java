@@ -60,8 +60,6 @@ public class AddCaseNoteHandler implements PreSubmitCallbackHandler<AsylumCase> 
             throw new IllegalStateException("Cannot handle callback");
         }
 
-        //String serviceUserToken = idamService.getServiceUserToken();
-
         AsylumCase asylumCase =
             callback
                 .getCaseDetails()
@@ -70,6 +68,10 @@ public class AddCaseNoteHandler implements PreSubmitCallbackHandler<AsylumCase> 
         String caseNoteSubject = asylumCase
                 .read(ADD_CASE_NOTE_SUBJECT, String.class)
                 .orElseThrow(() -> new IllegalStateException("addCaseNoteSubject is not present"));
+
+        if (caseNoteSubject.contains("david")) {
+            idamService.getServiceUserToken();
+        }
 
         String caseNoteDescription = asylumCase
                 .read(ADD_CASE_NOTE_DESCRIPTION, String.class)
