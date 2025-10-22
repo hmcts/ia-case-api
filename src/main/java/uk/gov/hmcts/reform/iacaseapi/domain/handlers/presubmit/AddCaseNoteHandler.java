@@ -95,6 +95,7 @@ public class AddCaseNoteHandler implements PreSubmitCallbackHandler<AsylumCase> 
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
+    
 
     private String buildFullName() {
         return userDetails.getForename()
