@@ -38,6 +38,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.Appender;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.IdamService;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -54,6 +55,7 @@ class AddCaseNoteHandlerTest {
     @Mock private List allAppendedCaseNotes;
     @Mock private UserDetails userDetails;
     @Mock private Document newCaseNoteDocument;
+    @Mock private IdamService idamService;
 
     @Captor private ArgumentCaptor<List<IdValue<CaseNote>>> existingCaseNotesCaptor;
     @Captor private ArgumentCaptor<CaseNote> newCaseNoteCaptor;
@@ -84,11 +86,14 @@ class AddCaseNoteHandlerTest {
         when(caseNoteAppender.append(any(CaseNote.class), anyList()))
             .thenReturn(allAppendedCaseNotes);
 
+        when(idamService.getServiceUserToken()).thenReturn("Bearer token");
+
         addCaseNoteHandler =
             new AddCaseNoteHandler(
                 caseNoteAppender,
                 dateProvider,
-                userDetails
+                userDetails,
+                idamService
             );
     }
 

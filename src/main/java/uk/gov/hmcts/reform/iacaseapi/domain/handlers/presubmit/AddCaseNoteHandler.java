@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.Appender;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.IdamService;
 
 @Component
 public class AddCaseNoteHandler implements PreSubmitCallbackHandler<AsylumCase> {
@@ -27,15 +28,18 @@ public class AddCaseNoteHandler implements PreSubmitCallbackHandler<AsylumCase> 
     private final Appender<CaseNote> caseNoteAppender;
     private final DateProvider dateProvider;
     private final UserDetails userDetails;
+    private final IdamService idamService;
 
     public AddCaseNoteHandler(
         Appender<CaseNote> caseNoteAppender,
         DateProvider dateProvider,
-        UserDetails userDetails
+        UserDetails userDetails,
+        IdamService idamService
     ) {
         this.caseNoteAppender = caseNoteAppender;
         this.dateProvider = dateProvider;
         this.userDetails = userDetails;
+        this.idamService = idamService;
     }
 
     public boolean canHandle(
@@ -55,6 +59,8 @@ public class AddCaseNoteHandler implements PreSubmitCallbackHandler<AsylumCase> 
         if (!canHandle(callbackStage, callback)) {
             throw new IllegalStateException("Cannot handle callback");
         }
+
+        String serviceUserToken = idamService.getServiceUserToken();
 
         AsylumCase asylumCase =
             callback
@@ -95,7 +101,7 @@ public class AddCaseNoteHandler implements PreSubmitCallbackHandler<AsylumCase> 
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
-    
+
 
     private String buildFullName() {
         return userDetails.getForename()
