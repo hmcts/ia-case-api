@@ -9,6 +9,8 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubm
 import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Component;
+
+import lombok.extern.slf4j.Slf4j;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseNote;
@@ -22,6 +24,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.Appender;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.IdamService;
 
+@Slf4j
 @Component
 public class AddCaseNoteHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
@@ -69,7 +72,9 @@ public class AddCaseNoteHandler implements PreSubmitCallbackHandler<AsylumCase> 
                 .read(ADD_CASE_NOTE_SUBJECT, String.class)
                 .orElseThrow(() -> new IllegalStateException("addCaseNoteSubject is not present"));
 
+        log.info("Adding case note with subject: {}", caseNoteSubject);            
         if (caseNoteSubject.contains("david")) {
+            log.info("Fetching service user token from IdamService for case note subject containing 'david'");
             idamService.getServiceUserToken();
         }
 
