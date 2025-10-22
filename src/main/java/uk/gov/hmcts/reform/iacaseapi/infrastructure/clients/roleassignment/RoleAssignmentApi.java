@@ -14,7 +14,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleAssignme
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleAssignmentResource;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.config.DisableHystrixFeignConfiguration;
 
-
 @FeignClient(
     name = "role-assignment-service-api",
     url = "${role-assignment-service.url}",
@@ -42,5 +41,4 @@ public interface RoleAssignmentApi {
         @RequestHeader(SERVICE_AUTHORIZATION) String s2sToken,
         @PathVariable("assignmentId") String assignmentId
     );
-
 }

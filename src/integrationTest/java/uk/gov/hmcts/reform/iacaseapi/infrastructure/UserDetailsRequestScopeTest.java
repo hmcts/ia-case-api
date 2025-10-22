@@ -22,6 +22,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.test.context.support.WithMockUser;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.SpringBootIntegrationTest;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.WithNotificationsApiStub;
+import uk.gov.hmcts.reform.iacaseapi.component.testutils.WithRoleAssignmentStub;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.WithServiceAuthStub;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes;
@@ -29,7 +30,8 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.IdamApi;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.idam.UserInfo;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.RequestUserAccessTokenProvider;
 
-class UserDetailsRequestScopeTest extends SpringBootIntegrationTest implements WithNotificationsApiStub, WithServiceAuthStub {
+class UserDetailsRequestScopeTest extends SpringBootIntegrationTest implements WithNotificationsApiStub,
+    WithServiceAuthStub, WithRoleAssignmentStub {
 
     @MockBean
     private RequestUserAccessTokenProvider requestTokenProvider;
@@ -61,6 +63,7 @@ class UserDetailsRequestScopeTest extends SpringBootIntegrationTest implements W
 
         addServiceAuthStub(server);
         addNotificationsApiTransformerStub(server);
+        addRoleAssignmentActorStub(server);
 
         iaCaseApiClient.aboutToSubmit(
             callback()
@@ -83,6 +86,6 @@ class UserDetailsRequestScopeTest extends SpringBootIntegrationTest implements W
 
         // assert that only two requests in total are sent to Idam API for user info data (one for the event,
         // one to determine if supplementary data need handling based on user role + journey type
-        Mockito.verify(idamApi, times(1)).userInfo(token);
+        Mockito.verify(idamApi, times(2)).userInfo(token);
     }
 }

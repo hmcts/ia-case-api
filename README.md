@@ -230,43 +230,5 @@ NB2. Use aat env variable for preview environment user creation as it uses aat's
 
 ## Development / Debugging Environment - Preview with Mirrord
 
-As an alternative for a development environment there is a procedure in place where after running the command below the required services are created in Preview under the developer's name, so these will be exclusively for the named developer use.
-
-While connected to the VPN run one of the below command from your project's (ia-case-api) folder:
-Note: be sure to have Docker running
-
-```shell
-npx @hmcts/dev-env@latest && ./bin/setup-devuser-preview-env.sh
-```
-
-Then to check that the environment is up in preview
-
-```shell
-// point kubectl at preview
-az aks get-credentials --resource-group cft-preview-01-rg --name cft-preview-01-aks --subscription DCD-CFTAPPS-DEV --overwrite
-
-// list preview dev enviroment pods, substitute mike for your mac usersname 
-kubectl -n ia get pods | grep mike
-```
-
-The above should list roughly 30 pods. Wait until all pods, but specifically "ia-case-api-mike-ccd-definition-store" , are up and running and look like the below
-
-```shell
-ia-case-api-mike-ccd-definition-store-55fc7d9695-r945t                   1/1     Running
-```
-
-You should now be able to connect via Mirrord. First install the Intellij plugin (older versions of Intellij seem to not work with the latest plugin which is required, at time of writing Intellij 2024.3.2.1 plugin 3.66.0)
-https://mirrord.dev
-
-After the plugin is installed there should be a Mirror icon near the top right of Intellij, click that and debug the app. This should display some quick dialog box saying roughly "waiting for pod to be ready". Then in the Intellij console you should see the app starting up with the usually spring boot stuff.
-Break points and debug should now behave as normal.
-
-e.g. the method getCcdEventAuthorizor() in SecurityConfiguration line 93 is a good place to test things are working as this point in the code should get executed as the app inializes
-
-If you want to clean up the environment just run:
-
-```shell
-npx @hmcts/dev-env@latest --delete
-```
-
+Check the documentation in ./README-MIRRORD.md
 

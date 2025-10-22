@@ -121,7 +121,7 @@ class AsylumSupplementaryDataFixingHandlerTest {
     @Test
     void should_handle_if_not_citizen_starts_case_and_not_start_appeal() {
         when(userDetailsProvider.getUserDetails()).thenReturn(userDetails);
-        when(userDetails.getRoles()).thenReturn(List.of("caseworker-ia-admofficer"));
+        when(userDetails.getRoles()).thenReturn(List.of("ctsc"));
         when(callback.getEvent()).thenReturn(SUBMIT_APPEAL);
 
         assertTrue(asylumSupplementaryDataFixingHandler.canHandle(ABOUT_TO_START, callback));
@@ -133,7 +133,7 @@ class AsylumSupplementaryDataFixingHandlerTest {
     })
     void should_not_handle_if_event_is_start_appeal_for_any_callback_stage(PreSubmitCallbackStage callbackStage) {
         when(userDetailsProvider.getUserDetails()).thenReturn(userDetails);
-        when(userDetails.getRoles()).thenReturn(List.of("caseworker-ia-admofficer"));
+        when(userDetails.getRoles()).thenReturn(List.of("ctsc"));
         when(callback.getEvent()).thenReturn(START_APPEAL);
 
         assertFalse(asylumSupplementaryDataFixingHandler.canHandle(callbackStage, callback));
