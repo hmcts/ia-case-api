@@ -7,6 +7,8 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.*;
 
 import java.util.List;
 import java.util.Optional;
+
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
@@ -24,6 +26,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DirectionAppender;
 
 @Component
+@Slf4j
 public class RequestHearingRequirementsDirectionHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final int hearingRequirementsDueInDays;
@@ -98,8 +101,10 @@ public class RequestHearingRequirementsDirectionHandler implements PreSubmitCall
         boolean isEjpUnrepNonDetained = (isEjpCase(asylumCase) && !isAppellantInDetention(asylumCase) && !isLegallyRepresentedEjpCase(asylumCase));
 
         if (HandlerUtils.isAipJourney(asylumCase) || isInternalDetainedNonAda || isEjpUnrepNonDetained) {
+            log.info("---------------APPELLANT");
             return Parties.APPELLANT;
         }
+        log.info("---------------LEGAL_REPRESENTATIVE");
         return Parties.LEGAL_REPRESENTATIVE;
     }
 }
