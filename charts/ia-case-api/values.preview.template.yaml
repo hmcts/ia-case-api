@@ -36,6 +36,7 @@ java:
     FEES_REGISTER_API_URL: "http://fees-register-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
     DUMMY: true
     PAYMENT_REMINDER_DUE_IN_MINUTES: 1
+    PAYMENT_EA_HU_NO_REMISSION_DUE_IN_MINUTES: 10
     ROLE_ASSIGNMENT_API_URL: https://am-role-assignment-ia-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net
   keyVaults:
     ia:
@@ -134,7 +135,7 @@ ia-case-documents-api:
   enabled: true #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
-    image: hmctspublic.azurecr.io/ia/case-documents-api:pr-984
+    image: hmctspublic.azurecr.io/ia/case-documents-api:pr-1103
     releaseNameOverride: ${SERVICE_NAME}-case-documents-api
     ingressHost: ${SERVICE_NAME}-documents-api.preview.platform.hmcts.net
     devcpuRequests: 500m
@@ -208,7 +209,7 @@ ia-case-notifications-api:
   java:
     imagePullPolicy: Always
 #    image: hmctspublic.azurecr.io/ia/case-notifications-api:latest
-    image: hmctspublic.azurecr.io/ia/case-notifications-api:pr-1385
+    image: hmctspublic.azurecr.io/ia/case-notifications-api:pr-1563
     releaseNameOverride: ${SERVICE_NAME}-case-notifications-api
     ingressHost: ${SERVICE_NAME}-notifications-api.preview.platform.hmcts.net
     devcpuRequests: 500m
