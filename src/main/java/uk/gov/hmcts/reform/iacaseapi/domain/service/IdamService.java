@@ -50,6 +50,7 @@ public class IdamService {
     @Cacheable(value = "accessTokenCache")
     public String getServiceUserToken() {
         log.info("Getting system user token from IDAM");
+        System.out.println("idamClientId: " + idamClientId);
         Map<String, String> idamAuthDetails = new ConcurrentHashMap<>();
 
         idamAuthDetails.put("grant_type", "password");
@@ -62,6 +63,7 @@ public class IdamService {
 
         for (Map.Entry<String, String> entry : idamAuthDetails.entrySet()) {
             log.info("idamAuthDetails - {}: {}", entry.getKey(), entry.getValue());
+            System.out.println("idamAuthDetails - " + entry.getKey() + ": " + entry.getValue());
         }
 
         logIdamEnvironmentVariables();
