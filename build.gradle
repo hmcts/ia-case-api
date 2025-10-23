@@ -17,13 +17,13 @@ plugins {
     id 'pmd'
     id 'com.github.ben-manes.versions' version '0.51.0'
     id "info.solidsoft.pitest" version '1.9.0'
-    id 'io.spring.dependency-management' version '1.1.0'
+    id 'io.spring.dependency-management' version '1.1.7'
     id 'org.flywaydb.flyway' version '5.2.4'
-    id 'org.owasp.dependencycheck' version '10.0.3'
-    id 'org.sonarqube' version '6.0.1.5171'
+    id 'org.owasp.dependencycheck' version '10.0.4'
+    id 'org.sonarqube' version '6.2.0.5505'
     id 'org.springframework.boot' version '2.7.18'
-    id 'uk.gov.hmcts.java' version '0.12.43'
-    id 'au.com.dius.pact' version '4.2.14'
+    id 'uk.gov.hmcts.java' version '0.12.67'
+    id 'au.com.dius.pact' version '4.6.17'
     id "io.freefair.lombok" version "6.6.3"
 }
 
@@ -34,13 +34,13 @@ apply plugin: 'project-report'
 apply plugin: 'idea'
 
 def versions = [
-        reformLogging      : '6.0.1',
-        serenity           : '3.6.22',
-        junit              : '5.8.2',
-        junitPlatform      : '1.7.2',
+        reformLogging      : '6.1.9',
+        serenity           : '3.9.8',
+        junit              : '5.13.3',
+        junitPlatform      : '1.13.3',
         sonarPitest        : '0.5',
         pitest             : '1.9.0',
-        restAssured        : '5.3.1'
+        restAssured        : '5.5.5'
 ]
 
 ext.libraries = [
@@ -49,7 +49,8 @@ ext.libraries = [
                 "org.junit.jupiter:junit-jupiter-engine:${versions.junit}",
                 "org.junit.jupiter:junit-jupiter-params:${versions.junit}",
                 "org.junit.platform:junit-platform-commons:${versions.junitPlatform}",
-                "org.junit.platform:junit-platform-engine:${versions.junitPlatform}"
+                "org.junit.platform:junit-platform-engine:${versions.junitPlatform}",
+                "org.junit.platform:junit-platform-launcher:${versions.junitPlatform}"
         ]
 ]
 
@@ -153,13 +154,13 @@ configurations {
 
 checkstyle {
     maxWarnings = 0
-    toolVersion = '10.12.0'
+    toolVersion = '10.26.0'
     // need to set configDirectory to rootDir otherwise submodule will use submodule/config/checkstyle
     configFile(new File(rootDir, 'config/checkstyle/checkstyle.xml'))
 }
 
 pmd {
-    toolVersion = '7.0.0'
+    toolVersion = '7.14.0'
     ignoreFailures = true
     sourceSets = [sourceSets.main, sourceSets.test, sourceSets.integrationTest, sourceSets.functionalTest, sourceSets.smokeTest]
     reportsDir = file("$project.buildDir/reports/pmd")
@@ -209,11 +210,11 @@ task fortifyScan(type: JavaExec, description: 'Run fortify scan.')  {
 project.ext {
     pacticipant = 'ia_caseApi'
     pacticipantVersion = getCheckedOutGitCommitHash()
-    set('springCloudVersion', "2021.0.3")
+    set('springCloudVersion', "2021.0.9")
 }
 
 jacoco {
-    toolVersion = "0.8.10"
+    toolVersion = "0.8.13"
 }
 
 jacocoTestReport {
@@ -277,11 +278,11 @@ dependencyManagement {
 
     dependencies {
 
-        dependencySet(group: 'com.google.guava', version: '32.1.2-jre') {
+        dependencySet(group: 'com.google.guava', version: '32.1.3-jre') {
             entry 'guava'
         }
 
-        dependencySet(group: 'org.yaml', version: '2.0') {
+        dependencySet(group: 'org.yaml', version: '2.4') {
             entry 'snakeyaml'
         }
 
@@ -289,25 +290,27 @@ dependencyManagement {
             entry 'commons-fileupload'
         }
 
-        dependencySet(group: 'com.fasterxml.jackson.core', version: '2.16.0') {
+        dependencySet(group: 'com.fasterxml.jackson.core', version: '2.19.1') {
             entry 'jackson-databind'
             entry 'jackson-core'
             entry 'jackson-annotations'
         }
 
-        dependencySet(group: 'com.fasterxml.jackson.dataformat', version: '2.16.0') {
+        dependencySet(group: 'com.fasterxml.jackson.dataformat', version: '2.19.1') {
             entry 'jackson-dataformat-csv'
             entry 'jackson-dataformat-yaml'
         }
 
-        dependencySet(group: 'com.fasterxml.jackson.datatype', version: '2.16.0') {
+        dependencySet(group: 'com.fasterxml.jackson.datatype', version: '2.19.1') {
             entry 'jackson-datatype-jsr310'
             entry 'jackson-datatype-jdk8'
         }
 
-        dependencySet(group: 'com.fasterxml.jackson.module', version: '2.16.0') {
+        dependencySet(group: 'com.fasterxml.jackson.module', version: '2.19.1') {
             entry 'jackson-module-parameter-names'
         }
+        // CVE-2023-3635
+        dependency 'com.squareup.okio:okio:3.5.0'
     }
 }
 
@@ -346,64 +349,65 @@ dependencies {
     implementation group: 'org.yaml', name: 'snakeyaml'
     implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.18.0'
 
-    implementation group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '9.22'
-    implementation (group: 'net.minidev', name: 'json-smart', version: '2.4.10'){
+    implementation group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '9.48'
+    implementation (group: 'net.minidev', name: 'json-smart', version: '2.5.2'){
         version {
             strictly('2.4.10')
         }
     }
-    implementation group: 'commons-io', name: 'commons-io', version: '2.14.0'
+    implementation group: 'commons-io', name: 'commons-io', version: '2.19.0'
     implementation group: 'org.apache.httpcomponents', name: 'httpclient'
-    implementation group: 'org.springdoc', name: 'springdoc-openapi-ui', version: '1.6.8'
-    implementation group: 'org.postgresql', name: 'postgresql', version: '42.4.4'
-    implementation group: 'com.sun.xml.bind', name: 'jaxb-osgi', version: '2.3.3'
+    implementation group: 'org.springdoc', name: 'springdoc-openapi-ui', version: '1.8.0'
+    implementation group: 'org.postgresql', name: 'postgresql', version: '42.7.7'
+    implementation group: 'com.sun.xml.bind', name: 'jaxb-osgi', version: '2.3.9'
 
     implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-core', version: '9.0.107'
     implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-websocket', version: '9.0.107'
 
     implementation group: 'com.google.guava', name: 'guava'
-    implementation group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '6.2.1'
+    implementation group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '6.3.0'
 
     implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.13'
     implementation group: 'ch.qos.logback', name: 'logback-core', version: '1.2.13'
-    implementation group: 'net.logstash.logback', name: 'logstash-logback-encoder', version: '8.0'
+    implementation group: 'net.logstash.logback', name: 'logstash-logback-encoder', version: '8.1'
 
-    implementation group: 'org.javamoney.moneta', name: 'moneta-core', version: '1.4.2'
+    implementation group: 'org.javamoney.moneta', name: 'moneta-core', version: '1.4.5'
+    implementation group: 'jakarta.annotation', name: 'jakarta.annotation-api', version: '3.0.0'
 
     implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: versions.reformLogging
     implementation group: 'com.github.hmcts.java-logging', name: 'logging-appinsights', version: versions.reformLogging
-    implementation(group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '4.0.3') {
+    implementation(group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '4.1.2') {
         exclude group: "org.bouncycastle", module: "bcprov-jdk15on"
     }
-    implementation(group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '3.1.8') {
+    implementation(group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '3.1.9') {
         exclude group: "org.bouncycastle", module: "bcprov-jdk15on"
     }
-    implementation(group: 'org.springframework.cloud', name: 'spring-cloud-starter-bootstrap' , version: '3.1.7') {
+    implementation(group: 'org.springframework.cloud', name: 'spring-cloud-starter-bootstrap' , version: '3.1.9') {
         exclude group: "org.bouncycastle", module: "bcprov-jdk15on"
     }
-    implementation group: 'org.bouncycastle', name: 'bcprov-jdk18on', version: '1.78'
-    implementation group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '5.0.1-RELEASE'
+    implementation group: 'org.bouncycastle', name: 'bcprov-jdk18on', version: '1.81'
+    implementation group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '5.2.1-RELEASE'
 
-    compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.30'
-    annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.30'
-    testCompileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.30'
-    testAnnotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.30'
+    compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.38'
+    annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.38'
+    testCompileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.38'
+    testAnnotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.38'
 
-    implementation group: 'org.springframework.retry', name: 'spring-retry', version: '1.3.3'
+    implementation group: 'org.springframework.retry', name: 'spring-retry', version: '1.3.4'
     implementation group: 'org.springframework.security', name: 'spring-security-crypto'
 
     implementation group: 'com.fasterxml.jackson.core', name: 'jackson-annotations'
 
-    implementation(group: 'org.springframework.cloud', name: 'spring-cloud-starter-bootstrap' , version: '4.0.0'){
+    implementation(group: 'org.springframework.cloud', name: 'spring-cloud-starter-bootstrap' , version: '4.3.0'){
         exclude group: "org.bouncycastle", module: "bcprov-jdk15on"
     }
 
-    implementation group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '9.37.3'
+    implementation group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '9.48'
 
     implementation group: 'net.minidev', name: 'json-smart', version: '2.5.2'
-    implementation 'joda-time:joda-time:2.12.7'
+    implementation 'joda-time:joda-time:2.14.0'
 
-    implementation group: 'com.googlecode.libphonenumber', name: 'libphonenumber', version: '8.13.43'
+    implementation group: 'com.googlecode.libphonenumber', name: 'libphonenumber', version: '8.13.55'
 
     testImplementation group: 'org.pitest', name: 'pitest', version: versions.pitest
     testImplementation "info.solidsoft.gradle.pitest:gradle-pitest-plugin:${versions.pitest}"
@@ -413,10 +417,10 @@ dependencies {
 
     testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test'
 
-    testImplementation group: 'org.mockito', name: 'mockito-core', version :'4.3.0'
+    testImplementation group: 'org.mockito', name: 'mockito-core', version :'4.11.0'
     testImplementation group: 'org.mockito', name: 'mockito-inline', version :'5.2.0'
 
-    testImplementation(group: 'org.springframework.cloud', name: 'spring-cloud-contract-wiremock', version: '3.1.6') {
+    testImplementation(group: 'org.springframework.cloud', name: 'spring-cloud-contract-wiremock', version: '3.1.10') {
         exclude group: "com.github.tomakehurst", module: "wiremock-standalone"
     }
     testImplementation group: 'org.powermock', name: 'powermock-api-mockito2', version: '2.0.9'
@@ -475,8 +479,6 @@ task runAndPublishConsumerPactTests(type: Test) {
 
 }
 
-runAndPublishConsumerPactTests.finalizedBy pactPublish
-
 pact {
     broker {
         pactBrokerUrl = System.getenv("PACT_BROKER_FULL_URL") ?: 'http://localhost:80'
@@ -487,6 +489,12 @@ pact {
         version = project.pacticipantVersion
     }
 }
+
+pactPublish {
+    pactPublish = project.pact.publish
+}
+
+runAndPublishConsumerPactTests.finalizedBy pactPublish
 
 dependencyCheck {
     suppressionFile = 'config/owasp/suppressions.xml'

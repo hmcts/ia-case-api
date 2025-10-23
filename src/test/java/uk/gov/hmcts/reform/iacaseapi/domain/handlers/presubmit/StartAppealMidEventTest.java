@@ -90,7 +90,7 @@ class StartAppealMidEventTest {
     @Mock
     private AsylumCase asylumCase;
 
-    private String correctHomeOfficeReferenceFormatCid = "01234567";
+    private String correctHomeOfficeReferenceFormatCid = "123456789";
     private String correctHomeOfficeReferenceFormatUan = "1234-5678-9876-5432";
     private String wrongHomeOfficeReferenceFormat = "A234567";
     private String callbackErrorMessage =

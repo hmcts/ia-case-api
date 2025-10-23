@@ -80,9 +80,9 @@ spring:
         jwt:
           jwk-set-uri: ${OPEN_ID_IDAM_URL:http://127.0.0.1:5000}/o/jwks
   cache:
-    cache-names: userInfoCache, accessTokenCache
+    cache-names: userInfoCache, accessTokenCache, homeOfficeReferenceDataCache
     caffeine:
-      spec: expireAfterAccess=3600s
+      spec: expireAfterWrite=3600s
   datasource:
     driverClassName: org.postgresql.Driver
     url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5050}/${POSTGRES_NAME:ia_case_api}${POSTGRES_CONNECTION_OPTIONS:}
@@ -590,6 +590,7 @@ security:
       - "generateListCmrTask"
       - "markAppealAsDetained"
       - "removeDetainedStatus"
+      - "editDocuments"
     ctsc:
       - "appellantInPersonManual"
       - "startAppeal"
@@ -654,6 +655,7 @@ security:
       - "generateListCmrTask"
       - "markAppealAsDetained"
       - "removeDetainedStatus"
+      - "editDocuments"
     ctsc-team-leader:
       - "appellantInPersonManual"
       - "startAppeal"
@@ -718,6 +720,7 @@ security:
       - "generateListCmrTask"
       - "markAppealAsDetained"
       - "removeDetainedStatus"
+      - "editDocuments"
     national-business-centre:
       - "appellantInPersonManual"
       - "startAppeal"
@@ -782,6 +785,7 @@ security:
       - "generateListCmrTask"
       - "markAppealAsDetained"
       - "removeDetainedStatus"
+      - "editDocuments"
     challenged-access-ctsc:
       - "appellantInPersonManual"
       - "startAppeal"
@@ -846,6 +850,7 @@ security:
       - "generateListCmrTask"
       - "markAppealAsDetained"
       - "removeDetainedStatus"
+      - "editDocuments"
     challenged-access-admin:
       - "appellantInPersonManual"
       - "startAppeal"
@@ -911,6 +916,7 @@ security:
       - "generateListCmrTask"
       - "markAppealAsDetained"
       - "removeDetainedStatus"
+      - "editDocuments"
     caseworker-ia-homeofficeapc:
       - "uploadHomeOfficeBundle"
       - "uploadAdditionalEvidenceHomeOffice"
@@ -967,6 +973,37 @@ security:
       - "pipActivation"
       - "applyForFTPAAppellant"
       - "requestFeeRemission"
+    caseworker-ia-iacjudge:
+      - "generateDecisionAndReasons"
+      - "endAppeal"
+      - "reinstateAppeal"
+      - "sendDecisionAndReasons"
+      - "changeDirectionDueDate"
+      - "sendDirection"
+      - "addCaseNote"
+      - "linkAppeal"
+      - "unlinkAppeal"
+      - "editAppealAfterSubmit"
+      - "updateHearingRequirements"
+      - "updateHearingAdjustments"
+      - "leadershipJudgeFtpaDecision"
+      - "residentJudgeFtpaDecision"
+      - "decideFtpaApplication"
+      - "uploadSensitiveDocuments"
+      - "decideAnApplication"
+      - "requestNewHearingRequirements"
+      - "generateUpperTribunalBundle"
+      - "asyncStitchingComplete"
+      - "markAddendumEvidenceAsReviewed"
+      - "adaSuitabilityReview"
+      - "transferOutOfAda"
+      - "reviewHearingRequirements"
+      - "createCaseLink"
+      - "maintainCaseLinks"
+      - "createFlag"
+      - "decideCostsApplication"
+      - "considerMakingCostsOrder"
+      - "updateTribunalDecision"
     judge:
       - "generateDecisionAndReasons"
       - "endAppeal"
