@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
+import com.launchdarkly.sdk.LDContext;
 import com.launchdarkly.sdk.LDUser;
 import com.launchdarkly.sdk.LDValue;
 import com.launchdarkly.sdk.server.interfaces.LDClientInterface;
@@ -42,11 +43,11 @@ class LaunchDarklyFeatureTogglerTest {
 
         when(ldClient.boolVariation(
             notExistingKey,
-            new LDUser.Builder(userDetails.getId())
+            LDContext.fromUser(new LDUser.Builder(userDetails.getId())
                 .firstName(userDetails.getForename())
                 .lastName(userDetails.getSurname())
                 .email(userDetails.getEmailAddress())
-                .build(),
+                .build()),
             true)
         ).thenReturn(true);
 
@@ -62,11 +63,11 @@ class LaunchDarklyFeatureTogglerTest {
         when(userDetails.getEmailAddress()).thenReturn("emailAddress");
         when(ldClient.boolVariation(
             existingKey,
-            new LDUser.Builder(userDetails.getId())
+            LDContext.fromUser(new LDUser.Builder(userDetails.getId())
                 .firstName(userDetails.getForename())
                 .lastName(userDetails.getSurname())
                 .email(userDetails.getEmailAddress())
-                .build(),
+                .build()),
             false)
         ).thenReturn(true);
 
@@ -82,11 +83,11 @@ class LaunchDarklyFeatureTogglerTest {
         when(userDetails.getEmailAddress()).thenReturn("emailAddress");
         when(ldClient.jsonValueVariation(
             existingKey,
-            new LDUser.Builder(userDetails.getId())
+            LDContext.fromUser(new LDUser.Builder(userDetails.getId())
                 .firstName(userDetails.getForename())
                 .lastName(userDetails.getSurname())
                 .email(userDetails.getEmailAddress())
-                .build(),
+                .build()),
             LDValue.ofNull())
         ).thenReturn(expectedJsonValue);
 
