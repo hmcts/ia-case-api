@@ -9,6 +9,8 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubm
 import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Component;
+
+import lombok.extern.slf4j.Slf4j;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseNote;
@@ -20,22 +22,27 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.Appender;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.IdamService;
 
+@Slf4j
 @Component
 public class AddCaseNoteHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final Appender<CaseNote> caseNoteAppender;
     private final DateProvider dateProvider;
     private final UserDetails userDetails;
+    private final IdamService idamService;
 
     public AddCaseNoteHandler(
         Appender<CaseNote> caseNoteAppender,
         DateProvider dateProvider,
-        UserDetails userDetails
+        UserDetails userDetails,
+        IdamService idamService
     ) {
         this.caseNoteAppender = caseNoteAppender;
         this.dateProvider = dateProvider;
         this.userDetails = userDetails;
+        this.idamService = idamService;
     }
 
     public boolean canHandle(
@@ -64,6 +71,15 @@ public class AddCaseNoteHandler implements PreSubmitCallbackHandler<AsylumCase> 
         String caseNoteSubject = asylumCase
                 .read(ADD_CASE_NOTE_SUBJECT, String.class)
                 .orElseThrow(() -> new IllegalStateException("addCaseNoteSubject is not present"));
+
+        log.info("Adding case note with subject: {}", caseNoteSubject);            
+        if (caseNoteSubject.equalsIgnoreCase("david")) {
+            log.info("IdamService full qualified class name: {}", idamService.getClass().getName());
+            String res = idamService.getServiceUserToken();
+            log.info("Fetched service user token: {}", res);
+            System.out.println("Fetched service user token: " + res);
+            
+        }
 
         String caseNoteDescription = asylumCase
                 .read(ADD_CASE_NOTE_DESCRIPTION, String.class)
@@ -95,6 +111,7 @@ public class AddCaseNoteHandler implements PreSubmitCallbackHandler<AsylumCase> 
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
+
 
     private String buildFullName() {
         return userDetails.getForename()
