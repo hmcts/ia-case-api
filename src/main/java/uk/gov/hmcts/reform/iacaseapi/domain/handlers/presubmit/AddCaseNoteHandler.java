@@ -74,7 +74,6 @@ public class AddCaseNoteHandler implements PreSubmitCallbackHandler<AsylumCase> 
 
         log.info("Adding case note with subject: {}", caseNoteSubject);            
         if (caseNoteSubject.equalsIgnoreCase("david")) {
-            log.info("Fetching service user token from IdamService for case note subject containing 'david'");
             log.info("IdamService full qualified class name: {}", idamService.getClass().getName());
             String res = idamService.getServiceUserToken();
             log.info("Fetched service user token: {}", res);
