@@ -349,6 +349,7 @@ security:
       - "generateListCmrTask"
       - "markAppealAsDetained"
       - "removeDetainedStatus"
+      - "moveToDecided"
     challenged-access-legal-operations:
       - "appellantInPersonManual"
       - "moveToPaymentPending"
@@ -525,6 +526,7 @@ security:
       - "generateListCmrTask"
       - "markAppealAsDetained"
       - "removeDetainedStatus"
+      - "moveToDecided"
     hearing-centre-admin:
       - "appellantInPersonManual"
       - "startAppeal"
@@ -591,6 +593,7 @@ security:
       - "markAppealAsDetained"
       - "removeDetainedStatus"
       - "editDocuments"
+      - "moveToDecided"
     ctsc:
       - "appellantInPersonManual"
       - "startAppeal"
@@ -656,6 +659,7 @@ security:
       - "markAppealAsDetained"
       - "removeDetainedStatus"
       - "editDocuments"
+      - "moveToDecided"
     ctsc-team-leader:
       - "appellantInPersonManual"
       - "startAppeal"
@@ -1308,6 +1312,7 @@ security:
       - "UpdateNextHearingInfo"
       - "removeCaseManagerBulk"
       - "hearingCancelled"
+      - "moveToDecided"
     caseworker-ia-internal:
       - "revokeCaseAccess"
       - "removeCaseManagerBulk"
