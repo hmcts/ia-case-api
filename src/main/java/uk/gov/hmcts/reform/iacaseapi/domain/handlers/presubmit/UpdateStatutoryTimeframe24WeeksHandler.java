@@ -3,7 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.FasterCaseStatus;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.StatutoryTimeframe24Weeks;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
@@ -19,22 +19,22 @@ import java.util.Optional;
 import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.ADD_FASTER_CASE_STATUS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.UPDATE_STATUTORY_TIMEFRAME_24_WEEKS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 
 @Component
-public class AddFasterCaseStatusHandler implements PreSubmitCallbackHandler<AsylumCase> {
+public class UpdateStatutoryTimeframe24WeeksHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
-    private final Appender<FasterCaseStatus> fasterCaseStatusAppender;
+    private final Appender<StatutoryTimeframe24Weeks> statutoryTimeframe24WeeksAppender;
     private final DateProvider dateProvider;
     private final UserDetails userDetails;
 
-    public AddFasterCaseStatusHandler(
-        Appender<FasterCaseStatus> fasterCaseStatusAppender,
+    public UpdateStatutoryTimeframe24WeeksHandler(
+        Appender<StatutoryTimeframe24Weeks> statutoryTimeframe24WeeksAppender,
         DateProvider dateProvider,
         UserDetails userDetails
     ) {
-        this.fasterCaseStatusAppender = fasterCaseStatusAppender;
+        this.statutoryTimeframe24WeeksAppender = statutoryTimeframe24WeeksAppender;
         this.dateProvider = dateProvider;
         this.userDetails = userDetails;
     }
@@ -46,7 +46,7 @@ public class AddFasterCaseStatusHandler implements PreSubmitCallbackHandler<Asyl
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
-        return callbackStage.equals(ABOUT_TO_SUBMIT) && callback.getEvent().equals(ADD_FASTER_CASE_STATUS);
+        return callbackStage.equals(ABOUT_TO_SUBMIT) && callback.getEvent().equals(UPDATE_STATUTORY_TIMEFRAME_24_WEEKS);
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
@@ -63,30 +63,30 @@ public class AddFasterCaseStatusHandler implements PreSubmitCallbackHandler<Asyl
                 .getCaseData();
 
         YesOrNo fasterCaseStatus = asylumCase
-                .read(FASTER_CASE_STATUS_STATUS, YesOrNo.class)
-                .orElseThrow(() -> new IllegalStateException("fasterCaseStatus is not present"));
+                .read(STATUTORY_TIMEFRAME_24_WEEKS_STATUS, YesOrNo.class)
+                .orElseThrow(() -> new IllegalStateException("statutoryTimeframe24WeeksStatus is not present"));
 
         String fasterCaseStatusReason = asylumCase
-                .read(FASTER_CASE_STATUS_REASON, String.class)
-                .orElseThrow(() -> new IllegalStateException("fasterCaseStatusReason is not present"));
+                .read(STATUTORY_TIMEFRAME_24_WEEKS_REASON, String.class)
+                .orElseThrow(() -> new IllegalStateException("statutoryTimeframe24WeeksReason is not present"));
 
-        Optional<List<IdValue<FasterCaseStatus>>> maybeExistingFasterCaseStatuses =
-            asylumCase.read(FASTER_CASE_STATUSES);
+        Optional<List<IdValue<StatutoryTimeframe24Weeks>>> maybeExistingStatutoryTimeframe24Weeks =
+            asylumCase.read(STATUTORY_TIMEFRAME_24_WEEKS);
 
-        final FasterCaseStatus newFasterCaseStatus = new FasterCaseStatus(
+        final StatutoryTimeframe24Weeks newStatutoryTimeframe24Weeks = new StatutoryTimeframe24Weeks(
             fasterCaseStatus,
             fasterCaseStatusReason,
             buildFullName(),
             dateProvider.now().toString()
         );
 
-        List<IdValue<FasterCaseStatus>> allFasterCaseStatuses =
-            fasterCaseStatusAppender.append(newFasterCaseStatus, maybeExistingFasterCaseStatuses.orElse(emptyList()));
+        List<IdValue<StatutoryTimeframe24Weeks>> allStatutoryTimeframe24Weeks =
+            statutoryTimeframe24WeeksAppender.append(newStatutoryTimeframe24Weeks, maybeExistingStatutoryTimeframe24Weeks.orElse(emptyList()));
 
-        asylumCase.write(FASTER_CASE_STATUSES, allFasterCaseStatuses);
+        asylumCase.write(STATUTORY_TIMEFRAME_24_WEEKS, allStatutoryTimeframe24Weeks);
 
-        asylumCase.clear(FASTER_CASE_STATUS_STATUS);
-        asylumCase.clear(FASTER_CASE_STATUS_REASON);
+        asylumCase.clear(STATUTORY_TIMEFRAME_24_WEEKS_STATUS);
+        asylumCase.clear(STATUTORY_TIMEFRAME_24_WEEKS_REASON);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }

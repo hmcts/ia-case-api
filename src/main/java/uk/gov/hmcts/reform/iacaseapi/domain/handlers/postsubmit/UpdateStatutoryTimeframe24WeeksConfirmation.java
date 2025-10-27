@@ -10,14 +10,14 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PostSubmitCallbackHandler;
 import static java.util.Objects.requireNonNull;
 
 @Component
-public class AddFasterCaseStatusConfirmation implements PostSubmitCallbackHandler<AsylumCase> {
+public class UpdateStatutoryTimeframe24WeeksConfirmation implements PostSubmitCallbackHandler<AsylumCase> {
 
     public boolean canHandle(
         Callback<AsylumCase> callback
     ) {
         requireNonNull(callback, "callback must not be null");
 
-        return callback.getEvent() == Event.ADD_FASTER_CASE_STATUS;
+        return callback.getEvent() == Event.UPDATE_STATUTORY_TIMEFRAME_24_WEEKS;
     }
 
     public PostSubmitCallbackResponse handle(
@@ -30,10 +30,10 @@ public class AddFasterCaseStatusConfirmation implements PostSubmitCallbackHandle
         PostSubmitCallbackResponse postSubmitResponse =
             new PostSubmitCallbackResponse();
 
-        postSubmitResponse.setConfirmationHeader("# You have added a faster case status");
+        postSubmitResponse.setConfirmationHeader("# You have updated the statutory timeframe 24 weeks");
         postSubmitResponse.setConfirmationBody(
             "#### What happens next\n\n"
-            + "You can review this status in the faster case status tab."
+            + "You can review this status in the statutory timeframe 24 weeks tab."
         );
 
         return postSubmitResponse;

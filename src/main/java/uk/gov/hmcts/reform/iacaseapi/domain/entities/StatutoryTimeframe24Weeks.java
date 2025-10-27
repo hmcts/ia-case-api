@@ -8,17 +8,17 @@ import static java.util.Objects.requireNonNull;
 
 @EqualsAndHashCode
 @ToString
-public class FasterCaseStatus {
+public class StatutoryTimeframe24Weeks {
 
     private YesOrNo status;
     private String reason;
     private String user;
     private String dateAdded;
 
-    private FasterCaseStatus() {
+    private StatutoryTimeframe24Weeks() {
     }
 
-    public FasterCaseStatus(
+    public StatutoryTimeframe24Weeks(
         YesOrNo status,
         String reason,
         String user,
@@ -30,11 +30,11 @@ public class FasterCaseStatus {
         this.dateAdded = requireNonNull(dateAdded);
     }
 
-    public YesOrNo getFasterCaseStatus() {
+    public YesOrNo getStatus() {
         return requireNonNull(status);
     }
 
-    public String getFasterCaseStatusReason() {
+    public String getReason() {
         return requireNonNull(reason);
     }
 
