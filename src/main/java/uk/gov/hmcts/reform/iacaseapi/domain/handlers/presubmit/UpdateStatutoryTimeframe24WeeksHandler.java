@@ -77,7 +77,7 @@ public class UpdateStatutoryTimeframe24WeeksHandler implements PreSubmitCallback
             fasterCaseStatus,
             fasterCaseStatusReason,
             buildFullName(),
-            dateProvider.now().toString()
+            dateProvider.nowWithTime().toString()
         );
 
         List<IdValue<StatutoryTimeframe24Weeks>> allStatutoryTimeframe24Weeks =
