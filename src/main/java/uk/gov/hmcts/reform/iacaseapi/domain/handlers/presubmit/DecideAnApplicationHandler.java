@@ -170,7 +170,7 @@ public class DecideAnApplicationHandler implements PreSubmitCallbackHandler<Asyl
 
     private boolean isHearingDeletionNecessary(MakeAnApplication makeAnApplication, State state) {
 
-        return makeAnApplication.getType().equals(CHANGE_HEARING_TYPE.toString())
+        return makeAnApplication.getType().equals(CHANGE_DECISION_TYPE.toString())
                && makeAnApplication.getDecision().equals(GRANTED.toString())
                && STATES_FOR_HEARING_CANCELLATION.contains(state);
     }

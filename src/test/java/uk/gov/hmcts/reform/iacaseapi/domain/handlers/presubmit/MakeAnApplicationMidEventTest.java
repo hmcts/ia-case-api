@@ -103,7 +103,7 @@ class MakeAnApplicationMidEventTest {
             new Value(TIME_EXTENSION.name(), TIME_EXTENSION.toString()),
             new Value(WITHDRAW.name(), WITHDRAW.toString()),
             new Value(OTHER.name(), OTHER.toString()),
-            new Value(CHANGE_HEARING_TYPE.name(), CHANGE_HEARING_TYPE.toString()),
+            new Value(CHANGE_DECISION_TYPE.name(), CHANGE_DECISION_TYPE.toString()),
             new Value(SET_ASIDE_A_DECISION.name(), OTHER.toString()),
             new Value(APPLICATION_UNDER_RULE_31_OR_RULE_32.name(), OTHER.toString()));
         DynamicList makeAnApplicationTypes =
@@ -193,7 +193,7 @@ class MakeAnApplicationMidEventTest {
                     .write(MAKE_AN_APPLICATION_DETAILS_LABEL,
                         "Describe the application you are making and explain the reasons for the application.");
                 break;
-            case CHANGE_HEARING_TYPE:
+            case CHANGE_DECISION_TYPE:
                 verify(asylumCase, times(1))
                     .write(MAKE_AN_APPLICATION_DETAILS_LABEL,
                         "Explain why you want to change the hearing type and the type of hearing that you would "
