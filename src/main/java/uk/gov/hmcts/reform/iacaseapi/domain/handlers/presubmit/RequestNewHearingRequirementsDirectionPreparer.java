@@ -4,7 +4,6 @@ import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.*;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
@@ -19,7 +18,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
 @Component
-@Slf4j
 public class RequestNewHearingRequirementsDirectionPreparer implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final int hearingRequirementsDueInDays;
@@ -55,43 +53,36 @@ public class RequestNewHearingRequirementsDirectionPreparer implements PreSubmit
                 .getCaseDetails()
                 .getCaseData();
 
-        log.info("---------3");
-        try {
-            PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
+        PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
 
-            if (asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class).map(flag -> flag.equals(YesOrNo.NO)).orElse(true)) {
-                response.addError("You cannot request hearing requirements for this appeal in this state.");
+        if (asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class).map(flag -> flag.equals(YesOrNo.NO)).orElse(true)) {
+            response.addError("You cannot request hearing requirements for this appeal in this state.");
+        } else {
+
+            String explanation = "This appeal will be reheard. You should tell the Tribunal if the appellant’s hearing requirements have changed.\n\n"
+                                 + "# Next steps\n\n"
+                                 + "Visit the online service and use the HMCTS reference to find the case. Use the link on the overview tab to submit the appellant’s hearing requirements.\n\n"
+                                 + "The Tribunal will review the hearing requirements and any requests for additional adjustments. You'll then be sent a hearing date.\n\n"
+                                 + "If you do not submit the hearing requirements by the date indicated below, the Tribunal may not be able to accommodate the appellant's needs for the hearing.";
+
+            asylumCase.write(SEND_DIRECTION_EXPLANATION, explanation);
+
+            boolean isEjpUnrepNonDetained = (isEjpCase(asylumCase) && !isAppellantInDetention(asylumCase) && !isLegallyRepresentedEjpCase(asylumCase));
+
+            if (isEjpUnrepNonDetained) {
+                asylumCase.write(SEND_DIRECTION_PARTIES, Parties.APPELLANT);
             } else {
-
-                String explanation = "This appeal will be reheard. You should tell the Tribunal if the appellant’s hearing requirements have changed.\n\n"
-                        + "# Next steps\n\n"
-                        + "Visit the online service and use the HMCTS reference to find the case. Use the link on the overview tab to submit the appellant’s hearing requirements.\n\n"
-                        + "The Tribunal will review the hearing requirements and any requests for additional adjustments. You'll then be sent a hearing date.\n\n"
-                        + "If you do not submit the hearing requirements by the date indicated below, the Tribunal may not be able to accommodate the appellant's needs for the hearing.";
-
-                asylumCase.write(SEND_DIRECTION_EXPLANATION, explanation);
-
-                boolean isEjpUnrepNonDetained = (isEjpCase(asylumCase) && !isAppellantInDetention(asylumCase) && !isLegallyRepresentedEjpCase(asylumCase));
-
-                if (isEjpUnrepNonDetained) {
-                    asylumCase.write(SEND_DIRECTION_PARTIES, Parties.APPELLANT);
-                } else {
-                    asylumCase.write(SEND_DIRECTION_PARTIES, Parties.LEGAL_REPRESENTATIVE);
-                }
-
-                asylumCase.write(SEND_DIRECTION_DATE_DUE,
-                        dateProvider
-                                .now()
-                                .plusDays(hearingRequirementsDueInDays)
-                                .toString()
-                );
+                asylumCase.write(SEND_DIRECTION_PARTIES, Parties.LEGAL_REPRESENTATIVE);
             }
 
-            log.info("---------4");
-            return response;
-        } catch (RuntimeException ex) {
-            log.error("-------5", ex);
-            throw ex;
+            asylumCase.write(SEND_DIRECTION_DATE_DUE,
+                dateProvider
+                    .now()
+                    .plusDays(hearingRequirementsDueInDays)
+                    .toString()
+            );
         }
+
+        return response;
     }
 }

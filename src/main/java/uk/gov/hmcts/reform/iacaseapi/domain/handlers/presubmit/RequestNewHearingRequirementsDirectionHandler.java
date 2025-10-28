@@ -7,8 +7,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isInteg
 
 import java.util.List;
 import java.util.Optional;
-
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
@@ -33,7 +31,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.PreviousHearingAppender;
 
 @Component
-@Slf4j
 public class RequestNewHearingRequirementsDirectionHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final int hearingRequirementsDueInDays;
@@ -70,55 +67,48 @@ public class RequestNewHearingRequirementsDirectionHandler implements PreSubmitC
             throw new IllegalStateException("Cannot handle callback");
         }
 
-        log.info("----------------------1");
-        try {
-            AsylumCase asylumCase =
-                    callback
-                            .getCaseDetails()
-                            .getCaseData();
+        AsylumCase asylumCase =
+            callback
+                .getCaseDetails()
+                .getCaseData();
 
-            Optional<List<IdValue<Direction>>> maybeDirections = asylumCase.read(DIRECTIONS);
+        Optional<List<IdValue<Direction>>> maybeDirections = asylumCase.read(DIRECTIONS);
 
-            final List<IdValue<Direction>> existingDirections =
-                    maybeDirections.orElse(emptyList());
+        final List<IdValue<Direction>> existingDirections =
+            maybeDirections.orElse(emptyList());
 
-            String defaultExplanation = "This appeal will be reheard. You should tell the Tribunal if the appellant’s hearing requirements have changed.\n\n"
-                    + "# Next steps\n\n"
-                    + "Visit the online service and use the HMCTS reference to find the case. Use the link on the overview tab to submit the appellant’s hearing requirements.\n\n"
-                    + "The Tribunal will review the hearing requirements and any requests for additional adjustments. You'll then be sent a hearing date.\n\n"
-                    + "If you do not submit the hearing requirements by the date indicated below, the Tribunal may not be able to accommodate the appellant's needs for the hearing.";
+        String defaultExplanation = "This appeal will be reheard. You should tell the Tribunal if the appellant’s hearing requirements have changed.\n\n"
+                                    + "# Next steps\n\n"
+                                    + "Visit the online service and use the HMCTS reference to find the case. Use the link on the overview tab to submit the appellant’s hearing requirements.\n\n"
+                                    + "The Tribunal will review the hearing requirements and any requests for additional adjustments. You'll then be sent a hearing date.\n\n"
+                                    + "If you do not submit the hearing requirements by the date indicated below, the Tribunal may not be able to accommodate the appellant's needs for the hearing.";
 
-            Optional<String> explanation = Optional.of(asylumCase.read(SEND_DIRECTION_EXPLANATION, String.class).orElse(defaultExplanation));
+        Optional<String> explanation = Optional.of(asylumCase.read(SEND_DIRECTION_EXPLANATION, String.class).orElse(defaultExplanation));
 
-            Optional<String> dueDate = Optional.of(asylumCase.read(SEND_DIRECTION_DATE_DUE, String.class).orElse(
-                    dateProvider
-                            .now()
-                            .plusDays(hearingRequirementsDueInDays)
-                            .toString()));
+        Optional<String> dueDate = Optional.of(asylumCase.read(SEND_DIRECTION_DATE_DUE, String.class).orElse(
+            dateProvider
+                .now()
+                .plusDays(hearingRequirementsDueInDays)
+                .toString()));
 
-            List<IdValue<Direction>> allDirections =
-                    directionAppender.append(
-                            asylumCase,
-                            existingDirections,
-                            explanation.get(),
-                            Parties.LEGAL_REPRESENTATIVE,
-                            dueDate.get(),
-                            DirectionTag.REQUEST_NEW_HEARING_REQUIREMENTS
-                    );
+        List<IdValue<Direction>> allDirections =
+            directionAppender.append(
+                    asylumCase,
+                existingDirections,
+                explanation.get(),
+                Parties.LEGAL_REPRESENTATIVE,
+                dueDate.get(),
+                DirectionTag.REQUEST_NEW_HEARING_REQUIREMENTS
+            );
 
-            asylumCase.write(DIRECTIONS, allDirections);
-            asylumCase.clear(SEND_DIRECTION_EXPLANATION);
-            asylumCase.clear(SEND_DIRECTION_PARTIES);
-            asylumCase.clear(SEND_DIRECTION_DATE_DUE);
+        asylumCase.write(DIRECTIONS, allDirections);
+        asylumCase.clear(SEND_DIRECTION_EXPLANATION);
+        asylumCase.clear(SEND_DIRECTION_PARTIES);
+        asylumCase.clear(SEND_DIRECTION_DATE_DUE);
 
-            writePreviousHearingsToAsylumCase(asylumCase);
+        writePreviousHearingsToAsylumCase(asylumCase);
 
-            log.info("----------------------2");
-            return new PreSubmitCallbackResponse<>(asylumCase);
-        } catch (RuntimeException ex) {
-            log.error("-----3", ex);
-            throw ex;
-        }
+        return new PreSubmitCallbackResponse<>(asylumCase);
     }
 
     protected void writePreviousHearingsToAsylumCase(AsylumCase asylumCase) {
