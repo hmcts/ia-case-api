@@ -325,6 +325,11 @@ public class MakeAnApplicationTypesProvider {
         return !notAllowedStates.contains(state) && hasAppropriateRole && !alreadyAdded;
     }
 
+    private void addValue(List<Value> values, MakeAnApplicationTypes type) {
+        values.add(new Value(type.name(), type.toString()));
+    }
+
+
     private void addValues(List<Value> values, MakeAnApplicationTypes... types) {
         for (MakeAnApplicationTypes type : types) {
             addValue(values, type);
