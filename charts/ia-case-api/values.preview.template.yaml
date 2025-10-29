@@ -777,7 +777,7 @@ ccd:
     ras:
       enabled: true
   global:
-    ccdApiGatewayIngress: https://{{ .Release.Name }}-ccd-api-gw
+    ccdApiGatewayIngress: http://{{ .Release.Name }}-ccd-api-gw
     ccdAdminWebIngress: admin-web-${SERVICE_FQDN}
     ccdDataStoreUrl: http://{{ .Release.Name }}-ccd-data-store-api
     ccdDefinitionStoreUrl: http://{{ .Release.Name }}-ccd-definition-store
