@@ -703,8 +703,8 @@ xui-webapp:
       HEALTH_CCD_COMPONENT_API: http://gateway-${SERVICE_FQDN}/health
       HEALTH_CCD_DATA_API: https://ccd-data-store-api-${SERVICE_FQDN}/health
       HEALTH_TERMS_AND_CONDITIONS_API: https://xui-terms-and-conditions-${SERVICE_FQDN}/health
-      SERVICES_EM_ANNO_API: http://{{ .Release.Name }}-ccd-api-gw
-      SERVICES_CCD_COMPONENT_API: http://{{ .Release.Name }}-ccd-api-gw
+      SERVICES_EM_ANNO_API: https://{{ .Release.Name }}-ccd-api-gw
+      SERVICES_CCD_COMPONENT_API: https://{{ .Release.Name }}-ccd-api-gw
       SERVICES_CCD_DATA_STORE_API: https://ccd-data-store-api-ia-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net
       SERVICES_TERMS_AND_CONDITIONS: https://xui-terms-and-conditions-${SERVICE_FQDN}
       SERVICES_IDAM_API_URL: https://idam-api.aat.platform.hmcts.net
@@ -777,7 +777,7 @@ ccd:
     ras:
       enabled: true
   global:
-    ccdApiGatewayIngress: http://{{ .Release.Name }}-ccd-api-gw
+    ccdApiGatewayIngress: https://{{ .Release.Name }}-ccd-api-gw
     ccdAdminWebIngress: admin-web-${SERVICE_FQDN}
     ccdDataStoreUrl: http://{{ .Release.Name }}-ccd-data-store-api
     ccdDefinitionStoreUrl: http://{{ .Release.Name }}-ccd-definition-store
