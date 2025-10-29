@@ -198,7 +198,13 @@ public class MakeAnApplicationTypesProvider {
             case DECISION:
                 addJudgeReviewValues(values, hasHomeOfficeRole, isInternalAndAdminRole);
                 addValues(values, ADJOURN, EXPEDITE);
-                addTransferOutValues(values, asylumCase);
+
+                if (isAcceleratedDetainedAppeal(asylumCase) && hasRole(ROLE_LEGAL_REP)) {
+                    addValues(values, TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS);
+                } else if (!isAcceleratedDetainedAppeal(asylumCase)) {
+                    addValues(values, TRANSFER);
+                }
+
                 addValues(values, TIME_EXTENSION);
 
                 if (hasRole(ROLE_LEGAL_REP)) {
