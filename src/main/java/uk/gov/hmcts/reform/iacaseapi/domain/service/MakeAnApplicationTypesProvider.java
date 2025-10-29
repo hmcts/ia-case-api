@@ -67,7 +67,7 @@ public class MakeAnApplicationTypesProvider {
                 values.add(new Value(WITHDRAW.name(), WITHDRAW.toString()));
                 values.add(new Value(LINK_OR_UNLINK.name(), LINK_OR_UNLINK.toString()));
                 values.add(new Value(OTHER.name(), OTHER.toString()));
-                addValue(values, CHANGE_HEARING_TYPE);
+                addValue(values, CHANGE_DECISION_TYPE);
                 break;
 
             case ENDED:
@@ -143,7 +143,7 @@ public class MakeAnApplicationTypesProvider {
                 values.add(new Value(WITHDRAW.name(), WITHDRAW.toString()));
                 values.add(new Value(LINK_OR_UNLINK.name(), LINK_OR_UNLINK.toString()));
                 values.add(new Value(OTHER.name(), OTHER.toString()));
-                addValue(values, CHANGE_HEARING_TYPE);
+                addValue(values, CHANGE_DECISION_TYPE);
                 break;
 
             case FTPA_SUBMITTED:
@@ -223,7 +223,7 @@ public class MakeAnApplicationTypesProvider {
 
                 values.add(new Value(WITHDRAW.name(), WITHDRAW.toString()));
                 values.add(new Value(LINK_OR_UNLINK.name(), LINK_OR_UNLINK.toString()));
-                addValue(values, CHANGE_HEARING_TYPE);
+                addValue(values, CHANGE_DECISION_TYPE);
                 values.add(new Value(OTHER.name(), OTHER.toString()));
                 break;
 
@@ -271,7 +271,7 @@ public class MakeAnApplicationTypesProvider {
 
                 values.add(new Value(WITHDRAW.name(), WITHDRAW.toString()));
                 values.add(new Value(LINK_OR_UNLINK.name(), LINK_OR_UNLINK.toString()));
-                addValue(values, CHANGE_HEARING_TYPE);
+                addValue(values, CHANGE_DECISION_TYPE);
                 break;
 
             case ADJOURNED:
@@ -318,7 +318,7 @@ public class MakeAnApplicationTypesProvider {
                 values.add(new Value(WITHDRAW.name(), WITHDRAW.toString()));
                 values.add(new Value(LINK_OR_UNLINK.name(), LINK_OR_UNLINK.toString()));
                 values.add(new Value(OTHER.name(), OTHER.toString()));
-                addValue(values, CHANGE_HEARING_TYPE);
+                addValue(values, CHANGE_DECISION_TYPE);
                 break;
 
             case DECIDED:
