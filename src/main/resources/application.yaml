@@ -1354,6 +1354,7 @@ govUkHolidays:
 caseIdListJsonLocation: caseIdForRetrigger.json
 
 saveNotificationsData:
+  enabled: ${SAVE_NOTIFICATIONS_TO_DATA_EVENT_ENABLED:true}
   scheduleAtHour: ${SAVE_NOTIFICATIONS_DATA_SCHEDULE_HOUR:23}
   scheduleMaxMinutes: ${SAVE_NOTIFICATIONS_DATA_SCHEDULE_MAX_MINUTES:50}
 
