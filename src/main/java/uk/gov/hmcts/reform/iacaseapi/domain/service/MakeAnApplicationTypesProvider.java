@@ -41,18 +41,18 @@ public class MakeAnApplicationTypesProvider {
         switch (currentState) {
 
             case APPEAL_SUBMITTED:
-                addValues(values, JUDGE_REVIEW);
+                addValue(values, JUDGE_REVIEW);
                 if (hasRole(ROLE_LEGAL_REP)) {
-                    addValues(values, UPDATE_APPEAL_DETAILS);
+                    addValue(values, UPDATE_APPEAL_DETAILS);
                 }
 
                 if (hasRole(ROLE_LEGAL_REP) || hasHomeOfficeRole || isInternalAndAdminRole) {
                     values.remove(0); // remove JUDGE_REVIEW
-                    addValues(values, JUDGE_REVIEW_LO);
+                    addValue(values, JUDGE_REVIEW_LO);
                 }
 
                 if (isAcceleratedDetainedAppeal(asylumCase) && hasRole(ROLE_LEGAL_REP)) {
-                    addValues(values, TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS);
+                    addValue(values, TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS);
                 }
 
                 if (isAcceleratedDetainedAppeal(asylumCase) && isInternalAndAdminRole) {
@@ -64,7 +64,7 @@ public class MakeAnApplicationTypesProvider {
 
             case ENDED:
                 addJudgeReviewValues(values, hasHomeOfficeRole, isInternalAndAdminRole);
-                addValues(values, REINSTATE);
+                addValue(values, REINSTATE);
                 break;
 
             case PENDING_PAYMENT:
@@ -77,12 +77,12 @@ public class MakeAnApplicationTypesProvider {
             case REASONS_FOR_APPEAL_SUBMITTED:
             case RESPONDENT_REVIEW:
             case SUBMIT_HEARING_REQUIREMENTS:
-                addValues(values, TIME_EXTENSION);
+                addValue(values, TIME_EXTENSION);
 
                 if (isInternalAndAdminRole && isAcceleratedDetainedAppeal(asylumCase)) {
                     addValues(values, ADJOURN, EXPEDITE);
                     if (hasSubmittedHearingRequirements(asylumCase)) {
-                        addValues(values, UPDATE_HEARING_REQUIREMENTS);
+                        addValue(values, UPDATE_HEARING_REQUIREMENTS);
                     }
                     if (currentState != PENDING_PAYMENT) {
                         addValues(values, TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS, UPDATE_APPEAL_DETAILS);
@@ -92,7 +92,7 @@ public class MakeAnApplicationTypesProvider {
                 addJudgeReviewValues(values, hasHomeOfficeRole, isInternalAndAdminRole);
 
                 if (hasRole(ROLE_LEGAL_REP)) {
-                    addValues(values, UPDATE_APPEAL_DETAILS);
+                    addValue(values, UPDATE_APPEAL_DETAILS);
                     if (isAcceleratedDetainedAppeal(asylumCase) && currentState != PENDING_PAYMENT) {
                         addValues(values, ADJOURN, EXPEDITE,
                                 TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS, UPDATE_HEARING_REQUIREMENTS);
@@ -113,18 +113,18 @@ public class MakeAnApplicationTypesProvider {
 
             case FTPA_SUBMITTED:
             case FTPA_DECIDED:
-                addValues(values, TIME_EXTENSION);
+                addValue(values, TIME_EXTENSION);
                 addJudgeReviewValues(values, hasHomeOfficeRole, isInternalAndAdminRole);
 
                 if (hasRole(ROLE_LEGAL_REP)) {
-                    addValues(values, UPDATE_APPEAL_DETAILS);
+                    addValue(values, UPDATE_APPEAL_DETAILS);
                 }
 
                 if (isInternalAndAdminRole && isAcceleratedDetainedAppeal(asylumCase)) {
                     if (hasSubmittedHearingRequirements(asylumCase)) {
-                        addValues(values, UPDATE_HEARING_REQUIREMENTS);
+                        addValue(values, UPDATE_HEARING_REQUIREMENTS);
                     }
-                    addValues(values, UPDATE_APPEAL_DETAILS);
+                    addValue(values, UPDATE_APPEAL_DETAILS);
                 }
 
                 addValues(values, TIME_EXTENSION, LINK_OR_UNLINK, OTHER);
@@ -132,7 +132,7 @@ public class MakeAnApplicationTypesProvider {
 
             case FINAL_BUNDLING:
                 addJudgeReviewValues(values, hasHomeOfficeRole, isInternalAndAdminRole);
-                addValues(values, TIME_EXTENSION);
+                addValue(values, TIME_EXTENSION);
 
                 if (hasRole(ROLE_LEGAL_REP)) {
                     addValues(values, UPDATE_APPEAL_DETAILS, UPDATE_HEARING_REQUIREMENTS);
@@ -146,14 +146,14 @@ public class MakeAnApplicationTypesProvider {
                 }
 
                 if (!isAcceleratedDetainedAppeal(asylumCase)) {
-                    addValues(values, TRANSFER);
+                    addValue(values, TRANSFER);
                 }
 
                 if (isInternalAndAdminRole
                         && isAcceleratedDetainedAppeal(asylumCase)) {
                     addValues(values, ADJOURN, EXPEDITE, TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS, UPDATE_APPEAL_DETAILS);
                     if (hasSubmittedHearingRequirements(asylumCase)) {
-                        addValues(values, UPDATE_HEARING_REQUIREMENTS);
+                        addValue(values, UPDATE_HEARING_REQUIREMENTS);
                     }
                 }
 
@@ -162,12 +162,12 @@ public class MakeAnApplicationTypesProvider {
 
             case LISTING:
                 if (hasRole(ROLE_LEGAL_REP) || hasHomeOfficeRole || isInternalAndAdminRole) {
-                    addValues(values, JUDGE_REVIEW_LO);
+                    addValue(values, JUDGE_REVIEW_LO);
                 } else {
-                    addValues(values, JUDGE_REVIEW);
+                    addValue(values, JUDGE_REVIEW);
                 }
 
-                addValues(values, TIME_EXTENSION);
+                addValue(values, TIME_EXTENSION);
 
                 if (hasRole(ROLE_LEGAL_REP)) {
                     addValues(values, UPDATE_APPEAL_DETAILS, UPDATE_HEARING_REQUIREMENTS);
@@ -185,7 +185,7 @@ public class MakeAnApplicationTypesProvider {
                     && isAcceleratedDetainedAppeal(asylumCase)) {
                     addValues(values, ADJOURN, EXPEDITE, TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS, UPDATE_APPEAL_DETAILS);
                     if (hasSubmittedHearingRequirements(asylumCase)) {
-                        addValues(values, UPDATE_HEARING_REQUIREMENTS);
+                        addValue(values, UPDATE_HEARING_REQUIREMENTS);
                     }
                 }
 
@@ -202,10 +202,10 @@ public class MakeAnApplicationTypesProvider {
                 if (isAcceleratedDetainedAppeal(asylumCase) && hasRole(ROLE_LEGAL_REP)) {
                     addValues(values, TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS);
                 } else if (!isAcceleratedDetainedAppeal(asylumCase)) {
-                    addValues(values, TRANSFER);
+                    addValue(values, TRANSFER);
                 }
 
-                addValues(values, TIME_EXTENSION);
+                addValue(values, TIME_EXTENSION);
 
                 if (hasRole(ROLE_LEGAL_REP)) {
                     addValues(values, UPDATE_APPEAL_DETAILS, UPDATE_HEARING_REQUIREMENTS);
@@ -213,7 +213,7 @@ public class MakeAnApplicationTypesProvider {
 
                 if (isInternalAndAdminRole && isAcceleratedDetainedAppeal(asylumCase)) {
                     if (hasSubmittedHearingRequirements(asylumCase)) {
-                        addValues(values, UPDATE_HEARING_REQUIREMENTS);
+                        addValue(values, UPDATE_HEARING_REQUIREMENTS);
                     }
                     addValues(values, UPDATE_APPEAL_DETAILS, TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS);
                 }
@@ -224,7 +224,7 @@ public class MakeAnApplicationTypesProvider {
             case DECIDED:
                 addJudgeReviewValues(values, hasHomeOfficeRole, isInternalAndAdminRole);
                 if (hasRole(ROLE_LEGAL_REP)) {
-                    addValues(values, UPDATE_APPEAL_DETAILS);
+                    addValue(values, UPDATE_APPEAL_DETAILS);
                     if (isAcceleratedDetainedAppeal(asylumCase)) {
                         addValues(values, TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS);
                     }
@@ -240,7 +240,7 @@ public class MakeAnApplicationTypesProvider {
             case REMITTED:
                 addValues(values, EXPEDITE, LINK_OR_UNLINK, OTHER, TIME_EXTENSION, TRANSFER);
                 if (hasRole(ROLE_LEGAL_REP)) {
-                    addValues(values, UPDATE_APPEAL_DETAILS);
+                    addValue(values, UPDATE_APPEAL_DETAILS);
                 }
                 addValues(values, WITHDRAW, JUDGE_REVIEW);
                 break;
@@ -250,7 +250,7 @@ public class MakeAnApplicationTypesProvider {
         }
 
         if (shouldAddExpediteApplicationType(currentState, values)) {
-            addValues(values, EXPEDITE);
+            addValue(values, EXPEDITE);
         }
 
         if (!values.isEmpty()) {
@@ -301,9 +301,9 @@ public class MakeAnApplicationTypesProvider {
 
     private void addJudgeReviewValues(List<Value> values, boolean hasHomeOfficeRole, boolean isInternalAndAdminRole) {
         if (hasRole(ROLE_LEGAL_REP) || hasHomeOfficeRole || isInternalAndAdminRole) {
-            addValues(values, JUDGE_REVIEW_LO);
+            addValue(values, JUDGE_REVIEW_LO);
         } else {
-            addValues(values, JUDGE_REVIEW);
+            addValue(values, JUDGE_REVIEW);
         }
     }
 }
