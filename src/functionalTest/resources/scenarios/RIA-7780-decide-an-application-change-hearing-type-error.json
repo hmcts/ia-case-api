@@ -39,7 +39,7 @@
               "id": "1",
               "value": {
                 "date": "2023-12-12",
-                "type": "Change decision type",
+                "type": "Change decision type (ie with or without a hearing)",
                 "state": "listing",
                 "details": "A reason to change decision type",
                 "decision": "Pending",
@@ -81,7 +81,7 @@
             "id": "1",
             "value": {
               "date": "2023-12-12",
-              "type": "Change decision type",
+              "type": "Change decision type (ie with or without a hearing)",
               "state": "listing",
               "details": "A reason to change decision type",
               "decision": "Granted",
@@ -104,7 +104,7 @@
           }
         ],
         "lastModifiedApplication": {
-          "type": "Change decision type",
+          "type": "Change decision type (ie with or without a hearing)",
           "details": "A reason to change decision type",
           "evidence": [
             {

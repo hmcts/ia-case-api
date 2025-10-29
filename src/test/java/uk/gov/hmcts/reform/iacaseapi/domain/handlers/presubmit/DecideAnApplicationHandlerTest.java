@@ -208,7 +208,7 @@ class DecideAnApplicationHandlerTest {
                                                                    YesOrNo isIntegrated) {
 
         makeAnApplication =
-            new MakeAnApplication("Legal representative", "Change decision type", "A reason to change decision type",
+            new MakeAnApplication("Legal representative", "Change decision type (ie with or without a hearing)", "A reason to change decision type",
                 evidence, dateProvider.now().toString(), "Pending",
                 State.LISTING.toString());
         makeAnApplication.setApplicantRole("caseworker-ia-legalrep-solicitor");
@@ -253,7 +253,7 @@ class DecideAnApplicationHandlerTest {
     void should_add_error_if_cancellation_call_unsuccessful_in_ia_hearings_api() {
 
         makeAnApplication =
-            new MakeAnApplication("Legal representative", "Change decision type", "A reason to change decision type",
+            new MakeAnApplication("Legal representative", "Change decision type (ie with or without a hearing)", "A reason to change decision type",
                 evidence, dateProvider.now().toString(), "Pending",
                 State.LISTING.toString());
         makeAnApplication.setApplicantRole("caseworker-ia-legalrep-solicitor");
@@ -290,7 +290,7 @@ class DecideAnApplicationHandlerTest {
     void should_add_error_if_delegation_to_ia_hearings_api_unsuccessful() {
 
         makeAnApplication =
-            new MakeAnApplication("Legal representative", "Change decision type", "A reason to change decision type",
+            new MakeAnApplication("Legal representative", "Change decision type (ie with or without a hearing)", "A reason to change decision type",
                 evidence, dateProvider.now().toString(), "Pending",
                 State.LISTING.toString());
         makeAnApplication.setApplicantRole("caseworker-ia-legalrep-solicitor");
