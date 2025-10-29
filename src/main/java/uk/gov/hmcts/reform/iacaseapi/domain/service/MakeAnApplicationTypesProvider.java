@@ -67,7 +67,7 @@ public class MakeAnApplicationTypesProvider {
                 values.add(new Value(WITHDRAW.name(), WITHDRAW.toString()));
                 values.add(new Value(LINK_OR_UNLINK.name(), LINK_OR_UNLINK.toString()));
                 values.add(new Value(OTHER.name(), OTHER.toString()));
-                values.add(new Value(CHANGE_DECISION_TYPE.name(), CHANGE_DECISION_TYPE.toString()));
+                addValue(values, CHANGE_HEARING_TYPE);
                 break;
 
             case ENDED:
@@ -143,7 +143,7 @@ public class MakeAnApplicationTypesProvider {
                 values.add(new Value(WITHDRAW.name(), WITHDRAW.toString()));
                 values.add(new Value(LINK_OR_UNLINK.name(), LINK_OR_UNLINK.toString()));
                 values.add(new Value(OTHER.name(), OTHER.toString()));
-                values.add(new Value(CHANGE_DECISION_TYPE.name(), CHANGE_DECISION_TYPE.toString()));
+                addValue(values, CHANGE_HEARING_TYPE);
                 break;
 
             case FTPA_SUBMITTED:
@@ -223,7 +223,7 @@ public class MakeAnApplicationTypesProvider {
 
                 values.add(new Value(WITHDRAW.name(), WITHDRAW.toString()));
                 values.add(new Value(LINK_OR_UNLINK.name(), LINK_OR_UNLINK.toString()));
-                values.add(new Value(CHANGE_DECISION_TYPE.name(), CHANGE_DECISION_TYPE.toString()));
+                addValue(values, CHANGE_HEARING_TYPE);
                 values.add(new Value(OTHER.name(), OTHER.toString()));
                 break;
 
@@ -271,7 +271,7 @@ public class MakeAnApplicationTypesProvider {
 
                 values.add(new Value(WITHDRAW.name(), WITHDRAW.toString()));
                 values.add(new Value(LINK_OR_UNLINK.name(), LINK_OR_UNLINK.toString()));
-                values.add(new Value(CHANGE_DECISION_TYPE.name(), CHANGE_DECISION_TYPE.toString()));
+                addValue(values, CHANGE_HEARING_TYPE);
                 break;
 
             case ADJOURNED:
@@ -318,7 +318,7 @@ public class MakeAnApplicationTypesProvider {
                 values.add(new Value(WITHDRAW.name(), WITHDRAW.toString()));
                 values.add(new Value(LINK_OR_UNLINK.name(), LINK_OR_UNLINK.toString()));
                 values.add(new Value(OTHER.name(), OTHER.toString()));
-                values.add(new Value(CHANGE_DECISION_TYPE.name(), CHANGE_DECISION_TYPE.toString()));
+                addValue(values, CHANGE_HEARING_TYPE);
                 break;
 
             case DECIDED:
@@ -408,4 +408,9 @@ public class MakeAnApplicationTypesProvider {
 
         return !notAllowedStates.contains(state) && hasAppropriateRole && !alreadyAdded;
     }
+
+    private void addValue(List<Value> values, MakeAnApplicationTypes type) {
+        values.add(new Value(type.name(), type.toString()));
+    }
+
 }
