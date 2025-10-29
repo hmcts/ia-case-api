@@ -231,8 +231,6 @@ NB2. Use aat env variable for preview environment user creation as it uses aat's
 
 Check the documentation in ./README-MIRRORD.md
 
-
-
 ## Uploading DMN files to ia-case-api PR
 To upload DMN files to an ia-case-api PR, you can use the following script:
 
