@@ -59,7 +59,7 @@ public class MakeAnApplicationTypesProvider {
                     addValues(values, TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS, UPDATE_APPEAL_DETAILS);
                 }
 
-                addValue(values, WITHDRAW, LINK_OR_UNLINK, OTHER, CHANGE_DECISION_TYPE);
+                addValues(values, WITHDRAW, LINK_OR_UNLINK, OTHER, CHANGE_DECISION_TYPE);
                 break;
 
             case ENDED:
@@ -120,7 +120,7 @@ public class MakeAnApplicationTypesProvider {
                     addValues(values, ADJOURN, EXPEDITE);
                 }
 
-                addValue(values, TIME_EXTENSION, WITHDRAW, LINK_OR_UNLINK, OTHER, CHANGE_DECISION_TYPE);
+                addValues(values, TIME_EXTENSION, WITHDRAW, LINK_OR_UNLINK, OTHER, CHANGE_DECISION_TYPE);
                 break;
 
             case FTPA_SUBMITTED:
@@ -180,7 +180,7 @@ public class MakeAnApplicationTypesProvider {
                     }
                 }
 
-                addValue(values, WITHDRAW, LINK_OR_UNLINK, CHANGE_DECISION_TYPE, OTHER);
+                addValues(values, WITHDRAW, LINK_OR_UNLINK, CHANGE_DECISION_TYPE, OTHER);
                 break;
 
             case LISTING:
@@ -212,7 +212,7 @@ public class MakeAnApplicationTypesProvider {
                     }
                 }
 
-                addValue(values, WITHDRAW, LINK_OR_UNLINK, CHANGE_DECISION_TYPE);
+                addValues(values, WITHDRAW, LINK_OR_UNLINK, CHANGE_DECISION_TYPE);
                 break;
 
             case ADJOURNED:
@@ -247,7 +247,7 @@ public class MakeAnApplicationTypesProvider {
                     addValues(values, UPDATE_APPEAL_DETAILS, TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS);
                 }
 
-                addValue(values, WITHDRAW, LINK_OR_UNLINK, OTHER, CHANGE_DECISION_TYPE);
+                addValues(values, WITHDRAW, LINK_OR_UNLINK, OTHER, CHANGE_DECISION_TYPE);
                 break;
 
             case DECIDED:
