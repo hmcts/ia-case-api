@@ -36,21 +36,48 @@ public class MakeAnApplicationTypesProvider {
         boolean hasHomeOfficeRole = userDetails.isHomeOffice();
         boolean isInternalAndAdminRole = userDetails.isAdmin() && isInternalCase(asylumCase);
 
+        DynamicList dynamicList;
         final List<Value> values = new ArrayList<>();
         switch (currentState) {
             case APPEAL_SUBMITTED:
-                addJudgeReview(values, hasPrivilegedRole(hasHomeOfficeRole, isInternalAndAdminRole, hasRole(ROLE_LEGAL_REP)));
-                addIf(hasRole(ROLE_LEGAL_REP), values, UPDATE_APPEAL_DETAILS);
-                addIf(isAcceleratedDetainedAppeal(asylumCase) && hasRole(ROLE_LEGAL_REP), values, TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS);
-                addIf(isAcceleratedDetainedAppeal(asylumCase) && isInternalAndAdminRole, values,
-                        TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS, UPDATE_APPEAL_DETAILS);
-                addCommonEndStates(values);
-                addType(values, CHANGE_DECISION_TYPE);
+                values.add(new Value(JUDGE_REVIEW.name(), JUDGE_REVIEW.toString()));
+
+                if (hasRole(ROLE_LEGAL_REP)) {
+                    values.add(new Value(UPDATE_APPEAL_DETAILS.name(),
+                        UPDATE_APPEAL_DETAILS.toString()));
+                }
+
+                if (hasRole(ROLE_LEGAL_REP) || hasHomeOfficeRole || isInternalAndAdminRole) {
+                    values.remove(0); // remove JUDGE_REVIEW
+                    values.add(new Value(JUDGE_REVIEW_LO.name(), JUDGE_REVIEW_LO.toString()));
+                }
+
+                if (isAcceleratedDetainedAppeal(asylumCase) && hasRole(ROLE_LEGAL_REP)) {
+                    values.add(new Value(TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.name(),
+                        TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.toString()));
+                }
+
+                if (isAcceleratedDetainedAppeal(asylumCase) && isInternalAndAdminRole) {
+                    values.add(new Value(TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.name(),
+                        TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.toString()));
+                    values.add(new Value(UPDATE_APPEAL_DETAILS.name(),
+                        UPDATE_APPEAL_DETAILS.toString()));
+                }
+
+                values.add(new Value(WITHDRAW.name(), WITHDRAW.toString()));
+                values.add(new Value(LINK_OR_UNLINK.name(), LINK_OR_UNLINK.toString()));
+                values.add(new Value(OTHER.name(), OTHER.toString()));
+                values.add(new Value(CHANGE_HEARING_TYPE.name(), CHANGE_HEARING_TYPE.toString()));
                 break;
 
             case ENDED:
-                addJudgeReview(values, hasPrivilegedRole(hasHomeOfficeRole, isInternalAndAdminRole, hasRole(ROLE_LEGAL_REP)));
-                addType(values, REINSTATE);
+                if (hasRole(ROLE_LEGAL_REP) || hasHomeOfficeRole || isInternalAndAdminRole) {
+                    values.add(new Value(JUDGE_REVIEW_LO.name(), JUDGE_REVIEW_LO.toString()));
+                } else {
+                    values.add(new Value(JUDGE_REVIEW.name(), JUDGE_REVIEW.toString()));
+                }
+
+                values.add(new Value(REINSTATE.name(), REINSTATE.toString()));
                 break;
 
             case PENDING_PAYMENT:
@@ -63,87 +90,278 @@ public class MakeAnApplicationTypesProvider {
             case REASONS_FOR_APPEAL_SUBMITTED:
             case RESPONDENT_REVIEW:
             case SUBMIT_HEARING_REQUIREMENTS:
-                addType(values, TIME_EXTENSION);
+                values.add(new Value(TIME_EXTENSION.name(), TIME_EXTENSION.toString()));
+                if (isInternalAndAdminRole
+                    && isAcceleratedDetainedAppeal(asylumCase)) {
 
-                if (isInternalAndAdminRole && isAcceleratedDetainedAppeal(asylumCase)) {
-                    addType(values, ADJOURN, EXPEDITE);
+                    values.add(new Value(ADJOURN.name(), ADJOURN.toString()));
+                    values.add(new Value(EXPEDITE.name(), EXPEDITE.toString()));
+
                     if (hasSubmittedHearingRequirements(asylumCase)) {
-                        addType(values, UPDATE_HEARING_REQUIREMENTS);
+                        values.add(new Value(UPDATE_HEARING_REQUIREMENTS.name(),
+                            UPDATE_HEARING_REQUIREMENTS.toString()));
                     }
                     if (currentState != PENDING_PAYMENT) {
-                        addType(values, TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS, UPDATE_APPEAL_DETAILS);
+                        values.add(new Value(TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.name(),
+                            TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.toString()));
+                        values.add(new Value(UPDATE_APPEAL_DETAILS.name(),
+                            UPDATE_APPEAL_DETAILS.toString()));
                     }
                 }
 
-                addJudgeReview(values, hasPrivilegedRole(hasHomeOfficeRole, isInternalAndAdminRole, hasRole(ROLE_LEGAL_REP)));
+                if (hasRole(ROLE_LEGAL_REP) || hasHomeOfficeRole || isInternalAndAdminRole) {
+                    values.add(new Value(JUDGE_REVIEW_LO.name(), JUDGE_REVIEW_LO.toString()));
+                } else {
+                    values.add(new Value(JUDGE_REVIEW.name(), JUDGE_REVIEW.toString()));
+                }
 
                 if (hasRole(ROLE_LEGAL_REP)) {
-                    addType(values, UPDATE_APPEAL_DETAILS);
+                    values.add(new Value(UPDATE_APPEAL_DETAILS.name(),
+                        UPDATE_APPEAL_DETAILS.toString()));
+
                     if (isAcceleratedDetainedAppeal(asylumCase) && currentState != PENDING_PAYMENT) {
-                        addType(values, ADJOURN, EXPEDITE, TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS, UPDATE_HEARING_REQUIREMENTS);
+                        values.add(new Value(ADJOURN.name(), ADJOURN.toString()));
+                        values.add(new Value(EXPEDITE.name(), EXPEDITE.toString()));
+                        values.add(new Value(TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.name(),
+                            TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.toString()));
+                        values.add(new Value(UPDATE_HEARING_REQUIREMENTS.name(), UPDATE_HEARING_REQUIREMENTS.toString()));
                     }
                 }
 
                 if (hasHomeOfficeRole && isAcceleratedDetainedAppeal(asylumCase)
-                        && !List.of(PENDING_PAYMENT, AWAITING_REASONS_FOR_APPEAL,
-                        AWAITING_CLARIFYING_QUESTIONS_ANSWERS, AWAITING_CMA_REQUIREMENTS,
-                        REASONS_FOR_APPEAL_SUBMITTED).contains(currentState)) {
+                    && currentState != PENDING_PAYMENT
+                    && currentState != AWAITING_REASONS_FOR_APPEAL
+                    && currentState != AWAITING_CLARIFYING_QUESTIONS_ANSWERS
+                    && currentState != AWAITING_CMA_REQUIREMENTS
+                    && currentState != REASONS_FOR_APPEAL_SUBMITTED) {
 
-                    addType(values, ADJOURN, EXPEDITE);
+                    values.add(new Value(ADJOURN.name(), ADJOURN.toString()));
+                    values.add(new Value(EXPEDITE.name(), EXPEDITE.toString()));
                 }
 
-                addType(values, TIME_EXTENSION);
-                addCommonEndStates(values);
-                addType(values, CHANGE_DECISION_TYPE);
+                values.add(new Value(TIME_EXTENSION.name(), TIME_EXTENSION.toString()));
+                values.add(new Value(WITHDRAW.name(), WITHDRAW.toString()));
+                values.add(new Value(LINK_OR_UNLINK.name(), LINK_OR_UNLINK.toString()));
+                values.add(new Value(OTHER.name(), OTHER.toString()));
+                values.add(new Value(CHANGE_HEARING_TYPE.name(), CHANGE_HEARING_TYPE.toString()));
                 break;
 
             case FTPA_SUBMITTED:
             case FTPA_DECIDED:
-                addType(values, TIME_EXTENSION);
-                addJudgeReview(values, hasPrivilegedRole(hasHomeOfficeRole, isInternalAndAdminRole, hasRole(ROLE_LEGAL_REP)));
-                addIf(hasRole(ROLE_LEGAL_REP), values, UPDATE_APPEAL_DETAILS);
-                addIf(isInternalAndAdminRole && isAcceleratedDetainedAppeal(asylumCase), values,
-                        UPDATE_HEARING_REQUIREMENTS, UPDATE_APPEAL_DETAILS);
-                addType(values, TIME_EXTENSION);
-                addCommonEndStates(values);
+                values.add(new Value(TIME_EXTENSION.name(), TIME_EXTENSION.toString()));
+                if (hasRole(ROLE_LEGAL_REP) || hasHomeOfficeRole || isInternalAndAdminRole) {
+                    values.add(new Value(JUDGE_REVIEW_LO.name(), JUDGE_REVIEW_LO.toString()));
+                } else {
+                    values.add(new Value(JUDGE_REVIEW.name(), JUDGE_REVIEW.toString()));
+                }
+
+                if (hasRole(ROLE_LEGAL_REP)) {
+                    values.add(new Value(UPDATE_APPEAL_DETAILS.name(),
+                        UPDATE_APPEAL_DETAILS.toString()));
+                }
+
+                if (isInternalAndAdminRole
+                    && isAcceleratedDetainedAppeal(asylumCase)) {
+                    if (hasSubmittedHearingRequirements(asylumCase)) {
+                        values.add(new Value(UPDATE_HEARING_REQUIREMENTS.name(),
+                            UPDATE_HEARING_REQUIREMENTS.toString()));
+                    }
+                    values.add(new Value(UPDATE_APPEAL_DETAILS.name(),
+                        UPDATE_APPEAL_DETAILS.toString()));
+                }
+
+                values.add(new Value(TIME_EXTENSION.name(), TIME_EXTENSION.toString()));
+                values.add(new Value(LINK_OR_UNLINK.name(), LINK_OR_UNLINK.toString()));
+                values.add(new Value(OTHER.name(), OTHER.toString()));
                 break;
 
             case FINAL_BUNDLING:
+                if (hasRole(ROLE_LEGAL_REP) || hasHomeOfficeRole || isInternalAndAdminRole) {
+                    values.add(new Value(JUDGE_REVIEW_LO.name(), JUDGE_REVIEW_LO.toString()));
+                } else {
+                    values.add(new Value(JUDGE_REVIEW.name(), JUDGE_REVIEW.toString()));
+                }
+
+                values.add(new Value(TIME_EXTENSION.name(), TIME_EXTENSION.toString()));
+
+                if (hasRole(ROLE_LEGAL_REP)) {
+                    values.add(new Value(UPDATE_APPEAL_DETAILS.name(),
+                        UPDATE_APPEAL_DETAILS.toString()));
+                    values.add(new Value(UPDATE_HEARING_REQUIREMENTS.name(),
+                        UPDATE_HEARING_REQUIREMENTS.toString()));
+
+                    if (isAcceleratedDetainedAppeal(asylumCase)) {
+                        values.add(new Value(ADJOURN.name(), ADJOURN.toString()));
+                        values.add(new Value(EXPEDITE.name(), EXPEDITE.toString()));
+                        values.add(new Value(TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.name(),
+                            TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.toString()));
+                    }
+                }
+
+                if (hasHomeOfficeRole && isAcceleratedDetainedAppeal(asylumCase)) {
+                    values.add(new Value(ADJOURN.name(), ADJOURN.toString()));
+                    values.add(new Value(EXPEDITE.name(), EXPEDITE.toString()));
+                }
+
+                if (!isAcceleratedDetainedAppeal(asylumCase)) {
+                    values.add(new Value(TRANSFER.name(), TRANSFER.toString()));
+                }
+
+                if (isInternalAndAdminRole
+                    && isAcceleratedDetainedAppeal(asylumCase)) {
+                    values.add(new Value(ADJOURN.name(), ADJOURN.toString()));
+                    values.add(new Value(EXPEDITE.name(), EXPEDITE.toString()));
+                    values.add(new Value(TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.name(),
+                        TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.toString()));
+                    values.add(new Value(UPDATE_APPEAL_DETAILS.name(),
+                        UPDATE_APPEAL_DETAILS.toString()));
+                    if (hasSubmittedHearingRequirements(asylumCase)) {
+                        values.add(new Value(UPDATE_HEARING_REQUIREMENTS.name(),
+                            UPDATE_HEARING_REQUIREMENTS.toString()));
+                    }
+                }
+
+                values.add(new Value(WITHDRAW.name(), WITHDRAW.toString()));
+                values.add(new Value(LINK_OR_UNLINK.name(), LINK_OR_UNLINK.toString()));
+                values.add(new Value(CHANGE_HEARING_TYPE.name(), CHANGE_HEARING_TYPE.toString()));
+                values.add(new Value(OTHER.name(), OTHER.toString()));
+                break;
+
             case LISTING:
+                if (hasRole(ROLE_LEGAL_REP) || hasHomeOfficeRole || isInternalAndAdminRole) {
+                    values.add(new Value(JUDGE_REVIEW_LO.name(), JUDGE_REVIEW_LO.toString()));
+                } else {
+                    values.add(new Value(JUDGE_REVIEW.name(), JUDGE_REVIEW.toString()));
+                }
+
+                values.add(new Value(TIME_EXTENSION.name(), TIME_EXTENSION.toString()));
+
+                if (hasRole(ROLE_LEGAL_REP)) {
+                    values.add(new Value(UPDATE_APPEAL_DETAILS.name(),
+                        UPDATE_APPEAL_DETAILS.toString()));
+                    values.add(new Value(UPDATE_HEARING_REQUIREMENTS.name(),
+                        UPDATE_HEARING_REQUIREMENTS.toString()));
+
+                    if (isAcceleratedDetainedAppeal(asylumCase)) {
+                        values.add(new Value(ADJOURN.name(), ADJOURN.toString()));
+                        values.add(new Value(EXPEDITE.name(), EXPEDITE.toString()));
+                        values.add(new Value(TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.name(),
+                            TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.toString()));
+                    }
+                }
+
+                if (hasHomeOfficeRole && isAcceleratedDetainedAppeal(asylumCase)) {
+                    values.add(new Value(ADJOURN.name(), ADJOURN.toString()));
+                    values.add(new Value(EXPEDITE.name(), EXPEDITE.toString()));
+                }
+
+                if (isInternalAndAdminRole
+                    && isAcceleratedDetainedAppeal(asylumCase)) {
+                    values.add(new Value(ADJOURN.name(), ADJOURN.toString()));
+                    values.add(new Value(EXPEDITE.name(), EXPEDITE.toString()));
+                    values.add(new Value(TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.name(),
+                        TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.toString()));
+                    values.add(new Value(UPDATE_APPEAL_DETAILS.name(),
+                        UPDATE_APPEAL_DETAILS.toString()));
+                    if (hasSubmittedHearingRequirements(asylumCase)) {
+                        values.add(new Value(UPDATE_HEARING_REQUIREMENTS.name(),
+                            UPDATE_HEARING_REQUIREMENTS.toString()));
+                    }
+                }
+
+                values.add(new Value(WITHDRAW.name(), WITHDRAW.toString()));
+                values.add(new Value(LINK_OR_UNLINK.name(), LINK_OR_UNLINK.toString()));
+                values.add(new Value(CHANGE_HEARING_TYPE.name(), CHANGE_HEARING_TYPE.toString()));
+                break;
+
             case ADJOURNED:
             case PREPARE_FOR_HEARING:
             case PRE_HEARING:
             case DECISION:
-                addJudgeReview(values, hasPrivilegedRole(hasHomeOfficeRole, isInternalAndAdminRole, hasRole(ROLE_LEGAL_REP)));
-                addType(values, TIME_EXTENSION, ADJOURN, EXPEDITE);
-                addIf(hasRole(ROLE_LEGAL_REP), values, UPDATE_APPEAL_DETAILS, UPDATE_HEARING_REQUIREMENTS);
-                if (isAcceleratedDetainedAppeal(asylumCase)) {
-                    addIf(hasRole(ROLE_LEGAL_REP), values, TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS);
-                    addIf(isInternalAndAdminRole, values,
-                            ADJOURN, EXPEDITE, TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS, UPDATE_APPEAL_DETAILS);
-                    addIf(isInternalAndAdminRole && hasSubmittedHearingRequirements(asylumCase), values, UPDATE_HEARING_REQUIREMENTS);
-                    addIf(hasHomeOfficeRole, values, ADJOURN, EXPEDITE);
+                if (hasRole(ROLE_LEGAL_REP) || hasHomeOfficeRole || isInternalAndAdminRole) {
+                    values.add(new Value(JUDGE_REVIEW_LO.name(), JUDGE_REVIEW_LO.toString()));
                 } else {
-                    addType(values, TRANSFER);
+                    values.add(new Value(JUDGE_REVIEW.name(), JUDGE_REVIEW.toString()));
                 }
-                addCommonEndStates(values);
-                addType(values, CHANGE_DECISION_TYPE);
+
+                values.add(new Value(ADJOURN.name(), ADJOURN.toString()));
+                values.add(new Value(EXPEDITE.name(), EXPEDITE.toString()));
+
+                if (isAcceleratedDetainedAppeal(asylumCase) && hasRole(ROLE_LEGAL_REP)) {
+                    values.add(new Value(TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.name(),
+                        TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.toString()));
+                } else if (!isAcceleratedDetainedAppeal(asylumCase)) {
+                    values.add(new Value(TRANSFER.name(), TRANSFER.toString()));
+                }
+
+                values.add(new Value(TIME_EXTENSION.name(), TIME_EXTENSION.toString()));
+
+                if (hasRole(ROLE_LEGAL_REP)) {
+                    values.add(new Value(UPDATE_APPEAL_DETAILS.name(),
+                        UPDATE_APPEAL_DETAILS.toString()));
+                    values.add(new Value(UPDATE_HEARING_REQUIREMENTS.name(),
+                        UPDATE_HEARING_REQUIREMENTS.toString()));
+                }
+
+                if (isInternalAndAdminRole
+                    && isAcceleratedDetainedAppeal(asylumCase)) {
+                    if (hasSubmittedHearingRequirements(asylumCase)) {
+                        values.add(new Value(UPDATE_HEARING_REQUIREMENTS.name(),
+                            UPDATE_HEARING_REQUIREMENTS.toString()));
+                    }
+                    values.add(new Value(UPDATE_APPEAL_DETAILS.name(),
+                        UPDATE_APPEAL_DETAILS.toString()));
+                    values.add(new Value(TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.name(),
+                        TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.toString()));
+                }
+
+                values.add(new Value(WITHDRAW.name(), WITHDRAW.toString()));
+                values.add(new Value(LINK_OR_UNLINK.name(), LINK_OR_UNLINK.toString()));
+                values.add(new Value(OTHER.name(), OTHER.toString()));
+                values.add(new Value(CHANGE_HEARING_TYPE.name(), CHANGE_HEARING_TYPE.toString()));
                 break;
 
             case DECIDED:
-                addJudgeReview(values, hasPrivilegedRole(hasHomeOfficeRole, isInternalAndAdminRole, hasRole(ROLE_LEGAL_REP)));
-                addIf(hasRole(ROLE_LEGAL_REP), values, UPDATE_APPEAL_DETAILS);
-                addIf(isAcceleratedDetainedAppeal(asylumCase) && hasRole(ROLE_LEGAL_REP), values, TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS);
-                addIf(isInternalAndAdminRole && isAcceleratedDetainedAppeal(asylumCase), values,
-                        TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS, UPDATE_APPEAL_DETAILS);
-                addType(values, LINK_OR_UNLINK, SET_ASIDE_A_DECISION, APPLICATION_UNDER_RULE_31_OR_RULE_32, OTHER);
+                if (hasRole(ROLE_LEGAL_REP) || hasHomeOfficeRole || isInternalAndAdminRole) {
+                    values.add(new Value(JUDGE_REVIEW_LO.name(), JUDGE_REVIEW_LO.toString()));
+                } else {
+                    values.add(new Value(JUDGE_REVIEW.name(), JUDGE_REVIEW.toString()));
+                }
+
+                if (hasRole(ROLE_LEGAL_REP)) {
+                    values.add(new Value(UPDATE_APPEAL_DETAILS.name(),
+                        UPDATE_APPEAL_DETAILS.toString()));
+
+                    if (isAcceleratedDetainedAppeal(asylumCase)) {
+                        values.add(new Value(TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.name(),
+                            TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.toString()));
+                    }
+                }
+                if (isInternalAndAdminRole
+                    && isAcceleratedDetainedAppeal(asylumCase)) {
+                    values.add(new Value(TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.name(),
+                        TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.toString()));
+                    values.add(new Value(UPDATE_APPEAL_DETAILS.name(),
+                        UPDATE_APPEAL_DETAILS.toString()));
+                }
+
+                values.add(new Value(LINK_OR_UNLINK.name(), LINK_OR_UNLINK.toString()));
+                values.add(new Value(SET_ASIDE_A_DECISION.name(), SET_ASIDE_A_DECISION.toString()));
+                values.add(new Value(APPLICATION_UNDER_RULE_31_OR_RULE_32.name(), APPLICATION_UNDER_RULE_31_OR_RULE_32.toString()));
+                values.add(new Value(OTHER.name(), OTHER.toString()));
                 break;
 
             case REMITTED:
-                addType(values, EXPEDITE, LINK_OR_UNLINK, OTHER, TIME_EXTENSION, TRANSFER);
-                addIf(hasRole(ROLE_LEGAL_REP), values, UPDATE_APPEAL_DETAILS);
-                addType(values, WITHDRAW);
-                addType(values, JUDGE_REVIEW);
+                values.add(new Value(EXPEDITE.name(), EXPEDITE.toString()));
+                values.add(new Value(LINK_OR_UNLINK.name(), LINK_OR_UNLINK.toString()));
+                values.add(new Value(OTHER.name(), OTHER.toString()));
+                values.add(new Value(TIME_EXTENSION.name(), TIME_EXTENSION.toString()));
+                values.add(new Value(TRANSFER.name(), TRANSFER.toString()));
+                if (hasRole(ROLE_LEGAL_REP)) {
+                    values.add(new Value(UPDATE_APPEAL_DETAILS.name(), UPDATE_APPEAL_DETAILS.toString()));
+                }
+                values.add(new Value(WITHDRAW.name(), WITHDRAW.toString()));
+                values.add(new Value(JUDGE_REVIEW.name(), JUDGE_REVIEW.toString()));
                 break;
 
             default:
@@ -152,34 +370,16 @@ public class MakeAnApplicationTypesProvider {
         }
 
         if (shouldAddExpediteApplicationType(currentState, values)) {
-            addType(values, EXPEDITE);
+            values.add(new Value(EXPEDITE.name(), EXPEDITE.toString()));
         }
 
-        return values.isEmpty() ? new DynamicList("") : new DynamicList(values.get(0), values);
-    }
-
-    private void addJudgeReview(List<Value> values, boolean privileged) {
-        addType(values, privileged ? JUDGE_REVIEW_LO : JUDGE_REVIEW);
-    }
-
-    private boolean hasPrivilegedRole(boolean hasHomeOfficeRole, boolean isInternalAndAdminRole, boolean hasLegalRepRole) {
-        return hasHomeOfficeRole || isInternalAndAdminRole || hasLegalRepRole;
-    }
-
-    private void addCommonEndStates(List<Value> values) {
-        addType(values, WITHDRAW, LINK_OR_UNLINK, OTHER);
-    }
-
-    private void addIf(boolean condition, List<Value> values, MakeAnApplicationTypes... types) {
-        if (condition) {
-            addType(values, types);
+        if (!values.isEmpty()) {
+            dynamicList = new DynamicList(values.get(0), values);
+        } else {
+            dynamicList = new DynamicList("");
         }
-    }
 
-    private void addType(List<Value> values, MakeAnApplicationTypes... types) {
-        for (MakeAnApplicationTypes type : types) {
-            values.add(new Value(type.name(), type.toString()));
-        }
+        return dynamicList;
     }
 
     private boolean hasRole(String roleName) {
