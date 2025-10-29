@@ -22,7 +22,7 @@ public class MakeAnApplicationTypesProvider {
     private final UserDetails userDetails;
 
     public MakeAnApplicationTypesProvider(
-            UserDetails userDetails
+        UserDetails userDetails
     ) {
         this.userDetails = userDetails;
     }
