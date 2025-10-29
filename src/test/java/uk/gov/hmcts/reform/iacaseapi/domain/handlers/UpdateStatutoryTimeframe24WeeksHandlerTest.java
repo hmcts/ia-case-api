@@ -23,7 +23,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.UpdateStatutoryTimeframe24WeeksHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.Appender;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -53,7 +53,7 @@ class UpdateStatutoryTimeframe24WeeksHandlerTest {
     @Captor private ArgumentCaptor<StatutoryTimeframe24Weeks> newStatutoryTimeframe24WeeksCaptor;
 
     private final List<StatutoryTimeframe24Weeks> existingStatutoryTimeframe24Weeks = singletonList(statutoryTimeframe24Weeks);
-    private final LocalDate now = LocalDate.now();
+    private final LocalDateTime nowWithTime = LocalDateTime.now();
     private final YesOrNo newStatutoryTimeframe24WeeksStatus = YesOrNo.YES;
     private final String newStatutoryTimeframe24WeeksReason = "some-reason";
     private final String forename = "Frank";
@@ -69,7 +69,7 @@ class UpdateStatutoryTimeframe24WeeksHandlerTest {
         when(userDetails.getForename()).thenReturn(forename);
         when(userDetails.getSurname()).thenReturn(surname);
 
-        when(dateProvider.now()).thenReturn(now);
+        when(dateProvider.nowWithTime()).thenReturn(nowWithTime);
 
         when(asylumCase.read(STATUTORY_TIMEFRAME_24_WEEKS)).thenReturn(Optional.of(existingStatutoryTimeframe24Weeks));
         when(asylumCase.read(STATUTORY_TIMEFRAME_24_WEEKS_STATUS, YesOrNo.class)).thenReturn(Optional.of(newStatutoryTimeframe24WeeksStatus));
@@ -102,7 +102,7 @@ class UpdateStatutoryTimeframe24WeeksHandlerTest {
         assertThat(capturedStatutoryTimeframe24Weeks.getStatus()).isEqualTo(YesOrNo.YES);
         assertThat(capturedStatutoryTimeframe24Weeks.getReason()).isEqualTo(newStatutoryTimeframe24WeeksReason);
         assertThat(capturedStatutoryTimeframe24Weeks.getUser()).isEqualTo(forename + " " + surname);
-        assertThat(capturedStatutoryTimeframe24Weeks.getDateAdded()).isEqualTo(now.toString());
+        assertThat(capturedStatutoryTimeframe24Weeks.getDateAdded()).isEqualTo(nowWithTime.toString());
 
         assertThat(existingStatutoryTimeframe24WeeksCaptor.getValue()).isEqualTo(existingStatutoryTimeframe24Weeks);
 
