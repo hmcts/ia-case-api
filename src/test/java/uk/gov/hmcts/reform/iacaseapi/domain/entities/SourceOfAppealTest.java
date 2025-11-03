@@ -11,6 +11,7 @@ public class SourceOfAppealTest {
     void test_all_values() {
         assertEquals(SourceOfAppeal.PAPER_FORM.getValue(), "paperForm");
         assertEquals(SourceOfAppeal.TRANSFERRED_FROM_UPPER_TRIBUNAL.getValue(), "transferredFromUpperTribunal");
+        assertEquals(SourceOfAppeal.REHYDRATED_APPEAL.getValue(),"rehydratedAppeal");
     }
 
     @Test
