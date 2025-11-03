@@ -11,12 +11,14 @@ public class SourceOfAppealTest {
     void test_all_values() {
         assertEquals(SourceOfAppeal.PAPER_FORM.getValue(), "paperForm");
         assertEquals(SourceOfAppeal.TRANSFERRED_FROM_UPPER_TRIBUNAL.getValue(), "transferredFromUpperTribunal");
+        assertEquals(SourceOfAppeal.REHYDRATED_APPEAL.getValue(), "rehydratedAppeal");
     }
 
     @Test
     void test_toString_gives_same_value() {
         assertEquals(SourceOfAppeal.PAPER_FORM.getValue(), SourceOfAppeal.PAPER_FORM.toString());
         assertEquals(SourceOfAppeal.TRANSFERRED_FROM_UPPER_TRIBUNAL.getValue(), SourceOfAppeal.TRANSFERRED_FROM_UPPER_TRIBUNAL.toString());
+        assertEquals(SourceOfAppeal.REHYDRATED_APPEAL.getValue(), SourceOfAppeal.REHYDRATED_APPEAL.toString());
     }
 
     @Test
@@ -30,11 +32,12 @@ public class SourceOfAppealTest {
     void should_create_one_facility_from_given_value() {
         assertEquals(SourceOfAppeal.PAPER_FORM, SourceOfAppeal.from("paperForm"));
         assertEquals(SourceOfAppeal.TRANSFERRED_FROM_UPPER_TRIBUNAL, SourceOfAppeal.from("transferredFromUpperTribunal"));
+        assertEquals(SourceOfAppeal.REHYDRATED_APPEAL, SourceOfAppeal.from("rehydratedAppeal"));
     }
 
     @Test
     void should_break_if_new_facility_is_added() {
-        assertEquals(2, SourceOfAppeal.values().length);
+        assertEquals(3, SourceOfAppeal.values().length);
     }
 
 }
