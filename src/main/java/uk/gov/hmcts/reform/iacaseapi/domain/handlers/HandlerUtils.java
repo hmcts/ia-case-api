@@ -402,4 +402,9 @@ public class HandlerUtils {
         }
         return false;
     }
+
+    public static boolean isRehydratedAppeal(AsylumCase asylumCase) {
+        return isInternalCase(asylumCase)
+                && (asylumCase.read(SOURCE_OF_APPEAL, String.class)).orElse("") == "rehydratedAppeal";
+    }
 }

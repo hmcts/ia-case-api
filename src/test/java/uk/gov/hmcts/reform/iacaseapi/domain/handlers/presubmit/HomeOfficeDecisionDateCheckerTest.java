@@ -756,4 +756,42 @@ class HomeOfficeDecisionDateCheckerTest {
         assertThat(values.get(1)).isEqualTo(NO);
     }
 
+    @Test
+    void handles_case_icc_with_tribunal_received_date_when_out_of_time_rehydrated_with_in_time_override() {
+
+        final String tribunalReceivedDate = "2025-04-25";
+        final String homeOfficeDecisionDate = "2025-03-25";
+        final String nowDate = "2025-04-28";
+
+        when(dateProvider.now()).thenReturn(LocalDate.parse(nowDate));
+        when(asylumCase.read(TRIBUNAL_RECEIVED_DATE)).thenReturn(Optional.of(tribunalReceivedDate));
+        when(asylumCase.read(HOME_OFFICE_DECISION_DATE)).thenReturn(Optional.of(homeOfficeDecisionDate));
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(SOURCE_OF_APPEAL, String.class)).thenReturn(Optional.of("rehydratedAppeal"));
+        when(asylumCase.read(SUBMISSION_OUT_OF_TIME, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+
+        homeOfficeDecisionDateChecker.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        verify(asylumCase, times(0)).write(asylumExtractor.capture(), valueCaptor.capture());
+    }
+
+    @Test
+    void handles_case_icc_with_tribunal_received_date_when_in_time_rehydrated_with_out_of_time_override() {
+
+        final String tribunalReceivedDate = "2025-04-01";
+        final String homeOfficeDecisionDate = "2025-03-25";
+        final String nowDate = "2025-04-28";
+
+        when(dateProvider.now()).thenReturn(LocalDate.parse(nowDate));
+        when(asylumCase.read(TRIBUNAL_RECEIVED_DATE)).thenReturn(Optional.of(tribunalReceivedDate));
+        when(asylumCase.read(HOME_OFFICE_DECISION_DATE)).thenReturn(Optional.of(homeOfficeDecisionDate));
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(SOURCE_OF_APPEAL, String.class)).thenReturn(Optional.of("rehydratedAppeal"));
+        when(asylumCase.read(SUBMISSION_OUT_OF_TIME, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+
+        homeOfficeDecisionDateChecker.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        verify(asylumCase, times(0)).write(asylumExtractor.capture(), valueCaptor.capture());
+    }
+
 }
