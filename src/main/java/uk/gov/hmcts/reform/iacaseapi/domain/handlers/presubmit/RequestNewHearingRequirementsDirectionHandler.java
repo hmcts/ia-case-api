@@ -110,7 +110,6 @@ public class RequestNewHearingRequirementsDirectionHandler implements PreSubmitC
         asylumCase.clear(SEND_DIRECTION_DATE_DUE);
 
         writePreviousHearingsToAsylumCase(asylumCase);
-        log.info("Case details before submit:\n {}", asylumCase.toString());
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 
