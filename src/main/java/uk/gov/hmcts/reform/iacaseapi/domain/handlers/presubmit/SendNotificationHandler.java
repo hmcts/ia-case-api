@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
-import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ADA_HEARING_REQUIREMENTS_SUBMITTED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_APPLICANT_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAS_TRANSFERRED_OUT_OF_ADA;
@@ -11,8 +10,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isAipJourney;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isInternalCase;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isNotificationTurnedOff;
 
 import java.util.List;
 import java.util.Set;
@@ -60,22 +57,25 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
         PreSubmitCallbackStage callbackStage,
         Callback<AsylumCase> callback
     ) {
-        requireNonNull(callbackStage, "callbackStage must not be null");
-        requireNonNull(callback, "callback must not be null");
 
-        final AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
+        return false;
 
-        if (isNotificationTurnedOff(asylumCase)) {
-            return false;
-        }
-
-        if (isInternalCase(asylumCase)) {
-            return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-                && getInternalEventsToHandle(callback).contains(callback.getEvent());
-        }
-
-        return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-            && getEventsToHandle(callback).contains(callback.getEvent());
+        //        requireNonNull(callbackStage, "callbackStage must not be null");
+        //        requireNonNull(callback, "callback must not be null");
+        //
+        //        final AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
+        //
+        //        if (isNotificationTurnedOff(asylumCase)) {
+        //            return false;
+        //        }
+        //
+        //        if (isInternalCase(asylumCase)) {
+        //            return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
+        //                && getInternalEventsToHandle(callback).contains(callback.getEvent());
+        //        }
+        //
+        //        return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
+        //            && getEventsToHandle(callback).contains(callback.getEvent());
 
     }
 
