@@ -34,7 +34,7 @@ public class SourceOfAppealTest {
 
     @Test
     void should_break_if_new_facility_is_added() {
-        assertEquals(2, SourceOfAppeal.values().length);
+        assertEquals(3, SourceOfAppeal.values().length);
     }
 
 }
