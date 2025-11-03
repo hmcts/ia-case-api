@@ -37,6 +37,9 @@ java:
     DUMMY: true
     PAYMENT_REMINDER_DUE_IN_MINUTES: 1
     ROLE_ASSIGNMENT_API_URL: https://am-role-assignment-ia-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net
+    SAVE_NOTIFICATIONS_TO_DATA_EVENT_ENABLED: false
+    SAVE_NOTIFICATIONS_DATA_SCHEDULE_HOUR: 17
+    SAVE_NOTIFICATIONS_DATA_SCHEDULE_MAX_MINUTES: 5
   keyVaults:
     ia:
       resourceGroup: ia
