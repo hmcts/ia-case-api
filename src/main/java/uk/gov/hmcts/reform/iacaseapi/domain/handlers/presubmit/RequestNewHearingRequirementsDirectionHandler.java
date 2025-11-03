@@ -129,10 +129,11 @@ public class RequestNewHearingRequirementsDirectionHandler implements PreSubmitC
 
         final Optional<HoursAndMinutes> actualCaseHearingLength = asylumCase.read(ACTUAL_CASE_HEARING_LENGTH, HoursAndMinutes.class);
 
-        final HearingCentre listCaseHearingCentre = asylumCase.read(LIST_CASE_HEARING_CENTRE, HearingCentre.class).orElse(null);
-
         final boolean decisionWithoutHearing = asylumCase.read(IS_DECISION_WITHOUT_HEARING, YesOrNo.class)
                 .map(yesOrNo -> YesOrNo.YES == yesOrNo).orElse(false);
+
+        final HearingCentre listCaseHearingCentre = asylumCase.read(LIST_CASE_HEARING_CENTRE, HearingCentre.class)
+                .orElse(decisionWithoutHearing ? HearingCentre.DECISION_WITHOUT_HEARING : null);
 
         String listCaseHearingDate = null;
         String ariaListingReference = null;

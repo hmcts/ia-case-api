@@ -215,7 +215,9 @@ class RequestNewHearingRequirementsDirectionHandlerTest {
                 Arguments.of(YES, NEWPORT, NO),
                 Arguments.of(NO, DECISION_WITHOUT_HEARING, YES),
                 Arguments.of(NO, DECISION_WITHOUT_HEARING, NO),
-                Arguments.of(NO, null, NO)
+                Arguments.of(NO, null, NO),
+                Arguments.of(NO, null, YES),
+                Arguments.of(YES, null, YES)
         );
     }
 
