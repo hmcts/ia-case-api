@@ -39,7 +39,7 @@ public class RemoveStatutoryTimeframe24WeeksHandler implements PreSubmitCallback
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
         YesOrNo status = YesOrNo.NO;
-        AsylumCase updatedAsylum = updateStatutoryTimeframe24WeeksService.updateCase(asylumCase, status);
+        AsylumCase updatedAsylum = updateStatutoryTimeframe24WeeksService.updateAsylumCase(asylumCase, status);
 
         return new PreSubmitCallbackResponse<>(updatedAsylum);
     }

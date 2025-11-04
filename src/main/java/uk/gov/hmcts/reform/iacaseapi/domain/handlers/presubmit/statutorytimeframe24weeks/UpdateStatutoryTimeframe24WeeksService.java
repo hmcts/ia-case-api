@@ -33,7 +33,7 @@ public class UpdateStatutoryTimeframe24WeeksService {
         this.userDetails = userDetails;
     }
 
-    public AsylumCase updateCase(AsylumCase asylumCase, YesOrNo statutoryTimeframe24WeeksStatus) {
+    public AsylumCase updateAsylumCase(AsylumCase asylumCase, YesOrNo statutoryTimeframe24WeeksStatus) {
         String statutoryTimeframe24WeeksReason = asylumCase
             .read(STATUTORY_TIMEFRAME_24_WEEKS_REASON, String.class)
             .orElseThrow(() -> new IllegalStateException("statutoryTimeframe24WeeksReason is not present"));
