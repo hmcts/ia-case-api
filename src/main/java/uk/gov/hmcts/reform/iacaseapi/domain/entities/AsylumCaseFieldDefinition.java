@@ -2834,9 +2834,6 @@ public enum AsylumCaseFieldDefinition {
     STATUTORY_TIMEFRAME_24_WEEKS(
       "statutoryTimeframe24Weeks", new TypeReference<List<IdValue<StatutoryTimeframe24Weeks>>>(){}),
 
-    STATUTORY_TIMEFRAME_24_WEEKS_STATUS(
-        "statutoryTimeframe24WeeksStatus", new TypeReference<YesOrNo>(){}),
-
     STATUTORY_TIMEFRAME_24_WEEKS_REASON(
         "statutoryTimeframe24WeeksReason", new TypeReference<String>(){}),
     ;

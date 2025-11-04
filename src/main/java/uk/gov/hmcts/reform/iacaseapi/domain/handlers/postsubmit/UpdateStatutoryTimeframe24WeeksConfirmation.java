@@ -17,7 +17,7 @@ public class UpdateStatutoryTimeframe24WeeksConfirmation implements PostSubmitCa
     ) {
         requireNonNull(callback, "callback must not be null");
 
-        return callback.getEvent() == Event.UPDATE_STATUTORY_TIMEFRAME_24_WEEKS;
+        return callback.getEvent() == Event.ADD_STATUTORY_TIMEFRAME_24_WEEKS || callback.getEvent() == Event.REMOVE_STATUTORY_TIMEFRAME_24_WEEKS;
     }
 
     public PostSubmitCallbackResponse handle(
