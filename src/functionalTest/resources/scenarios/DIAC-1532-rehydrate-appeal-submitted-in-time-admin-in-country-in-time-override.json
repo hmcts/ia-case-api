@@ -1,0 +1,36 @@
+{
+  "description": "DIAC-1532 Rehydrated Case, Submitted In Time - In Time override, Admin, In Country",
+  "request": {
+    "uri": "/asylum/ccdAboutToStart",
+    "credentials": "LegalRepresentative",
+    "input": {
+      "eventId": "submitAppeal",
+      "state": "appealStarted",
+      "caseData": {
+        "template": "minimal-appeal-started.json",
+        "replacements": {
+          "homeOfficeDecisionDate": "{$TODAY-20}",
+          "isAdmin": "Yes",
+          "tribunalReceivedDate": "{$TODAY-10}",
+          "appellantInUk": "Yes",
+          "sourceOfAppeal": "rehydratedAppeal",
+          "submissionOutOfTime": "No"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-started.json",
+      "replacements": {
+        "submissionOutOfTime": "No",
+        "homeOfficeDecisionDate": "{$TODAY-20}",
+        "sourceOfAppeal": "rehydratedAppeal",
+        "submissionOutOfTime": "No",
+        "recordedOutOfTimeDecision": "No"
+      }
+    }
+  }
+}
