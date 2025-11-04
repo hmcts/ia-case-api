@@ -25,10 +25,9 @@
     "caseData": {
       "template": "minimal-appeal-started.json",
       "replacements": {
-        "submissionOutOfTime": "No",
+        "submissionOutOfTime": "Yes",
         "homeOfficeDecisionDate": "{$TODAY-20}",
-        "sourceOfAppeal": "rehydratedAppeal",
-        "submissionOutOfTime": "Yes"
+        "sourceOfAppeal": "rehydratedAppeal"
       }
     }
   }
