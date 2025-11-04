@@ -408,7 +408,7 @@ class AppealOutOfCountryEditAppealAipHandlerTest {
 
     @ParameterizedTest
     @EnumSource(value = Event.class, names = {
-            "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT"
+        "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT"
     })
     void should_write_to_admin_sponsor_email_and_mobile_when_is_admin(Event event) {
         Subscriber subscriber = new Subscriber(
@@ -448,7 +448,7 @@ class AppealOutOfCountryEditAppealAipHandlerTest {
 
     @ParameterizedTest
     @EnumSource(value = Event.class, names = {
-            "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT"
+        "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT"
     })
     void should_write_to_normal_sponsor_fields_when_not_admin(Event event) {
         Subscriber subscriber = new Subscriber(
