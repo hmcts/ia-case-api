@@ -405,6 +405,6 @@ public class HandlerUtils {
 
     public static boolean isRehydratedAppeal(AsylumCase asylumCase) {
         return isInternalCase(asylumCase)
-                && (asylumCase.read(SOURCE_OF_APPEAL, String.class)).orElse("") == "rehydratedAppeal";
+                && asylumCase.read(SOURCE_OF_APPEAL, String.class).orElse("").equals("rehydratedAppeal");
     }
 }
