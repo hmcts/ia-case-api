@@ -403,10 +403,6 @@ public class HandlerUtils {
         return false;
     }
 
-    public static boolean isSubmissionOutOfTime(AsylumCase asylumCase) {
-        return (asylumCase.read(SUBMISSION_OUT_OF_TIME, YesOrNo.class)).orElse(NO) == YesOrNo.YES;
-    }
-
     public static boolean isRehydratedAppeal(AsylumCase asylumCase) {
         return isInternalCase(asylumCase)
                 && (asylumCase.read(SOURCE_OF_APPEAL, String.class)).orElse("") == "rehydratedAppeal";

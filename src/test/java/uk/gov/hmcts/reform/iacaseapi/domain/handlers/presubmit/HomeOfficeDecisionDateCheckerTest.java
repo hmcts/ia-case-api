@@ -772,12 +772,7 @@ class HomeOfficeDecisionDateCheckerTest {
 
         homeOfficeDecisionDateChecker.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
-        verify(asylumCase, times(1)).write(asylumExtractor.capture(), valueCaptor.capture());
-        List<AsylumCaseFieldDefinition> keys = asylumExtractor.getAllValues();
-        List<YesOrNo> values = valueCaptor.getAllValues();
-
-        assertThat(keys.get(0)).isEqualTo(RECORDED_OUT_OF_TIME_DECISION);
-        assertThat(values.get(0)).isEqualTo(NO);
+        verify(asylumCase, times(0)).write(asylumExtractor.capture(), valueCaptor.capture());
     }
 
     @Test
@@ -796,12 +791,7 @@ class HomeOfficeDecisionDateCheckerTest {
 
         homeOfficeDecisionDateChecker.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
-        verify(asylumCase, times(1)).write(asylumExtractor.capture(), valueCaptor.capture());
-        List<AsylumCaseFieldDefinition> keys = asylumExtractor.getAllValues();
-        List<YesOrNo> values = valueCaptor.getAllValues();
-
-        assertThat(keys.get(0)).isEqualTo(RECORDED_OUT_OF_TIME_DECISION);
-        assertThat(values.get(0)).isEqualTo(YES);
+        verify(asylumCase, times(0)).write(asylumExtractor.capture(), valueCaptor.capture());
     }
 
 }

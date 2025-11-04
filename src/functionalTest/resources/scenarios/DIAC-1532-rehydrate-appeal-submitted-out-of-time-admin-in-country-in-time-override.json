@@ -2,7 +2,7 @@
   "description": "DIAC-1532 Rehydrated Case, Submitted Out of Time - In Time override, Admin, In Country",
   "request": {
     "uri": "/asylum/ccdAboutToStart",
-    "credentials": "LegalRepresentative",
+    "credentials": "AdminOfficer",
     "input": {
       "eventId": "submitAppeal",
       "state": "appealStarted",
@@ -28,8 +28,7 @@
         "submissionOutOfTime": "Yes",
         "homeOfficeDecisionDate": "{$TODAY-20}",
         "sourceOfAppeal": "rehydratedAppeal",
-        "submissionOutOfTime": "No",
-        "recordedOutOfTimeDecision": "No"
+        "submissionOutOfTime": "No"
       }
     }
   }
