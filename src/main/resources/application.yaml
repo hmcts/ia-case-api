@@ -257,6 +257,7 @@ security:
       - "applyForCosts"
       - "respondToCosts"
       - "addEvidenceForCosts"
+      - "addStatutoryTimeframe24Weeks"
     tribunal-caseworker:
       - "appellantInPersonManual"
       - "moveToPaymentPending"
@@ -278,7 +279,6 @@ security:
       - "generateDecisionAndReasons"
       - "sendDecisionAndReasons"
       - "addCaseNote"
-      - "updateStatutoryTimeframe24Weeks"
       - "uploadAddendumEvidence"
       - "editCaseListing"
       - "recordApplication"
@@ -343,6 +343,7 @@ security:
       - "uploadHearingRecording"
       - "turnOnNotifications"
       - "updateTribunalDecision"
+      - "addStatutoryTimeframe24Weeks"
     challenged-access-legal-operations:
       - "appellantInPersonManual"
       - "moveToPaymentPending"
@@ -449,7 +450,6 @@ security:
       - "generateDecisionAndReasons"
       - "sendDecisionAndReasons"
       - "addCaseNote"
-      - "updateStatutoryTimeframe24Weeks"
       - "uploadAddendumEvidence"
       - "editCaseListing"
       - "recordApplication"
@@ -1005,6 +1005,8 @@ security:
       - "decideCostsApplication"
       - "considerMakingCostsOrder"
       - "updateTribunalDecision"
+      - "addStatutoryTimeframe24Weeks"
+      - "removeStatutoryTimeframe24Weeks"
     senior-judge:
       - "generateDecisionAndReasons"
       - "endAppeal"
