@@ -120,7 +120,7 @@ public class MakeAnApplicationMidEvent implements PreSubmitCallbackHandler<Asylu
                 break;
             case CHANGE_DECISION_TYPE:
                 asylumCase.write(MAKE_AN_APPLICATION_DETAILS_LABEL,
-                    "Explain how the appellant now wants the appellant now wants the appeal to be decided and why they want to change");
+                    "Explain how the appellant now wants the appeal to be decided and why they want to change");
                 break;
             case SET_ASIDE_A_DECISION:
                 asylumCase.write(MAKE_AN_APPLICATION_DETAILS_LABEL,

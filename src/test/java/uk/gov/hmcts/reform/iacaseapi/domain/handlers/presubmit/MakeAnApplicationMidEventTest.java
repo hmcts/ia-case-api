@@ -196,7 +196,7 @@ class MakeAnApplicationMidEventTest {
             case CHANGE_DECISION_TYPE:
                 verify(asylumCase, times(1))
                     .write(MAKE_AN_APPLICATION_DETAILS_LABEL,
-                            "Explain how the appellant now wants the appellant now wants the appeal to be decided and why they want to change");
+                            "Explain how the appellant now wants the appeal to be decided and why they want to change");
                 break;
             case SET_ASIDE_A_DECISION:
                 verify(asylumCase, times(1))
