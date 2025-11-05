@@ -32,6 +32,7 @@ public class DbAppealReferenceNumberGenerator implements AppealReferenceNumberGe
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    @Override
     public String generate(
         long caseId,
         AppealType appealType) {
@@ -95,5 +96,51 @@ public class DbAppealReferenceNumberGenerator implements AppealReferenceNumberGe
             parameters,
             String.class
         );
+    }
+
+    /**
+     * Checks if a reference number already exists in the database.
+     * @param referenceNumber The reference number in format XX/00000/0000
+     * @return true if the reference number exists, false otherwise
+     */
+    @Override
+    public boolean referenceNumberExists(String referenceNumber) {
+        if (referenceNumber == null || referenceNumber.isEmpty()) {
+            throw new IllegalArgumentException("Reference number cannot be null or empty");
+        }
+
+        String[] parts = referenceNumber.split("/");
+        if (parts.length != 3) {
+            throw new IllegalArgumentException("Invalid reference number format. Expected format: XX/00000/0000");
+        }
+
+        String appealType = parts[0];
+        String sequence = parts[1];
+        String year = parts[2];
+
+        MapSqlParameterSource parameters = new MapSqlParameterSource();
+        parameters.addValue("appealType", appealType);
+        parameters.addValue("sequence", sequence);
+        parameters.addValue("year", year);
+
+        try {
+            Integer count = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) "
+                + "  FROM ia_case_api.appeal_reference_numbers "
+                + " WHERE type = :appealType "
+                + "   AND sequence = :sequence "
+                + "   AND year = :year;",
+                parameters,
+                Integer.class
+            );
+
+            boolean exists = count != null && count > 0;
+            log.debug("Reference number {} exists: {}", referenceNumber, exists);
+            return exists;
+
+        } catch (Exception e) {
+            log.error("Error checking if reference number exists: {}", referenceNumber, e);
+            throw new IllegalStateException("Failed to check reference number existence", e);
+        }
     }
 }

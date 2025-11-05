@@ -140,8 +140,6 @@ public enum AsylumCaseFieldDefinition {
     APPEAL_REFERENCE_NUMBER(
         "appealReferenceNumber", new TypeReference<String>(){}),
 
-    ARIA_APPEAL_REFERENCE_NUMBER(
-            "ariaAppealReferenceNumber", new TypeReference<String>(){}),
     APPELLANT_NAME_FOR_DISPLAY(
         "appellantNameForDisplay", new TypeReference<String>(){}),
 

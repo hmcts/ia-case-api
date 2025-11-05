@@ -8,4 +8,7 @@ public interface AppealReferenceNumberGenerator {
         long caseId,
         AppealType appealType
     );
+
+    boolean referenceNumberExists(String referenceNumber);
+
 }

@@ -66,6 +66,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.AppealReferenceNumberValidator;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -89,6 +90,8 @@ class StartAppealMidEventTest {
     private CaseDetails<AsylumCase> caseDetailsBefore;
     @Mock
     private AsylumCase asylumCase;
+    @Mock
+    private AppealReferenceNumberValidator appealReferenceNumberValidator;
 
     private String correctHomeOfficeReferenceFormatCid = "123456789";
     private String correctHomeOfficeReferenceFormatUan = "1234-5678-9876-5432";
@@ -105,7 +108,7 @@ class StartAppealMidEventTest {
 
     @BeforeEach
     public void setUp() {
-        startAppealMidEvent = new StartAppealMidEvent();
+        startAppealMidEvent = new StartAppealMidEvent(appealReferenceNumberValidator);
 
         when(callback.getEvent()).thenReturn(Event.START_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);

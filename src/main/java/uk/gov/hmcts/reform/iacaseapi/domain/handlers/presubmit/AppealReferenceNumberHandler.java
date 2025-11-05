@@ -1,11 +1,5 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
-import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
-
-import java.util.Arrays;
-import java.util.Optional;
-
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
@@ -19,6 +13,17 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.AppealReferenceNumberGenerator;
+
+import java.util.Arrays;
+import java.util.Optional;
+
+import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_REFERENCE_NUMBER;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_SUBMISSION_DATE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_SUBMISSION_INTERNAL_DATE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ADMIN;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SOURCE_OF_APPEAL;
 
 @Service
 public class AppealReferenceNumberHandler implements PreSubmitCallbackHandler<AsylumCase> {
@@ -77,29 +82,20 @@ public class AppealReferenceNumberHandler implements PreSubmitCallbackHandler<As
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
                 new PreSubmitCallbackResponse<>(asylumCase);
 
-        if (hasNoExistingReferenceNo(asylumCase)) {
+        if (hasNoExistingReferenceNo(asylumCase) && !isRehydratedAppeal(asylumCase)) {
 
-            if (isReHyderateCase(asylumCase)) {
-                String reHydratedAppealReferenceNumber =
-                        asylumCase
-                                .read(ARIA_APPEAL_REFERENCE_NUMBER, String.class)
-                                .orElseThrow(() -> new IllegalStateException("ariaAppealReferenceNumber is not present"));
+            AppealType appealType =
+                    asylumCase
+                            .read(APPEAL_TYPE, AppealType.class)
+                            .orElseThrow(() -> new IllegalStateException("appealType is not present"));
 
-                asylumCase.write(APPEAL_REFERENCE_NUMBER, reHydratedAppealReferenceNumber);
-            } else {
-                AppealType appealType =
-                        asylumCase
-                                .read(APPEAL_TYPE, AppealType.class)
-                                .orElseThrow(() -> new IllegalStateException("appealType is not present"));
+            String appealReferenceNumber =
+                    appealReferenceNumberGenerator.generate(
+                            callback.getCaseDetails().getId(),
+                            appealType
+                    );
 
-                String appealReferenceNumber =
-                        appealReferenceNumberGenerator.generate(
-                                callback.getCaseDetails().getId(),
-                                appealType
-                        );
-
-                asylumCase.write(APPEAL_REFERENCE_NUMBER, appealReferenceNumber);
-            }
+            asylumCase.write(APPEAL_REFERENCE_NUMBER, appealReferenceNumber);
             asylumCase.write(APPEAL_SUBMISSION_DATE, dateProvider.now().toString());
 
             YesOrNo isAdmin = asylumCase.read(IS_ADMIN, YesOrNo.class).orElse(YesOrNo.NO);
@@ -114,11 +110,11 @@ public class AppealReferenceNumberHandler implements PreSubmitCallbackHandler<As
     private static boolean hasNoExistingReferenceNo(AsylumCase asylumCase) {
         Optional<String> existingAppealReferenceNumber = asylumCase.read(APPEAL_REFERENCE_NUMBER);
 
-        return !existingAppealReferenceNumber.isPresent()
+        return existingAppealReferenceNumber.isEmpty()
                 || existingAppealReferenceNumber.get().equals(DRAFT);
     }
 
-    private static boolean isReHyderateCase(AsylumCase asylumCase) {
+    private static boolean isRehydratedAppeal(AsylumCase asylumCase) {
         Optional<String> sourceOfAppeal = asylumCase.read(SOURCE_OF_APPEAL);
 
         return sourceOfAppeal.isPresent() && sourceOfAppeal.get().equals(SourceOfAppeal.REHYDRATED_APPEAL.getValue());
