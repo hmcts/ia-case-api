@@ -54,7 +54,7 @@ class AppealOutOfCountryEditAppealAipHandlerTest {
 
     @ParameterizedTest
     @EnumSource(value = Event.class, names = {
-            "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT"
+        "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT"
     })
     void should_clear_aip_fields_for_appellant_in_uk_change_to_out_of_country(Event event) {
 
@@ -80,7 +80,7 @@ class AppealOutOfCountryEditAppealAipHandlerTest {
 
     @ParameterizedTest
     @EnumSource(value = Event.class, names = {
-            "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT"
+        "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT"
     })
     void should_clear_aip_fields_for_appellant_in_uk_change_to_in_country(Event event) {
 
@@ -106,7 +106,7 @@ class AppealOutOfCountryEditAppealAipHandlerTest {
 
     @ParameterizedTest
     @EnumSource(value = Event.class, names = {
-            "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT"
+        "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT"
     })
     void should_not_clear_aip_fields_for_no_appellant_in_uk_change(Event event) {
 
@@ -131,7 +131,7 @@ class AppealOutOfCountryEditAppealAipHandlerTest {
 
     @ParameterizedTest
     @EnumSource(value = Event.class, names = {
-            "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT"
+        "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT"
     })
     void should_clear_aip_fields_for_an_appeal_type_change(Event event) {
 
@@ -160,7 +160,7 @@ class AppealOutOfCountryEditAppealAipHandlerTest {
 
     @ParameterizedTest
     @EnumSource(value = Event.class, names = {
-            "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT"
+        "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT"
     })
     void should_not_clear_aip_fields_when_no_change_to_appellant_in_uk_and_appeal_type_fields(Event event) {
 
@@ -188,7 +188,7 @@ class AppealOutOfCountryEditAppealAipHandlerTest {
 
     @ParameterizedTest
     @EnumSource(value = Event.class, names = {
-            "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT"
+        "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT"
     })
     void should_clear_aip_fields_for_an_outside_uk_when_application_made_change(Event event) {
 
@@ -220,7 +220,7 @@ class AppealOutOfCountryEditAppealAipHandlerTest {
 
     @ParameterizedTest
     @EnumSource(value = Event.class, names = {
-            "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT"
+        "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT"
     })
     void should_not_clear_aip_fields_when_no_change_to_appellant_in_uk_and_appeal_type_and_outside_uk_when_application_made_change_fields(Event event) {
 
@@ -248,7 +248,7 @@ class AppealOutOfCountryEditAppealAipHandlerTest {
 
     @ParameterizedTest
     @EnumSource(value = Event.class, names = {
-            "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT"
+        "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT"
     })
     void should_clear_sponsor_fields_for_when_has_sponsor_changed_to_no(Event event) {
 
@@ -297,7 +297,7 @@ class AppealOutOfCountryEditAppealAipHandlerTest {
 
     @ParameterizedTest
     @EnumSource(value = Event.class, names = {
-            "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT"
+        "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT"
     })
     void should_write_to_sponsor_email_and_sponsor_mobile_phone_fields_when_sponsor_subscriptions_available(Event event) {
 
@@ -334,7 +334,7 @@ class AppealOutOfCountryEditAppealAipHandlerTest {
 
     @ParameterizedTest
     @EnumSource(value = Event.class, names = {
-            "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT"
+        "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT"
     })
     void should_write_to_sponsor_email_field_when_sponsor_email_subscription_available(Event event) {
 
@@ -371,7 +371,7 @@ class AppealOutOfCountryEditAppealAipHandlerTest {
 
     @ParameterizedTest
     @EnumSource(value = Event.class, names = {
-            "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT"
+        "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT"
     })
     void should_write_to_sponsor_mobile_phone_field_when_sponsor_phone_subscription_available(Event event) {
 
@@ -408,7 +408,7 @@ class AppealOutOfCountryEditAppealAipHandlerTest {
 
     @ParameterizedTest
     @EnumSource(value = Event.class, names = {
-            "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT"
+        "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT"
     })
     void should_write_to_admin_sponsor_email_and_mobile_when_is_admin(Event event) {
         Subscriber subscriber = new Subscriber(
@@ -448,7 +448,7 @@ class AppealOutOfCountryEditAppealAipHandlerTest {
 
     @ParameterizedTest
     @EnumSource(value = Event.class, names = {
-            "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT"
+        "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT"
     })
     void should_write_to_normal_sponsor_fields_when_not_admin(Event event) {
         Subscriber subscriber = new Subscriber(
