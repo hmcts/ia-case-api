@@ -256,6 +256,7 @@ sonarqube {
                 "src/main/java/uk/gov/hmcts/reform/iacaseapi/Application.java," +
                 "src/main/java/uk/gov/hmcts/reform/iacaseapi/infrastructure/security/idam/IdamAuthoritiesConverter.java," +
                 "src/main/java/uk/gov/hmcts/reform/iacaseapi/domain/entities/CaseFlag.java"
+        property "sonar.cpd.exclusions", "src/main/java/uk/gov/hmcts/reform/iacaseapi/domain/handlers/**"
     }
 }
 

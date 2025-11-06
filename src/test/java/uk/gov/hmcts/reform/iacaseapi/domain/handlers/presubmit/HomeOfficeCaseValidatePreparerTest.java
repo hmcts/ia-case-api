@@ -82,23 +82,7 @@ class HomeOfficeCaseValidatePreparerTest {
                 .hasMessage("AppealType is not present.");
     }
 
-    @ParameterizedTest
-    @EnumSource(value = AppealType.class, names = { "PA", "RP", "DC", "EA", "HU", "AG" })
-    void handle_should_return_error_for_detained_appeals(AppealType appealType) {
 
-        when(callback.getEvent()).thenReturn(Event.REQUEST_HOME_OFFICE_DATA);
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
-
-        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
-        when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
-
-        PreSubmitCallbackResponse<AsylumCase> response =
-            homeOfficeCaseValidatePreparer.handle(ABOUT_TO_START, callback);
-
-        assertThat(response).isNotNull();
-        assertThat(response.getErrors()).contains("You cannot request Home Office data for this appeal");
-    }
 
     @ParameterizedTest
     @EnumSource(value = AppealType.class, names = { "PA", "RP", "DC", "EA", "HU", "AG" })
@@ -165,7 +149,7 @@ class HomeOfficeCaseValidatePreparerTest {
 
     @ParameterizedTest
     @MethodSource("eventAndAppealTypesData")
-    void handler_should_not_invoke_homeoffice_api(Event event, AppealType appealType) {
+    void handler_should_invoke_homeoffice_api_for_detained_appeals(Event event, AppealType appealType) {
 
         when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
         when(featureToggler.getValue("home-office-uan-pa-rp-feature", false)).thenReturn(true);
@@ -177,20 +161,19 @@ class HomeOfficeCaseValidatePreparerTest {
         PreSubmitCallbackResponse<AsylumCase> response =
             homeOfficeCaseValidatePreparer.handle(ABOUT_TO_START, callback);
 
-        if (event != REQUEST_HOME_OFFICE_DATA) {
-            assertThat(response).isNotNull();
-            assertThat(response.getData()).isNotEmpty();
-            assertThat(response.getData()).isEqualTo(asylumCase);
-            assertThat(response.getErrors()).isEmpty();
+        assertThat(response).isNotNull();
+        assertThat(response.getData()).isNotEmpty();
+        assertThat(response.getData()).isEqualTo(asylumCase);
+        assertThat(response.getErrors()).isEmpty();
 
+        if (Arrays.asList(PA, RP).contains(appealType)) {
+            verify(homeOfficeApi, times(1)).aboutToStart(callback);
+            verify(asylumCase, times(1)).write(
+                IS_HOME_OFFICE_INTEGRATION_ENABLED, YesOrNo.YES);
+        } else {
             verify(homeOfficeApi, times(0)).aboutToStart(callback);
-            if (Arrays.asList(PA, RP).contains(appealType)) {
-                verify(asylumCase, times(1)).write(
-                    IS_HOME_OFFICE_INTEGRATION_ENABLED, YesOrNo.YES);
-            } else {
-                verify(asylumCase, times(0)).write(
-                    IS_HOME_OFFICE_INTEGRATION_ENABLED, YesOrNo.YES);
-            }
+            verify(asylumCase, times(0)).write(
+                IS_HOME_OFFICE_INTEGRATION_ENABLED, YesOrNo.YES);
         }
     }
 
