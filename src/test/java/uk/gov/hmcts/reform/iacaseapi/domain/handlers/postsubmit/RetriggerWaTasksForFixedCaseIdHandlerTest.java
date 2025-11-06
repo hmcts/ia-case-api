@@ -9,6 +9,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -27,7 +28,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-@SuppressWarnings("unchecked")
 public class RetriggerWaTasksForFixedCaseIdHandlerTest {
 
 
@@ -62,10 +62,9 @@ public class RetriggerWaTasksForFixedCaseIdHandlerTest {
     @BeforeEach
     public void setUp() {
         retriggerWaTasksForFixedCaseIdHandler = new RetriggerWaTasksForFixedCaseIdHandler(
-                true,
-                "/retriggerWaTasksCaseList.json",
-                dateProvider,
-                scheduler
+            true,
+            dateProvider,
+            scheduler
         );
     }
 
@@ -86,12 +85,11 @@ public class RetriggerWaTasksForFixedCaseIdHandlerTest {
     @Test
     void handle_callback_should_return_false_timed_event_service_disabled() {
         retriggerWaTasksForFixedCaseIdHandler =
-                new RetriggerWaTasksForFixedCaseIdHandler(
-                        false,
-                        "/retriggerWaTasksCaseList.json",
-                        dateProvider,
-                        scheduler
-                );
+            new RetriggerWaTasksForFixedCaseIdHandler(
+                false,
+                dateProvider,
+                scheduler
+            );
         boolean canHandle = retriggerWaTasksForFixedCaseIdHandler.canHandle(callbackStage, callback);
         assertThat(canHandle).isEqualTo(false);
     }
@@ -99,46 +97,43 @@ public class RetriggerWaTasksForFixedCaseIdHandlerTest {
     @Test
     void handling_should_throw_if_cannot_handle() {
         retriggerWaTasksForFixedCaseIdHandler =
-                new RetriggerWaTasksForFixedCaseIdHandler(
-                        timedEventServiceEnabled,
-                        "/caseIdForRetrigger.json",
-                        dateProvider,
-                        scheduler
-                );
+            new RetriggerWaTasksForFixedCaseIdHandler(
+                timedEventServiceEnabled,
+                dateProvider,
+                scheduler
+            );
         assertThatThrownBy(
-                () -> retriggerWaTasksForFixedCaseIdHandler.handle(callbackStage, callback))
-                .hasMessage("Cannot handle callback")
-                .isExactlyInstanceOf(IllegalStateException.class);
+            () -> retriggerWaTasksForFixedCaseIdHandler.handle(callbackStage, callback))
+            .hasMessage("Cannot handle callback")
+            .isExactlyInstanceOf(IllegalStateException.class);
     }
 
     @Test
     void handling_should_throw_if_null_callback() {
         retriggerWaTasksForFixedCaseIdHandler =
-                new RetriggerWaTasksForFixedCaseIdHandler(
-                        timedEventServiceEnabled,
-                        "/retriggerWaTasksCaseList.json",
-                        dateProvider,
-                        scheduler
-                );
+            new RetriggerWaTasksForFixedCaseIdHandler(
+                timedEventServiceEnabled,
+                dateProvider,
+                scheduler
+            );
         assertThatThrownBy(
-                () -> retriggerWaTasksForFixedCaseIdHandler.handle(null, callback))
-                .hasMessage("callbackStage must not be null")
-                .isExactlyInstanceOf(NullPointerException.class);
+            () -> retriggerWaTasksForFixedCaseIdHandler.handle(null, callback))
+            .hasMessage("callbackStage must not be null")
+            .isExactlyInstanceOf(NullPointerException.class);
         assertThatThrownBy(
-                () -> retriggerWaTasksForFixedCaseIdHandler.handle(callbackStage, null))
-                .hasMessage("callback must not be null")
-                .isExactlyInstanceOf(NullPointerException.class);
+            () -> retriggerWaTasksForFixedCaseIdHandler.handle(callbackStage, null))
+            .hasMessage("callback must not be null")
+            .isExactlyInstanceOf(NullPointerException.class);
     }
 
     @Test
-    void should_not_schedule_anything_when_read_json_fails()  {
+    void should_not_schedule_anything_when_case_list_field_null() {
         retriggerWaTasksForFixedCaseIdHandler =
-                new RetriggerWaTasksForFixedCaseIdHandler(
-                        timedEventServiceEnabled,
-                        "/",
-                        dateProvider,
-                        scheduler
-                );
+            new RetriggerWaTasksForFixedCaseIdHandler(
+                timedEventServiceEnabled,
+                dateProvider,
+                scheduler
+            );
         when(callback.getEvent()).thenReturn(Event.RE_TRIGGER_WA_BULK_TASKS);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -148,68 +143,105 @@ public class RetriggerWaTasksForFixedCaseIdHandlerTest {
     }
 
     @Test
-    void should_not_schedule_anything_when_no_case_ids()  {
-        String testFilePath = "/retriggerWaTasksEmptyCaseList.json";
+    void should_not_schedule_anything_when_case_list_field_empty() {
         retriggerWaTasksForFixedCaseIdHandler =
-                new RetriggerWaTasksForFixedCaseIdHandler(
-                        timedEventServiceEnabled,
-                        testFilePath,
-                        dateProvider,
-                        scheduler
-                );
+            new RetriggerWaTasksForFixedCaseIdHandler(
+                timedEventServiceEnabled,
+                dateProvider,
+                scheduler
+            );
         when(callback.getEvent()).thenReturn(Event.RE_TRIGGER_WA_BULK_TASKS);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(dateProvider.nowWithTime()).thenReturn(now);
+        when(asylumCase.read(AsylumCaseFieldDefinition.CASE_ID_LIST, String.class))
+            .thenReturn(java.util.Optional.of(""));
         retriggerWaTasksForFixedCaseIdHandler.handle(callbackStage, callback);
         verify(scheduler, times(0)).scheduleTimedEvent(anyString(), any(ZonedDateTime.class), any(Event.class), anyString());
     }
 
     @Test
-    void should_schedule_re_trigger_wa_tasks_5_minutes_in_future_for_all_case_ids() {
-
-        String testFilePath = "/retriggerWaTasksCaseList.json";
+    void should_only_schedule_for_valid_case_ids() {
         retriggerWaTasksForFixedCaseIdHandler =
-                new RetriggerWaTasksForFixedCaseIdHandler(
-                        timedEventServiceEnabled,
-                        testFilePath,
-                        dateProvider,
-                        scheduler
-                );
+            new RetriggerWaTasksForFixedCaseIdHandler(
+                timedEventServiceEnabled,
+                dateProvider,
+                scheduler
+            );
         when(callback.getEvent()).thenReturn(Event.RE_TRIGGER_WA_BULK_TASKS);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(dateProvider.nowWithTime()).thenReturn(now);
-
+        when(asylumCase.read(AsylumCaseFieldDefinition.CASE_ID_LIST, String.class))
+            .thenReturn(java.util.Optional.of("1,2,3,5,6,8,2,1,26,8,1677132005196104"));
         retriggerWaTasksForFixedCaseIdHandler.handle(callbackStage, callback);
-        verify(scheduler, times(10)).scheduleTimedEvent(
-                caseIdCaptor.capture(), 
-                scheduledDateCaptor.capture(), 
-                eventCaptor.capture(),
-                timedEventIdCaptor.capture()
+        verify(scheduler, times(1)).scheduleTimedEvent(
+            caseIdCaptor.capture(),
+            scheduledDateCaptor.capture(),
+            eventCaptor.capture(),
+            timedEventIdCaptor.capture()
         );
 
         ZonedDateTime timeToSchedule = ZonedDateTime.of(now, ZoneId.systemDefault()).plusMinutes(5);
         String finalCaseId = caseIdCaptor.getValue();
         ZonedDateTime finalScheduledDate = scheduledDateCaptor.getValue();
         Event finalEvent = eventCaptor.getValue();
-        
+
+        assertEquals("1677132005196104", finalCaseId);
+        assertEquals(timeToSchedule, finalScheduledDate);
+        assertEquals(Event.RE_TRIGGER_WA_TASKS, finalEvent);
+
+        List<String> capturedCaseIds = caseIdCaptor.getAllValues();
+        List<String> expectedCaseIds = List.of("1677132005196104");
+
+        assertEquals(expectedCaseIds, capturedCaseIds);
+    }
+
+    @Test
+    void should_schedule_re_trigger_wa_tasks_5_minutes_in_future_for_all_case_ids() {
+        retriggerWaTasksForFixedCaseIdHandler =
+            new RetriggerWaTasksForFixedCaseIdHandler(
+                timedEventServiceEnabled,
+                dateProvider,
+                scheduler
+            );
+        when(callback.getEvent()).thenReturn(Event.RE_TRIGGER_WA_BULK_TASKS);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(dateProvider.nowWithTime()).thenReturn(now);
+        when(asylumCase.read(AsylumCaseFieldDefinition.CASE_ID_LIST, String.class))
+            .thenReturn(java.util.Optional.of("5260728023204485,7829484608979593,3007004947258233," +
+                "4719620009252072,6797092066725243,9301281768878771,8509676174519453," +
+                "1682542357170697,3673342967892569,1677132005196104"));
+        retriggerWaTasksForFixedCaseIdHandler.handle(callbackStage, callback);
+        verify(scheduler, times(10)).scheduleTimedEvent(
+            caseIdCaptor.capture(),
+            scheduledDateCaptor.capture(),
+            eventCaptor.capture(),
+            timedEventIdCaptor.capture()
+        );
+
+        ZonedDateTime timeToSchedule = ZonedDateTime.of(now, ZoneId.systemDefault()).plusMinutes(5);
+        String finalCaseId = caseIdCaptor.getValue();
+        ZonedDateTime finalScheduledDate = scheduledDateCaptor.getValue();
+        Event finalEvent = eventCaptor.getValue();
+
         assertEquals("1677132005196104", finalCaseId);
         assertEquals(timeToSchedule, finalScheduledDate);
         assertEquals(Event.RE_TRIGGER_WA_TASKS, finalEvent);
 
         List<String> capturedCaseIds = caseIdCaptor.getAllValues();
         List<String> expectedCaseIds = Arrays.asList(
-                "5260728023204485",
-                "7829484608979593",
-                "3007004947258233",
-                "4719620009252072",
-                "6797092066725243",
-                "9301281768878771",
-                "8509676174519453",
-                "1682542357170697",
-                "3673342967892569",
-                "1677132005196104"
+            "5260728023204485",
+            "7829484608979593",
+            "3007004947258233",
+            "4719620009252072",
+            "6797092066725243",
+            "9301281768878771",
+            "8509676174519453",
+            "1682542357170697",
+            "3673342967892569",
+            "1677132005196104"
         );
 
         assertEquals(expectedCaseIds, capturedCaseIds);
