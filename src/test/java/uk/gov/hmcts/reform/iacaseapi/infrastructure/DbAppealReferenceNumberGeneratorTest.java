@@ -318,8 +318,8 @@ class DbAppealReferenceNumberGeneratorTest {
 
             MapSqlParameterSource capturedParameters = parametersCaptor.getValue();
             assertEquals("RP", capturedParameters.getValue("appealType"));
-            assertEquals("67890", capturedParameters.getValue("sequence"));
-            assertEquals("2019", capturedParameters.getValue("year"));
+            assertEquals(67890, capturedParameters.getValue("sequence"));
+            assertEquals(2019, capturedParameters.getValue("year"));
         }
 
         @Test
@@ -335,6 +335,24 @@ class DbAppealReferenceNumberGeneratorTest {
             boolean exists = dbAppealReferenceNumberGenerator.referenceNumberExists(referenceNumber);
 
             assertTrue(exists);
+        }
+
+        @Test
+        void should_throw_exception_when_sequence_is_not_numeric() {
+            String invalidReferenceNumber = "PA/abc123/2017";
+
+            assertThatThrownBy(() -> dbAppealReferenceNumberGenerator.referenceNumberExists(invalidReferenceNumber))
+                .isExactlyInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("Invalid reference number format");
+        }
+
+        @Test
+        void should_throw_exception_when_year_is_not_numeric() {
+            String invalidReferenceNumber = "PA/12345/abcd";
+
+            assertThatThrownBy(() -> dbAppealReferenceNumberGenerator.referenceNumberExists(invalidReferenceNumber))
+                .isExactlyInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("Invalid reference number format");
         }
     }
 }

@@ -115,8 +115,14 @@ public class DbAppealReferenceNumberGenerator implements AppealReferenceNumberGe
         }
 
         String appealType = parts[0];
-        String sequence = parts[1];
-        String year = parts[2];
+        int sequence;
+        int year;
+        try {
+            sequence = Integer.parseInt(parts[1]);
+            year = Integer.parseInt(parts[2]);
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Invalid reference number format. Expected format: XX/00000/0000", e);
+        }
 
         MapSqlParameterSource parameters = new MapSqlParameterSource();
         parameters.addValue("appealType", appealType);
