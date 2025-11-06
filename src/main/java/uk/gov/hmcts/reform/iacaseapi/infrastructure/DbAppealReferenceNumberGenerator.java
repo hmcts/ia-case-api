@@ -141,7 +141,7 @@ public class DbAppealReferenceNumberGenerator implements AppealReferenceNumberGe
             );
 
             boolean exists = count != null && count > 0;
-            log.debug("Reference number {} exists: {}", referenceNumber, exists);
+            log.info("Reference number {} exists: {}", referenceNumber, exists);
             return exists;
 
         } catch (Exception e) {

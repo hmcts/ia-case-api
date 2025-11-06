@@ -115,8 +115,8 @@ public class AppealReferenceNumberHandler implements PreSubmitCallbackHandler<As
     }
 
     private static boolean isRehydratedAppeal(AsylumCase asylumCase) {
-        Optional<String> sourceOfAppeal = asylumCase.read(SOURCE_OF_APPEAL);
+        Optional<SourceOfAppeal> sourceOfAppeal = asylumCase.read(SOURCE_OF_APPEAL, SourceOfAppeal.class);
 
-        return sourceOfAppeal.isPresent() && sourceOfAppeal.get().equals(SourceOfAppeal.REHYDRATED_APPEAL.getValue());
+        return sourceOfAppeal.isPresent() && sourceOfAppeal.get() == SourceOfAppeal.REHYDRATED_APPEAL;
     }
 }
