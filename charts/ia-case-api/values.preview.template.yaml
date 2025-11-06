@@ -1486,7 +1486,7 @@ ia-cron-hearings-processor:
   enabled: true
   job:
     kind: CronJob
-    image: 'hmctspublic.azurecr.io/ia/hearings-api:pr-498'
+    image: 'hmctspublic.azurecr.io/ia/hearings-api:latest'
     releaseNameOverride: ${SERVICE_NAME}-ia-cron-hearings-processor
     name: ${SERVICE_NAME}-ia-cron-hearings-processor
     schedule: "*/5 * * * *"
