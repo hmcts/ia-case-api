@@ -1,8 +1,11 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.clients;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
 
 import java.util.Optional;
+
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
@@ -10,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
@@ -17,6 +21,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.AccessTokenProvider;
 
 @Service
+@Slf4j
 public class AsylumCaseCallbackApiDelegator {
 
     private static final String SERVICE_AUTHORIZATION = "ServiceAuthorization";
@@ -46,22 +51,52 @@ public class AsylumCaseCallbackApiDelegator {
 
         HttpEntity<Callback<AsylumCase>> requestEntity = new HttpEntity<>(callback, setHeaders(serviceAuthorizationToken,accessToken));
 
+        AsylumCase asylumCase0 = callback.getCaseDetails().getCaseData();
+        log.info("----------AsylumCaseCallbackApiDelegator111 {}", endpoint);
+        Optional<AppealType> appealType0Opt = asylumCase0.read(APPEAL_TYPE, AppealType.class);
+        log.info("{}", asylumCase0);
+        log.info("{}", requestEntity.getBody().getCaseDetails().getCaseData());
+        log.info("{}", appealType0Opt);
+        log.info("----------AsylumCaseCallbackApiDelegator222 {}", endpoint);
+
         try {
 
-            return Optional
-                .of(restTemplate
+            ResponseEntity<PreSubmitCallbackResponse<AsylumCase>> res = restTemplate
                     .exchange(
-                        endpoint,
-                        HttpMethod.POST,
-                        requestEntity,
-                        new ParameterizedTypeReference<PreSubmitCallbackResponse<AsylumCase>>() {
-                        }
-                    )
-                )
-                .map(ResponseEntity::getBody)
-                .map(PreSubmitCallbackResponse::getData)
-                .orElse(new AsylumCase());
-
+                            endpoint,
+                            HttpMethod.POST,
+                            requestEntity,
+                            new ParameterizedTypeReference<PreSubmitCallbackResponse<AsylumCase>>() {
+                            }
+                    );
+            log.info("----------AsylumCaseCallbackApiDelegator333000 res == null: {}", res == null);
+            if (res != null) {
+                log.info("----------AsylumCaseCallbackApiDelegator333000 res.getBody() == null: {}", res.getBody() == null);
+                if (res.getBody() != null) {
+                    log.info(
+                            "----------AsylumCaseCallbackApiDelegator333000 res.getBody().getData() == null: {}",
+                            res.getBody().getData() == null
+                    );
+                }
+            }
+            log.info("----------AsylumCaseCallbackApiDelegator333000 res == null: {}", res == null);
+            log.info("----------AsylumCaseCallbackApiDelegator333000 res.getHeaders(): {}", res.getHeaders());
+            for (String key: res.getHeaders().keySet()) {
+                log.info("----------AsylumCaseCallbackApiDelegator333000 res header: {} - {}", key, res.getHeaders().get(key));
+            }
+            AsylumCase asylumCase = Optional.of(res)
+                    .map(ResponseEntity::getBody)
+                    .map(PreSubmitCallbackResponse::getData)
+                    .orElse(new AsylumCase());
+            log.info("----------AsylumCaseCallbackApiDelegator333");
+            Optional<AppealType> appealTypeOpt = asylumCase.read(APPEAL_TYPE, AppealType.class);
+            log.info("{}", appealTypeOpt);
+            log.info("----------AsylumCaseCallbackApiDelegator333 body");
+            log.info("{}", res.getBody());
+            log.info("----------AsylumCaseCallbackApiDelegator333 asylumCase");
+            log.info("{}", asylumCase);
+            log.info("----------AsylumCaseCallbackApiDelegator444");
+            return asylumCase;
         } catch (RestClientException e) {
 
             throw new AsylumCaseServiceResponseException(
