@@ -74,7 +74,7 @@ public class AppealReferenceNumberHandler implements PreSubmitCallbackHandler<As
                         .getCaseDetails()
                         .getCaseData();
 
-        if (callback.getEvent() == Event.START_APPEAL) {
+        if (callback.getEvent() == Event.START_APPEAL  && !isRehydratedAppeal(asylumCase)) {
             asylumCase.write(APPEAL_REFERENCE_NUMBER, DRAFT);
             return new PreSubmitCallbackResponse<>(asylumCase);
         }
