@@ -47,7 +47,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 public class HomeOfficeDecisionDateValidatorTest {
 
     private static final String HOME_OFFICE_DECISION_LETTER_PAGE_ID = "homeOfficeDecisionLetter";
-    private static final String ENTRY_CLEARANCE_DECISION_PAGE_ID = "entryClearanceDecision";
+    private static final String ENTRY_CLEARANCE_DECISION_LETTER_PAGE_ID = "entryClearanceDecisionLetter";
     @Mock
     private Callback<AsylumCase> callback;
     @Mock
@@ -72,7 +72,7 @@ public class HomeOfficeDecisionDateValidatorTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = { HOME_OFFICE_DECISION_LETTER_PAGE_ID, ENTRY_CLEARANCE_DECISION_PAGE_ID, ""})
+    @ValueSource(strings = { HOME_OFFICE_DECISION_LETTER_PAGE_ID, ENTRY_CLEARANCE_DECISION_LETTER_PAGE_ID, ""})
 
     void it_can_handle_callback_decision(String pageId) {
         for (Event event : Event.values()) {
@@ -84,7 +84,7 @@ public class HomeOfficeDecisionDateValidatorTest {
 
                 if ((event == Event.START_APPEAL || event == Event.EDIT_APPEAL)
                     && callbackStage == MID_EVENT
-                    && (callback.getPageId().equals(HOME_OFFICE_DECISION_LETTER_PAGE_ID) || callback.getPageId().equals(ENTRY_CLEARANCE_DECISION_PAGE_ID))) {
+                    && (callback.getPageId().equals(HOME_OFFICE_DECISION_LETTER_PAGE_ID) || callback.getPageId().equals(ENTRY_CLEARANCE_DECISION_LETTER_PAGE_ID))) {
                     assertTrue(canHandle);
                 } else {
                     assertFalse(canHandle);
@@ -172,7 +172,7 @@ public class HomeOfficeDecisionDateValidatorTest {
 
     @Test
     void should_error_when_date_is_future_ec() {
-        when(callback.getPageId()).thenReturn(ENTRY_CLEARANCE_DECISION_PAGE_ID);
+        when(callback.getPageId()).thenReturn(ENTRY_CLEARANCE_DECISION_LETTER_PAGE_ID);
         when(asylumCase.read(AsylumCaseFieldDefinition.DATE_ENTRY_CLEARANCE_DECISION, String.class))
             .thenReturn(Optional.of(tomorrow));
 
@@ -238,7 +238,7 @@ public class HomeOfficeDecisionDateValidatorTest {
 
     @Test
     void should_not_error_when_date_is_not_future_ec() {
-        when(callback.getPageId()).thenReturn(ENTRY_CLEARANCE_DECISION_PAGE_ID);
+        when(callback.getPageId()).thenReturn(ENTRY_CLEARANCE_DECISION_LETTER_PAGE_ID);
         when(asylumCase.read(AsylumCaseFieldDefinition.DATE_ENTRY_CLEARANCE_DECISION, String.class))
             .thenReturn(Optional.of(today));
 
@@ -294,7 +294,7 @@ public class HomeOfficeDecisionDateValidatorTest {
 
     @Test
     void should_error_when_date_is_not_there_ec() {
-        when(callback.getPageId()).thenReturn(ENTRY_CLEARANCE_DECISION_PAGE_ID);
+        when(callback.getPageId()).thenReturn(ENTRY_CLEARANCE_DECISION_LETTER_PAGE_ID);
         when(asylumCase.read(AsylumCaseFieldDefinition.DATE_ENTRY_CLEARANCE_DECISION, String.class))
             .thenReturn(Optional.empty());
         

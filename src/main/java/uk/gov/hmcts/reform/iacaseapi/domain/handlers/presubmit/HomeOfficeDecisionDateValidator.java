@@ -29,7 +29,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 public class HomeOfficeDecisionDateValidator implements PreSubmitCallbackHandler<AsylumCase> {
 
     private static final String HOME_OFFICE_DECISION_LETTER_PAGE_ID = "homeOfficeDecisionLetter";
-    private static final String ENTRY_CLEARANCE_DECISION_PAGE_ID = "entryClearanceDecision";
+    private static final String ENTRY_CLEARANCE_DECISION_LETTER_PAGE_ID = "entryClearanceDecisionLetter";
 
     public boolean canHandle(
         PreSubmitCallbackStage callbackStage,
@@ -43,7 +43,7 @@ public class HomeOfficeDecisionDateValidator implements PreSubmitCallbackHandler
 
         return callbackStage == PreSubmitCallbackStage.MID_EVENT
                && (event.equals(START_APPEAL) || event.equals(EDIT_APPEAL))
-               && (pageId.equals(HOME_OFFICE_DECISION_LETTER_PAGE_ID) || pageId.equals(ENTRY_CLEARANCE_DECISION_PAGE_ID));
+               && (pageId.equals(HOME_OFFICE_DECISION_LETTER_PAGE_ID) || pageId.equals(ENTRY_CLEARANCE_DECISION_LETTER_PAGE_ID));
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(

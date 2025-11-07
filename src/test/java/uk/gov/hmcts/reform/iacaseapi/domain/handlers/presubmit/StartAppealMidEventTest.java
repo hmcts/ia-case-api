@@ -70,7 +70,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 @SuppressWarnings("unchecked")
 class StartAppealMidEventTest {
 
-    private static final String HOME_OFFICE_DECISION_PAGE_ID = "homeOfficeDecision";
+    private static final String HOME_OFFICE_REFERENCE_NUMBER_PAGE_ID = "homeOfficeReferenceNumber";
     private static final String OUT_OF_COUNTRY_PAGE_ID = "outOfCountry";
     private static final String DETENTION_FACILITY_PAGE_ID = "detentionFacility";
     private static final String SUITABILITY_ATTENDANCE_PAGE_ID = "suitabilityAppellantAttendance";
@@ -108,11 +108,11 @@ class StartAppealMidEventTest {
         when(callback.getEvent()).thenReturn(Event.START_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(callback.getPageId()).thenReturn(HOME_OFFICE_DECISION_PAGE_ID);
+        when(callback.getPageId()).thenReturn(HOME_OFFICE_REFERENCE_NUMBER_PAGE_ID);
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {HOME_OFFICE_DECISION_PAGE_ID, OUT_OF_COUNTRY_PAGE_ID, DETENTION_FACILITY_PAGE_ID, APPELLANTS_ADDRESS_PAGE_ID, ""})
+    @ValueSource(strings = {HOME_OFFICE_REFERENCE_NUMBER_PAGE_ID, OUT_OF_COUNTRY_PAGE_ID, DETENTION_FACILITY_PAGE_ID, APPELLANTS_ADDRESS_PAGE_ID, ""})
     void it_can_handle_callback(String pageId) {
 
         for (Event event : Event.values()) {
@@ -128,7 +128,7 @@ class StartAppealMidEventTest {
                     || event == Event.UPDATE_DETENTION_LOCATION)
                     && callbackStage == MID_EVENT
                     && (callback.getPageId().equals(DETENTION_FACILITY_PAGE_ID)
-                        || callback.getPageId().equals(HOME_OFFICE_DECISION_PAGE_ID)
+                        || callback.getPageId().equals(HOME_OFFICE_REFERENCE_NUMBER_PAGE_ID)
                         || callback.getPageId().equals(APPELLANTS_ADDRESS_PAGE_ID)
                         || callback.getPageId().equals(OUT_OF_COUNTRY_PAGE_ID))) {
                     assertTrue(canHandle);
@@ -275,7 +275,7 @@ class StartAppealMidEventTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {HOME_OFFICE_DECISION_PAGE_ID, OUT_OF_COUNTRY_PAGE_ID, DETENTION_FACILITY_PAGE_ID})
+    @ValueSource(strings = {HOME_OFFICE_REFERENCE_NUMBER_PAGE_ID, OUT_OF_COUNTRY_PAGE_ID, DETENTION_FACILITY_PAGE_ID})
     void should_only_set_is_accelerated_detained_if_correct_page_id(String pageId) {
         when(callback.getPageId()).thenReturn(pageId);
         when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of(correctHomeOfficeReferenceFormatCid));
