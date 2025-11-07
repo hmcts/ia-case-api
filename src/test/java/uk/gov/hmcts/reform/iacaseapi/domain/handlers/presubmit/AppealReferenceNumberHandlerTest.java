@@ -7,6 +7,8 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyLong;
+import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
@@ -146,8 +148,13 @@ class AppealReferenceNumberHandlerTest {
 
         appealReferenceNumberHandler.handle(ABOUT_TO_SUBMIT, callback);
 
-        verifyNoInteractions(appealReferenceNumberGenerator);
-        verify(asylumCase, never()).write(any(), any());
+        // Verify that the existing reference number is registered (for duplicate checking)
+        verify(appealReferenceNumberGenerator, times(1))
+            .registerReferenceNumber(123L, "some-existing-reference-number");
+        // Verify that no new reference number is generated
+        verify(appealReferenceNumberGenerator, never()).generate(anyLong(), any(AppealType.class));
+        // Verify that no new reference number is written to the case
+        verify(asylumCase, never()).write(eq(APPEAL_REFERENCE_NUMBER), any());
     }
 
     @Test

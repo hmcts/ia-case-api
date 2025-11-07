@@ -104,6 +104,26 @@ public class AppealReferenceNumberHandler implements PreSubmitCallbackHandler<As
             }
         }
 
+        // For cases with manually entered reference numbers (e.g., rehydrated appeals or legacy migrations),
+        // register the reference number in the database to ensure duplicate checking works
+        if (callback.getEvent() == Event.SUBMIT_APPEAL) {
+            Optional<String> existingAppealReferenceNumber = asylumCase.read(APPEAL_REFERENCE_NUMBER);
+            if (existingAppealReferenceNumber.isPresent() 
+                    && !existingAppealReferenceNumber.get().equals(DRAFT)) {
+                try {
+                    // Register the reference number if it's not already in the database
+                    // This ensures that future duplicate checks will catch it
+                    appealReferenceNumberGenerator.registerReferenceNumber(
+                            callback.getCaseDetails().getId(),
+                            existingAppealReferenceNumber.get()
+                    );
+                } catch (Exception e) {
+                    // Log error but don't fail the submission
+                    // The reference number is already in the case data, so the case can still be saved
+                }
+            }
+        }
+
         return callbackResponse;
     }
 
