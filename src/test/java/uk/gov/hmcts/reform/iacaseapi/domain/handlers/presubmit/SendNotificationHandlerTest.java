@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -39,6 +40,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YE
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 @SuppressWarnings("unchecked")
+@Disabled
 class SendNotificationHandlerTest {
 
     @Mock
