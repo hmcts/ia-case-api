@@ -1,6 +1,8 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.config;
 
+import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
@@ -9,6 +11,12 @@ import org.springframework.web.client.RestTemplate;
 
 @Configuration
 public class RestTemplateConfiguration {
+    @Bean
+    public ObjectMapper getMapper() {
+        return JsonMapper.builder()
+                .disable(JsonGenerator.Feature.AUTO_CLOSE_JSON_CONTENT)
+                .build();
+    }
 
     @Bean
     public RestOperations restOperations(
