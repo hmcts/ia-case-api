@@ -1,9 +1,9 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_APPLICANT_TYPE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_FTPA_APPELLANT_DECIDED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_FTPA_RESPONDENT_DECIDED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_RESPONDENT_RJ_DECISION_OUTCOME_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.FtpaResidentJudgeDecisionOutcomeType.REHEARD_RULE35;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -42,9 +42,21 @@ public class ForceFtpaDecidedStateHandler implements PreSubmitCallbackHandler<As
             .orElseThrow(() -> new IllegalStateException("appellantType is missing"));
 
         if (appellantType.equals("appellant")) {
+            String ftpaAppellantRjDecisionOutcomeType = asylumCase.read(FTPA_APPELLANT_RJ_DECISION_OUTCOME_TYPE, String.class).orElse("");
             asylumCase.write(IS_FTPA_APPELLANT_DECIDED, "Yes");
+            if (ftpaAppellantRjDecisionOutcomeType.equals(REHEARD_RULE35.toString())) {
+                asylumCase.write(FTPA_FINAL_DECISION_FOR_DISPLAY, "reheardRule35");
+            } else {
+                asylumCase.write(FTPA_FINAL_DECISION_FOR_DISPLAY, "undecided");
+            }
         } else if (appellantType.equals("respondent")) {
+            String ftpaRespondentRjDecisionOutcomeType = asylumCase.read(FTPA_RESPONDENT_RJ_DECISION_OUTCOME_TYPE, String.class).orElse("");
             asylumCase.write(IS_FTPA_RESPONDENT_DECIDED, "Yes");
+            if (ftpaRespondentRjDecisionOutcomeType.equals(REHEARD_RULE35.toString())) {
+                asylumCase.write(FTPA_FINAL_DECISION_FOR_DISPLAY, "reheardRule35");
+            } else {
+                asylumCase.write(FTPA_FINAL_DECISION_FOR_DISPLAY, "undecided");
+            }
         } else {
             throw new IllegalStateException("appellantType is is new and needs handling");
         }
