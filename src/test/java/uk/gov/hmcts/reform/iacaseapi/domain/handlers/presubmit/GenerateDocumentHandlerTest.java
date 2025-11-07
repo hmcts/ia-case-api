@@ -189,7 +189,8 @@ class GenerateDocumentHandlerTest {
         "REQUEST_CASE_BUILDING",
         "ASYNC_STITCHING_COMPLETE",
         "UPDATE_TRIBUNAL_DECISION",
-        "SAVE_NOTIFICATIONS_TO_DATA"
+        "SAVE_NOTIFICATIONS_TO_DATA",
+        "MARK_APPEAL_AS_REMITTED"
     })
     void should_generate_document_and_update_the_case(Event event) {
         when(callback.getEvent()).thenReturn(event);
@@ -383,7 +384,12 @@ class GenerateDocumentHandlerTest {
                     SUBMIT_CLARIFYING_QUESTION_ANSWERS,
                     UPDATE_TRIBUNAL_DECISION,
                     SAVE_NOTIFICATIONS_TO_DATA,
-                    MANAGE_FEE_UPDATE
+                    MANAGE_FEE_UPDATE,
+                    REMOVE_REPRESENTATION,
+                    REMOVE_LEGAL_REPRESENTATIVE,
+                    MARK_APPEAL_AS_REMITTED,
+                    DECIDE_FTPA_APPLICATION,
+                    DECISION_WITHOUT_HEARING
                 ).contains(event)) {
 
                 assertTrue(canHandle);
@@ -534,7 +540,12 @@ class GenerateDocumentHandlerTest {
                     SUBMIT_CLARIFYING_QUESTION_ANSWERS,
                     UPDATE_TRIBUNAL_DECISION,
                     SAVE_NOTIFICATIONS_TO_DATA,
-                    MANAGE_FEE_UPDATE
+                    MANAGE_FEE_UPDATE,
+                    REMOVE_REPRESENTATION,
+                    REMOVE_LEGAL_REPRESENTATIVE,
+                    MARK_APPEAL_AS_REMITTED,
+                    DECIDE_FTPA_APPLICATION,
+                    DECISION_WITHOUT_HEARING
                 );
 
             if (callbackStage.equals(PreSubmitCallbackStage.ABOUT_TO_SUBMIT)

@@ -406,6 +406,8 @@ ia-case-notifications-api:
             alias: IA_TEST_APPLICANT_MOBILE
           - name: ia-config-validator-secret
             alias: IA_CONFIG_VALIDATOR_SECRET
+          - name: ia-det-prison-email-mappings
+            alias: IA_DET_PRISON_EMAIL_MAPPINGS
 
 ia-bail-case-api:
   enabled: true
@@ -744,7 +746,7 @@ xui-webapp:
       PROTOCOL: http
       PREVIEW_DEPLOYMENT_ID: "ia-${CHANGE_ID}"
       ENABLE_HEARING_DATA_SOURCE_HEADERS: "true"
-      SERVICES_HEARINGS_COMPONENT_API_IAC: https://ia-hearings-api-ia-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net
+      SERVICES_HEARINGS_COMPONENT_API_IAC: https://ia-case-api-pr-${CHANGE_ID}-hearings-api.preview.platform.hmcts.net
     keyVaults:
       rpx:
         resourceGroup: rpx
@@ -844,7 +846,7 @@ ccd:
         DATA_STORE_DB_PASSWORD: ${GENERIC_VALUES_PREVIEW_YAML_PASS}
         DATA_STORE_IDAM_KEY: ${DATA_STORE_S2S_KEY}        
         DATA_STORE_CROSS_JURISDICTIONAL_ROLES: caseworker-caa,caseworker-approver
-        DATA_STORE_S2S_AUTHORISED_SERVICES: ccd_data,ccd_gw,ccd_ps,iac,bulk_scan_orchestrator,ccpay_bubble,ctsc_work_allocation,em_ccd_orchestrator,xui_webapp,aac_manage_case_assignment,wa_task_configuration_api,wa_task_monitor,ccd_case_document_am_api,hmc_cft_hearing_service,wa_task_management_api,am_role_assignment_service
+        DATA_STORE_S2S_AUTHORISED_SERVICES: ccd_gw,ccd_gateway,ccd_data,ccd_ps,aac_manage_case_assignment,xui_webapp,ccd_case_document_am_api,iac,em_ccd_orchestrator,wa_workflow_api,wa_task_configuration_api,wa_task_management_api,wa_task_monitor,wa_case_event_handler,am_role_assignment_service,ccpay_bubble,ctsc_work_allocation,pcq_consolidation_service,em_npa_app,hmc_cft_hearing_service,ccd_next_hearing_date_updater,em_annotation_app,bulk_scan_orchestrator
         IDAM_API_BASE_URL: https://idam-api.aat.platform.hmcts.net
         IDAM_OIDC_URL: https://idam-web-public.aat.platform.hmcts.net
         IDAM_OAUTH2_DATA_STORE_CLIENT_SECRET: ${IDAM_OAUTH2_DATA_STORE_CLIENT_SECRET}
@@ -1447,9 +1449,9 @@ ia-hearings-api:
   enabled: true
   java:
     imagePullPolicy: Always
-    image: hmctspublic.azurecr.io/ia/hearings-api:latest
+    image: 'hmctspublic.azurecr.io/ia/hearings-api:latest'
     releaseNameOverride: ${SERVICE_NAME}-hearings-api
-    ingressHost: ia-hearings-api-${SERVICE_FQDN}
+    ingressHost: ${SERVICE_NAME}-hearings-api.preview.platform.hmcts.net
     devcpuRequests: 500m
     devmemoryRequests: 1Gi
     devcpuLimits: 1
@@ -1484,7 +1486,7 @@ ia-cron-hearings-processor:
   enabled: true
   job:
     kind: CronJob
-    image: hmctspublic.azurecr.io/ia/hearings-api:latest
+    image: 'hmctspublic.azurecr.io/ia/hearings-api:latest'
     releaseNameOverride: ${SERVICE_NAME}-ia-cron-hearings-processor
     name: ${SERVICE_NAME}-ia-cron-hearings-processor
     schedule: "*/5 * * * *"
