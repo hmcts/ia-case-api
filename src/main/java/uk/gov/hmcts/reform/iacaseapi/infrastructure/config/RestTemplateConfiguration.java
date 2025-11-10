@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi.infrastructure.config;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.springframework.context.annotation.Bean;
@@ -12,7 +13,10 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.web.client.RestOperations;
 import org.springframework.web.client.RestTemplate;
 
+import java.nio.charset.StandardCharsets;
+
 @Configuration
+@Slf4j
 public class RestTemplateConfiguration {
     @Bean
     public ObjectMapper getMapper() {
@@ -41,7 +45,17 @@ public class RestTemplateConfiguration {
         factory.setReadTimeout(30_000);
         factory.setBufferRequestBody(false);
 
-        return new RestTemplate(factory);
+        RestTemplate restTemplate = new RestTemplate(factory);
+
+        restTemplate.getInterceptors().add((request, body, execution) -> {
+            var response = execution.execute(request, body);
+            String bodyAsString = new String(response.getBody().readAllBytes(), StandardCharsets.UTF_8);
+            log.info("------------Full response1: {}", bodyAsString);
+            log.info("------------Full response2");
+            return response;
+        });
+
+        return restTemplate;
     }
 
     @Bean
