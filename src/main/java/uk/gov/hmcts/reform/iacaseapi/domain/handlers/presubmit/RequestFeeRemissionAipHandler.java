@@ -186,7 +186,7 @@ public class RequestFeeRemissionAipHandler implements PreSubmitCallbackHandler<A
     }
 
     private void appendPreviousRemissionDetails(AsylumCase asylumCase) {
-        List<IdValue<RemissionDetails>> previousRemissionDetails = null;
+        List<IdValue<RemissionDetails>> previousRemissionDetails = Collections.emptyList();
 
         Optional<List<IdValue<RemissionDetails>>> maybeExistingRemissionDetails = asylumCase.read(PREVIOUS_REMISSION_DETAILS);
         final List<IdValue<RemissionDetails>> existingRemissionDetails = maybeExistingRemissionDetails.orElse(Collections.emptyList());
