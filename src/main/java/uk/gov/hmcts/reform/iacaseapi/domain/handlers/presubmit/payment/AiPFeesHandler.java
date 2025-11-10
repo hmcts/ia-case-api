@@ -41,6 +41,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HelpWithFeesOption.W
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus.PAYMENT_PENDING;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isAipJourney;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isHelpWithFees;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.sourceOfAppealEjp;
 
 @Component
@@ -184,12 +185,11 @@ public class AiPFeesHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
                 case NO_REMISSION:
                 case I_WANT_TO_GET_HELP_WITH_FEES:
-                    Optional<HelpWithFeesOption> helpWithFeesOption = asylumCase.read(HELP_WITH_FEES_OPTION, HelpWithFeesOption.class);
+                    HelpWithFeesOption helpWithFeesOption = asylumCase.read(HELP_WITH_FEES_OPTION, HelpWithFeesOption.class)
+                        .orElse(WILL_PAY_FOR_APPEAL);
 
-                    if (helpWithFeesOption.isEmpty() || helpWithFeesOption.get() == WILL_PAY_FOR_APPEAL) {
-                        if (remissionOption.get() == RemissionOption.NO_REMISSION) {
-                            clearRemissionDetails(asylumCase);
-                        }
+                    if (!isHelpWithFees(remissionOption.get(), helpWithFeesOption)) {
+                        clearRemissionDetails(asylumCase);
                     } else {
                         asylumCase.write(FEE_REMISSION_TYPE, FeeRemissionType.HELP_WITH_FEES);
                         asylumCase.clear(ASYLUM_SUPPORT_REF_NUMBER);

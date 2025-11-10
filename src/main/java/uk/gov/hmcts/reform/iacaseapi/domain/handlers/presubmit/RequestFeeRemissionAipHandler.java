@@ -32,11 +32,13 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMISSION_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SECTION17_DOCUMENT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SECTION20_DOCUMENT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HelpWithFeesOption.WILL_PAY_FOR_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDecision.APPROVED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.clearPreviousRemissionCaseFields;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.clearPreviousRemissionCaseFieldsFromAip;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.clearRemissionDecisionFields;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isAipJourney;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isHelpWithFees;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.setFeeRemissionTypeDetails;
 
 import java.util.Collections;
@@ -146,43 +148,55 @@ public class RequestFeeRemissionAipHandler implements PreSubmitCallbackHandler<A
     private void setFeeRemissionOptionDetails(AsylumCase asylumCase) {
         RemissionOption remissionOption = asylumCase.read(LATE_REMISSION_OPTION, RemissionOption.class)
             .orElse(RemissionOption.NO_REMISSION);
-        if (remissionOption.equals(RemissionOption.NO_REMISSION)) {
-            return;
+        switch (remissionOption) {
+            case FEE_WAIVER_FROM_HOME_OFFICE -> setHomeOfficeWaiver(asylumCase);
+            case ASYLUM_SUPPORT_FROM_HOME_OFFICE -> setAsylumSupportRef(asylumCase);
+            case PARENT_GET_SUPPORT, UNDER_18_GET_SUPPORT -> setLocalAuthorityLetters(asylumCase, remissionOption);
+            case I_WANT_TO_GET_HELP_WITH_FEES, NO_REMISSION -> setHelpWithFees(asylumCase, remissionOption);
+            default -> log.info("Remission option is invalid, no fee remission will be set");
         }
+    }
+
+    private void cleanRemissionFields(AsylumCase asylumCase, RemissionOption remissionOption) {
         asylumCase.clear(ASYLUM_SUPPORT_REF_NUMBER);
         asylumCase.clear(HELP_WITH_FEES_OPTION);
         asylumCase.clear(HELP_WITH_FEES_REF_NUMBER);
         asylumCase.clear(LOCAL_AUTHORITY_LETTERS);
         asylumCase.write(REMISSION_OPTION, remissionOption);
-        switch (remissionOption) {
-            case FEE_WAIVER_FROM_HOME_OFFICE -> asylumCase.write(FEE_REMISSION_TYPE, FeeRemissionType.HO_WAIVER);
-            case ASYLUM_SUPPORT_FROM_HOME_OFFICE -> setAsylumSupportRef(asylumCase);
-            case PARENT_GET_SUPPORT, UNDER_18_GET_SUPPORT -> setLocalAuthorityLetters(asylumCase);
-            case I_WANT_TO_GET_HELP_WITH_FEES -> setHelpWithFees(asylumCase);
-            default -> log.info("Remission option is invalid, no fee remission will be set");
-        }
+    }
+
+    private void setHomeOfficeWaiver(AsylumCase asylumCase) {
+        cleanRemissionFields(asylumCase, RemissionOption.FEE_WAIVER_FROM_HOME_OFFICE);
+        asylumCase.write(FEE_REMISSION_TYPE, FeeRemissionType.HO_WAIVER);
     }
 
     private void setAsylumSupportRef(AsylumCase asylumCase) {
+        cleanRemissionFields(asylumCase, RemissionOption.ASYLUM_SUPPORT_FROM_HOME_OFFICE);
         asylumCase.write(FEE_REMISSION_TYPE, FeeRemissionType.ASYLUM_SUPPORT);
         asylumCase.read(LATE_ASYLUM_SUPPORT_REF_NUMBER, String.class)
             .ifPresent((asylumCaseRef) -> asylumCase.write(ASYLUM_SUPPORT_REF_NUMBER, asylumCaseRef));
     }
 
-    private void setLocalAuthorityLetters(AsylumCase asylumCase) {
+    private void setLocalAuthorityLetters(AsylumCase asylumCase, RemissionOption remissionOption) {
+        cleanRemissionFields(asylumCase, remissionOption);
         asylumCase.write(FEE_REMISSION_TYPE, FeeRemissionType.LOCAL_AUTHORITY_SUPPORT);
         asylumCase.read(LATE_LOCAL_AUTHORITY_LETTERS, List.class)
             .filter(lateAuthorityLetters -> !lateAuthorityLetters.isEmpty())
             .ifPresent(lateAuthorityLetters -> asylumCase.write(LOCAL_AUTHORITY_LETTERS, lateAuthorityLetters));
     }
 
-    private void setHelpWithFees(AsylumCase asylumCase) {
-        asylumCase.write(FEE_REMISSION_TYPE, FeeRemissionType.HELP_WITH_FEES);
-        asylumCase.read(LATE_HELP_WITH_FEES_OPTION, HelpWithFeesOption.class).ifPresent(option ->
-            asylumCase.read(LATE_HELP_WITH_FEES_REF_NUMBER, String.class).ifPresent(ref -> {
-                asylumCase.write(HELP_WITH_FEES_OPTION, option);
-                asylumCase.write(HELP_WITH_FEES_REF_NUMBER, ref);
-            }));
+    private void setHelpWithFees(AsylumCase asylumCase, RemissionOption remissionOption) {
+        HelpWithFeesOption hwfOption = asylumCase.read(HELP_WITH_FEES_OPTION, HelpWithFeesOption.class)
+            .orElse(WILL_PAY_FOR_APPEAL);
+        if (isHelpWithFees(remissionOption, hwfOption)) {
+            cleanRemissionFields(asylumCase, remissionOption);
+            asylumCase.write(FEE_REMISSION_TYPE, FeeRemissionType.HELP_WITH_FEES);
+            asylumCase.read(LATE_HELP_WITH_FEES_OPTION, HelpWithFeesOption.class).ifPresent(option ->
+                asylumCase.read(LATE_HELP_WITH_FEES_REF_NUMBER, String.class).ifPresent(ref -> {
+                    asylumCase.write(HELP_WITH_FEES_OPTION, option);
+                    asylumCase.write(HELP_WITH_FEES_REF_NUMBER, ref);
+                }));
+        }
     }
 
     private void appendPreviousRemissionDetails(AsylumCase asylumCase) {
@@ -228,11 +242,15 @@ public class RequestFeeRemissionAipHandler implements PreSubmitCallbackHandler<A
                 break;
 
             case I_WANT_TO_GET_HELP_WITH_FEES:
-                HelpWithFeesOption helpWithFeesOption = asylumCase.read(HELP_WITH_FEES_OPTION, HelpWithFeesOption.class).orElseThrow(() -> new IllegalStateException("Help with fees option is not present"));
-                String helpWithFeesRefNumber = asylumCase.read(HELP_WITH_FEES_REF_NUMBER, String.class).orElse("");
+            case NO_REMISSION:
+                if (isHelpWithFees(remissionOption, asylumCase.read(HELP_WITH_FEES_OPTION, HelpWithFeesOption.class).orElse(WILL_PAY_FOR_APPEAL))) {
+                    HelpWithFeesOption helpWithFeesOption = asylumCase.read(HELP_WITH_FEES_OPTION, HelpWithFeesOption.class)
+                        .orElseThrow(() -> new IllegalStateException("Help with fees option is not present"));
+                    String helpWithFeesRefNumber = asylumCase.read(HELP_WITH_FEES_REF_NUMBER, String.class).orElse("");
 
-                previousRemissionDetails = remissionDetailsAppender.appendRemissionOptionDetails(
-                    existingRemissionDetails, FeeRemissionType.HELP_WITH_FEES, helpWithFeesOption.toString(), helpWithFeesRefNumber);
+                    previousRemissionDetails = remissionDetailsAppender.appendRemissionOptionDetails(
+                        existingRemissionDetails, FeeRemissionType.HELP_WITH_FEES, helpWithFeesOption.toString(), helpWithFeesRefNumber);
+                }
                 break;
 
             default:

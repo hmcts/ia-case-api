@@ -356,6 +356,11 @@ public class HandlerUtils {
             || (helpWithFeesOption.isPresent() && helpWithFeesOption.get() != WILL_PAY_FOR_APPEAL));
     }
 
+    public static boolean isHelpWithFees(RemissionOption remissionOption, HelpWithFeesOption helpWithFeesOption) {
+        return (remissionOption.equals(RemissionOption.I_WANT_TO_GET_HELP_WITH_FEES))
+            || (remissionOption.equals(RemissionOption.NO_REMISSION) && helpWithFeesOption != WILL_PAY_FOR_APPEAL);
+    }
+
     public static boolean outOfCountryDecisionTypeIsRefusalOfHumanRightsOrPermit(AsylumCase asylumCase) {
         return asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class).map(
             value -> (List.of(REFUSAL_OF_HUMAN_RIGHTS, REFUSE_PERMIT).contains(value))).orElse(false);
@@ -506,14 +511,16 @@ public class HandlerUtils {
                     clearExceptionalCircumstancesRemissionDetails(asylumCase);
                     clearLocalAuthorityLetters(asylumCase);
                 }
-                case I_WANT_TO_GET_HELP_WITH_FEES -> {
-                    clearAsylumSupportRemissionDetails(asylumCase);
-                    clearLegalAidAccountNumberRemissionDetails(asylumCase);
-                    clearSection17RemissionDetails(asylumCase);
-                    clearSection20RemissionDetails(asylumCase);
-                    clearHomeOfficeWaiverRemissionDetails(asylumCase);
-                    clearExceptionalCircumstancesRemissionDetails(asylumCase);
-                    clearLocalAuthorityLetters(asylumCase);
+                case I_WANT_TO_GET_HELP_WITH_FEES, NO_REMISSION -> {
+                    if (isHelpWithFees(lateRemissionOptionOpt.get(), asylumCase.read(HELP_WITH_FEES_OPTION, HelpWithFeesOption.class).orElse(WILL_PAY_FOR_APPEAL))) {
+                        clearAsylumSupportRemissionDetails(asylumCase);
+                        clearLegalAidAccountNumberRemissionDetails(asylumCase);
+                        clearSection17RemissionDetails(asylumCase);
+                        clearSection20RemissionDetails(asylumCase);
+                        clearHomeOfficeWaiverRemissionDetails(asylumCase);
+                        clearExceptionalCircumstancesRemissionDetails(asylumCase);
+                        clearLocalAuthorityLetters(asylumCase);
+                    }
                 }
                 default -> {
                     // do nothing
@@ -619,9 +626,9 @@ public class HandlerUtils {
     public static boolean hasRepresentation(AsylumCase asylumCase) {
         Optional<OrganisationPolicy> localAuthorityPolicy = asylumCase.read(AsylumCaseFieldDefinition.LOCAL_AUTHORITY_POLICY);
         return isRepJourney(asylumCase)
-                && localAuthorityPolicy.isPresent()
-                && localAuthorityPolicy.get().getOrganisation() != null
-                && StringUtils.isNotBlank(localAuthorityPolicy.get().getOrganisation().getOrganisationID());
+            && localAuthorityPolicy.isPresent()
+            && localAuthorityPolicy.get().getOrganisation() != null
+            && StringUtils.isNotBlank(localAuthorityPolicy.get().getOrganisation().getOrganisationID());
     }
 
     public static boolean hasUpdatedLegalRepFields(Callback<AsylumCase> callback) {
@@ -633,10 +640,10 @@ public class HandlerUtils {
             AsylumCase asylumCaseBefore = caseDetailsBefore.get().getCaseData();
 
             return !asylumCaseBefore.read(LEGAL_REP_NAME).equals(asylumCase.read(LEGAL_REP_NAME))
-                    || !asylumCaseBefore.read(LEGAL_REP_FAMILY_NAME).equals(asylumCase.read(LEGAL_REP_FAMILY_NAME))
-                    || !asylumCaseBefore.read(LEGAL_REP_COMPANY).equals(asylumCase.read(LEGAL_REP_COMPANY))
-                    || !asylumCaseBefore.read(LEGAL_REPRESENTATIVE_EMAIL_ADDRESS).equals(asylumCase.read(LEGAL_REPRESENTATIVE_EMAIL_ADDRESS))
-                    || !asylumCaseBefore.read(LEGAL_REP_MOBILE_PHONE_NUMBER).equals(asylumCase.read(LEGAL_REP_MOBILE_PHONE_NUMBER));
+                || !asylumCaseBefore.read(LEGAL_REP_FAMILY_NAME).equals(asylumCase.read(LEGAL_REP_FAMILY_NAME))
+                || !asylumCaseBefore.read(LEGAL_REP_COMPANY).equals(asylumCase.read(LEGAL_REP_COMPANY))
+                || !asylumCaseBefore.read(LEGAL_REPRESENTATIVE_EMAIL_ADDRESS).equals(asylumCase.read(LEGAL_REPRESENTATIVE_EMAIL_ADDRESS))
+                || !asylumCaseBefore.read(LEGAL_REP_MOBILE_PHONE_NUMBER).equals(asylumCase.read(LEGAL_REP_MOBILE_PHONE_NUMBER));
         }
         return false;
     }
