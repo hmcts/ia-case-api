@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 @Component
@@ -40,8 +41,12 @@ public class IsRehydratedAppealHandler implements PreSubmitCallbackHandler<Asylu
         }
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
+        boolean isRehydratedAppeal = sourceOfAppealRehydratedAppeal(asylumCase);
 
-        asylumCase.write(IS_REHYDRATED_APPEAL, sourceOfAppealRehydratedAppeal(asylumCase) ? YES : NO);
+        asylumCase.write(IS_REHYDRATED_APPEAL, isRehydratedAppeal ? YES : NO);
+        if (isRehydratedAppeal && asylumCase.read(IS_NOTIFICATION_TURNED_OFF, YesOrNo.class).isEmpty()) {
+            asylumCase.write(IS_NOTIFICATION_TURNED_OFF, YesOrNo.YES);
+        }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
 
