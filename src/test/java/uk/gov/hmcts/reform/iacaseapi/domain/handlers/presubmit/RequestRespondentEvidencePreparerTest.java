@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
@@ -18,6 +19,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfTimeDecisionTyp
 
 import java.time.LocalDate;
 import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -50,6 +52,7 @@ class RequestRespondentEvidencePreparerTest {
 
     private static final int DUE_IN_DAYS = 14;
     private static final int DUE_IN_DAYS_ADA = 3;
+    private static final int DUE_IN_DAYS_DETAINED = 7;
 
     @Mock
     private FeatureToggler featureToggler;
@@ -74,7 +77,7 @@ class RequestRespondentEvidencePreparerTest {
     @BeforeEach
     public void setUp() {
         requestRespondentEvidencePreparer =
-            new RequestRespondentEvidencePreparer(DUE_IN_DAYS, DUE_IN_DAYS_ADA, featureToggler, dateProvider, dueDateService);
+            new RequestRespondentEvidencePreparer(DUE_IN_DAYS, DUE_IN_DAYS_ADA, DUE_IN_DAYS_DETAINED, featureToggler, dateProvider, dueDateService);
     }
 
     @Test
@@ -107,6 +110,7 @@ class RequestRespondentEvidencePreparerTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
         when(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class)).thenReturn(Optional.of("SUCCESS"));
+        when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             requestRespondentEvidencePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
@@ -146,6 +150,7 @@ class RequestRespondentEvidencePreparerTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
         when(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class)).thenReturn(Optional.of("SUCCESS"));
+        when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
 
         when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(dueDateService.calculateDueDate(any(), eq(DUE_IN_DAYS_ADA))).thenReturn(LocalDate.parse(expectedDateDue).atStartOfDay(ZoneOffset.UTC));
@@ -280,7 +285,7 @@ class RequestRespondentEvidencePreparerTest {
     }
 
     @Test
-    void handle_should_throw_error_for_the_detained_appeal() {
+    void handle_should_throw_error_for_the_detained_appeal_when_appellant_details_not_matched() {
 
         when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
         when(featureToggler.getValue("home-office-uan-pa-rp-feature", false)).thenReturn(true);
@@ -298,11 +303,13 @@ class RequestRespondentEvidencePreparerTest {
             requestRespondentEvidencePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
         assertNotNull(callbackResponse);
-        assertTrue(callbackResponse.getErrors().isEmpty());;
+        assertFalse(callbackResponse.getErrors().isEmpty());
+        assertThat(callbackResponse.getErrors())
+                .contains("You need to match the appellant details before you can request the respondent evidence.");
     }
 
     @Test
-    void handle_should_throw_error_for_aaa_appeal() {
+    void handle_should_not_throw_error_for_aaa_appeal() {
 
         when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
         when(featureToggler.getValue("home-office-uan-pa-rp-feature", false)).thenReturn(true);
@@ -417,5 +424,230 @@ class RequestRespondentEvidencePreparerTest {
         assertThatThrownBy(() -> requestRespondentEvidencePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
+    }
+
+    @Test
+    void should_return_due_date_for_accelerated_detained_appeal() {
+        LocalDate today = LocalDate.of(2025, 5, 5);
+        ZonedDateTime adaDueDate = today.plusDays(DUE_IN_DAYS_ADA).atStartOfDay(ZoneOffset.UTC);
+        String expectedDateDue = "2025-05-08";
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONDENT_EVIDENCE);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(dateProvider.now()).thenReturn(today);
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(PA));
+        when(dueDateService.calculateDueDate(
+                any(), anyInt()))
+                .thenReturn(adaDueDate);
+
+        PreSubmitCallbackResponse<AsylumCase> response =
+                requestRespondentEvidencePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        verify(asylumCase).write(SEND_DIRECTION_DATE_DUE, expectedDateDue);
+    }
+
+    @Test
+    void should_return_due_date_for_standard_case() {
+        LocalDate today = LocalDate.of(2025, 5, 5);
+        String expectedDateDue = "2025-05-19";
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONDENT_EVIDENCE);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(dateProvider.now()).thenReturn(today);
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(PA));
+
+        PreSubmitCallbackResponse<AsylumCase> response =
+                requestRespondentEvidencePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        verify(asylumCase).write(SEND_DIRECTION_DATE_DUE, expectedDateDue);
+    }
+
+    @Test
+    void should_return_due_date_for_detained_case() {
+        LocalDate today = LocalDate.of(2025, 5, 5);
+        String expectedDateDue = "2025-05-12";
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONDENT_EVIDENCE);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(dateProvider.now()).thenReturn(today);
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(PA));
+
+        PreSubmitCallbackResponse<AsylumCase> response =
+                requestRespondentEvidencePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        verify(asylumCase).write(SEND_DIRECTION_DATE_DUE, expectedDateDue);
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = AppealType.class, names = { "PA", "RP", "DC", "EA", "HU" })
+    void should_prepare_detention_specific_direction_explanation_for_detained_appeals(AppealType appealType) {
+
+        final String expectedExplanationContains = "A notice of appeal has been lodged against this decision.";
+        final Parties expectedParties = Parties.RESPONDENT;
+        final String expectedDateDue = "2018-11-30";
+
+        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-pa-rp-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-dc-ea-hu-feature", false)).thenReturn(true);
+
+        when(dateProvider.now()).thenReturn(LocalDate.parse("2018-11-23"));
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONDENT_EVIDENCE);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
+        when(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class)).thenReturn(Optional.of("SUCCESS"));
+        when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            requestRespondentEvidencePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, times(4)).write(asylumExtractorCaptor.capture(), asylumCaseValuesCaptor.capture());
+
+        List<AsylumCaseFieldDefinition> extractors = asylumExtractorCaptor.getAllValues();
+        List<String> asylumCaseValues = asylumCaseValuesCaptor.getAllValues();
+
+        assertThat(
+            asylumCaseValues.get(extractors.indexOf(SEND_DIRECTION_EXPLANATION)))
+            .contains(expectedExplanationContains);
+
+        verify(asylumCase, times(1)).write(SEND_DIRECTION_PARTIES, expectedParties);
+        verify(asylumCase, times(1)).write(SEND_DIRECTION_DATE_DUE, expectedDateDue);
+        verify(asylumCase, times(1)).write(UPLOAD_HOME_OFFICE_BUNDLE_ACTION_AVAILABLE, YesOrNo.YES);
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = AppealType.class, names = { "PA", "RP", "DC", "EA", "HU" })
+    void should_prepare_standard_direction_explanation_for_non_detained_appeals(AppealType appealType) {
+
+        final String expectedExplanationContains = "A notice of appeal has been lodged against this decision.";
+        final Parties expectedParties = Parties.RESPONDENT;
+        final String expectedDateDue = "2018-12-07";
+
+        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-pa-rp-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-dc-ea-hu-feature", false)).thenReturn(true);
+
+        when(dateProvider.now()).thenReturn(LocalDate.parse("2018-11-23"));
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONDENT_EVIDENCE);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
+        when(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class)).thenReturn(Optional.of("SUCCESS"));
+        when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            requestRespondentEvidencePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, times(4)).write(asylumExtractorCaptor.capture(), asylumCaseValuesCaptor.capture());
+
+        List<AsylumCaseFieldDefinition> extractors = asylumExtractorCaptor.getAllValues();
+        List<String> asylumCaseValues = asylumCaseValuesCaptor.getAllValues();
+
+        assertThat(
+            asylumCaseValues.get(extractors.indexOf(SEND_DIRECTION_EXPLANATION)))
+            .contains(expectedExplanationContains);
+
+        verify(asylumCase, times(1)).write(SEND_DIRECTION_PARTIES, expectedParties);
+        verify(asylumCase, times(1)).write(SEND_DIRECTION_DATE_DUE, expectedDateDue);
+        verify(asylumCase, times(1)).write(UPLOAD_HOME_OFFICE_BUNDLE_ACTION_AVAILABLE, YesOrNo.YES);
+    }
+
+    @Test
+    void should_use_detention_specific_explanation_text_for_detained_appeals() {
+
+        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-pa-rp-feature", false)).thenReturn(true);
+
+        when(dateProvider.now()).thenReturn(LocalDate.parse("2018-11-23"));
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONDENT_EVIDENCE);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(PA));
+        when(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class)).thenReturn(Optional.of("SUCCESS"));
+        when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            requestRespondentEvidencePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, times(4)).write(asylumExtractorCaptor.capture(), asylumCaseValuesCaptor.capture());
+
+        List<AsylumCaseFieldDefinition> extractors = asylumExtractorCaptor.getAllValues();
+        List<String> asylumCaseValues = asylumCaseValuesCaptor.getAllValues();
+
+        String actualExplanation = asylumCaseValues.get(extractors.indexOf(SEND_DIRECTION_EXPLANATION));
+        
+        // Verify it contains the standard opening
+        assertThat(actualExplanation).contains("A notice of appeal has been lodged against this decision.");
+        
+        // Verify it contains detention-specific content
+        assertThat(actualExplanation).contains("You must now upload all documents to the Tribunal");
+        assertThat(actualExplanation).contains("Rule 24 of the Tribunal Procedure Rules 2014");
+        assertThat(actualExplanation).contains("The explanation for refusal");
+        assertThat(actualExplanation).contains("Interview record (if any)");
+        assertThat(actualExplanation).contains("copy of any medical report (if any)");
+        
+        // Verify it does NOT contain non-detention content
+        assertThat(actualExplanation).doesNotContain("directed to supply the documents");
+        assertThat(actualExplanation).doesNotContain("Rule 23 or Rule 24 of the Tribunal Procedure Rules 2014");
+        assertThat(actualExplanation).doesNotContain("any record of interview with the appellant");
+    }
+
+    @Test
+    void should_use_standard_explanation_text_for_non_detained_appeals() {
+
+        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-pa-rp-feature", false)).thenReturn(true);
+
+        when(dateProvider.now()).thenReturn(LocalDate.parse("2018-11-23"));
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONDENT_EVIDENCE);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(PA));
+        when(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class)).thenReturn(Optional.of("SUCCESS"));
+        when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            requestRespondentEvidencePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, times(4)).write(asylumExtractorCaptor.capture(), asylumCaseValuesCaptor.capture());
+
+        List<AsylumCaseFieldDefinition> extractors = asylumExtractorCaptor.getAllValues();
+        List<String> asylumCaseValues = asylumCaseValuesCaptor.getAllValues();
+
+        String actualExplanation = asylumCaseValues.get(extractors.indexOf(SEND_DIRECTION_EXPLANATION));
+        
+        // Verify it contains the standard opening
+        assertThat(actualExplanation).contains("A notice of appeal has been lodged against this decision.");
+        
+        // Verify it contains standard content
+        assertThat(actualExplanation).contains("directed to supply the documents");
+        assertThat(actualExplanation).contains("Rule 23 or Rule 24 of the Tribunal Procedure Rules 2014");
+        assertThat(actualExplanation).contains("any record of interview with the appellant");
+        assertThat(actualExplanation).contains("copy of the Certificate of Conviction");
+        
+        // Verify it does NOT contain detention-specific content
+        assertThat(actualExplanation).doesNotContain("You must now upload all documents to the Tribunal");
+        assertThat(actualExplanation).doesNotContain("The explanation for refusal");
+        assertThat(actualExplanation).doesNotContain("Interview record (if any)");
+        assertThat(actualExplanation).doesNotContain("copy of any medical report (if any)");
     }
 }
