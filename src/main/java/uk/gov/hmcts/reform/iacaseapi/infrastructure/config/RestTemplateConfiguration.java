@@ -47,13 +47,13 @@ public class RestTemplateConfiguration {
 
         RestTemplate restTemplate = new RestTemplate(factory);
 
-        restTemplate.getInterceptors().add((request, body, execution) -> {
-            var response = execution.execute(request, body);
-            String bodyAsString = new String(response.getBody().readAllBytes(), StandardCharsets.UTF_8);
-            log.info("------------Full response1: {}", bodyAsString);
-            log.info("------------Full response2");
-            return response;
-        });
+        // restTemplate.getInterceptors().add((request, body, execution) -> {
+        //     var response = execution.execute(request, body);
+        //     String bodyAsString = new String(response.getBody().readAllBytes(), StandardCharsets.UTF_8);
+        //     log.info("------------Full response1: {}", bodyAsString);
+        //     log.info("------------Full response2");
+        //     return response;
+        // });
 
         return restTemplate;
     }
