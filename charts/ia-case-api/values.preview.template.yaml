@@ -532,6 +532,8 @@ ia-home-office-integration-api:
       OPEN_ID_IDAM_URL: https://idam-web-public.aat.platform.hmcts.net
       S2S_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
       ROLE_ASSIGNMENT_URL: https://am-role-assignment-${SERVICE_FQDN}
+      IA_IDAM_REDIRECT_URI: https://${SERVICE_NAME}-home-office-integration-api.preview.platform.hmcts.net/oauth2/callback
+      CCD_URL: http://{{ .Release.Name }}-ccd-data-store-api
     keyVaults:
       ia:
         resourceGroup: ia
@@ -554,6 +556,10 @@ ia-home-office-integration-api:
             alias: LAUNCH_DARKLY_SDK_KEY
           - name: ia-config-validator-secret
             alias: IA_CONFIG_VALIDATOR_SECRET
+          - name: system-username
+            alias: IA_SYSTEM_USERNAME
+          - name: system-password
+            alias: IA_SYSTEM_PASSWORD  
 
 ia-case-access-api:
   enabled: true
