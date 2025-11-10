@@ -371,6 +371,10 @@ public class HandlerUtils {
         return (asylumCase.read(IS_ADMIN, YesOrNo.class)).orElse(NO) == YesOrNo.YES;
     }
 
+    public static boolean isAppellantInPersonManual(AsylumCase asylumCase) {
+        return isAdmin(asylumCase) && isAppellantsRepresentation(asylumCase);
+    }
+
     public static boolean hasAddedLegalRepDetails(AsylumCase asylumCase) {
         return (asylumCase.read(HAS_ADDED_LEGAL_REP_DETAILS, YesOrNo.class)).orElse(NO) == YesOrNo.YES;
     }

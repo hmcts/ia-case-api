@@ -469,7 +469,7 @@ class FeesHandlerTest {
         verify(asylumCase, times(1)).clear(HEARING_DECISION_SELECTED);
         verify(asylumCase, times(1)).clear(EA_HU_APPEAL_TYPE_PAYMENT_OPTION);
         verify(asylumCase, times(1)).clear(PA_APPEAL_TYPE_PAYMENT_OPTION);
-        verify(asylumCase, times(0)).clear(PAYMENT_STATUS);
+        verify(asylumCase, times(1)).clear(PAYMENT_STATUS);
     }
 
     @Test
@@ -502,7 +502,7 @@ class FeesHandlerTest {
         verify(asylumCase, times(1)).clear(HEARING_DECISION_SELECTED);
         verify(asylumCase, times(1)).clear(EA_HU_APPEAL_TYPE_PAYMENT_OPTION);
         verify(asylumCase, times(1)).clear(PA_APPEAL_TYPE_PAYMENT_OPTION);
-        verify(asylumCase, times(0)).clear(PAYMENT_STATUS);
+        verify(asylumCase, times(1)).clear(PAYMENT_STATUS);
 
     }
 
@@ -536,7 +536,7 @@ class FeesHandlerTest {
         verify(asylumCase, times(1)).clear(HEARING_DECISION_SELECTED);
         verify(asylumCase, times(1)).clear(EA_HU_APPEAL_TYPE_PAYMENT_OPTION);
         verify(asylumCase, times(1)).clear(PA_APPEAL_TYPE_PAYMENT_OPTION);
-        verify(asylumCase, times(0)).clear(PAYMENT_STATUS);
+        verify(asylumCase, times(1)).clear(PAYMENT_STATUS);
     }
 
     @Test
@@ -569,7 +569,7 @@ class FeesHandlerTest {
         verify(asylumCase, times(1)).clear(HEARING_DECISION_SELECTED);
         verify(asylumCase, times(1)).clear(EA_HU_APPEAL_TYPE_PAYMENT_OPTION);
         verify(asylumCase, times(1)).clear(PA_APPEAL_TYPE_PAYMENT_OPTION);
-        verify(asylumCase, times(0)).clear(PAYMENT_STATUS);
+        verify(asylumCase, times(1)).clear(PAYMENT_STATUS);
     }
 
     @Test
@@ -602,7 +602,7 @@ class FeesHandlerTest {
         verify(asylumCase, times(1)).clear(HEARING_DECISION_SELECTED);
         verify(asylumCase, times(1)).clear(EA_HU_APPEAL_TYPE_PAYMENT_OPTION);
         verify(asylumCase, times(1)).clear(PA_APPEAL_TYPE_PAYMENT_OPTION);
-        verify(asylumCase, times(0)).clear(PAYMENT_STATUS);
+        verify(asylumCase, times(1)).clear(PAYMENT_STATUS);
     }
 
     @ParameterizedTest
@@ -636,7 +636,7 @@ class FeesHandlerTest {
         verify(asylumCase, times(1)).clear(HEARING_DECISION_SELECTED);
         verify(asylumCase, times(1)).clear(EA_HU_APPEAL_TYPE_PAYMENT_OPTION);
         verify(asylumCase, times(1)).clear(PA_APPEAL_TYPE_PAYMENT_OPTION);
-        verify(asylumCase, times(0)).clear(PAYMENT_STATUS);
+        verify(asylumCase, times(1)).clear(PAYMENT_STATUS);
     }
 
     @ParameterizedTest
@@ -670,7 +670,7 @@ class FeesHandlerTest {
         verify(asylumCase, times(1)).clear(HEARING_DECISION_SELECTED);
         verify(asylumCase, times(1)).clear(EA_HU_APPEAL_TYPE_PAYMENT_OPTION);
         verify(asylumCase, times(1)).clear(PA_APPEAL_TYPE_PAYMENT_OPTION);
-        verify(asylumCase, times(0)).clear(PAYMENT_STATUS);
+        verify(asylumCase, times(1)).clear(PAYMENT_STATUS);
     }
 
     @ParameterizedTest
