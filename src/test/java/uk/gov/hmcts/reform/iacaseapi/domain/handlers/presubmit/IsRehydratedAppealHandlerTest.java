@@ -51,7 +51,7 @@ public class IsRehydratedAppealHandlerTest {
 
     @ParameterizedTest
     @EnumSource(value = Event.class, names = {
-            "START_APPEAL", "EDIT_APPEAL"
+        "START_APPEAL", "EDIT_APPEAL"
     })
     void should_write_to_rehydrated_appeal_yes_if_source_of_appeal_rehydrated_appeal(Event event) {
         when(callback.getEvent()).thenReturn(event);
@@ -67,7 +67,7 @@ public class IsRehydratedAppealHandlerTest {
 
     @ParameterizedTest
     @EnumSource(value = Event.class, names = {
-            "START_APPEAL", "EDIT_APPEAL"
+        "START_APPEAL", "EDIT_APPEAL"
     })
     void should_write_to_rehydrated_appeal_no_if_source_of_appeal_paper_form(Event event) {
         when(callback.getEvent()).thenReturn(event);
@@ -79,13 +79,11 @@ public class IsRehydratedAppealHandlerTest {
         verify(asylumCase, times(1)).write(IS_REHYDRATED_APPEAL, YesOrNo.NO);
         verify(asylumCase, times(0)).write(IS_NOTIFICATION_TURNED_OFF, YesOrNo.YES);
         verify(asylumCase, times(0)).write(IS_NOTIFICATION_TURNED_OFF, YesOrNo.NO);
-
-
     }
 
     @ParameterizedTest
     @EnumSource(value = Event.class, names = {
-            "START_APPEAL", "EDIT_APPEAL"
+        "START_APPEAL", "EDIT_APPEAL"
     })
     void should_not_write_to_notification_turned_off_if_already_exists(Event event) {
         when(callback.getEvent()).thenReturn(event);
