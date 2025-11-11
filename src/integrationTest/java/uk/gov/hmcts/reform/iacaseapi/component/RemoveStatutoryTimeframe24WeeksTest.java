@@ -33,11 +33,10 @@ class RemoveStatutoryTimeframe24WeeksTest extends SpringBootIntegrationTest impl
     @Test
     @WithMockUser(authorities = {"caseworker-ia-iacjudge"})
     void removes_a_statutory_timeframe_24_weeks() {
-        String reason = "some reason";
-
         addCaseWorkerUserDetailsStub(server);
         addServiceAuthStub(server);
         addRoleAssignmentActorStub(server);
+        String reason = "some reason";
         PreSubmitCallbackResponseForTest response = iaCaseApiClient.aboutToSubmit(callback()
             .event(REMOVE_STATUTORY_TIMEFRAME_24_WEEKS)
             .caseDetails(someCaseDetailsWith()

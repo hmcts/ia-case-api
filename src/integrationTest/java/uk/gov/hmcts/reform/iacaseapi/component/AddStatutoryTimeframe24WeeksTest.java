@@ -33,11 +33,10 @@ class AddStatutoryTimeframe24WeeksTest extends SpringBootIntegrationTest impleme
     @Test
     @WithMockUser(authorities = {"caseworker-ia", "tribunal-caseworker"})
     void adds_a_statutory_timeframe_24_weeks() {
-        String reason = "some reason";
-
         addCaseWorkerUserDetailsStub(server);
         addServiceAuthStub(server);
         addRoleAssignmentActorStub(server);
+        String reason = "some reason";
         PreSubmitCallbackResponseForTest response = iaCaseApiClient.aboutToSubmit(callback()
             .event(ADD_STATUTORY_TIMEFRAME_24_WEEKS)
             .caseDetails(someCaseDetailsWith()
