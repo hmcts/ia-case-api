@@ -34,16 +34,16 @@ public class RestTemplateConfiguration {
     public RestTemplate restTemplate(
             ObjectMapper objectMapper
     ) {
-        HttpClient httpClient = HttpClients.custom()
-                .disableContentCompression()  // Optional: prevent double compression issues
-                .build();
+        // HttpClient httpClient = HttpClients.custom()
+        //         .disableContentCompression()  // Optional: prevent double compression issues
+        //         .build();
 
-        HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory(httpClient);
-        factory.setConnectTimeout(30_000);
-        factory.setReadTimeout(30_000);
-        factory.setBufferRequestBody(false);
+        // HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory(httpClient);
+        // factory.setConnectTimeout(30_000);
+        // factory.setReadTimeout(30_000);
+        // factory.setBufferRequestBody(false);
 
-        RestTemplate restTemplate = new RestTemplate(factory);
+        // RestTemplate restTemplate = new RestTemplate(factory);
 
         // restTemplate.getInterceptors().add((request, body, execution) -> {
         //     var response = execution.execute(request, body);
@@ -52,6 +52,10 @@ public class RestTemplateConfiguration {
         //     log.info("------------Full response2");
         //     return response;
         // });
+
+        RestTemplate restTemplate = new RestTemplate();
+        restTemplate.getMessageConverters().removeIf(converter -> converter instanceof MappingJackson2HttpMessageConverter);
+        restTemplate.getMessageConverters().add(mappingJackson2HttpMessageConverter(objectMapper));
 
         return restTemplate;
     }
