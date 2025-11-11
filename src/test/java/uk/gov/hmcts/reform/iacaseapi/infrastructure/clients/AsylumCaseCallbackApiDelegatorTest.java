@@ -247,7 +247,7 @@ class AsylumCaseCallbackApiDelegatorTest {
                         eq(HttpMethod.POST),
                         any(HttpEntity.class),
                         any(Class.class)
-                );
+            );
 
         when(restTemplate
             .exchange(
