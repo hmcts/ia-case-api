@@ -162,6 +162,8 @@ class EventTest {
         assertEquals("removeCaseManagerBulk", Event.REMOVE_CASE_MANAGER_BULK.toString());
         assertEquals("generateListCmrTask", Event.GENERATE_LIST_CMR_TASK.toString());
         assertEquals("appellantInPersonManual", Event.APPELLANT_IN_PERSON_MANUAL.toString());
+        assertEquals("addStatutoryTimeframe24Weeks", Event.ADD_STATUTORY_TIMEFRAME_24_WEEKS.toString());
+        assertEquals("removeStatutoryTimeframe24Weeks", Event.REMOVE_STATUTORY_TIMEFRAME_24_WEEKS.toString());
     }
 
     @Test

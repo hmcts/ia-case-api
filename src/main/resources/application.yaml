@@ -261,7 +261,6 @@ security:
       - "applyForCosts"
       - "respondToCosts"
       - "addEvidenceForCosts"
-      - "addStatutoryTimeframe24Weeks"
     tribunal-caseworker:
       - "appellantInPersonManual"
       - "moveToPaymentPending"
@@ -658,6 +657,7 @@ security:
       - "markAppealAsDetained"
       - "removeDetainedStatus"
       - "editDocuments"
+      - "addStatutoryTimeframe24Weeks"
     ctsc-team-leader:
       - "appellantInPersonManual"
       - "startAppeal"
