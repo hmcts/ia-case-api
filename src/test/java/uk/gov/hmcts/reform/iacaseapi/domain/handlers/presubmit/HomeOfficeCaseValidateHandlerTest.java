@@ -144,17 +144,28 @@ class HomeOfficeCaseValidateHandlerTest {
 
     @ParameterizedTest
     @MethodSource("eventAndAppealTypesData")
-    void should_not_call_home_office_api_for_detained_appeals(Event event, AppealType appealType) {
+    void should_call_home_office_api_for_detained_appeals(Event event, AppealType appealType) {
 
         when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
         when(featureToggler.getValue("home-office-uan-pa-rp-feature", false)).thenReturn(true);
         when(featureToggler.getValue("home-office-uan-dc-ea-hu-feature", false)).thenReturn(true);
 
         when(callback.getEvent()).thenReturn(event);
+        when(homeOfficeApi.aboutToSubmit(callback)).thenReturn(asylumCase);
 
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
         when(asylumCase.read(APPELLANT_IN_UK,YesOrNo.class)).thenReturn(Optional.empty());
         when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(HOME_OFFICE_CASE_STATUS_DATA)).thenReturn(Optional.of(homeOfficeCaseStatus));
+        when(homeOfficeCaseStatus.getApplicationStatus()).thenReturn(applicationStatus);
+        when(asylumCase.read(CONTACT_PREFERENCE)).thenReturn(Optional.of(ContactPreference.WANTS_EMAIL));
+        List<IdValue<NationalityFieldValue>> nlist = new ArrayList<>();
+        nlist.add(new IdValue<>("0", new NationalityFieldValue("IS")));
+        nlist.add(new IdValue<>("1", new NationalityFieldValue("CA")));
+        nlist.add(new IdValue<>("2", new NationalityFieldValue("VA")));
+
+        when(asylumCase.read(APPELLANT_NATIONALITIES)).thenReturn(Optional.of(nlist));
+        when(featureToggler.getValue("home-office-notification-feature", false)).thenReturn(true);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             homeOfficeCaseValidateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -162,20 +173,20 @@ class HomeOfficeCaseValidateHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
+        verify(homeOfficeApi, times(1)).aboutToSubmit(callback);
         verify(asylumCase, times(1)).write(
             IS_HOME_OFFICE_INTEGRATION_ENABLED, YesOrNo.YES);
-        verify(homeOfficeApi, times(0)).aboutToSubmit(callback);
-        verify(asylumCase, times(0)).read(CONTACT_PREFERENCE);
-        verify(asylumCase, times(0)).write(
+        verify(asylumCase, times(1)).read(CONTACT_PREFERENCE);
+        verify(asylumCase, times(1)).write(
             CONTACT_PREFERENCE_DESCRIPTION, ContactPreference.WANTS_EMAIL.getDescription());
-        verify(asylumCase, times(0)).write(
+        verify(asylumCase, times(1)).write(
             APPEAL_TYPE_DESCRIPTION, appealType.getDescription());
-        verify(asylumCase, times(0)).write(
+        verify(asylumCase, times(1)).write(
             APPELLANT_NATIONALITIES_DESCRIPTION, "Iceland<br />Canada<br />Holy See (Vatican City State)");
-        verify(asylumCase, times(0)).read(HOME_OFFICE_CASE_STATUS_DATA);
-        verify(asylumCase, times(0)).write(
+        verify(asylumCase, times(1)).read(HOME_OFFICE_CASE_STATUS_DATA);
+        verify(asylumCase, times(1)).write(
             HOME_OFFICE_NOTIFICATIONS_ELIGIBLE, YesOrNo.YES);
-        verify(applicationStatus, times(0)).modifyListDataForCcd();
+        verify(applicationStatus, times(1)).modifyListDataForCcd();
     }
 
     @ParameterizedTest
