@@ -160,6 +160,7 @@ class EventTest {
         assertEquals("UpdateNextHearingInfo", Event.UPDATE_NEXT_HEARING_INFO.toString());
         assertEquals("hearingCancelled", Event.HEARING_CANCELLED.toString());
         assertEquals("removeCaseManagerBulk", Event.REMOVE_CASE_MANAGER_BULK.toString());
+        assertEquals("generateListCmrTask", Event.GENERATE_LIST_CMR_TASK.toString());
         assertEquals("appellantInPersonManual", Event.APPELLANT_IN_PERSON_MANUAL.toString());
     }
 
