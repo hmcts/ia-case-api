@@ -4,11 +4,16 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.http.client.HttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.RestOperations;
 import org.springframework.web.client.RestTemplate;
+
+import java.nio.charset.StandardCharsets;
 
 @Configuration
 @Slf4j
@@ -31,28 +36,28 @@ public class RestTemplateConfiguration {
     public RestTemplate restTemplate(
             ObjectMapper objectMapper
     ) {
-        // HttpClient httpClient = HttpClients.custom()
-        //         .disableContentCompression()  // Optional: prevent double compression issues
-        //         .build();
+        HttpClient httpClient = HttpClients.custom()
+                .disableContentCompression()  // Optional: prevent double compression issues
+                .build();
 
-        // HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory(httpClient);
-        // factory.setConnectTimeout(30_000);
-        // factory.setReadTimeout(30_000);
-        // factory.setBufferRequestBody(false);
+        HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory(httpClient);
+        factory.setConnectTimeout(30_000);
+        factory.setReadTimeout(30_000);
+        factory.setBufferRequestBody(false);
 
-        // RestTemplate restTemplate = new RestTemplate(factory);
+        RestTemplate restTemplate = new RestTemplate(factory);
 
-        // restTemplate.getInterceptors().add((request, body, execution) -> {
-        //     var response = execution.execute(request, body);
-        //     String bodyAsString = new String(response.getBody().readAllBytes(), StandardCharsets.UTF_8);
-        //     log.info("------------Full response1: {}", bodyAsString);
-        //     log.info("------------Full response2");
-        //     return response;
-        // });
+        restTemplate.getInterceptors().add((request, body, execution) -> {
+            var response = execution.execute(request, body);
+            String bodyAsString = new String(response.getBody().readAllBytes(), StandardCharsets.UTF_8);
+            log.info("------------Full response1: {}", bodyAsString);
+            log.info("------------Full response2");
+            return response;
+        });
 
-        RestTemplate restTemplate = new RestTemplate();
-        restTemplate.getMessageConverters().removeIf(converter -> converter instanceof MappingJackson2HttpMessageConverter);
-        restTemplate.getMessageConverters().add(mappingJackson2HttpMessageConverter(objectMapper));
+        // RestTemplate restTemplate = new RestTemplate();
+        // restTemplate.getMessageConverters().removeIf(converter -> converter instanceof MappingJackson2HttpMessageConverter);
+        // restTemplate.getMessageConverters().add(mappingJackson2HttpMessageConverter(objectMapper));
 
         return restTemplate;
     }
