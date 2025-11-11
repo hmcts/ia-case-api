@@ -142,6 +142,29 @@ class RequestFeeRemissionPreparerTest {
             .hasMessage("Previous fee remission type is not present");
     }
 
+    @ParameterizedTest
+    @EnumSource(value = AppealType.class, names = { "EA", "HU", "PA" })
+    void handle_should_clear_remission_if_previous_fee_remission_type_exits_and_decided(AppealType appealType) {
+
+        when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getEvent()).thenReturn(Event.REQUEST_FEE_REMISSION);
+
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
+        when(asylumCase.read(REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.of(HO_WAIVER_REMISSION));
+        when(asylumCase.read(LATE_REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.empty());
+        when(asylumCase.read(REMISSION_DECISION, RemissionDecision.class)).thenReturn(Optional.of(PARTIALLY_APPROVED));
+        when(asylumCase.read(FEE_REMISSION_TYPE, String.class)).thenReturn(Optional.of("HO waiver"));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                requestFeeRemissionPreparer.handle(ABOUT_TO_START, callback);
+        assertNotNull(callbackResponse);
+        verify(asylumCase, times(1)).clear(REMISSION_TYPE);
+        verify(asylumCase, times(1)).clear(REMISSION_CLAIM);
+    }
+
     @Test
     void handling_should_throw_if_cannot_actually_handle() {
         assertThatThrownBy(() -> requestFeeRemissionPreparer.handle(ABOUT_TO_START, callback))

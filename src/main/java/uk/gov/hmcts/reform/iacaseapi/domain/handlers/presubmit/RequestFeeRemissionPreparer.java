@@ -84,6 +84,7 @@ public class RequestFeeRemissionPreparer implements PreSubmitCallbackHandler<Asy
                     }
 
                     asylumCase.clear(REMISSION_TYPE);
+                    asylumCase.clear(REMISSION_CLAIM);
                 }
                 break;
 
