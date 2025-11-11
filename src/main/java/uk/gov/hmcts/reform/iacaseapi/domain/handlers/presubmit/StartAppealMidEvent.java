@@ -142,6 +142,17 @@ public class StartAppealMidEvent implements PreSubmitCallbackHandler<AsylumCase>
             response.addError("The appellant must have provided a postal address");
         }
 
+        // DIAC-1413 bugfix to show bail page for IRC, having returned in the journey, after originally selecting
+        // CUSTODIAL_SENTENCE yes via prison or other
+        if (callback.getPageId().equals(DETENTION_FACILITY_PAGE_ID)
+                && List.of(Event.START_APPEAL, Event.EDIT_APPEAL).contains(callback.getEvent())) {
+            String detentionFacilityValue = asylumCase.read(AsylumCaseFieldDefinition.DETENTION_FACILITY, String.class).orElse("");
+            if (detentionFacilityValue.equals("immigrationRemovalCentre")) {
+                asylumCase.write(CUSTODIAL_SENTENCE, YesOrNo.NO);
+                asylumCase.clear(DATE_CUSTODIAL_SENTENCE);
+            }
+        }
+
         return response;
     }
 
