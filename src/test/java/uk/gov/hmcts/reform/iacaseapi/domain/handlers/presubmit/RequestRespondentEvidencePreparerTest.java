@@ -284,6 +284,30 @@ class RequestRespondentEvidencePreparerTest {
                 .contains("You need to match the appellant details before you can request the respondent evidence.");
     }
 
+    @ParameterizedTest
+    @ValueSource(strings = { "FAIL", "MULTIPLE" })
+    void handle_should_not_throw_error_for_the_failed_home_office_response_pa_appeal_type_rehydrated(String hoSearchStatus) {
+
+        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-pa-rp-feature", false)).thenReturn(true);
+
+        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
+        when(dateProvider.now()).thenReturn(LocalDate.parse("2018-11-23"));
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONDENT_EVIDENCE);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(PA));
+        when(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class)).thenReturn(Optional.of(hoSearchStatus));
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(SOURCE_OF_APPEAL, SourceOfAppeal.class)).thenReturn(Optional.of(SourceOfAppeal.REHYDRATED_APPEAL));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                requestRespondentEvidencePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        assertNotNull(callbackResponse);
+        assertTrue(callbackResponse.getErrors().isEmpty());
+    }
+
     @Test
     void handle_should_throw_error_for_the_detained_appeal_when_appellant_details_not_matched() {
 
