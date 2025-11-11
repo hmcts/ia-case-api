@@ -4,6 +4,8 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.Optional;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.ParameterizedTypeReference;
@@ -94,9 +96,20 @@ public class AsylumCaseCallbackApiDelegator {
                             requestEntity,
                             String.class
                     );
+
+            AsylumCase asylumCase = requestEntity.getBody().getCaseDetails().getCaseData();
+            ObjectMapper mapper = new ObjectMapper();
+            try {
+                String json = mapper.writeValueAsString(asylumCase);
+                log.info("-------------------------");
+                log.info("Request: " + json.length());
+                log.info(json);
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
             String responseBody = responseEntity.getBody();
             log.info("-------------------------");
-            log.info("" + responseBody.length());
+            log.info("Response: " + responseBody.length());
             log.info(responseBody);
             log.info("-------------------------");
 

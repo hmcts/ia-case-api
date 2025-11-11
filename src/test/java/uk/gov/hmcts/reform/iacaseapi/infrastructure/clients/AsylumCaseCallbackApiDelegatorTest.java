@@ -28,6 +28,7 @@ import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
@@ -123,6 +124,19 @@ class AsylumCaseCallbackApiDelegatorTest {
 
         when(serviceAuthTokenGenerator.generate()).thenReturn(expectedServiceToken);
         when(accessTokenProvider.getAccessToken()).thenReturn(expectedAccessToken);
+
+        CaseDetails<AsylumCase> caseDetails = mock(CaseDetails.class);
+        AsylumCase asylumCase = mock(AsylumCase.class);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        doReturn(new ResponseEntity<>("postSubmitCallbackResponse", HttpStatus.OK))
+            .when(restTemplate)
+            .exchange(
+                eq(ENDPOINT),
+                eq(HttpMethod.POST),
+                any(HttpEntity.class),
+                any(Class.class)
+            );
 
         doReturn(new ResponseEntity<>(postSubmitCallbackResponse, HttpStatus.OK))
             .when(restTemplate)
@@ -221,6 +235,19 @@ class AsylumCaseCallbackApiDelegatorTest {
 
         when(serviceAuthTokenGenerator.generate()).thenReturn(expectedServiceToken);
         when(accessTokenProvider.getAccessToken()).thenReturn(expectedAccessToken);
+
+        CaseDetails<AsylumCase> caseDetails = mock(CaseDetails.class);
+        AsylumCase asylumCase = mock(AsylumCase.class);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        doReturn(new ResponseEntity<>("postSubmitCallbackResponse", HttpStatus.OK))
+                .when(restTemplate)
+                .exchange(
+                        eq(ENDPOINT),
+                        eq(HttpMethod.POST),
+                        any(HttpEntity.class),
+                        any(Class.class)
+                );
 
         when(restTemplate
             .exchange(
