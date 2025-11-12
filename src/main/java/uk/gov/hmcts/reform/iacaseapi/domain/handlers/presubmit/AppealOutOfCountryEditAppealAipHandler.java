@@ -25,7 +25,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAS_SPONSOR;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_DECISION_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_REFERENCE_NUMBER;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ADMIN;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.OUTSIDE_UK_WHEN_APPLICATION_MADE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.OUTSIDE_UK_WHEN_APPLICATION_MADE_PREVIOUS_SELECTION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.RP_DC_APPEAL_HEARING_OPTION;
@@ -35,8 +34,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SPONSOR_AUTHORISATION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SPONSOR_CONTACT_PREFERENCE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SPONSOR_EMAIL;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SPONSOR_EMAIL_ADMIN_J;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SPONSOR_MOBILE_NUMBER_ADMIN_J;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SPONSOR_FAMILY_NAME;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SPONSOR_GIVEN_NAMES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SPONSOR_MOBILE_NUMBER;
@@ -233,29 +230,21 @@ public class AppealOutOfCountryEditAppealAipHandler implements PreSubmitCallback
 
     private void writeSponsorContactDetails(AsylumCase asylumCase) {
         Optional<List<IdValue<Subscriber>>> maybeSponsorSubscriptions =
-                asylumCase.read(SPONSOR_SUBSCRIPTIONS);
+            asylumCase.read(SPONSOR_SUBSCRIPTIONS);
 
         final List<IdValue<Subscriber>> existingSponsorSubscriptions =
-                maybeSponsorSubscriptions.orElse(Collections.emptyList());
+            maybeSponsorSubscriptions.orElse(Collections.emptyList());
 
         if (!existingSponsorSubscriptions.isEmpty()) {
-            final IdValue<Subscriber> sponsorDetails = existingSponsorSubscriptions.get(0);
+            final IdValue<Subscriber> sponsorMobileNumber = existingSponsorSubscriptions.get(0);
+            final IdValue<Subscriber> sponsorEmail = existingSponsorSubscriptions.get(0);
 
-            String sponsorEmail = sponsorDetails.getValue().getEmail();
-            String sponsorMobile = sponsorDetails.getValue().getMobileNumber();
-
-            if (sponsorEmail != null && sponsorMobile != null) {
-                YesOrNo isAdmin = asylumCase.read(IS_ADMIN, YesOrNo.class).orElse(YesOrNo.NO);
-
-                if (isAdmin.equals(YesOrNo.YES)) {
-                    asylumCase.write(SPONSOR_EMAIL_ADMIN_J, sponsorEmail);
-                    asylumCase.write(SPONSOR_MOBILE_NUMBER_ADMIN_J, sponsorMobile);
-                } else {
-                    asylumCase.write(SPONSOR_EMAIL, sponsorEmail);
-                    asylumCase.write(AIP_SPONSOR_EMAIL_FOR_DISPLAY, sponsorEmail);
-                    asylumCase.write(SPONSOR_MOBILE_NUMBER, sponsorMobile);
-                    asylumCase.write(AIP_SPONSOR_MOBILE_NUMBER_FOR_DISPLAY, sponsorMobile);
-                }
+            if (existingSponsorSubscriptions.get(0).getValue().getEmail() != null
+                && existingSponsorSubscriptions.get(0).getValue().getMobileNumber() != null) {
+                asylumCase.write(SPONSOR_EMAIL, sponsorEmail.getValue().getEmail());
+                asylumCase.write(AIP_SPONSOR_EMAIL_FOR_DISPLAY, sponsorEmail.getValue().getEmail());
+                asylumCase.write(SPONSOR_MOBILE_NUMBER, sponsorMobileNumber.getValue().getMobileNumber());
+                asylumCase.write(AIP_SPONSOR_MOBILE_NUMBER_FOR_DISPLAY, sponsorMobileNumber.getValue().getMobileNumber());
             }
         }
     }
