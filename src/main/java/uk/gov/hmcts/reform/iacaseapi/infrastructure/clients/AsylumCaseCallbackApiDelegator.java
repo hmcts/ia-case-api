@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.clients;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
 
 import java.util.Optional;
 
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
@@ -39,8 +41,8 @@ public class AsylumCaseCallbackApiDelegator {
     }
 
     public AsylumCase delegate(
-        Callback<AsylumCase> callback,
-        String endpoint
+            Callback<AsylumCase> callback,
+            String endpoint
     ) {
         requireNonNull(callback, "callback must not be null");
         requireNonNull(endpoint, "endpoint must not be null");
@@ -48,6 +50,12 @@ public class AsylumCaseCallbackApiDelegator {
         final String accessToken = accessTokenProvider.getAccessToken();
 
         HttpEntity<Callback<AsylumCase>> requestEntity = new HttpEntity<>(callback, setHeaders(serviceAuthorizationToken,accessToken));
+
+        AsylumCase asylumCase0 = callback.getCaseDetails().getCaseData();
+        log.info("----------AsylumCaseCallbackApiDelegator111 {}", endpoint);
+        Optional<AppealType> appealType0Opt = asylumCase0.read(APPEAL_TYPE, AppealType.class);
+        log.info("{}", appealType0Opt);
+        log.info("----------AsylumCaseCallbackApiDelegator222 {}", endpoint);
 
         try {
 
@@ -60,29 +68,39 @@ public class AsylumCaseCallbackApiDelegator {
                             }
                     );
 
-            log.info("-----------contentLength1: {}", response.getHeaders().getContentLength());
-            response.getHeaders().forEach((k, v) -> log.info("-----{} = {}", k, v));
-            simError("111");
+            log.info("----------contentLength {}", response.getHeaders().getContentLength());
+            response.getHeaders().forEach((k, v) -> log.info("-----header: {} => {}", k, v));
+            log.info("----------AsylumCaseCallbackApiDelegator333000 res.getBody() == null: {}", response.getBody() == null);
+            if (response.getBody() != null) {
+                log.info(
+                    "----------AsylumCaseCallbackApiDelegator333000 res.getBody().getData() == null: {}",
+                    response.getBody().getData() == null
+                );
+            }
 
-            return Optional
-                .of(response
-                )
-                .map(ResponseEntity::getBody)
-                .map(PreSubmitCallbackResponse::getData)
-                .orElse(new AsylumCase());
+            AsylumCase asylumCase = Optional.of(response)
+                    .map(ResponseEntity::getBody)
+                    .map(PreSubmitCallbackResponse::getData)
+                    .orElse(new AsylumCase());
+            log.info("----------AsylumCaseCallbackApiDelegator333");
+            Optional<AppealType> appealTypeOpt = asylumCase.read(APPEAL_TYPE, AppealType.class);
+            log.info("{}", appealTypeOpt);
+            log.info("{}", asylumCase);
+            log.info("----------AsylumCaseCallbackApiDelegator444");
+            return asylumCase;
 
         } catch (RestClientException e) {
 
             throw new AsylumCaseServiceResponseException(
-                "Couldn't delegate callback to API: " + endpoint,
-                e
+                    "Couldn't delegate callback to API: " + endpoint,
+                    e
             );
         }
     }
 
     public PostSubmitCallbackResponse delegatePostSubmit(
-        Callback<AsylumCase> callback,
-        String endpoint
+            Callback<AsylumCase> callback,
+            String endpoint
     ) {
         requireNonNull(callback, "callback must not be null");
         requireNonNull(endpoint, "endpoint must not be null");
@@ -93,39 +111,25 @@ public class AsylumCaseCallbackApiDelegator {
 
         try {
 
-            ResponseEntity<PostSubmitCallbackResponse> response = restTemplate
-                    .exchange(
-                            endpoint,
-                            HttpMethod.POST,
-                            requestEntity,
-                            new ParameterizedTypeReference<PostSubmitCallbackResponse>() {
-                            }
-                    );
-
-            log.info("-----------contentLength2: {}", response.getHeaders().getContentLength());
-            response.getHeaders().forEach((k, v) -> log.info("-----{} = {}", k, v));
-            simError("222");
-
             return Optional
-                .of(response
-                )
-                .map(ResponseEntity::getBody)
-                .orElse(new PostSubmitCallbackResponse());
+                    .of(restTemplate
+                            .exchange(
+                                    endpoint,
+                                    HttpMethod.POST,
+                                    requestEntity,
+                                    new ParameterizedTypeReference<PostSubmitCallbackResponse>() {
+                                    }
+                            )
+                    )
+                    .map(ResponseEntity::getBody)
+                    .orElse(new PostSubmitCallbackResponse());
 
         } catch (RestClientException e) {
 
             throw new AsylumCaseServiceResponseException(
-                "Couldn't delegate callback to API: " + endpoint,
-                e
+                    "Couldn't delegate callback to API: " + endpoint,
+                    e
             );
-        }
-    }
-
-    private void simError(String number) {
-        try {
-            throw new RuntimeException(number);
-        } catch (RuntimeException ex) {
-            log.error(ex.getMessage(), ex);
         }
     }
 
