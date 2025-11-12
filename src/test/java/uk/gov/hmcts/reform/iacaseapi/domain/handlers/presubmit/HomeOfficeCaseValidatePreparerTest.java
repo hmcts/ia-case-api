@@ -195,6 +195,22 @@ class HomeOfficeCaseValidatePreparerTest {
 
     @ParameterizedTest
     @MethodSource("eventAndAppealTypesData")
+    void handler_should_not_invoke_homeoffice_api_when_isNotificationTurnedOff_yes(Event event, AppealType appealType) {
+
+        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-pa-rp-feature", false)).thenReturn(true);
+        when(callback.getEvent()).thenReturn(event);
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
+        when(homeOfficeApi.aboutToStart(callback)).thenReturn(asylumCase);
+        when(asylumCase.read(IS_NOTIFICATION_TURNED_OFF, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+
+        homeOfficeCaseValidatePreparer.handle(ABOUT_TO_START, callback);
+
+        verify(homeOfficeApi, times(0)).aboutToStart(callback);
+    }
+
+    @ParameterizedTest
+    @MethodSource("eventAndAppealTypesData")
     void handler_checks_home_office_integration_enabled_returns_yes_and_uan_feature_enabled_dc_ea_hu_appeal_types(Event event, AppealType appealType) {
 
         when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
