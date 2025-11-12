@@ -28,6 +28,7 @@ import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
@@ -76,6 +77,9 @@ class AsylumCaseCallbackApiDelegatorTest {
         when(accessTokenProvider.getAccessToken()).thenReturn(expectedAccessToken);
 
         when(callbackResponse.getData()).thenReturn(notifiedAsylumCase);
+        CaseDetails<AsylumCase> caseDetails = mock(CaseDetails.class);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(notifiedAsylumCase);
         doReturn(new ResponseEntity<>(callbackResponse, HttpStatus.OK))
             .when(restTemplate)
             .exchange(
@@ -195,6 +199,10 @@ class AsylumCaseCallbackApiDelegatorTest {
         final String expectedServiceToken = "ABCDEFG";
         final String expectedAccessToken = "HIJKLMN";
 
+        CaseDetails<AsylumCase> caseDetails = mock(CaseDetails.class);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        final AsylumCase notifiedAsylumCase = mock(AsylumCase.class);
+        when(caseDetails.getCaseData()).thenReturn(notifiedAsylumCase);
         when(serviceAuthTokenGenerator.generate()).thenReturn(expectedServiceToken);
         when(accessTokenProvider.getAccessToken()).thenReturn(expectedAccessToken);
 
@@ -238,6 +246,11 @@ class AsylumCaseCallbackApiDelegatorTest {
 
     @Test
     void wraps_http_client_exception_when_calling_documents_api() {
+
+        CaseDetails<AsylumCase> caseDetails = mock(CaseDetails.class);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        final AsylumCase notifiedAsylumCase = mock(AsylumCase.class);
+        when(caseDetails.getCaseData()).thenReturn(notifiedAsylumCase);
 
         HttpClientErrorException underlyingException = mock(HttpClientErrorException.class);
         final String expectedServiceToken = "ABCDEFG";
