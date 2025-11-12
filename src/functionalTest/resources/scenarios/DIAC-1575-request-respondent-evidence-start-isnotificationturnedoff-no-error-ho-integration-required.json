@@ -1,5 +1,5 @@
 {
-  "description": "DIAC-1575 Request respondent evidence start error - HO integration required",
+  "description": "DIAC-1575 Request respondent evidence start isNotificationTurnedOff No error - HO integration required",
   "request": {
     "uri": "/asylum/ccdAboutToStart",
     "credentials": "CaseOfficer",
@@ -9,7 +9,7 @@
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
-          "isAdmin": "Yes",
+          "isNotificationTurnedOff": "No",
           "sendDirectionExplanation": null,
           "sendDirectionParties": null,
           "sendDirectionDateDue": null
@@ -23,6 +23,7 @@
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {
+        "isNotificationTurnedOff": "No",
         "sendDirectionExplanation": null,
         "sendDirectionParties": null,
         "sendDirectionDateDue": null

@@ -1,5 +1,5 @@
 {
-  "description": "DIAC-1575 Request respondent evidence start Rehydrated appeal - No HO integration required",
+  "description": "DIAC-1575 Request respondent evidence start isNotificationTurnedOff Yes - No HO integration required",
   "request": {
     "uri": "/asylum/ccdAboutToStart",
     "credentials": "CaseOfficer",
@@ -9,8 +9,7 @@
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
-          "isAdmin": "Yes",
-          "sourceOfAppeal": "rehydratedAppeal",
+          "isNotificationTurnedOff": "Yes",
           "sendDirectionExplanation": null,
           "sendDirectionParties": null,
           "sendDirectionDateDue": null

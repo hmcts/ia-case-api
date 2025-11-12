@@ -286,7 +286,7 @@ class RequestRespondentEvidencePreparerTest {
 
     @ParameterizedTest
     @ValueSource(strings = { "FAIL", "MULTIPLE" })
-    void handle_should_not_throw_error_for_the_failed_home_office_response_pa_appeal_type_rehydrated(String hoSearchStatus) {
+    void handle_should_not_throw_error_for_the_failed_home_office_response_pa_appeal_type_rehydrated_isNotificationTurnedOff_yes(String hoSearchStatus) {
 
         when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
         when(featureToggler.getValue("home-office-uan-pa-rp-feature", false)).thenReturn(true);
@@ -300,6 +300,7 @@ class RequestRespondentEvidencePreparerTest {
         when(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class)).thenReturn(Optional.of(hoSearchStatus));
         when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(asylumCase.read(SOURCE_OF_APPEAL, SourceOfAppeal.class)).thenReturn(Optional.of(SourceOfAppeal.REHYDRATED_APPEAL));
+        when(asylumCase.read(IS_NOTIFICATION_TURNED_OFF, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
                 requestRespondentEvidencePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
