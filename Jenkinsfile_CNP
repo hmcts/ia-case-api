@@ -4,7 +4,7 @@ properties([
         pipelineTriggers([[$class: 'GitHubPushTrigger']])
 ])
 
-@Library('Infrastructure')
+@Library('Infrastructure@fix/wait-for-completed-jobs')
 
 import uk.gov.hmcts.contino.AppPipelineDsl
 import uk.gov.hmcts.contino.GithubAPI
