@@ -61,11 +61,7 @@ public class AsylumCaseCallbackApiDelegator {
                     );
 
             log.info("-----------contentLength1: {}", response.getHeaders().getContentLength());
-            try {
-                throw new Exception("111");
-            } catch (Exception ex) {
-                log.error(ex.getMessage(), ex);
-            }
+            simError("111");
 
             return Optional
                 .of(response
@@ -105,11 +101,8 @@ public class AsylumCaseCallbackApiDelegator {
                             }
                     );
             log.info("-----------contentLength2: {}", response.getHeaders().getContentLength());
-            try {
-                throw new Exception("222");
-            } catch (Exception ex) {
-                log.error(ex.getMessage(), ex);
-            }
+
+            simError("222");
 
             return Optional
                 .of(response
@@ -123,6 +116,14 @@ public class AsylumCaseCallbackApiDelegator {
                 "Couldn't delegate callback to API: " + endpoint,
                 e
             );
+        }
+    }
+
+    private void simError(String number) {
+        try {
+            throw new RuntimeException(number);
+        } catch (RuntimeException ex) {
+            log.error(ex.getMessage(), ex);
         }
     }
 
