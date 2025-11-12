@@ -3,6 +3,8 @@ package uk.gov.hmcts.reform.iacaseapi.infrastructure.clients;
 import static java.util.Objects.requireNonNull;
 
 import java.util.Optional;
+
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
@@ -17,6 +19,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.AccessTokenProvider;
 
 @Service
+@Slf4j
 public class AsylumCaseCallbackApiDelegator {
 
     private static final String SERVICE_AUTHORIZATION = "ServiceAuthorization";
@@ -48,15 +51,24 @@ public class AsylumCaseCallbackApiDelegator {
 
         try {
 
-            return Optional
-                .of(restTemplate
+            ResponseEntity<PreSubmitCallbackResponse<AsylumCase>> response = restTemplate
                     .exchange(
-                        endpoint,
-                        HttpMethod.POST,
-                        requestEntity,
-                        new ParameterizedTypeReference<PreSubmitCallbackResponse<AsylumCase>>() {
-                        }
-                    )
+                            endpoint,
+                            HttpMethod.POST,
+                            requestEntity,
+                            new ParameterizedTypeReference<PreSubmitCallbackResponse<AsylumCase>>() {
+                            }
+                    );
+
+            log.info("-----------contentLength1: {}", response.getHeaders().getContentLength());
+            try {
+                throw new Exception("111");
+            } catch (Exception ex) {
+                log.error(ex.getMessage(), ex);
+            }
+
+            return Optional
+                .of(response
                 )
                 .map(ResponseEntity::getBody)
                 .map(PreSubmitCallbackResponse::getData)
@@ -84,15 +96,23 @@ public class AsylumCaseCallbackApiDelegator {
 
         try {
 
-            return Optional
-                .of(restTemplate
+            ResponseEntity<PostSubmitCallbackResponse> response = restTemplate
                     .exchange(
-                        endpoint,
-                        HttpMethod.POST,
-                        requestEntity,
-                        new ParameterizedTypeReference<PostSubmitCallbackResponse>() {
-                        }
-                    )
+                            endpoint,
+                            HttpMethod.POST,
+                            requestEntity,
+                            new ParameterizedTypeReference<PostSubmitCallbackResponse>() {
+                            }
+                    );
+            log.info("-----------contentLength2: {}", response.getHeaders().getContentLength());
+            try {
+                throw new Exception("222");
+            } catch (Exception ex) {
+                log.error(ex.getMessage(), ex);
+            }
+
+            return Optional
+                .of(response
                 )
                 .map(ResponseEntity::getBody)
                 .orElse(new PostSubmitCallbackResponse());
