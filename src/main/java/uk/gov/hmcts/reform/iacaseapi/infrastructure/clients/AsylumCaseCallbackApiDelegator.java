@@ -109,6 +109,7 @@ public class AsylumCaseCallbackApiDelegator {
 
         HttpEntity<Callback<AsylumCase>> requestEntity = new HttpEntity<>(callback, setHeaders(serviceAuthorizationToken,accessToken));
 
+        log.info("--------------------444 {}", endpoint);
         try {
 
             return Optional
