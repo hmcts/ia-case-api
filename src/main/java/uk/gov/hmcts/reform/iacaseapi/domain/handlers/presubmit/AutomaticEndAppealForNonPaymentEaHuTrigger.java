@@ -6,8 +6,8 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMISSION_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HelpWithFeesOption.WILL_PAY_FOR_APPEAL;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isAcceleratedDetainedAppeal;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isAipJourney;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.SourceOfAppeal.REHYDRATED_APPEAL;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.*;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -50,6 +50,7 @@ public class AutomaticEndAppealForNonPaymentEaHuTrigger implements PreSubmitCall
             PreSubmitCallbackStage callbackStage,
             Callback<AsylumCase> callback
     ) {
+
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
@@ -61,11 +62,13 @@ public class AutomaticEndAppealForNonPaymentEaHuTrigger implements PreSubmitCall
         Optional<RemissionType> remissionType = asylumCase.read(REMISSION_TYPE, RemissionType.class);
         Optional<AppealType> appealType = asylumCase.read(APPEAL_TYPE, AppealType.class);
 
+
         boolean lrAppealWithNoRemission = remissionType.map(
                 remission -> remission.equals(RemissionType.NO_REMISSION)).orElse(true);
 
         return  callback.getEvent() == Event.SUBMIT_APPEAL
                 && callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
+                && !isRehydratedAppeal(asylumCase)
                 && !isAcceleratedDetainedAppeal(asylumCase)
                 && (isAipJourney(asylumCase) ? !aipAppealHasRemission(asylumCase) : lrAppealWithNoRemission)
                 && (appealType.isPresent() && Set.of(EA, HU, EU, AG).contains(appealType.get()));

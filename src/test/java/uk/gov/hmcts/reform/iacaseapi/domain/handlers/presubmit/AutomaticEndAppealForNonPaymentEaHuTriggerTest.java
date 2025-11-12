@@ -2,9 +2,9 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
@@ -365,5 +365,50 @@ class AutomaticEndAppealForNonPaymentEaHuTriggerTest {
                 .hasMessage("Cannot handle callback for auto end appeal for remission rejection")
                 .isExactlyInstanceOf(IllegalStateException.class);
     }
+    @Test
+    void should_not_trigger_event_if_the_appeal_is_rehydrated() {
+        // Arrange: make everything eligible EXCEPT rehydration
+        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(caseDetails.getId()).thenReturn(caseId);
+
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(EA));
+
+        when(asylumCase.read(REMISSION_TYPE, RemissionType.class))
+                .thenReturn(Optional.of(RemissionType.NO_REMISSION));
+
+        when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class))
+                .thenReturn(Optional.of(YesOrNo.NO));
+
+        when(asylumCase.read(IS_REHYDRATED_APPEAL, YesOrNo.class))
+                .thenReturn(Optional.of(YesOrNo.YES));
+
+        assertThatThrownBy(() ->
+                automaticEndAppealForNonPaymentEaHuTrigger.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback)
+        )
+                .hasMessage("Cannot handle callback for auto end appeal for remission rejection")
+                .isExactlyInstanceOf(IllegalStateException.class);
+
+        verifyNoInteractions(scheduler);
+    }
+
+    @Test
+    void canHandle_should_return_false_for_rehydrated_appeals() {
+        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(EA));
+        when(asylumCase.read(REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.of(RemissionType.NO_REMISSION));
+        when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(asylumCase.read(IS_REHYDRATED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+
+        boolean result = automaticEndAppealForNonPaymentEaHuTrigger
+                .canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertFalse(result);
+    }
+
+
 
 }
