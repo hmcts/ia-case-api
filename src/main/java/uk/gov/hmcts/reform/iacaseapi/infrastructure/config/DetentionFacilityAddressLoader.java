@@ -23,8 +23,10 @@ public class DetentionFacilityAddressLoader {
     }
 
     public List<String> loadAddress() {
-        InputStream resourceAsStream = requireNonNull(getClass().getResourceAsStream(addressFile));
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(resourceAsStream, UTF_8))) {
+        try (
+            InputStream resourceAsStream = requireNonNull(getClass().getResourceAsStream(addressFile));
+            BufferedReader reader = new BufferedReader(new InputStreamReader(resourceAsStream, UTF_8))
+        ) {
             return reader.lines().collect(toList());
         } catch (Exception e) {
             throw new RuntimeException("Failed to load prison addresses", e);
