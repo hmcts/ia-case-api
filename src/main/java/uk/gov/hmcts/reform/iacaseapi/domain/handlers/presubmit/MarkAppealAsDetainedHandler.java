@@ -2,8 +2,10 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.DetentionFacility.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.MARK_APPEAL_AS_DETAINED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isAipJourney;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -49,13 +51,27 @@ public class MarkAppealAsDetainedHandler implements PreSubmitCallbackHandler<Asy
             .ifPresent(dateAo -> asylumCase.write(DATE_CUSTODIAL_SENTENCE, dateAo));
 
         // clearing non-detention related fields
+        String detentionFacility = asylumCase.read(DETENTION_FACILITY, String.class)
+            .orElseThrow(() -> new IllegalStateException("detentionFacility missing on when marking as detained"));
+
+        if (!detentionFacility.equals(OTHER.getValue())) {
+            // We use this to store "Other" detention facility address
+            asylumCase.clear(APPELLANT_ADDRESS);
+        }
         asylumCase.clear(APPELLANT_HAS_FIXED_ADDRESS);
-        asylumCase.clear(APPELLANT_ADDRESS);
         asylumCase.clear(CONTACT_PREFERENCE);
         asylumCase.clear(EMAIL);
         asylumCase.clear(MOBILE_NUMBER);
+        asylumCase.clear(DETENTION_REMOVAL_REASON);
+        asylumCase.clear(DETENTION_REMOVAL_DATE);
 
         asylumCase.write(APPELLANT_IN_DETENTION, YES);
+
+        if (isAipJourney(asylumCase)) {
+            asylumCase.clear(JOURNEY_TYPE);
+            asylumCase.write(IS_ADMIN, YES);
+            asylumCase.write(APPELLANTS_REPRESENTATION, YES);
+        }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
 
