@@ -631,6 +631,29 @@ class HomeOfficeCaseNotificationsHandlerTest {
         reset(callback);
     }
 
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {"SEND_DIRECTION", "CHANGE_DIRECTION_DUE_DATE"}, mode = EnumSource.Mode.EXCLUDE)
+    void it_can_not_handle_callback_isNotificationTurnedOff_yes(Event event) {
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(event);
+        for (State state : State.values()) {
+            when(callback.getCaseDetails()).thenReturn(caseDetails);
+            when(caseDetails.getCaseData()).thenReturn(asylumCase);
+            when(callback.getCaseDetails().getState()).thenReturn(state);
+            when(asylumCase.read(DIRECTION_EDIT_PARTIES, Parties.class))
+                    .thenReturn(Optional.of(Parties.RESPONDENT));
+            when(asylumCase.read(AsylumCaseFieldDefinition.DIRECTIONS))
+                    .thenReturn(Optional.of(Collections.singletonList(originalDirection8)));
+            when(asylumCase.read(IS_NOTIFICATION_TURNED_OFF, YesOrNo.class))
+                    .thenReturn(Optional.of(YES));
+
+            boolean canHandle = homeOfficeCaseNotificationsHandler.canHandle(ABOUT_TO_SUBMIT, callback);
+
+            assertFalse(canHandle);
+        }
+        reset(callback);
+    }
+
     @Test
     void it_cannot_handle_if_edit_case_listing_for_remote_to_remote_hearing_channel_update() {
 
