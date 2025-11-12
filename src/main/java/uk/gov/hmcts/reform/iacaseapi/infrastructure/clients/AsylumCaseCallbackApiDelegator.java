@@ -61,6 +61,7 @@ public class AsylumCaseCallbackApiDelegator {
                     );
 
             log.info("-----------contentLength1: {}", response.getHeaders().getContentLength());
+            response.getHeaders().forEach((k, v) -> log.info("-----{} = {}", k, v));
             simError("111");
 
             return Optional
@@ -100,8 +101,9 @@ public class AsylumCaseCallbackApiDelegator {
                             new ParameterizedTypeReference<PostSubmitCallbackResponse>() {
                             }
                     );
-            log.info("-----------contentLength2: {}", response.getHeaders().getContentLength());
 
+            log.info("-----------contentLength2: {}", response.getHeaders().getContentLength());
+            response.getHeaders().forEach((k, v) -> log.info("-----{} = {}", k, v));
             simError("222");
 
             return Optional
