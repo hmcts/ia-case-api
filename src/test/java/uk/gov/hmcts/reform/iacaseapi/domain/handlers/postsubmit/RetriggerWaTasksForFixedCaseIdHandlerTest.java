@@ -210,7 +210,7 @@ public class RetriggerWaTasksForFixedCaseIdHandlerTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(dateProvider.nowWithTime()).thenReturn(now);
         when(asylumCase.read(AsylumCaseFieldDefinition.CASE_ID_LIST, String.class))
-            .thenReturn(java.util.Optional.of("5260728023204485,7829484608979593,3007004947258233," +
+            .thenReturn(java.util.Optional.of("5260728023204485, 7829484608979593, 3007004947258233," +
                 "4719620009252072,6797092066725243,9301281768878771,8509676174519453," +
                 "1682542357170697,3673342967892569,1677132005196104"));
         retriggerWaTasksForFixedCaseIdHandler.handle(callbackStage, callback);

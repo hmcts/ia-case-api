@@ -77,11 +77,12 @@ public class RetriggerWaTasksForFixedCaseIdHandler implements PreSubmitCallbackH
 
         Arrays.stream(caseIdListList)
             .forEach(caseId -> {
-                    if (caseId.length() != 16) {
-                        log.info("Invalid Case Id found to re-trigger WA tasks: {}", caseId);
+                    String trimmedCaseId = caseId.trim();
+                    if (trimmedCaseId.length() != 16) {
+                        log.info("Invalid Case Id found to re-trigger WA tasks: {}", trimmedCaseId);
                         return;
                     }
-                    scheduler.scheduleTimedEvent(caseId, scheduledDate, Event.RE_TRIGGER_WA_TASKS, "");
+                    scheduler.scheduleTimedEvent(trimmedCaseId, scheduledDate, Event.RE_TRIGGER_WA_TASKS, "");
                 }
             );
         asylumCase.clear(CASE_ID_LIST);
