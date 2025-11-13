@@ -368,7 +368,6 @@ class AutomaticEndAppealForNonPaymentEaHuTriggerTest {
 
     @Test
     void should_not_trigger_event_if_the_appeal_is_rehydrated() {
-        // Arrange: make everything eligible EXCEPT rehydration
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
