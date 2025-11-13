@@ -365,6 +365,7 @@ class AutomaticEndAppealForNonPaymentEaHuTriggerTest {
                 .hasMessage("Cannot handle callback for auto end appeal for remission rejection")
                 .isExactlyInstanceOf(IllegalStateException.class);
     }
+
     @Test
     void should_not_trigger_event_if_the_appeal_is_rehydrated() {
         // Arrange: make everything eligible EXCEPT rehydration
