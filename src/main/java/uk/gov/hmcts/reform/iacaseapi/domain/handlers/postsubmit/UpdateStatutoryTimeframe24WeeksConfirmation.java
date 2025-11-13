@@ -33,7 +33,7 @@ public class UpdateStatutoryTimeframe24WeeksConfirmation implements PostSubmitCa
         postSubmitResponse.setConfirmationHeader("# You have updated the statutory timeframe 24 weeks");
         postSubmitResponse.setConfirmationBody(
             "#### What happens next\n\n"
-            + "You can review this status in the statutory timeframe 24 weeks tab."
+            + "You can review this status in the Overview tab."
         );
 
         return postSubmitResponse;
