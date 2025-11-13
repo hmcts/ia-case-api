@@ -32,7 +32,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfCountryCircumstances;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfCountryDecisionType;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.SourceOfAppeal;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -768,7 +767,7 @@ class HomeOfficeDecisionDateCheckerTest {
         when(asylumCase.read(TRIBUNAL_RECEIVED_DATE)).thenReturn(Optional.of(tribunalReceivedDate));
         when(asylumCase.read(HOME_OFFICE_DECISION_DATE)).thenReturn(Optional.of(homeOfficeDecisionDate));
         when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
-        when(asylumCase.read(SOURCE_OF_APPEAL, SourceOfAppeal.class)).thenReturn(Optional.of(SourceOfAppeal.REHYDRATED_APPEAL));
+        when(asylumCase.read(IS_REHYDRATED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(asylumCase.read(SUBMISSION_OUT_OF_TIME, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
 
         homeOfficeDecisionDateChecker.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
@@ -787,7 +786,7 @@ class HomeOfficeDecisionDateCheckerTest {
         when(asylumCase.read(TRIBUNAL_RECEIVED_DATE)).thenReturn(Optional.of(tribunalReceivedDate));
         when(asylumCase.read(HOME_OFFICE_DECISION_DATE)).thenReturn(Optional.of(homeOfficeDecisionDate));
         when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
-        when(asylumCase.read(SOURCE_OF_APPEAL, SourceOfAppeal.class)).thenReturn(Optional.of(SourceOfAppeal.REHYDRATED_APPEAL));
+        when(asylumCase.read(IS_REHYDRATED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(asylumCase.read(SUBMISSION_OUT_OF_TIME, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
 
         homeOfficeDecisionDateChecker.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);

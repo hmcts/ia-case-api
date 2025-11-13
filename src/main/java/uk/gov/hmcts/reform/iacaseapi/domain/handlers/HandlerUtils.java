@@ -413,8 +413,4 @@ public class HandlerUtils {
         return false;
     }
 
-    public static boolean isRehydratedAppeal(AsylumCase asylumCase) {
-        return isInternalCase(asylumCase)
-                && asylumCase.read(SOURCE_OF_APPEAL, SourceOfAppeal.class).orElse(SourceOfAppeal.PAPER_FORM) == SourceOfAppeal.REHYDRATED_APPEAL;
-    }
 }
