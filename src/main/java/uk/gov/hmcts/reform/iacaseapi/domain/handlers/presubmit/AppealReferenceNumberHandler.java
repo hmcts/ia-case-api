@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
@@ -26,6 +27,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SOURCE_OF_APPEAL;
 
 @Service
+@Slf4j
 public class AppealReferenceNumberHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private static final String DRAFT = "DRAFT";
@@ -74,7 +76,7 @@ public class AppealReferenceNumberHandler implements PreSubmitCallbackHandler<As
                         .getCaseDetails()
                         .getCaseData();
 
-        if (callback.getEvent() == Event.START_APPEAL  && !isRehydratedAppeal(asylumCase)) {
+        if (callback.getEvent() == Event.START_APPEAL && !isRehydratedAppeal(asylumCase)) {
             asylumCase.write(APPEAL_REFERENCE_NUMBER, DRAFT);
             return new PreSubmitCallbackResponse<>(asylumCase);
         }
@@ -104,22 +106,21 @@ public class AppealReferenceNumberHandler implements PreSubmitCallbackHandler<As
             }
         }
 
-        // For cases with manually entered reference numbers (e.g., rehydrated appeals or legacy migrations),
+        // For cases with manually entered reference numbers (e.g., rehydrated appeals),
         // register the reference number in the database to ensure duplicate checking works
         if (callback.getEvent() == Event.SUBMIT_APPEAL) {
             Optional<String> existingAppealReferenceNumber = asylumCase.read(APPEAL_REFERENCE_NUMBER);
-            if (existingAppealReferenceNumber.isPresent() 
+            if (existingAppealReferenceNumber.isPresent()
                     && !existingAppealReferenceNumber.get().equals(DRAFT)) {
                 try {
                     // Register the reference number if it's not already in the database
-                    // This ensures that future duplicate checks will catch it
                     appealReferenceNumberGenerator.registerReferenceNumber(
                             callback.getCaseDetails().getId(),
                             existingAppealReferenceNumber.get()
                     );
                 } catch (Exception e) {
-                    // Log error but don't fail the submission
-                    // The reference number is already in the case data, so the case can still be saved
+                    log.warn("Could not register reference number {} for case {}: {}",
+                            existingAppealReferenceNumber.get(), callback.getCaseDetails().getId(), e.getMessage());
                 }
             }
         }

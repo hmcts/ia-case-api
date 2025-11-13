@@ -77,7 +77,6 @@ public class DbAppealReferenceNumberGenerator implements AppealReferenceNumberGe
         // 3. Only check within a reasonable range to avoid performance issues
         // 4. If no gaps found or range exceeded, fall back to MAX(sequence) + 1
         //
-        // Performance consideration: Limits gap search to avoid issues with very large gaps
         jdbcTemplate.update(
                 "INSERT INTO ia_case_api.appeal_reference_numbers "
                         + "          (case_id, "
@@ -253,7 +252,6 @@ public class DbAppealReferenceNumberGenerator implements AppealReferenceNumberGe
 
         try {
             // Insert or update the reference number for this case
-            // If case_id already exists, update it; otherwise insert
             int rowsAffected = jdbcTemplate.update(
                     "INSERT INTO ia_case_api.appeal_reference_numbers "
                             + "          (case_id, "
