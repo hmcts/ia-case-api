@@ -13,7 +13,7 @@
           "isAdmin": "Yes",
           "tribunalReceivedDate": "{$TODAY-10}",
           "appellantInUk": "Yes",
-          "sourceOfAppeal": "rehydratedAppeal",
+          "isRehydratedAppeal": "Yes",
           "submissionOutOfTime": "Yes"
         }
       }
@@ -27,7 +27,7 @@
       "replacements": {
         "submissionOutOfTime": "Yes",
         "homeOfficeDecisionDate": "{$TODAY-20}",
-        "sourceOfAppeal": "rehydratedAppeal"
+        "isRehydratedAppeal": "Yes"
       }
     }
   }
