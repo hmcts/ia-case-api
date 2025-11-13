@@ -2,12 +2,10 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.Assert.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
 import java.time.LocalDate;
@@ -18,6 +16,8 @@ import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.stream.Stream;
+
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -285,6 +285,23 @@ class AutomaticDirectionRequestingHearingRequirementsHandlerTest {
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
     }
+
+    @Test
+    void should_not_schedule_request_hearing_requirements_for_rehydrated_appeal() {
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONSE_REVIEW);
+
+        when(asylumCase.read(IS_REHYDRATED_APPEAL, YesOrNo.class))
+                .thenReturn(Optional.of(YesOrNo.YES));
+
+        boolean canHandle = automaticDirectionHandler
+                .canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        Assertions.assertFalse(canHandle);
+        verifyNoInteractions(scheduler);
+    }
+
 
     @Test
     void it_can_handle_callback() {
