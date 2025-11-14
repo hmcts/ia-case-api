@@ -58,6 +58,7 @@ class AutomaticDirectionRequestingHearingRequirementsHandlerTest {
     private final long caseId = 12345;
     private final String jurisdiction = "IA";
     private final String caseType = "Asylum";
+    private final boolean rehydratedAppeal = true;
     @Mock
     private DateProvider dateProvider;
     @Mock
@@ -274,16 +275,26 @@ class AutomaticDirectionRequestingHearingRequirementsHandlerTest {
 
     @Test
     void handling_should_throw_if_cannot_actually_handle() {
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(IS_REHYDRATED_APPEAL, YesOrNo.class))
+                .thenReturn(Optional.of(YesOrNo.YES));
 
-        assertThatThrownBy(() -> automaticDirectionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
-            .hasMessage("Cannot handle callback")
-            .isExactlyInstanceOf(IllegalStateException.class);
+        assertThatThrownBy(() ->
+                automaticDirectionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback)
+        )
+                .hasMessage("Cannot handle callback")
+                .isExactlyInstanceOf(IllegalStateException.class);
 
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
-        assertThatThrownBy(() -> automaticDirectionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
-            .hasMessage("Cannot handle callback")
-            .isExactlyInstanceOf(IllegalStateException.class);
+
+        assertThatThrownBy(() ->
+                automaticDirectionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback)
+        )
+                .hasMessage("Cannot handle callback")
+                .isExactlyInstanceOf(IllegalStateException.class);
     }
+
 
     @Test
     void should_not_schedule_request_hearing_requirements_for_rehydrated_appeal() {
@@ -304,26 +315,44 @@ class AutomaticDirectionRequestingHearingRequirementsHandlerTest {
 
     @Test
     void it_can_handle_callback() {
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        // ensure this is NOT rehydrated
+        when(asylumCase.read(IS_REHYDRATED_APPEAL, YesOrNo.class))
+                .thenReturn(Optional.of(YesOrNo.NO));
 
         for (Event event : Event.values()) {
-
             when(callback.getEvent()).thenReturn(event);
 
             for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
 
                 boolean canHandle = automaticDirectionHandler.canHandle(callbackStage, callback);
 
-                if (callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-                    && Arrays.asList(Event.REQUEST_RESPONSE_REVIEW, Event.ADD_APPEAL_RESPONSE).contains(event)) {
+                boolean expected =
+                        callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
+                                && Arrays.asList(Event.REQUEST_RESPONSE_REVIEW, Event.ADD_APPEAL_RESPONSE)
+                                .contains(event);
 
-                    assertThat(canHandle).isTrue();
-                } else {
-                    assertThat(canHandle).isFalse();
-                }
+                assertThat(canHandle).isEqualTo(expected);
             }
-
-            reset(callback);
         }
     }
+
+
+    @Test
+    void handling_should_throw_for_rehydrated_appeal() {
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONSE_REVIEW);
+        when(asylumCase.read(IS_REHYDRATED_APPEAL, YesOrNo.class))
+                .thenReturn(Optional.of(YesOrNo.YES));
+
+        assertThatThrownBy(() ->
+                automaticDirectionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback)
+        )
+                .hasMessage("Cannot handle callback")
+                .isExactlyInstanceOf(IllegalStateException.class);
+    }
+
 
 }
