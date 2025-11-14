@@ -8,6 +8,7 @@ import static org.mockito.AdditionalMatchers.and;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.contains;
 import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -353,6 +354,301 @@ class DbAppealReferenceNumberGeneratorTest {
             assertThatThrownBy(() -> dbAppealReferenceNumberGenerator.referenceNumberExists(invalidReferenceNumber))
                 .isExactlyInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("Invalid reference number format");
+        }
+    }
+
+    @Nested
+    class RegisterReferenceNumber {
+
+        private final long testCaseId = 456;
+        private final String validReferenceNumber = "HU/54321/2024";
+
+        @Test
+        void should_successfully_register_new_reference_number() {
+            // No existing case with this reference number
+            when(jdbcTemplate.queryForObject(
+                and(
+                    contains("SELECT case_id"),
+                    contains("FROM ia_case_api.appeal_reference_numbers")
+                ),
+                any(MapSqlParameterSource.class),
+                eq(Integer.class)
+            )).thenThrow(EmptyResultDataAccessException.class);
+
+            when(jdbcTemplate.update(
+                and(
+                    contains("INSERT INTO ia_case_api.appeal_reference_numbers"),
+                    contains("ON CONFLICT")
+                ),
+                any(MapSqlParameterSource.class)
+            )).thenReturn(1);
+
+            dbAppealReferenceNumberGenerator.registerReferenceNumber(testCaseId, validReferenceNumber);
+
+            verify(jdbcTemplate, times(1))
+                .queryForObject(
+                    contains("SELECT case_id"),
+                    any(MapSqlParameterSource.class),
+                    eq(Integer.class)
+                );
+            verify(jdbcTemplate, times(1))
+                .update(
+                    contains("INSERT INTO ia_case_api.appeal_reference_numbers"),
+                    any(MapSqlParameterSource.class)
+                );
+        }
+
+        @Test
+        void should_update_reference_number_when_already_exists_for_same_case() {
+            // No existing case with this reference number (for different case)
+            when(jdbcTemplate.queryForObject(
+                and(
+                    contains("SELECT case_id"),
+                    contains("FROM ia_case_api.appeal_reference_numbers")
+                ),
+                any(MapSqlParameterSource.class),
+                eq(Integer.class)
+            )).thenThrow(EmptyResultDataAccessException.class);
+
+            // ON CONFLICT will update the existing record
+            when(jdbcTemplate.update(
+                and(
+                    contains("INSERT INTO ia_case_api.appeal_reference_numbers"),
+                    contains("ON CONFLICT")
+                ),
+                any(MapSqlParameterSource.class)
+            )).thenReturn(1);
+
+            dbAppealReferenceNumberGenerator.registerReferenceNumber(testCaseId, validReferenceNumber);
+
+            verify(jdbcTemplate, times(1))
+                .update(
+                    contains("INSERT INTO ia_case_api.appeal_reference_numbers"),
+                    any(MapSqlParameterSource.class)
+                );
+        }
+
+        @Test
+        void should_not_register_when_reference_number_exists_for_another_case() {
+            long anotherCaseId = 789;
+            when(jdbcTemplate.queryForObject(
+                and(
+                    contains("SELECT case_id"),
+                    contains("FROM ia_case_api.appeal_reference_numbers")
+                ),
+                any(MapSqlParameterSource.class),
+                eq(Integer.class)
+            )).thenReturn((int) anotherCaseId);
+
+            dbAppealReferenceNumberGenerator.registerReferenceNumber(testCaseId, validReferenceNumber);
+
+            verify(jdbcTemplate, times(1))
+                .queryForObject(
+                    contains("SELECT case_id"),
+                    any(MapSqlParameterSource.class),
+                    eq(Integer.class)
+                );
+            // Should not attempt to insert/update
+            verify(jdbcTemplate, never())
+                .update(
+                    contains("INSERT INTO ia_case_api.appeal_reference_numbers"),
+                    any(MapSqlParameterSource.class)
+                );
+        }
+
+        @Test
+        void should_throw_exception_when_reference_number_is_null() {
+            assertThatThrownBy(() -> dbAppealReferenceNumberGenerator.registerReferenceNumber(testCaseId, null))
+                .isExactlyInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("Reference number cannot be null or empty");
+        }
+
+        @Test
+        void should_throw_exception_when_reference_number_is_empty() {
+            assertThatThrownBy(() -> dbAppealReferenceNumberGenerator.registerReferenceNumber(testCaseId, ""))
+                .isExactlyInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("Reference number cannot be null or empty");
+        }
+
+        @Test
+        void should_throw_exception_when_reference_number_has_invalid_format_too_few_parts() {
+            String invalidReferenceNumber = "HU/54321";
+
+            assertThatThrownBy(() -> dbAppealReferenceNumberGenerator.registerReferenceNumber(testCaseId, invalidReferenceNumber))
+                .isExactlyInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("Invalid reference number format. Expected format: XX/00000/0000");
+        }
+
+        @Test
+        void should_throw_exception_when_reference_number_has_invalid_format_too_many_parts() {
+            String invalidReferenceNumber = "HU/54321/2024/extra";
+
+            assertThatThrownBy(() -> dbAppealReferenceNumberGenerator.registerReferenceNumber(testCaseId, invalidReferenceNumber))
+                .isExactlyInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("Invalid reference number format. Expected format: XX/00000/0000");
+        }
+
+        @Test
+        void should_throw_exception_when_sequence_is_not_numeric() {
+            String invalidReferenceNumber = "HU/abc123/2024";
+
+            assertThatThrownBy(() -> dbAppealReferenceNumberGenerator.registerReferenceNumber(testCaseId, invalidReferenceNumber))
+                .isExactlyInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("Invalid reference number format. Expected format: XX/00000/0000");
+        }
+
+        @Test
+        void should_throw_exception_when_year_is_not_numeric() {
+            String invalidReferenceNumber = "HU/54321/abcd";
+
+            assertThatThrownBy(() -> dbAppealReferenceNumberGenerator.registerReferenceNumber(testCaseId, invalidReferenceNumber))
+                .isExactlyInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("Invalid reference number format. Expected format: XX/00000/0000");
+        }
+
+        @Test
+        void should_verify_correct_parameters_passed_to_queries() {
+            String referenceNumber = "RP/67890/2019";
+
+            when(jdbcTemplate.queryForObject(
+                any(String.class),
+                any(MapSqlParameterSource.class),
+                eq(Integer.class)
+            )).thenThrow(EmptyResultDataAccessException.class);
+
+            when(jdbcTemplate.update(
+                any(String.class),
+                any(MapSqlParameterSource.class)
+            )).thenReturn(1);
+
+            dbAppealReferenceNumberGenerator.registerReferenceNumber(testCaseId, referenceNumber);
+
+            ArgumentCaptor<MapSqlParameterSource> queryParametersCaptor = ArgumentCaptor.forClass(MapSqlParameterSource.class);
+            verify(jdbcTemplate).queryForObject(
+                any(String.class),
+                queryParametersCaptor.capture(),
+                eq(Integer.class)
+            );
+
+            MapSqlParameterSource capturedQueryParameters = queryParametersCaptor.getValue();
+            assertEquals(testCaseId, capturedQueryParameters.getValue("caseId"));
+            assertEquals("RP", capturedQueryParameters.getValue("appealType"));
+            assertEquals(67890, capturedQueryParameters.getValue("sequence"));
+            assertEquals(2019, capturedQueryParameters.getValue("year"));
+
+            ArgumentCaptor<MapSqlParameterSource> updateParametersCaptor = ArgumentCaptor.forClass(MapSqlParameterSource.class);
+            verify(jdbcTemplate).update(
+                any(String.class),
+                updateParametersCaptor.capture()
+            );
+
+            MapSqlParameterSource capturedUpdateParameters = updateParametersCaptor.getValue();
+            assertEquals(testCaseId, capturedUpdateParameters.getValue("caseId"));
+            assertEquals("RP", capturedUpdateParameters.getValue("appealType"));
+            assertEquals(67890, capturedUpdateParameters.getValue("sequence"));
+            assertEquals(2019, capturedUpdateParameters.getValue("year"));
+        }
+
+        @Test
+        void should_throw_exception_when_database_error_occurs_when_checking_existing_case() {
+            when(jdbcTemplate.queryForObject(
+                any(String.class),
+                any(MapSqlParameterSource.class),
+                eq(Integer.class)
+            )).thenThrow(new DataAccessException("Database connection error") {});
+
+            // Should throw exception since only EmptyResultDataAccessException is caught
+            assertThatThrownBy(() -> dbAppealReferenceNumberGenerator.registerReferenceNumber(testCaseId, validReferenceNumber))
+                .isInstanceOf(DataAccessException.class)
+                .hasMessageContaining("Database connection error");
+
+            verify(jdbcTemplate, times(1))
+                .queryForObject(
+                    any(String.class),
+                    any(MapSqlParameterSource.class),
+                    eq(Integer.class)
+                );
+            // Should not attempt to insert/update after error
+            verify(jdbcTemplate, never())
+                .update(
+                    any(String.class),
+                    any(MapSqlParameterSource.class)
+                );
+        }
+
+        @Test
+        void should_handle_database_error_gracefully_when_inserting() {
+            when(jdbcTemplate.queryForObject(
+                any(String.class),
+                any(MapSqlParameterSource.class),
+                eq(Integer.class)
+            )).thenThrow(EmptyResultDataAccessException.class);
+
+            when(jdbcTemplate.update(
+                any(String.class),
+                any(MapSqlParameterSource.class)
+            )).thenThrow(new DataAccessException("Database connection error") {});
+
+            // Should not throw exception, just log warning
+            dbAppealReferenceNumberGenerator.registerReferenceNumber(testCaseId, validReferenceNumber);
+
+            verify(jdbcTemplate, times(1))
+                .update(
+                    any(String.class),
+                    any(MapSqlParameterSource.class)
+                );
+        }
+
+        @Test
+        void should_handle_detained_appeal_type() {
+            String detainedReferenceNumber = "DE/12345/2017";
+
+            when(jdbcTemplate.queryForObject(
+                any(String.class),
+                any(MapSqlParameterSource.class),
+                eq(Integer.class)
+            )).thenThrow(EmptyResultDataAccessException.class);
+
+            when(jdbcTemplate.update(
+                any(String.class),
+                any(MapSqlParameterSource.class)
+            )).thenReturn(1);
+
+            dbAppealReferenceNumberGenerator.registerReferenceNumber(testCaseId, detainedReferenceNumber);
+
+            verify(jdbcTemplate, times(1))
+                .update(
+                    contains("INSERT INTO ia_case_api.appeal_reference_numbers"),
+                    any(MapSqlParameterSource.class)
+                );
+        }
+
+        @Test
+        void should_handle_different_appeal_types() {
+            String[] appealTypes = {"HU", "DA", "DC", "EA", "PA", "RP", "LE", "LD", "LP", "LH", "LR", "IA"};
+
+            for (String appealType : appealTypes) {
+                String referenceNumber = appealType + "/12345/2024";
+
+                when(jdbcTemplate.queryForObject(
+                    any(String.class),
+                    any(MapSqlParameterSource.class),
+                    eq(Integer.class)
+                )).thenThrow(EmptyResultDataAccessException.class);
+
+                when(jdbcTemplate.update(
+                    any(String.class),
+                    any(MapSqlParameterSource.class)
+                )).thenReturn(1);
+
+                dbAppealReferenceNumberGenerator.registerReferenceNumber(testCaseId, referenceNumber);
+            }
+
+            verify(jdbcTemplate, times(appealTypes.length))
+                .update(
+                    any(String.class),
+                    any(MapSqlParameterSource.class)
+                );
         }
     }
 }
