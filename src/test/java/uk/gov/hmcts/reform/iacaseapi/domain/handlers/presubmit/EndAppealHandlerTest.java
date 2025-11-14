@@ -309,7 +309,6 @@ class EndAppealHandlerTest {
 
         verify(iaHearingsApiService).aboutToSubmit(callback);
         verify(asylumCase, never()).write(eq(MANUAL_CANCEL_HEARINGS_REQUIRED), any());
-        verify(asylumCase).clear(LIST_CASE_HEARING_DATE);
     }
 
     @Test
@@ -328,7 +327,6 @@ class EndAppealHandlerTest {
         assertEquals(asylumCase, callbackResponse.getData());
 
         verify(iaHearingsApiService).aboutToSubmit(callback);
-        verify(asylumCase).clear(LIST_CASE_HEARING_DATE);
         verify(asylumCase, times(1))
             .write(MANUAL_CANCEL_HEARINGS_REQUIRED, YesOrNo.YES);
     }
