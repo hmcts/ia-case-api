@@ -146,29 +146,8 @@ public class DbAppealReferenceNumberGenerator implements AppealReferenceNumberGe
      */
     @Override
     public boolean referenceNumberExists(String referenceNumber) {
-        if (referenceNumber == null || referenceNumber.isEmpty()) {
-            throw new IllegalArgumentException("Reference number cannot be null or empty");
-        }
-
-        String[] parts = referenceNumber.split("/");
-        if (parts.length != 3) {
-            throw new IllegalArgumentException("Invalid reference number format. Expected format: XX/00000/0000");
-        }
-
-        String appealType = parts[0];
-        int sequence;
-        int year;
-        try {
-            sequence = Integer.parseInt(parts[1]);
-            year = Integer.parseInt(parts[2]);
-        } catch (NumberFormatException e) {
-            throw new IllegalArgumentException("Invalid reference number format. Expected format: XX/00000/0000", e);
-        }
-
-        MapSqlParameterSource parameters = new MapSqlParameterSource();
-        parameters.addValue("appealType", appealType);
-        parameters.addValue("sequence", sequence);
-        parameters.addValue("year", year);
+        ReferenceNumberComponents components = parseReferenceNumber(referenceNumber);
+        MapSqlParameterSource parameters = createParametersFromComponents(components);
 
         try {
             Integer count = jdbcTemplate.queryForObject(
@@ -202,30 +181,9 @@ public class DbAppealReferenceNumberGenerator implements AppealReferenceNumberGe
     @Override
     @Retryable(include = TransientDataAccessException.class)
     public void registerReferenceNumber(long caseId, String referenceNumber) {
-        if (referenceNumber == null || referenceNumber.isEmpty()) {
-            throw new IllegalArgumentException("Reference number cannot be null or empty");
-        }
-
-        String[] parts = referenceNumber.split("/");
-        if (parts.length != 3) {
-            throw new IllegalArgumentException("Invalid reference number format. Expected format: XX/00000/0000");
-        }
-
-        String appealType = parts[0];
-        int sequence;
-        int year;
-        try {
-            sequence = Integer.parseInt(parts[1]);
-            year = Integer.parseInt(parts[2]);
-        } catch (NumberFormatException e) {
-            throw new IllegalArgumentException("Invalid reference number format. Expected format: XX/00000/0000", e);
-        }
-
-        MapSqlParameterSource parameters = new MapSqlParameterSource();
+        ReferenceNumberComponents components = parseReferenceNumber(referenceNumber);
+        MapSqlParameterSource parameters = createParametersFromComponents(components);
         parameters.addValue("caseId", caseId);
-        parameters.addValue("appealType", appealType);
-        parameters.addValue("sequence", sequence);
-        parameters.addValue("year", year);
 
         try {
             // Check if this reference number already exists for another case
@@ -276,6 +234,65 @@ public class DbAppealReferenceNumberGenerator implements AppealReferenceNumberGe
             // If there's an unexpected error, log a warning but don't fail
             log.warn("Could not register reference number {} for case {}: {}", 
                     referenceNumber, caseId, e.getMessage());
+        }
+    }
+
+    /**
+     * Parses and validates a reference number string.
+     *
+     * @param referenceNumber The reference number in format XX/00000/0000
+     * @return ReferenceNumberComponents containing the parsed values
+     * @throws IllegalArgumentException if the reference number is invalid
+     */
+    private ReferenceNumberComponents parseReferenceNumber(String referenceNumber) {
+        if (referenceNumber == null || referenceNumber.isEmpty()) {
+            throw new IllegalArgumentException("Reference number cannot be null or empty");
+        }
+
+        String[] parts = referenceNumber.split("/");
+        if (parts.length != 3) {
+            throw new IllegalArgumentException("Invalid reference number format. Expected format: XX/00000/0000");
+        }
+
+        String appealType = parts[0];
+        int sequence;
+        int year;
+        try {
+            sequence = Integer.parseInt(parts[1]);
+            year = Integer.parseInt(parts[2]);
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Invalid reference number format. Expected format: XX/00000/0000", e);
+        }
+
+        return new ReferenceNumberComponents(appealType, sequence, year);
+    }
+
+    /**
+     * Creates MapSqlParameterSource from reference number components.
+     *
+     * @param components The parsed reference number components
+     * @return MapSqlParameterSource with appealType, sequence, and year
+     */
+    private MapSqlParameterSource createParametersFromComponents(ReferenceNumberComponents components) {
+        MapSqlParameterSource parameters = new MapSqlParameterSource();
+        parameters.addValue("appealType", components.appealType);
+        parameters.addValue("sequence", components.sequence);
+        parameters.addValue("year", components.year);
+        return parameters;
+    }
+
+    /**
+     * Inner class to hold parsed reference number components.
+     */
+    private static class ReferenceNumberComponents {
+        private final String appealType;
+        private final int sequence;
+        private final int year;
+
+        ReferenceNumberComponents(String appealType, int sequence, int year) {
+            this.appealType = appealType;
+            this.sequence = sequence;
+            this.year = year;
         }
     }
 }
