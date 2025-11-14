@@ -72,7 +72,7 @@ public class AutomaticDirectionRequestingHearingRequirementsHandler implements P
         return timedEventServiceEnabled
                 && !isRehydratedAppeal(asylumCase)
                 && callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-               && Arrays.asList(
+                && Arrays.asList(
                     Event.REQUEST_RESPONSE_REVIEW,
                     Event.ADD_APPEAL_RESPONSE)
                    .contains(callback.getEvent());
