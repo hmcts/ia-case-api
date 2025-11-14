@@ -62,10 +62,8 @@ public class AppealUserRoleAppender implements PreSubmitCallbackHandler<AsylumCa
 
         if (userRoleLabel.equals(UserRoleLabel.ADMIN_OFFICER)) {
             asylumCase.write(IS_ADMIN, YES);
-            log.info("User role: {} - {}", IS_ADMIN, YES);
         } else {
             asylumCase.write(IS_ADMIN, NO);
-            log.info("User role: {} - {}", IS_ADMIN, NO);
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
