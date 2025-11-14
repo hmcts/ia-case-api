@@ -1,0 +1,48 @@
+{
+  "description": "DIAC-1141-set-detained-individual-flag-by-when-detained-appeal-submitted",
+
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "AdminOfficer",
+    "input": {
+      "eventId": "markAppealAsDetained",
+      "state": "appealSubmitted",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "appellantInDetention": "No",
+          "detentionFacility": "immigrationRemovalCentre"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "appealType": "protection",
+        "sendDirectionActionAvailable": "Yes",
+        "appellantHasFixedAddress": null,
+        "mobileNumber": null,
+        "contactPreference": null,
+        "appellantLevelFlags": {
+          "partyName": null,
+          "roleOnCase": null,
+          "details": [
+            {
+              "id": "$/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-Ff]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/",
+              "value": {
+                "name": "Detained individual",
+                "flagCode": "PF0019",
+                "status": "Active",
+                "hearingRelevant": "Yes"
+              }
+            }
+          ]
+        }
+      }
+    }
+  }
+}
