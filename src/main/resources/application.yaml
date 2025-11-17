@@ -136,9 +136,9 @@ requestRespondentReview.dueInDays: ${REQUEST_RESPONDENT_REVIEW_DUE_IN_DAYS:14}
 requestRespondentReviewAda.dueInDays: ${REQUEST_RESPONDENT_REVIEW_ADA_DUE_IN_DAYS:2}
 requestRespondentReviewDetained.dueInDays: ${REQUEST_RESPONDENT_REVIEW_DETAINED_DUE_IN_DAYS:7}
 appellantReasonsForAppeal.dueInDays: ${APPELLANT_REASONS_FOR_APPEAL_DUE_IN_DAYS:28}
-paymentAfterRemissionRejection.dueInMinutes: ${PAYMENT_AFTER_REMISSION_REJECTION_DUE_IN_MINUTES:2}
+paymentAfterRemissionRejection.dueInMinutes: ${PAYMENT_AFTER_REMISSION_REJECTION_DUE_IN_MINUTES:20160}
 legalRepresentativeRemissionReminder.dueInMinutes: ${LEGAL_REP_REMISSION_REMINDER_DUE_IN_MINUTES:10080}
-paymentEaHuNoRemission.dueInMinutes: ${PAYMENT_EA_HU_NO_REMISSION_DUE_IN_MINUTES:2}
+paymentEaHuNoRemission.dueInMinutes: ${PAYMENT_EA_HU_NO_REMISSION_DUE_IN_MINUTES:20160}
 adaCaseListedDirection.dueInDaysSinceSubmission: ${ADA_CASE_LISTED_DIRECTION_DUE_IN_DAYS:15}
 sendPaymentReminderNotification.dueInMinutesSinceSubmission: ${PAYMENT_REMINDER_DUE_IN_MINUTES:10080}
 
