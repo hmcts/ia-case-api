@@ -1288,6 +1288,7 @@ security:
       - "considerMakingCostsOrder"
       - "updateTribunalDecision"
     caseworker-ia-system:
+      - "addStatutoryTimeframe24Weeks"
       - "requestHearingRequirementsFeature"
       - "moveToPaymentPending"
       - "rollbackPayment"

@@ -29,6 +29,8 @@ public class CcdEventAuthorizor {
             || userRoles.isEmpty()
             || Collections.disjoint(requiredRoles, userRoles)) {
 
+            log.warn("User with roles {} not authorized for event '{}' which requires one of roles {}",
+                userRoles, event.toString(), requiredRoles);
             throw new AccessDeniedException("Event '" + event.toString() + "' not allowed");
         }
     }
