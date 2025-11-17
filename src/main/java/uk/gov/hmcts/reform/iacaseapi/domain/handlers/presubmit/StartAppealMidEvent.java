@@ -21,7 +21,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 @Component
 public class StartAppealMidEvent implements PreSubmitCallbackHandler<AsylumCase> {
 
-    private static final String HOME_OFFICE_REFERENCE_NUMBER_PAGE_ID = "homeOfficeReferenceNumber";
+    private static final String HOME_OFFICE_DECISION_PAGE_ID = "homeOfficeDecision";
     private static final String OUT_OF_COUNTRY_PAGE_ID = "outOfCountry";
     private static final String DETENTION_FACILITY_PAGE_ID = "detentionFacility";
     private static final String SUITABILITY_ATTENDANCE_PAGE_ID = "suitabilityAppellantAttendance";
@@ -42,7 +42,7 @@ public class StartAppealMidEvent implements PreSubmitCallbackHandler<AsylumCase>
                     || callback.getEvent() == Event.EDIT_APPEAL
                     || callback.getEvent() == Event.EDIT_APPEAL_AFTER_SUBMIT
                     || callback.getEvent() == Event.UPDATE_DETENTION_LOCATION)
-               && (callback.getPageId().equals(HOME_OFFICE_REFERENCE_NUMBER_PAGE_ID)
+               && (callback.getPageId().equals(HOME_OFFICE_DECISION_PAGE_ID)
                     || callback.getPageId().equals(OUT_OF_COUNTRY_PAGE_ID)
                     || callback.getPageId().equals(DETENTION_FACILITY_PAGE_ID)
                     || callback.getPageId().equals(SUITABILITY_ATTENDANCE_PAGE_ID)
@@ -76,7 +76,7 @@ public class StartAppealMidEvent implements PreSubmitCallbackHandler<AsylumCase>
             asylumCase.write(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.NO);
         }
 
-        if (callback.getPageId().equals(HOME_OFFICE_REFERENCE_NUMBER_PAGE_ID)) {
+        if (callback.getPageId().equals(HOME_OFFICE_DECISION_PAGE_ID)) {
             if (!asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class).map(
                 value -> (OutOfCountryDecisionType.REFUSAL_OF_HUMAN_RIGHTS.equals(value)
                     || OutOfCountryDecisionType.REFUSE_PERMIT.equals(value))).orElse(false)) {
@@ -84,7 +84,7 @@ public class StartAppealMidEvent implements PreSubmitCallbackHandler<AsylumCase>
                         .read(HOME_OFFICE_REFERENCE_NUMBER, String.class)
                         .orElseThrow(() -> new IllegalStateException("homeOfficeReferenceNumber is missing"));
 
-                if (!HOME_OFFICE_REF_PATTERN.matcher(homeOfficeReferenceNumber).matches()) { // need to update this as the Case ID is no longer used by the HO
+                if (!HOME_OFFICE_REF_PATTERN.matcher(homeOfficeReferenceNumber).matches()) {
                     response.addError("Enter the Home office reference or Case ID in the correct format. The Home office reference or Case ID cannot include letters and must be either 9 digits or 16 digits with dashes.");
                 }
             }

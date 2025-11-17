@@ -43,9 +43,7 @@ public class HomeOfficeReferenceHandler implements PreSubmitCallbackHandler<Asyl
         return callbackStage == PreSubmitCallbackStage.MID_EVENT
                 && (callback.getEvent() == Event.START_APPEAL
                 || callback.getEvent() == Event.EDIT_APPEAL)
-                && (callback.getPageId().equals("homeOfficeReferenceNumber_TEMPORARILY_DISABLED") || 
-                    // TODO - add logic for this case below (the other two have been implemented, whereas this one hasn't)
-                    callback.getPageId().equals("oocHomeOfficeReferenceNumber_TEMPORARILY_DISABLED") ||
+                && (callback.getPageId().equals("homeOfficeDecision_TEMPORARILY_DISABLED") || 
                     callback.getPageId().equals("appellantBasicDetails_TEMPORARILY_DISABLED"));
     }
 
@@ -69,7 +67,7 @@ public class HomeOfficeReferenceHandler implements PreSubmitCallbackHandler<Asyl
                 .orElseThrow(() -> new IllegalStateException("homeOfficeReferenceNumber is missing"));
 
                 
-            if (callback.getPageId().equals("homeOfficeReferenceNumber_TEMPORARILY_DISABLED")) {    
+            if (callback.getPageId().equals("homeOfficeDecision_TEMPORARILY_DISABLED")) {    
                 if (!isWellFormedHomeOfficeReference(homeOfficeReferenceNumber)) {
                     PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
                     response.addError("Enter the Home Office reference or Case ID in the correct format. The Home Office reference or Case ID must be either GWF followed by 9 digits or 16 digits with dashes.");

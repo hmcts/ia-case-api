@@ -53,7 +53,7 @@ public class EditAppealAfterSubmitHandler implements PreSubmitCallbackHandler<As
     private final DocumentsAppender documentsAppender;
 
     private final DueDateService dueDateService;
-    private static final String HOME_OFFICE_DECISION_PAGE_ID = "homeOfficeDecisionLetter";
+    private static final String HOME_OFFICE_DECISION_PAGE_ID = "homeOfficeDecision";
 
     public EditAppealAfterSubmitHandler(
         DateProvider dateProvider,

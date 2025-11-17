@@ -54,7 +54,7 @@ class EditAppealAfterSubmitHandlerTest {
     private static final int APPEAL_OUT_OF_TIME_DAYS_UK = 14;
     private static final int APPEAL_OUT_OF_TIME_DAYS_OOC = 28;
     private static final int APPEAL_OUT_OF_TIME_ADA_WORKING_DAYS = 5;
-    private static final String HOME_OFFICE_DECISION_PAGE_ID = "homeOfficeDecisionLetter";
+    private static final String HOME_OFFICE_DECISION_PAGE_ID = "homeOfficeDecision";
 
     @Mock
     private Callback<AsylumCase> callback;

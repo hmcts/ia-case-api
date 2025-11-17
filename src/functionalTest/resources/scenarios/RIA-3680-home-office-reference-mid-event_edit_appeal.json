@@ -1,7 +1,7 @@
 {
   "description": "RIA-3680 Home Office Reference Number Mid-Event - wrong home-office reference number for editAppeal event",
   "request": {
-    "uri": "/asylum/ccdMidEvent?pageId=homeOfficeReferenceNumber",
+    "uri": "/asylum/ccdMidEvent?pageId=homeOfficeDecision",
     "credentials": "LegalRepresentative",
     "input": {
       "eventId": "editAppeal",

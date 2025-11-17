@@ -57,7 +57,7 @@ class HomeOfficeReferenceHandlerTest {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(callback.getPageId()).thenReturn("homeOfficeReferenceNumber_TEMPORARILY_DISABLED");
+        when(callback.getPageId()).thenReturn("homeOfficeDecision_TEMPORARILY_DISABLED");
     }
 
     @ParameterizedTest
@@ -97,7 +97,7 @@ class HomeOfficeReferenceHandlerTest {
     @Test
     void should_handle_correct_events_and_stages() {
         when(callback.getEvent()).thenReturn(START_APPEAL);
-        when(callback.getPageId()).thenReturn("homeOfficeReferenceNumber_TEMPORARILY_DISABLED");
+        when(callback.getPageId()).thenReturn("homeOfficeDecision_TEMPORARILY_DISABLED");
         
         assertTrue(homeOfficeReferenceHandler.canHandle(MID_EVENT, callback));
         
@@ -115,7 +115,7 @@ class HomeOfficeReferenceHandlerTest {
     void should_handle_correct_page_ids() {
         when(callback.getEvent()).thenReturn(START_APPEAL);
         
-        when(callback.getPageId()).thenReturn("homeOfficeReferenceNumber_TEMPORARILY_DISABLED");
+        when(callback.getPageId()).thenReturn("homeOfficeDecision_TEMPORARILY_DISABLED");
         assertTrue(homeOfficeReferenceHandler.canHandle(MID_EVENT, callback));
         
         when(callback.getPageId()).thenReturn("appellantBasicDetails_TEMPORARILY_DISABLED");
@@ -128,7 +128,7 @@ class HomeOfficeReferenceHandlerTest {
     @Test
     void should_throw_exception_when_home_office_reference_missing() {
         when(callback.getEvent()).thenReturn(START_APPEAL);
-        when(callback.getPageId()).thenReturn("homeOfficeReferenceNumber_TEMPORARILY_DISABLED");
+        when(callback.getPageId()).thenReturn("homeOfficeDecision_TEMPORARILY_DISABLED");
         when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> homeOfficeReferenceHandler.handle(MID_EVENT, callback))
@@ -380,7 +380,7 @@ class HomeOfficeReferenceHandlerTest {
     @Test
     void should_add_error_for_malformed_home_office_reference_on_homeOfficeDecision_page() {
         when(callback.getEvent()).thenReturn(START_APPEAL);
-        when(callback.getPageId()).thenReturn("homeOfficeReferenceNumber_TEMPORARILY_DISABLED");
+        when(callback.getPageId()).thenReturn("homeOfficeDecision_TEMPORARILY_DISABLED");
         when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of("invalid-ref"));
 
         PreSubmitCallbackResponse<AsylumCase> response = 
@@ -392,7 +392,7 @@ class HomeOfficeReferenceHandlerTest {
     @Test
     void should_add_error_for_non_matching_home_office_case_number() {
         when(callback.getEvent()).thenReturn(START_APPEAL);
-        when(callback.getPageId()).thenReturn("homeOfficeReferenceNumber_TEMPORARILY_DISABLED");
+        when(callback.getPageId()).thenReturn("homeOfficeDecision_TEMPORARILY_DISABLED");
         when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of("123456789"));
         when(homeOfficeReferenceService.getHomeOfficeReferenceData("123456789")).thenReturn(Optional.empty());
 

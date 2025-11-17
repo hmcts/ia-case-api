@@ -25,8 +25,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-
-import uk.gov.hmcts.reform.iacaseapi.domain.RequiredFieldMissingException;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
@@ -38,9 +36,9 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class ClientLeaveUkDateValidatorTest {
+public class DecisionLetterDateValidatorTest {
 
-    private static final String CLIENT_DEPARTURE_DATE_PAGE_ID = "departureDate";
+    private static final String DECISION_LETTER_DETAILS_PAGE_ID = "decisionLetterDetails";
     @Mock
     private Callback<AsylumCase> callback;
     @Mock
@@ -49,11 +47,12 @@ public class ClientLeaveUkDateValidatorTest {
     private AsylumCase asylumCase;
     private String today;
     private String tomorrow;
-    private ClientLeaveUkDateValidator clientLeaveUkDateValidator;
+    private String callbackErrorMessage = "Date of letter must not be in the future";
+    private DecisionLetterDateValidator decisionLetterDateValidator;
 
     @BeforeEach
     public void setUp() {
-        clientLeaveUkDateValidator = new ClientLeaveUkDateValidator();
+        decisionLetterDateValidator = new DecisionLetterDateValidator();
 
         LocalDate now = LocalDate.now();
         today = now.toString();
@@ -62,23 +61,25 @@ public class ClientLeaveUkDateValidatorTest {
         when(callback.getEvent()).thenReturn(Event.START_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(callback.getPageId()).thenReturn(CLIENT_DEPARTURE_DATE_PAGE_ID);
+        when(callback.getPageId()).thenReturn(DECISION_LETTER_DETAILS_PAGE_ID);
     }
 
     @ParameterizedTest
-    @ValueSource(strings = { CLIENT_DEPARTURE_DATE_PAGE_ID, ""})
+    @ValueSource(strings = { DECISION_LETTER_DETAILS_PAGE_ID, ""})
+    void it_can_handle_callback(String pageId) {
 
-    void it_can_handle_callback_decision(String pageId) {
         for (Event event : Event.values()) {
+
             when(callback.getEvent()).thenReturn(event);
             when(callback.getPageId()).thenReturn(pageId);
 
             for (PreSubmitCallbackStage callbackStage : values()) {
-                boolean canHandle = clientLeaveUkDateValidator.canHandle(callbackStage, callback);
+
+                boolean canHandle = decisionLetterDateValidator.canHandle(callbackStage, callback);
 
                 if ((event == Event.START_APPEAL || event == Event.EDIT_APPEAL)
                     && callbackStage == MID_EVENT
-                    && callback.getPageId().equals(CLIENT_DEPARTURE_DATE_PAGE_ID)) {
+                    && callback.getPageId().equals(DECISION_LETTER_DETAILS_PAGE_ID)) {
                     assertTrue(canHandle);
                 } else {
                     assertFalse(canHandle);
@@ -91,62 +92,55 @@ public class ClientLeaveUkDateValidatorTest {
 
     @Test
     void handling_should_throw_if_cannot_actually_handle() {
-        assertThatThrownBy(() -> clientLeaveUkDateValidator.handle(ABOUT_TO_SUBMIT, callback))
+
+        assertThatThrownBy(() -> decisionLetterDateValidator.handle(ABOUT_TO_SUBMIT, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
 
-        assertThatThrownBy(() -> clientLeaveUkDateValidator.handle(ABOUT_TO_START, callback))
+        assertThatThrownBy(() -> decisionLetterDateValidator.handle(ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
     }
 
     @Test
     void should_not_allow_null_arguments() {
-        assertThatThrownBy(() -> clientLeaveUkDateValidator.canHandle(null, callback))
+
+        assertThatThrownBy(() -> decisionLetterDateValidator.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> clientLeaveUkDateValidator.canHandle(MID_EVENT, null))
+        assertThatThrownBy(() -> decisionLetterDateValidator.canHandle(MID_EVENT, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
     }
 
     @Test
     void should_error_when_date_is_future() {
-        when(asylumCase.read(AsylumCaseFieldDefinition.DATE_CLIENT_LEAVE_UK, String.class))
+        when(asylumCase.read(AsylumCaseFieldDefinition.DATE_ON_DECISION_LETTER, String.class))
             .thenReturn(Optional.of(tomorrow));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            clientLeaveUkDateValidator.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+            decisionLetterDateValidator.handle(PreSubmitCallbackStage.MID_EVENT, callback);
 
         assertNotNull(callback);
         assertEquals(asylumCase, callbackResponse.getData());
         final Set<String> errors = callbackResponse.getErrors();
-        assertThat(errors).hasSize(1).containsOnly("Client departure from UK date must not be in the future.");
+        assertThat(errors).hasSize(1).containsOnly(callbackErrorMessage);
     }
 
     @Test
     void should_not_error_when_date_is_not_future() {
-        when(asylumCase.read(AsylumCaseFieldDefinition.DATE_CLIENT_LEAVE_UK, String.class))
+        when(asylumCase.read(AsylumCaseFieldDefinition.DATE_ON_DECISION_LETTER, String.class))
             .thenReturn(Optional.of(today));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            clientLeaveUkDateValidator.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+            decisionLetterDateValidator.handle(PreSubmitCallbackStage.MID_EVENT, callback);
 
         assertNotNull(callback);
         assertEquals(asylumCase, callbackResponse.getData());
         final Set<String> errors = callbackResponse.getErrors();
         assertThat(errors).isEmpty();
     }
-
-    @Test
-    void should_error_when_date_is_not_there() {
-        when(asylumCase.read(AsylumCaseFieldDefinition.DATE_CLIENT_LEAVE_UK, String.class))
-            .thenReturn(Optional.empty());
-        
-        assertThatThrownBy(() -> clientLeaveUkDateValidator.handle(MID_EVENT, callback))
-            .hasMessage("Client departure from UK date missing")
-            .isExactlyInstanceOf(RequiredFieldMissingException.class);    
-    }
-
 }
+
+
