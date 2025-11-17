@@ -163,10 +163,11 @@ class EventTest {
         assertEquals("generateListCmrTask", Event.GENERATE_LIST_CMR_TASK.toString());
         assertEquals("appellantInPersonManual", Event.APPELLANT_IN_PERSON_MANUAL.toString());
         assertEquals("forceDecidedState", Event.FORCE_DECIDED_STATE.toString());
+        assertEquals("forceFtpaDecidedState", Event.FORCE_FTPA_DECIDED_STATE.toString());
     }
 
     @Test
     void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(158, Event.values().length);
+        assertEquals(159, Event.values().length);
     }
 }
