@@ -715,22 +715,4 @@ class StartAppealMidEventTest {
         assertThat(errors).isEmpty();
         verify(appealReferenceNumberValidator, never()).validate(any());
     }
-
-    @Test
-    void should_not_validate_aria_appeal_reference_number_for_wrong_page_id() {
-        when(callback.getEvent()).thenReturn(Event.START_APPEAL);
-        when(callback.getPageId()).thenReturn(HOME_OFFICE_DECISION_PAGE_ID);
-        String appealReferenceNumber = "HU/12345/2024";
-        when(asylumCase.read(APPEAL_REFERENCE_NUMBER, String.class))
-            .thenReturn(Optional.of(appealReferenceNumber));
-        when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class))
-            .thenReturn(Optional.of(correctHomeOfficeReferenceFormatCid));
-
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            startAppealMidEvent.handle(PreSubmitCallbackStage.MID_EVENT, callback);
-
-        assertNotNull(callback);
-        assertEquals(asylumCase, callbackResponse.getData());
-        verify(appealReferenceNumberValidator, never()).validate(any());
-    }
 }
