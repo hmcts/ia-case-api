@@ -261,6 +261,7 @@ security:
       - "applyForCosts"
       - "respondToCosts"
       - "addEvidenceForCosts"
+      - "addStatutoryTimeframe24Weeks"
     tribunal-caseworker:
       - "appellantInPersonManual"
       - "moveToPaymentPending"
@@ -346,6 +347,7 @@ security:
       - "uploadHearingRecording"
       - "turnOnNotifications"
       - "updateTribunalDecision"
+      - "addStatutoryTimeframe24Weeks"
       - "generateListCmrTask"
       - "markAppealAsDetained"
       - "removeDetainedStatus"
@@ -1004,6 +1006,8 @@ security:
       - "decideCostsApplication"
       - "considerMakingCostsOrder"
       - "updateTribunalDecision"
+      - "addStatutoryTimeframe24Weeks"
+      - "removeStatutoryTimeframe24Weeks"
     judge:
       - "generateDecisionAndReasons"
       - "endAppeal"
@@ -1284,6 +1288,7 @@ security:
       - "considerMakingCostsOrder"
       - "updateTribunalDecision"
     caseworker-ia-system:
+      - "addStatutoryTimeframe24Weeks"
       - "requestHearingRequirementsFeature"
       - "moveToPaymentPending"
       - "rollbackPayment"

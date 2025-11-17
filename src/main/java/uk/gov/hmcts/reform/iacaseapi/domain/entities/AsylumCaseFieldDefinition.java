@@ -2831,6 +2831,12 @@ public enum AsylumCaseFieldDefinition {
     HEARING_DECISION_LIST(
             "hearingDecisionList", new TypeReference<List<IdValue<HearingDecision>>>(){}),
 
+    STATUTORY_TIMEFRAME_24_WEEKS(
+      "statutoryTimeframe24Weeks", new TypeReference<List<IdValue<StatutoryTimeframe24Weeks>>>(){}),
+
+    STATUTORY_TIMEFRAME_24_WEEKS_REASON(
+        "statutoryTimeframe24WeeksReason", new TypeReference<String>(){}),
+
     GENERATE_LIST_CMR_TASK_REQUESTED(
             "generateListCmrTaskRequested", new TypeReference<YesOrNo>(){}),
 
