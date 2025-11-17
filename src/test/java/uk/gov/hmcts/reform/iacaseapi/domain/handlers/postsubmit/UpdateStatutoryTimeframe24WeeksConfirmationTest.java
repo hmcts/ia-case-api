@@ -49,6 +49,7 @@ class UpdateStatutoryTimeframe24WeeksConfirmationTest {
             .contains("You can review this status in the Overview tab.");
 
     }
+
     @Test
     void should_return_confirmation_when_removing() {
 
