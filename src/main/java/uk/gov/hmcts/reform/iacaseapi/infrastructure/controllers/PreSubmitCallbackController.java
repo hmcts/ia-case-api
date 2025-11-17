@@ -172,10 +172,11 @@ public class PreSubmitCallbackController {
     ) {
 
         log.info(
-            "Asylum Case CCD `{}` event `{}` received for Case ID `{}`",
+            "Asylum Case CCD `{}` event `{}` received for Case ID `{}` from page ID `{}`",
             callbackStage,
             callback.getEvent(),
-            callback.getCaseDetails().getId()
+            callback.getCaseDetails().getId(),
+            callback.getPageId()
         );
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
