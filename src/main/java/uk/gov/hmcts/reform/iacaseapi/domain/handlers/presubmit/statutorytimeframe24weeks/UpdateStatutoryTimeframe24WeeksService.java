@@ -5,6 +5,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseNote;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.StatutoryTimeframe24Weeks;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.StatutoryTimeframe24WeeksHistory;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
@@ -23,18 +24,18 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 @Service
 public class UpdateStatutoryTimeframe24WeeksService {
 
-    private final Appender<StatutoryTimeframe24Weeks> statutoryTimeframe24WeeksAppender;
+    private final Appender<StatutoryTimeframe24WeeksHistory> statutoryTimeframe24WeeksHistoryAppender;
     private final Appender<CaseNote> caseNoteAppender;
     private final DateProvider dateProvider;
     private final UserDetails userDetails;
 
     public UpdateStatutoryTimeframe24WeeksService(
-        Appender<StatutoryTimeframe24Weeks> statutoryTimeframe24WeeksAppender,
+        Appender<StatutoryTimeframe24WeeksHistory> statutoryTimeframe24WeeksHistoryAppender,
         Appender<CaseNote> caseNoteAppender,
         DateProvider dateProvider,
         UserDetails userDetails
     ) {
-        this.statutoryTimeframe24WeeksAppender = statutoryTimeframe24WeeksAppender;
+        this.statutoryTimeframe24WeeksHistoryAppender = statutoryTimeframe24WeeksHistoryAppender;
         this.caseNoteAppender = caseNoteAppender;
         this.dateProvider = dateProvider;
         this.userDetails = userDetails;
@@ -45,17 +46,15 @@ public class UpdateStatutoryTimeframe24WeeksService {
             .read(STATUTORY_TIMEFRAME_24_WEEKS_REASON, String.class)
             .orElseThrow(() -> new IllegalStateException("statutoryTimeframe24WeeksReason is not present"));
 
-        Optional<List<IdValue<StatutoryTimeframe24Weeks>>> maybeExistingStatutoryTimeframe24Weeks =
+        Optional<StatutoryTimeframe24Weeks> maybeExistingStatutoryTimeframe24Weeks =
             asylumCase.read(STATUTORY_TIMEFRAME_24_WEEKS);
 
         String userDetails = buildFullName();
 
-        List<IdValue<StatutoryTimeframe24Weeks>> allStatutoryTimeframe24Weeks =
-            statutoryTimeframe24WeeksAppender.append(
-                buildNewStatutoryTimeframe24Weeks(statutoryTimeframe24WeeksStatus, statutoryTimeframe24WeeksReason, userDetails),
-                maybeExistingStatutoryTimeframe24Weeks.orElse(emptyList()));
+        StatutoryTimeframe24Weeks updatedStatutoryTimeframe24Weeks =
+            buildNewStatutoryTimeframe24Weeks(statutoryTimeframe24WeeksStatus, statutoryTimeframe24WeeksReason, userDetails, maybeExistingStatutoryTimeframe24Weeks);
 
-        asylumCase.write(STATUTORY_TIMEFRAME_24_WEEKS, allStatutoryTimeframe24Weeks);
+        asylumCase.write(STATUTORY_TIMEFRAME_24_WEEKS, updatedStatutoryTimeframe24Weeks);
 
         Optional<List<IdValue<CaseNote>>> maybeExistingCaseNotes = asylumCase.read(CASE_NOTES);
         List<IdValue<CaseNote>> allCaseNotes = caseNoteAppender.append(
@@ -74,12 +73,23 @@ public class UpdateStatutoryTimeframe24WeeksService {
             + userDetails.getSurname();
     }
 
-    private StatutoryTimeframe24Weeks buildNewStatutoryTimeframe24Weeks(YesOrNo status, String reason, String user) {
-        return new StatutoryTimeframe24Weeks(
+    private StatutoryTimeframe24Weeks buildNewStatutoryTimeframe24Weeks(YesOrNo status, String reason, String user, Optional<StatutoryTimeframe24Weeks> maybeExistingStatutoryTimeframe24Weeks) {
+        List<IdValue<StatutoryTimeframe24WeeksHistory>> existingHistory = emptyList();
+
+        if (maybeExistingStatutoryTimeframe24Weeks.isPresent()) {
+            StatutoryTimeframe24Weeks statutoryTimeframe24Weeks = maybeExistingStatutoryTimeframe24Weeks.get();
+
+            existingHistory = statutoryTimeframe24Weeks.getHistory();
+        }
+        StatutoryTimeframe24WeeksHistory latestStatutoryTimeframe24WeeksHistory = new StatutoryTimeframe24WeeksHistory(
             status,
             reason,
             user,
             dateProvider.nowWithTime().toString()
+        );
+        return new StatutoryTimeframe24Weeks(
+            status,
+            statutoryTimeframe24WeeksHistoryAppender.append(latestStatutoryTimeframe24WeeksHistory, existingHistory)
         );
     }
 

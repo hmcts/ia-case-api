@@ -2856,7 +2856,7 @@ public enum AsylumCaseFieldDefinition {
             new TypeReference<String>(){}),
 
     STATUTORY_TIMEFRAME_24_WEEKS(
-      "statutoryTimeframe24Weeks", new TypeReference<List<IdValue<StatutoryTimeframe24Weeks>>>(){}),
+      "statutoryTimeframe24Weeks", new TypeReference<StatutoryTimeframe24Weeks>(){}),
 
     STATUTORY_TIMEFRAME_24_WEEKS_REASON(
         "statutoryTimeframe24WeeksReason", new TypeReference<String>(){}),
