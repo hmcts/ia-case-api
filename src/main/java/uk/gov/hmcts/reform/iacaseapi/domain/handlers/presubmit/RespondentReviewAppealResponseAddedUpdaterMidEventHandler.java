@@ -55,7 +55,7 @@ public class RespondentReviewAppealResponseAddedUpdaterMidEventHandler implement
                         () -> {
                             asylumCase.write(END_APPEAL_OUTCOME_REASON, "");
                         }
-                );
+            );
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
