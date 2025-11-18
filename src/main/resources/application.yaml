@@ -349,6 +349,7 @@ security:
       - "generateListCmrTask"
       - "markAppealAsDetained"
       - "removeDetainedStatus"
+      - "turnOnNotificationsWATasks"
     challenged-access-legal-operations:
       - "appellantInPersonManual"
       - "moveToPaymentPending"
@@ -525,6 +526,7 @@ security:
       - "generateListCmrTask"
       - "markAppealAsDetained"
       - "removeDetainedStatus"
+      - "turnOnNotificationsWATasks"
     hearing-centre-admin:
       - "appellantInPersonManual"
       - "startAppeal"
@@ -591,6 +593,7 @@ security:
       - "markAppealAsDetained"
       - "removeDetainedStatus"
       - "editDocuments"
+      - "turnOnNotificationsWATasks"
     ctsc:
       - "appellantInPersonManual"
       - "startAppeal"
@@ -655,6 +658,7 @@ security:
       - "generateListCmrTask"
       - "markAppealAsDetained"
       - "removeDetainedStatus"
+      - "turnOnNotificationsWATasks"
       - "editDocuments"
     ctsc-team-leader:
       - "appellantInPersonManual"
@@ -698,6 +702,7 @@ security:
       - "editAppealAfterSubmit"
       - "markAppealAsAda"
       - "removeDetainedStatus"
+      - "turnOnNotificationsWATasks"
       - "markAppealAsDetained"
       - "markAsReadyForUtTransfer"
       - "createCaseLink"
