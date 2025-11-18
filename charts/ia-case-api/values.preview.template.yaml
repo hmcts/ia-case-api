@@ -565,7 +565,6 @@ ia-case-access-api:
   enabled: true
   java:
     image: hmctspublic.azurecr.io/ia/case-access-api:latest
-    # image: hmctspublic.azurecr.io/ia/case-access-api:pr-56
     ingressHost: ${SERVICE_FQDN}-case-access-api.preview.platform.hmcts.net
     keyVaults:
       ia:
@@ -614,7 +613,6 @@ ia-aip-frontend:
       PAYMENTS_API_URL: http://payment-api-aat.service.core-compute-aat.internal
       DOCMOSIS_RENDER_URL: "https://docmosis.aat.platform.hmcts.net/rs/render"
       IDAM_WEB_URL: https://idam-web-public.aat.platform.hmcts.net
-      # IDAM_WEB_URL: https://xui-ia-case-api-pr-1389.preview.platform.hmcts.net
       IDAM_API_URL: https://idam-api.aat.platform.hmcts.net
       # IDAM_API_URL: http://{{ .Release.Name }}-xui-webapp
       S2S_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
