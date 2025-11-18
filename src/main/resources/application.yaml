@@ -1316,7 +1316,6 @@ security:
     caseworker-ia-internal:
       - "revokeCaseAccess"
       - "removeCaseManagerBulk"
-    caseworker-ia-task-retrigger:
       - "reTriggerWaTasks"
       - "reTriggerWaBulkTasks"
     caseworker-ia-rparobot:
@@ -1385,8 +1384,6 @@ commonData:
 
 govUkHolidays:
   url: https://www.gov.uk/
-
-caseIdListJsonLocation: caseIdForRetrigger.json
 
 saveNotificationsData:
   enabled: ${SAVE_NOTIFICATIONS_TO_DATA_EVENT_ENABLED:true}
