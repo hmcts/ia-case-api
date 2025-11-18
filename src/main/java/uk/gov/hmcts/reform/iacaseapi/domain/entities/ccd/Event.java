@@ -163,6 +163,8 @@ public enum Event {
     APPELLANT_IN_PERSON_MANUAL("appellantInPersonManual"),
     GENERATE_LIST_CMR_TASK("generateListCmrTask"),
 
+    FORCE_DECIDED_STATE("forceDecidedState"),
+
     @JsonEnumDefaultValue
     UNKNOWN("unknown");
 
