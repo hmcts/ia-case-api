@@ -2828,8 +2828,8 @@ public enum AsylumCaseFieldDefinition {
     HEARING_ID_LIST(
             "hearingIdList", new TypeReference<List<IdValue<String>>>(){}),
 
-    REMOVE_CASE_MANAGER_CASE_ID_LIST(
-        "removeCaseManagerCaseIdList", new TypeReference<String>() {}),
+    CASE_ID_LIST(
+        "caseIdList", new TypeReference<String>() {}),
 
     HEARING_DECISION_LIST(
             "hearingDecisionList", new TypeReference<List<IdValue<HearingDecision>>>(){}),
