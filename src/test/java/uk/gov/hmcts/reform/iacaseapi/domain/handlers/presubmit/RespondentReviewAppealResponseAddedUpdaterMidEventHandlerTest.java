@@ -17,6 +17,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 
@@ -76,16 +77,31 @@ class RespondentReviewAppealResponseAddedUpdaterMidEventHandlerTest {
     }
 
     @Test
-    void should_write_end_appeal_outcome_reason_if_withdrawn() {
+    void should_write_reason_only_when_state_is_respondent_review() {
         when(callback.getEvent()).thenReturn(Event.END_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(caseDetails.getState()).thenReturn(State.RESPONDENT_REVIEW);
         when(asylumCase.read(eq(END_APPEAL_OUTCOME), eq(String.class)))
                 .thenReturn(Optional.of("WITHDRAWN"));
 
         handler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
 
         verify(asylumCase).write(eq(END_APPEAL_OUTCOME_REASON), contains("The Respondent has withdrawn"));
+    }
+
+    @Test
+    void should_clear_reason_if_withdrawn_but_state_not_respondent_review() {
+        when(callback.getEvent()).thenReturn(Event.END_APPEAL);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(caseDetails.getState()).thenReturn(State.APPEAL_SUBMITTED);
+        when(asylumCase.read(eq(END_APPEAL_OUTCOME), eq(String.class)))
+                .thenReturn(Optional.of("WITHDRAWN"));
+
+        handler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+
+        verify(asylumCase).write(END_APPEAL_OUTCOME_REASON, "");
     }
 
     @Test
