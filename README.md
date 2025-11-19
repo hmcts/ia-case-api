@@ -3,6 +3,7 @@
 
 Immigration &amp; Asylum case API
  
+
 ## Purpose
 
 Immigration &amp; Asylum case API is a Spring Boot based application to manage cases for Immigration & Asylum Appellants and Legal Representatives.
