@@ -3,6 +3,10 @@ package uk.gov.hmcts.reform.iacaseapi.infrastructure.clients;
 import static java.util.Objects.requireNonNull;
 
 import java.util.Optional;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
@@ -17,6 +21,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.AccessTokenProvider;
 
 @Service
+@Slf4j
 public class AsylumCaseCallbackApiDelegator {
 
     private static final String SERVICE_AUTHORIZATION = "ServiceAuthorization";
@@ -84,14 +89,37 @@ public class AsylumCaseCallbackApiDelegator {
 
         try {
 
+            ResponseEntity<String> responseEntity = restTemplate
+                    .exchange(
+                            endpoint,
+                            HttpMethod.POST,
+                            requestEntity,
+                            String.class
+                    );
+
+            AsylumCase asylumCase = requestEntity.getBody().getCaseDetails().getCaseData();
+            ObjectMapper mapper = new ObjectMapper();
+            try {
+                String json = mapper.writeValueAsString(asylumCase);
+                log.info("-------------------------");
+                log.info("Request: " + json.length());
+                log.info(json);
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
+            String responseBody = responseEntity.getBody();
+            log.info("-------------------------");
+            log.info("Response: " + responseBody.length());
+            log.info(responseBody);
+            log.info("-------------------------");
+
             return Optional
                 .of(restTemplate
                     .exchange(
                         endpoint,
                         HttpMethod.POST,
                         requestEntity,
-                        new ParameterizedTypeReference<PostSubmitCallbackResponse>() {
-                        }
+                        new ParameterizedTypeReference<PostSubmitCallbackResponse>() {}
                     )
                 )
                 .map(ResponseEntity::getBody)
