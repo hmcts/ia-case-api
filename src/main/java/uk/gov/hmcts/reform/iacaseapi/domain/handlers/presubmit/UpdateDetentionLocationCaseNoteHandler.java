@@ -64,9 +64,9 @@ public class UpdateDetentionLocationCaseNoteHandler implements PreSubmitCallback
         AsylumCase caseDataBefore = mayBePreviousCaseDetails.getCaseData();
 
         String caseNoteDesc = "The detention location for this appellant has changed from: \n\n"
-                + getDetentionLocation(caseDataBefore)
+                + getDetentionLocationForCaseNote(caseDataBefore)
                 + "\n\n to: \n\n"
-                + getDetentionLocation(asylumCase);
+                + getDetentionLocationForCaseNote(asylumCase);
         final String caseNoteSubject = "Updated detention location";
 
         Optional<List<IdValue<CaseNote>>> maybeExistingCaseNotes =
@@ -83,7 +83,7 @@ public class UpdateDetentionLocationCaseNoteHandler implements PreSubmitCallback
             caseNoteAppender.append(newCaseNote, maybeExistingCaseNotes.orElse(emptyList()));
 
         asylumCase.write(CASE_NOTES, allCaseNotes);
-        asylumCase.write(PREVIOUS_DETENTION_LOCATION, getDetentionLocation(caseDataBefore).split(" ")[0]);
+        asylumCase.write(PREVIOUS_DETENTION_LOCATION, getDetentionLocation(caseDataBefore));
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
@@ -94,7 +94,7 @@ public class UpdateDetentionLocationCaseNoteHandler implements PreSubmitCallback
                + userDetails.getSurname();
     }
 
-    private String getDetentionLocation(AsylumCase asylumCase) {
+    private String getDetentionLocationForCaseNote(AsylumCase asylumCase) {
         String detentionFacility = asylumCase.read(DETENTION_FACILITY, String.class)
                 .orElse("");
         switch (detentionFacility) {
@@ -102,6 +102,22 @@ public class UpdateDetentionLocationCaseNoteHandler implements PreSubmitCallback
                 return getFacilityName(IRC_NAME, asylumCase) + " IRC";
             case "prison":
                 return getFacilityName(PRISON_NAME, asylumCase) + " Prison";
+            case "other":
+                return asylumCase.read(OTHER_DETENTION_FACILITY_NAME, OtherDetentionFacilityName.class)
+                        .orElseThrow(() -> new RequiredFieldMissingException("Other detention facility name is missing")).getOther();
+            default:
+                throw new RequiredFieldMissingException("Detention Facility is missing");
+        }
+    }
+
+    private String getDetentionLocation(AsylumCase asylumCase) {
+        String detentionFacility = asylumCase.read(DETENTION_FACILITY, String.class)
+                .orElse("");
+        switch (detentionFacility) {
+            case "immigrationRemovalCentre":
+                return getFacilityName(IRC_NAME, asylumCase);
+            case "prison":
+                return getFacilityName(PRISON_NAME, asylumCase);
             case "other":
                 return asylumCase.read(OTHER_DETENTION_FACILITY_NAME, OtherDetentionFacilityName.class)
                         .orElseThrow(() -> new RequiredFieldMissingException("Other detention facility name is missing")).getOther();

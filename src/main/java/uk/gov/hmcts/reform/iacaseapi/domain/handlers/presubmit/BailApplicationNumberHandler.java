@@ -4,6 +4,7 @@ import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
 import java.util.Optional;
+import java.util.Set;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -16,6 +17,9 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 @Service
 public class BailApplicationNumberHandler implements PreSubmitCallbackHandler<AsylumCase> {
+
+    private static final Set<String> DETENTION_FACILITY_PAGE_IDS = Set.of(
+          "hasPendingBailApplications", "markAppealAsDetained_appellantBailApplication");
 
     @Override
     public DispatchPriority getDispatchPriority() {
@@ -34,7 +38,7 @@ public class BailApplicationNumberHandler implements PreSubmitCallbackHandler<As
                || callback.getEvent() == Event.EDIT_APPEAL
                || callback.getEvent() == Event.EDIT_APPEAL_AFTER_SUBMIT
                || callback.getEvent() == Event.MARK_APPEAL_AS_DETAINED)
-               && callback.getPageId().equals(HAS_PENDING_BAIL_APPLICATIONS.value());
+               && DETENTION_FACILITY_PAGE_IDS.contains(callback.getPageId());
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
