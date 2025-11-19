@@ -7,6 +7,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 import static java.util.Objects.requireNonNull;
@@ -41,7 +42,7 @@ public class TurnOnNotificationsAndWorkAllocationHandler implements PreSubmitCal
                         .getCaseDetails()
                         .getCaseData();
 
-        asylumCase.clear(AsylumCaseFieldDefinition.IS_NOTIFICATION_TURNED_OFF);
+        asylumCase.write(AsylumCaseFieldDefinition.IS_NOTIFICATION_TURNED_OFF, YesOrNo.NO);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }

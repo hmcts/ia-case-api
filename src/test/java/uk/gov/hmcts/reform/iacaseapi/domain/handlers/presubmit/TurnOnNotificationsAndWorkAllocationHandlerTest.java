@@ -11,6 +11,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_NOTIFICATION_TURNED_OFF;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.TURN_ON_NOTIFICATIONS_WA_TASKS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
@@ -53,7 +54,7 @@ class TurnOnNotificationsAndWorkAllocationHandlerTest {
     }
 
     @Test
-    void should_clear_is_notification_turned_off_field() {
+    void should_set_is_notification_turned_off_field_to_no() {
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             turnOnNotificationsAndWorkAllocationHandler.handle(ABOUT_TO_SUBMIT, callback);
@@ -61,7 +62,7 @@ class TurnOnNotificationsAndWorkAllocationHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(asylumCase, times(1)).clear(eq(IS_NOTIFICATION_TURNED_OFF));
+        verify(asylumCase, times(1)).write(eq(IS_NOTIFICATION_TURNED_OFF), eq(NO));
     }
 
     @Test
