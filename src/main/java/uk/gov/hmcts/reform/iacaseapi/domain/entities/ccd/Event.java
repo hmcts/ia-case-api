@@ -39,6 +39,8 @@ public enum Event {
     GENERATE_DECISION_AND_REASONS("generateDecisionAndReasons"),
     SEND_DECISION_AND_REASONS("sendDecisionAndReasons"),
     ADD_CASE_NOTE("addCaseNote"),
+    ADD_STATUTORY_TIMEFRAME_24_WEEKS("addStatutoryTimeframe24Weeks"),
+    REMOVE_STATUTORY_TIMEFRAME_24_WEEKS("removeStatutoryTimeframe24Weeks"),
     EDIT_CASE_LISTING("editCaseListing"),
     RECORD_APPLICATION("recordApplication"),
     RECORD_ATTENDEES_AND_DURATION("recordAttendeesAndDuration"),
