@@ -13,7 +13,7 @@ public class StatutoryTimeframe24WeeksHistory {
     private YesOrNo status;
     private String reason;
     private String user;
-    private String dateAdded;
+    private String dateTimeAdded;
 
     private StatutoryTimeframe24WeeksHistory() {
     }
@@ -22,12 +22,12 @@ public class StatutoryTimeframe24WeeksHistory {
         YesOrNo status,
         String reason,
         String user,
-        String dateAdded
+        String dateTimeAdded
     ) {
         this.status = requireNonNull(status);
         this.reason = requireNonNull(reason);
         this.user = requireNonNull(user);
-        this.dateAdded = requireNonNull(dateAdded);
+        this.dateTimeAdded = requireNonNull(dateTimeAdded);
     }
 
     public YesOrNo getStatus() {
@@ -42,7 +42,7 @@ public class StatutoryTimeframe24WeeksHistory {
         return requireNonNull(user);
     }
 
-    public String getDateAdded() {
-        return requireNonNull(dateAdded);
+    public String getDateTimeAdded() {
+        return requireNonNull(dateTimeAdded);
     }
 }

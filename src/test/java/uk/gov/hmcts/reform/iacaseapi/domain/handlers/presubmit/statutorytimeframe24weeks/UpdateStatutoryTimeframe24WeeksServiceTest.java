@@ -107,7 +107,7 @@ class UpdateStatutoryTimeframe24WeeksServiceTest {
         assertThat(capturedStatutoryTimeframe24Weeks.getStatus()).isEqualTo(newStatus);
         assertThat(capturedStatutoryTimeframe24Weeks.getReason()).isEqualTo(newStatutoryTimeframe24WeeksReason);
         assertThat(capturedStatutoryTimeframe24Weeks.getUser()).isEqualTo(forename + " " + surname);
-        assertThat(capturedStatutoryTimeframe24Weeks.getDateAdded()).isEqualTo(nowWithTime.toString());
+        assertThat(capturedStatutoryTimeframe24Weeks.getDateTimeAdded()).isEqualTo(nowWithTime.toString());
 
         verify(caseNoteAppender, times(1)).append(
             newCaseNotesCaptor.capture(),
@@ -146,7 +146,7 @@ class UpdateStatutoryTimeframe24WeeksServiceTest {
         assertThat(capturedStatutoryTimeframe24Weeks.getStatus()).isEqualTo(newStatus);
         assertThat(capturedStatutoryTimeframe24Weeks.getReason()).isEqualTo(newStatutoryTimeframe24WeeksReason);
         assertThat(capturedStatutoryTimeframe24Weeks.getUser()).isEqualTo(forename + " " + surname);
-        assertThat(capturedStatutoryTimeframe24Weeks.getDateAdded()).isEqualTo(nowWithTime.toString());
+        assertThat(capturedStatutoryTimeframe24Weeks.getDateTimeAdded()).isEqualTo(nowWithTime.toString());
 
         verify(caseNoteAppender, times(1)).append(
             newCaseNotesCaptor.capture(),
