@@ -32,7 +32,6 @@ public class DbAppealReferenceNumberGenerator implements AppealReferenceNumberGe
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    @Override
     @Retryable(include = TransientDataAccessException.class)
     public String generate(
             long caseId,
@@ -68,15 +67,6 @@ public class DbAppealReferenceNumberGenerator implements AppealReferenceNumberGe
     private void tryInsertNewReferenceNumber(
             MapSqlParameterSource parameters
     ) {
-        // Find the next available sequence number with gap-filling strategy
-        // This prevents wasting sequence numbers when manually entered high numbers exist
-        // 
-        // Strategy:
-        // 1. Start with minimum sequence: the greater of (seed OR smallest existing sequence)
-        // 2. Find first gap by looking for a sequence where sequence+1 doesn't exist
-        // 3. Only check within a reasonable range to avoid performance issues
-        // 4. If no gaps found or range exceeded, fall back to MAX(sequence) + 1
-        //
         jdbcTemplate.update(
                 "INSERT INTO ia_case_api.appeal_reference_numbers "
                         + "          (case_id, "
@@ -86,42 +76,10 @@ public class DbAppealReferenceNumberGenerator implements AppealReferenceNumberGe
                         + "   SELECT :caseId, "
                         + "          :appealType, "
                         + "          :year, "
-                        + "          COALESCE( "
-                        // Try to find a gap: look for the first available sequence starting from seed
-                        // This checks if there's a missing sequence between existing records
-                        + "            ( "
-                        + "              WITH sequence_range AS ( "
-                        + "                SELECT MIN(sequence) as min_seq, MAX(sequence) as max_seq "
-                        + "                  FROM ia_case_api.appeal_reference_numbers "
-                        + "                 WHERE type = :appealType "
-                        + "                   AND year = :year "
-                        + "                   AND sequence >= :seed "
-                        + "              ), "
-                        + "              first_gap AS ( "
-                        + "                SELECT t1.sequence + 1 AS gap_seq "
-                        + "                  FROM ia_case_api.appeal_reference_numbers t1 "
-                        + "                  LEFT JOIN ia_case_api.appeal_reference_numbers t2 "
-                        + "                         ON t2.type = t1.type "
-                        + "                        AND t2.year = t1.year "
-                        + "                        AND t2.sequence = t1.sequence + 1 "
-                        + "                 WHERE t1.type = :appealType "
-                        + "                   AND t1.year = :year "
-                        + "                   AND t1.sequence >= :seed "
-                        + "                   AND t2.sequence IS NULL "
-                        + "                   AND t1.sequence < (SELECT COALESCE(max_seq, :seed) FROM sequence_range) "
-                        + "                 ORDER BY t1.sequence "
-                        + "                 LIMIT 1 "
-                        + "              ) "
-                        + "              SELECT gap_seq FROM first_gap WHERE gap_seq > :seed "
-                        + "            ), "
-                        // Fallback: Use MAX(sequence) + 1, or seed + 1 if table is empty
-                        + "            ( "
-                        + "              SELECT COALESCE(MAX(sequence), :seed) + 1 "
-                        + "                FROM ia_case_api.appeal_reference_numbers "
-                        + "               WHERE type = :appealType "
-                        + "                 AND year = :year "
-                        + "            ) "
-                        + "          );",
+                        + "          COALESCE(MAX(sequence), :seed) + 1 "
+                        + "    FROM ia_case_api.appeal_reference_numbers "
+                        + "   WHERE type = :appealType "
+                        + "     AND year = :year;",
                 parameters
         );
     }
@@ -136,163 +94,5 @@ public class DbAppealReferenceNumberGenerator implements AppealReferenceNumberGe
                 parameters,
                 String.class
         );
-    }
-
-    /**
-     * Checks if a reference number already exists in the database.
-     *
-     * @param referenceNumber The reference number in format XX/00000/0000
-     * @return true if the reference number exists, false otherwise
-     */
-    @Override
-    public boolean referenceNumberExists(String referenceNumber) {
-        ReferenceNumberComponents components = parseReferenceNumber(referenceNumber);
-        MapSqlParameterSource parameters = createParametersFromComponents(components);
-
-        try {
-            Integer count = jdbcTemplate.queryForObject(
-                    "SELECT COUNT(*) "
-                            + "  FROM ia_case_api.appeal_reference_numbers "
-                            + " WHERE type = :appealType "
-                            + "   AND sequence = :sequence "
-                            + "   AND year = :year;",
-                    parameters,
-                    Integer.class
-            );
-
-            boolean exists = count != null && count > 0;
-            log.info("Reference number {} exists: {}", referenceNumber, exists);
-            return exists;
-
-        } catch (Exception e) {
-            log.error("Error checking if reference number exists: {}", referenceNumber, e);
-            throw new IllegalStateException("Failed to check reference number existence", e);
-        }
-    }
-
-    /**
-     * Registers a manually entered reference number in the database.
-     * This ensures duplicate checking works for both generated and manually entered reference numbers.
-     * If the reference number already exists in the database, this method will silently ignore the duplicate.
-     *
-     * @param caseId The case ID
-     * @param referenceNumber The reference number in format XX/00000/0000
-     */
-    @Override
-    @Retryable(include = TransientDataAccessException.class)
-    public void registerReferenceNumber(long caseId, String referenceNumber) {
-        ReferenceNumberComponents components = parseReferenceNumber(referenceNumber);
-        MapSqlParameterSource parameters = createParametersFromComponents(components);
-        parameters.addValue("caseId", caseId);
-
-        try {
-            // Check if this reference number already exists for another case
-            Integer existingCaseId = jdbcTemplate.queryForObject(
-                    "SELECT case_id "
-                            + "  FROM ia_case_api.appeal_reference_numbers "
-                            + " WHERE type = :appealType "
-                            + "   AND sequence = :sequence "
-                            + "   AND year = :year "
-                            + "   AND case_id != :caseId "
-                            + " LIMIT 1;",
-                    parameters,
-                    Integer.class
-            );
-            
-            if (existingCaseId != null) {
-                log.warn("Reference number {} already exists for case {}. Cannot register for case {}", 
-                        referenceNumber, existingCaseId, caseId);
-                return;
-            }
-        } catch (EmptyResultDataAccessException e) {
-            // No existing reference number found for another case, proceed with registration
-        }
-
-        try {
-            // Insert or update the reference number for this case
-            int rowsAffected = jdbcTemplate.update(
-                    "INSERT INTO ia_case_api.appeal_reference_numbers "
-                            + "          (case_id, "
-                            + "           type, "
-                            + "           year, "
-                            + "           sequence) "
-                            + "   VALUES (:caseId, "
-                            + "           :appealType, "
-                            + "           :year, "
-                            + "           :sequence) "
-                            + "ON CONFLICT (case_id) "
-                            + "DO UPDATE SET type = :appealType, "
-                            + "              year = :year, "
-                            + "              sequence = :sequence;",
-                    parameters
-            );
-            
-            if (rowsAffected > 0) {
-                log.info("Registered reference number {} for case {}", referenceNumber, caseId);
-            }
-        } catch (Exception e) {
-            // If there's an unexpected error, log a warning but don't fail
-            log.warn("Could not register reference number {} for case {}: {}", 
-                    referenceNumber, caseId, e.getMessage());
-        }
-    }
-
-    /**
-     * Parses and validates a reference number string.
-     *
-     * @param referenceNumber The reference number in format XX/00000/0000
-     * @return ReferenceNumberComponents containing the parsed values
-     * @throws IllegalArgumentException if the reference number is invalid
-     */
-    private ReferenceNumberComponents parseReferenceNumber(String referenceNumber) {
-        if (referenceNumber == null || referenceNumber.isEmpty()) {
-            throw new IllegalArgumentException("Reference number cannot be null or empty");
-        }
-
-        String[] parts = referenceNumber.split("/");
-        if (parts.length != 3) {
-            throw new IllegalArgumentException("Invalid reference number format. Expected format: XX/00000/0000");
-        }
-
-        String appealType = parts[0];
-        int sequence;
-        int year;
-        try {
-            sequence = Integer.parseInt(parts[1]);
-            year = Integer.parseInt(parts[2]);
-        } catch (NumberFormatException e) {
-            throw new IllegalArgumentException("Invalid reference number format. Expected format: XX/00000/0000", e);
-        }
-
-        return new ReferenceNumberComponents(appealType, sequence, year);
-    }
-
-    /**
-     * Creates MapSqlParameterSource from reference number components.
-     *
-     * @param components The parsed reference number components
-     * @return MapSqlParameterSource with appealType, sequence, and year
-     */
-    private MapSqlParameterSource createParametersFromComponents(ReferenceNumberComponents components) {
-        MapSqlParameterSource parameters = new MapSqlParameterSource();
-        parameters.addValue("appealType", components.appealType);
-        parameters.addValue("sequence", components.sequence);
-        parameters.addValue("year", components.year);
-        return parameters;
-    }
-
-    /**
-     * Inner class to hold parsed reference number components.
-     */
-    private static class ReferenceNumberComponents {
-        private final String appealType;
-        private final int sequence;
-        private final int year;
-
-        ReferenceNumberComponents(String appealType, int sequence, int year) {
-            this.appealType = appealType;
-            this.sequence = sequence;
-            this.year = year;
-        }
     }
 }
