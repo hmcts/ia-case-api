@@ -161,12 +161,100 @@ class AppealReferenceNumberValidatorTest {
     }
 
     @Test
-    void should_validate_sequence_with_max_digits() {
-        String validReferenceNumber = "EA/99999/2023";
+    void should_validate_sequence_starting_with_0() {
+        String validReferenceNumber = "EA/01234/2023";
 
         List<String> errors = appealReferenceNumberValidator.validate(validReferenceNumber);
 
         assertThat(errors).isEmpty();
+    }
+
+    @Test
+    void should_validate_sequence_starting_with_1() {
+        String validReferenceNumber = "EA/12345/2023";
+
+        List<String> errors = appealReferenceNumberValidator.validate(validReferenceNumber);
+
+        assertThat(errors).isEmpty();
+    }
+
+    @Test
+    void should_validate_sequence_starting_with_2() {
+        String validReferenceNumber = "EA/23456/2023";
+
+        List<String> errors = appealReferenceNumberValidator.validate(validReferenceNumber);
+
+        assertThat(errors).isEmpty();
+    }
+
+    @Test
+    void should_return_error_when_sequence_starts_with_3() {
+        String invalidReferenceNumber = "EA/34567/2023";
+
+        List<String> errors = appealReferenceNumberValidator.validate(invalidReferenceNumber);
+
+        assertThat(errors).hasSize(1);
+        assertThat(errors).contains("The reference number is in an incorrect format.");
+    }
+
+    @Test
+    void should_return_error_when_sequence_starts_with_4() {
+        String invalidReferenceNumber = "EA/45678/2023";
+
+        List<String> errors = appealReferenceNumberValidator.validate(invalidReferenceNumber);
+
+        assertThat(errors).hasSize(1);
+        assertThat(errors).contains("The reference number is in an incorrect format.");
+    }
+
+    @Test
+    void should_return_error_when_sequence_starts_with_5() {
+        String invalidReferenceNumber = "EA/56789/2023";
+
+        List<String> errors = appealReferenceNumberValidator.validate(invalidReferenceNumber);
+
+        assertThat(errors).hasSize(1);
+        assertThat(errors).contains("The reference number is in an incorrect format.");
+    }
+
+    @Test
+    void should_return_error_when_sequence_starts_with_6() {
+        String invalidReferenceNumber = "EA/67890/2023";
+
+        List<String> errors = appealReferenceNumberValidator.validate(invalidReferenceNumber);
+
+        assertThat(errors).hasSize(1);
+        assertThat(errors).contains("The reference number is in an incorrect format.");
+    }
+
+    @Test
+    void should_return_error_when_sequence_starts_with_7() {
+        String invalidReferenceNumber = "EA/78901/2023";
+
+        List<String> errors = appealReferenceNumberValidator.validate(invalidReferenceNumber);
+
+        assertThat(errors).hasSize(1);
+        assertThat(errors).contains("The reference number is in an incorrect format.");
+    }
+
+    @Test
+    void should_return_error_when_sequence_starts_with_8() {
+        String invalidReferenceNumber = "EA/89012/2023";
+
+        List<String> errors = appealReferenceNumberValidator.validate(invalidReferenceNumber);
+
+        assertThat(errors).hasSize(1);
+        assertThat(errors).contains("The reference number is in an incorrect format.");
+    }
+
+    @Test
+    void should_return_error_when_sequence_starts_with_9() {
+        String invalidReferenceNumber = "EA/99999/2023";
+
+        List<String> errors = appealReferenceNumberValidator.validate(invalidReferenceNumber);
+
+        assertThat(errors).hasSize(1);
+        assertThat(errors).contains("The reference number is in an incorrect format.");
     }
 }
 

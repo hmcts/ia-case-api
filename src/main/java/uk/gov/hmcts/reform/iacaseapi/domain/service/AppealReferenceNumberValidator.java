@@ -9,7 +9,7 @@ import java.util.regex.Pattern;
 @Service
 public class AppealReferenceNumberValidator {
 
-    private static final Pattern APPEAL_REF_PATTERN = Pattern.compile("^(HU|DA|DC|EA|PA|RP|LE|LD|LP|LH|LR|IA)/\\d{5}/20\\d{2}$");
+    private static final Pattern APPEAL_REF_PATTERN = Pattern.compile("^(HU|DA|DC|EA|PA|RP|LE|LD|LP|LH|LR|IA)/[012]\\d{4}/20\\d{2}$");
     private static final String INVALID_FORMAT_ERROR = "The reference number is in an incorrect format.";
 
     /**
