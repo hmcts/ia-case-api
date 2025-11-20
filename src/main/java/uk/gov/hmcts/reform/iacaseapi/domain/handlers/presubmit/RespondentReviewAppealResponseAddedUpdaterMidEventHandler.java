@@ -37,7 +37,6 @@ public class RespondentReviewAppealResponseAddedUpdaterMidEventHandler implement
                 .filter(outcome -> outcome.equalsIgnoreCase(WITHDRAWN.toString()))
                 .ifPresentOrElse(
                         outcome -> {
-                            // *** NEW CHECK ADDED HERE ***
                             if (State.RESPONDENT_REVIEW.equals(callback.getCaseDetails().getState())) {
                                 asylumCase.write(
                                         END_APPEAL_OUTCOME_REASON,
