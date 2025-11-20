@@ -173,7 +173,7 @@ class UpdateStatutoryTimeframe24WeeksServiceTest {
     }
 
     @Test
-    void should_throw_when_statutory_timeframe_24_weeks_status_is_already_set_to_the_same_status() {
+    void should_throw_when_statutory_timeframe_24_weeks_status_is_already_set_to_yes() {
         YesOrNo currentStatus = YesOrNo.YES;
         StatutoryTimeframe24WeeksHistory statutoryTimeframe24WeeksHistory = new StatutoryTimeframe24WeeksHistory(currentStatus, newStatutoryTimeframe24WeeksReason, forename + " " + surname, nowWithTime.toString());
         List<IdValue<StatutoryTimeframe24WeeksHistory>> existingStatutoryTimeframe24WeeksHistory = Arrays.asList(new IdValue<>("1", statutoryTimeframe24WeeksHistory));
@@ -182,7 +182,22 @@ class UpdateStatutoryTimeframe24WeeksServiceTest {
         when(asylumCase.read(STATUTORY_TIMEFRAME_24_WEEKS)).thenReturn(Optional.of(existingStatutoryTimeframe24Weeks));
         when(asylumCase.read(STATUTORY_TIMEFRAME_24_WEEKS_REASON, String.class)).thenReturn(Optional.of(newStatutoryTimeframe24WeeksReason));
 
-        assertThatThrownBy(() -> updateStatutoryTimeframe24WeeksService.updateAsylumCase(asylumCase, YesOrNo.YES))
+        assertThatThrownBy(() -> updateStatutoryTimeframe24WeeksService.updateAsylumCase(asylumCase, currentStatus))
+            .hasMessage("The current status is already set to " + currentStatus)
+            .isExactlyInstanceOf(IllegalStateException.class);
+    }
+
+    @Test
+    void should_throw_when_statutory_timeframe_24_weeks_status_is_already_set_to_no() {
+        YesOrNo currentStatus = YesOrNo.NO;
+        StatutoryTimeframe24WeeksHistory statutoryTimeframe24WeeksHistory = new StatutoryTimeframe24WeeksHistory(currentStatus, newStatutoryTimeframe24WeeksReason, forename + " " + surname, nowWithTime.toString());
+        List<IdValue<StatutoryTimeframe24WeeksHistory>> existingStatutoryTimeframe24WeeksHistory = Arrays.asList(new IdValue<>("1", statutoryTimeframe24WeeksHistory));
+        StatutoryTimeframe24Weeks existingStatutoryTimeframe24Weeks = new StatutoryTimeframe24Weeks(currentStatus, existingStatutoryTimeframe24WeeksHistory);
+
+        when(asylumCase.read(STATUTORY_TIMEFRAME_24_WEEKS)).thenReturn(Optional.of(existingStatutoryTimeframe24Weeks));
+        when(asylumCase.read(STATUTORY_TIMEFRAME_24_WEEKS_REASON, String.class)).thenReturn(Optional.of(newStatutoryTimeframe24WeeksReason));
+
+        assertThatThrownBy(() -> updateStatutoryTimeframe24WeeksService.updateAsylumCase(asylumCase, currentStatus))
             .hasMessage("The current status is already set to " + currentStatus)
             .isExactlyInstanceOf(IllegalStateException.class);
     }
