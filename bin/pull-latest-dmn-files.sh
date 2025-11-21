@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-branchName=$1
+branchName=DIAC-1574-turn-off-wa-tasks
 
 #Checkout specific branch pf  camunda bpmn definition
 git clone https://github.com/hmcts/ia-task-configuration.git
