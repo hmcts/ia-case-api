@@ -59,6 +59,7 @@ public class PinInPostGeneratorTest {
 
         Optional<PinInPostDetails> details = response.getData().read(AsylumCaseFieldDefinition.APPELLANT_PIN_IN_POST, PinInPostDetails.class);
 
+        System.out.println("details: " + details.get().getAccessCode());
         assertTrue(details.isPresent());
         assertNotNull(details.get().getAccessCode());
         assertNotNull(details.get().getExpiryDate());
