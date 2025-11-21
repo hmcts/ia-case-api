@@ -61,7 +61,13 @@ class DetainedIndividualFlagHandler implements PreSubmitCallbackHandler<AsylumCa
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
-        YesOrNo appellantInDetention = asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class).orElse(NO);
+        var maybeAppellantInDetention = asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class);
+
+        YesOrNo appellantInDetention = maybeAppellantInDetention.orElse(NO);
+
+        if(!maybeAppellantInDetention.isPresent() && callback.getEvent() == SUBMIT_APPEAL)  {
+            asylumCase.write(APPELLANT_IN_DETENTION, NO);
+        }
 
         StrategicCaseFlagService strategicCaseFlagService = asylumCase
               .read(APPELLANT_LEVEL_FLAGS, StrategicCaseFlag.class)
