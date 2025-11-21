@@ -1,0 +1,29 @@
+{
+  "description": "DIAC-1538: Turn on notifications/WA tasks - AboutToSubmit - sets isNotificationTurnedOff to No",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "AdminOfficer",
+    "input": {
+      "eventId": "turnOnNotificationsWATasks",
+      "state": "appealSubmitted",
+      "id": 1234,
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "isNotificationTurnedOff": "Yes"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "isNotificationTurnedOff": "No"
+      }
+    }
+  }
+}
+
