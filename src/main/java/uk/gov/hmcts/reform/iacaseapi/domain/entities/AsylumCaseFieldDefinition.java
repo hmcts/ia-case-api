@@ -2407,6 +2407,9 @@ public enum AsylumCaseFieldDefinition {
     UPPER_TRIBUNAL_REFERENCE_NUMBER(
         "upperTribunalReferenceNumber", new TypeReference<String>() {}),
 
+    IS_REHYDRATED_APPEAL(
+        "isRehydratedAppeal", new TypeReference<YesOrNo>() {}),
+
     IS_EJP(
         "isEjp", new TypeReference<YesOrNo>() {}),
 
