@@ -33,9 +33,7 @@ import uk.gov.hmcts.reform.iacaseapi.component.testutils.WithRoleAssignmentStub;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.WithServiceAuthStub;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.WithTimedEventServiceStub;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.WithUserDetailsStub;
-import uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.PreSubmitCallbackResponseForTest;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
 class DocumentApiDelgationTest extends SpringBootIntegrationTest implements WithUserDetailsStub,
@@ -62,7 +60,7 @@ class DocumentApiDelgationTest extends SpringBootIntegrationTest implements With
         addRoleAssignmentActorStub(server);
         addDocumentApiTransformerStub(server);
 
-        PreSubmitCallbackResponseForTest response = iaCaseApiClient.aboutToSubmit(callback()
+        iaCaseApiClient.aboutToSubmit(callback()
             .event(SUBMIT_APPEAL)
             .caseDetails(someCaseDetailsWith()
                 .state(APPEAL_STARTED)
@@ -74,8 +72,6 @@ class DocumentApiDelgationTest extends SpringBootIntegrationTest implements With
                     .with(APPEAL_TYPE, AppealType.PA)
                     .with(APPELLANT_GIVEN_NAMES, "some-given-name")
                     .with(APPELLANT_FAMILY_NAME, "some-family-name"))));
-
-        AsylumCase asylumCase = response.getAsylumCase();
 
         server.verify(0, postRequestedFor(urlEqualTo("/ia-case-documents-api/asylum/ccdAboutToSubmit")));
     }
@@ -97,7 +93,7 @@ class DocumentApiDelgationTest extends SpringBootIntegrationTest implements With
         addTimedEventServiceStub(server);
         addNotificationsApiTransformerStub(server);
 
-        PreSubmitCallbackResponseForTest response = iaCaseApiClient.aboutToSubmit(callback()
+        iaCaseApiClient.aboutToSubmit(callback()
             .event(SUBMIT_APPEAL)
             .caseDetails(someCaseDetailsWith()
                 .state(APPEAL_STARTED)
