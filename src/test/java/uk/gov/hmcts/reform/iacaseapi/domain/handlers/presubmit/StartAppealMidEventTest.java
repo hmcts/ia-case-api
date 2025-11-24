@@ -15,7 +15,9 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_HAS_FIXED_ADDRESS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_HAS_FIXED_ADDRESS_ADMIN_J;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_IN_UK;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CUSTODIAL_SENTENCE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DATE_CLIENT_LEAVE_UK;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DATE_CUSTODIAL_SENTENCE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DATE_ENTRY_CLEARANCE_DECISION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DETENTION_FACILITY;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.GWF_REFERENCE_NUMBER;
@@ -70,7 +72,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 @SuppressWarnings("unchecked")
 class StartAppealMidEventTest {
 
-    private static final String HOME_OFFICE_DECISION_PAGE_ID = "homeOfficeDecision";
+    private static final String HOME_OFFICE_REFERENCE_NUMBER_PAGE_ID = "homeOfficeReferenceNumber";
     private static final String OUT_OF_COUNTRY_PAGE_ID = "outOfCountry";
     private static final String DETENTION_FACILITY_PAGE_ID = "detentionFacility";
     private static final String SUITABILITY_ATTENDANCE_PAGE_ID = "suitabilityAppellantAttendance";
@@ -88,7 +90,7 @@ class StartAppealMidEventTest {
     @Mock
     private AsylumCase asylumCase;
 
-    private String correctHomeOfficeReferenceFormatCid = "01234567";
+    private String correctHomeOfficeReferenceFormatCid = "123456789";
     private String correctHomeOfficeReferenceFormatUan = "1234-5678-9876-5432";
     private String wrongHomeOfficeReferenceFormat = "A234567";
     private String callbackErrorMessage =
@@ -108,11 +110,11 @@ class StartAppealMidEventTest {
         when(callback.getEvent()).thenReturn(Event.START_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(callback.getPageId()).thenReturn(HOME_OFFICE_DECISION_PAGE_ID);
+        when(callback.getPageId()).thenReturn(HOME_OFFICE_REFERENCE_NUMBER_PAGE_ID);
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {HOME_OFFICE_DECISION_PAGE_ID, OUT_OF_COUNTRY_PAGE_ID, DETENTION_FACILITY_PAGE_ID, APPELLANTS_ADDRESS_PAGE_ID, ""})
+    @ValueSource(strings = {HOME_OFFICE_REFERENCE_NUMBER_PAGE_ID, OUT_OF_COUNTRY_PAGE_ID, DETENTION_FACILITY_PAGE_ID, APPELLANTS_ADDRESS_PAGE_ID, ""})
     void it_can_handle_callback(String pageId) {
 
         for (Event event : Event.values()) {
@@ -128,7 +130,7 @@ class StartAppealMidEventTest {
                     || event == Event.UPDATE_DETENTION_LOCATION)
                     && callbackStage == MID_EVENT
                     && (callback.getPageId().equals(DETENTION_FACILITY_PAGE_ID)
-                        || callback.getPageId().equals(HOME_OFFICE_DECISION_PAGE_ID)
+                        || callback.getPageId().equals(HOME_OFFICE_REFERENCE_NUMBER_PAGE_ID)
                         || callback.getPageId().equals(APPELLANTS_ADDRESS_PAGE_ID)
                         || callback.getPageId().equals(OUT_OF_COUNTRY_PAGE_ID))) {
                     assertTrue(canHandle);
@@ -275,7 +277,7 @@ class StartAppealMidEventTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {HOME_OFFICE_DECISION_PAGE_ID, OUT_OF_COUNTRY_PAGE_ID, DETENTION_FACILITY_PAGE_ID})
+    @ValueSource(strings = {HOME_OFFICE_REFERENCE_NUMBER_PAGE_ID, OUT_OF_COUNTRY_PAGE_ID, DETENTION_FACILITY_PAGE_ID})
     void should_only_set_is_accelerated_detained_if_correct_page_id(String pageId) {
         when(callback.getPageId()).thenReturn(pageId);
         when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of(correctHomeOfficeReferenceFormatCid));
@@ -507,5 +509,81 @@ class StartAppealMidEventTest {
         assertEquals(asylumCase, callbackResponse.getData());
         final Set<String> errors = callbackResponse.getErrors();
         assertThat(errors).hasSize(0);
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = { "START_APPEAL", "EDIT_APPEAL"})
+    void should_clear_custodial_sentence_immigrationRemovalCentre(Event event) {
+        when(callback.getEvent()).thenReturn(event);
+        when(callback.getPageId()).thenReturn(DETENTION_FACILITY_PAGE_ID);
+        when(asylumCase.read(DETENTION_FACILITY, String.class))
+                .thenReturn(Optional.of("immigrationRemovalCentre"));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                startAppealMidEvent.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+
+        assertNotNull(callback);
+        assertEquals(asylumCase, callbackResponse.getData());
+        final Set<String> errors = callbackResponse.getErrors();
+        assertThat(errors).hasSize(0);
+        verify(asylumCase, times(1)).write(CUSTODIAL_SENTENCE, YesOrNo.NO);
+        verify(asylumCase, times(1)).clear(DATE_CUSTODIAL_SENTENCE);
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = { "START_APPEAL", "EDIT_APPEAL"})
+    void should_not_clear_custodial_sentence_not_immigrationRemovalCentre(Event event) {
+        when(callback.getEvent()).thenReturn(event);
+        when(callback.getPageId()).thenReturn(DETENTION_FACILITY_PAGE_ID);
+        when(asylumCase.read(DETENTION_FACILITY, String.class))
+                .thenReturn(Optional.of("prison"));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                startAppealMidEvent.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+
+        assertNotNull(callback);
+        assertEquals(asylumCase, callbackResponse.getData());
+        final Set<String> errors = callbackResponse.getErrors();
+        assertThat(errors).hasSize(0);
+        verify(asylumCase, times(0)).write(CUSTODIAL_SENTENCE, YesOrNo.NO);
+        verify(asylumCase, times(0)).clear(DATE_CUSTODIAL_SENTENCE);
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = { "START_APPEAL", "EDIT_APPEAL"})
+    void should_not_clear_custodial_sentence_detentionFacility_empty(Event event) {
+        when(callback.getEvent()).thenReturn(event);
+        when(callback.getPageId()).thenReturn(DETENTION_FACILITY_PAGE_ID);
+        when(asylumCase.read(DETENTION_FACILITY, String.class))
+                .thenReturn(Optional.empty());
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                startAppealMidEvent.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+
+        assertNotNull(callback);
+        assertEquals(asylumCase, callbackResponse.getData());
+        final Set<String> errors = callbackResponse.getErrors();
+        assertThat(errors).hasSize(0);
+        verify(asylumCase, times(0)).write(CUSTODIAL_SENTENCE, YesOrNo.NO);
+        verify(asylumCase, times(0)).clear(DATE_CUSTODIAL_SENTENCE);
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = { "EDIT_APPEAL_AFTER_SUBMIT"})
+    void should_not_clear_custodial_sentence_wrong_event(Event event) {
+        when(callback.getEvent()).thenReturn(event);
+        when(callback.getPageId()).thenReturn(DETENTION_FACILITY_PAGE_ID);
+        when(asylumCase.read(DETENTION_FACILITY, String.class))
+                .thenReturn(Optional.of("immigrationRemovalCentre"));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                startAppealMidEvent.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+
+        assertNotNull(callback);
+        assertEquals(asylumCase, callbackResponse.getData());
+        final Set<String> errors = callbackResponse.getErrors();
+        assertThat(errors).hasSize(0);
+        verify(asylumCase, times(0)).write(CUSTODIAL_SENTENCE, YesOrNo.NO);
+        verify(asylumCase, times(0)).clear(DATE_CUSTODIAL_SENTENCE);
     }
 }

@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.clients;
 
+import com.launchdarkly.sdk.LDContext;
 import com.launchdarkly.sdk.LDUser;
 import com.launchdarkly.sdk.LDValue;
 import com.launchdarkly.sdk.server.interfaces.LDClientInterface;
@@ -32,26 +33,19 @@ public class LaunchDarklyTestFeatureToggler implements FeatureToggler {
     }
 
     public boolean getValue(String key, Boolean defaultValue) {
-        LDUser user;
-        try {
-            UserDetails userDetails = userDetailsProvider.getUserDetails();
-            user = new LDUser.Builder(userDetails.getId())
+
+        UserDetails userDetails = userDetailsProvider.getUserDetails();
+
+        return ldClient.boolVariation(
+            key,
+            LDContext.fromUser(
+                new LDUser.Builder(userDetails.getId())
                 .firstName(userDetails.getForename())
                 .lastName(userDetails.getSurname())
                 .email(userDetails.getEmailAddress())
-                .build();
-        } catch (Exception e) {
-            // Fallback to idam system user if user details cannot be retrieved
-            String token = idamService.getServiceUserToken();
-            UserInfo userDetails = idamService.getUserInfo(token);
-            user = new LDUser.Builder(userDetails.getUid())
-                .firstName(userDetails.getGivenName())
-                .lastName(userDetails.getFamilyName())
-                .email(userDetails.getEmail())
-                .build();
-        }
-        return ldClient.boolVariation(
-            key, user, defaultValue
+                .build()
+            ),
+            defaultValue
         );
     }
 
@@ -61,11 +55,13 @@ public class LaunchDarklyTestFeatureToggler implements FeatureToggler {
 
         return ldClient.jsonValueVariation(
             key,
-            new LDUser.Builder(userDetails.getId())
+            LDContext.fromUser(
+                new LDUser.Builder(userDetails.getId())
                 .firstName(userDetails.getForename())
                 .lastName(userDetails.getSurname())
                 .email(userDetails.getEmailAddress())
-                .build(),
+                .build()
+            ),
             defaultValue
         );
     }

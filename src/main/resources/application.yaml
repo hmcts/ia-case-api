@@ -58,6 +58,8 @@ fees-register:
       jurisdiction2: immigration and asylum chamber
       keyword: HearingPaper
       service: other
+files:
+  detention-facilities-addresses: "/detention-facilities.csv"
 
 spring:
   config:
@@ -80,9 +82,9 @@ spring:
         jwt:
           jwk-set-uri: ${OPEN_ID_IDAM_URL:http://127.0.0.1:5000}/o/jwks
   cache:
-    cache-names: userInfoCache, accessTokenCache
+    cache-names: userInfoCache, accessTokenCache, homeOfficeReferenceDataCache
     caffeine:
-      spec: expireAfterAccess=3600s
+      spec: expireAfterWrite=3600s
   datasource:
     driverClassName: org.postgresql.Driver
     url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5050}/${POSTGRES_NAME:ia_case_api}${POSTGRES_CONNECTION_OPTIONS:}
@@ -131,8 +133,10 @@ legalRepresentativeHearingRequirements.dueInDays: ${LEGAL_REP_HEARING_REQUIREMEN
 legalRepresentativeReview.dueInDays: ${LEGAL_REP_REVIEW_DUE_IN_DAYS:5}
 requestRespondentEvidence.dueInDays: ${REQUEST_RESPONDENT_EVIDENCE_DUE_IN_DAYS:14}
 requestRespondentEvidence.dueInDaysAda: ${REQUEST_RESPONDENT_EVIDENCE_ADA_DUE_IN_DAYS:3}
+requestRespondentEvidence.dueInDaysDetained: ${REQUEST_RESPONDENT_EVIDENCE_DETAINED_DUE_IN_DAYS:7}
 requestRespondentReview.dueInDays: ${REQUEST_RESPONDENT_REVIEW_DUE_IN_DAYS:14}
 requestRespondentReviewAda.dueInDays: ${REQUEST_RESPONDENT_REVIEW_ADA_DUE_IN_DAYS:2}
+requestRespondentReviewDetained.dueInDays: ${REQUEST_RESPONDENT_REVIEW_DETAINED_DUE_IN_DAYS:7}
 appellantReasonsForAppeal.dueInDays: ${APPELLANT_REASONS_FOR_APPEAL_DUE_IN_DAYS:28}
 paymentAfterRemissionRejection.dueInMinutes: ${PAYMENT_AFTER_REMISSION_REJECTION_DUE_IN_MINUTES:20160}
 legalRepresentativeRemissionReminder.dueInMinutes: ${LEGAL_REP_REMISSION_REMINDER_DUE_IN_MINUTES:10080}
@@ -346,6 +350,9 @@ security:
       - "uploadHearingRecording"
       - "turnOnNotifications"
       - "updateTribunalDecision"
+      - "generateListCmrTask"
+      - "markAppealAsDetained"
+      - "removeDetainedStatus"
     challenged-access-legal-operations:
       - "appellantInPersonManual"
       - "moveToPaymentPending"
@@ -431,6 +438,9 @@ security:
       - "uploadHearingRecording"
       - "turnOnNotifications"
       - "updateTribunalDecision"
+      - "generateListCmrTask"
+      - "markAppealAsDetained"
+      - "removeDetainedStatus"
     senior-tribunal-caseworker:
       - "appellantInPersonManual"
       - "moveToPaymentPending"
@@ -516,6 +526,9 @@ security:
       - "uploadHearingRecording"
       - "turnOnNotifications"
       - "updateTribunalDecision"
+      - "generateListCmrTask"
+      - "markAppealAsDetained"
+      - "removeDetainedStatus"
     hearing-centre-admin:
       - "appellantInPersonManual"
       - "startAppeal"
@@ -576,7 +589,11 @@ security:
       - "saveNotificationsToData"
       - "refundConfirmation"
       - "progressMigratedCase"
+      - "generateListCmrTask"
       - "hearingCancelled"
+      - "generateListCmrTask"
+      - "markAppealAsDetained"
+      - "removeDetainedStatus"
       - "editDocuments"
     ctsc:
       - "appellantInPersonManual"
@@ -639,6 +656,9 @@ security:
       - "refundConfirmation"
       - "progressMigratedCase"
       - "hearingCancelled"
+      - "generateListCmrTask"
+      - "markAppealAsDetained"
+      - "removeDetainedStatus"
       - "editDocuments"
     ctsc-team-leader:
       - "appellantInPersonManual"
@@ -701,6 +721,9 @@ security:
       - "refundConfirmation"
       - "progressMigratedCase"
       - "hearingCancelled"
+      - "generateListCmrTask"
+      - "markAppealAsDetained"
+      - "removeDetainedStatus"
       - "editDocuments"
     national-business-centre:
       - "appellantInPersonManual"
@@ -763,6 +786,9 @@ security:
       - "refundConfirmation"
       - "progressMigratedCase"
       - "hearingCancelled"
+      - "generateListCmrTask"
+      - "markAppealAsDetained"
+      - "removeDetainedStatus"
       - "editDocuments"
     challenged-access-ctsc:
       - "appellantInPersonManual"
@@ -825,6 +851,9 @@ security:
       - "refundConfirmation"
       - "progressMigratedCase"
       - "hearingCancelled"
+      - "generateListCmrTask"
+      - "markAppealAsDetained"
+      - "removeDetainedStatus"
       - "editDocuments"
     challenged-access-admin:
       - "appellantInPersonManual"
@@ -888,6 +917,9 @@ security:
       - "progressMigratedCase"
       - "hearingCancelled"
       - "appellantInPersonManual"
+      - "generateListCmrTask"
+      - "markAppealAsDetained"
+      - "removeDetainedStatus"
       - "editDocuments"
     caseworker-ia-homeofficeapc:
       - "uploadHomeOfficeBundle"
@@ -945,6 +977,37 @@ security:
       - "pipActivation"
       - "applyForFTPAAppellant"
       - "requestFeeRemission"
+    caseworker-ia-iacjudge:
+      - "generateDecisionAndReasons"
+      - "endAppeal"
+      - "reinstateAppeal"
+      - "sendDecisionAndReasons"
+      - "changeDirectionDueDate"
+      - "sendDirection"
+      - "addCaseNote"
+      - "linkAppeal"
+      - "unlinkAppeal"
+      - "editAppealAfterSubmit"
+      - "updateHearingRequirements"
+      - "updateHearingAdjustments"
+      - "leadershipJudgeFtpaDecision"
+      - "residentJudgeFtpaDecision"
+      - "decideFtpaApplication"
+      - "uploadSensitiveDocuments"
+      - "decideAnApplication"
+      - "requestNewHearingRequirements"
+      - "generateUpperTribunalBundle"
+      - "asyncStitchingComplete"
+      - "markAddendumEvidenceAsReviewed"
+      - "adaSuitabilityReview"
+      - "transferOutOfAda"
+      - "reviewHearingRequirements"
+      - "createCaseLink"
+      - "maintainCaseLinks"
+      - "createFlag"
+      - "decideCostsApplication"
+      - "considerMakingCostsOrder"
+      - "updateTribunalDecision"
     judge:
       - "generateDecisionAndReasons"
       - "endAppeal"
@@ -1252,7 +1315,6 @@ security:
     caseworker-ia-internal:
       - "revokeCaseAccess"
       - "removeCaseManagerBulk"
-    caseworker-ia-task-retrigger:
       - "reTriggerWaTasks"
       - "reTriggerWaBulkTasks"
     caseworker-ia-rparobot:
@@ -1324,9 +1386,8 @@ commonData:
 govUkHolidays:
   url: https://www.gov.uk/
 
-caseIdListJsonLocation: caseIdForRetrigger.json
-
 saveNotificationsData:
+  enabled: ${SAVE_NOTIFICATIONS_TO_DATA_EVENT_ENABLED:true}
   scheduleAtHour: ${SAVE_NOTIFICATIONS_DATA_SCHEDULE_HOUR:23}
   scheduleMaxMinutes: ${SAVE_NOTIFICATIONS_DATA_SCHEDULE_MAX_MINUTES:50}
 
