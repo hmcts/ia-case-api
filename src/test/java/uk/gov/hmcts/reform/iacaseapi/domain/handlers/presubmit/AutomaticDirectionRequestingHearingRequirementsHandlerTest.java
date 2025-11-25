@@ -33,6 +33,7 @@ import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealReviewOutcome;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.SourceOfAppeal;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -302,8 +303,8 @@ class AutomaticDirectionRequestingHearingRequirementsHandlerTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONSE_REVIEW);
 
-        when(asylumCase.read(IS_REHYDRATED_APPEAL, YesOrNo.class))
-                .thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(SOURCE_OF_APPEAL,SourceOfAppeal.class))
+                .thenReturn(Optional.of(SourceOfAppeal.REHYDRATED_APPEAL));
 
         boolean canHandle = automaticDirectionHandler
                 .canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -318,8 +319,8 @@ class AutomaticDirectionRequestingHearingRequirementsHandlerTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         // ensure this is NOT rehydrated
-        when(asylumCase.read(IS_REHYDRATED_APPEAL, YesOrNo.class))
-                .thenReturn(Optional.of(YesOrNo.NO));
+        when(asylumCase.read(SOURCE_OF_APPEAL, SourceOfAppeal.class))
+                .thenReturn(Optional.of(SourceOfAppeal.PAPER_FORM));
 
         for (Event event : Event.values()) {
             when(callback.getEvent()).thenReturn(event);
@@ -344,8 +345,8 @@ class AutomaticDirectionRequestingHearingRequirementsHandlerTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONSE_REVIEW);
-        when(asylumCase.read(IS_REHYDRATED_APPEAL, YesOrNo.class))
-                .thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(SOURCE_OF_APPEAL, SourceOfAppeal.class))
+                .thenReturn(Optional.of(SourceOfAppeal.REHYDRATED_APPEAL));
 
         assertThatThrownBy(() ->
                 automaticDirectionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback)
