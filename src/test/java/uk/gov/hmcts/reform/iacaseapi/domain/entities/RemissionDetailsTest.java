@@ -12,7 +12,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 class RemissionDetailsTest {
 
     private String feeRemissionType = "A remission type";
-    private String asylumSupportReference = "Asylum support";
+    private String asylumSupportReference = FeeRemissionType.ASYLUM_SUPPORT;
     private Document asylumSupportDocument = mock(Document.class);
     private String legalAidAccountNumber = "legalAidAccountNumber";
     private Document section17Document = mock(Document.class);
