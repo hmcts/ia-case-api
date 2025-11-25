@@ -71,12 +71,12 @@ public class UpdateStatutoryTimeframe24WeeksService {
         asylumCase.clear(STATUTORY_TIMEFRAME_24_WEEKS_REASON);
         
         updateBannerText(asylumCase, statutoryTimeframe24WeeksStatus);
-         return asylumCase;
+        return asylumCase;
     }
 
     private void updateBannerText(AsylumCase asylumCase, YesOrNo statutoryTimeframe24WeeksStatus) {
         Optional<Object> bannerTexOptional = asylumCase.read(STF24W_BANNER_TEXT);
-        if (statutoryTimeframe24WeeksStatus == YesOrNo.YES ) {
+        if (statutoryTimeframe24WeeksStatus == YesOrNo.YES) {
             if (!bannerTexOptional.isPresent()) {
                 asylumCase.write(STF24W_BANNER_TEXT, "24 Week STF");
             }
