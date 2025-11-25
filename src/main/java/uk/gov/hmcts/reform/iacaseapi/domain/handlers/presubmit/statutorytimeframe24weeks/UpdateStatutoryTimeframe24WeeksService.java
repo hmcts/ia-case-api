@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.statutorytimeframe24weeks;
 
 import org.springframework.stereotype.Service;
+
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseNote;
@@ -20,6 +21,7 @@ import static java.util.Collections.emptyList;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_NOTES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STATUTORY_TIMEFRAME_24_WEEKS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STATUTORY_TIMEFRAME_24_WEEKS_REASON;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STF24W_BANNER_TEXT;
 
 @Service
 public class UpdateStatutoryTimeframe24WeeksService {
@@ -67,8 +69,22 @@ public class UpdateStatutoryTimeframe24WeeksService {
         asylumCase.write(CASE_NOTES, allCaseNotes);
 
         asylumCase.clear(STATUTORY_TIMEFRAME_24_WEEKS_REASON);
+        
+        updateBannerText(asylumCase, statutoryTimeframe24WeeksStatus);
+         return asylumCase;
+    }
 
-        return asylumCase;
+    private void updateBannerText(AsylumCase asylumCase, YesOrNo statutoryTimeframe24WeeksStatus) {
+        Optional<Object> bannerTexOptional = asylumCase.read(STF24W_BANNER_TEXT);
+        if (statutoryTimeframe24WeeksStatus == YesOrNo.YES ) {
+            if (!bannerTexOptional.isPresent()) {
+                asylumCase.write(STF24W_BANNER_TEXT, "24 Week STF");
+            }
+        } else {
+            if (bannerTexOptional.isPresent()) {
+                asylumCase.clear(STF24W_BANNER_TEXT);
+            }
+        }
     }
 
     private String buildFullName() {

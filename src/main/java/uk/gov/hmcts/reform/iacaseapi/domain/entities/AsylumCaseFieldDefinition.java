@@ -2860,6 +2860,9 @@ public enum AsylumCaseFieldDefinition {
 
     STATUTORY_TIMEFRAME_24_WEEKS_REASON(
         "statutoryTimeframe24WeeksReason", new TypeReference<String>(){}),
+        
+    STF24W_BANNER_TEXT(
+        "stf24wBannerText", new TypeReference<String>(){}),
     ;
 
     private final String value;
