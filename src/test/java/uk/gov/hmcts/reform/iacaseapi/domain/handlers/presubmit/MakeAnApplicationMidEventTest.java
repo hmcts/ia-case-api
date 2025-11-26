@@ -12,7 +12,7 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MAKE_AN_APPLICATION_DETAILS_LABEL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MAKE_AN_APPLICATION_TYPES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.ADJOURN;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.CHANGE_HEARING_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.CHANGE_DECISION_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.EXPEDITE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.OTHER;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.TIME_EXTENSION;
@@ -86,7 +86,7 @@ class MakeAnApplicationMidEventTest {
         "REINSTATE",
         "WITHDRAW",
         "OTHER",
-        "CHANGE_HEARING_TYPE",
+        "CHANGE_DECISION_TYPE",
         "SET_ASIDE_A_DECISION",
         "APPLICATION_UNDER_RULE_31_OR_RULE_32",
         "OTHER"
@@ -103,7 +103,7 @@ class MakeAnApplicationMidEventTest {
             new Value(TIME_EXTENSION.name(), TIME_EXTENSION.toString()),
             new Value(WITHDRAW.name(), WITHDRAW.toString()),
             new Value(OTHER.name(), OTHER.toString()),
-            new Value(CHANGE_HEARING_TYPE.name(), CHANGE_HEARING_TYPE.toString()),
+            new Value(CHANGE_DECISION_TYPE.name(), CHANGE_DECISION_TYPE.toString()),
             new Value(SET_ASIDE_A_DECISION.name(), OTHER.toString()),
             new Value(APPLICATION_UNDER_RULE_31_OR_RULE_32.name(), OTHER.toString()));
         DynamicList makeAnApplicationTypes =
@@ -193,11 +193,10 @@ class MakeAnApplicationMidEventTest {
                     .write(MAKE_AN_APPLICATION_DETAILS_LABEL,
                         "Describe the application you are making and explain the reasons for the application.");
                 break;
-            case CHANGE_HEARING_TYPE:
+            case CHANGE_DECISION_TYPE:
                 verify(asylumCase, times(1))
                     .write(MAKE_AN_APPLICATION_DETAILS_LABEL,
-                        "Explain why you want to change the hearing type and the type of hearing that you would "
-                            + "like to change to.");
+                            "Explain how the appellant now wants the appeal to be decided and why they want to change");
                 break;
             case SET_ASIDE_A_DECISION:
                 verify(asylumCase, times(1))
