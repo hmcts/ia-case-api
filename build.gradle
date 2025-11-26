@@ -445,6 +445,7 @@ dependencies {
     testImplementation group: 'org.apache.httpcomponents', name: 'fluent-hc', version:  '4.5.14'
 
 
+    implementation group: 'com.github.hmcts', name: 'core-case-data-store-client', version: '4.9.2'
     functionalTestImplementation group: 'com.github.hmcts', name: 'core-case-data-store-client', version: '4.9.2'
 
 

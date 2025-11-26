@@ -11,6 +11,15 @@ public class AppealReferenceNumberValidator {
 
     private static final Pattern APPEAL_REF_PATTERN = Pattern.compile("^(HU|DA|DC|EA|PA|RP|LE|LD|LP|LH|LR|IA)/[012]\\d{4}/20\\d{2}$");
     private static final String INVALID_FORMAT_ERROR = "The reference number is in an incorrect format.";
+    private static final String ALREADY_EXISTS_ERROR = "The reference number already exists. Please enter a different reference number.";
+
+    private final AppealReferenceNumberSearchService appealReferenceNumberSearchService;
+
+    public AppealReferenceNumberValidator(
+        AppealReferenceNumberSearchService appealReferenceNumberSearchService
+    ) {
+        this.appealReferenceNumberSearchService = appealReferenceNumberSearchService;
+    }
 
     /**
      * Validates an appeal reference number for format and existence.
@@ -30,6 +39,11 @@ public class AppealReferenceNumberValidator {
         if (!APPEAL_REF_PATTERN.matcher(appealReferenceNumber).matches()) {
             errors.add(INVALID_FORMAT_ERROR);
             return errors; // Don't check existence if format is invalid
+        }
+
+        // Check if reference number already exists in CCD using Elasticsearch
+        if (appealReferenceNumberSearchService.appealReferenceNumberExists(appealReferenceNumber)) {
+            errors.add(ALREADY_EXISTS_ERROR);
         }
 
         return errors;
