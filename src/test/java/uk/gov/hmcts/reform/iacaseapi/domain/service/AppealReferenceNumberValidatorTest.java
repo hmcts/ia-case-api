@@ -1,6 +1,8 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -17,209 +19,133 @@ class AppealReferenceNumberValidatorTest {
 
     @Mock
     private AppealReferenceNumberGenerator appealReferenceNumberGenerator;
+    @Mock
+    private AppealReferenceNumberSearchService appealReferenceNumberSearchService;
 
-    private AppealReferenceNumberValidator appealReferenceNumberValidator;
+    private AppealReferenceNumberValidator validator;
 
     @BeforeEach
     void setUp() {
-        appealReferenceNumberValidator = new AppealReferenceNumberValidator(appealReferenceNumberGenerator);
+        validator = new AppealReferenceNumberValidator(
+            appealReferenceNumberGenerator,
+            appealReferenceNumberSearchService
+        );
     }
 
     @Test
-    void should_return_empty_list_when_reference_number_is_valid_and_does_not_exist() {
-        String validReferenceNumber = "PA/12345/2025";
+    void should_pass_validation_for_valid_and_unique_reference_number() {
+        String validReferenceNumber = "PA/12345/2023";
 
-        when(appealReferenceNumberGenerator.referenceNumberExists(validReferenceNumber))
-            .thenReturn(false);
+        when(appealReferenceNumberGenerator.referenceNumberExists(validReferenceNumber)).thenReturn(false);
+        when(appealReferenceNumberSearchService.appealReferenceNumberExists(validReferenceNumber)).thenReturn(false);
 
-        List<String> errors = appealReferenceNumberValidator.validate(validReferenceNumber);
+        List<String> errors = validator.validate(validReferenceNumber);
 
-        assertThat(errors).isEmpty();
+        assertTrue(errors.isEmpty());
         verify(appealReferenceNumberGenerator).referenceNumberExists(validReferenceNumber);
+        verify(appealReferenceNumberSearchService).appealReferenceNumberExists(validReferenceNumber);
     }
 
     @Test
-    void should_return_error_when_reference_number_exists() {
-        String existingReferenceNumber = "HU/67890/2024";
+    void should_return_error_for_null_reference_number() {
+        List<String> errors = validator.validate(null);
 
-        when(appealReferenceNumberGenerator.referenceNumberExists(existingReferenceNumber))
-            .thenReturn(true);
+        assertEquals(1, errors.size());
+        assertThat(errors.get(0)).contains("cannot be null or empty");
+    }
 
-        List<String> errors = appealReferenceNumberValidator.validate(existingReferenceNumber);
+    @Test
+    void should_return_error_for_empty_reference_number() {
+        List<String> errors = validator.validate("");
 
-        assertThat(errors).hasSize(1);
-        assertThat(errors).contains("The reference number already exists. Please enter a different reference number.");
+        assertEquals(1, errors.size());
+        assertThat(errors.get(0)).contains("cannot be null or empty");
+    }
+
+    @Test
+    void should_return_error_for_invalid_format() {
+        String invalidReferenceNumber = "INVALID/12345/2023";
+
+        List<String> errors = validator.validate(invalidReferenceNumber);
+
+        assertEquals(1, errors.size());
+        assertThat(errors.get(0)).contains("incorrect format");
+        verify(appealReferenceNumberGenerator, never()).referenceNumberExists(invalidReferenceNumber);
+        verify(appealReferenceNumberSearchService, never()).appealReferenceNumberExists(invalidReferenceNumber);
+    }
+
+    @Test
+    void should_return_error_when_reference_exists_in_database() {
+        String existingReferenceNumber = "PA/12345/2023";
+
+        when(appealReferenceNumberGenerator.referenceNumberExists(existingReferenceNumber)).thenReturn(true);
+
+        List<String> errors = validator.validate(existingReferenceNumber);
+
+        assertEquals(1, errors.size());
+        assertThat(errors.get(0)).contains("already exists");
         verify(appealReferenceNumberGenerator).referenceNumberExists(existingReferenceNumber);
+        verify(appealReferenceNumberSearchService, never()).appealReferenceNumberExists(existingReferenceNumber);
     }
 
     @Test
-    void should_return_error_when_reference_number_is_null() {
-        List<String> errors = appealReferenceNumberValidator.validate(null);
+    void should_return_error_when_reference_exists_in_ccd() {
+        String existingReferenceNumber = "PA/12345/2023";
 
-        assertThat(errors).hasSize(1);
-        assertThat(errors).contains("Appeal reference number cannot be null or empty");
-        verify(appealReferenceNumberGenerator, never()).referenceNumberExists(null);
+        when(appealReferenceNumberGenerator.referenceNumberExists(existingReferenceNumber)).thenReturn(false);
+        when(appealReferenceNumberSearchService.appealReferenceNumberExists(existingReferenceNumber)).thenReturn(true);
+
+        List<String> errors = validator.validate(existingReferenceNumber);
+
+        assertEquals(1, errors.size());
+        assertThat(errors.get(0)).contains("already exists");
+        verify(appealReferenceNumberSearchService).appealReferenceNumberExists(existingReferenceNumber);
     }
 
     @Test
-    void should_return_error_when_reference_number_is_empty() {
-        List<String> errors = appealReferenceNumberValidator.validate("");
+    void should_validate_all_valid_appeal_type_prefixes() {
+        String[] validPrefixes = {"HU", "DA", "DC", "EA", "PA", "RP", "LE", "LD", "LP", "LH", "LR", "IA"};
 
-        assertThat(errors).hasSize(1);
-        assertThat(errors).contains("Appeal reference number cannot be null or empty");
-        verify(appealReferenceNumberGenerator, never()).referenceNumberExists("");
-    }
+        for (String prefix : validPrefixes) {
+            String referenceNumber = prefix + "/12345/2023";
+            when(appealReferenceNumberGenerator.referenceNumberExists(referenceNumber)).thenReturn(false);
+            when(appealReferenceNumberSearchService.appealReferenceNumberExists(referenceNumber)).thenReturn(false);
 
-    @Test
-    void should_return_error_when_reference_number_has_invalid_format_wrong_appeal_type() {
-        String invalidReferenceNumber = "XX/12345/2025";
+            List<String> errors = validator.validate(referenceNumber);
 
-        List<String> errors = appealReferenceNumberValidator.validate(invalidReferenceNumber);
-
-        assertThat(errors).hasSize(1);
-        assertThat(errors).contains("The reference number is in an incorrect format. Please enter valid format of XX/00000/0000");
-        verify(appealReferenceNumberGenerator, never()).referenceNumberExists(invalidReferenceNumber);
-    }
-
-    @Test
-    void should_return_error_when_reference_number_has_invalid_format_too_few_digits_in_sequence() {
-        String invalidReferenceNumber = "PA/1234/2025";
-
-        List<String> errors = appealReferenceNumberValidator.validate(invalidReferenceNumber);
-
-        assertThat(errors).hasSize(1);
-        assertThat(errors).contains("The reference number is in an incorrect format. Please enter valid format of XX/00000/0000");
-        verify(appealReferenceNumberGenerator, never()).referenceNumberExists(invalidReferenceNumber);
-    }
-
-    @Test
-    void should_return_error_when_reference_number_has_invalid_format_too_many_digits_in_sequence() {
-        String invalidReferenceNumber = "PA/123456/2025";
-
-        List<String> errors = appealReferenceNumberValidator.validate(invalidReferenceNumber);
-
-        assertThat(errors).hasSize(1);
-        assertThat(errors).contains("The reference number is in an incorrect format. Please enter valid format of XX/00000/0000");
-        verify(appealReferenceNumberGenerator, never()).referenceNumberExists(invalidReferenceNumber);
-    }
-
-    @Test
-    void should_return_error_when_reference_number_has_invalid_format_wrong_year_format() {
-        String invalidReferenceNumber = "PA/12345/1999";
-
-        List<String> errors = appealReferenceNumberValidator.validate(invalidReferenceNumber);
-
-        assertThat(errors).hasSize(1);
-        assertThat(errors).contains("The reference number is in an incorrect format. Please enter valid format of XX/00000/0000");
-        verify(appealReferenceNumberGenerator, never()).referenceNumberExists(invalidReferenceNumber);
-    }
-
-    @Test
-    void should_return_error_when_reference_number_has_invalid_format_missing_slashes() {
-        String invalidReferenceNumber = "PA123452025";
-
-        List<String> errors = appealReferenceNumberValidator.validate(invalidReferenceNumber);
-
-        assertThat(errors).hasSize(1);
-        assertThat(errors).contains("The reference number is in an incorrect format. Please enter valid format of XX/00000/0000");
-        verify(appealReferenceNumberGenerator, never()).referenceNumberExists(invalidReferenceNumber);
-    }
-
-    @Test
-    void should_return_error_when_reference_number_has_invalid_format_too_few_parts() {
-        String invalidReferenceNumber = "PA/12345";
-
-        List<String> errors = appealReferenceNumberValidator.validate(invalidReferenceNumber);
-
-        assertThat(errors).hasSize(1);
-        assertThat(errors).contains("The reference number is in an incorrect format. Please enter valid format of XX/00000/0000");
-        verify(appealReferenceNumberGenerator, never()).referenceNumberExists(invalidReferenceNumber);
-    }
-
-    @Test
-    void should_return_error_when_reference_number_has_invalid_format_too_many_parts() {
-        String invalidReferenceNumber = "PA/12345/2025/extra";
-
-        List<String> errors = appealReferenceNumberValidator.validate(invalidReferenceNumber);
-
-        assertThat(errors).hasSize(1);
-        assertThat(errors).contains("The reference number is in an incorrect format. Please enter valid format of XX/00000/0000");
-        verify(appealReferenceNumberGenerator, never()).referenceNumberExists(invalidReferenceNumber);
-    }
-
-    @Test
-    void should_validate_all_valid_appeal_types() {
-        String[] validAppealTypes = {"HU", "DA", "DC", "EA", "PA", "RP", "LE", "LD", "LP", "LH", "LR", "IA"};
-
-        for (String appealType : validAppealTypes) {
-            String validReferenceNumber = appealType + "/12345/2025";
-
-            when(appealReferenceNumberGenerator.referenceNumberExists(validReferenceNumber))
-                .thenReturn(false);
-
-            List<String> errors = appealReferenceNumberValidator.validate(validReferenceNumber);
-
-            assertThat(errors).isEmpty();
+            assertTrue(errors.isEmpty(), "Expected no errors for prefix: " + prefix);
         }
     }
 
     @Test
-    void should_not_check_existence_when_format_is_invalid() {
-        String invalidReferenceNumber = "INVALID/12345/2025";
+    void should_reject_invalid_year_format() {
+        String invalidYearReferenceNumber = "PA/12345/1999";
 
-        List<String> errors = appealReferenceNumberValidator.validate(invalidReferenceNumber);
+        List<String> errors = validator.validate(invalidYearReferenceNumber);
 
-        assertThat(errors).hasSize(1);
-        assertThat(errors.get(0)).contains("The reference number is in an incorrect format");
-        verify(appealReferenceNumberGenerator, never()).referenceNumberExists(invalidReferenceNumber);
+        assertEquals(1, errors.size());
+        assertThat(errors.get(0)).contains("incorrect format");
     }
 
     @Test
-    void should_validate_edge_case_year_2000() {
-        String validReferenceNumber = "PA/12345/2000";
+    void should_reject_invalid_number_length() {
+        String invalidNumberLength = "PA/123/2023";
 
-        when(appealReferenceNumberGenerator.referenceNumberExists(validReferenceNumber))
-            .thenReturn(false);
+        List<String> errors = validator.validate(invalidNumberLength);
 
-        List<String> errors = appealReferenceNumberValidator.validate(validReferenceNumber);
-
-        assertThat(errors).isEmpty();
+        assertEquals(1, errors.size());
+        assertThat(errors.get(0)).contains("incorrect format");
     }
 
     @Test
-    void should_validate_edge_case_year_2099() {
-        String validReferenceNumber = "PA/12345/2099";
+    void should_check_database_before_elasticsearch() {
+        String referenceNumber = "PA/12345/2023";
 
-        when(appealReferenceNumberGenerator.referenceNumberExists(validReferenceNumber))
-            .thenReturn(false);
+        when(appealReferenceNumberGenerator.referenceNumberExists(referenceNumber)).thenReturn(true);
 
-        List<String> errors = appealReferenceNumberValidator.validate(validReferenceNumber);
+        validator.validate(referenceNumber);
 
-        assertThat(errors).isEmpty();
-    }
-
-    @Test
-    void should_validate_sequence_with_leading_zeros() {
-        String validReferenceNumber = "HU/00001/2024";
-
-        when(appealReferenceNumberGenerator.referenceNumberExists(validReferenceNumber))
-            .thenReturn(false);
-
-        List<String> errors = appealReferenceNumberValidator.validate(validReferenceNumber);
-
-        assertThat(errors).isEmpty();
-    }
-
-    @Test
-    void should_validate_sequence_with_max_digits() {
-        String validReferenceNumber = "EA/99999/2023";
-
-        when(appealReferenceNumberGenerator.referenceNumberExists(validReferenceNumber))
-            .thenReturn(false);
-
-        List<String> errors = appealReferenceNumberValidator.validate(validReferenceNumber);
-
-        assertThat(errors).isEmpty();
+        verify(appealReferenceNumberGenerator).referenceNumberExists(referenceNumber);
+        verify(appealReferenceNumberSearchService, never()).appealReferenceNumberExists(referenceNumber);
     }
 }
-

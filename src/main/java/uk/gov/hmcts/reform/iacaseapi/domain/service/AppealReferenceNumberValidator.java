@@ -13,9 +13,14 @@ public class AppealReferenceNumberValidator {
     private static final String ALREADY_EXISTS_ERROR = "The reference number already exists. Please enter a different reference number.";
 
     private final AppealReferenceNumberGenerator appealReferenceNumberGenerator;
+    private final AppealReferenceNumberSearchService appealReferenceNumberSearchService;
 
-    public AppealReferenceNumberValidator(AppealReferenceNumberGenerator appealReferenceNumberGenerator) {
+    public AppealReferenceNumberValidator(
+        AppealReferenceNumberGenerator appealReferenceNumberGenerator,
+        AppealReferenceNumberSearchService appealReferenceNumberSearchService
+    ) {
         this.appealReferenceNumberGenerator = appealReferenceNumberGenerator;
+        this.appealReferenceNumberSearchService = appealReferenceNumberSearchService;
     }
 
     /**
@@ -38,8 +43,14 @@ public class AppealReferenceNumberValidator {
             return errors; // Don't check existence if format is invalid
         }
 
-        // Check if reference number already exists
+        // Check if reference number already exists in the database
         if (appealReferenceNumberGenerator.referenceNumberExists(appealReferenceNumber)) {
+            errors.add(ALREADY_EXISTS_ERROR);
+            return errors;
+        }
+
+        // Check if reference number already exists in CCD using Elasticsearch
+        if (appealReferenceNumberSearchService.appealReferenceNumberExists(appealReferenceNumber)) {
             errors.add(ALREADY_EXISTS_ERROR);
         }
 
