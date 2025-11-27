@@ -1,0 +1,28 @@
+{
+  "description": "DIAC-1601 Notice of Change Request Paper AboutToStart",
+  "disabled": false,
+  "request": {
+    "uri": "/asylum/ccdAboutToStart",
+    "credentials": "CaseOfficer",
+    "input": {
+      "eventId": "nocRequest",
+      "state": "appealSubmitted",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "sourceOfAppeal": "paperForm"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "sourceOfAppeal": "paperForm"
+      }
+    }
+  }
+}
