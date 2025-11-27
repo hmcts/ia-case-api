@@ -349,6 +349,7 @@ security:
       - "generateListCmrTask"
       - "markAppealAsDetained"
       - "removeDetainedStatus"
+      - "turnOnNotificationsWATasks"
       - "addStatutoryTimeframe24Weeks"
     challenged-access-legal-operations:
       - "appellantInPersonManual"
@@ -526,6 +527,7 @@ security:
       - "generateListCmrTask"
       - "markAppealAsDetained"
       - "removeDetainedStatus"
+      - "turnOnNotificationsWATasks"
     hearing-centre-admin:
       - "appellantInPersonManual"
       - "startAppeal"
@@ -593,6 +595,7 @@ security:
       - "removeDetainedStatus"
       - "editDocuments"
       - "forceDecidedState"
+      - "turnOnNotificationsWATasks"
     ctsc:
       - "appellantInPersonManual"
       - "startAppeal"
@@ -657,6 +660,7 @@ security:
       - "generateListCmrTask"
       - "markAppealAsDetained"
       - "removeDetainedStatus"
+      - "turnOnNotificationsWATasks"
       - "editDocuments"
       - "addStatutoryTimeframe24Weeks"
       - "forceDecidedState"
@@ -702,6 +706,7 @@ security:
       - "editAppealAfterSubmit"
       - "markAppealAsAda"
       - "removeDetainedStatus"
+      - "turnOnNotificationsWATasks"
       - "markAppealAsDetained"
       - "markAsReadyForUtTransfer"
       - "createCaseLink"
