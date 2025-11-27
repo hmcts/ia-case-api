@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CcdElasticSearchQueryBuilder;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CcdElasticSearchRepository;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CcdSearchQuery;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.CcdCase;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.CcdSearchResult;
 
 /**
@@ -44,9 +45,27 @@ public class AppealReferenceNumberSearchService {
             CcdSearchQuery query = queryBuilder.buildAppealReferenceNumberQuery(appealReferenceNumber);
             CcdSearchResult result = searchRepository.searchCases(query);
 
+            log.info("CCD search result for appeal reference number {}: total={}, cases={}", 
+                appealReferenceNumber, 
+                result != null ? result.getTotal() : "null",
+                result != null && result.getCases() != null ? result.getCases().size() : "null");
+
             if (result == null) {
                 log.warn("Received null result from CCD search");
                 return false;
+            }
+
+            if (result.getCases() != null && !result.getCases().isEmpty()) {
+                log.info("Case details found for appeal reference number {}:", appealReferenceNumber);
+                for (int i = 0; i < result.getCases().size(); i++) {
+                    CcdCase ccdCase = result.getCases().get(i);
+                    log.info("  Case[{}]: id={}, reference={}, appealReferenceNumber={}", 
+                        i + 1,
+                        ccdCase.getId(),
+                        ccdCase.getReference(),
+                        ccdCase.getData() != null ? ccdCase.getData().get("appealReferenceNumber") : "null");
+                    log.info("  Case[{}] data: {}", i + 1, ccdCase.getData());
+                }
             }
 
             boolean exists = result.getTotal() > 0;
