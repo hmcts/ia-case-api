@@ -14,7 +14,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.NOC_REQUES
 
 @Slf4j
 @Component
-public class NoticeOfChangeRequestPreparer implements PreSubmitCallbackHandler<AsylumCase> {
+public class RehydratedNoticeOfChangePreventer implements PreSubmitCallbackHandler<AsylumCase> {
 
     public boolean canHandle(
             PreSubmitCallbackStage callbackStage,
@@ -23,7 +23,7 @@ public class NoticeOfChangeRequestPreparer implements PreSubmitCallbackHandler<A
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
-        return callbackStage == PreSubmitCallbackStage.ABOUT_TO_START
+        return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
                 && callback.getEvent() == NOC_REQUEST;
     }
 
@@ -45,7 +45,7 @@ public class NoticeOfChangeRequestPreparer implements PreSubmitCallbackHandler<A
 
         if (isRehydratedCase) {
             PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
-            response.addError("You cannot request Notice of Change for this appeal");
+            response.addError("Can't take over Rehydrated case.");
             return response;
         }
 

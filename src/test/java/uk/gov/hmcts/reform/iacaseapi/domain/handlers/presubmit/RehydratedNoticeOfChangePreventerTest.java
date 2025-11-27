@@ -27,7 +27,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
-class NoticeOfChangeRequestPreparerTest {
+class RehydratedNoticeOfChangePreventerTest {
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -35,11 +35,11 @@ class NoticeOfChangeRequestPreparerTest {
     private CaseDetails<AsylumCase> caseDetails;
     @Mock
     private AsylumCase asylumCase;
-    private NoticeOfChangeRequestPreparer noticeOfChangeRequestPreparer;
+    private RehydratedNoticeOfChangePreventer rehydratedNoticeOfChangePreventer;
 
     @BeforeEach
     public void setup() {
-        noticeOfChangeRequestPreparer = new NoticeOfChangeRequestPreparer();
+        rehydratedNoticeOfChangePreventer = new RehydratedNoticeOfChangePreventer();
     }
 
     @Test
@@ -49,7 +49,7 @@ class NoticeOfChangeRequestPreparerTest {
         when(callback.getEvent()).thenReturn(Event.NOC_REQUEST);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                noticeOfChangeRequestPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+                rehydratedNoticeOfChangePreventer.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
@@ -63,7 +63,7 @@ class NoticeOfChangeRequestPreparerTest {
 
         when(callback.getEvent()).thenReturn(Event.NOC_REQUEST);
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                noticeOfChangeRequestPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+                rehydratedNoticeOfChangePreventer.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
@@ -78,11 +78,11 @@ class NoticeOfChangeRequestPreparerTest {
 
         when(callback.getEvent()).thenReturn(Event.NOC_REQUEST);
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                noticeOfChangeRequestPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+                rehydratedNoticeOfChangePreventer.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(1, callbackResponse.getErrors().size());
-        assertTrue(callbackResponse.getErrors().contains("You cannot request Notice of Change for this appeal"));
+        assertTrue(callbackResponse.getErrors().contains("Can't take over Rehydrated case."));
     }
 
     @Test
@@ -91,7 +91,7 @@ class NoticeOfChangeRequestPreparerTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
         assertThatThrownBy(
-                () -> noticeOfChangeRequestPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
+                () -> rehydratedNoticeOfChangePreventer.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
                 .hasMessage("Cannot handle callback")
                 .isExactlyInstanceOf(IllegalStateException.class);
     }
@@ -101,8 +101,8 @@ class NoticeOfChangeRequestPreparerTest {
         for (Event event : Event.values()) {
             when(callback.getEvent()).thenReturn(event);
             for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
-                boolean canHandle = noticeOfChangeRequestPreparer.canHandle(callbackStage, callback);
-                if (callbackStage == PreSubmitCallbackStage.ABOUT_TO_START
+                boolean canHandle = rehydratedNoticeOfChangePreventer.canHandle(callbackStage, callback);
+                if (callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
                         && ((callback.getEvent() == Event.NOC_REQUEST))) {
                     assertTrue(canHandle);
                 } else {
@@ -115,20 +115,20 @@ class NoticeOfChangeRequestPreparerTest {
     @Test
     void should_not_allow_null_arguments() {
 
-        assertThatThrownBy(() -> noticeOfChangeRequestPreparer.canHandle(null, callback))
+        assertThatThrownBy(() -> rehydratedNoticeOfChangePreventer.canHandle(null, callback))
                 .hasMessage("callbackStage must not be null")
                 .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(
-                () -> noticeOfChangeRequestPreparer.canHandle(PreSubmitCallbackStage.ABOUT_TO_START, null))
+                () -> rehydratedNoticeOfChangePreventer.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
                 .hasMessage("callback must not be null")
                 .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> noticeOfChangeRequestPreparer.handle(null, callback))
+        assertThatThrownBy(() -> rehydratedNoticeOfChangePreventer.handle(null, callback))
                 .hasMessage("callbackStage must not be null")
                 .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> noticeOfChangeRequestPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, null))
+        assertThatThrownBy(() -> rehydratedNoticeOfChangePreventer.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
                 .hasMessage("callback must not be null")
                 .isExactlyInstanceOf(NullPointerException.class);
     }
