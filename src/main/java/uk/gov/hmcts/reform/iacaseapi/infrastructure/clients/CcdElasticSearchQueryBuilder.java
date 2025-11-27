@@ -19,6 +19,8 @@ public class CcdElasticSearchQueryBuilder {
     /**
      * Builds an Elasticsearch query to search for cases by appeal reference number.
      * Uses term queries for exact matching of the appeal reference number.
+     * Note: Uses .keyword suffix for the appeal reference number field to perform exact match
+     * on the non-analyzed keyword subfield.
      *
      * @param appealReferenceNumber The appeal reference number to search for
      * @return CcdSearchQuery object containing the Elasticsearch query
@@ -27,7 +29,7 @@ public class CcdElasticSearchQueryBuilder {
         Map<String, Object> query = new HashMap<>();
         Map<String, Object> bool = new HashMap<>();
         List<Map<String, Object>> must = List.of(
-            createTermQuery("data.appealReferenceNumber", appealReferenceNumber),
+            createTermQuery("data.appealReferenceNumber.keyword", appealReferenceNumber),
             createTermQuery("case_type_id", CASE_TYPE_ID),
             createTermQuery("jurisdiction", JURISDICTION)
         );
