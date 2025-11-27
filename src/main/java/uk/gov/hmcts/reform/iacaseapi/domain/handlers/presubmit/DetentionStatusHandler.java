@@ -47,21 +47,30 @@ public class DetentionStatusHandler implements PreSubmitCallbackHandler<AsylumCa
                 .getCaseDetails()
                 .getCaseData();
 
+        Optional<YesOrNo> appellantInDetentionOpt =
+                asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class);
+        Optional<YesOrNo> isAdaOpt =
+                asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class);
+        Event event = callback.getEvent();
 
-        if (asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class).isPresent() && asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class).isPresent()) {
+        if ((event == Event.START_APPEAL || event == Event.EDIT_APPEAL)
+                && appellantInDetentionOpt.isEmpty()) {
+            asylumCase.write(APPELLANT_IN_DETENTION, YesOrNo.NO);
+            appellantInDetentionOpt = Optional.of(YesOrNo.NO);
+        }
 
-            Optional<YesOrNo> appellantInDetention = asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class);
-            Optional<YesOrNo> isAcceleratedDetainedAppeal = asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class);
+        if (appellantInDetentionOpt.isPresent() && isAdaOpt.isPresent()) {
+            YesOrNo appellantInDetention = appellantInDetentionOpt.get();
+            YesOrNo isAda = isAdaOpt.get();
 
-            if (appellantInDetention.equals(Optional.of(YesOrNo.YES)) && isAcceleratedDetainedAppeal.equals(Optional.of(YesOrNo.YES))) {
-                asylumCase.write(DETENTION_STATUS, DetentionStatus.ACCELERATED);
-            } else if (appellantInDetention.equals(Optional.of(YesOrNo.YES)) && isAcceleratedDetainedAppeal.equals(Optional.of(YesOrNo.NO))) {
+        if (appellantInDetention == YesOrNo.YES && isAda ==  YesOrNo.YES) {
+            asylumCase.write(DETENTION_STATUS, DetentionStatus.ACCELERATED);
+        } else if (appellantInDetention == YesOrNo.YES && isAda == YesOrNo.NO) {
                 asylumCase.write(DETENTION_STATUS, DetentionStatus.DETAINED);
             }
         }
 
-        Optional<YesOrNo> isAcceleratedDetainedAppeal = asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class);
-        if (callback.getEvent().equals(Event.MARK_APPEAL_AS_DETAINED) && isAcceleratedDetainedAppeal.isPresent()) {
+        if (event == Event.MARK_APPEAL_AS_DETAINED && isAdaOpt.isPresent()) {
             asylumCase.write(DETENTION_STATUS, DetentionStatus.DETAINED);
         }
 
