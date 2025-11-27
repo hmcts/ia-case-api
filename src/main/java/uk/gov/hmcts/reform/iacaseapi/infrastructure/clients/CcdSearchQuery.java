@@ -1,12 +1,16 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.clients;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import lombok.Data;
+
 import java.util.List;
 import java.util.Map;
 
 /**
  * Represents an Elasticsearch query for CCD case search.
  */
+@Data
 public class CcdSearchQuery {
 
     @JsonProperty("query")
@@ -23,29 +27,4 @@ public class CcdSearchQuery {
         this.size = size;
         this.source = source;
     }
-
-    public Map<String, Object> getQuery() {
-        return query;
-    }
-
-    public void setQuery(Map<String, Object> query) {
-        this.query = query;
-    }
-
-    public int getSize() {
-        return size;
-    }
-
-    public void setSize(int size) {
-        this.size = size;
-    }
-
-    public List<String> getSource() {
-        return source;
-    }
-
-    public void setSource(List<String> source) {
-        this.source = source;
-    }
 }
-

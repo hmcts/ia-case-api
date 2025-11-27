@@ -2,11 +2,15 @@ package uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import lombok.Data;
+
 import java.util.Map;
 
 /**
  * Represents a single case in the CCD Elasticsearch search results.
  */
+@Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CcdCase {
 
@@ -26,30 +30,6 @@ public class CcdCase {
     public CcdCase(Long id, Long reference, Map<String, Object> data) {
         this.id = id;
         this.reference = reference;
-        this.data = data;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Long getReference() {
-        return reference;
-    }
-
-    public void setReference(Long reference) {
-        this.reference = reference;
-    }
-
-    public Map<String, Object> getData() {
-        return data;
-    }
-
-    public void setData(Map<String, Object> data) {
         this.data = data;
     }
 }
