@@ -17,7 +17,7 @@
   },
   "expectation": {
     "status": 200,
-    "errors": ["You cannot request Notice of Chanage for this appeal"],
+    "errors": ["You cannot request Notice of Change for this appeal"],
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {
