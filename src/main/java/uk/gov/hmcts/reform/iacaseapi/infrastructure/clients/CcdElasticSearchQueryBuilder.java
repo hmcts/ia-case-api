@@ -18,6 +18,7 @@ public class CcdElasticSearchQueryBuilder {
 
     /**
      * Builds an Elasticsearch query to search for cases by appeal reference number.
+     * Uses term queries for exact matching of the appeal reference number.
      *
      * @param appealReferenceNumber The appeal reference number to search for
      * @return CcdSearchQuery object containing the Elasticsearch query
@@ -26,9 +27,9 @@ public class CcdElasticSearchQueryBuilder {
         Map<String, Object> query = new HashMap<>();
         Map<String, Object> bool = new HashMap<>();
         List<Map<String, Object>> must = List.of(
-            createMatchQuery("data.appealReferenceNumber", appealReferenceNumber),
-            createMatchQuery("case_type_id", CASE_TYPE_ID),
-            createMatchQuery("jurisdiction", JURISDICTION)
+            createTermQuery("data.appealReferenceNumber", appealReferenceNumber),
+            createTermQuery("case_type_id", CASE_TYPE_ID),
+            createTermQuery("jurisdiction", JURISDICTION)
         );
 
         bool.put("must", must);
@@ -42,18 +43,19 @@ public class CcdElasticSearchQueryBuilder {
     }
 
     /**
-     * Creates a match query for a specific field and value.
+     * Creates a term query for exact matching of a specific field and value.
+     * Term queries perform exact matches without text analysis.
      *
-     * @param field The field to match
-     * @param value The value to match
-     * @return Map representing a match query
+     * @param field The field to match exactly
+     * @param value The value to match exactly
+     * @return Map representing a term query
      */
-    private Map<String, Object> createMatchQuery(String field, String value) {
-        Map<String, Object> match = new HashMap<>();
+    private Map<String, Object> createTermQuery(String field, String value) {
+        Map<String, Object> term = new HashMap<>();
         Map<String, Object> fieldValue = new HashMap<>();
         fieldValue.put(field, value);
-        match.put("match", fieldValue);
-        return match;
+        term.put("term", fieldValue);
+        return term;
     }
 }
 

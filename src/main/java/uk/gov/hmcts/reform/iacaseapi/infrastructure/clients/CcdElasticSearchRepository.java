@@ -3,6 +3,8 @@ package uk.gov.hmcts.reform.iacaseapi.infrastructure.clients;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static uk.gov.hmcts.reform.iacaseapi.infrastructure.config.ServiceTokenGeneratorConfiguration.SERVICE_AUTHORIZATION;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -32,17 +34,20 @@ public class CcdElasticSearchRepository {
     private final AuthTokenGenerator serviceAuthTokenGenerator;
     private final UserDetails userDetails;
     private final String ccdUrl;
+    private final ObjectMapper objectMapper;
 
     public CcdElasticSearchRepository(
         RestTemplate restTemplate,
         AuthTokenGenerator serviceAuthTokenGenerator,
         UserDetails userDetails,
-        @Value("${core_case_data_api_url}") String ccdUrl
+        @Value("${core_case_data_api_url}") String ccdUrl,
+        ObjectMapper objectMapper
     ) {
         this.restTemplate = restTemplate;
         this.serviceAuthTokenGenerator = serviceAuthTokenGenerator;
         this.userDetails = userDetails;
         this.ccdUrl = ccdUrl;
+        this.objectMapper = objectMapper;
     }
 
     /**
@@ -64,6 +69,12 @@ public class CcdElasticSearchRepository {
             HttpEntity<CcdSearchQuery> requestEntity = new HttpEntity<>(query, headers);
 
             log.info("Executing Elasticsearch query against CCD: {}", url);
+            try {
+                String queryJson = objectMapper.writeValueAsString(query);
+                log.info("Elasticsearch query JSON: {}", queryJson);
+            } catch (JsonProcessingException e) {
+                log.warn("Failed to serialize query to JSON for logging", e);
+            }
 
             ResponseEntity<CcdSearchResult> response = restTemplate.exchange(
                 url,

@@ -8,6 +8,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -38,17 +39,20 @@ class CcdElasticSearchRepositoryTest {
     private ResponseEntity<CcdSearchResult> responseEntity;
 
     private CcdElasticSearchRepository repository;
+    private ObjectMapper objectMapper;
     private static final String CCD_URL = "http://localhost:4452";
     private static final String USER_TOKEN = "Bearer user-token";
     private static final String SERVICE_TOKEN = "service-token";
 
     @BeforeEach
     void setUp() {
+        objectMapper = new ObjectMapper();
         repository = new CcdElasticSearchRepository(
             restTemplate,
             serviceAuthTokenGenerator,
             userDetails,
-            CCD_URL
+            CCD_URL,
+            objectMapper
         );
 
         when(userDetails.getAccessToken()).thenReturn(USER_TOKEN);
