@@ -164,6 +164,7 @@ public enum Event {
     UPDATE_NEXT_HEARING_INFO("UpdateNextHearingInfo"),
     APPELLANT_IN_PERSON_MANUAL("appellantInPersonManual"),
     GENERATE_LIST_CMR_TASK("generateListCmrTask"),
+    TURN_ON_NOTIFICATIONS_WA_TASKS("turnOnNotificationsWATasks"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");
