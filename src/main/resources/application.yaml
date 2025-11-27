@@ -350,6 +350,7 @@ security:
       - "markAppealAsDetained"
       - "removeDetainedStatus"
       - "turnOnNotificationsWATasks"
+      - "addStatutoryTimeframe24Weeks"
     challenged-access-legal-operations:
       - "appellantInPersonManual"
       - "moveToPaymentPending"
@@ -660,6 +661,7 @@ security:
       - "removeDetainedStatus"
       - "turnOnNotificationsWATasks"
       - "editDocuments"
+      - "addStatutoryTimeframe24Weeks"
     ctsc-team-leader:
       - "appellantInPersonManual"
       - "startAppeal"
@@ -1009,6 +1011,8 @@ security:
       - "decideCostsApplication"
       - "considerMakingCostsOrder"
       - "updateTribunalDecision"
+      - "addStatutoryTimeframe24Weeks"
+      - "removeStatutoryTimeframe24Weeks"
     judge:
       - "generateDecisionAndReasons"
       - "endAppeal"

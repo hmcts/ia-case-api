@@ -2407,6 +2407,9 @@ public enum AsylumCaseFieldDefinition {
     UPPER_TRIBUNAL_REFERENCE_NUMBER(
         "upperTribunalReferenceNumber", new TypeReference<String>() {}),
 
+    IS_REHYDRATED_APPEAL(
+        "isRehydratedAppeal", new TypeReference<YesOrNo>() {}),
+
     IS_EJP(
         "isEjp", new TypeReference<YesOrNo>() {}),
 
@@ -2860,6 +2863,12 @@ public enum AsylumCaseFieldDefinition {
 
     APPELLANT_DETAINED_DATE("appellantDetainedDate",
             new TypeReference<String>(){}),
+
+    STATUTORY_TIMEFRAME_24_WEEKS(
+      "statutoryTimeframe24Weeks", new TypeReference<StatutoryTimeframe24Weeks>(){}),
+
+    STATUTORY_TIMEFRAME_24_WEEKS_REASON(
+        "statutoryTimeframe24WeeksReason", new TypeReference<String>(){}),
     ;
 
     private final String value;
