@@ -63,9 +63,9 @@ public class DetentionStatusHandler implements PreSubmitCallbackHandler<AsylumCa
             YesOrNo appellantInDetention = appellantInDetentionOpt.get();
             YesOrNo isAda = isAdaOpt.get();
 
-        if (appellantInDetention == YesOrNo.YES && isAda ==  YesOrNo.YES) {
-            asylumCase.write(DETENTION_STATUS, DetentionStatus.ACCELERATED);
-        } else if (appellantInDetention == YesOrNo.YES && isAda == YesOrNo.NO) {
+            if (appellantInDetention == YesOrNo.YES && isAda ==  YesOrNo.YES) {
+                asylumCase.write(DETENTION_STATUS, DetentionStatus.ACCELERATED);
+            } else if (appellantInDetention == YesOrNo.YES && isAda == YesOrNo.NO) {
                 asylumCase.write(DETENTION_STATUS, DetentionStatus.DETAINED);
             }
         }
