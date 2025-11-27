@@ -1,0 +1,28 @@
+{
+  "description": "DIAC-1601 Notice of Change Request Rehydrated AboutToStart - Error",
+  "disabled": false,
+  "request": {
+    "uri": "/asylum/ccdAboutToStart",
+    "credentials": "CaseOfficer",
+    "input": {
+      "eventId": "nocRequest",
+      "state": "appealSubmitted",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "sourceOfAppeal": "rehydratedAppeal"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": ["You cannot request Notice of Chanage for this appeal"],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "sourceOfAppeal": "rehydratedAppeal"
+      }
+    }
+  }
+}
