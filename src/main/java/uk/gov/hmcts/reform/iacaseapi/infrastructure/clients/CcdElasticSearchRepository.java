@@ -76,6 +76,7 @@ public class CcdElasticSearchRepository {
             
             if (result != null) {
                 log.info("Elasticsearch query returned {} results", result.getTotal());
+                log.info("Elasticsearch result {}", result.toString());
             }
 
             return result;

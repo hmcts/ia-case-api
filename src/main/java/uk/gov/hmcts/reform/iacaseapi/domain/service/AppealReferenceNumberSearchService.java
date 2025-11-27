@@ -82,7 +82,6 @@ public class AppealReferenceNumberSearchService {
         } catch (CcdElasticSearchRepository.CcdSearchException e) {
             log.error("Error searching for appeal reference number: {}", appealReferenceNumber, e);
             // In case of search failure, we'll return false to avoid blocking the operation
-            // This could be changed to throw an exception if stricter validation is required
             return false;
         }
     }
