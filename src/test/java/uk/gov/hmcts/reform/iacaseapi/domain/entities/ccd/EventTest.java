@@ -165,6 +165,8 @@ class EventTest {
         assertEquals("turnOnNotificationsWATasks", Event.TURN_ON_NOTIFICATIONS_WA_TASKS.toString());
         assertEquals("addStatutoryTimeframe24Weeks", Event.ADD_STATUTORY_TIMEFRAME_24_WEEKS.toString());
         assertEquals("removeStatutoryTimeframe24Weeks", Event.REMOVE_STATUTORY_TIMEFRAME_24_WEEKS.toString());
+        assertEquals("forceDecidedState", Event.FORCE_DECIDED_STATE.toString());
+
     }
 
     @Test

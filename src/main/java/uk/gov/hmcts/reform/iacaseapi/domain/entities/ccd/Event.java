@@ -166,6 +166,8 @@ public enum Event {
     GENERATE_LIST_CMR_TASK("generateListCmrTask"),
     TURN_ON_NOTIFICATIONS_WA_TASKS("turnOnNotificationsWATasks"),
 
+    FORCE_DECIDED_STATE("forceDecidedState"),
+
     @JsonEnumDefaultValue
     UNKNOWN("unknown");
 

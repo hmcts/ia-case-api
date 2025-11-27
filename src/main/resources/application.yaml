@@ -594,6 +594,7 @@ security:
       - "markAppealAsDetained"
       - "removeDetainedStatus"
       - "editDocuments"
+      - "forceDecidedState"
       - "turnOnNotificationsWATasks"
     ctsc:
       - "appellantInPersonManual"
@@ -662,6 +663,7 @@ security:
       - "turnOnNotificationsWATasks"
       - "editDocuments"
       - "addStatutoryTimeframe24Weeks"
+      - "forceDecidedState"
     ctsc-team-leader:
       - "appellantInPersonManual"
       - "startAppeal"
@@ -728,6 +730,7 @@ security:
       - "markAppealAsDetained"
       - "removeDetainedStatus"
       - "editDocuments"
+      - "forceDecidedState"
     national-business-centre:
       - "appellantInPersonManual"
       - "startAppeal"
@@ -793,6 +796,7 @@ security:
       - "markAppealAsDetained"
       - "removeDetainedStatus"
       - "editDocuments"
+      - "forceDecidedState"
     challenged-access-ctsc:
       - "appellantInPersonManual"
       - "startAppeal"
@@ -858,6 +862,7 @@ security:
       - "markAppealAsDetained"
       - "removeDetainedStatus"
       - "editDocuments"
+      - "forceDecidedState"
     challenged-access-admin:
       - "appellantInPersonManual"
       - "startAppeal"
@@ -924,6 +929,7 @@ security:
       - "markAppealAsDetained"
       - "removeDetainedStatus"
       - "editDocuments"
+      - "forceDecidedState"
     caseworker-ia-homeofficeapc:
       - "uploadHomeOfficeBundle"
       - "uploadAdditionalEvidenceHomeOffice"
@@ -1317,6 +1323,7 @@ security:
       - "UpdateNextHearingInfo"
       - "removeCaseManagerBulk"
       - "hearingCancelled"
+      - "forceDecidedState"
     caseworker-ia-internal:
       - "revokeCaseAccess"
       - "removeCaseManagerBulk"
