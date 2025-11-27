@@ -3,7 +3,7 @@
   "disabled": false,
   "request": {
     "uri": "/asylum/ccdAboutToStart",
-    "credentials": "CaseOfficer",
+    "credentials": "LegalRepresentative",
     "input": {
       "eventId": "nocRequest",
       "state": "appealSubmitted",
