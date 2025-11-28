@@ -79,6 +79,7 @@ java:
       secretRef: postgres
       key: PASSWORD
       disabled: false
+      
 
 global:
   postgresHostname: "ia-preview.postgres.database.azure.com"
