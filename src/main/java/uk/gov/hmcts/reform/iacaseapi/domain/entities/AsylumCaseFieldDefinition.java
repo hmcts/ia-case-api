@@ -2869,6 +2869,12 @@ public enum AsylumCaseFieldDefinition {
 
     STATUTORY_TIMEFRAME_24_WEEKS_REASON(
         "statutoryTimeframe24WeeksReason", new TypeReference<String>(){}),
+
+    HAS_BEEN_DECIDED("hasBeenDecided",
+        new TypeReference<YesOrNo>(){}),
+
+    HAS_BEEN_FTPA_DECIDED("hasBeenFtpaDecided",
+        new TypeReference<YesOrNo>(){}),
     ;
 
     private final String value;

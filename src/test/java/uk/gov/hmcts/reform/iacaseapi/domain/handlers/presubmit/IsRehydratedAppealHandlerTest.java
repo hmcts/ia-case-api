@@ -78,7 +78,7 @@ public class IsRehydratedAppealHandlerTest {
         assertThat(response).isNotNull();
         verify(asylumCase, times(1)).write(IS_REHYDRATED_APPEAL, YesOrNo.NO);
         verify(asylumCase, times(0)).write(IS_NOTIFICATION_TURNED_OFF, YesOrNo.YES);
-        verify(asylumCase, times(1)).write(IS_NOTIFICATION_TURNED_OFF, YesOrNo.NO);
+        verify(asylumCase, times(0)).write(IS_NOTIFICATION_TURNED_OFF, YesOrNo.NO);
     }
 
     @ParameterizedTest
