@@ -79,7 +79,6 @@ java:
       secretRef: postgres
       key: PASSWORD
       disabled: false
-      
 
 global:
   postgresHostname: "ia-preview.postgres.database.azure.com"
@@ -1554,3 +1553,5 @@ postgresql:
       - name: "pr-${CHANGE_ID}-org_role_mapping"
       - name: "pr-${CHANGE_ID}-ia_timed_event_service"
       - name: "pr-${CHANGE_ID}-hmc-cft-hearing-service"
+
+      
