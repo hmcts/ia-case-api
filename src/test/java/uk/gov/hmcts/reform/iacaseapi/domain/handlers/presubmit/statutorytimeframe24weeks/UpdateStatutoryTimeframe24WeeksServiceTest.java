@@ -225,4 +225,25 @@ class UpdateStatutoryTimeframe24WeeksServiceTest {
 
         verify(asylumCase, never()).write(eq(STATUTORY_TIMEFRAME_24_WEEKS), any());
     }
+
+    @Test
+    void should_not_throw_when_status_matches_but_reason_contains_home_office_initial_determination() {
+        YesOrNo currentStatus = YesOrNo.YES;
+        StatutoryTimeframe24WeeksHistory statutoryTimeframe24WeeksHistory = 
+            new StatutoryTimeframe24WeeksHistory(currentStatus, "Home Office initial determination", 
+                forename + " " + surname, nowWithTime.toString());
+        List<IdValue<StatutoryTimeframe24WeeksHistory>> existingHistory = 
+            Arrays.asList(new IdValue<>("1", statutoryTimeframe24WeeksHistory));
+        StatutoryTimeframe24Weeks existingStatutoryTimeframe24Weeks = 
+            new StatutoryTimeframe24Weeks(currentStatus, existingHistory);
+
+        when(asylumCase.read(STATUTORY_TIMEFRAME_24_WEEKS)).thenReturn(Optional.of(existingStatutoryTimeframe24Weeks));
+        when(asylumCase.read(STATUTORY_TIMEFRAME_24_WEEKS_REASON, String.class))
+            .thenReturn(Optional.of("Home Office initial determination"));
+
+        // Should NOT throw even though status matches
+        updateStatutoryTimeframe24WeeksService.updateAsylumCase(asylumCase, currentStatus);
+
+        verify(asylumCase, never()).write(eq(STATUTORY_TIMEFRAME_24_WEEKS), any());
+    }
 }
