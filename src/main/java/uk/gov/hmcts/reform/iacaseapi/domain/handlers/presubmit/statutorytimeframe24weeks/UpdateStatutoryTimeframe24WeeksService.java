@@ -65,6 +65,7 @@ public class UpdateStatutoryTimeframe24WeeksService {
         if (!statutoryTimeframe24WeeksReason.contains(HOME_OFFICE_INITIAL_DETERMINATION)) {
             log.info("Writing STATUTORY_TIMEFRAME_24_WEEKS with status: {}", statutoryTimeframe24WeeksStatus);
             asylumCase.write(STATUTORY_TIMEFRAME_24_WEEKS, updatedStatutoryTimeframe24Weeks);
+            asylumCase.clear(STATUTORY_TIMEFRAME_24_WEEKS_REASON);
         } else {
             log.info("Skipping write of STATUTORY_TIMEFRAME_24_WEEKS for '{}'", HOME_OFFICE_INITIAL_DETERMINATION);
         }
@@ -74,8 +75,6 @@ public class UpdateStatutoryTimeframe24WeeksService {
             buildNewCaseNote(statutoryTimeframe24WeeksStatus, statutoryTimeframe24WeeksReason, userDetails), maybeExistingCaseNotes.orElse(Collections.emptyList()));
 
         asylumCase.write(CASE_NOTES, allCaseNotes);
-
-        asylumCase.clear(STATUTORY_TIMEFRAME_24_WEEKS_REASON);
 
         return asylumCase;
     }
