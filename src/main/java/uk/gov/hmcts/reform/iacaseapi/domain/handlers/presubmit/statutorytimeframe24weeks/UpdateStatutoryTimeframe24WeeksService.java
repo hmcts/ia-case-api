@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.statutorytimeframe24weeks;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -21,8 +22,11 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STATUTORY_TIMEFRAME_24_WEEKS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STATUTORY_TIMEFRAME_24_WEEKS_REASON;
 
+@Slf4j
 @Service
 public class UpdateStatutoryTimeframe24WeeksService {
+
+    public static final String HOME_OFFICE_INITIAL_DETERMINATION = "Home Office initial determination";
 
     private final Appender<StatutoryTimeframe24WeeksHistory> statutoryTimeframe24WeeksHistoryAppender;
     private final Appender<CaseNote> caseNoteAppender;
@@ -58,7 +62,12 @@ public class UpdateStatutoryTimeframe24WeeksService {
         StatutoryTimeframe24Weeks updatedStatutoryTimeframe24Weeks =
             buildNewStatutoryTimeframe24Weeks(statutoryTimeframe24WeeksStatus, statutoryTimeframe24WeeksReason, userDetails, maybeExistingStatutoryTimeframe24Weeks);
 
-        asylumCase.write(STATUTORY_TIMEFRAME_24_WEEKS, updatedStatutoryTimeframe24Weeks);
+        if (!statutoryTimeframe24WeeksReason.contains(HOME_OFFICE_INITIAL_DETERMINATION)) {
+            log.info("Writing STATUTORY_TIMEFRAME_24_WEEKS with status: {}", statutoryTimeframe24WeeksStatus);
+            asylumCase.write(STATUTORY_TIMEFRAME_24_WEEKS, updatedStatutoryTimeframe24Weeks);
+        } else {
+            log.info("Skipping write of STATUTORY_TIMEFRAME_24_WEEKS for '{}'", HOME_OFFICE_INITIAL_DETERMINATION);
+        }
 
         Optional<List<IdValue<CaseNote>>> maybeExistingCaseNotes = asylumCase.read(CASE_NOTES);
         List<IdValue<CaseNote>> allCaseNotes = caseNoteAppender.append(
