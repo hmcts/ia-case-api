@@ -1,6 +1,9 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.clients;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAS_JOB_BEEN_SCHEDULED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -9,6 +12,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.NotificationSender;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.Scheduler;
@@ -81,8 +85,9 @@ public class AsylumCaseNotificationApiSender implements NotificationSender<Asylu
     }
 
     private void scheduleSaveNotificationToData(Callback<AsylumCase> callback) {
-        if (timedEventServiceEnabled) {
-
+        AsylumCase caseData = callback.getCaseDetails().getCaseData();
+        YesOrNo hasScheduled = caseData.read(HAS_JOB_BEEN_SCHEDULED, YesOrNo.class).orElse(NO);
+        if (timedEventServiceEnabled && hasScheduled.equals(NO)) {
             try {
                 scheduler.schedule(
                         new TimedEvent(
@@ -94,6 +99,7 @@ public class AsylumCaseNotificationApiSender implements NotificationSender<Asylu
                                 callback.getCaseDetails().getId()
                         )
                 );
+                caseData.write(HAS_JOB_BEEN_SCHEDULED, YES);
             } catch (AsylumCaseServiceResponseException e) {
                 log.error("Scheduling SAVE_NOTIFICATIONS_TO_DATA event failed: ", e);
             }

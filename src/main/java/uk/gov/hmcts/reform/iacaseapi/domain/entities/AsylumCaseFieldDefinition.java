@@ -2751,7 +2751,7 @@ public enum AsylumCaseFieldDefinition {
 
     NOTIFICATIONS("notifications", new TypeReference<List<IdValue<StoredNotification>>>(){}),
     NOTIFICATIONS_SENT("notificationsSent", new TypeReference<List<IdValue<String>>>(){}),
-
+    HAS_JOB_BEEN_SCHEDULED("hasJobBeenScheduled", new TypeReference<YesOrNo>(){}),
     REQUEST_FEE_REMISSION_DATE(
             "requestFeeRemissionDate", new TypeReference<String>(){}),
 
