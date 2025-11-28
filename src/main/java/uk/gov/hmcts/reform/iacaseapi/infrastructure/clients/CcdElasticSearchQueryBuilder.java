@@ -12,15 +12,12 @@ import org.springframework.stereotype.Component;
 @Component
 public class CcdElasticSearchQueryBuilder {
 
-    private static final String CASE_TYPE_ID = "Asylum";
-    private static final String JURISDICTION = "IA";
     private static final int DEFAULT_SIZE = 10;
 
     /**
      * Builds an Elasticsearch query to search for cases by appeal reference number.
-     * Uses term queries for exact matching of the appeal reference number.
-     * Note: Uses .keyword suffix for the appeal reference number field to perform exact match
-     * on the non-analyzed keyword subfield.
+     * - Uses match query for the appealReferenceNumber field (analyzed text field)
+     * - The match query will find exact matches when the entire value matches
      *
      * @param appealReferenceNumber The appeal reference number to search for
      * @return CcdSearchQuery object containing the Elasticsearch query
@@ -29,9 +26,7 @@ public class CcdElasticSearchQueryBuilder {
         Map<String, Object> query = new HashMap<>();
         Map<String, Object> bool = new HashMap<>();
         List<Map<String, Object>> must = List.of(
-            createTermQuery("data.appealReferenceNumber.keyword", appealReferenceNumber),
-            createTermQuery("case_type_id", CASE_TYPE_ID),
-            createTermQuery("jurisdiction", JURISDICTION)
+            createMatchQuery("data.appealReferenceNumber", appealReferenceNumber)
         );
 
         bool.put("must", must);
@@ -45,19 +40,19 @@ public class CcdElasticSearchQueryBuilder {
     }
 
     /**
-     * Creates a term query for exact matching of a specific field and value.
-     * Term queries perform exact matches without text analysis.
+     * Creates a match query for text field matching.
+     * Match queries work with analyzed text fields.
      *
-     * @param field The field to match exactly
-     * @param value The value to match exactly
-     * @return Map representing a term query
+     * @param field The field to match
+     * @param value The value to match
+     * @return Map representing a match query
      */
-    private Map<String, Object> createTermQuery(String field, String value) {
-        Map<String, Object> term = new HashMap<>();
+    private Map<String, Object> createMatchQuery(String field, String value) {
+        Map<String, Object> match = new HashMap<>();
         Map<String, Object> fieldValue = new HashMap<>();
         fieldValue.put(field, value);
-        term.put("term", fieldValue);
-        return term;
+        match.put("match", fieldValue);
+        return match;
     }
 }
 
