@@ -16,8 +16,8 @@ public class CcdElasticSearchQueryBuilder {
 
     /**
      * Builds an Elasticsearch query to search for cases by appeal reference number.
-     * - Uses match query for the appealReferenceNumber field (analyzed text field)
-     * - The match query will find exact matches when the entire value matches
+     * Uses match_phrase query for exact phrase matching on analyzed text fields.
+     * match_phrase ensures the entire phrase matches in order, preventing partial matches.
      *
      * @param appealReferenceNumber The appeal reference number to search for
      * @return CcdSearchQuery object containing the Elasticsearch query
@@ -26,7 +26,7 @@ public class CcdElasticSearchQueryBuilder {
         Map<String, Object> query = new HashMap<>();
         Map<String, Object> bool = new HashMap<>();
         List<Map<String, Object>> must = List.of(
-            createMatchQuery("data.appealReferenceNumber", appealReferenceNumber)
+            createMatchPhraseQuery("data.appealReferenceNumber", appealReferenceNumber)
         );
 
         bool.put("must", must);
@@ -40,19 +40,20 @@ public class CcdElasticSearchQueryBuilder {
     }
 
     /**
-     * Creates a match query for text field matching.
-     * Match queries work with analyzed text fields.
+     * Creates a match_phrase query for exact phrase matching on analyzed text fields.
+     * match_phrase matches the exact phrase in order, preventing partial token matches.
+     * This ensures "HU/12345/2025" only matches "HU/12345/2025" and not "HU/12344/2022".
      *
      * @param field The field to match
-     * @param value The value to match
-     * @return Map representing a match query
+     * @param value The phrase value to match exactly
+     * @return Map representing a match_phrase query
      */
-    private Map<String, Object> createMatchQuery(String field, String value) {
-        Map<String, Object> match = new HashMap<>();
+    private Map<String, Object> createMatchPhraseQuery(String field, String value) {
+        Map<String, Object> matchPhrase = new HashMap<>();
         Map<String, Object> fieldValue = new HashMap<>();
         fieldValue.put(field, value);
-        match.put("match", fieldValue);
-        return match;
+        matchPhrase.put("match_phrase", fieldValue);
+        return matchPhrase;
     }
 }
 

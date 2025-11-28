@@ -56,18 +56,18 @@ class CcdElasticSearchQueryBuilderTest {
         @SuppressWarnings("unchecked")
         List<Map<String, Object>> must = (List<Map<String, Object>>) bool.get("must");
         
-        // Should only have the appeal reference number match query
+        // Should only have the appeal reference number match_phrase query
         // Case type filtering is handled by the ctid query parameter
         assertEquals(1, must.size());
         
-        // Verify the must clause is a match query for appeal reference number
+        // Verify the must clause is a match_phrase query for appeal reference number
         Map<String, Object> firstClause = must.get(0);
-        assertThat(firstClause).containsKey("match");
+        assertThat(firstClause).containsKey("match_phrase");
         
         @SuppressWarnings("unchecked")
-        Map<String, Object> matchClause = (Map<String, Object>) firstClause.get("match");
-        assertThat(matchClause).containsKey("data.appealReferenceNumber");
-        assertEquals(appealReferenceNumber, matchClause.get("data.appealReferenceNumber"));
+        Map<String, Object> matchPhraseClause = (Map<String, Object>) firstClause.get("match_phrase");
+        assertThat(matchPhraseClause).containsKey("data.appealReferenceNumber");
+        assertEquals(appealReferenceNumber, matchPhraseClause.get("data.appealReferenceNumber"));
     }
 
     @Test
