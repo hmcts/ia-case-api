@@ -21,8 +21,8 @@ public class DetentionStatusHandler implements PreSubmitCallbackHandler<AsylumCa
 
     @Override
     public boolean canHandle(
-        PreSubmitCallbackStage callbackStage,
-        Callback<AsylumCase> callback
+            PreSubmitCallbackStage callbackStage,
+            Callback<AsylumCase> callback
     ) {
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
@@ -35,45 +35,36 @@ public class DetentionStatusHandler implements PreSubmitCallbackHandler<AsylumCa
 
     @Override
     public PreSubmitCallbackResponse<AsylumCase> handle(
-        PreSubmitCallbackStage callbackStage,
-        Callback<AsylumCase> callback) {
+            PreSubmitCallbackStage callbackStage,
+            Callback<AsylumCase> callback) {
 
         if (!canHandle(callbackStage, callback)) {
             throw new IllegalStateException("Cannot handle callback");
         }
 
         AsylumCase asylumCase =
-            callback
-                .getCaseDetails()
-                .getCaseData();
+                callback
+                        .getCaseDetails()
+                        .getCaseData();
 
-        Optional<YesOrNo> appellantInDetentionOpt =
-                asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class);
-        Optional<YesOrNo> isAdaOpt =
-                asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class);
-        Event event = callback.getEvent();
+        Optional<YesOrNo> appellantInDetention = asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class);
+        Optional<YesOrNo> isAcceleratedDetainedAppeal = asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class);
 
-        if ((event == Event.START_APPEAL || event == Event.EDIT_APPEAL)
-                && appellantInDetentionOpt.isEmpty()) {
-            asylumCase.write(APPELLANT_IN_DETENTION, YesOrNo.NO);
-            appellantInDetentionOpt = Optional.of(YesOrNo.NO);
-        }
+        if (asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class).isPresent() && asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class).isPresent()) {
 
-        if (appellantInDetentionOpt.isPresent() && isAdaOpt.isPresent()) {
-            YesOrNo appellantInDetention = appellantInDetentionOpt.get();
-            YesOrNo isAda = isAdaOpt.get();
-
-            if (appellantInDetention == YesOrNo.YES && isAda ==  YesOrNo.YES) {
+            if (appellantInDetention.equals(Optional.of(YesOrNo.YES)) && isAcceleratedDetainedAppeal.equals(Optional.of(YesOrNo.YES))) {
                 asylumCase.write(DETENTION_STATUS, DetentionStatus.ACCELERATED);
-            } else if (appellantInDetention == YesOrNo.YES && isAda == YesOrNo.NO) {
+            } else if (appellantInDetention.equals(Optional.of(YesOrNo.YES)) && isAcceleratedDetainedAppeal.equals(Optional.of(YesOrNo.NO))) {
                 asylumCase.write(DETENTION_STATUS, DetentionStatus.DETAINED);
             }
         }
 
-        if (event == Event.MARK_APPEAL_AS_DETAINED && isAdaOpt.isPresent()) {
+        if (callback.getEvent().equals(Event.MARK_APPEAL_AS_DETAINED) && isAcceleratedDetainedAppeal.isPresent()) {
             asylumCase.write(DETENTION_STATUS, DetentionStatus.DETAINED);
         }
-
+        if (!asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class).isPresent()) {
+            asylumCase.write(APPELLANT_IN_DETENTION, YesOrNo.NO);
+        }
         return new PreSubmitCallbackResponse<>(asylumCase);
 
     }
