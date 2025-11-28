@@ -137,25 +137,4 @@ public class DetainedIndividualFlagHandlerTest {
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
     }
-
-    @Test
-    void sets_appellant_in_detention_to_no_when_flag_is_missing_on_submit_appeal() {
-        when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class))
-                .thenReturn(Optional.empty());
-
-        when(asylumCase.read(APPELLANT_LEVEL_FLAGS, StrategicCaseFlag.class))
-                .thenReturn(Optional.empty());
-
-        when(asylumCase.read(APPELLANT_NAME_FOR_DISPLAY, String.class))
-                .thenReturn(Optional.of("Some display name"));
-
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                flagHandler.handle(ABOUT_TO_SUBMIT, callback);
-
-        assertNotNull(callbackResponse);
-        assertEquals(asylumCase, callbackResponse.getData());
-
-        verify(asylumCase, times(1)).write(APPELLANT_IN_DETENTION, NO);
-    }
-
 }
