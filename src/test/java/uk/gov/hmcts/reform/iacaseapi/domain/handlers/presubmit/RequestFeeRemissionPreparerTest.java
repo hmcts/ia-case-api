@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDecision.PARTIALLY_APPROVED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDecision.REJECTED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.*;
 
@@ -45,7 +46,7 @@ class RequestFeeRemissionPreparerTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = AppealType.class, names = { "EA", "HU", "PA" })
+    @EnumSource(value = AppealType.class, names = { "EA", "HU", "PA", "EU" })
     void should_handle_if_no_previous_remission_exists(AppealType appealType) {
 
         when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
@@ -62,6 +63,73 @@ class RequestFeeRemissionPreparerTest {
 
         assertNotNull(callbackResponse);
         assertEquals(callbackResponse.getData(), asylumCase);
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = AppealType.class, names = { "EA", "HU", "PA", "EU" })
+    void should_handle_if_previous_remission_exists(AppealType appealType) {
+
+        when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getEvent()).thenReturn(Event.REQUEST_FEE_REMISSION);
+
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
+        when(asylumCase.read(REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.of(HO_WAIVER_REMISSION));
+        when(asylumCase.read(REMISSION_DECISION, RemissionDecision.class)).thenReturn(Optional.of(REJECTED));
+        when(asylumCase.read(FEE_REMISSION_TYPE, String.class)).thenReturn(Optional.of("some fee remission type"));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            requestFeeRemissionPreparer.handle(ABOUT_TO_START, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(callbackResponse.getData(), asylumCase);
+        verify(asylumCase, times(1)).clear(LATE_REMISSION_TYPE);
+        verify(asylumCase, times(1)).clear(REMISSION_CLAIM);
+        verify(asylumCase, times(1)).clear(ASYLUM_SUPPORT_REFERENCE);
+        verify(asylumCase, times(1)).clear(ASYLUM_SUPPORT_DOCUMENT);
+        verify(asylumCase, times(1)).clear(LEGAL_AID_ACCOUNT_NUMBER);
+        verify(asylumCase, times(1)).clear(SECTION17_DOCUMENT);
+        verify(asylumCase, times(1)).clear(SECTION20_DOCUMENT);
+        verify(asylumCase, times(1)).clear(HOME_OFFICE_WAIVER_DOCUMENT);
+        verify(asylumCase, times(1)).clear(HELP_WITH_FEES_REFERENCE_NUMBER);
+        verify(asylumCase, times(1)).clear(EXCEPTIONAL_CIRCUMSTANCES);
+        verify(asylumCase, times(1)).clear(REMISSION_EC_EVIDENCE_DOCUMENTS);
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = AppealType.class, names = { "EA", "HU", "PA", "EU" })
+    void should_handle_if_previous_late_remission_exists(AppealType appealType) {
+
+        when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getEvent()).thenReturn(Event.REQUEST_FEE_REMISSION);
+
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
+        when(asylumCase.read(REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.empty());
+        when(asylumCase.read(LATE_REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.of(HO_WAIVER_REMISSION));
+        when(asylumCase.read(REMISSION_DECISION, RemissionDecision.class)).thenReturn(Optional.of(REJECTED));
+        when(asylumCase.read(FEE_REMISSION_TYPE, String.class)).thenReturn(Optional.of("some fee remission type"));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            requestFeeRemissionPreparer.handle(ABOUT_TO_START, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(callbackResponse.getData(), asylumCase);
+        verify(asylumCase, times(1)).clear(LATE_REMISSION_TYPE);
+        verify(asylumCase, times(1)).clear(REMISSION_CLAIM);
+        verify(asylumCase, times(1)).clear(ASYLUM_SUPPORT_REFERENCE);
+        verify(asylumCase, times(1)).clear(ASYLUM_SUPPORT_DOCUMENT);
+        verify(asylumCase, times(1)).clear(LEGAL_AID_ACCOUNT_NUMBER);
+        verify(asylumCase, times(1)).clear(SECTION17_DOCUMENT);
+        verify(asylumCase, times(1)).clear(SECTION20_DOCUMENT);
+        verify(asylumCase, times(1)).clear(HOME_OFFICE_WAIVER_DOCUMENT);
+        verify(asylumCase, times(1)).clear(HELP_WITH_FEES_REFERENCE_NUMBER);
+        verify(asylumCase, times(1)).clear(EXCEPTIONAL_CIRCUMSTANCES);
+        verify(asylumCase, times(1)).clear(REMISSION_EC_EVIDENCE_DOCUMENTS);
     }
 
     @Test
