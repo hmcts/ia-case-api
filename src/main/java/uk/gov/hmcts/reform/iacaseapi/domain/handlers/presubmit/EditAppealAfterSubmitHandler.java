@@ -28,6 +28,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ApplicationType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ContactPreference;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfCountryDecisionType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -52,7 +53,7 @@ public class EditAppealAfterSubmitHandler implements PreSubmitCallbackHandler<As
     private final DocumentsAppender documentsAppender;
 
     private final DueDateService dueDateService;
-    private static final String HOME_OFFICE_DECISION_PAGE_ID = "homeOfficeDecision";
+    private static final String HOME_OFFICE_DECISION_PAGE_ID = "homeOfficeDecisionLetter";
 
     public EditAppealAfterSubmitHandler(
         DateProvider dateProvider,
@@ -92,7 +93,24 @@ public class EditAppealAfterSubmitHandler implements PreSubmitCallbackHandler<As
             throw new IllegalStateException("Cannot handle callback");
         }
 
-        AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
+        AsylumCase asylumCase =
+            callback
+                .getCaseDetails()
+                .getCaseData();
+
+
+        final String legalRepReferenceNumber = asylumCase.read(LEGAL_REP_REFERENCE_NUMBER, String.class)
+                .orElse("");
+        Optional<CaseDetails<AsylumCase>> caseDetailsBefore = callback.getCaseDetailsBefore();
+        if (caseDetailsBefore.isPresent()) {
+            final String prevLegalRepReferenceNumber = caseDetailsBefore
+                    .get().getCaseData().read(LEGAL_REP_REFERENCE_NUMBER, String.class).orElse("");
+            if (!legalRepReferenceNumber.equals(prevLegalRepReferenceNumber)) {
+                asylumCase.write(HAS_ADDED_LEGAL_REP_DETAILS, YesOrNo.YES);
+            }
+        }
+
+
 
         Optional<OutOfCountryDecisionType> outOfCountryDecisionTypeOptional = asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class);
         YesOrNo appellantInUk = asylumCase.read(APPELLANT_IN_UK, YesOrNo.class).orElse(NO);

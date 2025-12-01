@@ -74,9 +74,18 @@ class RequestCaseBuildingPreparerTest {
 
     @ParameterizedTest
     @MethodSource("caseTypeScenarios")
-    void should_prepare_send_direction_fields(YesOrNo yesOrNo, Parties expectedParties) {
-        final String expectedExplanationContains =
-            "You must now build your case to enable the respondent to conduct a thorough review of the appeal.";
+    void should_prepare_send_direction_fields(YesOrNo yesOrNo, YesOrNo appellantsRepresentation, Parties expectedParties) {
+        String expectedExplanationContains;
+        if (yesOrNo == YES && appellantsRepresentation == YES) {
+            // match detained direction text
+            expectedExplanationContains = "The Home Office has uploaded their bundle of evidence.";
+        } else if (yesOrNo == YES) {
+            // match detained direction text
+            expectedExplanationContains = "The form and content of this ASA must comply with the terms of Practice Direction";
+        } else {
+            // match non-detained direction text
+            expectedExplanationContains = "The appellant and their representative are reminded that they have an obligation under Rule 2(4)";
+        }
 
         final String expectedDueDate = "2019-10-08";
 
@@ -87,6 +96,7 @@ class RequestCaseBuildingPreparerTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.ofNullable(yesOrNo));
         when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.ofNullable(yesOrNo));
+        when(asylumCase.read(APPELLANTS_REPRESENTATION, YesOrNo.class)).thenReturn(Optional.ofNullable(appellantsRepresentation));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             requestCaseBuildingPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
@@ -120,8 +130,14 @@ class RequestCaseBuildingPreparerTest {
         YesOrNo isLegallyRepresentedEjp,
         Parties party
     ) {
-        final String expectedExplanationContains =
-            "You must now build your case to enable the respondent to conduct a thorough review of the appeal.";
+        String expectedExplanationContains;
+        if (appellantInDetention == YES) {
+            // match detained direction text
+            expectedExplanationContains = "The form and content of this ASA must comply with the terms of Practice Direction";
+        } else {
+            // match non-detained direction text
+            expectedExplanationContains = "The appellant and their representative are reminded that they have an obligation under Rule 2(4)";
+        }
 
         final String expectedDueDate = "2019-10-08";
 
@@ -247,7 +263,7 @@ class RequestCaseBuildingPreparerTest {
     void should_return_current_date_plus_9_days_when_submission_is_an_ada_case() {
 
         final String expectedExplanationContains =
-                "You must now build your case to enable the respondent to conduct a thorough review of the appeal.";
+                "The appellant and their representative are reminded that they have an obligation under Rule 2(4)";
         final Parties expectedParties = Parties.LEGAL_REPRESENTATIVE;
         final String expectedDueDate = "2023-02-16";
         final ZonedDateTime zonedDueDateTime = LocalDate.parse(expectedDueDate).atStartOfDay(ZoneOffset.UTC);
@@ -281,8 +297,9 @@ class RequestCaseBuildingPreparerTest {
 
     static Stream<Arguments> caseTypeScenarios() {
         return Stream.of(
-                Arguments.of(YES, Parties.APPELLANT),
-                Arguments.of(NO, Parties.LEGAL_REPRESENTATIVE)
+                Arguments.of(YES, YES, Parties.APPELLANT),
+                Arguments.of(YES, NO, Parties.APPELLANT),
+                Arguments.of(NO, NO, Parties.LEGAL_REPRESENTATIVE)
         );
     }
 
