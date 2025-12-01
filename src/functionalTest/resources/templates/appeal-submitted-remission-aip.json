@@ -1,0 +1,67 @@
+{
+  "homeOfficeReferenceNumber": "123456789",
+  "appellantTitle": "Mr",
+  "appellantGivenNames": "Talha",
+  "appellantFamilyName": "Awan",
+  "appellantDateOfBirth": "{$TODAY-7300}",
+  "appellantNationalities": [
+    {
+      "id": "1",
+      "value": {
+        "code": "IS"
+      }
+    }
+  ],
+  "appellantHasFixedAddress": "No",
+  "contactPreference": "wantsSms",
+  "wantsSms": "Text message",
+  "mobileNumber": "07977111111",
+  "appealTypeForDisplay": "protection",
+  "appealGroundsProtection": {
+    "values": [
+      "refugeeConvention"
+    ]
+  },
+  "hasNewMatters": "No",
+  "hasOtherAppeals": "No",
+  "appellantNameForDisplay": "Talha Awan",
+  "appealReferenceNumber": "PA/12345/2018",
+  "legalRepresentativeName": "{$IA_USER_PREFIX}A Test Legal Rep",
+  "legalRepresentativeEmailAddress": "{$TEST_LAW_FIRM_A_USERNAME}",
+  "sendDirectionActionAvailable": "Yes",
+  "hearingCentre": "newport",
+  "submissionOutOfTime": "No",
+  "uploadAdditionalEvidenceActionAvailable": "No",
+  "appellantInUk": "Yes",
+  "homeOfficeDecisionDate": "{$TODAY-14}",
+  "appealType": "refusalOfHumanRights",
+  "legalAidAccountNumber": "legalAidAccountNumber",
+  "asylumSupportRefNumber": "asylumSupportRefNumber",
+  "helpWithFeesRefNumber": "helpWithFeesRefNumber",
+  "asylumSupportReference": "asylumSupportReference",
+  "section17Document": {
+    "document_url": "http://url",
+    "document_binary_url": "http://url/binary",
+    "document_filename": "file1.pdf"
+  },
+  "section20Document": {
+    "document_url": "http://url",
+    "document_binary_url": "http://url/binary",
+    "document_filename": "file1.pdf"
+  },
+  "homeOfficeWaiverDocument": {
+    "document_url": "http://url",
+    "document_binary_url": "http://url/binary",
+    "document_filename": "file1.pdf"
+  },
+  "helpWithFeesReferenceNumber": "helpWithFeesReferenceNumber",
+  "exceptionalCircumstances": "exceptionalCircumstances",
+  "remissionDecision": "approved",
+  "remissionRequestedBy": "Admin Officer",
+  "amountRemitted": "140.00",
+  "amountLeftToPay": "00.00",
+  "hasPreviousRemission": "Yes",
+  "feeAmountGbp": "14000",
+  "previousRemissionDetails": [],
+  "journeyType": "aip"
+}

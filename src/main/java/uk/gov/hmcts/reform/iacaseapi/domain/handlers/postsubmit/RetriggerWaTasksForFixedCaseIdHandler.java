@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
+import java.util.Arrays;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -14,11 +15,9 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.Scheduler;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.io.IOException;
-import java.util.List;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.readJsonFileList;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_ID_LIST;
 
 @Slf4j
 @Component
@@ -27,39 +26,36 @@ public class RetriggerWaTasksForFixedCaseIdHandler implements PreSubmitCallbackH
     private final boolean timedEventServiceEnabled;
     private final DateProvider dateProvider;
     private final Scheduler scheduler;
-    private String filePath;
 
 
     public RetriggerWaTasksForFixedCaseIdHandler(
-            @Value("${featureFlag.timedEventServiceEnabled}") boolean timedEventServiceEnabled,
-            @Value("${caseIdListJsonLocation}") String filePath,
-            DateProvider dateProvider,
-            Scheduler scheduler
+        @Value("${featureFlag.timedEventServiceEnabled}") boolean timedEventServiceEnabled,
+        DateProvider dateProvider,
+        Scheduler scheduler
     ) {
         this.timedEventServiceEnabled = timedEventServiceEnabled;
         this.dateProvider = dateProvider;
         this.scheduler = scheduler;
-        this.filePath = filePath;
     }
 
     public boolean canHandle(
-            PreSubmitCallbackStage callbackStage,
-            Callback<AsylumCase> callback
+        PreSubmitCallbackStage callbackStage,
+        Callback<AsylumCase> callback
     ) {
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
         Event qualifyingEvent = Event.RE_TRIGGER_WA_BULK_TASKS;
 
-        return  timedEventServiceEnabled
-                && callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-                && callback.getEvent() == qualifyingEvent;
+        return timedEventServiceEnabled
+            && callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
+            && callback.getEvent() == qualifyingEvent;
 
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
-            PreSubmitCallbackStage callbackStage,
-            Callback<AsylumCase> callback
+        PreSubmitCallbackStage callbackStage,
+        Callback<AsylumCase> callback
     ) {
         if (!canHandle(callbackStage, callback)) {
             throw new IllegalStateException("Cannot handle callback");
@@ -70,19 +66,26 @@ public class RetriggerWaTasksForFixedCaseIdHandler implements PreSubmitCallbackH
         int scheduleDelayInMinutes = 5;
         ZonedDateTime scheduledDate = ZonedDateTime.of(dateProvider.nowWithTime(), ZoneId.systemDefault()).plusMinutes(scheduleDelayInMinutes);
 
-        List<String> caseIdList;
-        try {
-            caseIdList = readJsonFileList(filePath, "caseIdList");
-        } catch (IOException | NullPointerException e) {
-            log.error("filePath is " + filePath);
-            log.error(e.getMessage());
-            caseIdList = null;
+        String caseIdList = asylumCase.read(CASE_ID_LIST, String.class)
+            .orElse("");
+
+        if (!caseIdList.contains(",")) {
+            log.info("No Case Ids found to re-trigger WA tasks");
+            return new PreSubmitCallbackResponse<>(asylumCase);
         }
-        if (caseIdList != null && caseIdList.size() > 0) {
-            for (int i = 0; i < caseIdList.size(); i++) {
-                scheduler.scheduleTimedEvent(caseIdList.get(i), scheduledDate, Event.RE_TRIGGER_WA_TASKS, "");
-            }
-        }
+        String[] caseIdListList = caseIdList.split(",");
+
+        Arrays.stream(caseIdListList)
+            .forEach(caseId -> {
+                    String trimmedCaseId = caseId.trim();
+                    if (trimmedCaseId.length() != 16) {
+                        log.info("Invalid Case Id found to re-trigger WA tasks: {}", trimmedCaseId);
+                        return;
+                    }
+                    scheduler.scheduleTimedEvent(trimmedCaseId, scheduledDate, Event.RE_TRIGGER_WA_TASKS, "");
+                }
+            );
+        asylumCase.clear(CASE_ID_LIST);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
