@@ -5,6 +5,7 @@ import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isIntegrated;
 
+import lombok.extern.slf4j.Slf4j;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,6 +32,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.PreviousHearingAppender;
 
 @Component
+@Slf4j
 public class RequestNewHearingRequirementsDirectionHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final int hearingRequirementsDueInDays;
@@ -132,7 +134,7 @@ public class RequestNewHearingRequirementsDirectionHandler implements PreSubmitC
         final boolean decisionWithoutHearing = asylumCase.read(IS_DECISION_WITHOUT_HEARING, YesOrNo.class)
                 .map(yesOrNo -> YesOrNo.YES == yesOrNo).orElse(false);
 
-        System.out.println("listCaseHearingCentre value: " + listCaseHearingCentre);
+        log.debug("listCaseHearingCentre value: " + listCaseHearingCentre);
 
         String listCaseHearingDate = null;
         String ariaListingReference = null;
@@ -164,7 +166,7 @@ public class RequestNewHearingRequirementsDirectionHandler implements PreSubmitC
         final List<IdValue<DocumentWithMetadata>> finalDecisionAndReasonsDocuments =
             maybeFinalDecisionAndReasonsDocuments.orElse(emptyList());
 
-        System.out.println("before previous hearing");
+        log.debug("before previous hearing");
 
         final PreviousHearing previousHearing = new PreviousHearing(
             attendingJudge,
@@ -179,7 +181,7 @@ public class RequestNewHearingRequirementsDirectionHandler implements PreSubmitC
             finalDecisionAndReasonsDocuments
         );
 
-        System.out.println("after previous hearing");
+        log.debug("after previous hearing");
 
         List<IdValue<PreviousHearing>> allPreviousHearings =
             previousHearingAppender.append(
@@ -188,7 +190,7 @@ public class RequestNewHearingRequirementsDirectionHandler implements PreSubmitC
 
         asylumCase.write(PREVIOUS_HEARINGS, allPreviousHearings);
 
-        System.out.println("after write hearing");
+        log.debug("after write hearing");
 
         asylumCase.write(REHEARD_CASE_LISTED_WITHOUT_HEARING_REQUIREMENTS, YesOrNo.NO);
     }
