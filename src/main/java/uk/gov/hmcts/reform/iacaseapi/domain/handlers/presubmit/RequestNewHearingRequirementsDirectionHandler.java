@@ -132,6 +132,8 @@ public class RequestNewHearingRequirementsDirectionHandler implements PreSubmitC
         final boolean decisionWithoutHearing = asylumCase.read(IS_DECISION_WITHOUT_HEARING, YesOrNo.class)
                 .map(yesOrNo -> YesOrNo.YES == yesOrNo).orElse(false);
 
+        log.debug("listCaseHearingCentre value: " + listCaseHearingCentre);
+
         String listCaseHearingDate = null;
         String ariaListingReference = null;
         String listCaseHearingLength = null;
@@ -162,6 +164,9 @@ public class RequestNewHearingRequirementsDirectionHandler implements PreSubmitC
         final List<IdValue<DocumentWithMetadata>> finalDecisionAndReasonsDocuments =
             maybeFinalDecisionAndReasonsDocuments.orElse(emptyList());
 
+        log.debug("before previous hearing");
+
+
         final PreviousHearing previousHearing = new PreviousHearing(
             attendingJudge,
             attendingAppellant,
@@ -175,12 +180,18 @@ public class RequestNewHearingRequirementsDirectionHandler implements PreSubmitC
             finalDecisionAndReasonsDocuments
         );
 
+        log.debug("after previous hearing");
+
+
         List<IdValue<PreviousHearing>> allPreviousHearings =
             previousHearingAppender.append(
                 existingPreviousHearings,
                 previousHearing);
 
         asylumCase.write(PREVIOUS_HEARINGS, allPreviousHearings);
+
+        log.debug("after write hearing");
+
 
         asylumCase.write(REHEARD_CASE_LISTED_WITHOUT_HEARING_REQUIREMENTS, YesOrNo.NO);
     }
