@@ -28,7 +28,7 @@ java:
     OPEN_ID_IDAM_URL: "https://idam-web-public.aat.platform.hmcts.net"
     S2S_URL: "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
     IS_SAVE_AND_CONTINUE_ENABLED: "true"
-    SAVE_NOTIFICATIONS_DATA_SCHEDULE_HOUR: 15
+    SAVE_NOTIFICATIONS_DATA_SCHEDULE_HOUR: 16
     SAVE_NOTIFICATIONS_DATA_SCHEDULE_MAX_MINUTES: 5
     ROLE_ASSIGNMENT_URL: https://am-role-assignment-${SERVICE_FQDN}
     CASE_DOCUMENT_AM_URL: https://${SERVICE_NAME}-ccd-case-document-am-api
@@ -212,7 +212,7 @@ ia-case-notifications-api:
   enabled: true #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
-    image: hmctspublic.azurecr.io/ia/case-notifications-api:latest
+    image: hmctspublic.azurecr.io/ia/case-notifications-api:pr-1602
     releaseNameOverride: ${SERVICE_NAME}-case-notifications-api
     ingressHost: ${SERVICE_NAME}-notifications-api.preview.platform.hmcts.net
     devcpuRequests: 500m
