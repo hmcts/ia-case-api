@@ -773,7 +773,7 @@ class HomeOfficeDecisionDateCheckerTest {
 
         homeOfficeDecisionDateChecker.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
-        verify(asylumCase, times(0)).write(asylumExtractor.capture(), valueCaptor.capture());
+        verify(asylumCase, times(2)).write(asylumExtractor.capture(), valueCaptor.capture());
     }
 
     @Test
@@ -792,7 +792,7 @@ class HomeOfficeDecisionDateCheckerTest {
 
         homeOfficeDecisionDateChecker.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
-        verify(asylumCase, times(0)).write(asylumExtractor.capture(), valueCaptor.capture());
+        verify(asylumCase, times(1)).write(asylumExtractor.capture(), valueCaptor.capture());
     }
 
 }
