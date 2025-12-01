@@ -1,0 +1,28 @@
+{
+  "description": "DIAC-1601 Notice of Change Request Rehydrated AboutToSubmit - Error",
+  "disabled": false,
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "LegalRepresentative",
+    "input": {
+      "eventId": "nocRequest",
+      "state": "appealSubmitted",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "sourceOfAppeal": "rehydratedAppeal"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": ["Can't take over Rehydrated case."],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "sourceOfAppeal": "rehydratedAppeal"
+      }
+    }
+  }
+}

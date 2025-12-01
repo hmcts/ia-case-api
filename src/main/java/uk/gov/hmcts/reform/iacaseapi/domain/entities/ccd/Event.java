@@ -39,6 +39,8 @@ public enum Event {
     GENERATE_DECISION_AND_REASONS("generateDecisionAndReasons"),
     SEND_DECISION_AND_REASONS("sendDecisionAndReasons"),
     ADD_CASE_NOTE("addCaseNote"),
+    ADD_STATUTORY_TIMEFRAME_24_WEEKS("addStatutoryTimeframe24Weeks"),
+    REMOVE_STATUTORY_TIMEFRAME_24_WEEKS("removeStatutoryTimeframe24Weeks"),
     EDIT_CASE_LISTING("editCaseListing"),
     RECORD_APPLICATION("recordApplication"),
     RECORD_ATTENDEES_AND_DURATION("recordAttendeesAndDuration"),
@@ -162,6 +164,9 @@ public enum Event {
     UPDATE_NEXT_HEARING_INFO("UpdateNextHearingInfo"),
     APPELLANT_IN_PERSON_MANUAL("appellantInPersonManual"),
     GENERATE_LIST_CMR_TASK("generateListCmrTask"),
+    TURN_ON_NOTIFICATIONS_WA_TASKS("turnOnNotificationsWATasks"),
+    FORCE_DECIDED_STATE("forceDecidedState"),
+    FORCE_FTPA_DECIDED_STATE("forceFtpaDecidedState"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");
