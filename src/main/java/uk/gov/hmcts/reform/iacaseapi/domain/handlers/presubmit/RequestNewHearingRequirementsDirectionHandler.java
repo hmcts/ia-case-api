@@ -166,7 +166,6 @@ public class RequestNewHearingRequirementsDirectionHandler implements PreSubmitC
 
         log.debug("before previous hearing");
 
-
         final PreviousHearing previousHearing = new PreviousHearing(
             attendingJudge,
             attendingAppellant,
@@ -182,7 +181,6 @@ public class RequestNewHearingRequirementsDirectionHandler implements PreSubmitC
 
         log.debug("after previous hearing");
 
-
         List<IdValue<PreviousHearing>> allPreviousHearings =
             previousHearingAppender.append(
                 existingPreviousHearings,
@@ -191,7 +189,6 @@ public class RequestNewHearingRequirementsDirectionHandler implements PreSubmitC
         asylumCase.write(PREVIOUS_HEARINGS, allPreviousHearings);
 
         log.debug("after write hearing");
-
 
         asylumCase.write(REHEARD_CASE_LISTED_WITHOUT_HEARING_REQUIREMENTS, YesOrNo.NO);
     }
