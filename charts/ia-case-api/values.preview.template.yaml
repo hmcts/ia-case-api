@@ -14,7 +14,6 @@ java:
     #Un comment APIs if you need to test a local version.
     IA_CASE_DOCUMENTS_API_URL: https://${SERVICE_NAME}-documents-api.preview.platform.hmcts.net
     IA_CASE_NOTIFICATIONS_API_URL: https://${SERVICE_NAME}-notifications-api.preview.platform.hmcts.net
-    IA_CASE_PAYMENTS_API_URL: https://${SERVICE_NAME}-payments-api.preview.platform.hmcts.net
     IA_HOME_OFFICE_INTEGRATION_API_URL: https://${SERVICE_NAME}-home-office-integration-api.preview.platform.hmcts.net
     IA_TIMED_EVENT_SERVICE_URL: https://${SERVICE_NAME}-timed-event-service.preview.platform.hmcts.net
     IA_HEARINGS_API_URL:  https://${SERVICE_NAME}-hearings-api.preview.platform.hmcts.net
@@ -609,7 +608,6 @@ ia-aip-frontend:
       MICROSERVICE: iac
       CCD_API_URL: http://{{ .Release.Name }}-ccd-data-store-api
       DOC_MANAGEMENT_URL: "http://dm-store-aat.service.core-compute-aat.internal"
-      #IA_CASE_PAYMENTS_API_URL: https://${SERVICE_NAME}-payments-api.preview.platform.hmcts.net
       PAYMENTS_API_URL: http://payment-api-aat.service.core-compute-aat.internal
       DOCMOSIS_RENDER_URL: "https://docmosis.aat.platform.hmcts.net/rs/render"
       IDAM_WEB_URL: https://idam-web-public.aat.platform.hmcts.net
