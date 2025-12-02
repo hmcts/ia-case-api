@@ -69,6 +69,9 @@ public class RequestNewHearingRequirementsDirectionHandler implements PreSubmitC
             throw new IllegalStateException("Cannot handle callback");
         }
 
+        log.info("Can handle request new hearing requirements");
+
+
         AsylumCase asylumCase =
             callback
                 .getCaseDetails()
@@ -108,12 +111,17 @@ public class RequestNewHearingRequirementsDirectionHandler implements PreSubmitC
         asylumCase.clear(SEND_DIRECTION_PARTIES);
         asylumCase.clear(SEND_DIRECTION_DATE_DUE);
 
+        log.info("if you made it hear it is working up until writePreviousHearingsToAsylumCase");
+
+
         writePreviousHearingsToAsylumCase(asylumCase);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 
     protected void writePreviousHearingsToAsylumCase(AsylumCase asylumCase) {
+
+        log.info("In writePreviousHearingsToAsylumCase");
 
         Optional<List<IdValue<PreviousHearing>>> maybePreviousHearings =
             asylumCase.read(PREVIOUS_HEARINGS);
@@ -134,7 +142,7 @@ public class RequestNewHearingRequirementsDirectionHandler implements PreSubmitC
         final boolean decisionWithoutHearing = asylumCase.read(IS_DECISION_WITHOUT_HEARING, YesOrNo.class)
                 .map(yesOrNo -> YesOrNo.YES == yesOrNo).orElse(false);
 
-        log.debug("listCaseHearingCentre value: " + listCaseHearingCentre);
+        log.info("listCaseHearingCentre value: " + listCaseHearingCentre);
 
         String listCaseHearingDate = null;
         String ariaListingReference = null;
@@ -166,7 +174,7 @@ public class RequestNewHearingRequirementsDirectionHandler implements PreSubmitC
         final List<IdValue<DocumentWithMetadata>> finalDecisionAndReasonsDocuments =
             maybeFinalDecisionAndReasonsDocuments.orElse(emptyList());
 
-        log.debug("before previous hearing");
+        log.info("before previous hearing");
 
         final PreviousHearing previousHearing = new PreviousHearing(
             attendingJudge,
@@ -181,7 +189,7 @@ public class RequestNewHearingRequirementsDirectionHandler implements PreSubmitC
             finalDecisionAndReasonsDocuments
         );
 
-        log.debug("after previous hearing");
+        log.info("after previous hearing");
 
         List<IdValue<PreviousHearing>> allPreviousHearings =
             previousHearingAppender.append(
@@ -190,7 +198,7 @@ public class RequestNewHearingRequirementsDirectionHandler implements PreSubmitC
 
         asylumCase.write(PREVIOUS_HEARINGS, allPreviousHearings);
 
-        log.debug("after write hearing");
+        log.info("after write hearing");
 
         asylumCase.write(REHEARD_CASE_LISTED_WITHOUT_HEARING_REQUIREMENTS, YesOrNo.NO);
     }
