@@ -17,17 +17,17 @@ class CaseDataContentTest {
 
         CaseDataContent obj1 = new CaseDataContent("ref", data1, event1, "token", true);
         CaseDataContent obj2 = new CaseDataContent("ref", data1, event1, "token", true);
-        CaseDataContent obj3 = new CaseDataContent("ref2", data1, event1, "token", true);
 
         assertEquals(obj1, obj2);
         assertEquals(obj2, obj1);
-        CaseDataContent obj4 = new CaseDataContent("ref", data1, event1, "token", true);
         assertEquals(obj1, obj2);
+        CaseDataContent obj4 = new CaseDataContent("ref", data1, event1, "token", true);
         assertEquals(obj2, obj4);
         assertEquals(obj1, obj4);
         assertEquals(obj1, obj2);
         assertEquals(obj1, obj2);
         assertNotEquals(null, obj1);
+        CaseDataContent obj3 = new CaseDataContent("ref2", data1, event1, "token", true);
         assertNotEquals(obj1, obj3);
         assertEquals(obj1.hashCode(), obj2.hashCode());
         assertNotEquals(obj1.hashCode(), obj3.hashCode());

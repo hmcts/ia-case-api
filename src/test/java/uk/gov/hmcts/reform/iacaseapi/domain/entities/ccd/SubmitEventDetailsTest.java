@@ -20,17 +20,17 @@ class SubmitEventDetailsTest {
 
         SubmitEventDetails obj1 = new SubmitEventDetails(1234, "IA", State.APPEAL_SUBMITTED, data1, 200, "CALLBACK_COMPLETED");
         SubmitEventDetails obj2 = new SubmitEventDetails(1234, "IA", State.APPEAL_SUBMITTED, data2, 200, "CALLBACK_COMPLETED");
-        SubmitEventDetails obj3 = new SubmitEventDetails(5678, "IA", State.APPEAL_SUBMITTED, data1, 200, "CALLBACK_COMPLETED");
 
         assertEquals(obj1, obj2);
         assertEquals(obj2, obj1);
-        SubmitEventDetails obj4 = new SubmitEventDetails(1234, "IA", State.APPEAL_SUBMITTED, data1, 200, "CALLBACK_COMPLETED");
         assertEquals(obj1, obj2);
+        SubmitEventDetails obj4 = new SubmitEventDetails(1234, "IA", State.APPEAL_SUBMITTED, data1, 200, "CALLBACK_COMPLETED");
         assertEquals(obj2, obj4);
         assertEquals(obj1, obj4);
         assertEquals(obj1, obj2);
         assertEquals(obj1, obj2);
         assertNotEquals(null, obj1);
+        SubmitEventDetails obj3 = new SubmitEventDetails(5678, "IA", State.APPEAL_SUBMITTED, data1, 200, "CALLBACK_COMPLETED");
         assertNotEquals(obj1, obj3);
         assertEquals(obj1.hashCode(), obj2.hashCode());
         assertNotEquals(obj1.hashCode(), obj3.hashCode());
