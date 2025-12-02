@@ -866,6 +866,7 @@ ccd:
         ENABLE_ATTRIBUTE_BASED_ACCESS_CONTROL: true
         ENABLE_PSEUDO_ROLE_ASSIGNMENTS_GENERATION: true
         ENABLE_PSEUDO_ACCESS_PROFILES_GENERATION: true
+        logging.level.root: DEBUG
       keyVaults: []
       ingressHost: ccd-data-store-api-${SERVICE_FQDN}
 
