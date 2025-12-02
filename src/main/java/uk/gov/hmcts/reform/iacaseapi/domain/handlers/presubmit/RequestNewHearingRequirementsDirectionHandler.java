@@ -108,6 +108,8 @@ public class RequestNewHearingRequirementsDirectionHandler implements PreSubmitC
         asylumCase.clear(SEND_DIRECTION_PARTIES);
         asylumCase.clear(SEND_DIRECTION_DATE_DUE);
 
+        writePreviousHearingsToAsylumCase(asylumCase);
+
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 
@@ -175,10 +177,14 @@ public class RequestNewHearingRequirementsDirectionHandler implements PreSubmitC
             finalDecisionAndReasonsDocuments
         );
 
+        log.info("previous hearing: " + previousHearing);
+
         List<IdValue<PreviousHearing>> allPreviousHearings =
             previousHearingAppender.append(
                 existingPreviousHearings,
                 previousHearing);
+
+        log.info("all previous hearings: " + previousHearing);
 
         asylumCase.write(PREVIOUS_HEARINGS, allPreviousHearings);
 
