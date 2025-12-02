@@ -324,7 +324,8 @@ class SendNotificationHandlerTest {
                         Event.REQUEST_RESPONSE_REVIEW,
                         Event.RECORD_REMISSION_REMINDER,
                         Event.MARK_APPEAL_AS_REMITTED,
-                        Event.REFUND_CONFIRMATION
+                        Event.REFUND_CONFIRMATION,
+                        Event.HEARING_CANCELLED
                     ).contains(event)) {
                     assertTrue(canHandle);
                 } else {
@@ -361,6 +362,7 @@ class SendNotificationHandlerTest {
                     Event.APPLY_FOR_FTPA_APPELLANT,
                     Event.APPLY_FOR_FTPA_RESPONDENT,
                     Event.REMOVE_DETAINED_STATUS,
+                    Event.MARK_APPEAL_AS_DETAINED,
                     Event.REINSTATE_APPEAL,
                     Event.RECORD_OUT_OF_TIME_DECISION,
                     Event.END_APPEAL,
@@ -409,7 +411,8 @@ class SendNotificationHandlerTest {
                     Event.UPLOAD_HOME_OFFICE_APPEAL_RESPONSE,
                     Event.SEND_PAYMENT_REMINDER_NOTIFICATION,
                     Event.PROGRESS_MIGRATED_CASE,
-                    Event.REFUND_CONFIRMATION
+                    Event.REFUND_CONFIRMATION,
+                    Event.HEARING_CANCELLED
                 ).contains(event)) {
                 assertTrue(canHandle);
             } else {
@@ -449,6 +452,7 @@ class SendNotificationHandlerTest {
                         Event.APPLY_FOR_FTPA_APPELLANT,
                         Event.APPLY_FOR_FTPA_RESPONDENT,
                         Event.REMOVE_DETAINED_STATUS,
+                        Event.MARK_APPEAL_AS_DETAINED,
                         Event.REINSTATE_APPEAL,
                         Event.RECORD_OUT_OF_TIME_DECISION,
                         Event.END_APPEAL,
@@ -495,7 +499,8 @@ class SendNotificationHandlerTest {
                         Event.PROGRESS_MIGRATED_CASE,
                         Event.UPDATE_TRIBUNAL_DECISION,
                         Event.SEND_PAYMENT_REMINDER_NOTIFICATION,
-                        Event.REFUND_CONFIRMATION
+                        Event.REFUND_CONFIRMATION,
+                        Event.HEARING_CANCELLED
                     ).contains(event)) {
                     assertTrue(canHandle);
                 } else {

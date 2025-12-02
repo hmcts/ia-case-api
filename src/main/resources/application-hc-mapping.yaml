@@ -35,11 +35,15 @@ hearingCentreMappings:
     - "Stocken"
     - "Stoke Heath"
     - "Sudbury"
+    - "Swinderby"
     - "Swinfen Hall"
     - "Wellingborough"
     - "Whatton"
     - "Whitemoor"
     - "Woodhill"
+    - "Five Wells"
+    - "Fosse Way"
+    - "Oakwood"
   Bradford:
     - "Acklington"
     - "Askham Grange"
@@ -66,6 +70,9 @@ hearingCentreMappings:
     - "Wealstun"
     - "Wetherby"
     - "Wolds"
+    - "Hatfield (Main site)"
+    - "Hatfield (Lakes site)"
+    - "Humber"
   Glasgow:
     - "Addiewell"
     - "Barlinnie"
@@ -73,7 +80,7 @@ hearingCentreMappings:
     - "Cornton Vale"
     - "Dumfries"
     - "Dungavel"
-    - "Edinburgh, Saughton"
+    - "Edinburgh Saughton"
     - "Glenochil"
     - "Grampian"
     - "Greenock"
@@ -86,6 +93,9 @@ hearingCentreMappings:
     - "Perth"
     - "Polmont"
     - "Shotts"
+    - "Bella Centre"
+    - "Lilias Centre"
+    - "Stirling"
   Hatton Cross:
     - "Albany"
     - "Brixton"
@@ -108,6 +118,7 @@ hearingCentreMappings:
     - "Wandsworth"
     - "Winchester"
     - "Wormwood Scrubs"
+    - "Isle of Wight"
   Manchester:
     - "Altcourse"
     - "Buckley Hall"
@@ -129,9 +140,11 @@ hearingCentreMappings:
     - "Thorn Cross"
     - "Werrington"
     - "Wymott"
+    - "Berwyn"
   Newport:
     - "Ashfield"
     - "Bristol"
+    - "Campsfield House"
     - "Cardiff"
     - "Channings Wood"
     - "Dartmoor"
@@ -146,6 +159,7 @@ hearingCentreMappings:
     - "Swansea"
     - "The Weare"
     - "Usk"
+    - "The Verne"
   Taylor House:
     - "Belmarsh"
     - "Blantyre House"
@@ -171,5 +185,9 @@ hearingCentreMappings:
     - "Tinsley House"
     - "Warren Hill"
     - "Wayland"
+    - "Bure"
+    - "Thameside"
   Yarlswood:
     - "Yarlswood"
+  Newcastle:
+    - "Northumberland"
