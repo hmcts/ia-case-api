@@ -22,6 +22,7 @@ import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDecision;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.SourceOfAppeal;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -160,5 +161,29 @@ class AutomaticPaymentReminderRemissionLegalRepTriggerTest {
         assertEquals(timedEvent.getCaseType(), result.getCaseType());
         assertEquals(timedEvent.getEvent(), result.getEvent());
         assertEquals("", result.getId());
+    }
+
+    @Test
+    void should_not_schedule_reminder_for_rehydrated_appeal() {
+        when(callback.getEvent()).thenReturn(Event.RECORD_REMISSION_DECISION);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(caseDetails.getId()).thenReturn(caseId);
+
+        when(asylumCase.read(REMISSION_DECISION, RemissionDecision.class))
+                .thenReturn(Optional.of(RemissionDecision.REJECTED));
+
+        when(asylumCase.read(SOURCE_OF_APPEAL, SourceOfAppeal.class))
+                .thenReturn(Optional.of(SourceOfAppeal.REHYDRATED_APPEAL));
+
+        PreSubmitCallbackResponse<AsylumCase> response =
+                automaticPaymentReminderRemissionLegalRepTrigger.handle(
+                        PreSubmitCallbackStage.ABOUT_TO_SUBMIT,
+                        callback
+                );
+
+        assertThat(response.getData()).isEqualTo(asylumCase);
+        verify(scheduler, never()).schedule(any(TimedEvent.class));
+        verify(asylumCase, never()).write(eq(AUTOMATIC_REMISSION_REMINDER_LEGAL_REP), any());
     }
 }

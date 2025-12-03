@@ -3,8 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
 import java.time.LocalDateTime;
@@ -22,6 +21,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDecision;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.SourceOfAppeal;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -218,5 +218,32 @@ class AutomaticEndAppealForRemissionRejectedTriggerTest {
         assertThatThrownBy(() -> autoEndAppealTrigger.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
                 .hasMessage("Cannot handle callback for auto end appeal for remission rejection")
                 .isExactlyInstanceOf(IllegalStateException.class);
+    }
+
+    @Test
+    void should_not_schedule_timed_event_for_rehydrated_appeal() {
+        when(callback.getEvent()).thenReturn(Event.RECORD_REMISSION_DECISION);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(caseDetails.getId()).thenReturn(caseId);
+
+        when(asylumCase.read(REMISSION_DECISION, RemissionDecision.class))
+                .thenReturn(Optional.of(RemissionDecision.REJECTED));
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class))
+                .thenReturn(Optional.of(AppealType.HU));
+        when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class))
+                .thenReturn(Optional.of(PaymentStatus.PAYMENT_PENDING));
+        when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class))
+                .thenReturn(Optional.of(YesOrNo.NO));
+
+        when(asylumCase.read(IS_REHYDRATED_APPEAL, YesOrNo.class))
+                .thenReturn(Optional.of(YesOrNo.YES));
+
+        PreSubmitCallbackResponse<AsylumCase> response =
+                autoEndAppealTrigger.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertEquals(asylumCase, response.getData());
+        verify(scheduler, never()).schedule(any(TimedEvent.class));
+        verify(asylumCase, never()).write(eq(AUTOMATIC_END_APPEAL_TIMED_EVENT_ID), any());
     }
 }
