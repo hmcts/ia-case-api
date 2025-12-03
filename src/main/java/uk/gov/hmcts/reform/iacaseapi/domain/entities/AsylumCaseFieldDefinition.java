@@ -1353,6 +1353,9 @@ public enum AsylumCaseFieldDefinition {
     FEE_WITHOUT_HEARING(
         "feeWithoutHearing", new TypeReference<String>(){}),
 
+    DATES_TO_AVOID_YES_NO(
+        "datesToAvoidYesNo", new TypeReference<YesOrNo>(){}),
+
     DATES_TO_AVOID(
         "datesToAvoid", new TypeReference<List<IdValue<DatesToAvoid>>>(){}),
 
