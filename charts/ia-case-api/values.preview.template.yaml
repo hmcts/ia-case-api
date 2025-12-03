@@ -40,6 +40,7 @@ java:
     SAVE_NOTIFICATIONS_TO_DATA_EVENT_ENABLED: false
     SAVE_NOTIFICATIONS_DATA_SCHEDULE_HOUR: 17
     SAVE_NOTIFICATIONS_DATA_SCHEDULE_MAX_MINUTES: 5
+    logging.level.root: DEBUG
   keyVaults:
     ia:
       resourceGroup: ia
