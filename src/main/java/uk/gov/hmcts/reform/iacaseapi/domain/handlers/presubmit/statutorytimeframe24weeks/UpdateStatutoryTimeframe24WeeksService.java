@@ -58,8 +58,8 @@ public class UpdateStatutoryTimeframe24WeeksService {
 
         if (statusHasChanged) {
             String statutoryTimeframe24WeeksReason = asylumCase
-            .read(STATUTORY_TIMEFRAME_24_WEEKS_REASON, String.class)
-            .orElseThrow(() -> new IllegalStateException("statutoryTimeframe24WeeksReason is not present"));
+                .read(STATUTORY_TIMEFRAME_24_WEEKS_REASON, String.class)
+                .orElseThrow(() -> new IllegalStateException("statutoryTimeframe24WeeksReason is not present"));
 
             StatutoryTimeframe24Weeks updatedStatutoryTimeframe24Weeks =
                 buildNewStatutoryTimeframe24Weeks(statutoryTimeframe24WeeksStatus, statutoryTimeframe24WeeksReason, userDetails, existingStatutoryTimeframe24Weeks);
@@ -70,7 +70,7 @@ public class UpdateStatutoryTimeframe24WeeksService {
                 buildNewCaseNote(statutoryTimeframe24WeeksStatus, statutoryTimeframe24WeeksReason, userDetails), existingCaseNotes.orElse(Collections.emptyList()));
             asylumCase.write(CASE_NOTES, allCaseNotes);
 
-             //Clear transient fields used only to capture user input in the EXUI form
+            //Clear transient fields used only to capture user input in the EXUI form
             asylumCase.clear(STATUTORY_TIMEFRAME_24_WEEKS_REASON);
         } else {
             log.info("skipping update of Statutory timeframe 24 weeks status because unchanged");
