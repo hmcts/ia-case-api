@@ -1289,6 +1289,7 @@ security:
       - "updateTribunalDecision"
     caseworker-ia-system:
       - "requestHearingRequirementsFeature"
+      - "changeHearingCentre"
       - "moveToPaymentPending"
       - "rollbackPayment"
       - "rollbackPaymentTimeout"
