@@ -221,12 +221,12 @@ class AutomaticEndAppealForRemissionRejectedTriggerTest {
     }
 
     @Test
-    void should_not_schedule_timed_event_for_rehydrated_appeal() {
+    void should_not_schedule_for_rehydrated_appeal() {
         when(callback.getEvent()).thenReturn(Event.RECORD_REMISSION_DECISION);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(caseDetails.getId()).thenReturn(caseId);
 
+        // conditions that WOULD normally allow scheduling…
         when(asylumCase.read(REMISSION_DECISION, RemissionDecision.class))
                 .thenReturn(Optional.of(RemissionDecision.REJECTED));
         when(asylumCase.read(APPEAL_TYPE, AppealType.class))
@@ -236,14 +236,18 @@ class AutomaticEndAppealForRemissionRejectedTriggerTest {
         when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class))
                 .thenReturn(Optional.of(YesOrNo.NO));
 
-        when(asylumCase.read(IS_REHYDRATED_APPEAL, YesOrNo.class))
-                .thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(SOURCE_OF_APPEAL, SourceOfAppeal.class))
+                .thenReturn(Optional.of(SourceOfAppeal.REHYDRATED_APPEAL));
 
-        PreSubmitCallbackResponse<AsylumCase> response =
-                autoEndAppealTrigger.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+        assertThatThrownBy(() ->
+                autoEndAppealTrigger.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback)
+        )
+                .hasMessage("Cannot handle callback for auto end appeal for remission rejection")
+                .isExactlyInstanceOf(IllegalStateException.class);
 
-        assertEquals(asylumCase, response.getData());
-        verify(scheduler, never()).schedule(any(TimedEvent.class));
-        verify(asylumCase, never()).write(eq(AUTOMATIC_END_APPEAL_TIMED_EVENT_ID), any());
+        verifyNoInteractions(scheduler);
     }
+
+
+
 }
