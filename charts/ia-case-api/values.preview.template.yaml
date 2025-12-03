@@ -158,7 +158,7 @@ ia-case-documents-api:
       ROLE_ASSIGNMENT_URL: https://am-role-assignment-${SERVICE_FQDN}
       FEES_REGISTER_API_URL: http://fees-register-api-aat.service.core-compute-aat.internal
       PAYMENT_API_URL: http://payment-api-aat.service.core-compute-aat.internal
-      PAY_CALLBACK_URL: https://${SERVICE_NAME}-payments-api.preview.platform.hmcts.net/service-request-update
+      PAY_CALLBACK_URL: https://${SERVICE_NAME}-documents-api.preview.platform.hmcts.net/service-request-update
       PROF_REF_DATA_URL: http://rd-professional-api-aat.service.core-compute-aat.internal
 
     keyVaults:
