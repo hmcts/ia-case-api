@@ -44,8 +44,8 @@ public class IsRehydratedAppealHandler implements PreSubmitCallbackHandler<Asylu
         boolean isRehydratedAppeal = sourceOfAppealRehydratedAppeal(asylumCase);
 
         asylumCase.write(IS_REHYDRATED_APPEAL, isRehydratedAppeal ? YES : NO);
-        if (asylumCase.read(IS_NOTIFICATION_TURNED_OFF, YesOrNo.class).isEmpty()) {
-            asylumCase.write(IS_NOTIFICATION_TURNED_OFF, isRehydratedAppeal ? YES : NO);
+        if (isRehydratedAppeal && asylumCase.read(IS_NOTIFICATION_TURNED_OFF, YesOrNo.class).isEmpty()) {
+            asylumCase.write(IS_NOTIFICATION_TURNED_OFF, YesOrNo.YES);
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);

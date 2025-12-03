@@ -1,0 +1,33 @@
+{
+  "description": "DIAC-1575 Request respondent evidence start isNotificationTurnedOff No error - HO integration required",
+  "request": {
+    "uri": "/asylum/ccdAboutToStart",
+    "credentials": "CaseOfficer",
+    "input": {
+      "eventId": "requestRespondentEvidence",
+      "state": "awaitingRespondentEvidence",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "isNotificationTurnedOff": "No",
+          "sendDirectionExplanation": null,
+          "sendDirectionParties": null,
+          "sendDirectionDateDue": null
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": ["You need to match the appellant details before you can request the respondent evidence."],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "isNotificationTurnedOff": "No",
+        "sendDirectionExplanation": null,
+        "sendDirectionParties": null,
+        "sendDirectionDateDue": null
+      }
+    }
+  }
+}

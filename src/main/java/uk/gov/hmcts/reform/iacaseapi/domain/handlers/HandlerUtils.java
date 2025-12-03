@@ -270,6 +270,11 @@ public class HandlerUtils {
         return (asylumCase.read(SOURCE_OF_APPEAL, SourceOfAppeal.class)).orElse(SourceOfAppeal.PAPER_FORM) == SourceOfAppeal.REHYDRATED_APPEAL;
     }
 
+    // This method uses the isRehydratedAppeal field which is set yes for Rehydrated appeals when a case is saved or no if paper form
+    public static boolean isRehydratedAppeal(AsylumCase asylumCase) {
+        return asylumCase.read(IS_REHYDRATED_APPEAL, YesOrNo.class).orElse(NO) == YesOrNo.YES;
+    }
+
     // This method uses the isEjp field which is set yes for EJP when a case is saved or no if paper form
     public static boolean isEjpCase(AsylumCase asylumCase) {
         return asylumCase.read(IS_EJP, YesOrNo.class).orElse(NO) == YesOrNo.YES;
@@ -652,4 +657,5 @@ public class HandlerUtils {
         }
         return false;
     }
+
 }
