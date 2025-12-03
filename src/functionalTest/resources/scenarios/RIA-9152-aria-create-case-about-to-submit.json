@@ -9,7 +9,7 @@
       "caseData": {
         "template": "minimal-appeal-started.json",
         "replacements": {
-          "appealReferenceNumber": null,
+          "appealReferenceNumber": "PA/12345/2024",
           "ariaMigrationTaskDueDays": "5"
         }
       }
@@ -21,7 +21,7 @@
     "caseData": {
       "template": "minimal-appeal-started.json",
       "replacements": {
-        "appealReferenceNumber": "$/((?i)RP|PA|EA|HU|DC|DA|AA|IA|OA|VA)\/[0-9]{5,}\/[0-9]{4}/",
+        "appealReferenceNumber": "PA/12345/2024",
         "isAriaMigrated": "Yes",
         "isAriaMigratedFilter": "Yes",
         "appealSubmissionDate": "{$TODAY}",
