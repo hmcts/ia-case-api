@@ -31,6 +31,7 @@ import java.util.regex.Pattern;
 
 import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAS_JOB_BEEN_SCHEDULED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NOTIFICATIONS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NOTIFICATIONS_SENT;
 
@@ -104,6 +105,7 @@ public class SaveNotificationsToDataHandler implements PreSubmitCallbackHandler<
             allNotifications = sortNotificationsByDate(allNotifications);
             asylumCase.write(NOTIFICATIONS, allNotifications);
         }
+        asylumCase.clear(HAS_JOB_BEEN_SCHEDULED);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
