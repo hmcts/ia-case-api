@@ -21,6 +21,7 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.SourceOfAppeal;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -126,4 +127,28 @@ class AutomaticInternalSendPaymentReminderTriggerTest {
         assertEquals(timedEvent.getEvent(), result.getEvent());
         assertEquals("", result.getId());
     }
+
+    @Test
+    void should_not_schedule_payment_reminder_for_rehydrated_appeal() {
+        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class))
+                .thenReturn(Optional.of(PaymentStatus.PAYMENT_PENDING));
+
+        when(asylumCase.read(SOURCE_OF_APPEAL, SourceOfAppeal.class))
+                .thenReturn(Optional.of(SourceOfAppeal.REHYDRATED_APPEAL));
+
+        assertThatThrownBy(() ->
+                automaticInternalSendPaymentReminderTrigger.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback)
+        )
+                .hasMessage("Cannot handle callback")
+                .isExactlyInstanceOf(IllegalStateException.class);
+
+        verifyNoInteractions(scheduler);
+    }
+
 }
