@@ -28,7 +28,9 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.anyList;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -200,5 +202,48 @@ class UpdateStatutoryTimeframe24WeeksServiceTest {
         assertThatThrownBy(() -> updateStatutoryTimeframe24WeeksService.updateAsylumCase(asylumCase, currentStatus))
             .hasMessage("The current status is already set to " + currentStatus)
             .isExactlyInstanceOf(IllegalStateException.class);
+    }
+
+    @Test
+    void should_write_statutory_timeframe_when_reason_does_not_contain_home_office_initial_determination() {
+        when(asylumCase.read(STATUTORY_TIMEFRAME_24_WEEKS_REASON, String.class))
+            .thenReturn(Optional.of("Some other reason"));
+        when(asylumCase.read(STATUTORY_TIMEFRAME_24_WEEKS)).thenReturn(Optional.empty());
+
+        updateStatutoryTimeframe24WeeksService.updateAsylumCase(asylumCase, YesOrNo.YES);
+
+        verify(asylumCase, times(1)).write(eq(STATUTORY_TIMEFRAME_24_WEEKS), any());
+    }
+
+    @Test
+    void should_skip_write_statutory_timeframe_when_reason_contains_home_office_initial_determination() {
+        when(asylumCase.read(STATUTORY_TIMEFRAME_24_WEEKS_REASON, String.class))
+            .thenReturn(Optional.of("Home Office initial determination"));
+        when(asylumCase.read(STATUTORY_TIMEFRAME_24_WEEKS)).thenReturn(Optional.empty());
+
+        updateStatutoryTimeframe24WeeksService.updateAsylumCase(asylumCase, YesOrNo.YES);
+
+        verify(asylumCase, never()).write(eq(STATUTORY_TIMEFRAME_24_WEEKS), any());
+    }
+
+    @Test
+    void should_not_throw_when_status_matches_but_reason_contains_home_office_initial_determination() {
+        YesOrNo currentStatus = YesOrNo.YES;
+        StatutoryTimeframe24WeeksHistory statutoryTimeframe24WeeksHistory = 
+            new StatutoryTimeframe24WeeksHistory(currentStatus, "Home Office initial determination", 
+                forename + " " + surname, nowWithTime.toString());
+        List<IdValue<StatutoryTimeframe24WeeksHistory>> existingHistory = 
+            Arrays.asList(new IdValue<>("1", statutoryTimeframe24WeeksHistory));
+        StatutoryTimeframe24Weeks existingStatutoryTimeframe24Weeks = 
+            new StatutoryTimeframe24Weeks(currentStatus, existingHistory);
+
+        when(asylumCase.read(STATUTORY_TIMEFRAME_24_WEEKS)).thenReturn(Optional.of(existingStatutoryTimeframe24Weeks));
+        when(asylumCase.read(STATUTORY_TIMEFRAME_24_WEEKS_REASON, String.class))
+            .thenReturn(Optional.of("Home Office initial determination"));
+
+        // Should NOT throw even though status matches
+        updateStatutoryTimeframe24WeeksService.updateAsylumCase(asylumCase, currentStatus);
+
+        verify(asylumCase, never()).write(eq(STATUTORY_TIMEFRAME_24_WEEKS), any());
     }
 }
