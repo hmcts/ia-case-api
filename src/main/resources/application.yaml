@@ -193,7 +193,7 @@ notificationsApi:
   ccdSubmittedPath: "/asylum/ccdSubmitted"
 
 paymentApi:
-  endpoint: ${IA_CASE_PAYMENTS_API_URL:http://127.0.0.1:8096}
+  endpoint: ${IA_CASE_DOCUMENTS_API_URL:http://127.0.0.1:8092}
   aboutToStartPath: "/asylum/ccdAboutToStart"
   aboutToSubmitPath: "/asylum/ccdAboutToSubmit"
   ccdSubmittedPath: "/asylum/ccdSubmitted"
