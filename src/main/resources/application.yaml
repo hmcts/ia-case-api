@@ -349,6 +349,7 @@ security:
       - "generateListCmrTask"
       - "markAppealAsDetained"
       - "removeDetainedStatus"
+      - "addStatutoryTimeframe24Weeks"
     challenged-access-legal-operations:
       - "appellantInPersonManual"
       - "moveToPaymentPending"
@@ -656,6 +657,7 @@ security:
       - "markAppealAsDetained"
       - "removeDetainedStatus"
       - "editDocuments"
+      - "addStatutoryTimeframe24Weeks"
     ctsc-team-leader:
       - "appellantInPersonManual"
       - "startAppeal"
@@ -1004,6 +1006,8 @@ security:
       - "decideCostsApplication"
       - "considerMakingCostsOrder"
       - "updateTribunalDecision"
+      - "addStatutoryTimeframe24Weeks"
+      - "removeStatutoryTimeframe24Weeks"
     judge:
       - "generateDecisionAndReasons"
       - "endAppeal"
@@ -1285,6 +1289,7 @@ security:
       - "updateTribunalDecision"
     caseworker-ia-system:
       - "requestHearingRequirementsFeature"
+      - "changeHearingCentre"
       - "moveToPaymentPending"
       - "rollbackPayment"
       - "rollbackPaymentTimeout"
@@ -1311,7 +1316,6 @@ security:
     caseworker-ia-internal:
       - "revokeCaseAccess"
       - "removeCaseManagerBulk"
-    caseworker-ia-task-retrigger:
       - "reTriggerWaTasks"
       - "reTriggerWaBulkTasks"
     caseworker-ia-rparobot:
@@ -1380,8 +1384,6 @@ commonData:
 
 govUkHolidays:
   url: https://www.gov.uk/
-
-caseIdListJsonLocation: caseIdForRetrigger.json
 
 saveNotificationsData:
   enabled: ${SAVE_NOTIFICATIONS_TO_DATA_EVENT_ENABLED:true}
