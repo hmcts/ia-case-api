@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.AppealReferenceNumberValidator;
 
 @Component
 public class StartAppealMidEvent implements PreSubmitCallbackHandler<AsylumCase> {
@@ -27,8 +28,15 @@ public class StartAppealMidEvent implements PreSubmitCallbackHandler<AsylumCase>
     private static final String SUITABILITY_ATTENDANCE_PAGE_ID = "suitabilityAppellantAttendance";
     private static final String UPPER_TRIBUNAL_REFERENCE_NUMBER_PAGE_ID = "utReferenceNumber";
     private static final String APPELLANTS_ADDRESS_PAGE_ID = "appellantAddress";
+    private static final String ARIA_APPEAL_REFERENCE_PAGE_ID = "appealReferenceNumber";
     protected static final String APPELLANTS_ADDRESS_ADMIN_J_PAGE_ID = "appellantAddressAdminJ";
     private static final Pattern UPPER_TRIBUNAL_REFERENCE_NUMBER_PATTERN = Pattern.compile("^UI-[0-9]{4}-[0-9]{6}$");
+
+    private final AppealReferenceNumberValidator appealReferenceNumberValidator;
+
+    public StartAppealMidEvent(AppealReferenceNumberValidator appealReferenceNumberValidator) {
+        this.appealReferenceNumberValidator = appealReferenceNumberValidator;
+    }
 
     public boolean canHandle(
             PreSubmitCallbackStage callbackStage,
@@ -48,6 +56,7 @@ public class StartAppealMidEvent implements PreSubmitCallbackHandler<AsylumCase>
                     || callback.getPageId().equals(SUITABILITY_ATTENDANCE_PAGE_ID)
                     || callback.getPageId().equals(UPPER_TRIBUNAL_REFERENCE_NUMBER_PAGE_ID)
                     || callback.getPageId().equals(APPELLANTS_ADDRESS_PAGE_ID)
+                    || callback.getPageId().equals(ARIA_APPEAL_REFERENCE_PAGE_ID)
                     || callback.getPageId().equals(APPELLANTS_ADDRESS_ADMIN_J_PAGE_ID));
     }
 
@@ -151,6 +160,17 @@ public class StartAppealMidEvent implements PreSubmitCallbackHandler<AsylumCase>
                 asylumCase.write(CUSTODIAL_SENTENCE, YesOrNo.NO);
                 asylumCase.clear(DATE_CUSTODIAL_SENTENCE);
             }
+        }
+
+        if (callback.getPageId().equals(ARIA_APPEAL_REFERENCE_PAGE_ID)
+                && List.of(Event.START_APPEAL, Event.EDIT_APPEAL).contains(callback.getEvent())) {
+
+            String appealReferenceNumber = asylumCase
+                    .read(APPEAL_REFERENCE_NUMBER, String.class)
+                    .orElseThrow(() -> new IllegalStateException("appealReferenceNumber is missing"));
+
+            List<String> validationErrors = appealReferenceNumberValidator.validate(appealReferenceNumber);
+            validationErrors.forEach(response::addError);
         }
 
         return response;

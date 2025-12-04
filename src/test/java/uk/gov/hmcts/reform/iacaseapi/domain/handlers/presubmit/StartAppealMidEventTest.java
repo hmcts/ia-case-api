@@ -36,6 +36,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SUITABILITY_APPELLANT_ATTENDANCE_YES_OR_NO_1;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SUITABILITY_APPELLANT_ATTENDANCE_YES_OR_NO_2;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SUITABILITY_HEARING_TYPE_YES_OR_NO;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_REFERENCE_NUMBER;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPPER_TRIBUNAL_REFERENCE_NUMBER;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfCountryDecisionType.REFUSAL_OF_HUMAN_RIGHTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
@@ -45,6 +46,8 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubm
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.StartAppealMidEvent.APPELLANTS_ADDRESS_ADMIN_J_PAGE_ID;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
@@ -66,6 +69,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.AppealReferenceNumberValidator;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -78,6 +82,7 @@ class StartAppealMidEventTest {
     private static final String SUITABILITY_ATTENDANCE_PAGE_ID = "suitabilityAppellantAttendance";
     private static final String UPPER_TRIBUNAL_REFERENCE_NUMBER_PAGE_ID = "utReferenceNumber";
     private static final String APPELLANTS_ADDRESS_PAGE_ID = "appellantAddress";
+    private static final String ARIA_APPEAL_REFERENCE_PAGE_ID = "appealReferenceNumber";
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -89,6 +94,8 @@ class StartAppealMidEventTest {
     private CaseDetails<AsylumCase> caseDetailsBefore;
     @Mock
     private AsylumCase asylumCase;
+    @Mock
+    private AppealReferenceNumberValidator appealReferenceNumberValidator;
 
     private String correctHomeOfficeReferenceFormatCid = "123456789";
     private String correctHomeOfficeReferenceFormatUan = "1234-5678-9876-5432";
@@ -105,7 +112,7 @@ class StartAppealMidEventTest {
 
     @BeforeEach
     public void setUp() {
-        startAppealMidEvent = new StartAppealMidEvent();
+        startAppealMidEvent = new StartAppealMidEvent(appealReferenceNumberValidator);
 
         when(callback.getEvent()).thenReturn(Event.START_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -585,5 +592,127 @@ class StartAppealMidEventTest {
         assertThat(errors).hasSize(0);
         verify(asylumCase, times(0)).write(CUSTODIAL_SENTENCE, YesOrNo.NO);
         verify(asylumCase, times(0)).clear(DATE_CUSTODIAL_SENTENCE);
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = { "START_APPEAL", "EDIT_APPEAL" })
+    void should_successfully_validate_aria_appeal_reference_number(Event event) {
+        when(callback.getEvent()).thenReturn(event);
+        when(callback.getPageId()).thenReturn(ARIA_APPEAL_REFERENCE_PAGE_ID);
+        String validAppealReferenceNumber = "HU/12345/2024";
+        when(asylumCase.read(APPEAL_REFERENCE_NUMBER, String.class))
+            .thenReturn(Optional.of(validAppealReferenceNumber));
+        when(appealReferenceNumberValidator.validate(validAppealReferenceNumber))
+            .thenReturn(Collections.emptyList());
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            startAppealMidEvent.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+
+        assertNotNull(callback);
+        assertEquals(asylumCase, callbackResponse.getData());
+        final Set<String> errors = callbackResponse.getErrors();
+        assertThat(errors).isEmpty();
+        verify(appealReferenceNumberValidator, times(1)).validate(validAppealReferenceNumber);
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = { "START_APPEAL", "EDIT_APPEAL" })
+    void should_error_when_aria_appeal_reference_number_format_is_invalid(Event event) {
+        when(callback.getEvent()).thenReturn(event);
+        when(callback.getPageId()).thenReturn(ARIA_APPEAL_REFERENCE_PAGE_ID);
+        String invalidAppealReferenceNumber = "INVALID/12345/2024";
+        String formatErrorMessage = "The reference number is in an incorrect format. Please enter valid format of XX/00000/0000";
+        when(asylumCase.read(APPEAL_REFERENCE_NUMBER, String.class))
+            .thenReturn(Optional.of(invalidAppealReferenceNumber));
+        when(appealReferenceNumberValidator.validate(invalidAppealReferenceNumber))
+            .thenReturn(Collections.singletonList(formatErrorMessage));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            startAppealMidEvent.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+
+        assertNotNull(callback);
+        assertEquals(asylumCase, callbackResponse.getData());
+        final Set<String> errors = callbackResponse.getErrors();
+        assertThat(errors).hasSize(1).containsOnly(formatErrorMessage);
+        verify(appealReferenceNumberValidator, times(1)).validate(invalidAppealReferenceNumber);
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = { "START_APPEAL", "EDIT_APPEAL" })
+    void should_error_when_aria_appeal_reference_number_already_exists(Event event) {
+        when(callback.getEvent()).thenReturn(event);
+        when(callback.getPageId()).thenReturn(ARIA_APPEAL_REFERENCE_PAGE_ID);
+        String existingAppealReferenceNumber = "HU/12345/2024";
+        String alreadyExistsErrorMessage = "The reference number already exists. Please enter a different reference number.";
+        when(asylumCase.read(APPEAL_REFERENCE_NUMBER, String.class))
+            .thenReturn(Optional.of(existingAppealReferenceNumber));
+        when(appealReferenceNumberValidator.validate(existingAppealReferenceNumber))
+            .thenReturn(Collections.singletonList(alreadyExistsErrorMessage));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            startAppealMidEvent.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+
+        assertNotNull(callback);
+        assertEquals(asylumCase, callbackResponse.getData());
+        final Set<String> errors = callbackResponse.getErrors();
+        assertThat(errors).hasSize(1).containsOnly(alreadyExistsErrorMessage);
+        verify(appealReferenceNumberValidator, times(1)).validate(existingAppealReferenceNumber);
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = { "START_APPEAL", "EDIT_APPEAL" })
+    void should_error_when_aria_appeal_reference_number_has_multiple_validation_errors(Event event) {
+        when(callback.getEvent()).thenReturn(event);
+        when(callback.getPageId()).thenReturn(ARIA_APPEAL_REFERENCE_PAGE_ID);
+        String invalidAppealReferenceNumber = "INVALID/12345/2024";
+        String formatErrorMessage = "The reference number is in an incorrect format. Please enter valid format of XX/00000/0000";
+        String alreadyExistsErrorMessage = "The reference number already exists. Please enter a different reference number.";
+        List<String> validationErrors = Arrays.asList(formatErrorMessage, alreadyExistsErrorMessage);
+        when(asylumCase.read(APPEAL_REFERENCE_NUMBER, String.class))
+            .thenReturn(Optional.of(invalidAppealReferenceNumber));
+        when(appealReferenceNumberValidator.validate(invalidAppealReferenceNumber))
+            .thenReturn(validationErrors);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            startAppealMidEvent.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+
+        assertNotNull(callback);
+        assertEquals(asylumCase, callbackResponse.getData());
+        final Set<String> errors = callbackResponse.getErrors();
+        assertThat(errors).hasSize(2).containsAll(validationErrors);
+        verify(appealReferenceNumberValidator, times(1)).validate(invalidAppealReferenceNumber);
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = { "START_APPEAL", "EDIT_APPEAL" })
+    void should_throw_exception_when_aria_appeal_reference_number_is_missing(Event event) {
+        when(callback.getEvent()).thenReturn(event);
+        when(callback.getPageId()).thenReturn(ARIA_APPEAL_REFERENCE_PAGE_ID);
+        when(asylumCase.read(APPEAL_REFERENCE_NUMBER, String.class)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> startAppealMidEvent.handle(MID_EVENT, callback))
+            .hasMessage("appealReferenceNumber is missing")
+            .isExactlyInstanceOf(IllegalStateException.class);
+
+        verify(appealReferenceNumberValidator, never()).validate(any());
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = { "EDIT_APPEAL_AFTER_SUBMIT" })
+    void should_not_validate_aria_appeal_reference_number_for_edit_appeal_after_submit(Event event) {
+        when(callback.getEvent()).thenReturn(event);
+        when(callback.getPageId()).thenReturn(ARIA_APPEAL_REFERENCE_PAGE_ID);
+        String appealReferenceNumber = "HU/12345/2024";
+        when(asylumCase.read(APPEAL_REFERENCE_NUMBER, String.class))
+            .thenReturn(Optional.of(appealReferenceNumber));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            startAppealMidEvent.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+
+        assertNotNull(callback);
+        assertEquals(asylumCase, callbackResponse.getData());
+        final Set<String> errors = callbackResponse.getErrors();
+        assertThat(errors).isEmpty();
+        verify(appealReferenceNumberValidator, never()).validate(any());
     }
 }
