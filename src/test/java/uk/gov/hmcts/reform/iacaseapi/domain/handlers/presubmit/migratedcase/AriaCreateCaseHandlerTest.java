@@ -41,7 +41,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.AppealReferenceNumberGenerator;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -56,20 +55,16 @@ class AriaCreateCaseHandlerTest {
     private AsylumCase asylumCase;
     @Mock
     private DateProvider dateProvider;
-    @Mock
-    private AppealReferenceNumberGenerator appealReferenceNumberGenerator;
 
     private AriaCreateCaseHandler ariaCreateCaseHandler;
 
-    private final String nextAppealReferenceNumber = "EXAMPLE/10000/2024";
     private final String ariaTaskDueDays = "10";
     private final LocalDate now = LocalDate.now();
 
     @BeforeEach
     public void setUp() {
-
         ariaCreateCaseHandler =
-            new AriaCreateCaseHandler(dateProvider, appealReferenceNumberGenerator);
+                new AriaCreateCaseHandler(dateProvider);
         when(callback.getEvent()).thenReturn(Event.ARIA_CREATE_CASE);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getId()).thenReturn(123L);
@@ -84,21 +79,53 @@ class AriaCreateCaseHandlerTest {
     }
 
     @Test
-    void should_set_next_appeal_reference_number_if_not_present_for_submit_appeal() {
-        when(appealReferenceNumberGenerator.generate(123, AppealType.PA))
-            .thenReturn(nextAppealReferenceNumber);
+    void should_error_when_reference_number_not_present_for_submit_appeal() {
 
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.PA));
         when(asylumCase.read(ARIA_DESIRED_STATE, State.class)).thenReturn(Optional.of(State.LISTING));
         when(asylumCase.read(APPEAL_REFERENCE_NUMBER)).thenReturn(Optional.empty());
 
+        assertThatThrownBy(() -> ariaCreateCaseHandler.handle(ABOUT_TO_SUBMIT, callback))
+                .hasMessage("appealReferenceNumber is not present")
+                .isExactlyInstanceOf(IllegalStateException.class);
+
+        verify(asylumCase, times(0)).write(APPEAL_SUBMISSION_DATE, now.toString());
+        verify(asylumCase, times(0)).write(IS_ARIA_MIGRATED, YesOrNo.YES);
+        verify(asylumCase, times(0)).write(IS_ARIA_MIGRATED_FILTER, YesOrNo.YES);
+        verify(asylumCase, times(0)).write(ARIA_DESIRED_STATE_SELECTED_VALUE, "Listing");
+    }
+
+    @Test
+    void should_error_when_reference_number_not_valid_for_submit_appeal() {
+
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.PA));
+        when(asylumCase.read(ARIA_DESIRED_STATE, State.class)).thenReturn(Optional.of(State.LISTING));
+        when(asylumCase.read(APPEAL_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of("12345"));
+
+        assertThatThrownBy(() -> ariaCreateCaseHandler.handle(ABOUT_TO_SUBMIT, callback))
+                .hasMessage("appealReferenceNumber is not valid")
+                .isExactlyInstanceOf(IllegalStateException.class);
+
+        verify(asylumCase, times(0)).write(APPEAL_SUBMISSION_DATE, now.toString());
+        verify(asylumCase, times(0)).write(IS_ARIA_MIGRATED, YesOrNo.YES);
+        verify(asylumCase, times(0)).write(IS_ARIA_MIGRATED_FILTER, YesOrNo.YES);
+        verify(asylumCase, times(0)).write(ARIA_DESIRED_STATE_SELECTED_VALUE, "Listing");
+    }
+
+    @Test
+    void should_set_case_fields_for_submit_appeal() {
+
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.PA));
+        when(asylumCase.read(ARIA_DESIRED_STATE, State.class)).thenReturn(Optional.of(State.LISTING));
+        when(asylumCase.read(APPEAL_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of("PA/12345/2024"));
+
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            ariaCreateCaseHandler.handle(ABOUT_TO_SUBMIT, callback);
+                ariaCreateCaseHandler.handle(ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(asylumCase, times(1)).write(APPEAL_REFERENCE_NUMBER, nextAppealReferenceNumber);
+        verify(asylumCase, times(1)).write(APPEAL_REFERENCE_NUMBER, "PA/12345/2024");
         verify(asylumCase, times(1)).write(APPEAL_SUBMISSION_DATE, now.toString());
         verify(asylumCase, times(1)).write(IS_ARIA_MIGRATED, YesOrNo.YES);
         verify(asylumCase, times(1)).write(IS_ARIA_MIGRATED_FILTER, YesOrNo.YES);
@@ -149,27 +176,51 @@ class AriaCreateCaseHandlerTest {
     void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> ariaCreateCaseHandler.handle(ABOUT_TO_START, callback))
-            .hasMessage("Cannot handle callback")
-            .isExactlyInstanceOf(IllegalStateException.class);
+                .hasMessage("Cannot handle callback")
+                .isExactlyInstanceOf(IllegalStateException.class);
     }
 
     @Test
     void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> ariaCreateCaseHandler.canHandle(null, callback))
-            .hasMessage("callbackStage must not be null")
-            .isExactlyInstanceOf(NullPointerException.class);
+                .hasMessage("callbackStage must not be null")
+                .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(() -> ariaCreateCaseHandler.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
-            .hasMessage("callback must not be null")
-            .isExactlyInstanceOf(NullPointerException.class);
+                .hasMessage("callback must not be null")
+                .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(() -> ariaCreateCaseHandler.handle(null, callback))
-            .hasMessage("callbackStage must not be null")
-            .isExactlyInstanceOf(NullPointerException.class);
+                .hasMessage("callbackStage must not be null")
+                .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(() -> ariaCreateCaseHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
-            .hasMessage("callback must not be null")
-            .isExactlyInstanceOf(NullPointerException.class);
+                .hasMessage("callback must not be null")
+                .isExactlyInstanceOf(NullPointerException.class);
+    }
+
+    @Test
+    void should_return_true_for_valid_appeal_reference_numbers() {
+        assertTrue(AriaCreateCaseHandler.isValidAppealReferenceNumber("PA/12345/2024"));
+        assertTrue(AriaCreateCaseHandler.isValidAppealReferenceNumber("RP/01234/2023"));
+        assertTrue(AriaCreateCaseHandler.isValidAppealReferenceNumber("EA/20000/2025"));
+        assertTrue(AriaCreateCaseHandler.isValidAppealReferenceNumber("HU/11111/2022"));
+    }
+
+    @Test
+    void should_return_false_for_invalid_appeal_reference_numbers() {
+        assertFalse(AriaCreateCaseHandler.isValidAppealReferenceNumber("INVALID/12345/2024")); // Invalid prefix
+        assertFalse(AriaCreateCaseHandler.isValidAppealReferenceNumber("PA/1234/2024")); // Less than 5 digits
+        assertFalse(AriaCreateCaseHandler.isValidAppealReferenceNumber("PA/12345/24")); // Year not 4 digits
+        assertFalse(AriaCreateCaseHandler.isValidAppealReferenceNumber("12345/2024")); // Missing prefix
+        assertFalse(AriaCreateCaseHandler.isValidAppealReferenceNumber("PA12345/2024")); // Missing slash
+        assertFalse(AriaCreateCaseHandler.isValidAppealReferenceNumber("PA/32345/2024")); // Sequence starts with 3
+    }
+
+    @Test
+    void should_return_false_for_empty_strings() {
+        assertFalse(AriaCreateCaseHandler.isValidAppealReferenceNumber(""));
+        assertFalse(AriaCreateCaseHandler.isValidAppealReferenceNumber(" "));
     }
 }
