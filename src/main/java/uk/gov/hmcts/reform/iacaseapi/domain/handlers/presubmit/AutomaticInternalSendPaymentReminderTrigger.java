@@ -55,6 +55,7 @@ public class AutomaticInternalSendPaymentReminderTrigger implements PreSubmitCal
                 && callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
                 && isInternalCase(asylumCase)
                 && !isAppellantInDetention(asylumCase)
+                && !sourceOfAppealRehydratedAppeal(asylumCase)
                 && (paymentStatus.map(status -> status.equals(PaymentStatus.PAYMENT_PENDING)).orElse(false));
     }
 
