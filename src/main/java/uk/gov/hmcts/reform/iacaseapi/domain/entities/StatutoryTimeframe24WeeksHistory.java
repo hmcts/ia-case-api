@@ -21,6 +21,7 @@ public class StatutoryTimeframe24WeeksHistory {
     public StatutoryTimeframe24WeeksHistory(
         YesOrNo status,
         String reason,
+        String homeOfficeCaseType,
         String user,
         String dateTimeAdded
     ) {

@@ -21,6 +21,7 @@ import static java.util.Collections.emptyList;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_NOTES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STATUTORY_TIMEFRAME_24_WEEKS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STATUTORY_TIMEFRAME_24_WEEKS_REASON;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STATUTORY_TIMEFRAME_24_WEEKS_HOME_OFFICE_CASE_TYPE;
 
 @Slf4j
 @Service
@@ -60,8 +61,12 @@ public class UpdateStatutoryTimeframe24WeeksService {
                 .read(STATUTORY_TIMEFRAME_24_WEEKS_REASON, String.class)
                 .orElseThrow(() -> new IllegalStateException("statutoryTimeframe24WeeksReason is not present"));
 
+            String homeOfficeCaseType = asylumCase
+                .read(STATUTORY_TIMEFRAME_24_WEEKS_HOME_OFFICE_CASE_TYPE, String.class)
+                .orElseThrow(() -> new IllegalStateException("statutoryTimeframe24WeeksHomeOfficeCaseType is not present"));
+
             StatutoryTimeframe24Weeks updatedStatutoryTimeframe24Weeks =
-                buildNewStatutoryTimeframe24Weeks(statutoryTimeframe24WeeksStatus, statutoryTimeframe24WeeksReason, userDetails, existingStatutoryTimeframe24Weeks);
+                buildNewStatutoryTimeframe24Weeks(statutoryTimeframe24WeeksStatus, statutoryTimeframe24WeeksReason, homeOfficeCaseType, userDetails, existingStatutoryTimeframe24Weeks);
             asylumCase.write(STATUTORY_TIMEFRAME_24_WEEKS, updatedStatutoryTimeframe24Weeks);
             
             Optional<List<IdValue<CaseNote>>> existingCaseNotes = asylumCase.read(CASE_NOTES);
@@ -71,6 +76,7 @@ public class UpdateStatutoryTimeframe24WeeksService {
 
             //Clear transient fields used only to capture user input in the EXUI form
             asylumCase.clear(STATUTORY_TIMEFRAME_24_WEEKS_REASON);
+            asylumCase.clear(STATUTORY_TIMEFRAME_24_WEEKS_HOME_OFFICE_CASE_TYPE);
         }
 
         return asylumCase;
@@ -82,7 +88,7 @@ public class UpdateStatutoryTimeframe24WeeksService {
             + userDetails.getSurname();
     }
 
-    private StatutoryTimeframe24Weeks buildNewStatutoryTimeframe24Weeks(YesOrNo status, String reason, String user, Optional<StatutoryTimeframe24Weeks> existingStatutoryTimeframe24Weeks) {
+    private StatutoryTimeframe24Weeks buildNewStatutoryTimeframe24Weeks(YesOrNo status, String reason, String homeOfficeCaseType, String user, Optional<StatutoryTimeframe24Weeks> existingStatutoryTimeframe24Weeks) {
         List<IdValue<StatutoryTimeframe24WeeksHistory>> existingHistory = emptyList();
 
         if (existingStatutoryTimeframe24Weeks.isPresent()) {
@@ -93,6 +99,7 @@ public class UpdateStatutoryTimeframe24WeeksService {
         StatutoryTimeframe24WeeksHistory latestStatutoryTimeframe24WeeksHistory = new StatutoryTimeframe24WeeksHistory(
             status,
             reason,
+            homeOfficeCaseType,
             user,
             dateProvider.nowWithTime().toString()
         );
