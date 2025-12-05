@@ -7,7 +7,9 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_DECISION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_DECISION_AVAILABLE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_DECISION_ALLOWED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -54,6 +56,7 @@ class ForceDecidedStateHandlerTest {
             forceDecidedStateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         verify(asylumCase, times(1)).write(APPEAL_DECISION, "Allowed");
+        verify(asylumCase, times(1)).write(APPEAL_DECISION_AVAILABLE, YES);
         assertThat(callbackResponse.getData()).isEqualTo(asylumCase);
     }
 
@@ -66,6 +69,7 @@ class ForceDecidedStateHandlerTest {
             forceDecidedStateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         verify(asylumCase, times(1)).write(APPEAL_DECISION, "Dismissed");
+        verify(asylumCase, times(1)).write(APPEAL_DECISION_AVAILABLE, YES);
         assertThat(callbackResponse.getData()).isEqualTo(asylumCase);
     }
 

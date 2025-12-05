@@ -1,0 +1,36 @@
+{
+  "description": "DIAC-1587 Force FTPA decided state",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "AdminOfficer",
+    "input": {
+      "eventId": "forceFtpaDecidedState",
+      "state": "paymentPending",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "isAdmin": "Yes",
+          "sourceOfAppeal": "rehydratedAppeal",
+          "isRehydratedAppeal": "Yes",
+          "appellantInUk": "Yes",
+          "isAcceleratedDetainedAppeal": "No",
+          "ftpaApplicantType": "appellant"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "state": "decided",
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "isFtpaAppellantDecided": "Yes",
+        "hasBeenDecided": "Yes",
+        "hasBeenFtpaDecided": "Yes",
+        "sendDirectionActionAvailable": "No"
+      }
+    }
+  }
+}

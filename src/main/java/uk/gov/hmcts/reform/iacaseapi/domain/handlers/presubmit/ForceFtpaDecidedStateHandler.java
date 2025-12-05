@@ -1,7 +1,9 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_APPELLANT_DECISION_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_APPLICANT_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_RESPONDENT_DECISION_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_FTPA_APPELLANT_DECIDED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_FTPA_RESPONDENT_DECIDED;
 
@@ -45,8 +47,12 @@ public class ForceFtpaDecidedStateHandler implements PreSubmitCallbackHandler<As
             asylumCase.write(IS_FTPA_APPELLANT_DECIDED, "Yes");
         } else if (appellantType.equals("respondent")) {
             asylumCase.write(IS_FTPA_RESPONDENT_DECIDED, "Yes");
+
+            String ftpaAppellantDecisionDate = asylumCase.read(FTPA_APPELLANT_DECISION_DATE, String.class)
+                .orElseThrow(() -> new IllegalStateException("ftpaAppellantDecisionDate is missing"));
+            asylumCase.write(FTPA_RESPONDENT_DECISION_DATE, ftpaAppellantDecisionDate);
         } else {
-            throw new IllegalStateException("appellantType is is new and needs handling");
+            throw new IllegalStateException("appellantType " + appellantType + " is new and needs handling");
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);

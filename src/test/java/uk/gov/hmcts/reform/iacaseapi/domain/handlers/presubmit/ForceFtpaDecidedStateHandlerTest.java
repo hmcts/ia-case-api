@@ -8,7 +8,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_APPELLANT_DECISION_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_APPLICANT_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_RESPONDENT_DECISION_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_FTPA_APPELLANT_DECIDED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_FTPA_RESPONDENT_DECIDED;
 
@@ -69,6 +71,7 @@ class ForceFtpaDecidedStateHandlerTest {
         when(callback.getEvent()).thenReturn(Event.FORCE_FTPA_DECIDED_STATE);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of("respondent"));
+        when(asylumCase.read(FTPA_APPELLANT_DECISION_DATE, String.class)).thenReturn(Optional.of("2022-01-01"));
 
         PreSubmitCallbackResponse<AsylumCase> returnedCallbackResponse =
             forceFtpaDecidedStateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -76,6 +79,7 @@ class ForceFtpaDecidedStateHandlerTest {
         assertNotNull(returnedCallbackResponse);
         assertEquals(asylumCase, returnedCallbackResponse.getData());
         verify(asylumCase).write(IS_FTPA_RESPONDENT_DECIDED, "Yes");
+        verify(asylumCase).write(FTPA_RESPONDENT_DECISION_DATE, "2022-01-01");
     }
 
     @Test
@@ -100,7 +104,21 @@ class ForceFtpaDecidedStateHandlerTest {
         when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of("invalid"));
 
         assertThatThrownBy(() -> forceFtpaDecidedStateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
-            .hasMessage("appellantType is is new and needs handling")
+            .hasMessage("appellantType invalid is new and needs handling")
+            .isExactlyInstanceOf(IllegalStateException.class);
+    }
+
+    @Test
+    void should_throw_exception_when_appellant_decision_date_is_missing_for_respondent() {
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.FORCE_FTPA_DECIDED_STATE);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of("respondent"));
+        when(asylumCase.read(FTPA_APPELLANT_DECISION_DATE, String.class)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> forceFtpaDecidedStateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
+            .hasMessage("ftpaAppellantDecisionDate is missing")
             .isExactlyInstanceOf(IllegalStateException.class);
     }
 
