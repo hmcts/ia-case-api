@@ -3,7 +3,9 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealDecision.ALLOWED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_DECISION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_DECISION_AVAILABLE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_DECISION_ALLOWED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.*;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealDecision;
@@ -47,6 +49,8 @@ public class ForceDecidedStateHandler implements PreSubmitCallbackHandler<Asylum
         } else {
             asylumCase.write(APPEAL_DECISION, "Dismissed");
         }
+
+        asylumCase.write(APPEAL_DECISION_AVAILABLE, YES);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
