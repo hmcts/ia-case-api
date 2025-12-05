@@ -25,6 +25,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_NOTES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STATUTORY_TIMEFRAME_24_WEEKS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STATUTORY_TIMEFRAME_24_WEEKS_REASON;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STATUTORY_TIMEFRAME_24_WEEKS_HOME_OFFICE_CASE_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.ADD_STATUTORY_TIMEFRAME_24_WEEKS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.APPEAL_SUBMITTED;
 
@@ -38,12 +39,14 @@ class AddStatutoryTimeframe24WeeksTest extends SpringBootIntegrationTest impleme
         addServiceAuthStub(server);
         addRoleAssignmentActorStub(server);
         String reason = "some reason";
+        String homeOfficeCaseType = "some-case-type";
         PreSubmitCallbackResponseForTest response = iaCaseApiClient.aboutToSubmit(callback()
             .event(ADD_STATUTORY_TIMEFRAME_24_WEEKS)
             .caseDetails(someCaseDetailsWith()
                 .state(APPEAL_SUBMITTED)
                 .caseData(anAsylumCase()
                     .with(STATUTORY_TIMEFRAME_24_WEEKS_REASON, reason)
+                    .with(STATUTORY_TIMEFRAME_24_WEEKS_HOME_OFFICE_CASE_TYPE, homeOfficeCaseType)
                     .with(APPELLANT_GIVEN_NAMES, "some-given-name")
                     .with(APPELLANT_FAMILY_NAME, "some-family-name"))));
 
@@ -64,5 +67,6 @@ class AddStatutoryTimeframe24WeeksTest extends SpringBootIntegrationTest impleme
         assertThat(statutoryTimeframe24WeekHistory.get(0).getValue().getUser()).isEqualTo("Case Officer");
         assertThat(statutoryTimeframe24WeekHistory.get(0).getValue().getStatus()).isEqualTo(YesOrNo.YES);
         assertThat(statutoryTimeframe24WeekHistory.get(0).getValue().getReason()).isEqualTo(reason);
+        assertThat(statutoryTimeframe24WeekHistory.get(0).getValue().getHomeOfficeCaseType()).isEqualTo(homeOfficeCaseType);
     }
 }
