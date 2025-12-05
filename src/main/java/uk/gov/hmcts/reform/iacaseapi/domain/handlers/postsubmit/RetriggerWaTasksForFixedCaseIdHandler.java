@@ -2,19 +2,14 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
 import java.util.Arrays;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.Scheduler;
-
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.CcdDataService;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_ID_LIST;
@@ -23,19 +18,11 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 @Component
 public class RetriggerWaTasksForFixedCaseIdHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
-    private final boolean timedEventServiceEnabled;
-    private final DateProvider dateProvider;
-    private final Scheduler scheduler;
+    private final CcdDataService ccdDataService;
 
 
-    public RetriggerWaTasksForFixedCaseIdHandler(
-        @Value("${featureFlag.timedEventServiceEnabled}") boolean timedEventServiceEnabled,
-        DateProvider dateProvider,
-        Scheduler scheduler
-    ) {
-        this.timedEventServiceEnabled = timedEventServiceEnabled;
-        this.dateProvider = dateProvider;
-        this.scheduler = scheduler;
+    public RetriggerWaTasksForFixedCaseIdHandler(CcdDataService ccdDataService) {
+        this.ccdDataService = ccdDataService;
     }
 
     public boolean canHandle(
@@ -45,11 +32,8 @@ public class RetriggerWaTasksForFixedCaseIdHandler implements PreSubmitCallbackH
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
-        Event qualifyingEvent = Event.RE_TRIGGER_WA_BULK_TASKS;
-
-        return timedEventServiceEnabled
-            && callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-            && callback.getEvent() == qualifyingEvent;
+        return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
+            && callback.getEvent() == Event.RE_TRIGGER_WA_BULK_TASKS;
 
     }
 
@@ -63,15 +47,19 @@ public class RetriggerWaTasksForFixedCaseIdHandler implements PreSubmitCallbackH
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
-        int scheduleDelayInMinutes = 5;
-        ZonedDateTime scheduledDate = ZonedDateTime.of(dateProvider.nowWithTime(), ZoneId.systemDefault()).plusMinutes(scheduleDelayInMinutes);
-
         String caseIdList = asylumCase.read(CASE_ID_LIST, String.class)
             .orElse("");
 
         if (!caseIdList.contains(",")) {
-            log.info("No Case Ids found to re-trigger WA tasks");
-            return new PreSubmitCallbackResponse<>(asylumCase);
+            String trimmedCaseId = caseIdList.trim();
+            if (trimmedCaseId.length() != 16) {
+                log.info("No valid Case Ids found to re-trigger WA tasks");
+                return new PreSubmitCallbackResponse<>(asylumCase);
+            } else {
+                ccdDataService.retriggerWaTasks(trimmedCaseId);
+                asylumCase.clear(CASE_ID_LIST);
+                return new PreSubmitCallbackResponse<>(asylumCase);
+            }
         }
         String[] caseIdListList = caseIdList.split(",");
 
@@ -82,7 +70,7 @@ public class RetriggerWaTasksForFixedCaseIdHandler implements PreSubmitCallbackH
                         log.info("Invalid Case Id found to re-trigger WA tasks: {}", trimmedCaseId);
                         return;
                     }
-                    scheduler.scheduleTimedEvent(trimmedCaseId, scheduledDate, Event.RE_TRIGGER_WA_TASKS, "");
+                    ccdDataService.retriggerWaTasks(trimmedCaseId);
                 }
             );
         asylumCase.clear(CASE_ID_LIST);
