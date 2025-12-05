@@ -55,7 +55,7 @@ public class UpdateStatutoryTimeframe24WeeksService {
         String userDetails = buildFullName();
 
         if (!statusHasChanged) {
-            throw new IllegalStateException("The current status is already set to " + statutoryTimeframe24WeeksStatus);
+            log.warn("The current status is already set to {}", statutoryTimeframe24WeeksStatus);
         } else {
             String statutoryTimeframe24WeeksReason = asylumCase
                 .read(STATUTORY_TIMEFRAME_24_WEEKS_REASON, String.class)

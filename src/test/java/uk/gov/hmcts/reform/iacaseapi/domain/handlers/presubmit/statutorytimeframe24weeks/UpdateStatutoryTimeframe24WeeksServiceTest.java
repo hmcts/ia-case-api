@@ -122,7 +122,7 @@ class UpdateStatutoryTimeframe24WeeksServiceTest {
 
         CaseNote capturedCaseNotes = newCaseNotesCaptor.getValue();
 
-        assertThat(capturedCaseNotes.getCaseNoteSubject()).isEqualTo("Setting statutory timeframe 24 weeks to " + newStatus);
+        assertThat(capturedCaseNotes.getCaseNoteSubject()).isEqualTo("Setting statutory timeframe 24 weeks to " + homeOfficeCaseType + " - " + newStatus);
         assertThat(capturedCaseNotes.getCaseNoteDescription()).isEqualTo(newStatutoryTimeframe24WeeksReason);
         assertThat(capturedCaseNotes.getUser()).isEqualTo(forename + " " + surname);
         assertThat(capturedCaseNotes.getDateAdded()).isEqualTo(now.toString());
@@ -164,7 +164,7 @@ class UpdateStatutoryTimeframe24WeeksServiceTest {
 
         CaseNote capturedCaseNotes = newCaseNotesCaptor.getValue();
 
-        assertThat(capturedCaseNotes.getCaseNoteSubject()).isEqualTo("Setting statutory timeframe 24 weeks to " + newStatus);
+        assertThat(capturedCaseNotes.getCaseNoteSubject()).isEqualTo("Setting statutory timeframe 24 weeks to " + homeOfficeCaseType + " - " + newStatus);
         assertThat(capturedCaseNotes.getCaseNoteDescription()).isEqualTo(newStatutoryTimeframe24WeeksReason);
         assertThat(capturedCaseNotes.getUser()).isEqualTo(forename + " " + surname);
         assertThat(capturedCaseNotes.getDateAdded()).isEqualTo(now.toString());
@@ -180,34 +180,6 @@ class UpdateStatutoryTimeframe24WeeksServiceTest {
 
         assertThatThrownBy(() -> updateStatutoryTimeframe24WeeksService.updateAsylumCase(asylumCase, YesOrNo.YES))
             .hasMessage("statutoryTimeframe24WeeksReason is not present")
-            .isExactlyInstanceOf(IllegalStateException.class);
-    }
-
-    @Test
-    void should_throw_when_statutory_timeframe_24_weeks_status_is_already_set_to_yes() {
-        YesOrNo currentStatus = YesOrNo.YES;
-        StatutoryTimeframe24WeeksHistory statutoryTimeframe24WeeksHistory = new StatutoryTimeframe24WeeksHistory(currentStatus, newStatutoryTimeframe24WeeksReason, homeOfficeCaseType, forename + " " + surname, nowWithTime.toString());
-        List<IdValue<StatutoryTimeframe24WeeksHistory>> existingStatutoryTimeframe24WeeksHistory = Arrays.asList(new IdValue<>("1", statutoryTimeframe24WeeksHistory));
-        StatutoryTimeframe24Weeks existingStatutoryTimeframe24Weeks = new StatutoryTimeframe24Weeks(currentStatus, existingStatutoryTimeframe24WeeksHistory);
-
-        when(asylumCase.read(STATUTORY_TIMEFRAME_24_WEEKS)).thenReturn(Optional.of(existingStatutoryTimeframe24Weeks));
-
-        assertThatThrownBy(() -> updateStatutoryTimeframe24WeeksService.updateAsylumCase(asylumCase, currentStatus))
-            .hasMessage("The current status is already set to " + currentStatus)
-            .isExactlyInstanceOf(IllegalStateException.class);
-    }
-
-    @Test
-    void should_throw_when_statutory_timeframe_24_weeks_status_is_already_set_to_no() {
-        YesOrNo currentStatus = YesOrNo.NO;
-        StatutoryTimeframe24WeeksHistory statutoryTimeframe24WeeksHistory = new StatutoryTimeframe24WeeksHistory(currentStatus, newStatutoryTimeframe24WeeksReason, homeOfficeCaseType, forename + " " + surname, nowWithTime.toString());
-        List<IdValue<StatutoryTimeframe24WeeksHistory>> existingStatutoryTimeframe24WeeksHistory = Arrays.asList(new IdValue<>("1", statutoryTimeframe24WeeksHistory));
-        StatutoryTimeframe24Weeks existingStatutoryTimeframe24Weeks = new StatutoryTimeframe24Weeks(currentStatus, existingStatutoryTimeframe24WeeksHistory);
-
-        when(asylumCase.read(STATUTORY_TIMEFRAME_24_WEEKS)).thenReturn(Optional.of(existingStatutoryTimeframe24Weeks));
-
-        assertThatThrownBy(() -> updateStatutoryTimeframe24WeeksService.updateAsylumCase(asylumCase, currentStatus))
-            .hasMessage("The current status is already set to " + currentStatus)
             .isExactlyInstanceOf(IllegalStateException.class);
     }
 
