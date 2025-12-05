@@ -71,7 +71,7 @@ public class UpdateStatutoryTimeframe24WeeksService {
             
             Optional<List<IdValue<CaseNote>>> existingCaseNotes = asylumCase.read(CASE_NOTES);
             List<IdValue<CaseNote>> allCaseNotes = caseNoteAppender.append(
-                buildNewCaseNote(statutoryTimeframe24WeeksStatus, statutoryTimeframe24WeeksReason, userDetails), existingCaseNotes.orElse(Collections.emptyList()));
+                buildNewCaseNote(statutoryTimeframe24WeeksStatus, statutoryTimeframe24WeeksReason, homeOfficeCaseType, userDetails), existingCaseNotes.orElse(Collections.emptyList()));
             asylumCase.write(CASE_NOTES, allCaseNotes);
 
             //Clear transient fields used only to capture user input in the EXUI form
@@ -109,9 +109,9 @@ public class UpdateStatutoryTimeframe24WeeksService {
         );
     }
 
-    private CaseNote buildNewCaseNote(YesOrNo status, String reason, String user) {
+    private CaseNote buildNewCaseNote(YesOrNo status, String reason, String homeOfficeCaseType, String user) {
         return new CaseNote(
-            "Setting statutory timeframe 24 weeks to " + status,
+            "Setting statutory timeframe 24 weeks to " + homeOfficeCaseType + " - " + status,
             reason,
             user,
             LocalDate.now().toString()
