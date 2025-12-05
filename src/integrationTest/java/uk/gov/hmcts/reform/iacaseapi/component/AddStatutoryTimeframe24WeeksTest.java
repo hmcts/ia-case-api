@@ -56,7 +56,7 @@ class AddStatutoryTimeframe24WeeksTest extends SpringBootIntegrationTest impleme
 
         assertThat(caseNotes.get()).hasSize(1);
         assertThat(caseNote.getUser()).isEqualTo("Case Officer");
-        assertThat(caseNote.getCaseNoteSubject()).isEqualTo("Setting statutory timeframe 24 weeks to Yes");
+        assertThat(caseNote.getCaseNoteSubject()).isEqualTo("Setting statutory timeframe 24 weeks to " + homeOfficeCaseType + " - Yes");
         assertThat(caseNote.getCaseNoteDescription()).isEqualTo(reason);
 
         Optional<StatutoryTimeframe24Weeks> statutoryTimeframe24Weeks = response.getAsylumCase().read(STATUTORY_TIMEFRAME_24_WEEKS);
