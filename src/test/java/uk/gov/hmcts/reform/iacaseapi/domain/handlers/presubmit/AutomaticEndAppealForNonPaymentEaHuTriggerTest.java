@@ -377,8 +377,8 @@ class AutomaticEndAppealForNonPaymentEaHuTriggerTest {
         when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class))
                 .thenReturn(Optional.of(YesOrNo.NO));
 
-        when(asylumCase.read(SOURCE_OF_APPEAL, SourceOfAppeal.class))
-                .thenReturn(Optional.of(SourceOfAppeal.REHYDRATED_APPEAL));
+        when(asylumCase.read(IS_NOTIFICATION_TURNED_OFF, YesOrNo.class))
+                .thenReturn(Optional.of(YesOrNo.YES));
 
         assertThatThrownBy(() ->
                 automaticEndAppealForNonPaymentEaHuTrigger.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback)
@@ -397,7 +397,7 @@ class AutomaticEndAppealForNonPaymentEaHuTriggerTest {
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(EA));
         when(asylumCase.read(REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.of(RemissionType.NO_REMISSION));
         when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
-        when(asylumCase.read(SOURCE_OF_APPEAL, SourceOfAppeal.class)).thenReturn(Optional.of(SourceOfAppeal.REHYDRATED_APPEAL));
+        when(asylumCase.read(IS_NOTIFICATION_TURNED_OFF, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
 
         boolean result = automaticEndAppealForNonPaymentEaHuTrigger
                 .canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);

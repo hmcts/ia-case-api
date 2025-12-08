@@ -21,7 +21,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.Scheduler;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.TimedEvent;
 
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isNotificationTurnedOff;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.sourceOfAppealRehydratedAppeal;
 
 @Component
 public class AutomaticPaymentReminderRemissionLegalRepTrigger implements PreSubmitCallbackHandler<AsylumCase> {

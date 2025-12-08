@@ -59,7 +59,6 @@ class AutomaticDirectionRequestingHearingRequirementsHandlerTest {
     private final long caseId = 12345;
     private final String jurisdiction = "IA";
     private final String caseType = "Asylum";
-    private final boolean rehydratedAppeal = true;
     @Mock
     private DateProvider dateProvider;
     @Mock
@@ -348,7 +347,7 @@ class AutomaticDirectionRequestingHearingRequirementsHandlerTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONSE_REVIEW);
         when(asylumCase.read(IS_NOTIFICATION_TURNED_OFF, YesOrNo.class))
-                .thenReturn(Optional.of(YesOrNo.NO));
+                .thenReturn(Optional.of(YesOrNo.YES));
 
         assertThatThrownBy(() ->
                 automaticDirectionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback)
