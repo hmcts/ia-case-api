@@ -4,7 +4,6 @@ import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DETENTION_STATUS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.REMOVE_DETAINED_STATUS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -48,7 +47,7 @@ public class RemoveDetainedStatusHandler implements PreSubmitCallbackHandler<Asy
 
             clearDetentionRelatedFields(asylumCase);
 
-            asylumCase.write(APPELLANT_IN_DETENTION, NO);
+            asylumCase.remove(APPELLANT_IN_DETENTION);
 
         }
         return new PreSubmitCallbackResponse<>(asylumCase);
