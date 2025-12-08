@@ -303,7 +303,7 @@ class AutomaticDirectionRequestingHearingRequirementsHandlerTest {
         when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONSE_REVIEW);
 
         when(asylumCase.read(IS_NOTIFICATION_TURNED_OFF, YesOrNo.class))
-                .thenReturn(Optional.of(YesOrNo.NO));
+                .thenReturn(Optional.of(YesOrNo.YES));
 
         boolean canHandle = automaticDirectionHandler
                 .canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
