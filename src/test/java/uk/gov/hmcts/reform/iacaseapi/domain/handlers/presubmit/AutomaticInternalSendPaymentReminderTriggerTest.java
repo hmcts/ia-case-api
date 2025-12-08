@@ -139,8 +139,8 @@ class AutomaticInternalSendPaymentReminderTriggerTest {
         when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class))
                 .thenReturn(Optional.of(PaymentStatus.PAYMENT_PENDING));
 
-        when(asylumCase.read(SOURCE_OF_APPEAL, SourceOfAppeal.class))
-                .thenReturn(Optional.of(SourceOfAppeal.REHYDRATED_APPEAL));
+        when(asylumCase.read(IS_NOTIFICATION_TURNED_OFF, YesOrNo.class))
+                .thenReturn(Optional.of(YesOrNo.YES));
 
         assertThatThrownBy(() ->
                 automaticInternalSendPaymentReminderTrigger.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback)

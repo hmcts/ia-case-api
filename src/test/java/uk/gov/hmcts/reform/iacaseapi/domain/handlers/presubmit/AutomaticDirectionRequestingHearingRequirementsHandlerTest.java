@@ -303,8 +303,8 @@ class AutomaticDirectionRequestingHearingRequirementsHandlerTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONSE_REVIEW);
 
-        when(asylumCase.read(SOURCE_OF_APPEAL,SourceOfAppeal.class))
-                .thenReturn(Optional.of(SourceOfAppeal.REHYDRATED_APPEAL));
+        when(asylumCase.read(IS_NOTIFICATION_TURNED_OFF, YesOrNo.class))
+                .thenReturn(Optional.of(YesOrNo.NO));
 
         boolean canHandle = automaticDirectionHandler
                 .canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -321,6 +321,8 @@ class AutomaticDirectionRequestingHearingRequirementsHandlerTest {
         // ensure this is NOT rehydrated
         when(asylumCase.read(SOURCE_OF_APPEAL, SourceOfAppeal.class))
                 .thenReturn(Optional.of(SourceOfAppeal.PAPER_FORM));
+        when(asylumCase.read(IS_NOTIFICATION_TURNED_OFF, YesOrNo.class))
+                .thenReturn(Optional.of(YesOrNo.NO));
 
         for (Event event : Event.values()) {
             when(callback.getEvent()).thenReturn(event);
@@ -345,8 +347,8 @@ class AutomaticDirectionRequestingHearingRequirementsHandlerTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONSE_REVIEW);
-        when(asylumCase.read(SOURCE_OF_APPEAL, SourceOfAppeal.class))
-                .thenReturn(Optional.of(SourceOfAppeal.REHYDRATED_APPEAL));
+        when(asylumCase.read(IS_NOTIFICATION_TURNED_OFF, YesOrNo.class))
+                .thenReturn(Optional.of(YesOrNo.NO));
 
         assertThatThrownBy(() ->
                 automaticDirectionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback)

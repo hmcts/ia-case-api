@@ -236,8 +236,8 @@ class AutomaticEndAppealForRemissionRejectedTriggerTest {
         when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class))
                 .thenReturn(Optional.of(YesOrNo.NO));
 
-        when(asylumCase.read(SOURCE_OF_APPEAL, SourceOfAppeal.class))
-                .thenReturn(Optional.of(SourceOfAppeal.REHYDRATED_APPEAL));
+        when(asylumCase.read(IS_NOTIFICATION_TURNED_OFF, YesOrNo.class))
+                .thenReturn(Optional.of(YesOrNo.NO));
 
         assertThatThrownBy(() ->
                 autoEndAppealTrigger.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback)
