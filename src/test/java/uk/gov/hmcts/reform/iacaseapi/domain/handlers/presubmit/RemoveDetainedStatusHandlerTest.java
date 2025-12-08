@@ -52,7 +52,7 @@ class RemoveDetainedStatusHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(asylumCase).remove(APPELLANT_IN_DETENTION);
+        verify(asylumCase).write(APPELLANT_IN_DETENTION, YesOrNo.NO);
         verify(asylumCase).clear(DETENTION_FACILITY);
         verify(asylumCase).clear(IRC_NAME);
         verify(asylumCase).clear(PRISON_NAME);

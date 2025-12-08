@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
@@ -47,7 +48,7 @@ public class RemoveDetainedStatusHandler implements PreSubmitCallbackHandler<Asy
 
             clearDetentionRelatedFields(asylumCase);
 
-            asylumCase.remove(APPELLANT_IN_DETENTION);
+            asylumCase.write(APPELLANT_IN_DETENTION, YesOrNo.NO);
 
         }
         return new PreSubmitCallbackResponse<>(asylumCase);
