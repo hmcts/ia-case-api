@@ -75,8 +75,8 @@ public class UpdateStatutoryTimeframe24WeeksService {
             asylumCase.write(CASE_NOTES, allCaseNotes);
 
             //Clear transient fields used only to capture user input in the EXUI form
-            //asylumCase.clear(STATUTORY_TIMEFRAME_24_WEEKS_REASON);
-            //asylumCase.clear(STATUTORY_TIMEFRAME_24_WEEKS_HOME_OFFICE_CASE_TYPE);
+            asylumCase.clear(STATUTORY_TIMEFRAME_24_WEEKS_REASON);
+            asylumCase.clear(STATUTORY_TIMEFRAME_24_WEEKS_HOME_OFFICE_CASE_TYPE);
         }
 
         return asylumCase;
