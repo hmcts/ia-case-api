@@ -95,7 +95,7 @@ class UpdateStatutoryTimeframe24WeeksServiceTest {
         YesOrNo currentStatus = YesOrNo.NO;
         StatutoryTimeframe24WeeksHistory statutoryTimeframe24WeeksHistory = new StatutoryTimeframe24WeeksHistory(currentStatus, newStatutoryTimeframe24WeeksReason, homeOfficeCaseType, forename + " " + surname, nowWithTime.toString());
         List<IdValue<StatutoryTimeframe24WeeksHistory>> existingStatutoryTimeframe24WeeksHistory = Arrays.asList(new IdValue<>("1", statutoryTimeframe24WeeksHistory));
-        StatutoryTimeframe24Weeks existingStatutoryTimeframe24Weeks = new StatutoryTimeframe24Weeks(currentStatus, existingStatutoryTimeframe24WeeksHistory);
+        StatutoryTimeframe24Weeks existingStatutoryTimeframe24Weeks = new StatutoryTimeframe24Weeks(currentStatus, homeOfficeCaseType, existingStatutoryTimeframe24WeeksHistory);
 
         when(asylumCase.read(STATUTORY_TIMEFRAME_24_WEEKS)).thenReturn(Optional.of(existingStatutoryTimeframe24Weeks));
         when(asylumCase.read(STATUTORY_TIMEFRAME_24_WEEKS_REASON, String.class)).thenReturn(Optional.of(newStatutoryTimeframe24WeeksReason));
@@ -127,7 +127,7 @@ class UpdateStatutoryTimeframe24WeeksServiceTest {
         assertThat(capturedCaseNotes.getUser()).isEqualTo(forename + " " + surname);
         assertThat(capturedCaseNotes.getDateAdded()).isEqualTo(now.toString());
 
-        verify(asylumCase, times(1)).write(STATUTORY_TIMEFRAME_24_WEEKS, new StatutoryTimeframe24Weeks(newStatus, allAppendedStatutoryTimeframe24Weeks));
+        verify(asylumCase, times(1)).write(STATUTORY_TIMEFRAME_24_WEEKS, new StatutoryTimeframe24Weeks(newStatus, homeOfficeCaseType, allAppendedStatutoryTimeframe24Weeks));
         verify(asylumCase, times(1)).clear(STATUTORY_TIMEFRAME_24_WEEKS_REASON);
         verify(asylumCase, times(1)).clear(STATUTORY_TIMEFRAME_24_WEEKS_HOME_OFFICE_CASE_TYPE);
     }
@@ -137,7 +137,7 @@ class UpdateStatutoryTimeframe24WeeksServiceTest {
         YesOrNo currentStatus = YesOrNo.YES;
         StatutoryTimeframe24WeeksHistory statutoryTimeframe24WeeksHistory = new StatutoryTimeframe24WeeksHistory(currentStatus, newStatutoryTimeframe24WeeksReason, homeOfficeCaseType, forename + " " + surname, nowWithTime.toString());
         List<IdValue<StatutoryTimeframe24WeeksHistory>> existingStatutoryTimeframe24WeeksHistory = Arrays.asList(new IdValue<>("1", statutoryTimeframe24WeeksHistory));
-        StatutoryTimeframe24Weeks existingStatutoryTimeframe24Weeks = new StatutoryTimeframe24Weeks(currentStatus, existingStatutoryTimeframe24WeeksHistory);
+        StatutoryTimeframe24Weeks existingStatutoryTimeframe24Weeks = new StatutoryTimeframe24Weeks(currentStatus, homeOfficeCaseType, existingStatutoryTimeframe24WeeksHistory);
 
         when(asylumCase.read(STATUTORY_TIMEFRAME_24_WEEKS)).thenReturn(Optional.of(existingStatutoryTimeframe24Weeks));
         when(asylumCase.read(STATUTORY_TIMEFRAME_24_WEEKS_REASON, String.class)).thenReturn(Optional.of(newStatutoryTimeframe24WeeksReason));
@@ -169,7 +169,7 @@ class UpdateStatutoryTimeframe24WeeksServiceTest {
         assertThat(capturedCaseNotes.getUser()).isEqualTo(forename + " " + surname);
         assertThat(capturedCaseNotes.getDateAdded()).isEqualTo(now.toString());
 
-        verify(asylumCase, times(1)).write(STATUTORY_TIMEFRAME_24_WEEKS, new StatutoryTimeframe24Weeks(newStatus, allAppendedStatutoryTimeframe24Weeks));
+        verify(asylumCase, times(1)).write(STATUTORY_TIMEFRAME_24_WEEKS, new StatutoryTimeframe24Weeks(newStatus, homeOfficeCaseType, allAppendedStatutoryTimeframe24Weeks));
         verify(asylumCase, times(1)).clear(STATUTORY_TIMEFRAME_24_WEEKS_REASON);
         verify(asylumCase, times(1)).clear(STATUTORY_TIMEFRAME_24_WEEKS_HOME_OFFICE_CASE_TYPE);
     }
@@ -202,7 +202,7 @@ class UpdateStatutoryTimeframe24WeeksServiceTest {
         // If the status is different, it should write; if same, it should throw exception
         
         when(asylumCase.read(STATUTORY_TIMEFRAME_24_WEEKS, StatutoryTimeframe24Weeks.class))
-            .thenReturn(Optional.of(new StatutoryTimeframe24Weeks(YesOrNo.NO, emptyList())));
+            .thenReturn(Optional.of(new StatutoryTimeframe24Weeks(YesOrNo.NO, homeOfficeCaseType, emptyList())));
         when(asylumCase.read(STATUTORY_TIMEFRAME_24_WEEKS_REASON, String.class))
             .thenReturn(Optional.of("Home Office Initial Determination"));
         when(asylumCase.read(STATUTORY_TIMEFRAME_24_WEEKS_HOME_OFFICE_CASE_TYPE, String.class))

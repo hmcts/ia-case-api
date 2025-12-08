@@ -105,6 +105,7 @@ public class UpdateStatutoryTimeframe24WeeksService {
         );
         return new StatutoryTimeframe24Weeks(
             status,
+            homeOfficeCaseType,
             statutoryTimeframe24WeeksHistoryAppender.append(latestStatutoryTimeframe24WeeksHistory, existingHistory)
         );
     }
