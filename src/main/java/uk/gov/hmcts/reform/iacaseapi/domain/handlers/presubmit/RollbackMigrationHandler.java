@@ -44,7 +44,7 @@ public class RollbackMigrationHandler implements PreSubmitCallbackHandler<Asylum
                 .getCaseDetails()
                 .getCaseData();
 
-        Optional<Object> appellantInDetention = asylumCase.read(APPELLANT_IN_DETENTION);
+        Optional<YesOrNo> appellantInDetention = asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class);
 
         if (appellantInDetention.isPresent() && appellantInDetention.get().equals(YesOrNo.NO)) {
             asylumCase.remove(APPELLANT_IN_DETENTION);
