@@ -67,7 +67,7 @@ public class AutomaticEndAppealForNonPaymentEaHuTrigger implements PreSubmitCall
 
         return  callback.getEvent() == Event.SUBMIT_APPEAL
                 && callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-                && !sourceOfAppealRehydratedAppeal(asylumCase)
+                && !isNotificationTurnedOff(asylumCase)
                 && !isAcceleratedDetainedAppeal(asylumCase)
                 && (isAipJourney(asylumCase) ? !aipAppealHasRemission(asylumCase) : lrAppealWithNoRemission)
                 && (appealType.isPresent() && Set.of(EA, HU, EU, AG).contains(appealType.get()));

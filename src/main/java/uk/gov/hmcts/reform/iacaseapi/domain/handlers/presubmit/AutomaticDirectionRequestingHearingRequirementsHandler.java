@@ -6,6 +6,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAS_TRANSFERRED_OUT_OF_ADA;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.ADD_APPEAL_RESPONSE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isNotificationTurnedOff;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.sourceOfAppealRehydratedAppeal;
 
 import java.time.LocalTime;
@@ -70,7 +71,7 @@ public class AutomaticDirectionRequestingHearingRequirementsHandler implements P
 
 
         return timedEventServiceEnabled
-                && !sourceOfAppealRehydratedAppeal(asylumCase)
+                && !isNotificationTurnedOff(asylumCase)
                 && callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
                 && Arrays.asList(
                     Event.REQUEST_RESPONSE_REVIEW,

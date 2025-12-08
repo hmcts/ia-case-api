@@ -4,8 +4,7 @@ import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PAYMENT_STATUS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMISSION_DECISION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isAcceleratedDetainedAppeal;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.sourceOfAppealRehydratedAppeal;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.*;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -63,7 +62,7 @@ public class AutomaticEndAppealForRemissionRejectedTrigger implements PreSubmitC
                 && callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
                 && paymentStatus != PaymentStatus.PAID
                 && !isAcceleratedDetainedAppeal(asylumCase)
-                && !sourceOfAppealRehydratedAppeal(asylumCase)
+                && !isNotificationTurnedOff(asylumCase)
                 && remissionDecision.isPresent()
                 && remissionDecision.get() == RemissionDecision.REJECTED
                 && appealType.isPresent()
