@@ -14,6 +14,7 @@ public class EventTest {
         assertEquals("uploadBailSummary", Event.UPLOAD_BAIL_SUMMARY.toString());
         assertEquals("recordTheDecision", Event.RECORD_THE_DECISION.toString());
         assertEquals("uploadSignedDecisionNotice", Event.UPLOAD_SIGNED_DECISION_NOTICE.toString());
+        assertEquals("uploadSignedDecisionNoticeConditionalGrant", Event.UPLOAD_SIGNED_DECISION_NOTICE_CONDITIONAL_GRANT.toString());
         assertEquals("addCaseNote", Event.ADD_CASE_NOTE.toString());
         assertEquals("moveApplicationToDecided", Event.MOVE_APPLICATION_TO_DECIDED.toString());
         assertEquals("uploadDocuments", Event.UPLOAD_DOCUMENTS.toString());
@@ -45,6 +46,6 @@ public class EventTest {
 
     @Test
     void fail_if_changes_needed_after_modifying_class() {
-        assertEquals(36, Event.values().length);
+        assertEquals(37, Event.values().length);
     }
 }
