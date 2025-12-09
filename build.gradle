@@ -255,7 +255,8 @@ sonarqube {
                 "src/main/java/uk/gov/hmcts/reform/iacaseapi/infrastructure/SystemDateProvider.java," +
                 "src/main/java/uk/gov/hmcts/reform/iacaseapi/Application.java," +
                 "src/main/java/uk/gov/hmcts/reform/iacaseapi/infrastructure/security/idam/IdamAuthoritiesConverter.java," +
-                "src/main/java/uk/gov/hmcts/reform/iacaseapi/domain/entities/CaseFlag.java"
+                "src/main/java/uk/gov/hmcts/reform/iacaseapi/domain/entities/CaseFlag.java," +
+                "src/main/java/uk/gov/hmcts/reform/iacaseapi/infrastructure/clients/model/ccd/**"
         property "sonar.cpd.exclusions", "src/main/java/uk/gov/hmcts/reform/iacaseapi/domain/handlers/**"
     }
 }
@@ -445,6 +446,7 @@ dependencies {
     testImplementation group: 'org.apache.httpcomponents', name: 'fluent-hc', version:  '4.5.14'
 
 
+    implementation group: 'com.github.hmcts', name: 'core-case-data-store-client', version: '4.9.2'
     functionalTestImplementation group: 'com.github.hmcts', name: 'core-case-data-store-client', version: '4.9.2'
 
 
