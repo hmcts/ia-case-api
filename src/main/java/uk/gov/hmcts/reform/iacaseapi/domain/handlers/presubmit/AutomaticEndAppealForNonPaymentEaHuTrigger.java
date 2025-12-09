@@ -67,7 +67,6 @@ public class AutomaticEndAppealForNonPaymentEaHuTrigger implements PreSubmitCall
 
         return  callback.getEvent() == Event.SUBMIT_APPEAL
                 && callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-                && !isNotificationTurnedOff(asylumCase)
                 && !isAcceleratedDetainedAppeal(asylumCase)
                 && (isAipJourney(asylumCase) ? !aipAppealHasRemission(asylumCase) : lrAppealWithNoRemission)
                 && (appealType.isPresent() && Set.of(EA, HU, EU, AG).contains(appealType.get()));
@@ -83,6 +82,10 @@ public class AutomaticEndAppealForNonPaymentEaHuTrigger implements PreSubmitCall
         }
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
+
+        if (isNotificationTurnedOff(asylumCase)) {
+            return new PreSubmitCallbackResponse<>(asylumCase);
+        }
 
         ZonedDateTime scheduledDate = ZonedDateTime.of(dateProvider.nowWithTime(), ZoneId.systemDefault()).plusMinutes(schedule14DaysInMinutes);
 

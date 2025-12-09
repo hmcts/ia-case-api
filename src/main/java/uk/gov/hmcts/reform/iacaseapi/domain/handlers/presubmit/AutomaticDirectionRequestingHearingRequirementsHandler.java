@@ -70,7 +70,6 @@ public class AutomaticDirectionRequestingHearingRequirementsHandler implements P
 
 
         return timedEventServiceEnabled
-                && !isNotificationTurnedOff(asylumCase)
                 && callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
                 && Arrays.asList(
                     Event.REQUEST_RESPONSE_REVIEW,
@@ -90,6 +89,10 @@ public class AutomaticDirectionRequestingHearingRequirementsHandler implements P
             callback
                 .getCaseDetails()
                 .getCaseData();
+
+        if (isNotificationTurnedOff(asylumCase)) {
+            return new PreSubmitCallbackResponse<>(asylumCase);
+        }
 
         ZonedDateTime scheduledDate = ZonedDateTime.of(dateProvider.now().plusDays(reviewDueInDays + 1L), LocalTime.MIDNIGHT, ZoneId.systemDefault());
 

@@ -79,6 +79,10 @@ public class AutomaticEndAppealForRemissionRejectedTrigger implements PreSubmitC
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
+        if (isNotificationTurnedOff(asylumCase)) {
+            return new PreSubmitCallbackResponse<>(asylumCase);
+        }
+
         ZonedDateTime scheduledDate = ZonedDateTime.of(dateProvider.nowWithTime(), ZoneId.systemDefault()).plusMinutes(schedule14DaysInMinutes);
 
         TimedEvent timedEvent = scheduler.schedule(

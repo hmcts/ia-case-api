@@ -55,7 +55,6 @@ public class AutomaticInternalSendPaymentReminderTrigger implements PreSubmitCal
                 && callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
                 && isInternalCase(asylumCase)
                 && !isAppellantInDetention(asylumCase)
-                && !isNotificationTurnedOff(asylumCase)
                 && (paymentStatus.map(status -> status.equals(PaymentStatus.PAYMENT_PENDING)).orElse(false));
     }
 
@@ -68,6 +67,10 @@ public class AutomaticInternalSendPaymentReminderTrigger implements PreSubmitCal
         }
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
+
+        if (isNotificationTurnedOff(asylumCase)) {
+            return new PreSubmitCallbackResponse<>(asylumCase);
+        }
 
         ZonedDateTime scheduledDate = ZonedDateTime.of(dateProvider.nowWithTime(), ZoneId.systemDefault()).plusMinutes(schedule7DaysInMinutes);
 
