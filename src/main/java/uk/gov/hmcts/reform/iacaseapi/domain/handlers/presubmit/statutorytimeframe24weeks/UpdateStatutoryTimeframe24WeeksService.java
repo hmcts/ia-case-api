@@ -74,10 +74,11 @@ public class UpdateStatutoryTimeframe24WeeksService {
                 buildNewCaseNote(statutoryTimeframe24WeeksStatus, statutoryTimeframe24WeeksReason, homeOfficeCaseType, userDetails), existingCaseNotes.orElse(Collections.emptyList()));
             asylumCase.write(CASE_NOTES, allCaseNotes);
 
-            //Clear transient fields used only to capture user input in the EXUI form
-            asylumCase.clear(STATUTORY_TIMEFRAME_24_WEEKS_REASON);
-            asylumCase.clear(STATUTORY_TIMEFRAME_24_WEEKS_HOME_OFFICE_CASE_TYPE);
         }
+
+        //Clear transient fields, form field will be empty for update event
+        asylumCase.clear(STATUTORY_TIMEFRAME_24_WEEKS_REASON);
+        asylumCase.clear(STATUTORY_TIMEFRAME_24_WEEKS_HOME_OFFICE_CASE_TYPE);
 
         return asylumCase;
     }
