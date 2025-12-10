@@ -349,6 +349,7 @@ security:
       - "generateListCmrTask"
       - "markAppealAsDetained"
       - "removeDetainedStatus"
+      - "addStatutoryTimeframe24Weeks"
     challenged-access-legal-operations:
       - "appellantInPersonManual"
       - "moveToPaymentPending"
@@ -656,6 +657,7 @@ security:
       - "markAppealAsDetained"
       - "removeDetainedStatus"
       - "editDocuments"
+      - "addStatutoryTimeframe24Weeks"
     ctsc-team-leader:
       - "appellantInPersonManual"
       - "startAppeal"
@@ -1004,6 +1006,8 @@ security:
       - "decideCostsApplication"
       - "considerMakingCostsOrder"
       - "updateTribunalDecision"
+      - "addStatutoryTimeframe24Weeks"
+      - "removeStatutoryTimeframe24Weeks"
     judge:
       - "generateDecisionAndReasons"
       - "endAppeal"
@@ -1285,6 +1289,7 @@ security:
       - "updateTribunalDecision"
     caseworker-ia-system:
       - "requestHearingRequirementsFeature"
+      - "changeHearingCentre"
       - "moveToPaymentPending"
       - "rollbackPayment"
       - "rollbackPaymentTimeout"
@@ -1308,6 +1313,7 @@ security:
       - "UpdateNextHearingInfo"
       - "removeCaseManagerBulk"
       - "hearingCancelled"
+      - "rollbackMigration"
     caseworker-ia-internal:
       - "revokeCaseAccess"
       - "removeCaseManagerBulk"
