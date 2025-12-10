@@ -1313,6 +1313,7 @@ security:
       - "UpdateNextHearingInfo"
       - "removeCaseManagerBulk"
       - "hearingCancelled"
+      - "rollbackMigration"
       - "addStatutoryTimeframe24Weeks"
     caseworker-ia-internal:
       - "revokeCaseAccess"
