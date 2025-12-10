@@ -35,7 +35,6 @@ java:
     LOCATION_REF_DATA_URL: "http://rd-location-ref-api-aat.service.core-compute-aat.internal"
     FEES_REGISTER_API_URL: "http://fees-register-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
     DUMMY: true
-    PAYMENT_EA_HU_NO_REMISSION_DUE_IN_MINUTES: 2
     PAYMENT_REMINDER_DUE_IN_MINUTES: 1
     ROLE_ASSIGNMENT_API_URL: https://am-role-assignment-ia-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net
     SAVE_NOTIFICATIONS_TO_DATA_EVENT_ENABLED: false
@@ -211,7 +210,6 @@ ia-case-notifications-api:
   enabled: true #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
-#    image: hmctspublic.azurecr.io/ia/case-notifications-api:latest
     image: hmctspublic.azurecr.io/ia/case-notifications-api:latest
     releaseNameOverride: ${SERVICE_NAME}-case-notifications-api
     ingressHost: ${SERVICE_NAME}-notifications-api.preview.platform.hmcts.net
