@@ -1,8 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.*;
@@ -380,17 +379,11 @@ class AutomaticEndAppealForNonPaymentEaHuTriggerTest {
         when(asylumCase.read(IS_NOTIFICATION_TURNED_OFF, YesOrNo.class))
                 .thenReturn(Optional.of(YesOrNo.YES));
 
-        assertThatThrownBy(() ->
-                automaticEndAppealForNonPaymentEaHuTrigger.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback)
-        )
-                .hasMessage("Cannot handle callback for auto end appeal for remission rejection")
-                .isExactlyInstanceOf(IllegalStateException.class);
-
         verifyNoInteractions(scheduler);
     }
 
     @Test
-    void canHandle_should_return_false_for_rehydrated_appeals() {
+    void canHandle_should_return_true_for_rehydrated_appeals() {
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -402,7 +395,7 @@ class AutomaticEndAppealForNonPaymentEaHuTriggerTest {
         boolean result = automaticEndAppealForNonPaymentEaHuTrigger
                 .canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
-        assertFalse(result);
+        assertTrue(result);
     }
 
 

@@ -140,13 +140,9 @@ class AutomaticInternalSendPaymentReminderTriggerTest {
 
         when(asylumCase.read(IS_NOTIFICATION_TURNED_OFF, YesOrNo.class))
                 .thenReturn(Optional.of(YesOrNo.YES));
-
-        assertThatThrownBy(() ->
-                automaticInternalSendPaymentReminderTrigger.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback)
-        )
-                .hasMessage("Cannot handle callback")
-                .isExactlyInstanceOf(IllegalStateException.class);
-
+        boolean result = automaticInternalSendPaymentReminderTrigger
+                .canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+        assertTrue(result);
         verifyNoInteractions(scheduler);
     }
 

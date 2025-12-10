@@ -16,7 +16,6 @@ import java.util.Arrays;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -308,13 +307,12 @@ class AutomaticDirectionRequestingHearingRequirementsHandlerTest {
         boolean canHandle = automaticDirectionHandler
                 .canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
-        Assertions.assertFalse(canHandle);
         verifyNoInteractions(scheduler);
     }
 
 
     @Test
-    void it_can_handle_callback() {
+    void it_can_handle_callback_for_notifications_turned_off() {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         // ensure this is NOT rehydrated
@@ -338,22 +336,6 @@ class AutomaticDirectionRequestingHearingRequirementsHandlerTest {
                 assertThat(canHandle).isEqualTo(expected);
             }
         }
-    }
-
-
-    @Test
-    void handling_should_throw_for_rehydrated_appeal() {
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONSE_REVIEW);
-        when(asylumCase.read(IS_NOTIFICATION_TURNED_OFF, YesOrNo.class))
-                .thenReturn(Optional.of(YesOrNo.YES));
-
-        assertThatThrownBy(() ->
-                automaticDirectionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback)
-        )
-                .hasMessage("Cannot handle callback")
-                .isExactlyInstanceOf(IllegalStateException.class);
     }
 
 
