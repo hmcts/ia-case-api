@@ -2864,6 +2864,9 @@ public enum AsylumCaseFieldDefinition {
     APPELLANT_DETAINED_DATE("appellantDetainedDate",
             new TypeReference<String>(){}),
 
+    XUI_BANNER_TEXT(
+            "xuiBannerText", new TypeReference<String>(){}),
+
     STATUTORY_TIMEFRAME_24_WEEKS(
       "statutoryTimeframe24Weeks", new TypeReference<StatutoryTimeframe24Weeks>(){}),
 
