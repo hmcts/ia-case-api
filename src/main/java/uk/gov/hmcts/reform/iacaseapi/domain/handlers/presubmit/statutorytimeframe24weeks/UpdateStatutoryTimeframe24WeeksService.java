@@ -70,18 +70,19 @@ public class UpdateStatutoryTimeframe24WeeksService {
             StatutoryTimeframe24Weeks updatedStatutoryTimeframe24Weeks =
                 buildNewStatutoryTimeframe24Weeks(statutoryTimeframe24WeeksStatus, statutoryTimeframe24WeeksReason, homeOfficeCaseType, userDetails, existingStatutoryTimeframe24Weeks);
             asylumCase.write(STATUTORY_TIMEFRAME_24_WEEKS, updatedStatutoryTimeframe24Weeks);
-            
+
             Optional<List<IdValue<CaseNote>>> existingCaseNotes = asylumCase.read(CASE_NOTES);
             List<IdValue<CaseNote>> allCaseNotes = caseNoteAppender.append(
                 buildNewCaseNote(statutoryTimeframe24WeeksStatus, statutoryTimeframe24WeeksReason, homeOfficeCaseType, userDetails), existingCaseNotes.orElse(Collections.emptyList()));
             asylumCase.write(CASE_NOTES, allCaseNotes);
 
+            bannerTextService.updateBannerText(asylumCase, updatedStatutoryTimeframe24Weeks);
         }
 
         //Clear transient fields, form field will be empty for update event
         asylumCase.clear(STATUTORY_TIMEFRAME_24_WEEKS_REASON);
 
-        bannerTextService.updateBannerText(asylumCase, updatedStatutoryTimeframe24Weeks);
+
         return asylumCase;
     }
 
