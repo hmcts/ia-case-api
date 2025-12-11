@@ -10,11 +10,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseNote;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.StatutoryTimeframe24Weeks;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.StatutoryTimeframe24WeeksHistory;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.Appender;
@@ -50,11 +46,14 @@ class UpdateStatutoryTimeframe24WeeksServiceTest {
     @Mock private List allAppendedStatutoryTimeframe24Weeks;
     @Mock private List allAppendedCaseNotes;
     @Mock private UserDetails userDetails;
+    @Mock private BannerTextService bannerTextService;
 
     @Captor private ArgumentCaptor<List<IdValue<StatutoryTimeframe24WeeksHistory>>> existingStatutoryTimeframe24WeeksHistoryCaptor;
     @Captor private ArgumentCaptor<StatutoryTimeframe24WeeksHistory> newStatutoryTimeframe24WeeksHistoryCaptor;
     @Captor private ArgumentCaptor<List<IdValue<CaseNote>>> existingCaseNotesCaptor;
     @Captor private ArgumentCaptor<CaseNote> newCaseNotesCaptor;
+    @Captor private ArgumentCaptor<StatutoryTimeframe24Weeks> statutoryTimeframe24WeeksCaptor;
+    @Captor private ArgumentCaptor<AsylumCase> asylumCaseCaptor;
 
     private final LocalDate now = LocalDate.now();
     private final LocalDateTime nowWithTime = LocalDateTime.now();
@@ -81,8 +80,7 @@ class UpdateStatutoryTimeframe24WeeksServiceTest {
                 statutoryTimeframe24WeeksHistoryAppender,
                 caseNoteAppender,
                 dateProvider,
-                userDetails
-            );
+                userDetails, bannerTextService);
     }
 
     @Test
@@ -122,6 +120,7 @@ class UpdateStatutoryTimeframe24WeeksServiceTest {
 
         verify(asylumCase, times(1)).write(STATUTORY_TIMEFRAME_24_WEEKS, new StatutoryTimeframe24Weeks(newStatus, allAppendedStatutoryTimeframe24Weeks));
         verify(asylumCase, times(1)).clear(STATUTORY_TIMEFRAME_24_WEEKS_REASON);
+        verify(bannerTextService, times(1)).updateBannerText(asylumCaseCaptor.capture(), statutoryTimeframe24WeeksCaptor.capture());
     }
 
     @Test
