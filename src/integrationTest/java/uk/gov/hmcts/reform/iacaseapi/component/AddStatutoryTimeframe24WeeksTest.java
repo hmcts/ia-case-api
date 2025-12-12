@@ -20,18 +20,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.AsylumCaseForTest.anAsylumCase;
 import static uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.CallbackForTest.CallbackForTestBuilder.callback;
 import static uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.CaseDetailsForTest.CaseDetailsForTestBuilder.someCaseDetailsWith;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_FAMILY_NAME;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_GIVEN_NAMES;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_NOTES;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STATUTORY_TIMEFRAME_24_WEEKS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STATUTORY_TIMEFRAME_24_WEEKS_REASON;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STATUTORY_TIMEFRAME_24_WEEKS_HOME_OFFICE_CASE_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.ADD_STATUTORY_TIMEFRAME_24_WEEKS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.APPEAL_SUBMITTED;
 
 class AddStatutoryTimeframe24WeeksTest extends SpringBootIntegrationTest implements WithUserDetailsStub,
     WithRoleAssignmentStub, WithServiceAuthStub {
-
+    private static final String APPEAL_SUBMISSION_DATE_STR = "2025-12-10";
     @Test
     @WithMockUser(authorities = {"caseworker-ia", "tribunal-caseworker"})
     void adds_a_statutory_timeframe_24_weeks() {
@@ -45,6 +40,7 @@ class AddStatutoryTimeframe24WeeksTest extends SpringBootIntegrationTest impleme
             .caseDetails(someCaseDetailsWith()
                 .state(APPEAL_SUBMITTED)
                 .caseData(anAsylumCase()
+                    .with(APPEAL_SUBMISSION_DATE, APPEAL_SUBMISSION_DATE_STR)
                     .with(STATUTORY_TIMEFRAME_24_WEEKS_REASON, reason)
                     .with(STATUTORY_TIMEFRAME_24_WEEKS_HOME_OFFICE_CASE_TYPE, homeOfficeCaseType)
                     .with(APPELLANT_GIVEN_NAMES, "some-given-name")
