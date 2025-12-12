@@ -27,6 +27,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.APPEAL_SUB
 class AddStatutoryTimeframe24WeeksTest extends SpringBootIntegrationTest implements WithUserDetailsStub,
     WithRoleAssignmentStub, WithServiceAuthStub {
     private static final String APPEAL_SUBMISSION_DATE_STR = "2025-12-10";
+    
     @Test
     @WithMockUser(authorities = {"caseworker-ia", "tribunal-caseworker"})
     void adds_a_statutory_timeframe_24_weeks() {
