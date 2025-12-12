@@ -43,7 +43,7 @@ public class BannerTextService {
     @NotNull
     private String populateSTF24wBannerText(AsylumCase asylumCase) {
         Optional<String> appealSubmissionDate = asylumCase.read(APPEAL_SUBMISSION_DATE);
-        String added24WeeksToAppealDate = add24WeeksToAppealDate(appealSubmissionDate.get());
+        String added24WeeksToAppealDate = add24WeeksToAppealDate(appealSubmissionDate);
         return PRE_24W_BANNER_TEXT + added24WeeksToAppealDate;
     }
 
@@ -53,7 +53,7 @@ public class BannerTextService {
 
 
     private void remove24wBannerText(AsylumCase asylumCase, Optional<String> bannerTex, String stf24wBannerText) {
-        String existingBannerText = bannerTex.get();
+        String existingBannerText = bannerTex.orElse(EMPTY);
         if (is24wBannerTextAlreadyExist(existingBannerText, stf24wBannerText)) {
             existingBannerText = existingBannerText.replace(stf24wBannerText, EMPTY);
             add24wBannerText(asylumCase, existingBannerText.trim());
@@ -61,7 +61,7 @@ public class BannerTextService {
     }
 
     private void append24wBannerTextToExistingBannerText(AsylumCase asylumCase, Optional<String> bannerTex, String stf24wBannerText) {
-        String existingBannerText = bannerTex.get();
+        String existingBannerText = bannerTex.orElse(EMPTY);
         if (!is24wBannerTextAlreadyExist(existingBannerText, stf24wBannerText)) {
             if (!existingBannerText.isEmpty()) {
                 existingBannerText = existingBannerText + SPACE + stf24wBannerText;
@@ -76,8 +76,8 @@ public class BannerTextService {
         return existingText.contains(stf24wBannerText);
     }
 
-    public String add24WeeksToAppealDate(String appealSubmittedDate) {
-        LocalDate appealDate = parse(appealSubmittedDate);
+    public String add24WeeksToAppealDate(Optional<String> appealSubmittedDate) {
+        LocalDate appealDate = parse(appealSubmittedDate.orElse(EMPTY));
         LocalDate stf24WeeksDate = appealDate.plusWeeks(INT_24);
         DateTimeFormatter dateFormatter = ofPattern(DD_MMM_YYYY);
         return stf24WeeksDate.format(dateFormatter);
