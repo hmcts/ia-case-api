@@ -65,5 +65,6 @@ class AddStatutoryTimeframe24WeeksTest extends SpringBootIntegrationTest impleme
         assertThat(statutoryTimeframe24WeekHistory.get(0).getValue().getStatus()).isEqualTo(YesOrNo.YES);
         assertThat(statutoryTimeframe24WeekHistory.get(0).getValue().getReason()).isEqualTo(reason);
         assertThat(statutoryTimeframe24WeekHistory.get(0).getValue().getHomeOfficeCaseType()).isEqualTo(homeOfficeCaseType);
+        assertThat(response.getAsylumCase().read(XUI_BANNER_TEXT).get()).isEqualTo("24 Week STF: case deadline 27 May 2026");
     }
 }

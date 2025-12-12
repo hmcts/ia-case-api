@@ -35,12 +35,14 @@ class RemoveStatutoryTimeframe24WeeksTest extends SpringBootIntegrationTest impl
         addRoleAssignmentActorStub(server);
         String reason = "some reason";
         String homeOfficeCaseType = "some case type";
+        String bannerText = "some text 24 Week STF: case deadline 27 May 2026";
         PreSubmitCallbackResponseForTest response = iaCaseApiClient.aboutToSubmit(callback()
             .event(REMOVE_STATUTORY_TIMEFRAME_24_WEEKS)
             .caseDetails(someCaseDetailsWith()
                 .state(APPEAL_SUBMITTED)
                 .caseData(anAsylumCase()
                     .with(APPEAL_SUBMISSION_DATE, APPEAL_SUBMISSION_DATE_STR)
+                    .with(XUI_BANNER_TEXT, bannerText)
                     .with(STATUTORY_TIMEFRAME_24_WEEKS_REASON, reason)
                     .with(STATUTORY_TIMEFRAME_24_WEEKS_HOME_OFFICE_CASE_TYPE, homeOfficeCaseType)
                     .with(APPELLANT_GIVEN_NAMES, "some-given-name")
@@ -65,5 +67,6 @@ class RemoveStatutoryTimeframe24WeeksTest extends SpringBootIntegrationTest impl
         assertThat(statutoryTimeframe24WeekHistory.get(0).getValue().getStatus()).isEqualTo(YesOrNo.NO);
         assertThat(statutoryTimeframe24WeekHistory.get(0).getValue().getReason()).isEqualTo(reason);
         assertThat(statutoryTimeframe24WeekHistory.get(0).getValue().getHomeOfficeCaseType()).isEqualTo(homeOfficeCaseType);
+        assertThat(response.getAsylumCase().read(XUI_BANNER_TEXT).get()).isEqualTo("some text");
     }
 }
