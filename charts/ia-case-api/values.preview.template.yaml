@@ -40,6 +40,7 @@ java:
     SAVE_NOTIFICATIONS_TO_DATA_EVENT_ENABLED: false
     SAVE_NOTIFICATIONS_DATA_SCHEDULE_HOUR: 17
     SAVE_NOTIFICATIONS_DATA_SCHEDULE_MAX_MINUTES: 5
+    logging.level.root: DEBUG
   keyVaults:
     ia:
       resourceGroup: ia
@@ -137,7 +138,7 @@ ia-case-documents-api:
   enabled: true #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
-    image: hmctspublic.azurecr.io/ia/case-documents-api:latest
+    image: hmctspublic.azurecr.io/ia/case-documents-api:pr-1125
     releaseNameOverride: ${SERVICE_NAME}-case-documents-api
     ingressHost: ${SERVICE_NAME}-documents-api.preview.platform.hmcts.net
     devcpuRequests: 500m
@@ -866,6 +867,7 @@ ccd:
         ENABLE_ATTRIBUTE_BASED_ACCESS_CONTROL: true
         ENABLE_PSEUDO_ROLE_ASSIGNMENTS_GENERATION: true
         ENABLE_PSEUDO_ACCESS_PROFILES_GENERATION: true
+        logging.level.root: DEBUG
       keyVaults: []
       ingressHost: ccd-data-store-api-${SERVICE_FQDN}
 
