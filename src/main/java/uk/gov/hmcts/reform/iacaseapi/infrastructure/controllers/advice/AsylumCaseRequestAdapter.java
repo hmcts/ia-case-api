@@ -28,11 +28,12 @@ public class AsylumCaseRequestAdapter extends RequestBodyAdviceAdapter {
 
     @Override
     public Object afterBodyRead(Object body, HttpInputMessage inputMessage, MethodParameter parameter, Type targetType, Class<? extends HttpMessageConverter<?>> converterType) {
+        if (body instanceof Callback<?>) {
+            Callback<AsylumCase> callback = (Callback<AsylumCase>) body;
+            CaseDetails<AsylumCase> caseDetails = callback.getCaseDetails();
 
-        Callback<AsylumCase> callback = (Callback<AsylumCase>) body;
-        CaseDetails<AsylumCase> caseDetails = callback.getCaseDetails();
-
-        RequestContextHolder.currentRequestAttributes().setAttribute("CCDCaseId", caseDetails.getId(), RequestAttributes.SCOPE_REQUEST);
+            RequestContextHolder.currentRequestAttributes().setAttribute("CCDCaseId", caseDetails.getId(), RequestAttributes.SCOPE_REQUEST);
+        }
 
         return body;
     }

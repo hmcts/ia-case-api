@@ -74,8 +74,8 @@ public class CcdCaseCreationTest {
     protected String legalRepUserId;
     protected String citizenUserId;
 
-    private static final String jurisdiction = "IA";
-    private static final String caseType = "Asylum";
+    protected static final String jurisdiction = "IA";
+    protected static final String caseType = "Asylum";
     protected static final String AUTHORIZATION = "Authorization";
     protected static final String SERVICE_AUTHORIZATION = "ServiceAuthorization";
 
