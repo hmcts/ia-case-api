@@ -26,6 +26,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.APPEAL_SUB
 
 class RemoveStatutoryTimeframe24WeeksTest extends SpringBootIntegrationTest implements WithUserDetailsStub,
     WithRoleAssignmentStub, WithServiceAuthStub {
+
     private static final String APPEAL_SUBMISSION_DATE_STR = "2025-12-10";
 
     @Test
