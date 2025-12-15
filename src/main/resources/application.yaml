@@ -1320,6 +1320,7 @@ security:
       - "hearingCancelled"
       - "rollbackMigration"
       - "addStatutoryTimeframe24Weeks"
+      - "removeStatutoryTimeframe24Weeks"
     caseworker-ia-internal:
       - "revokeCaseAccess"
       - "removeCaseManagerBulk"
