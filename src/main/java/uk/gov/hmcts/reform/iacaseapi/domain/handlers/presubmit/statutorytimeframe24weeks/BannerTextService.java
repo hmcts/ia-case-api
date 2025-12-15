@@ -14,8 +14,7 @@ import static java.time.LocalDate.parse;
 import static java.time.format.DateTimeFormatter.ofPattern;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.commons.lang3.StringUtils.SPACE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_SUBMISSION_DATE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.XUI_BANNER_TEXT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 @Slf4j
@@ -42,9 +41,10 @@ public class BannerTextService {
 
     @NotNull
     private String populateSTF24wBannerText(AsylumCase asylumCase) {
-        Optional<String> appealSubmissionDate = asylumCase.read(APPEAL_SUBMISSION_DATE);
-        String added24WeeksToAppealDate = add24WeeksToAppealDate(appealSubmissionDate);
-        return PRE_24W_BANNER_TEXT + added24WeeksToAppealDate;
+        Optional<String> tribunalReceivedDate = asylumCase.read(TRIBUNAL_RECEIVED_DATE);
+        String added24WeeksToDate = tribunalReceivedDate.isPresent() ? add24WeeksTolDate(tribunalReceivedDate) :
+                add24WeeksTolDate(asylumCase.read(APPEAL_SUBMISSION_DATE));
+        return PRE_24W_BANNER_TEXT + added24WeeksToDate;
     }
 
     private Optional<String> getExistingCaseBannerText(AsylumCase asylumCase) {
@@ -76,8 +76,8 @@ public class BannerTextService {
         return existingText.contains(stf24wBannerText);
     }
 
-    public String add24WeeksToAppealDate(Optional<String> appealSubmittedDate) {
-        LocalDate appealDate = parse(appealSubmittedDate.orElse(EMPTY));
+    public String add24WeeksTolDate(@NotNull Optional<String> submittedDate) {
+        LocalDate appealDate = parse(submittedDate.orElse(EMPTY));
         LocalDate stf24WeeksDate = appealDate.plusWeeks(INT_24);
         DateTimeFormatter dateFormatter = ofPattern(DD_MMM_YYYY);
         return stf24WeeksDate.format(dateFormatter);
