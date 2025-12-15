@@ -152,6 +152,11 @@ public enum AsylumCaseFieldDefinition {
     SEND_DIRECTION_EXPLANATION(
         "sendDirectionExplanation", new TypeReference<String>(){}),
 
+    END_APPEAL_OUTCOME(
+            "endAppealOutcome", new TypeReference<String>(){}),
+    END_APPEAL_OUTCOME_REASON(
+            "endAppealOutcomeReason", new TypeReference<String>(){}),
+
     SEND_DIRECTION_PARTIES(
         "sendDirectionParties", new TypeReference<Parties>(){}),
 
