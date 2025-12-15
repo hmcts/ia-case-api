@@ -95,6 +95,6 @@ class AddStatutoryTimeframe24WeeksTest extends SpringBootIntegrationTest impleme
                                 .with(APPELLANT_GIVEN_NAMES, SOME_GIVEN_NAME)
                                 .with(APPELLANT_FAMILY_NAME, SOME_FAMILY_NAME))));
 
-         assertThat(response.getAsylumCase().read(XUI_BANNER_TEXT).get()).isEqualTo(WEEK_STF_CASE_DEADLINE_28_MAY_2026);
+        assertThat(response.getAsylumCase().read(XUI_BANNER_TEXT).get()).isEqualTo(WEEK_STF_CASE_DEADLINE_28_MAY_2026);
     }
 }
