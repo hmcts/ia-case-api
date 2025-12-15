@@ -9,6 +9,8 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag;
@@ -20,6 +22,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentReceiver;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
@@ -67,6 +70,23 @@ public class AppealWasNotSubmittedSupportingDocumentsHandler implements PreSubmi
         YesOrNo isAdmin = asylumCase.read(IS_ADMIN, YesOrNo.class).orElse(YesOrNo.NO);
 
         if (featureToggler.getValue("dlrm-internal-feature-flag", false) && isAdmin.equals(YesOrNo.YES)) {
+
+            Optional<List<IdValue<DocumentWithMetadata>>> maybeExistingLegalRepDocuments =
+                    asylumCase.read(LEGAL_REPRESENTATIVE_DOCUMENTS);
+
+            List<IdValue<DocumentWithMetadata>> existingLegalRepDocuments =
+                    maybeExistingLegalRepDocuments.orElse(emptyList());
+
+            legalRepDocumentsContainSupportDocs = checkIfAppealNotSubmittedDocumentExist(existingLegalRepDocuments);
+
+            if (legalRepDocumentsContainSupportDocs) {
+                if (HandlerUtils.isAppellantsRepresentation(asylumCase)) {
+                    asylumCase.write(LEGAL_REPRESENTATIVE_DOCUMENTS, removeAppealNotSubmittedDocument(existingLegalRepDocuments));
+                }
+
+                return new PreSubmitCallbackResponse<>(asylumCase);
+            }
+
             Optional<List<IdValue<DocumentWithDescription>>> maybeAppealNotSubmittedReasonDocuments =
                 asylumCase.read(APPEAL_NOT_SUBMITTED_REASON_DOCUMENTS);
 
@@ -80,18 +100,6 @@ public class AppealWasNotSubmittedSupportingDocumentsHandler implements PreSubmi
                     .map(Optional::get)
                     .collect(Collectors.toList());
 
-            Optional<List<IdValue<DocumentWithMetadata>>> maybeExistingLegalRepDocuments =
-                asylumCase.read(LEGAL_REPRESENTATIVE_DOCUMENTS);
-
-            List<IdValue<DocumentWithMetadata>> existingLegalRepDocuments =
-                maybeExistingLegalRepDocuments.orElse(emptyList());
-
-            legalRepDocumentsContainSupportDocs = checkIfAppealNotSubmittedDocumentExist(existingLegalRepDocuments);
-
-            if (legalRepDocumentsContainSupportDocs) {
-                return new PreSubmitCallbackResponse<>(asylumCase);
-            }
-
             if (!appealWasNotSubmittedReasons.isEmpty()) {
                 List<IdValue<DocumentWithMetadata>> allLegalRepDocuments =
                     documentsAppender.prepend(existingLegalRepDocuments, appealWasNotSubmittedReasons);
@@ -101,6 +109,14 @@ public class AppealWasNotSubmittedSupportingDocumentsHandler implements PreSubmi
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
+    }
+
+    @NotNull
+    private static List<IdValue<DocumentWithMetadata>> removeAppealNotSubmittedDocument(List<IdValue<DocumentWithMetadata>> existingLegalRepDocuments) {
+        return existingLegalRepDocuments.stream().filter(documentWithMetadataIdValue ->
+                documentWithMetadataIdValue.getValue().getTag() != null
+                        && !documentWithMetadataIdValue.getValue().getTag()
+                        .equals(DocumentTag.APPEAL_WAS_NOT_SUBMITTED_SUPPORTING_DOCUMENT)).collect(Collectors.toList());
     }
 
     private boolean checkIfAppealNotSubmittedDocumentExist(List<IdValue<DocumentWithMetadata>> listOfLegalRepDocuments) {

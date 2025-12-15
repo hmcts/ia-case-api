@@ -5,11 +5,16 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_NOT_SUBMITTED_REASON_DOCUMENTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANTS_REPRESENTATION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ADMIN;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LEGAL_REPRESENTATIVE_DOCUMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag.APPEAL_WAS_NOT_SUBMITTED_SUPPORTING_DOCUMENT;
@@ -187,6 +192,29 @@ class AppealWasNotSubmittedSupportingDocumentsHandlerTest {
             allLegalRepDocuments,
             notSubmittedWithMetadata
         );
+    }
+
+    @Test
+    void should_remove_appeal_was_not_submitted_doc_to_legal_rep_documents_for_appellant_manual_appeals() {
+
+        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+        when(asylumCase.read(APPELLANTS_REPRESENTATION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+
+        when(appealWasNotSubmittedWithMetadata.getTag()).thenReturn(APPEAL_WAS_NOT_SUBMITTED_SUPPORTING_DOCUMENT);
+        allLegalRepDocuments = List.of(
+            new IdValue<>("1", someLegalRepDocument),
+            new IdValue<>("2", appealWasNotSubmittedWithMetadata)
+        );
+
+        when(asylumCase.read(LEGAL_REPRESENTATIVE_DOCUMENTS)).thenReturn(Optional.of(allLegalRepDocuments));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse = appealWasNotSubmittedSupportingDocumentsHandler.handle(ABOUT_TO_SUBMIT, callback);
+
+        assertThat(callbackResponse).isNotNull();
+        verify(asylumCase, times(1)).write(eq(LEGAL_REPRESENTATIVE_DOCUMENTS), anyList());
+        verify(asylumCase, never()).read(APPEAL_NOT_SUBMITTED_REASON_DOCUMENTS);
+        verifyNoInteractions(documentReceiver);
+        verifyNoInteractions(documentsAppender);
     }
 
     @Test
