@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.Appender;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.BannerTextService;
 
 import java.time.LocalDate;
 import java.util.Collections;
@@ -31,14 +32,14 @@ public class UpdateStatutoryTimeframe24WeeksService {
     private final Appender<CaseNote> caseNoteAppender;
     private final DateProvider dateProvider;
     private final UserDetails userDetails;
-    private final BannerTextService bannerTextService;
+    private final STF24WeeksBannerTextService bannerTextService;
 
     public UpdateStatutoryTimeframe24WeeksService(
         Appender<StatutoryTimeframe24WeeksHistory> statutoryTimeframe24WeeksHistoryAppender,
         Appender<CaseNote> caseNoteAppender,
         DateProvider dateProvider,
         UserDetails userDetails,
-        BannerTextService bannerTextService) {
+        STF24WeeksBannerTextService bannerTextService) {
         this.statutoryTimeframe24WeeksHistoryAppender = statutoryTimeframe24WeeksHistoryAppender;
         this.caseNoteAppender = caseNoteAppender;
         this.dateProvider = dateProvider;

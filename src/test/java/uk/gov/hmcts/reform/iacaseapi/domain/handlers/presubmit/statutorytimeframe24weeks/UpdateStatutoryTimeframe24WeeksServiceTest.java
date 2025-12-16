@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.Appender;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.BannerTextService;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -50,7 +51,7 @@ class UpdateStatutoryTimeframe24WeeksServiceTest {
     @Mock private List allAppendedStatutoryTimeframe24Weeks;
     @Mock private List allAppendedCaseNotes;
     @Mock private UserDetails userDetails;
-    @Mock private BannerTextService bannerTextService;
+    @Mock private STF24WeeksBannerTextService bannerTextService;
 
     @Captor private ArgumentCaptor<List<IdValue<StatutoryTimeframe24WeeksHistory>>> existingStatutoryTimeframe24WeeksHistoryCaptor;
     @Captor private ArgumentCaptor<StatutoryTimeframe24WeeksHistory> newStatutoryTimeframe24WeeksHistoryCaptor;
