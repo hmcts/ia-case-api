@@ -41,13 +41,14 @@ public class BannerTextService {
     @NotNull
     private String populateSTF24wBannerText(AsylumCase asylumCase) {
         String tribunalReceivedDate = getTribunalReceivedDate(asylumCase);
-        String added24WeeksToDate;
+        String stf24WeeksAddedToDate;
         if (isEmpty(tribunalReceivedDate)) {
-            added24WeeksToDate = add24WeeksToDate(getAppealSubmissionDate(asylumCase));
+            String appealSubmissionDate = getAppealSubmissionDate(asylumCase);
+            stf24WeeksAddedToDate = add24WeeksToDate(appealSubmissionDate);
         } else {
-            added24WeeksToDate = add24WeeksToDate(tribunalReceivedDate);
+            stf24WeeksAddedToDate = add24WeeksToDate(tribunalReceivedDate);
         }
-        return PRE_24W_BANNER_TEXT + added24WeeksToDate;
+        return PRE_24W_BANNER_TEXT + stf24WeeksAddedToDate;
     }
 
     private String getAppealSubmissionDate(AsylumCase asylumCase) {
