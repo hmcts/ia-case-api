@@ -31,17 +31,19 @@ public class UpdateStatutoryTimeframe24WeeksService {
     private final Appender<CaseNote> caseNoteAppender;
     private final DateProvider dateProvider;
     private final UserDetails userDetails;
+    private final STF24WeeksBannerTextService bannerTextService;
 
     public UpdateStatutoryTimeframe24WeeksService(
         Appender<StatutoryTimeframe24WeeksHistory> statutoryTimeframe24WeeksHistoryAppender,
         Appender<CaseNote> caseNoteAppender,
         DateProvider dateProvider,
-        UserDetails userDetails
-    ) {
+        UserDetails userDetails,
+        STF24WeeksBannerTextService bannerTextService) {
         this.statutoryTimeframe24WeeksHistoryAppender = statutoryTimeframe24WeeksHistoryAppender;
         this.caseNoteAppender = caseNoteAppender;
         this.dateProvider = dateProvider;
         this.userDetails = userDetails;
+        this.bannerTextService = bannerTextService;
     }
 
     public AsylumCase updateAsylumCase(AsylumCase asylumCase, YesOrNo statutoryTimeframe24WeeksStatus) {
@@ -73,6 +75,7 @@ public class UpdateStatutoryTimeframe24WeeksService {
             List<IdValue<CaseNote>> allCaseNotes = caseNoteAppender.append(
                 buildNewCaseNote(statutoryTimeframe24WeeksStatus, statutoryTimeframe24WeeksReason, homeOfficeCaseType, userDetails), existingCaseNotes.orElse(Collections.emptyList()));
             asylumCase.write(CASE_NOTES, allCaseNotes);
+            bannerTextService.updateBannerText(asylumCase, updatedStatutoryTimeframe24Weeks);
 
         }
 

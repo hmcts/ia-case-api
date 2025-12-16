@@ -1,0 +1,107 @@
+package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.statutorytimeframe24weeks;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.StatutoryTimeframe24Weeks;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.BannerTextService;
+
+import java.util.ArrayList;
+import java.util.Optional;
+
+import static org.apache.commons.lang3.StringUtils.EMPTY;
+import static org.apache.commons.lang3.StringUtils.SPACE;
+import static org.mockito.Mockito.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_SUBMISSION_DATE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.TRIBUNAL_RECEIVED_DATE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
+
+@MockitoSettings(strictness = Strictness.LENIENT)
+@ExtendWith(MockitoExtension.class)
+class STF24WeeksBannerTextServiceTest {
+    private static final String PRE_EXISTING_BANNER_TEXT = "Some text";
+    private static final String STF_24_W_BANNER_TEXT_TRIB_RECEIVED_DATE = "24 Week STF: case deadline 27 May 2026";
+    private static final String STF_24_W_BANNER_TEXT_APPEAL_SUBMIT_DATE = "24 Week STF: case deadline 28 May 2026";
+    private static final String APPEAL_SUBMISSION_DATE_STR = "2025-12-11";
+    private static final String TRIBUNAL_RECEIVED_DATE_STR = "2025-12-10";
+    private static final int ONE = 1;
+
+    @Mock
+    private BannerTextService bannerTextService;
+    @Mock
+    private AsylumCase asylumCase;
+
+    private STF24WeeksBannerTextService subject;
+
+
+    @BeforeEach
+    public void setUp() {
+        when(asylumCase.read(APPEAL_SUBMISSION_DATE)).thenReturn(Optional.of(APPEAL_SUBMISSION_DATE_STR));
+        when(asylumCase.read(TRIBUNAL_RECEIVED_DATE)).thenReturn(Optional.of(TRIBUNAL_RECEIVED_DATE_STR));
+        subject = new STF24WeeksBannerTextService(bannerTextService);
+    }
+
+    @Test
+    void shouldAdd24wBannerTextIfNoCaseBannerTextExists() {
+        when(bannerTextService.getBannerText(asylumCase)).thenReturn(EMPTY);
+        subject.updateBannerText(asylumCase, buildSTF24WeeksWithStatus(YES));
+        verifyBannerTextUpdateWith(STF_24_W_BANNER_TEXT_TRIB_RECEIVED_DATE);
+    }
+
+    @Test
+    void shouldAppend24WBannerTextToExistingCaseBannerText() {
+
+        when(bannerTextService.getBannerText(asylumCase)).thenReturn(PRE_EXISTING_BANNER_TEXT);
+
+        subject.updateBannerText(asylumCase, buildSTF24WeeksWithStatus(YES));
+        verifyBannerTextUpdateWith(PRE_EXISTING_BANNER_TEXT + SPACE + STF_24_W_BANNER_TEXT_TRIB_RECEIVED_DATE);
+    }
+
+    @Test
+    void shouldAppend24WBannerTextToExistingCaseBannerTextForAppealSubmitDate() {
+        when(asylumCase.read(TRIBUNAL_RECEIVED_DATE)).thenReturn(Optional.empty());
+        when(asylumCase.read(APPEAL_SUBMISSION_DATE)).thenReturn(Optional.of(APPEAL_SUBMISSION_DATE_STR));
+        when(bannerTextService.getBannerText(asylumCase)).thenReturn(PRE_EXISTING_BANNER_TEXT);
+        subject.updateBannerText(asylumCase, buildSTF24WeeksWithStatus(YES));
+        verifyBannerTextUpdateWith(PRE_EXISTING_BANNER_TEXT + SPACE + STF_24_W_BANNER_TEXT_APPEAL_SUBMIT_DATE);
+    }
+
+    @Test
+    void shouldAdd24WBannerTextIfExistingCaseBannerText() {
+        when(bannerTextService.getBannerText(asylumCase)).thenReturn(EMPTY);
+
+        subject.updateBannerText(asylumCase, buildSTF24WeeksWithStatus(YES));
+        verifyBannerTextUpdateWith(STF_24_W_BANNER_TEXT_TRIB_RECEIVED_DATE);
+    }
+
+    @Test
+    void shouldRemove24wBannerTextFromTheCaseBannerTextAndUpdateWithEmptyText() {
+        when(bannerTextService.getBannerText(asylumCase)).thenReturn(STF_24_W_BANNER_TEXT_TRIB_RECEIVED_DATE);
+        subject.updateBannerText(asylumCase, buildSTF24WeeksWithStatus(NO));
+        verifyBannerTextUpdateWith(EMPTY);
+    }
+
+    @Test
+    void shouldRemove24wBannerTextFromTheCaseBannerTextHasSomeText() {
+        when(bannerTextService.getBannerText(asylumCase)).thenReturn(PRE_EXISTING_BANNER_TEXT + EMPTY + STF_24_W_BANNER_TEXT_TRIB_RECEIVED_DATE);
+        subject.updateBannerText(asylumCase, buildSTF24WeeksWithStatus(NO));
+        verifyBannerTextUpdateWith(PRE_EXISTING_BANNER_TEXT);
+    }
+
+    private void verifyBannerTextUpdateWith(String bannerTextWriteIntoDB) {
+        verify(bannerTextService, times(ONE)).addBannerText(asylumCase, bannerTextWriteIntoDB);
+    }
+
+    private StatutoryTimeframe24Weeks buildSTF24WeeksWithStatus(YesOrNo statusAutoGenerated) {
+        return new StatutoryTimeframe24Weeks(statusAutoGenerated, EMPTY, new ArrayList<>());
+    }
+
+}
+
