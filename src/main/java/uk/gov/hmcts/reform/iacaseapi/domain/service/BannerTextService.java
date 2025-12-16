@@ -2,12 +2,13 @@ package uk.gov.hmcts.reform.iacaseapi.domain.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 
 import java.util.Optional;
 
 import static org.apache.commons.lang3.StringUtils.EMPTY;
+import static org.apache.commons.lang3.StringUtils.SPACE;
+import static org.springframework.util.StringUtils.hasText;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.XUI_BANNER_TEXT;
 
 @Slf4j
@@ -19,14 +20,48 @@ public class BannerTextService {
         return read.orElse(EMPTY);
     }
 
-    public void addBannerText(AsylumCase asylumCase, String bannerText) {
-        if (StringUtils.hasText(bannerText)) {
-            asylumCase.write(XUI_BANNER_TEXT, bannerText);
-        } else {
-            log.error("Banner text value is {}", bannerText);
-            throw new IllegalArgumentException("Banner text can not be null or empty");
-        }
 
+    public void addBannerText(AsylumCase asylumCase, String bannerText) {
+        validateText(bannerText);
+        asylumCase.write(XUI_BANNER_TEXT, bannerText.trim());
     }
 
+    public void addToBannerText(AsylumCase asylumCase, String bannerText) {
+        validateText(bannerText);
+        String existingBannerText = getBannerText(asylumCase);
+        if (canAddNewBannerText(existingBannerText, bannerText)) {
+            StringBuilder existingTextBuilder = new StringBuilder(existingBannerText);
+            StringBuilder newBannerText;
+            if (hasText(existingTextBuilder)) {
+                newBannerText = existingTextBuilder.append(SPACE).append(bannerText);
+            } else {
+                newBannerText = existingTextBuilder.append(bannerText.trim());
+            }
+            asylumCase.write(XUI_BANNER_TEXT, newBannerText.toString());
+        }
+    }
+
+    public void removeFromBannerText(AsylumCase asylumCase, String bannerText) {
+        validateText(bannerText);
+        String existingBannerText = getBannerText(asylumCase);
+        if (canRemoveFromTheExistingText(existingBannerText, bannerText)) {
+            String bannerTextAfterRemove = existingBannerText.replace(bannerText, EMPTY);
+            asylumCase.write(XUI_BANNER_TEXT, bannerTextAfterRemove.trim());
+        }
+    }
+
+    private void validateText(String text) {
+        if (!hasText(text)) {
+            log.error("Banner text can not be null or empty");
+            throw new IllegalArgumentException("Banner text can not be null or empty");
+        }
+    }
+
+    private boolean canRemoveFromTheExistingText(String existingText, String newText) {
+        return existingText.toLowerCase().contains(newText.toLowerCase());
+    }
+
+    private boolean canAddNewBannerText(String existingText, String newText) {
+        return !existingText.equalsIgnoreCase(newText);
+    }
 }
