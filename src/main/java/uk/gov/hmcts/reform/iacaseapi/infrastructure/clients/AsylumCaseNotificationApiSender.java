@@ -81,7 +81,7 @@ public class AsylumCaseNotificationApiSender implements NotificationSender<Asylu
                 asylumCase.write(SAVE_NOTIFICATIONS_TO_DATA_DATE, LocalDate.now());
             }
         } else {
-            log.info("Skipping saveNotificationsToDate event schedule");
+            log.info("Skipping saveNotificationsToData event schedule");
         }
 
         return asylumCaseCallbackApiDelegator.delegate(
