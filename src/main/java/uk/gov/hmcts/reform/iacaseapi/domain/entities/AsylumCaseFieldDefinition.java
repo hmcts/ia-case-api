@@ -152,6 +152,11 @@ public enum AsylumCaseFieldDefinition {
     SEND_DIRECTION_EXPLANATION(
         "sendDirectionExplanation", new TypeReference<String>(){}),
 
+    END_APPEAL_OUTCOME(
+            "endAppealOutcome", new TypeReference<String>(){}),
+    END_APPEAL_OUTCOME_REASON(
+            "endAppealOutcomeReason", new TypeReference<String>(){}),
+
     SEND_DIRECTION_PARTIES(
         "sendDirectionParties", new TypeReference<Parties>(){}),
 
@@ -1347,6 +1352,9 @@ public enum AsylumCaseFieldDefinition {
 
     FEE_WITHOUT_HEARING(
         "feeWithoutHearing", new TypeReference<String>(){}),
+
+    DATES_TO_AVOID_YES_NO(
+        "datesToAvoidYesNo", new TypeReference<YesOrNo>(){}),
 
     DATES_TO_AVOID(
         "datesToAvoid", new TypeReference<List<IdValue<DatesToAvoid>>>(){}),
@@ -2860,6 +2868,15 @@ public enum AsylumCaseFieldDefinition {
 
     APPELLANT_DETAINED_DATE("appellantDetainedDate",
             new TypeReference<String>(){}),
+
+    STATUTORY_TIMEFRAME_24_WEEKS(
+      "statutoryTimeframe24Weeks", new TypeReference<StatutoryTimeframe24Weeks>(){}),
+
+    STATUTORY_TIMEFRAME_24_WEEKS_REASON(
+        "statutoryTimeframe24WeeksReason", new TypeReference<String>(){}),
+
+    STATUTORY_TIMEFRAME_24_WEEKS_HOME_OFFICE_CASE_TYPE(
+        "statutoryTimeframe24WeeksHomeOfficeCaseType", new TypeReference<String>(){}),
     ;
 
     private final String value;

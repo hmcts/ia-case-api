@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.ADJOURN;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.CHANGE_HEARING_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.CHANGE_DECISION_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.EXPEDITE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.LINK_OR_UNLINK;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.OTHER;
@@ -87,7 +87,7 @@ class MakeAnApplicationTypesProviderTest {
             new Value(TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.name(),
                 TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.toString()),
             new Value(OTHER.name(), OTHER.toString()),
-            new Value(CHANGE_HEARING_TYPE.name(), CHANGE_HEARING_TYPE.toString()));
+            new Value(CHANGE_DECISION_TYPE.name(), CHANGE_DECISION_TYPE.toString()));
 
         DynamicList expectedList =
             new DynamicList(values.get(0), values);
@@ -155,7 +155,7 @@ class MakeAnApplicationTypesProviderTest {
             new Value(LINK_OR_UNLINK.name(), LINK_OR_UNLINK.toString()),
             new Value(JUDGE_REVIEW_LO.name(), JUDGE_REVIEW_LO.toString()),
             new Value(OTHER.name(), OTHER.toString()),
-            new Value(CHANGE_HEARING_TYPE.name(), CHANGE_HEARING_TYPE.toString()));
+            new Value(CHANGE_DECISION_TYPE.name(), CHANGE_DECISION_TYPE.toString()));
 
         if (!state.equals(PENDING_PAYMENT)) {
             values.addAll(Arrays.asList(
@@ -214,7 +214,7 @@ class MakeAnApplicationTypesProviderTest {
             new Value(TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.name(),
                 TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.toString()),
             new Value(UPDATE_APPEAL_DETAILS.name(), UPDATE_APPEAL_DETAILS.toString()),
-            new Value(CHANGE_HEARING_TYPE.name(), CHANGE_HEARING_TYPE.toString()));
+            new Value(CHANGE_DECISION_TYPE.name(), CHANGE_DECISION_TYPE.toString()));
 
         DynamicList expectedList =
             new DynamicList(values.get(0), values);
@@ -357,7 +357,7 @@ class MakeAnApplicationTypesProviderTest {
             new Value(LINK_OR_UNLINK.name(), LINK_OR_UNLINK.toString()),
             new Value(JUDGE_REVIEW_LO.name(), JUDGE_REVIEW_LO.toString()),
             new Value(OTHER.name(), OTHER.toString()),
-            new Value(CHANGE_HEARING_TYPE.name(), CHANGE_HEARING_TYPE.toString()));
+            new Value(CHANGE_DECISION_TYPE.name(), CHANGE_DECISION_TYPE.toString()));
 
         DynamicList expectedList =
             new DynamicList(values.get(0), values);
@@ -393,7 +393,7 @@ class MakeAnApplicationTypesProviderTest {
             new Value(TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.name(),
                 TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.toString()),
             new Value(OTHER.name(), OTHER.toString()),
-            new Value(CHANGE_HEARING_TYPE.name(), CHANGE_HEARING_TYPE.toString()));
+            new Value(CHANGE_DECISION_TYPE.name(), CHANGE_DECISION_TYPE.toString()));
         DynamicList expectedList =
             new DynamicList(values.get(0), values);
 
@@ -441,7 +441,7 @@ class MakeAnApplicationTypesProviderTest {
             new Value(UPDATE_HEARING_REQUIREMENTS.name(), UPDATE_HEARING_REQUIREMENTS.toString()),
             new Value(WITHDRAW.name(), WITHDRAW.toString()),
             new Value(LINK_OR_UNLINK.name(), LINK_OR_UNLINK.toString()),
-            new Value(CHANGE_HEARING_TYPE.name(), CHANGE_HEARING_TYPE.toString()),
+            new Value(CHANGE_DECISION_TYPE.name(), CHANGE_DECISION_TYPE.toString()),
             new Value(JUDGE_REVIEW_LO.name(), JUDGE_REVIEW_LO.toString()),
             new Value(ADJOURN.name(), ADJOURN.toString()),
             new Value(EXPEDITE.name(), EXPEDITE.toString()),
@@ -474,7 +474,7 @@ class MakeAnApplicationTypesProviderTest {
             new Value(UPDATE_HEARING_REQUIREMENTS.name(), UPDATE_HEARING_REQUIREMENTS.toString()),
             new Value(WITHDRAW.name(), WITHDRAW.toString()),
             new Value(LINK_OR_UNLINK.name(), LINK_OR_UNLINK.toString()),
-            new Value(CHANGE_HEARING_TYPE.name(), CHANGE_HEARING_TYPE.toString()));
+            new Value(CHANGE_DECISION_TYPE.name(), CHANGE_DECISION_TYPE.toString()));
         DynamicList expectedList =
             new DynamicList(values.get(0), values);
 
@@ -505,7 +505,7 @@ class MakeAnApplicationTypesProviderTest {
                 TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.toString()),
             new Value(WITHDRAW.name(), WITHDRAW.toString()),
             new Value(LINK_OR_UNLINK.name(), LINK_OR_UNLINK.toString()),
-            new Value(CHANGE_HEARING_TYPE.name(), CHANGE_HEARING_TYPE.toString()));
+            new Value(CHANGE_DECISION_TYPE.name(), CHANGE_DECISION_TYPE.toString()));
         DynamicList expectedList =
             new DynamicList(values.get(0), values);
 
@@ -530,13 +530,13 @@ class MakeAnApplicationTypesProviderTest {
             new Value(TIME_EXTENSION.name(), TIME_EXTENSION.toString()),
             new Value(WITHDRAW.name(), WITHDRAW.toString()),
             new Value(LINK_OR_UNLINK.name(), LINK_OR_UNLINK.toString()),
-            new Value(CHANGE_HEARING_TYPE.name(), CHANGE_HEARING_TYPE.toString()),
+            new Value(CHANGE_DECISION_TYPE.name(), CHANGE_DECISION_TYPE.toString()),
             new Value(EXPEDITE.name(), EXPEDITE.toString()),
             new Value(TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.name(),
                 TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.toString()),
             new Value(WITHDRAW.name(), WITHDRAW.toString()),
             new Value(LINK_OR_UNLINK.name(), LINK_OR_UNLINK.toString()),
-            new Value(CHANGE_HEARING_TYPE.name(), CHANGE_HEARING_TYPE.toString()));
+            new Value(CHANGE_DECISION_TYPE.name(), CHANGE_DECISION_TYPE.toString()));
         DynamicList expectedList =
             new DynamicList(values.get(0), values);
 

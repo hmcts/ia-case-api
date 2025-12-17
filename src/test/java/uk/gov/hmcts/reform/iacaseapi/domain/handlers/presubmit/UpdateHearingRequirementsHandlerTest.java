@@ -607,6 +607,38 @@ public class UpdateHearingRequirementsHandlerTest {
         verify(asylumCase).clear(WITNESS_10_INTERPRETER_SPOKEN_LANGUAGE);
     }
 
+    @Test
+    void should_clear_dates_to_avoid_if_dates_to_avoid_yes_no_is_no() {
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(DATES_TO_AVOID_YES_NO, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+
+        updateHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        verify(asylumCase).clear(DATES_TO_AVOID);
+    }
+
+    @Test
+    void should_clear_dates_to_avoid_if_dates_to_avoid_yes_no_is_empty() {
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(DATES_TO_AVOID_YES_NO, YesOrNo.class)).thenReturn(Optional.empty());
+
+        updateHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        verify(asylumCase).clear(DATES_TO_AVOID);
+    }
+
+    @Test
+    void should_not_clear_date_to_avoid_if_date_to_avoid_yes_no_is_yes() {
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(DATES_TO_AVOID_YES_NO, YesOrNo.class)).thenReturn(Optional.of(YES));
+
+        updateHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        verify(asylumCase, times(0)).clear(DATES_TO_AVOID);
+    }
 
     @Test
     void should_clear_all_witness_related_fields_if_no_witness_attending() {
