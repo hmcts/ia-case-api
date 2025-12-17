@@ -152,6 +152,11 @@ public enum AsylumCaseFieldDefinition {
     SEND_DIRECTION_EXPLANATION(
         "sendDirectionExplanation", new TypeReference<String>(){}),
 
+    END_APPEAL_OUTCOME(
+            "endAppealOutcome", new TypeReference<String>(){}),
+    END_APPEAL_OUTCOME_REASON(
+            "endAppealOutcomeReason", new TypeReference<String>(){}),
+
     SEND_DIRECTION_PARTIES(
         "sendDirectionParties", new TypeReference<Parties>(){}),
 
@@ -2869,6 +2874,9 @@ public enum AsylumCaseFieldDefinition {
 
     STATUTORY_TIMEFRAME_24_WEEKS_REASON(
         "statutoryTimeframe24WeeksReason", new TypeReference<String>(){}),
+
+    STATUTORY_TIMEFRAME_24_WEEKS_HOME_OFFICE_CASE_TYPE(
+        "statutoryTimeframe24WeeksHomeOfficeCaseType", new TypeReference<String>(){}),
     ;
 
     private final String value;
