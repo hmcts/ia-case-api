@@ -55,7 +55,7 @@ class BannerTextServiceTest {
 
     @Test
     void shouldAddBannerTextToTheCase() {
-        subject.addBannerText(asylumCase, SOME_TEXT);
+        subject.addToBannerText(asylumCase, SOME_TEXT);
         verify(asylumCase, times(ONE)).write(XUI_BANNER_TEXT, SOME_TEXT);
     }
 
@@ -96,7 +96,7 @@ class BannerTextServiceTest {
 
     @Test
     void shouldThrowExceptionIfTextIsEmpty() {
-        assertThatThrownBy(() -> subject.addBannerText(asylumCase, EMPTY))
+        assertThatThrownBy(() -> subject.addToBannerText(asylumCase, EMPTY))
                 .hasMessage("Banner text can not be null or empty")
                 .isExactlyInstanceOf(IllegalArgumentException.class);
     }

@@ -20,16 +20,10 @@ public class BannerTextService {
         return read.orElse(EMPTY);
     }
 
-
-    public void addBannerText(AsylumCase asylumCase, String bannerText) {
-        validateText(bannerText);
-        asylumCase.write(XUI_BANNER_TEXT, bannerText.trim());
-    }
-
     public void addToBannerText(AsylumCase asylumCase, String bannerText) {
         validateText(bannerText);
         String existingBannerText = getBannerText(asylumCase);
-        if (canAddNewBannerText(existingBannerText, bannerText)) {
+        if (isBannerTextNotExists(existingBannerText, bannerText)) {
             StringBuilder existingTextBuilder = new StringBuilder(existingBannerText);
             StringBuilder newBannerText;
             if (hasText(existingTextBuilder)) {
@@ -37,7 +31,7 @@ public class BannerTextService {
             } else {
                 newBannerText = existingTextBuilder.append(bannerText.trim());
             }
-            asylumCase.write(XUI_BANNER_TEXT, newBannerText.toString());
+            addBannerText(asylumCase, newBannerText.toString());
         }
     }
 
@@ -46,8 +40,13 @@ public class BannerTextService {
         String existingBannerText = getBannerText(asylumCase);
         if (canRemoveFromTheExistingText(existingBannerText, bannerText)) {
             String bannerTextAfterRemove = existingBannerText.replace(bannerText, EMPTY);
-            asylumCase.write(XUI_BANNER_TEXT, bannerTextAfterRemove.trim());
+            addBannerText(asylumCase, bannerTextAfterRemove);
         }
+    }
+
+    private void addBannerText(AsylumCase asylumCase, String bannerText) {
+        validateText(bannerText);
+        asylumCase.write(XUI_BANNER_TEXT, bannerText.trim());
     }
 
     private void validateText(String text) {
@@ -61,7 +60,7 @@ public class BannerTextService {
         return existingText.toLowerCase().contains(newText.toLowerCase());
     }
 
-    private boolean canAddNewBannerText(String existingText, String newText) {
+    private boolean isBannerTextNotExists(String existingText, String newText) {
         return !existingText.equalsIgnoreCase(newText);
     }
 }
