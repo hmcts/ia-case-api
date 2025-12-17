@@ -100,7 +100,4 @@ class AddStatutoryTimeframe24WeeksHandlerTest {
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
     }
-
-
-
 }
