@@ -1,6 +1,8 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
 import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,6 +14,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 @Setter
 @EqualsAndHashCode
 @ToString
+@Builder
+@AllArgsConstructor
 public class RemissionDetails {
 
     private String feeRemissionType;
@@ -54,6 +58,18 @@ public class RemissionDetails {
         this.feeRemissionType = feeRemissionType;
         this.legalAidAccountNumber = legalAidAccountNumber;
         this.helpWithFeesReferenceNumber = helpWithFeesReferenceNumber;
+    }
+
+    public RemissionDetails(
+        String feeRemissionType,
+        String legalAidAccountNumber,
+        String helpWithFeesReferenceNumber,
+        String helpWithFeesOption
+    ) {
+        this.feeRemissionType = feeRemissionType;
+        this.legalAidAccountNumber = legalAidAccountNumber;
+        this.helpWithFeesReferenceNumber = helpWithFeesReferenceNumber;
+        this.helpWithFeesOption = helpWithFeesOption;
     }
 
     public RemissionDetails(
