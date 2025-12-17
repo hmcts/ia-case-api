@@ -15,15 +15,10 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 @Service
 public class BannerTextService {
 
-    public String getBannerText(AsylumCase asylumCase) {
-        Optional<String> read = asylumCase.read(XUI_BANNER_TEXT);
-        return read.orElse(EMPTY);
-    }
-
     public void addToBannerText(AsylumCase asylumCase, String bannerText) {
         validateText(bannerText);
         String existingBannerText = getBannerText(asylumCase);
-        if (isBannerTextNotExists(existingBannerText, bannerText)) {
+        if (!existingBannerText.equalsIgnoreCase(bannerText)) {
             StringBuilder existingTextBuilder = new StringBuilder(existingBannerText);
             StringBuilder newBannerText;
             if (hasText(existingTextBuilder)) {
@@ -38,10 +33,15 @@ public class BannerTextService {
     public void removeFromBannerText(AsylumCase asylumCase, String bannerText) {
         validateText(bannerText);
         String existingBannerText = getBannerText(asylumCase);
-        if (canRemoveFromTheExistingText(existingBannerText, bannerText)) {
+        if (existingBannerText.toLowerCase().contains(bannerText.toLowerCase())) {
             String bannerTextAfterRemove = existingBannerText.replace(bannerText, EMPTY);
             addBannerText(asylumCase, bannerTextAfterRemove);
         }
+    }
+
+    private String getBannerText(AsylumCase asylumCase) {
+        Optional<String> read = asylumCase.read(XUI_BANNER_TEXT);
+        return read.orElse(EMPTY);
     }
 
     private void addBannerText(AsylumCase asylumCase, String bannerText) {
@@ -55,11 +55,5 @@ public class BannerTextService {
         }
     }
 
-    private boolean canRemoveFromTheExistingText(String existingText, String newText) {
-        return existingText.toLowerCase().contains(newText.toLowerCase());
-    }
 
-    private boolean isBannerTextNotExists(String existingText, String newText) {
-        return !existingText.equalsIgnoreCase(newText);
-    }
 }

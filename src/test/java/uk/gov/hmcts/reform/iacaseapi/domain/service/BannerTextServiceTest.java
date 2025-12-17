@@ -13,9 +13,10 @@ import java.util.Optional;
 
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.commons.lang3.StringUtils.SPACE;
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.XUI_BANNER_TEXT;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -35,22 +36,6 @@ class BannerTextServiceTest {
     @BeforeEach
     public void setUp() {
         subject = new BannerTextService();
-    }
-
-    @Test
-    void shouldReturnEmptyStringIfNoExistingBannerTextOfTheCase() {
-        when(asylumCase.read(XUI_BANNER_TEXT)).thenReturn(Optional.empty());
-        String bannerText = subject.getBannerText(asylumCase);
-        assertThat(bannerText).isEqualTo(EMPTY);
-        verify(asylumCase, times(ONE)).read(XUI_BANNER_TEXT);
-    }
-
-    @Test
-    void shouldReturnExistingBannerTextOfTheCase() {
-        when(asylumCase.read(XUI_BANNER_TEXT)).thenReturn(Optional.of(SOME_TEXT));
-        String bannerText = subject.getBannerText(asylumCase);
-        assertThat(bannerText).isEqualTo(SOME_TEXT);
-        verify(asylumCase, times(ONE)).read(XUI_BANNER_TEXT);
     }
 
     @Test

@@ -16,7 +16,9 @@ import java.util.ArrayList;
 import java.util.Optional;
 
 import static org.apache.commons.lang3.StringUtils.EMPTY;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_SUBMISSION_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.TRIBUNAL_RECEIVED_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
@@ -25,7 +27,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YE
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 class STF24WeeksBannerTextServiceTest {
-    private static final String PRE_EXISTING_BANNER_TEXT = "Some text";
     private static final String STF_24_W_BANNER_TEXT_TRIB_RECEIVED_DATE = "24 Week STF: case deadline 27 May 2026";
     private static final String STF_24_W_BANNER_TEXT_APPEAL_SUBMIT_DATE = "24 Week STF: case deadline 28 May 2026";
     private static final String APPEAL_SUBMISSION_DATE_STR = "2025-12-11";
@@ -63,7 +64,6 @@ class STF24WeeksBannerTextServiceTest {
     void shouldAppend24WBannerTextToExistingCaseBannerTextForAppealSubmitDate() {
         when(asylumCase.read(TRIBUNAL_RECEIVED_DATE)).thenReturn(Optional.empty());
         when(asylumCase.read(APPEAL_SUBMISSION_DATE)).thenReturn(Optional.of(APPEAL_SUBMISSION_DATE_STR));
-        when(bannerTextService.getBannerText(asylumCase)).thenReturn(PRE_EXISTING_BANNER_TEXT);
         subject.updateBannerText(asylumCase, buildSTF24WeeksWithStatus(YES));
         verifyBannerTextUpdateWith(STF_24_W_BANNER_TEXT_APPEAL_SUBMIT_DATE);
     }
