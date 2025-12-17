@@ -29,7 +29,7 @@ public class BannerTextService {
             if (hasText(existingTextBuilder)) {
                 newBannerText = existingTextBuilder.append(SPACE).append(bannerText);
             } else {
-                newBannerText = existingTextBuilder.append(bannerText.trim());
+                newBannerText = existingTextBuilder.append(bannerText);
             }
             addBannerText(asylumCase, newBannerText.toString());
         }
