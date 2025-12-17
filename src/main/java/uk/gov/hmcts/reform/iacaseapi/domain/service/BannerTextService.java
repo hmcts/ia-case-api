@@ -45,7 +45,6 @@ public class BannerTextService {
     }
 
     private void addBannerText(AsylumCase asylumCase, String bannerText) {
-        validateText(bannerText);
         asylumCase.write(XUI_BANNER_TEXT, bannerText.trim());
     }
 
