@@ -62,7 +62,7 @@ public class STF24WeeksBannerTextService {
         return tribunalReceivedDate.orElse(EMPTY);
     }
 
-    public String add24WeeksToDate(String date) {
+    private String add24WeeksToDate(String date) {
         LocalDate appealDate = parse(date);
         LocalDate stf24WeeksDate = appealDate.plusWeeks(INT_24);
         DateTimeFormatter dateFormatter = ofPattern(DD_MMM_YYYY);
