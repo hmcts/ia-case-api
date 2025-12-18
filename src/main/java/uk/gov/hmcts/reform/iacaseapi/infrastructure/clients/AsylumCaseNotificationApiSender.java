@@ -75,16 +75,14 @@ public class AsylumCaseNotificationApiSender implements NotificationSender<Asylu
         if (featureTogglerValue) {
             AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
             Optional<String> saveNotificationToDataDateOpt = asylumCase.read(SAVE_NOTIFICATIONS_TO_DATA_DATE, String.class);
-            log.info("------------------saveNotificationToDataDateOpt {}", saveNotificationToDataDateOpt);
             if (saveNotificationToDataDateOpt.isEmpty()
                     || parse(saveNotificationToDataDateOpt.get()).isBefore(LocalDate.now())) {
-                log.info("------------------111");
                 scheduleSaveNotificationToData(callback);
                 String saveNotificationsToDataDate = LocalDate.now().toString();
-                log.info("------------------saveNotificationsToDataDate: {}", saveNotificationsToDataDate);
+                log.info("Writing saveNotificationsToDataDate to caseData: {}", saveNotificationsToDataDate);
                 asylumCase.write(SAVE_NOTIFICATIONS_TO_DATA_DATE, saveNotificationsToDataDate);
             } else {
-                log.info("------------------222");
+                log.info("saveNotificationsToDataDate field already present: {}", saveNotificationToDataDateOpt.get());
             }
         } else {
             log.info("Skipping saveNotificationsToData event schedule");
