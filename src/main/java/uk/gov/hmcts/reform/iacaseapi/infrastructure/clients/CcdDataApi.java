@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.clients;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static uk.gov.hmcts.reform.iacaseapi.infrastructure.config.ServiceTokenGeneratorConfiguration.SERVICE_AUTHORIZATION;
 
 import org.springframework.cloud.openfeign.FeignClient;
@@ -12,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDataContent;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.StartEventDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.SubmitEventDetails;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.CaseDetails;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.SearchResult;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.config.FeignConfiguration;
 
 @FeignClient(
@@ -46,6 +49,30 @@ public interface CcdDataApi {
         @RequestHeader(SERVICE_AUTHORIZATION) String s2sToken,
         @PathVariable("cid") String id,
         @RequestBody CaseDataContent requestBody
+    );
+
+
+    @PostMapping(
+        value = "/searchCases?ctid={caseType}",
+        headers = CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE
+    )
+    SearchResult searchCases(
+        @RequestHeader(AUTHORIZATION) String authorisation,
+        @RequestHeader(SERVICE_AUTHORIZATION) String serviceAuthorisation,
+        @PathVariable("caseType") String caseType,
+        @RequestBody String searchString
+    );
+
+    @GetMapping(value = "/caseworkers/{uid}/jurisdictions/{jid}/case-types/{ctid}/cases/{cid}",
+        produces = "application/json",
+        consumes = "application/json")
+    CaseDetails get(
+        @RequestHeader(AUTHORIZATION) String userToken,
+        @RequestHeader(SERVICE_AUTHORIZATION) String s2sToken,
+        @PathVariable("uid") String userId,
+        @PathVariable("jid") String jurisdiction,
+        @PathVariable("ctid") String caseType,
+        @PathVariable("cid") String id
     );
 }
 

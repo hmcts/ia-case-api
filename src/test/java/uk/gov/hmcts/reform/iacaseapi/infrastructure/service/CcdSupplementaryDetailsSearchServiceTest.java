@@ -22,7 +22,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.SupplementaryInfo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.IdamService;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CoreCaseDataApi;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CcdDataApi;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.SearchResult;
 
@@ -30,7 +30,7 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.SearchResu
 class CcdSupplementaryDetailsSearchServiceTest {
 
     @Mock
-    private CoreCaseDataApi coreCaseDataApi;
+    private CcdDataApi coreCaseDataApi;
     @Mock
     private IdamService idamService;
     @Mock

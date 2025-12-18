@@ -87,6 +87,7 @@ public class CcdCaseCreationTest {
     private MapValueExpander mapValueExpander;
 
     protected void setupForLegalRep() {
+        log.info(coreCaseDataApi.health().getStatus().getCode());
         startAppealAsLegalRep();
         submitAppealAsLegalRep();
     }
