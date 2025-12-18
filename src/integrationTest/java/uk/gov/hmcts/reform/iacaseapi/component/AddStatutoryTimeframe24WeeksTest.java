@@ -35,8 +35,8 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.APPEAL_SUB
 class AddStatutoryTimeframe24WeeksTest extends SpringBootIntegrationTest implements WithUserDetailsStub,
         WithRoleAssignmentStub, WithServiceAuthStub {
 
-    public static final String WEEK_STF_CASE_DEADLINE_28_MAY_2026 = "24 Week STF: case deadline 28 May 2026";
-    public static final String WEEK_STF_CASE_DEADLINE_27_MAY_2026 = "24 Week STF: case deadline 27 May 2026";
+    public static final String WEEK_STF_CASE_DEADLINE_28_MAY_2026 = "24 Week STF (28 May 2026)";
+    public static final String WEEK_STF_CASE_DEADLINE_27_MAY_2026 = "24 Week STF (27 May 2026)";
     public static final String SOME_REASON = "some reason";
     public static final String SOME_CASE_TYPE = "some-case-type";
     public static final String SOME_GIVEN_NAME = "some-given-name";

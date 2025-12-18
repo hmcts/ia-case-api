@@ -9,6 +9,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
+import static java.lang.String.format;
 import static java.time.LocalDate.parse;
 import static java.time.format.DateTimeFormatter.ofPattern;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
@@ -20,7 +21,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YE
 @Service
 public class STF24WeeksBannerTextService {
     private static final String DD_MMM_YYYY = "dd MMM yyyy";
-    private static final String PRE_24W_BANNER_TEXT = "24 Week STF: case deadline ";
+    private static final String PRE_24W_BANNER_TEXT = "24 Week STF (%s)";
     private static final int INT_24 = 24;
     private final BannerTextService bannerTextService;
 
@@ -49,7 +50,7 @@ public class STF24WeeksBannerTextService {
         } else {
             stf24WeeksAddedToDate = add24WeeksToDate(tribunalReceivedDate);
         }
-        return PRE_24W_BANNER_TEXT + stf24WeeksAddedToDate;
+        return format(PRE_24W_BANNER_TEXT, stf24WeeksAddedToDate);
     }
 
     private String getAppealSubmissionDate(AsylumCase asylumCase) {

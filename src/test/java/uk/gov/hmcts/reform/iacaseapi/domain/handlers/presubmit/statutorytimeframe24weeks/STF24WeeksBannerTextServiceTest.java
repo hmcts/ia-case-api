@@ -27,8 +27,8 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YE
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 class STF24WeeksBannerTextServiceTest {
-    private static final String STF_24_W_BANNER_TEXT_TRIB_RECEIVED_DATE = "24 Week STF: case deadline 27 May 2026";
-    private static final String STF_24_W_BANNER_TEXT_APPEAL_SUBMIT_DATE = "24 Week STF: case deadline 28 May 2026";
+    private static final String STF_24_W_BANNER_TEXT_TRIB_RECEIVED_DATE = "24 Week STF (27 May 2026)";
+    private static final String STF_24_W_BANNER_TEXT_APPEAL_SUBMIT_DATE = "24 Week STF (28 May 2026)";
     private static final String APPEAL_SUBMISSION_DATE_STR = "2025-12-11";
     private static final String TRIBUNAL_RECEIVED_DATE_STR = "2025-12-10";
     private static final int ONE = 1;

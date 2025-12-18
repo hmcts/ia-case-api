@@ -35,7 +35,7 @@ class RemoveStatutoryTimeframe24WeeksTest extends SpringBootIntegrationTest impl
         WithRoleAssignmentStub, WithServiceAuthStub {
 
     private static final String APPEAL_SUBMISSION_DATE_STR = "2025-12-10";
-    private static final String BANNER_TEXT = "some text 24 Week STF: case deadline 27 May 2026";
+    private static final String BANNER_TEXT = "some text 24 Week STF (27 May 2026)";
 
     @Test
     @WithMockUser(authorities = {"caseworker-ia-iacjudge"})
