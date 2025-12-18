@@ -65,16 +65,24 @@ class AppealWasNotSubmittedSupportingDocumentsHandlerTest {
     @Mock
     private DocumentWithMetadata appealWasNotSubmittedWithMetadata;
     @Mock
+    private DocumentWithDescription updatedAppealWasNotSubmitted;
+    @Mock
+    private DocumentWithMetadata updatedAppealWasNotSubmittedWithMetadata;
+    @Mock
     FeatureToggler featureToggler;
 
     private List<IdValue<DocumentWithMetadata>> allLegalRepDocuments;
     private AppealWasNotSubmittedSupportingDocumentsHandler appealWasNotSubmittedSupportingDocumentsHandler;
 
-
     private final Document someDoc = new Document(
         "some url",
         "some binary url",
         "some filename");
+
+    private final Document appealNotSubmittedDoc = new Document(
+            "appeal not submitted url",
+            "appeal not submitted binary url",
+            "appeal not submitted filename");
 
     private final DocumentWithMetadata someLegalRepDocument = new DocumentWithMetadata(
         someDoc,
@@ -188,10 +196,60 @@ class AppealWasNotSubmittedSupportingDocumentsHandlerTest {
 
         assertThat(callbackResponse).isNotNull();
 
-        verify(documentsAppender, times(1)).prepend(
+        verify(documentsAppender, times(1)).append(
             allLegalRepDocuments,
-            notSubmittedWithMetadata
+            notSubmittedWithMetadata,
+            APPEAL_WAS_NOT_SUBMITTED_SUPPORTING_DOCUMENT
         );
+    }
+
+    @Test
+    void should_update_appeal_was_not_submitted_doc_when_legal_rep_documents_is_present_and_updated() {
+
+        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+
+        final DocumentWithMetadata legalRepAppealNotSubmittedDocument = new DocumentWithMetadata(
+                appealNotSubmittedDoc,
+                "appeal not submitted description",
+                "21/07/2021",
+                APPEAL_WAS_NOT_SUBMITTED_SUPPORTING_DOCUMENT,
+                "some supplier"
+        );
+
+        allLegalRepDocuments = List.of(
+                new IdValue<>("1", someLegalRepDocument),
+                new IdValue<>("2", legalRepAppealNotSubmittedDocument)
+        );
+
+        final List<IdValue<DocumentWithDescription>> notSubmittedDocuments =
+                List.of(new IdValue<>("1", updatedAppealWasNotSubmitted));
+
+        when(updatedAppealWasNotSubmitted.getDescription()).thenReturn(Optional.of("Updated document description"));
+        when(asylumCase.read(APPEAL_NOT_SUBMITTED_REASON_DOCUMENTS)).thenReturn(Optional.of(notSubmittedDocuments));
+        when(asylumCase.read(LEGAL_REPRESENTATIVE_DOCUMENTS)).thenReturn(Optional.of(allLegalRepDocuments));
+
+        when(documentReceiver.tryReceive(updatedAppealWasNotSubmitted, APPEAL_WAS_NOT_SUBMITTED_SUPPORTING_DOCUMENT))
+            .thenReturn(Optional.of(updatedAppealWasNotSubmittedWithMetadata));
+
+        final List<IdValue<DocumentWithMetadata>> allLegalRepDocumentsUpdated = List.of(
+                new IdValue<>("1", someLegalRepDocument),
+                new IdValue<>("2", updatedAppealWasNotSubmittedWithMetadata)
+        );
+
+        when(documentsAppender.append(allLegalRepDocuments,
+                List.of(updatedAppealWasNotSubmittedWithMetadata),
+                APPEAL_WAS_NOT_SUBMITTED_SUPPORTING_DOCUMENT)).thenReturn(allLegalRepDocumentsUpdated);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse
+                = appealWasNotSubmittedSupportingDocumentsHandler.handle(ABOUT_TO_SUBMIT, callback);
+
+        assertThat(callbackResponse).isNotNull();
+
+        verify(documentsAppender, times(1)).append(
+                allLegalRepDocuments,
+                List.of(updatedAppealWasNotSubmittedWithMetadata),
+                APPEAL_WAS_NOT_SUBMITTED_SUPPORTING_DOCUMENT);
+
     }
 
     @Test

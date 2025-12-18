@@ -65,7 +65,6 @@ public class AppealWasNotSubmittedSupportingDocumentsHandler implements PreSubmi
         }
 
         final AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
-        boolean legalRepDocumentsContainSupportDocs = false;
 
         YesOrNo isAdmin = asylumCase.read(IS_ADMIN, YesOrNo.class).orElse(YesOrNo.NO);
 
@@ -77,12 +76,8 @@ public class AppealWasNotSubmittedSupportingDocumentsHandler implements PreSubmi
             List<IdValue<DocumentWithMetadata>> existingLegalRepDocuments =
                     maybeExistingLegalRepDocuments.orElse(emptyList());
 
-            legalRepDocumentsContainSupportDocs = checkIfAppealNotSubmittedDocumentExist(existingLegalRepDocuments);
-
-            if (legalRepDocumentsContainSupportDocs) {
-                if (HandlerUtils.isAppellantsRepresentation(asylumCase)) {
-                    asylumCase.write(LEGAL_REPRESENTATIVE_DOCUMENTS, removeAppealNotSubmittedDocument(existingLegalRepDocuments));
-                }
+            if (HandlerUtils.isAppellantsRepresentation(asylumCase)) {
+                asylumCase.write(LEGAL_REPRESENTATIVE_DOCUMENTS, removeAppealNotSubmittedDocument(existingLegalRepDocuments));
 
                 return new PreSubmitCallbackResponse<>(asylumCase);
             }
@@ -102,7 +97,7 @@ public class AppealWasNotSubmittedSupportingDocumentsHandler implements PreSubmi
 
             if (!appealWasNotSubmittedReasons.isEmpty()) {
                 List<IdValue<DocumentWithMetadata>> allLegalRepDocuments =
-                    documentsAppender.prepend(existingLegalRepDocuments, appealWasNotSubmittedReasons);
+                    documentsAppender.append(existingLegalRepDocuments, appealWasNotSubmittedReasons, DocumentTag.APPEAL_WAS_NOT_SUBMITTED_SUPPORTING_DOCUMENT);
 
                 asylumCase.write(LEGAL_REPRESENTATIVE_DOCUMENTS, allLegalRepDocuments);
             }
@@ -119,14 +114,4 @@ public class AppealWasNotSubmittedSupportingDocumentsHandler implements PreSubmi
                         .equals(DocumentTag.APPEAL_WAS_NOT_SUBMITTED_SUPPORTING_DOCUMENT)).collect(Collectors.toList());
     }
 
-    private boolean checkIfAppealNotSubmittedDocumentExist(List<IdValue<DocumentWithMetadata>> listOfLegalRepDocuments) {
-        for (IdValue<DocumentWithMetadata> existingLegalRepDocument : listOfLegalRepDocuments) {
-            if (existingLegalRepDocument.getValue().getTag() != null) {
-                if (existingLegalRepDocument.getValue().getTag().equals(DocumentTag.APPEAL_WAS_NOT_SUBMITTED_SUPPORTING_DOCUMENT)) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
 }
