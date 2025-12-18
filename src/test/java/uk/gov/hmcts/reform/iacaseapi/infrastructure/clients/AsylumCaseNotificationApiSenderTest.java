@@ -151,7 +151,7 @@ class AsylumCaseNotificationApiSenderTest {
         verify(asylumCaseCallbackApiDelegator, times(1))
             .delegate(callback, ENDPOINT + CCD_SUBMITTED_PATH);
 
-        verify(asylumCase).write(SAVE_NOTIFICATIONS_TO_DATA_DATE, LocalDate.now());
+        verify(asylumCase).write(SAVE_NOTIFICATIONS_TO_DATA_DATE, LocalDate.now().toString());
 
         assertEquals(notifiedAsylumCase, actualAsylumCase);
     }
@@ -199,7 +199,7 @@ class AsylumCaseNotificationApiSenderTest {
         verify(asylumCaseCallbackApiDelegator, times(1))
             .delegate(callback, ENDPOINT + CCD_SUBMITTED_PATH);
 
-        verify(asylumCase).write(SAVE_NOTIFICATIONS_TO_DATA_DATE, LocalDate.now());
+        verify(asylumCase).write(SAVE_NOTIFICATIONS_TO_DATA_DATE, LocalDate.now().toString());
 
         assertEquals(notifiedAsylumCase, callbackResponse);
     }
@@ -273,7 +273,7 @@ class AsylumCaseNotificationApiSenderTest {
         verifyTimedEventSchedule(scheduledTimedEventValue);
         assertEquals(scheduledTimedEventValue.getScheduledDateTime().toLocalDate(), LocalDate.now());
 
-        verify(asylumCase).write(SAVE_NOTIFICATIONS_TO_DATA_DATE, LocalDate.now());
+        verify(asylumCase).write(SAVE_NOTIFICATIONS_TO_DATA_DATE, LocalDate.now().toString());
 
         verify(asylumCaseCallbackApiDelegator, times(1))
             .delegate(callback, ENDPOINT + CCD_SUBMITTED_PATH);
@@ -317,7 +317,7 @@ class AsylumCaseNotificationApiSenderTest {
         verify(asylumCaseCallbackApiDelegator, times(1))
                 .delegate(callback, ENDPOINT + CCD_SUBMITTED_PATH);
 
-        verify(asylumCase).write(SAVE_NOTIFICATIONS_TO_DATA_DATE, LocalDate.now());
+        verify(asylumCase).write(SAVE_NOTIFICATIONS_TO_DATA_DATE, LocalDate.now().toString());
 
         assertEquals(notifiedAsylumCase, callbackResponse);
     }
@@ -358,7 +358,7 @@ class AsylumCaseNotificationApiSenderTest {
         verify(asylumCaseCallbackApiDelegator, times(1))
                 .delegate(callback, ENDPOINT + CCD_SUBMITTED_PATH);
 
-        verify(asylumCase).write(SAVE_NOTIFICATIONS_TO_DATA_DATE, LocalDate.now());
+        verify(asylumCase).write(SAVE_NOTIFICATIONS_TO_DATA_DATE, LocalDate.now().toString());
 
         assertEquals(notifiedAsylumCase, callbackResponse);
     }

@@ -80,7 +80,9 @@ public class AsylumCaseNotificationApiSender implements NotificationSender<Asylu
                     || parse(saveNotificationToDataDateOpt.get()).isBefore(LocalDate.now())) {
                 log.info("------------------111");
                 scheduleSaveNotificationToData(callback);
-                asylumCase.write(SAVE_NOTIFICATIONS_TO_DATA_DATE, LocalDate.now());
+                String saveNotificationsToDataDate = LocalDate.now().toString();
+                log.info("------------------saveNotificationsToDataDate: {}", saveNotificationsToDataDate);
+                asylumCase.write(SAVE_NOTIFICATIONS_TO_DATA_DATE, saveNotificationsToDataDate);
             } else {
                 log.info("------------------222");
             }
