@@ -69,6 +69,7 @@ public class AsylumCaseNotificationApiSender implements NotificationSender<Asylu
         log.info("save-notifications-feature LD flag value: {}", featureTogglerValue);
 
         if (featureTogglerValue && saveNotificationToDataEnabled) {
+            log.info("------------------scheduleSaveNotificationToData");
             scheduleSaveNotificationToData(callback);
         } else {
             log.info("Skipping saveNotificationsToDate event schedule");
