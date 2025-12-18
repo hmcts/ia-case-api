@@ -24,12 +24,12 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.config.FeignConfiguration;
 )
 public interface CcdDataApi {
     String EXPERIMENTAL = "experimental=true";
-    String CONTENT_TYPE = "content-type=application/json";
+    String CONTENT_TYPE = "content-type";
 
     @GetMapping(
         value = "/caseworkers/{uid}/jurisdictions/{jid}/case-types/{ctid}/cases/{cid}/event-triggers/{etid}"
             + "/token?ignore-warning=true",
-        headers = CONTENT_TYPE
+        headers = CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE
     )
     StartEventDetails startEvent(
         @RequestHeader(AUTHORIZATION) String userToken,
@@ -43,7 +43,7 @@ public interface CcdDataApi {
 
     @PostMapping(
         value = "/cases/{cid}/events",
-        headers = { CONTENT_TYPE, EXPERIMENTAL })
+        headers = { CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE, EXPERIMENTAL })
     SubmitEventDetails submitEvent(
         @RequestHeader(AUTHORIZATION) String userToken,
         @RequestHeader(SERVICE_AUTHORIZATION) String s2sToken,
@@ -64,8 +64,8 @@ public interface CcdDataApi {
     );
 
     @GetMapping(value = "/caseworkers/{uid}/jurisdictions/{jid}/case-types/{ctid}/cases/{cid}",
-        produces = "application/json",
-        consumes = "application/json")
+        produces = APPLICATION_JSON_VALUE,
+        consumes = APPLICATION_JSON_VALUE)
     CaseDetails get(
         @RequestHeader(AUTHORIZATION) String userToken,
         @RequestHeader(SERVICE_AUTHORIZATION) String s2sToken,
