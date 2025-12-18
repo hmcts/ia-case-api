@@ -72,7 +72,7 @@ public class AsylumCaseNotificationApiSender implements NotificationSender<Asylu
         boolean featureTogglerValue = featureToggler.getValue("save-notifications-feature", false);
         log.info("save-notifications-feature LD flag value: {}", featureTogglerValue);
 
-        if (featureTogglerValue) {
+        if (featureTogglerValue && saveNotificationToDataEnabled) {
             AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
             Optional<String> saveNotificationToDataDateOpt = asylumCase.read(SAVE_NOTIFICATIONS_TO_DATA_DATE, String.class);
             if (saveNotificationToDataDateOpt.isEmpty()
