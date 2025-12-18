@@ -91,16 +91,6 @@ public class CcdScenarioRunnerTest {
         RestAssured.useRelaxedHTTPSValidation();
     }
 
-    @BeforeEach
-    @SneakyThrows
-    void authenticateMe() {
-        String accessToken = authorizationHeadersProvider.getCaseOfficerAuthorization().getValue("Authorization");
-        Thread.sleep(1000);
-        assertNotNull(accessToken);
-        when(requestUserAccessTokenProvider.getAccessToken()).thenReturn(accessToken);
-    }
-
-
     @Test
     public void scenarios_should_behave_as_specified() throws IOException {
         loadPropertiesIntoMapValueExpander();
@@ -108,7 +98,6 @@ public class CcdScenarioRunnerTest {
         for (Fixture fixture : fixtures) {
             fixture.prepare();
         }
-
 
         assertFalse(
             "Verifiers are configured",
@@ -137,6 +126,10 @@ public class CcdScenarioRunnerTest {
                 try {
                     Map<String, Object> scenario = deserializeWithExpandedValues(scenarioSource);
                     final Headers authorizationHeaders = getAuthorizationHeaders(scenario);
+
+                    String accessToken = authorizationHeaders.getValue("Authorization");
+                    assertNotNull(accessToken);
+                    when(requestUserAccessTokenProvider.getAccessToken()).thenReturn(accessToken);
 
                     description = MapValueExtractor.extract(scenario, "description");
 
