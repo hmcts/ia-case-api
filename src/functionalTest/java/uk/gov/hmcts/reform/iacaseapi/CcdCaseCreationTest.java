@@ -41,7 +41,6 @@ import uk.gov.hmcts.reform.iacaseapi.util.MapValueExpander;
 @SpringBootTest()
 @ActiveProfiles("functional")
 @DirtiesContext
-@Disabled
 public class CcdCaseCreationTest {
 
     @Value("classpath:templates/start-appeal-aip.json")

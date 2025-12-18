@@ -25,7 +25,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.LISTING;
 @Slf4j
 @ActiveProfiles("functional")
 @DirtiesContext
-@Disabled
 public class RecordAdjournmentDetailsPreparerFunctionalTest extends CcdCaseCreationTest {
 
     @BeforeEach

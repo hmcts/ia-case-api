@@ -10,7 +10,7 @@ spring.flyway.enabled: false
 
 idam:
   redirectUrl: ${IA_IDAM_REDIRECT_URI:http://localhost:3002/oauth2/callback}
-  scope: "openid profile authorities acr roles search-user manage-user create-user"
+  scope: "openid profile authorities acr roles create-user manage-user search-user"
 
 feign:
   hystrix:

@@ -7,6 +7,7 @@ import static org.awaitility.Awaitility.await;
 
 import io.restassured.http.Header;
 import io.restassured.response.Response;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
@@ -15,17 +16,21 @@ import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+import uk.gov.hmcts.reform.iacaseapi.fixtures.Fixture;
 
 @RunWith(SpringIntegrationSerenityRunner.class)
 @SpringBootTest
 @ActiveProfiles("functional")
-public class ReconcileCaseDataFunctionalTest extends FunctionalTest {
+public class ReconcileCaseDataFunctionalTest extends CaseAccessFunctionalTest {
 
     private List<String> ccdCaseNumbers = new ArrayList<>();
     private String cases;
 
     @BeforeEach
-    public void setUp() {
+    public void setUp() throws IOException {
+        for (Fixture fixture : fixtures) {
+            fixture.prepare();
+        }
         fetchTokensAndUserIds();
         setupForLegalRep();
         ccdCaseNumbers.clear();
@@ -152,7 +157,7 @@ public class ReconcileCaseDataFunctionalTest extends FunctionalTest {
     }
 
     private Response supplementaryDetails(String cases, String serviceToken) {
-        return given(requestSpecification)
+        return given(caseApiSpecification)
             .when()
             .header(new Header("Authorization", legalRepToken))
             .header(new Header("ServiceAuthorization", serviceToken))
