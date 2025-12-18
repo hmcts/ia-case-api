@@ -1,8 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi;
 
-import java.io.IOException;
 import java.util.List;
-import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
@@ -10,7 +8,6 @@ import uk.gov.hmcts.reform.iacaseapi.fixtures.Fixture;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CoreCaseDataApi;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.config.ServiceTokenGeneratorConfiguration;
 import uk.gov.hmcts.reform.iacaseapi.util.FunctionalSpringContext;
-
 
 @SpringBootTest(classes = {
     ServiceTokenGeneratorConfiguration.class,
