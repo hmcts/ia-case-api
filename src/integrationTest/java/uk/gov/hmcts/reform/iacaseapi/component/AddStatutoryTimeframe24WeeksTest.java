@@ -37,7 +37,7 @@ class AddStatutoryTimeframe24WeeksTest extends SpringBootIntegrationTest impleme
     void adds_a_statutory_timeframe_24_weeks() {
         addCaseWorkerUserDetailsStub(server);
         addServiceAuthStub(server);
-        addRoleAssignmentActorStub(server);
+        addRoleAssignmentQueryStub(server);
         String reason = "some reason";
         String homeOfficeCaseType = "some-case-type";
         PreSubmitCallbackResponseForTest response = iaCaseApiClient.aboutToSubmit(callback()

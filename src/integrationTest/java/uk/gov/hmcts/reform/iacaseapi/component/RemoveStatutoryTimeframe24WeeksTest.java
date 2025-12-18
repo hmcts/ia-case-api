@@ -37,7 +37,7 @@ class RemoveStatutoryTimeframe24WeeksTest extends SpringBootIntegrationTest impl
     void removes_a_statutory_timeframe_24_weeks() {
         addCaseWorkerUserDetailsStub(server);
         addServiceAuthStub(server);
-        addRoleAssignmentActorStub(server);
+        addRoleAssignmentQueryStub(server);
         String reason = "some reason";
         String homeOfficeCaseType = "some case type";
         PreSubmitCallbackResponseForTest response = iaCaseApiClient.aboutToSubmit(callback()
