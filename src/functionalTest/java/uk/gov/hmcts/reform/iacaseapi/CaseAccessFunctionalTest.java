@@ -6,13 +6,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.iacaseapi.fixtures.Fixture;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CcdDataApi;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.config.ServiceTokenGeneratorConfiguration;
-import uk.gov.hmcts.reform.iacaseapi.util.FunctionalSpringContext;
 
-@SpringBootTest(classes = {
-    ServiceTokenGeneratorConfiguration.class,
-    FunctionalSpringContext.class
-})
+@SpringBootTest
 @ActiveProfiles("functional")
 public class CaseAccessFunctionalTest extends CcdCaseCreationTest {
     @Autowired

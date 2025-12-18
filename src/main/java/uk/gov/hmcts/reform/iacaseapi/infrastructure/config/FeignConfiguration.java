@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.config;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.codec.Decoder;
 import feign.codec.Encoder;
@@ -36,6 +37,7 @@ public class FeignConfiguration {
 
     public ObjectMapper objectMapper() {
         ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.configure(DeserializationFeature.READ_UNKNOWN_ENUM_VALUES_USING_DEFAULT_VALUE, true);
         return objectMapper;
     }
 
