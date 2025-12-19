@@ -54,11 +54,14 @@ class UpdateStatutoryTimeframe24WeeksServiceTest {
     @Mock private List allAppendedStatutoryTimeframe24Weeks;
     @Mock private List allAppendedCaseNotes;
     @Mock private UserDetails userDetails;
+    @Mock private STF24WeeksBannerTextService bannerTextService;
 
     @Captor private ArgumentCaptor<List<IdValue<StatutoryTimeframe24WeeksHistory>>> existingStatutoryTimeframe24WeeksHistoryCaptor;
     @Captor private ArgumentCaptor<StatutoryTimeframe24WeeksHistory> newStatutoryTimeframe24WeeksHistoryCaptor;
     @Captor private ArgumentCaptor<List<IdValue<CaseNote>>> existingCaseNotesCaptor;
     @Captor private ArgumentCaptor<CaseNote> newCaseNotesCaptor;
+    @Captor private ArgumentCaptor<AsylumCase> asylumCaseCaptor;
+    @Captor private ArgumentCaptor<StatutoryTimeframe24Weeks> statutoryTimeframe24WeeksCaptor;
 
     private final LocalDate now = LocalDate.now();
     private final LocalDateTime nowWithTime = LocalDateTime.now();
@@ -67,6 +70,7 @@ class UpdateStatutoryTimeframe24WeeksServiceTest {
     private final String forename = "Frank";
     private final String surname = "Butcher";
     private UpdateStatutoryTimeframe24WeeksService updateStatutoryTimeframe24WeeksService;
+
 
     @BeforeEach
     public void setUp() {
@@ -86,8 +90,8 @@ class UpdateStatutoryTimeframe24WeeksServiceTest {
                 statutoryTimeframe24WeeksHistoryAppender,
                 caseNoteAppender,
                 dateProvider,
-                userDetails
-            );
+                userDetails,
+                    bannerTextService);
     }
 
     @Test
@@ -129,6 +133,8 @@ class UpdateStatutoryTimeframe24WeeksServiceTest {
 
         verify(asylumCase, times(1)).write(STATUTORY_TIMEFRAME_24_WEEKS, new StatutoryTimeframe24Weeks(newStatus, homeOfficeCaseType, allAppendedStatutoryTimeframe24Weeks));
         verify(asylumCase, times(1)).clear(STATUTORY_TIMEFRAME_24_WEEKS_REASON);
+        verify(bannerTextService, times(1)).updateBannerText(asylumCaseCaptor.capture(), statutoryTimeframe24WeeksCaptor.capture());
+
     }
 
     @Test
@@ -170,6 +176,7 @@ class UpdateStatutoryTimeframe24WeeksServiceTest {
 
         verify(asylumCase, times(1)).write(STATUTORY_TIMEFRAME_24_WEEKS, new StatutoryTimeframe24Weeks(newStatus, homeOfficeCaseType, allAppendedStatutoryTimeframe24Weeks));
         verify(asylumCase, times(1)).clear(STATUTORY_TIMEFRAME_24_WEEKS_REASON);
+
     }
 
     @Test
