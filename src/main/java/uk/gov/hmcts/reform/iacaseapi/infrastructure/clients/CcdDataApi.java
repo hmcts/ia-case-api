@@ -14,7 +14,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDataContent;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.StartEventDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.SubmitEventDetails;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.CaseDetails;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.SearchResult;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.config.FeignConfiguration;
 
 @FeignClient(
@@ -49,18 +48,6 @@ public interface CcdDataApi {
         @RequestHeader(SERVICE_AUTHORIZATION) String s2sToken,
         @PathVariable("cid") String id,
         @RequestBody CaseDataContent requestBody
-    );
-
-
-    @PostMapping(
-        value = "/searchCases?ctid={caseType}",
-        headers = CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE
-    )
-    SearchResult searchCases(
-        @RequestHeader(AUTHORIZATION) String authorisation,
-        @RequestHeader(SERVICE_AUTHORIZATION) String serviceAuthorisation,
-        @PathVariable("caseType") String caseType,
-        @RequestBody String searchString
     );
 
     @GetMapping(value = "/caseworkers/{uid}/jurisdictions/{jid}/case-types/{ctid}/cases/{cid}",

@@ -3,8 +3,8 @@ package uk.gov.hmcts.reform.iacaseapi;
 import io.restassured.http.Header;
 import io.restassured.response.Response;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.test.annotation.DirtiesContext;
@@ -37,6 +37,7 @@ public class HearingsUpdateHearingRequestFunctionalTest extends CcdCaseCreationT
         fetchTokensAndUserIds();
     }
 
+    @Disabled("Disabled due to ccd-data-store being preview instance but hmc hearings service being in aat so case not found")
     @ParameterizedTest
     @CsvSource({ "true", "false" })
     void should_handle_update_hearing_request_about_to_start_successfully(boolean isAipJourney) {
@@ -56,7 +57,8 @@ public class HearingsUpdateHearingRequestFunctionalTest extends CcdCaseCreationT
         );
 
         Callback<CaseData> callback = new Callback<>(caseDetails, Optional.of(caseDetails), UPDATE_HEARING_REQUEST);
-        given(caseApiSpecification)
+
+        Response response = given(caseApiSpecification)
             .when()
             .contentType("application/json")
             .header(new Header(AUTHORIZATION, caseOfficerToken))
@@ -64,8 +66,10 @@ public class HearingsUpdateHearingRequestFunctionalTest extends CcdCaseCreationT
             .body(callback)
             .post("/asylum/ccdAboutToStart")
             .then()
-            .statusCode(HttpStatus.SC_OK)
-            .log().all(true);
+            .log().all(true)
+            .extract().response();
+
+        assertEquals(200, response.getStatusCode());
     }
 
     @ParameterizedTest

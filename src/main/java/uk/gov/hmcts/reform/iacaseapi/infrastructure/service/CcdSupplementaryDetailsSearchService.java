@@ -22,7 +22,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.SupplementaryDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.SupplementaryInfo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.IdamService;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.SupplementaryDetailsService;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CcdDataApi;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CcdDataCaseAccessApi;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.SearchResult;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.idam.IdentityManagerResponseException;
@@ -33,7 +33,7 @@ public class CcdSupplementaryDetailsSearchService implements SupplementaryDetail
     private static final String CASE_TYPE_ID = "Asylum";
     private static final String APPELLANT_FAMILY_NAME = "appellantFamilyName";
     private static final String APPEAL_REFERENCE_NUMBER = "appealReferenceNumber";
-    private final CcdDataApi coreCaseDataApi;
+    private final CcdDataCaseAccessApi ccdDataCaseAccessApi;
     private final IdamService idamService;
     private final AuthTokenGenerator s2sAuthTokenGenerator;
     private final int maxRecords;
@@ -41,13 +41,13 @@ public class CcdSupplementaryDetailsSearchService implements SupplementaryDetail
 
     @Autowired
     public CcdSupplementaryDetailsSearchService(IdamService idamService,
-                                                CcdDataApi coreCaseDataApi,
+                                                CcdDataCaseAccessApi ccdDataCaseAccessApi,
                                                 AuthTokenGenerator s2sAuthTokenGenerator,
                                                 @Qualifier("fixedThreadPool") ExecutorService executorService,
                                                 @Value("${requestPagination.maxRecords}") int maxRecords
     ) {
         this.idamService = idamService;
-        this.coreCaseDataApi = coreCaseDataApi;
+        this.ccdDataCaseAccessApi = ccdDataCaseAccessApi;
         this.s2sAuthTokenGenerator = s2sAuthTokenGenerator;
         this.executorService = executorService;
         this.maxRecords = maxRecords;
@@ -114,7 +114,7 @@ public class CcdSupplementaryDetailsSearchService implements SupplementaryDetail
 
     private List<SupplementaryInfo> search(String userAuthorisation, String serviceAuthToken, String query) {
 
-        SearchResult searchResult = coreCaseDataApi.searchCases(
+        SearchResult searchResult = ccdDataCaseAccessApi.searchCases(
             userAuthorisation,
             serviceAuthToken,
             CASE_TYPE_ID,
