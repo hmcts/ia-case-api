@@ -4,6 +4,8 @@ import static io.restassured.RestAssured.given;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.when;
 
 import io.restassured.http.Header;
 import io.restassured.response.Response;
@@ -14,32 +16,44 @@ import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.iacaseapi.fixtures.Fixture;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.RequestUserAccessTokenProvider;
+import uk.gov.hmcts.reform.iacaseapi.util.AuthorizationHeadersProvider;
 
 @RunWith(SpringIntegrationSerenityRunner.class)
 @SpringBootTest
 @ActiveProfiles("functional")
 public class ReconcileCaseDataFunctionalTest extends CaseAccessFunctionalTest {
-
-    private List<String> ccdCaseNumbers = new ArrayList<>();
+    @Autowired
+    private AuthorizationHeadersProvider authorizationHeadersProvider;
+    @MockBean
+    RequestUserAccessTokenProvider requestUserAccessTokenProvider;
+    private final List<String> ccdCaseNumbers = new ArrayList<>();
     private String cases;
+    private Case legalRepCase;
 
     @BeforeEach
-    public void setUp() throws IOException {
+    public void setUp() throws IOException, InterruptedException {
+        String accessToken = authorizationHeadersProvider.getCaseOfficerAuthorization().getValue("Authorization");
+        Thread.sleep(1000);
+        assertNotNull(accessToken);
+        when(requestUserAccessTokenProvider.getAccessToken()).thenReturn(accessToken);
         for (Fixture fixture : fixtures) {
             fixture.prepare();
         }
         fetchTokensAndUserIds();
-        setupForLegalRep();
+        legalRepCase = createAndGetCase(false);
         ccdCaseNumbers.clear();
     }
 
     @Test
     public void should_return_400_status_code_for_a_bad_request() {
 
-        ccdCaseNumbers.add(String.valueOf(legalRepCaseId));
+        ccdCaseNumbers.add(String.valueOf(legalRepCase.getCaseId()));
         ccdCaseNumbers.add("1234567890123457");
         ccdCaseNumbers.add("1234567890123458");
         cases = caseListAsString(ccdCaseNumbers, "-");
@@ -51,13 +65,13 @@ public class ReconcileCaseDataFunctionalTest extends CaseAccessFunctionalTest {
 
         assertThat(response.getStatusCode()).isEqualTo(400);
 
-        assertThatCaseIsInState(legalRepCaseId, "appealSubmitted");
+        assertThatCaseIsInState(legalRepCase.getCaseId(), "appealSubmitted");
     }
 
     @Test
     public void should_return_401_status_code_when_missing_s2s_token() {
 
-        ccdCaseNumbers.add(String.valueOf(legalRepCaseId));
+        ccdCaseNumbers.add(String.valueOf(legalRepCase.getCaseId()));
         cases = caseListAsString(ccdCaseNumbers, ",");
 
         Response response = supplementaryDetails(
@@ -67,13 +81,13 @@ public class ReconcileCaseDataFunctionalTest extends CaseAccessFunctionalTest {
 
         assertThat(response.getStatusCode()).isEqualTo(401);
 
-        assertThatCaseIsInState(legalRepCaseId, "appealSubmitted");
+        assertThatCaseIsInState(legalRepCase.getCaseId(), "appealSubmitted");
     }
 
     @Test
     public void should_return_401_status_code_when_invalid_s2s_token() {
 
-        ccdCaseNumbers.add(String.valueOf(legalRepCaseId));
+        ccdCaseNumbers.add(String.valueOf(legalRepCase.getCaseId()));
         cases = caseListAsString(ccdCaseNumbers, ",");
 
         Response response = supplementaryDetails(
@@ -83,7 +97,7 @@ public class ReconcileCaseDataFunctionalTest extends CaseAccessFunctionalTest {
 
         assertThat(response.getStatusCode()).isEqualTo(401);
 
-        assertThatCaseIsInState(legalRepCaseId, "appealSubmitted");
+        assertThatCaseIsInState(legalRepCase.getCaseId(), "appealSubmitted");
     }
 
     @Test
@@ -100,13 +114,13 @@ public class ReconcileCaseDataFunctionalTest extends CaseAccessFunctionalTest {
 
         assertThat(response.getStatusCode()).isEqualTo(404);
 
-        assertThatCaseIsInState(legalRepCaseId, "appealSubmitted");
+        assertThatCaseIsInState(legalRepCase.getCaseId(), "appealSubmitted");
     }
 
     @Test
     public void should_return_200_status_code_when_surname_retrieved_for_given_case_number() {
 
-        ccdCaseNumbers.add(String.valueOf(legalRepCaseId));
+        ccdCaseNumbers.add(String.valueOf(legalRepCase.getCaseId()));
         cases = caseListAsString(ccdCaseNumbers, ",");
 
         Response response = supplementaryDetails(
@@ -116,15 +130,15 @@ public class ReconcileCaseDataFunctionalTest extends CaseAccessFunctionalTest {
 
         assertThat(response.getStatusCode()).isEqualTo(200);
 
-        assertThatCaseIsInState(legalRepCaseId, "appealSubmitted");
+        assertThatCaseIsInState(legalRepCase.getCaseId(), "appealSubmitted");
     }
 
     @Test
     public void should_return_200_status_code_when_surname_retrieved_for_given_case_number_duplicated_ccd_ids() {
 
-        ccdCaseNumbers.add(String.valueOf(legalRepCaseId));
-        ccdCaseNumbers.add(String.valueOf(legalRepCaseId));
-        ccdCaseNumbers.add(String.valueOf(legalRepCaseId));
+        ccdCaseNumbers.add(String.valueOf(legalRepCase.getCaseId()));
+        ccdCaseNumbers.add(String.valueOf(legalRepCase.getCaseId()));
+        ccdCaseNumbers.add(String.valueOf(legalRepCase.getCaseId()));
 
         cases = caseListAsString(ccdCaseNumbers, ",");
 
@@ -135,13 +149,13 @@ public class ReconcileCaseDataFunctionalTest extends CaseAccessFunctionalTest {
 
         assertThat(response.getStatusCode()).isEqualTo(200);
 
-        assertThatCaseIsInState(legalRepCaseId, "appealSubmitted");
+        assertThatCaseIsInState(legalRepCase.getCaseId(), "appealSubmitted");
     }
 
     @Test
     public void should_return_206_status_code_when_partial_match_found_for_given_case_numbers() {
 
-        ccdCaseNumbers.add(String.valueOf(legalRepCaseId));
+        ccdCaseNumbers.add(String.valueOf(legalRepCase.getCaseId()));
         ccdCaseNumbers.add("1234567890123457");
         ccdCaseNumbers.add("1234567890123458");
         cases = caseListAsString(ccdCaseNumbers, ",");
@@ -153,7 +167,7 @@ public class ReconcileCaseDataFunctionalTest extends CaseAccessFunctionalTest {
 
         assertThat(response.getStatusCode()).isEqualTo(206);
 
-        assertThatCaseIsInState(legalRepCaseId, "appealSubmitted");
+        assertThatCaseIsInState(legalRepCase.getCaseId(), "appealSubmitted");
     }
 
     private Response supplementaryDetails(String cases, String serviceToken) {
