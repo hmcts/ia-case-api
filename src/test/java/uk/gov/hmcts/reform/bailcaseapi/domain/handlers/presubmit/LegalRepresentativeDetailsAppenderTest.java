@@ -95,7 +95,7 @@ class LegalRepresentativeDetailsAppenderTest {
         assertThat(response.getData()).isEqualTo(bailCase);
         assertThat(response.getErrors()).isEmpty();
 
-        verify(companyNameProvider, times(1)).prepareCompanyName(callback);
+        verify(companyNameProvider, times(1)).prepareCompanyNameBailCase(callback);
         assertEquals(organisationName, organisationResponse.getName());
         verify(bailCase, times(1)).write(LEGAL_REP_EMAIL_ADDRESS, legalRepEmailAddress);
         verify(bailCase, times(1)).write(eq(LOCAL_AUTHORITY_POLICY), organisationPolicyArgumentCaptor.capture());
@@ -122,7 +122,7 @@ class LegalRepresentativeDetailsAppenderTest {
         assertThat(response.getData()).isEqualTo(bailCase);
         assertThat(response.getErrors()).isEmpty();
 
-        verify(companyNameProvider, times(0)).prepareCompanyName(callback);
+        verify(companyNameProvider, times(0)).prepareCompanyNameBailCase(callback);
         verify(bailCase, never()).write(LEGAL_REP_EMAIL_ADDRESS, legalRepEmailAddress);
         verify(bailCase, never()).write(eq(LOCAL_AUTHORITY_POLICY), any());
 

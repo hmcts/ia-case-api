@@ -56,7 +56,7 @@ class CompanyNameProviderTest {
         when(organisationResponse.getOrganisationIdentifier()).thenReturn(organisationIdentifier);
         when(organisationResponse.getName()).thenReturn(organisationName);
 
-        companyNameProvider.prepareCompanyName(callback);
+        companyNameProvider.prepareCompanyNameBailCase(callback);
 
         verify(bailCase, times(1)).write(LEGAL_REP_COMPANY, organisationName);
     }
@@ -66,7 +66,7 @@ class CompanyNameProviderTest {
 
         when(professionalOrganisationRetriever.retrieve()).thenReturn(null);
 
-        companyNameProvider.prepareCompanyName(callback);
+        companyNameProvider.prepareCompanyNameBailCase(callback);
 
         verify(bailCase, times(0)).write(LEGAL_REP_COMPANY, organisationName);
     }

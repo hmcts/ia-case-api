@@ -15,9 +15,9 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 @EqualsAndHashCode
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class StartEventDetails {
+public class StartEventDetails<T extends CaseData>  {
 
     private Event eventId;
     private String token;
-    private CaseDetails<AsylumCase> caseDetails;
+    private CaseDetails<T> caseDetails;
 }

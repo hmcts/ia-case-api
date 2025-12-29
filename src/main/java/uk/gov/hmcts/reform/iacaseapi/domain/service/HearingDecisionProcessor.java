@@ -4,6 +4,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealDecision;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.BailCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.BailCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingDecision;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 
@@ -16,6 +18,7 @@ import static java.util.Collections.emptyList;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CURRENT_HEARING_ID;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_DECISION_LIST;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_DECISION_ALLOWED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.BailCaseFieldDefinition.DECISION_GRANTED_OR_REFUSED;
 
 @Component
 @Slf4j
@@ -56,6 +59,40 @@ public class HearingDecisionProcessor {
                 newHearingDecisionList = appendToHearingDecisionList(hearingDecisionList, newHearingDecision);
             }
             asylumCase.write(HEARING_DECISION_LIST, newHearingDecisionList);
+        }
+    }
+
+    public void processHearingDecision(BailCase bailCase) {
+        Optional<String> decisionOpt = bailCase.read(DECISION_GRANTED_OR_REFUSED, String.class);
+        String decision = decisionOpt.orElse("decided");
+        processHearingDecision(bailCase, decision);
+    }
+
+    private void processHearingDecision(BailCase bailCase, String decision) {
+        Optional<String> currentHearingIdOpt = bailCase.read(BailCaseFieldDefinition.CURRENT_HEARING_ID, String.class);
+
+        if (currentHearingIdOpt.isPresent()) {
+            String currentHearingId = currentHearingIdOpt.get();
+
+            Optional<List<IdValue<HearingDecision>>> hearingDecisionListOpt = bailCase.read(BailCaseFieldDefinition.HEARING_DECISION_LIST);
+            final List<IdValue<HearingDecision>> hearingDecisionList = hearingDecisionListOpt.orElse(emptyList());
+
+            Optional<IdValue<HearingDecision>> existingHearingDecisionIdValueOpt =
+                getHearingDecisionId(hearingDecisionList, currentHearingId);
+
+            List<IdValue<HearingDecision>> newHearingDecisionList;
+            if (existingHearingDecisionIdValueOpt.isPresent()) {
+                IdValue<HearingDecision> existingHearingDecisionIdValue = existingHearingDecisionIdValueOpt.get();
+                HearingDecision newHearingDecision = new HearingDecision(currentHearingId, decision);
+                IdValue<HearingDecision> newHearingDecisionIdValue =
+                    new IdValue<>(existingHearingDecisionIdValue.getId(), newHearingDecision);
+                newHearingDecisionList =
+                    updateHearingDecisionInHearingDecisionList(hearingDecisionList, newHearingDecisionIdValue);
+            } else {
+                HearingDecision newHearingDecision = new HearingDecision(currentHearingId, decision);
+                newHearingDecisionList = appendToHearingDecisionList(hearingDecisionList, newHearingDecision);
+            }
+            bailCase.write(BailCaseFieldDefinition.HEARING_DECISION_LIST, newHearingDecisionList);
         }
     }
 

@@ -16,9 +16,9 @@ import java.util.List;
 @Component
 public class BailCaseDataFixingHandler implements PreSubmitCallbackHandler<BailCase> {
 
-    private final List<DataFixer> dataFixers;
+    private final List<DataFixer<AsylumCase>> dataFixers;
 
-    public BailCaseDataFixingHandler(List<DataFixer> dataFixers) {
+    public BailCaseDataFixingHandler(List<DataFixer<AsylumCase>> dataFixers) {
         this.dataFixers = dataFixers;
     }
 

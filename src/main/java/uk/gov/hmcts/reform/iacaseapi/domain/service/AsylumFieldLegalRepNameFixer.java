@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 
 @Component
-public class AsylumFieldLegalRepNameFixer implements DataFixer {
+public class AsylumFieldLegalRepNameFixer implements DataFixer<AsylumCase> {
 
     @Override
     public void fix(AsylumCase asylumCase) {

@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.infrastructure.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.BailCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.BailCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.BailFieldCaseNameFixer;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DataFixer;
@@ -10,7 +11,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.DataFixer;
 public class BailCaseDataConfiguration {
 
     @Bean
-    public DataFixer caseNameAppender() {
+    public DataFixer<BailCase> caseNameAppender() {
         return new BailFieldCaseNameFixer(
             BailCaseFieldDefinition.CASE_NAME_HMCTS_INTERNAL,
             BailCaseFieldDefinition.APPLICANT_GIVEN_NAMES,

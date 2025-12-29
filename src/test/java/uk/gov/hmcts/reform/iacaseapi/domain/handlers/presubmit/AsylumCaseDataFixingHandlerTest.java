@@ -33,11 +33,11 @@ class AsylumCaseDataFixingHandlerTest {
     @Mock
     private AsylumCase asylumCase;
     @Mock
-    private DataFixer dataFixer1;
+    private DataFixer<AsylumCase> dataFixer1;
     @Mock
-    private DataFixer dataFixer2;
+    private DataFixer<AsylumCase> dataFixer2;
 
-    private List<DataFixer> dataFixers;
+    private List<DataFixer<AsylumCase>> dataFixers;
 
     private AsylumCaseDataFixingHandler asylumCaseDataFixingHandler;
 

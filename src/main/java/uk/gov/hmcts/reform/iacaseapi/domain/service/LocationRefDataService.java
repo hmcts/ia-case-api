@@ -6,7 +6,9 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre.REMOTE
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
@@ -29,6 +31,7 @@ public class LocationRefDataService {
     private final UserDetails userDetails;
     private final LocationRefDataApi locationRefDataApi;
     @org.springframework.beans.factory.annotation.Value("${hmcts_service_id}")
+    @Setter
     private String serviceId;
 
     public DynamicList getHearingLocationsDynamicList() {
@@ -48,6 +51,13 @@ public class LocationRefDataService {
             .toList());
     }
 
+    public Optional<CourtVenue> getCourtVenuesByEpimmsId(String epimmsId) {
+        return getCourtVenues().stream()
+            .filter(this::isHearingLocation)
+            .filter(courtVenue -> courtVenue.getEpimmsId().equals(epimmsId))
+            .findFirst();
+    }
+
     public List<CourtVenue> getCourtVenues() {
 
         CourtLocationCategory locationCategory = locationRefDataApi
@@ -56,10 +66,6 @@ public class LocationRefDataService {
         return locationCategory == null
             ? Collections.emptyList()
             : locationCategory.getCourtVenues();
-    }
-
-    public void setServiceId(String serviceId) {
-        this.serviceId = serviceId;
     }
 
     public boolean isCaseManagementLocation(String epimsId) {

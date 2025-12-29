@@ -73,7 +73,7 @@ public class DeriveHearingCentreHandler implements PreSubmitCallbackHandler<Bail
         } else {
             String detentionFacilityName = !prisonName.isEmpty() ? prisonName : ircName;
 
-            HearingCentre hearingCentre = hearingCentreFinder.find(detentionFacilityName);
+            HearingCentre hearingCentre = hearingCentreFinder.findByDetentionFacility(detentionFacilityName);
             bailCase.write(HEARING_CENTRE, hearingCentre);
 
             if (locationRefDataEnabled(bailCase)) {

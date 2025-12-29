@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.BailCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDataContent;
@@ -30,7 +31,22 @@ public interface CcdDataApi {
             + "/token?ignore-warning=true",
         headers = CONTENT_TYPE
     )
-    StartEventDetails startEvent(
+    StartEventDetails<AsylumCase> startEvent(
+        @RequestHeader(AUTHORIZATION) String userToken,
+        @RequestHeader(SERVICE_AUTHORIZATION) String s2sToken,
+        @PathVariable("uid") String userId,
+        @PathVariable("jid") String jurisdiction,
+        @PathVariable("ctid") String caseType,
+        @PathVariable("cid") String id,
+        @PathVariable("etid") String eventId
+    );
+
+    @GetMapping(
+        value = "/caseworkers/{uid}/jurisdictions/{jid}/case-types/{ctid}/cases/{cid}/event-triggers/{etid}"
+            + "/token?ignore-warning=true",
+        headers = CONTENT_TYPE
+    )
+    StartEventDetails<BailCase> startBailEvent(
         @RequestHeader(AUTHORIZATION) String userToken,
         @RequestHeader(SERVICE_AUTHORIZATION) String s2sToken,
         @PathVariable("uid") String userId,

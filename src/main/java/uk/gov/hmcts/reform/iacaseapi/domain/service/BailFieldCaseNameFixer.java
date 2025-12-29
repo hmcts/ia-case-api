@@ -7,7 +7,7 @@ import java.util.Optional;
 
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.BailCaseFieldDefinition.CASE_NAME_HMCTS_INTERNAL;
 
-public class BailFieldCaseNameFixer implements DataFixer {
+public class BailFieldCaseNameFixer implements DataFixer<BailCase> {
 
     private final BailCaseFieldDefinition hmctsCaseNameInternal;
     private final BailCaseFieldDefinition applicantGivenNames;

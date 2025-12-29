@@ -6,7 +6,7 @@ import java.util.Optional;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 
-public class AsylumFieldCaseNameFixer implements DataFixer {
+public class AsylumFieldCaseNameFixer implements DataFixer<AsylumCase> {
 
     private final AsylumCaseFieldDefinition hmctsCaseNameInternal;
     private final AsylumCaseFieldDefinition appellantGivenNames;

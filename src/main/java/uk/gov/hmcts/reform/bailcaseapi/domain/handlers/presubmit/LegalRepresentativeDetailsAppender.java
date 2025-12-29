@@ -68,7 +68,7 @@ public class LegalRepresentativeDetailsAppender implements PreSubmitCallbackHand
         UserRoleLabel userRoleLabel = userDetailsHelper.getLoggedInUserRoleLabel(userDetails, true);
 
         if (userRoleLabel.equals(UserRoleLabel.LEGAL_REPRESENTATIVE)) {
-            companyNameProvider.prepareCompanyName(callback);
+            companyNameProvider.prepareCompanyNameBailCase(callback);
             bailCase.write(BailCaseFieldDefinition.LEGAL_REP_EMAIL_ADDRESS, email);
 
             final OrganisationEntityResponse organisationEntityResponse =
