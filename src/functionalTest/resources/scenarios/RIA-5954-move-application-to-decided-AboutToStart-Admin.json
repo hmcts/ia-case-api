@@ -1,0 +1,32 @@
+{
+  "description": "Move the application to decided state by Admin Officer",
+  "request": {
+    "uri": "/bail/ccdAboutToStart",
+    "credentials": "AdminOfficer",
+    "input": {
+      "id": 1111,
+      "eventId": "moveApplicationToDecided",
+      "state": "decisionConditionalBail",
+      "caseData": {
+        "template": "minimal-application-started.json",
+        "replacements": {
+          "uploadSignedDecisionNoticeDocument": {
+            "document_url": "http://dm-store:8080/documents/1488f4de-c9fe-4f3e-a6b6-ee032ca759c0",
+            "document_binary_url": "http://dm-store:8080/documents/1488f4de-c9fe-4f3e-a6b6-ee032ca759c0/binary",
+            "document_filename": "signed-decision-notice-doc.pdf"
+          }
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-application-started.json",
+      "replacements": {
+        "outcomeState": "decisionDecided"
+      }
+    }
+  }
+}

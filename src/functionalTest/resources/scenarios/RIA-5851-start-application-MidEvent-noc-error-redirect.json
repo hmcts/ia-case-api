@@ -1,0 +1,28 @@
+{
+  "description": "Start the application by admin - show error message (redirect) if applicant has application already",
+  "request": {
+    "uri": "/bail/ccdMidEvent?pageId=redirectToPreviousApplicationOrNoc",
+    "credentials": "AdminOfficer",
+    "input": {
+      "id": 1111,
+      "eventId": "startApplication",
+      "state": "applicationStarted",
+      "caseData": {
+        "template": "minimal-application-started.json",
+        "replacements": {
+          "previousApplicationDoneViaCcd": "Yes"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": ["contains(A case record already exists for this applicant.)"],
+    "caseData": {
+      "template": "minimal-application-started.json",
+      "replacements": {
+        "previousApplicationDoneViaCcd": "Yes"
+      }
+    }
+  }
+}

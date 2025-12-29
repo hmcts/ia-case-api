@@ -1,0 +1,23 @@
+{
+  "description": "Change bail direction due date (post-submit REST call)",
+  "request": {
+    "uri": "/bail/ccdSubmitted",
+    "credentials": "AdminOfficer",
+    "input": {
+      "id": 1111,
+      "eventId": "changeBailDirectionDueDate",
+      "state": "applicationSubmitted",
+      "caseData": {
+        "template": "minimal-application-started.json"
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "confirmation": {
+      "header": "# You have changed the direction due date",
+      "body": "contains(### What happens next\n\nAll parties will be notified that the direction due date has changed. You can see the status of the direction in the [directions tab](/case/IA/Bail/1111#Direction"
+    }
+  }
+}

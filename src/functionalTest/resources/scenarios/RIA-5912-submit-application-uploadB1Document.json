@@ -1,0 +1,93 @@
+{
+  "description": "Submit the application with a B1 form (pre-submit REST call)",
+  "request": {
+    "uri": "/bail/ccdAboutToSubmit",
+    "credentials": "AdminOfficer",
+    "input": {
+      "id": 1111,
+      "eventId": "submitApplication",
+      "state": "applicationStarted",
+      "caseData": {
+        "template": "minimal-application-started.json",
+        "replacements": {
+          "uploadB1FormDocs":
+          [
+            {
+              "id": "2",
+              "value": {
+                "document": {
+                  "document_url": "http:\/\/dm-store:8080\/documents\/aaaaaaaa-bbbb-1ccc-8ddd-eeeeeeeeeeee",
+                  "document_binary_url": "http://dm-store:8080/documents/aaaaaaaa-bbbb-1ccc-8ddd-eeeeeeeeeeee\/binary",
+                  "document_filename": "B1.PDF"
+                },
+                "description":"test b1 description"
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-application-started.json",
+      "replacements": {
+        "uploadB1FormDocs":
+        [
+          {
+            "id": "2",
+            "value": {
+              "document": {
+                "document_url": "$/http:\/\/dm-store:8080\/documents\/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/",
+                "document_binary_url": "$/http://dm-store:8080/documents/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\/binary/",
+                "document_filename": "B1.PDF"
+              },
+              "description":"test b1 description"
+            }
+          }
+        ],
+        "applicantDocumentsWithMetadata": [
+          {
+            "id": "2",
+            "value": {
+              "document": {
+                "document_url": "$/http.+\/documents\/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/",
+                "document_binary_url": "$/http.+\/documents/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\/binary/",
+                "document_filename": "B1.PDF",
+                "document_hash": null
+              },
+              "description": "test b1 description",
+              "dateUploaded": "{$TODAY}",
+              "tag": "b1Document",
+              "suppliedBy": null
+            }
+          },
+          {
+            "id": "1",
+            "value": {
+              "document": {
+                "document_url": "$/http.+\/documents\/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/",
+                "document_binary_url": "$/http.+\/documents/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\/binary/",
+                "document_filename": "LastName-bail-application-details.PDF",
+                "document_hash": null
+              },
+              "description": "",
+              "dateUploaded": "{$TODAY}",
+              "tag": "bailSubmission",
+              "suppliedBy": ""
+            }
+          }
+        ],
+        "notificationsSent": [
+          { "id": "1111_BAIL_APPLICATION_SUBMITTED_HEARING_CENTRE",
+            "value":"$/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/"
+          },
+          {"id": "1111_BAIL_APPLICATION_SUBMITTED_HOME_OFFICE",
+            "value":"$/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/"}
+        ]
+      }
+    }
+  }
+}

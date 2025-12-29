@@ -1,0 +1,23 @@
+{
+  "description": "RIA-5949 Record the decision confirmation (post-submit REST call)",
+  "request": {
+    "uri": "/bail/ccdSubmitted",
+    "credentials": "AdminOfficer",
+    "input": {
+      "id": 1111,
+      "eventId": "recordTheDecision",
+      "state": "bailSummaryUploaded",
+      "caseData": {
+        "template": "minimal-application-submitted-record-conditions.json"
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "confirmation": {
+      "header": "# You have recorded the decision",
+      "body": "### Do this next\n\nThis application has been decided. Download the decision notice from the documents tab and distribute to anyone who needs to sign it. [Upload the signed decision notice](/cases/case-details/1111/trigger/uploadSignedDecisionNotice/uploadSignedDecisionNoticesignedDecisionNoticeUpload) when it is ready."
+    }
+  }
+}

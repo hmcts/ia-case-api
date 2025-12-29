@@ -72,3 +72,4 @@ services:
 networks:
   compose_default:
     external: true
+

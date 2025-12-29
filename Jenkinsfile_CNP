@@ -1,7 +1,7 @@
 #!groovy
 properties([
-        [$class: 'GithubProjectProperty', projectUrlStr: 'https://github.com/hmcts/ia-case-api.git'],
-        pipelineTriggers([[$class: 'GitHubPushTrigger']])
+  [$class: 'GithubProjectProperty', projectUrlStr: 'https://github.com/hmcts/ia-case-api.git'],
+  pipelineTriggers([[$class: 'GitHubPushTrigger']])
 ])
 
 @Library('Infrastructure')
@@ -16,276 +16,320 @@ def dmnBranch = "master"
 def bpmnBranch = "master"
 
 def secrets = [
-        'rpx-${env}': [
-                secret('mc-s2s-client-secret', 'S2S_SECRET'),
-                secret('mc-idam-client-secret', 'IDAM_CLIENT_SECRET'),
-                secret('system-user-name', 'SYSTEM_USER_NAME'),
-                secret('system-user-password', 'SYSTEM_USER_PASSWORD'),
-        ],
-        'ia-${env}' : [
+  'rpx-${env}': [
+    secret('mc-s2s-client-secret', 'S2S_SECRET'),
+    secret('mc-idam-client-secret', 'IDAM_CLIENT_SECRET'),
+    secret('system-user-name', 'SYSTEM_USER_NAME'),
+    secret('system-user-password', 'SYSTEM_USER_PASSWORD'),
+  ],
+  'ia-${env}' : [
 
-                secret('test-caseofficer-username', 'TEST_CASEOFFICER_USERNAME'),
-                secret('test-caseofficer-password', 'TEST_CASEOFFICER_PASSWORD'),
-                secret('test-law-firm-a-username', 'TEST_LAW_FIRM_A_USERNAME'),
-                secret('test-law-firm-a-password', 'TEST_LAW_FIRM_A_PASSWORD'),
-                secret('test-adminofficer-username', 'TEST_ADMINOFFICER_USERNAME'),
-                secret('test-adminofficer-password', 'TEST_ADMINOFFICER_PASSWORD'),
+    secret('test-caseofficer-username', 'TEST_CASEOFFICER_USERNAME'),
+    secret('test-caseofficer-password', 'TEST_CASEOFFICER_PASSWORD'),
+    secret('test-law-firm-a-username', 'TEST_LAW_FIRM_A_USERNAME'),
+    secret('test-law-firm-a-password', 'TEST_LAW_FIRM_A_PASSWORD'),
+    secret('test-adminofficer-username', 'TEST_ADMINOFFICER_USERNAME'),
+    secret('test-adminofficer-password', 'TEST_ADMINOFFICER_PASSWORD'),
 
-                secret('test-homeoffice-apc-username', 'TEST_HOMEOFFICE_APC_USERNAME'),
-                secret('test-homeoffice-apc-password', 'TEST_HOMEOFFICE_APC_PASSWORD'),
-                secret('test-homeoffice-lart-username', 'TEST_HOMEOFFICE_LART_USERNAME'),
-                secret('test-homeoffice-lart-password', 'TEST_HOMEOFFICE_LART_PASSWORD'),
-                secret('test-homeoffice-pou-username', 'TEST_HOMEOFFICE_POU_USERNAME'),
-                secret('test-homeoffice-pou-password', 'TEST_HOMEOFFICE_POU_PASSWORD'),
-                secret('test-homeoffice-generic-username', 'TEST_HOMEOFFICE_GENERIC_USERNAME'),
-                secret('test-homeoffice-generic-password', 'TEST_HOMEOFFICE_GENERIC_PASSWORD'),
-                secret('test-judge-x-username', 'TEST_JUDGE_X_USERNAME'),
-                secret('test-judge-x-password', 'TEST_JUDGE_X_PASSWORD'),
-                secret('test-law-firm-share-case-a-username', 'TEST_LAW_FIRM_SHARE_CASE_A_USERNAME'),
-                secret('test-law-firm-share-case-a-password', 'TEST_LAW_FIRM_SHARE_CASE_A_PASSWORD'),
-                secret('test-citizen-username', 'TEST_CITIZEN_USERNAME'),
-                secret('test-citizen-password', 'TEST_CITIZEN_PASSWORD'),
+    secret('test-homeoffice-apc-username', 'TEST_HOMEOFFICE_APC_USERNAME'),
+    secret('test-homeoffice-apc-password', 'TEST_HOMEOFFICE_APC_PASSWORD'),
+    secret('test-homeoffice-lart-username', 'TEST_HOMEOFFICE_LART_USERNAME'),
+    secret('test-homeoffice-lart-password', 'TEST_HOMEOFFICE_LART_PASSWORD'),
+    secret('test-homeoffice-pou-username', 'TEST_HOMEOFFICE_POU_USERNAME'),
+    secret('test-homeoffice-pou-password', 'TEST_HOMEOFFICE_POU_PASSWORD'),
+    secret('test-homeoffice-generic-username', 'TEST_HOMEOFFICE_GENERIC_USERNAME'),
+    secret('test-homeoffice-generic-password', 'TEST_HOMEOFFICE_GENERIC_PASSWORD'),
+    secret('test-judge-x-username', 'TEST_JUDGE_X_USERNAME'),
+    secret('test-judge-x-password', 'TEST_JUDGE_X_PASSWORD'),
+    secret('test-law-firm-share-case-a-username', 'TEST_LAW_FIRM_SHARE_CASE_A_USERNAME'),
+    secret('test-law-firm-share-case-a-password', 'TEST_LAW_FIRM_SHARE_CASE_A_PASSWORD'),
+    secret('test-citizen-username', 'TEST_CITIZEN_USERNAME'),
+    secret('test-citizen-password', 'TEST_CITIZEN_PASSWORD'),
 
-                secret('test-law-firm-share-case-a-username', 'TEST_LAW_FIRM_ORG_SUCCESS_USERNAME'),
-                secret('test-law-firm-share-case-a-password', 'TEST_LAW_FIRM_ORG_SUCCESS_PASSWORD'),
+    secret('test-law-firm-share-case-a-username', 'TEST_LAW_FIRM_ORG_SUCCESS_USERNAME'),
+    secret('test-law-firm-share-case-a-password', 'TEST_LAW_FIRM_ORG_SUCCESS_PASSWORD'),
 
-                secret('test-law-firm-org-success-username', 'TEST_LAW_FIRM_ORG_SUCCESS_USERNAME'),
-                secret('test-law-firm-org-success-password', 'TEST_LAW_FIRM_ORG_SUCCESS_PASSWORD'),
+    secret('test-law-firm-org-success-username', 'TEST_LAW_FIRM_ORG_SUCCESS_USERNAME'),
+    secret('test-law-firm-org-success-password', 'TEST_LAW_FIRM_ORG_SUCCESS_PASSWORD'),
 
-                secret('test-law-firm-org-deleted-username', 'TEST_LAW_FIRM_ORG_DELETED_USERNAME'),
-                secret('test-law-firm-org-deleted-password', 'TEST_LAW_FIRM_ORG_DELETED_PASSWORD'),
+    secret('test-law-firm-org-deleted-username', 'TEST_LAW_FIRM_ORG_DELETED_USERNAME'),
+    secret('test-law-firm-org-deleted-password', 'TEST_LAW_FIRM_ORG_DELETED_PASSWORD'),
 
-                secret('ccd-admin-web-username', 'IA_CCD_ADMIN_USERNAME'),
-                secret('ccd-admin-web-password', 'IA_CCD_ADMIN_PASSWORD'),
+    secret('ccd-admin-web-username', 'IA_CCD_ADMIN_USERNAME'),
+    secret('ccd-admin-web-password', 'IA_CCD_ADMIN_PASSWORD'),
 
-                secret('wa-test-adminofficer-username', 'IA_WA_ADMINOFFICER_USERNAME'),
-                secret('wa-test-adminofficer-password', 'IA_WA_ADMINOFFICER_PASSWORD'),
-                secret('wa-test-caseofficer-a-username', 'IA_WA_CASEOFFICER_USERNAME'),
-                secret('wa-test-caseofficer-a-password', 'IA_WA_CASEOFFICER_PASSWORD'),
-                secret('wa-test-ctsc-admin-username', 'IA_WA_CTSC_ADMIN_USERNAME'),
-                secret('wa-test-ctsc-admin-password', 'IA_WA_CTSC_ADMIN_PASSWORD'),
-                secret('wa-test-adminofficer-username-1', 'IA_WA_ADMINOFFICER_USERNAME_1'),
-                secret('wa-test-adminofficer-password-1', 'IA_WA_ADMINOFFICER_PASSWORD_1'),
-                secret('wa-test-caseofficer-stcw-username', 'IA_WA_CASEOFFICER_USERNAME_STCW'),
-                secret('wa-test-caseofficer-stcw-password', 'IA_WA_CASEOFFICER_PASSWORD_STCW'),
-                secret('wa-test-judge-username', 'IA_WA_JUDGE_USERNAME'),
-                secret('wa-test-judge-password', 'IA_WA_JUDGE_PASSWORD'),
-                secret('wa-test-ctsc-admin-username-2', 'IA_WA_CTSC_ADMIN_USERNAME_2'),
-                secret('wa-test-ctsc-admin-password-2', 'IA_WA_CTSC_ADMIN_PASSWORD_2'),
-                secret('wa-test-adminofficer-no-idam-username', 'IA_WA_ADMINOFFICER_NO_IDAM_USERNAME'),
-                secret('wa-test-adminofficer-no-idam-password', 'IA_WA_ADMINOFFICER_NO_IDAM_PASSWORD'),
-                secret('wa-test-caseofficer-no-idam-username', 'IA_WA_CASEOFFICER_NO_IDAM_USERNAME'),
-                secret('wa-test-caseofficer-no-idam-password', 'IA_WA_CASEOFFICER_NO_IDAM_PASSWORD'),
-                secret('wa-test-judge-no-idam-username', 'IA_WA_JUDGE_NO_IDAM_USERNAME'),
-                secret('wa-test-judge-no-idam-password', 'IA_WA_JUDGE_NO_IDAM_PASSWORD'),
+    secret('wa-test-adminofficer-username', 'IA_WA_ADMINOFFICER_USERNAME'),
+    secret('wa-test-adminofficer-password', 'IA_WA_ADMINOFFICER_PASSWORD'),
+    secret('wa-test-caseofficer-a-username', 'IA_WA_CASEOFFICER_USERNAME'),
+    secret('wa-test-caseofficer-a-password', 'IA_WA_CASEOFFICER_PASSWORD'),
+    secret('wa-test-ctsc-admin-username', 'IA_WA_CTSC_ADMIN_USERNAME'),
+    secret('wa-test-ctsc-admin-password', 'IA_WA_CTSC_ADMIN_PASSWORD'),
+    secret('wa-test-adminofficer-username-1', 'IA_WA_ADMINOFFICER_USERNAME_1'),
+    secret('wa-test-adminofficer-password-1', 'IA_WA_ADMINOFFICER_PASSWORD_1'),
+    secret('wa-test-caseofficer-stcw-username', 'IA_WA_CASEOFFICER_USERNAME_STCW'),
+    secret('wa-test-caseofficer-stcw-password', 'IA_WA_CASEOFFICER_PASSWORD_STCW'),
+    secret('wa-test-judge-username', 'IA_WA_JUDGE_USERNAME'),
+    secret('wa-test-judge-password', 'IA_WA_JUDGE_PASSWORD'),
+    secret('wa-test-ctsc-admin-username-2', 'IA_WA_CTSC_ADMIN_USERNAME_2'),
+    secret('wa-test-ctsc-admin-password-2', 'IA_WA_CTSC_ADMIN_PASSWORD_2'),
+    secret('wa-test-adminofficer-no-idam-username', 'IA_WA_ADMINOFFICER_NO_IDAM_USERNAME'),
+    secret('wa-test-adminofficer-no-idam-password', 'IA_WA_ADMINOFFICER_NO_IDAM_PASSWORD'),
+    secret('wa-test-caseofficer-no-idam-username', 'IA_WA_CASEOFFICER_NO_IDAM_USERNAME'),
+    secret('wa-test-caseofficer-no-idam-password', 'IA_WA_CASEOFFICER_NO_IDAM_PASSWORD'),
+    secret('wa-test-judge-no-idam-username', 'IA_WA_JUDGE_NO_IDAM_USERNAME'),
+    secret('wa-test-judge-no-idam-password', 'IA_WA_JUDGE_NO_IDAM_PASSWORD'),
 
-                secret('addressLookupToken', 'ADDRESS_LOOKUP_TOKEN'),
-                secret('pcq-token-key', 'PCQ_TOKEN_KEY'),
-                secret('ia-redis-access-key', 'IA_REDIS_ACCESS_KEY'),
-                secret('ia-redis-connection-string', 'IA_REDIS_CONNECTION_STRING'),
-                secret('homeoffice-client-id', 'IA_HOMEOFFICE_CLIENT_ID'),
-                secret('homeoffice-secret', 'IA_HOMEOFFICE_SECRET'),
-                secret('idam-client-id', 'IA_IDAM_CLIENT_ID'),
-                secret('idam-secret', 'IA_IDAM_SECRET'),
-                secret('s2s-secret', 'IA_S2S_SECRET'),
-                secret('s2s-microservice', 'IA_S2S_MICROSERVICE'),
-                secret('prof-ref-data-url', 'PROF_REF_DATA_URL'),
-                secret('docmosis-enabled', 'IA_DOCMOSIS_ENABLED'),
-                secret('docmosis-access-key', 'DOCMOSIS_ACCESS_KEY'),
-                secret('em-stitching-enabled', 'IA_EM_STITCHING_ENABLED'),
-                secret('submit-hearing-requirements-enabled', 'IA_SUBMIT_HEARING_REQUIREMENTS_ENABLED'),
-                secret('launch-darkly-sdk-key', 'LAUNCH_DARKLY_SDK_KEY'),
-                secret('ia-gov-notify-key', 'IA_GOV_NOTIFY_KEY'),
-                secret('ia-bail-gov-notify-key', 'IA_BAIL_GOV_NOTIFY_KEY'),
-                secret('app-insights-connection-string', 'app-insights-connection-string'),
-                secret('postgres-auth-values-password', 'PG_AUTH_VALUES_YAML_PASS'),
-                secret('generic-values-preview-password', 'GENERIC_VALUES_PREVIEW_YAML_PASS'),
-                secret('generic-docker-pact-broker-password', 'GENERIC_DOCKER_PACT_BROKER_YAML_PASS'),
-                secret('postgres-auth-values-tes-password', 'POSTGRES_AUTH_VALUES_TES_PASSWORD'),
+    secret('addressLookupToken', 'ADDRESS_LOOKUP_TOKEN'),
+    secret('pcq-token-key', 'PCQ_TOKEN_KEY'),
+    secret('ia-redis-access-key', 'IA_REDIS_ACCESS_KEY'),
+    secret('ia-redis-connection-string', 'IA_REDIS_CONNECTION_STRING'),
+    secret('homeoffice-client-id', 'IA_HOMEOFFICE_CLIENT_ID'),
+    secret('homeoffice-secret', 'IA_HOMEOFFICE_SECRET'),
+    secret('idam-client-id', 'IA_IDAM_CLIENT_ID'),
+    secret('idam-secret', 'IA_IDAM_SECRET'),
+    secret('s2s-secret', 'IA_S2S_SECRET'),
+    secret('s2s-microservice', 'IA_S2S_MICROSERVICE'),
+    secret('prof-ref-data-url', 'PROF_REF_DATA_URL'),
+    secret('docmosis-enabled', 'IA_DOCMOSIS_ENABLED'),
+    secret('docmosis-access-key', 'DOCMOSIS_ACCESS_KEY'),
+    secret('em-stitching-enabled', 'IA_EM_STITCHING_ENABLED'),
+    secret('submit-hearing-requirements-enabled', 'IA_SUBMIT_HEARING_REQUIREMENTS_ENABLED'),
+    secret('launch-darkly-sdk-key', 'LAUNCH_DARKLY_SDK_KEY'),
+    secret('ia-gov-notify-key', 'IA_GOV_NOTIFY_KEY'),
+    secret('ia-bail-gov-notify-key', 'IA_BAIL_GOV_NOTIFY_KEY'),
+    secret('app-insights-connection-string', 'app-insights-connection-string'),
+    secret('postgres-auth-values-password', 'PG_AUTH_VALUES_YAML_PASS'),
+    secret('generic-values-preview-password', 'GENERIC_VALUES_PREVIEW_YAML_PASS'),
+    secret('generic-docker-pact-broker-password', 'GENERIC_DOCKER_PACT_BROKER_YAML_PASS'),
+    secret('postgres-auth-values-tes-password', 'POSTGRES_AUTH_VALUES_TES_PASSWORD'),
 
-                secret('hearing-centre-activation-date-bradford', 'IA_HEARING_CENTRE_ACTIVATION_DATE_BRADFORD'),
-                secret('hearing-centre-activation-date-manchester', 'IA_HEARING_CENTRE_ACTIVATION_DATE_MANCHESTER'),
-                secret('hearing-centre-activation-date-newport', 'IA_HEARING_CENTRE_ACTIVATION_DATE_NEWPORT'),
-                secret('hearing-centre-activation-date-taylor-house', 'IA_HEARING_CENTRE_ACTIVATION_DATE_TAYLOR_HOUSE'),
-                secret('hearing-centre-activation-date-north-shields', 'IA_HEARING_CENTRE_ACTIVATION_DATE_NORTH_SHIELDS'),
-                secret('hearing-centre-activation-date-birmingham', 'IA_HEARING_CENTRE_ACTIVATION_DATE_BIRMINGHAM'),
-                secret('hearing-centre-activation-date-hatton-cross', 'IA_HEARING_CENTRE_ACTIVATION_DATE_HATTON_CROSS'),
-                secret('hearing-centre-activation-date-glasgow', 'IA_HEARING_CENTRE_ACTIVATION_DATE_GLASGOW'),
-                secret('servicesatcdmiac-password', 'CCD_UPLOAD_PASSWORD'),
-                secret('ccd-client-secret', 'CCD_CLIENT_SECRET'),
-                secret('system-username', 'IA_SYSTEM_USERNAME'),
-                secret('system-password', 'IA_SYSTEM_PASSWORD'),
-                secret('ia-det-prison-email-mappings', 'IA_DET_PRISON_EMAIL_MAPPINGS')        
-          
-        ],
-        's2s-${env}': [
-                secret('microservicekey-ccd-data', 'DATA_STORE_S2S_KEY'),
-                secret('microservicekey-ccd-definition', 'DEFINITION_STORE_S2S_KEY'),
-                secret('microservicekey-ccd-gw', 'API_GATEWAY_S2S_KEY'),
-                secret('microservicekey-ccd-admin', 'ADMIN_S2S_KEY'),
-                secret('microservicekey-iac', 'IAC_S2S_KEY')
-        ],
-        'ccd-${env}': [
-                secret('ccd-api-gateway-oauth2-client-secret', 'CCD_API_GATEWAY_IDAM_CLIENT_SECRET'),
-                secret('ccd-admin-web-oauth2-client-secret', 'ADMIN_WEB_IDAM_SECRET'),
-                secret('idam-data-store-client-secret', 'IDAM_OAUTH2_DATA_STORE_CLIENT_SECRET'),
-                secret('idam-data-store-system-user-username', 'IDAM_DATA_STORE_SYSTEM_USER_USERNAME'),
-                secret('idam-data-store-system-user-password', 'IDAM_DATA_STORE_SYSTEM_USER_PASSWORD'),
-                secret('postcode-info-address-lookup-token', 'ADDRESS_LOOKUP_TOKEN')
-        ]
+    secret('hearing-centre-activation-date-bradford', 'IA_HEARING_CENTRE_ACTIVATION_DATE_BRADFORD'),
+    secret('hearing-centre-activation-date-manchester', 'IA_HEARING_CENTRE_ACTIVATION_DATE_MANCHESTER'),
+    secret('hearing-centre-activation-date-newport', 'IA_HEARING_CENTRE_ACTIVATION_DATE_NEWPORT'),
+    secret('hearing-centre-activation-date-taylor-house', 'IA_HEARING_CENTRE_ACTIVATION_DATE_TAYLOR_HOUSE'),
+    secret('hearing-centre-activation-date-north-shields', 'IA_HEARING_CENTRE_ACTIVATION_DATE_NORTH_SHIELDS'),
+    secret('hearing-centre-activation-date-birmingham', 'IA_HEARING_CENTRE_ACTIVATION_DATE_BIRMINGHAM'),
+    secret('hearing-centre-activation-date-hatton-cross', 'IA_HEARING_CENTRE_ACTIVATION_DATE_HATTON_CROSS'),
+    secret('hearing-centre-activation-date-glasgow', 'IA_HEARING_CENTRE_ACTIVATION_DATE_GLASGOW'),
+    secret('servicesatcdmiac-password', 'CCD_UPLOAD_PASSWORD'),
+    secret('ccd-client-secret', 'CCD_CLIENT_SECRET'),
+    secret('system-username', 'IA_SYSTEM_USERNAME'),
+    secret('system-password', 'IA_SYSTEM_PASSWORD'),
+    secret('ia-det-prison-email-mappings', 'IA_DET_PRISON_EMAIL_MAPPINGS'),
+
+    secret('idam-client-id', 'IA_IDAM_CLIENT_ID'),
+    secret('idam-secret', 'IA_IDAM_SECRET'),
+    secret('s2s-secret', 'IA_S2S_SECRET'),
+    secret('s2s-microservice', 'IA_S2S_MICROSERVICE'),
+    secret('prof-ref-data-url', 'PROF_REF_DATA_URL'),
+    secret('docmosis-enabled', 'IA_DOCMOSIS_ENABLED'),
+    secret('em-stitching-enabled', 'IA_EM_STITCHING_ENABLED'),
+    secret('launch-darkly-sdk-key', 'LAUNCH_DARKLY_SDK_KEY'),
+    secret('app-insights-connection-string', 'app-insights-connection-string'),
+    secret('ia-config-validator-secret', 'IA_CONFIG_VALIDATOR_SECRET'),
+    secret('generic-docker-pact-broker-password', 'GENERIC_DOCKER_PACT_BROKER_YAML_PASS'),
+
+    secret('test-caseofficer-username', 'TEST_CASEOFFICER_USERNAME'),
+    secret('test-caseofficer-password', 'TEST_CASEOFFICER_PASSWORD'),
+    secret('test-law-firm-a-username', 'TEST_LAW_FIRM_A_USERNAME'),
+    secret('test-law-firm-a-password', 'TEST_LAW_FIRM_A_PASSWORD'),
+    secret('test-adminofficer-username', 'TEST_ADMINOFFICER_USERNAME'),
+    secret('test-adminofficer-password', 'TEST_ADMINOFFICER_PASSWORD'),
+
+    secret('test-homeoffice-apc-username', 'TEST_HOMEOFFICE_APC_USERNAME'),
+    secret('test-homeoffice-apc-password', 'TEST_HOMEOFFICE_APC_PASSWORD'),
+    secret('test-homeoffice-lart-username', 'TEST_HOMEOFFICE_LART_USERNAME'),
+    secret('test-homeoffice-lart-password', 'TEST_HOMEOFFICE_LART_PASSWORD'),
+    secret('test-homeoffice-pou-username', 'TEST_HOMEOFFICE_POU_USERNAME'),
+    secret('test-homeoffice-pou-password', 'TEST_HOMEOFFICE_POU_PASSWORD'),
+    secret('test-homeoffice-generic-username', 'TEST_HOMEOFFICE_GENERIC_USERNAME'),
+    secret('test-homeoffice-generic-password', 'TEST_HOMEOFFICE_GENERIC_PASSWORD'),
+    secret('test-judge-x-username', 'TEST_JUDGE_X_USERNAME'),
+    secret('test-judge-x-password', 'TEST_JUDGE_X_PASSWORD'),
+    secret('test-citizen-username', 'TEST_CITIZEN_USERNAME'),
+    secret('test-citizen-password', 'TEST_CITIZEN_PASSWORD'),
+
+    secret('test-law-firm-share-case-a-username', 'TEST_LAW_FIRM_SHARE_CASE_A_USERNAME'),
+    secret('test-law-firm-share-case-a-password', 'TEST_LAW_FIRM_SHARE_CASE_A_PASSWORD'),
+
+    secret('test-law-firm-org-success-username', 'TEST_LAW_FIRM_ORG_SUCCESS_USERNAME'),
+    secret('test-law-firm-org-success-password', 'TEST_LAW_FIRM_ORG_SUCCESS_PASSWORD'),
+
+    secret('test-law-firm-org-deleted-username', 'TEST_LAW_FIRM_ORG_DELETED_USERNAME'),
+    secret('test-law-firm-org-deleted-password', 'TEST_LAW_FIRM_ORG_DELETED_PASSWORD'),
+
+    secret('test-homeoffice-bail-username', 'TEST_HOMEOFFICE_BAIL_USERNAME'),
+    secret('test-homeoffice-bail-password', 'TEST_HOMEOFFICE_BAIL_PASSWORD'),
+
+  ],
+  's2s-${env}': [
+    secret('microservicekey-ccd-data', 'DATA_STORE_S2S_KEY'),
+    secret('microservicekey-ccd-definition', 'DEFINITION_STORE_S2S_KEY'),
+    secret('microservicekey-ccd-gw', 'API_GATEWAY_S2S_KEY'),
+    secret('microservicekey-ccd-admin', 'ADMIN_S2S_KEY'),
+    secret('microservicekey-iac', 'IAC_S2S_KEY')
+  ],
+  'ccd-${env}': [
+    secret('ccd-api-gateway-oauth2-client-secret', 'CCD_API_GATEWAY_IDAM_CLIENT_SECRET'),
+    secret('ccd-admin-web-oauth2-client-secret', 'ADMIN_WEB_IDAM_SECRET'),
+    secret('idam-data-store-client-secret', 'IDAM_OAUTH2_DATA_STORE_CLIENT_SECRET'),
+    secret('idam-data-store-system-user-username', 'IDAM_DATA_STORE_SYSTEM_USER_USERNAME'),
+    secret('idam-data-store-system-user-password', 'IDAM_DATA_STORE_SYSTEM_USER_PASSWORD'),
+    secret('postcode-info-address-lookup-token', 'ADDRESS_LOOKUP_TOKEN')
+  ]
 ]
 
 static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
-    [$class     : 'AzureKeyVaultSecret',
-     secretType : 'Secret',
-     name       : secretName,
-     version    : '',
-     envVariable: envVar
-    ]
+  [$class     : 'AzureKeyVaultSecret',
+   secretType : 'Secret',
+   name       : secretName,
+   version    : '',
+   envVariable: envVar
+  ]
 }
 
 withPipeline(type, product, component) {
-    def githubApi = new GithubAPI(this)
-    env.ENABLE_WA = false
-    env.ENABLE_TES = false
-    env.TES_URL = "http://ia-timed-event-service-aat.service.core-compute-aat.internal/"
-    for (label in githubApi.getLabelsbyPattern(env.BRANCH_NAME, "enable_") ) {
-        if (label == "enable_wa") {
-            env.ENABLE_WA = true
-            env.SERVICES_WORK_ALLOCATION_TASK_API = "http://ia-case-api-pr-${CHANGE_ID}-wa-task-management-api"
-            env.SERVICES_WA_WORKFLOW_API_URL = "http://ia-case-api-pr-${CHANGE_ID}-wa-workflow-api"
-            env.WA_SUPPORTED_JURISDICTIONS = "IA"
-        } else if (label == "enable_timed_event_service") {
-            env.ENABLE_TES = true
-            env.TES_URL = "https://ia-case-api-pr-${CHANGE_ID}-timed-event-service.preview.platform.hmcts.net"
-        }
+  def githubApi = new GithubAPI(this)
+  env.ENABLE_WA = false
+  env.ENABLE_TES = false
+  env.TES_URL = "http://ia-timed-event-service-aat.service.core-compute-aat.internal/"
+  for (label in githubApi.getLabelsbyPattern(env.BRANCH_NAME, "enable_")) {
+    if (label == "enable_wa") {
+      env.ENABLE_WA = true
+      env.SERVICES_WORK_ALLOCATION_TASK_API = "http://ia-case-api-pr-${CHANGE_ID}-wa-task-management-api"
+      env.SERVICES_WA_WORKFLOW_API_URL = "http://ia-case-api-pr-${CHANGE_ID}-wa-workflow-api"
+      env.WA_SUPPORTED_JURISDICTIONS = "IA"
+    } else if (label == "enable_timed_event_service") {
+      env.ENABLE_TES = true
+      env.TES_URL = "https://ia-case-api-pr-${CHANGE_ID}-timed-event-service.preview.platform.hmcts.net"
     }
-    env.IA_CASE_DOCUMENTS_API_URL = "http://ia-case-documents-api-aat.service.core-compute-aat.internal/"
-    env.IA_CASE_NOTIFICATIONS_API_URL = "http://ia-case-notifications-api-aat.service.core-compute-aat.internal/"
-    env.IA_TIMED_EVENT_SERVICE_URL = "http://ia-timed-event-service-aat.service.core-compute-aat.internal/"
-    env.IA_CASE_PAYMENTS_API_URL = "http://ia-case-payments-api-aat.service.core-compute-aat.internal/"
-    env.IA_HOME_OFFICE_INTEGRATION_API_URL = "http://ia-home-office-integration-api-aat.service.core-compute-aat.internal/"
-    env.IA_IDAM_REDIRECT_URI = "https://ia-case-api-aat.service.core-compute-aat.internal/oauth2/callback"
-    env.CCD_URL = "http://ccd-data-store-api-aat.service.core-compute-aat.internal"
-    env.CCD_GW_URL = "http://dm-store-aat.service.core-compute-aat.internal"
-    env.DM_URL = "http://dm-store-aat.service.core-compute-aat.internal"
-    env.IDAM_URL = "https://idam-api.aat.platform.hmcts.net"
-    env.OPEN_ID_IDAM_URL = "https://idam-web-public.aat.platform.hmcts.net"
-    env.S2S_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
-    env.PACT_BROKER_FULL_URL = "https://pact-broker.platform.hmcts.net"
-    env.ROLE_ASSIGNMENT_URL = "http://am-role-assignment-service-aat.service.core-compute-aat.internal"
-    env.CASE_DOCUMENT_AM_URL = "http://ccd-case-document-am-api-aat.service.core-compute-aat.internal"
-    env.IS_SAVE_AND_CONTINUE_ENABLED = "false"
-    env.IA_HOME_OFFICE_INTEGRATION_ENABLED = "true"
-    env.CASE_API_URL = "http://ia-case-api-demo.service.core-compute-demo.internal"
-    env.LOCATION_REF_DATA_URL = "http://rd-location-ref-api-aat.service.core-compute-aat.internal"
+  }
+  env.IA_CASE_DOCUMENTS_API_URL = "http://ia-case-documents-api-aat.service.core-compute-aat.internal/"
+  env.IA_CASE_NOTIFICATIONS_API_URL = "http://ia-case-notifications-api-aat.service.core-compute-aat.internal/"
+  env.IA_TIMED_EVENT_SERVICE_URL = "http://ia-timed-event-service-aat.service.core-compute-aat.internal/"
+  env.IA_CASE_PAYMENTS_API_URL = "http://ia-case-payments-api-aat.service.core-compute-aat.internal/"
+  env.IA_HOME_OFFICE_INTEGRATION_API_URL = "http://ia-home-office-integration-api-aat.service.core-compute-aat.internal/"
+  env.IA_IDAM_REDIRECT_URI = "https://ia-case-api-aat.service.core-compute-aat.internal/oauth2/callback"
+  env.CCD_URL = "http://ccd-data-store-api-aat.service.core-compute-aat.internal"
+  env.CCD_GW_URL = "http://dm-store-aat.service.core-compute-aat.internal"
+  env.DM_URL = "http://dm-store-aat.service.core-compute-aat.internal"
+  env.IDAM_URL = "https://idam-api.aat.platform.hmcts.net"
+  env.OPEN_ID_IDAM_URL = "https://idam-web-public.aat.platform.hmcts.net"
+  env.S2S_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
+  env.PACT_BROKER_FULL_URL = "https://pact-broker.platform.hmcts.net"
+  env.ROLE_ASSIGNMENT_URL = "http://am-role-assignment-service-aat.service.core-compute-aat.internal"
+  env.CASE_DOCUMENT_AM_URL = "http://ccd-case-document-am-api-aat.service.core-compute-aat.internal"
+  env.IS_SAVE_AND_CONTINUE_ENABLED = "false"
+  env.IA_HOME_OFFICE_INTEGRATION_ENABLED = "true"
+  env.CASE_API_URL = "http://ia-case-api-demo.service.core-compute-demo.internal"
+  env.LOCATION_REF_DATA_URL = "http://rd-location-ref-api-aat.service.core-compute-aat.internal"
 
-    enableAksStagingDeployment()
-    disableLegacyDeployment()
-    loadVaultSecrets(secrets)
+  enableAksStagingDeployment()
+  disableLegacyDeployment()
+  loadVaultSecrets(secrets)
 
-    before('smoketest:preview') {
-        sh """
+  before('smoketest:preview') {
+    sh """
     eval \$(./bin/variables/load-preview-environment-variables.sh ${CHANGE_ID})
     ./bin/add-roles.sh
     """
-    }
+  }
 
 //enableFortifyScan()
-enableSecurityScan()
+  enableSecurityScan()
 //enableMutationTest()
 
-    afterSuccess('akschartsinstall') {
-        onPR {
-            if (env.ENABLE_WA) {
-                githubUpdateDeploymentStatus(githubCreateDeployment("-AIP"), "https://ia-case-api-pr-${CHANGE_ID}-aip-frontend.preview.platform.hmcts.net")
-                githubUpdateDeploymentStatus(githubCreateDeployment("-LR"), "https://xui-ia-case-api-pr-${CHANGE_ID}." + "preview.platform.hmcts.net")
-                env.IDAM_API_URL = "https://idam-api.aat.platform.hmcts.net"
-                env.CAMUNDA_BASE_URL = "https://camunda-ia-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
-                env.SERVICE_AUTH_PROVIDER_API_BASE_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
-                sh """
+  afterSuccess('akschartsinstall') {
+    onPR {
+      if (env.ENABLE_WA) {
+        githubUpdateDeploymentStatus(githubCreateDeployment("-AIP"), "https://ia-case-api-pr-${CHANGE_ID}-aip-frontend.preview.platform.hmcts.net")
+        githubUpdateDeploymentStatus(githubCreateDeployment("-LR"), "https://xui-ia-case-api-pr-${CHANGE_ID}." + "preview.platform.hmcts.net")
+        env.IDAM_API_URL = "https://idam-api.aat.platform.hmcts.net"
+        env.CAMUNDA_BASE_URL = "https://camunda-ia-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
+        env.SERVICE_AUTH_PROVIDER_API_BASE_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
+        sh """
                 ./bin/pull-latest-dmn-files.sh ${dmnBranch}
                 ./bin/pull-latest-camunda-wa-files.sh ${bpmnBranch}
             """
-            }
-        }
+      }
     }
+  }
 
-    before('functionalTest:preview') {
-        //steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
-        env.IDAM_API_URL = "https://idam-api.aat.platform.hmcts.net"
-        env.ROLE_ASSIGNMENT_URL = "https://am-role-assignment-ia-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
-        env.SERVICE_AUTH_PROVIDER_API_BASE_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
-        sh """
+  before('functionalTest:preview') {
+    //steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
+    env.IDAM_API_URL = "https://idam-api.aat.platform.hmcts.net"
+    env.ROLE_ASSIGNMENT_URL = "https://am-role-assignment-ia-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
+    env.SERVICE_AUTH_PROVIDER_API_BASE_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
+    sh """
       ./bin/add-org-roles-to-users.sh
     """
-    }
-    afterAlways('functionalTest:preview') {
-        publishHTML([
-                allowMissing         : true,
-                alwaysLinkToLastBuild: true,
-                keepAll              : true,
-                reportDir            : "build/reports/tests/functional",
-                reportFiles          : 'index.html',
-                reportName           : 'Functional Test Report'
-        ])
+  }
+  afterAlways('functionalTest:preview') {
+    publishHTML([
+      allowMissing         : true,
+      alwaysLinkToLastBuild: true,
+      keepAll              : true,
+      reportDir            : "build/reports/tests/functional",
+      reportFiles          : 'index.html',
+      reportName           : 'Functional Test Report'
+    ])
 
-    }
+  }
 
-    afterAlways('functionalTest:aat') {
-        steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
-        steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/**/*'
-    }
+  afterAlways('functionalTest:aat') {
+    steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
+    steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/**/*'
+  }
 
-    afterAlways('smoketest:preview') {
-        publishHTML target: [
-                allowMissing         : true,
-                alwaysLinkToLastBuild: true,
-                keepAll              : true,
-                reportDir            : "build/reports/tests/smoke",
-                reportFiles          : "index.html",
-                reportName           : "Smoke Test Report"
-        ]
-    }
+  afterAlways('smoketest:preview') {
+    publishHTML target: [
+      allowMissing         : true,
+      alwaysLinkToLastBuild: true,
+      keepAll              : true,
+      reportDir            : "build/reports/tests/smoke",
+      reportFiles          : "index.html",
+      reportName           : "Smoke Test Report"
+    ]
+  }
 
-    afterAlways('test') {
-        steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/**/*'
-        publishHTML target: [
-                allowMissing         : true,
-                alwaysLinkToLastBuild: true,
-                keepAll              : true,
-                reportDir            : "build/reports/tests/test",
-                reportFiles          : "index.html",
-                reportName           : "Unit Test Report"
-        ]
-        publishHTML([
-                allowMissing         : true,
-                alwaysLinkToLastBuild: true,
-                keepAll              : true,
-                reportDir            : "build/reports",
-                reportFiles          : 'dependency-check-report.html',
-                reportName           : 'Dependency Check Report'
-        ])
-    }
+  afterAlways('test') {
+    steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/**/*'
+    publishHTML target: [
+      allowMissing         : true,
+      alwaysLinkToLastBuild: true,
+      keepAll              : true,
+      reportDir            : "build/reports/tests/test",
+      reportFiles          : "index.html",
+      reportName           : "Unit Test Report"
+    ]
+    publishHTML([
+      allowMissing         : true,
+      alwaysLinkToLastBuild: true,
+      keepAll              : true,
+      reportDir            : "build/reports",
+      reportFiles          : 'dependency-check-report.html',
+      reportName           : 'Dependency Check Report'
+    ])
+  }
 
-    afterSuccess('sonarscan') {
+  afterSuccess('sonarscan') {
 
-        publishHTML target: [
-                allowMissing         : true,
-                alwaysLinkToLastBuild: true,
-                keepAll              : true,
-                reportDir            : "build/reports/tests/integration",
-                reportFiles          : "index.html",
-                reportName           : "Integration Test Report"
-        ]
-    }
+    publishHTML target: [
+      allowMissing         : true,
+      alwaysLinkToLastBuild: true,
+      keepAll              : true,
+      reportDir            : "build/reports/tests/integration",
+      reportFiles          : "index.html",
+      reportName           : "Integration Test Report"
+    ]
+  }
 
-    enableSlackNotifications('#ia-tech')
+  enableSlackNotifications('#ia-tech')
 
-    onMaster() {
-        enablePactAs([AppPipelineDsl.PactRoles.CONSUMER])
-    }
-    onPR() {
-        enablePactAs([AppPipelineDsl.PactRoles.CONSUMER])
-    }
+  onMaster() {
+    enablePactAs([AppPipelineDsl.PactRoles.CONSUMER])
+  }
+  onPR() {
+    enablePactAs([AppPipelineDsl.PactRoles.CONSUMER])
+  }
 }

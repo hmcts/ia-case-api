@@ -1,0 +1,38 @@
+{
+  "description": "Make new application by admin - detention facility appender Prison",
+  "request": {
+    "uri": "/bail/ccdAboutToSubmit",
+    "credentials": "AdminOfficer",
+    "input": {
+      "id": 1111,
+      "eventId": "makeNewApplication",
+      "state": "decisionDecided",
+      "caseData": {
+        "template": "minimal-application-started.json",
+        "replacements": {
+          "ircName": "",
+          "applicantDetainedLoc": "prison",
+          "prisonName": "Barlinnie",
+          "applicantPrisonDetails": "4321"
+        }
+      },
+      "caseDataBefore": {
+        "template": "minimal-application-started.json"
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "state": "APPLICATION_SUBMITTED",
+    "caseData": {
+      "template": "minimal-application-make-new-application.json",
+      "replacements": {
+        "ircName": null,
+        "applicantDetainedLoc": "prison",
+        "detentionFacility": "Barlinnie",
+        "hearingCentre": "glasgow"
+      }
+    }
+  }
+}

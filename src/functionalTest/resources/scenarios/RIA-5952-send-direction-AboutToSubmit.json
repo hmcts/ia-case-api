@@ -1,0 +1,54 @@
+{
+  "description": "Send direction event - direction sent to Applicant",
+  "request": {
+    "uri": "/bail/ccdAboutToSubmit",
+    "credentials": "AdminOfficer",
+    "input": {
+      "id": 1111,
+      "eventId": "sendBailDirection",
+      "state": "applicationSubmitted",
+      "caseData": {
+        "template": "minimal-application-started.json",
+        "replacements": {
+          "sendDirectionDescription": "Direction test",
+          "sendDirectionList": "Applicant",
+          "dateOfCompliance": "2100-01-01",
+          "notificationsSent": []
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-application-started.json",
+      "replacements": {
+        "currentCaseStateVisibleToJudge": "applicationSubmitted",
+        "currentCaseStateVisibleToAllUsers": "applicationSubmitted",
+        "currentCaseStateVisibleToHomeOffice": "applicationSubmitted",
+        "currentCaseStateVisibleToAdminOfficer": "applicationSubmitted",
+        "currentCaseStateVisibleToLegalRepresentative": "applicationSubmitted",
+        "directions": [
+          {
+            "id": "1",
+            "value": {
+              "sendDirectionDescription": "Direction test",
+              "sendDirectionList": "Applicant",
+              "dateOfCompliance": "2100-01-01",
+              "dateSent": "{$TODAY}",
+              "dateTimeDirectionCreated": "$/\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.?\\d*/",
+              "dateTimeDirectionModified": null,
+              "previousDates": []
+            }
+          }
+        ],
+        "notificationsSent": [
+          { "id": "1111_BAIL_SENT_DIRECTION_HOME_OFFICE",
+            "value":"$/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/"
+          }
+        ]
+      }
+    }
+  }
+}

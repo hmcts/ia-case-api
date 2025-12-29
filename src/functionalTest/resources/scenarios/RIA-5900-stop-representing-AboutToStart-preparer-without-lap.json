@@ -1,0 +1,42 @@
+{
+  "description": "RIA-5900 Stop representing client (Legal Rep) - localAuthorityPolicy missing",
+  "request": {
+    "uri": "/bail/ccdAboutToStart",
+    "credentials": "LegalRepresentativeOrgSuccess",
+    "input": {
+      "id": 1111,
+      "eventId": "stopLegalRepresenting",
+      "state": "applicationSubmitted",
+      "caseData": {
+        "template": "minimal-application-started.json",
+        "replacements": {
+          "localAuthorityPolicy": {
+            "Organisation": {
+              "OrganisationID": "SOME-ID",
+              "OrganisationName": "SOME-NAME"
+            },
+            "OrgPolicyReference": "someRef",
+            "OrgPolicyCaseAssignedRole": "someRole"
+          }
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-application-started.json",
+      "replacements": {
+        "localAuthorityPolicy": {
+          "Organisation": {
+            "OrganisationID": "SOME-ID",
+            "OrganisationName": "SOME-NAME"
+          },
+          "OrgPolicyReference": "someRef",
+          "OrgPolicyCaseAssignedRole": "someRole"
+        }
+      }
+    }
+  }
+}

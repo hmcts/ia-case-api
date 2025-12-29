@@ -1,0 +1,25 @@
+{
+  "description": "Upload documents with Home Office user - append HO user role",
+  "request": {
+    "uri": "/bail/ccdAboutToStart",
+    "credentials": "HomeOfficeGeneric",
+    "input": {
+      "id": 1111,
+      "eventId": "uploadDocuments",
+      "state": "applicationSubmitted",
+      "caseData": {
+        "template": "minimal-application-started.json"
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-application-started.json",
+      "replacements": {
+        "currentUser": "Home Office"
+      }
+    }
+  }
+}

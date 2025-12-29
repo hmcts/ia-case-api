@@ -1,0 +1,71 @@
+{
+  "description": "RIA-5947 End the application by admin officer",
+  "request": {
+    "uri": "/bail/ccdAboutToSubmit",
+    "credentials": "AdminOfficer",
+    "input": {
+      "id": 1111,
+      "eventId": "endApplication",
+      "state": "applicationSubmitted",
+      "caseData": {
+        "template": "minimal-application-started.json",
+        "replacements": {
+          "currentCaseStateVisibleToJudge": "applicationSubmitted",
+          "currentCaseStateVisibleToAllUsers": "applicationSubmitted",
+          "currentCaseStateVisibleToHomeOffice": "applicationSubmitted",
+          "currentCaseStateVisibleToAdminOfficer": "applicationSubmitted",
+          "currentCaseStateVisibleToLegalRepresentative": "applicationSubmitted",
+          "isLegallyRepresentedForFlag": "Yes",
+          "legalRepEmail": "ia-law-firm-a@fake.hmcts.net",
+          "applicantHasMobile": "Yes",
+          "applicantMobileNumber1": "07900900123"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-application-started.json",
+      "replacements": {
+        "endApplicationDate": "{$TODAY}",
+        "outcomeState": "applicationEnded",
+        "currentCaseStateVisibleToJudge": "applicationSubmitted",
+        "currentCaseStateVisibleToAllUsers": "applicationSubmitted",
+        "currentCaseStateVisibleToHomeOffice": "applicationSubmitted",
+        "currentCaseStateVisibleToAdminOfficer": "applicationSubmitted",
+        "currentCaseStateVisibleToLegalRepresentative": "applicationSubmitted",
+        "isLegallyRepresentedForFlag": "Yes",
+        "applicantHasMobile": "Yes",
+        "tribunalDocumentsWithMetadata":
+        [
+          {
+            "id": "1",
+            "value": {
+              "document": {
+                "document_url": "$/http.+\/documents\/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/",
+                "document_binary_url": "$/http.+\/documents/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\/binary/",
+                "document_filename": "LastName-ended-application-notice.PDF"
+              },
+              "description":"",
+              "dateUploaded": "{$TODAY}",
+              "tag":"bailEndApplication",
+              "suppliedBy":""
+            }
+          }
+        ],
+        "notificationsSent": [
+          { "id": "1111_BAIL_APPLICATION_ENDED_APPLICANT_SMS",
+            "value":"$/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/"
+          },
+          { "id": "1111_BAIL_APPLICATION_ENDED_HOME_OFFICE",
+            "value":"$/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/"
+          },
+          {"id": "1111_BAIL_APPLICATION_ENDED_LEGAL_REPRESENTATIVE",
+            "value":"$/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/"}
+        ]
+      }
+    }
+  }
+}

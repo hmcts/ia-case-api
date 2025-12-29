@@ -1,0 +1,78 @@
+{
+  "description": "Make new application by admin - with bail evidence attached",
+  "request": {
+    "uri": "/bail/ccdAboutToSubmit",
+    "credentials": "AdminOfficer",
+    "input": {
+      "id": 1111,
+      "eventId": "makeNewApplication",
+      "state": "decisionDecided",
+      "caseData": {
+        "template": "minimal-application-started.json",
+        "replacements": {
+          "groundsForBailProvideEvidenceOption": "Yes",
+          "uploadTheBailEvidenceDocs":
+          [
+            {
+              "id": "2",
+              "value": {
+                "document": {
+                  "document_url": "http://dm-store:8080/documents/1488f4de-c9fe-4f3e-a6b6-ee032ca759c0",
+                  "document_binary_url": "http://dm-store:8080/documents/1488f4de-c9fe-4f3e-a6b6-ee032ca759c0/binary",
+                  "document_filename": "evidence.PDF"
+                },
+                "description":"test evidence description"
+              }
+            }
+          ]
+        }
+      },
+      "caseDataBefore": {
+        "template": "minimal-application-started.json"
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "state": "APPLICATION_SUBMITTED",
+    "caseData": {
+      "template": "minimal-application-make-new-application.json",
+      "replacements": {
+        "groundsForBailProvideEvidenceOption": "Yes",
+        "applicantDocumentsWithMetadata": [
+          {
+            "id": "2",
+            "value": {
+              "document": {
+                "document_url": "$/http.+\/documents\/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/",
+                "document_binary_url": "$/http.+\/documents/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\/binary/",
+                "document_filename": "evidence.PDF",
+                "document_hash": null
+              },
+              "description": "test evidence description",
+              "dateUploaded": "{$TODAY}",
+              "tag": "uploadTheBailEvidenceDocs",
+              "suppliedBy": null
+            }
+          },
+          {
+            "id": "1",
+            "value": {
+              "document": {
+                "document_url": "$/http.+\/documents\/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/",
+                "document_binary_url": "$/http.+\/documents/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\/binary/",
+                "document_filename": "LastName-bail-application-details.PDF",
+                "document_hash": null
+              },
+              "description": "",
+              "dateUploaded": "{$TODAY}",
+              "tag": "bailSubmission",
+              "suppliedBy": ""
+            }
+          }
+        ]
+      }
+    }
+  }
+}

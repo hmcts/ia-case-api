@@ -1,0 +1,74 @@
+{
+  "description": "Change bail direction due date event - direction updated",
+  "request": {
+    "uri": "/bail/ccdAboutToSubmit",
+    "credentials": "AdminOfficer",
+    "input": {
+      "id": 1111,
+      "eventId": "changeBailDirectionDueDate",
+      "state": "applicationSubmitted",
+      "caseData": {
+        "template": "minimal-application-started.json",
+        "replacements": {
+          "bailDirectionList": "Direction 1",
+          "bailDirectionEditDateDue": "2100-02-01",
+          "directions": [
+            {
+              "id": "1",
+              "value": {
+                "sendDirectionDescription": "Direction test",
+                "sendDirectionList": "Applicant",
+                "dateOfCompliance": "2100-01-01",
+                "dateSent": "{$TODAY}",
+                "dateTimeDirectionCreated": "2022-01-01T00:00:00",
+                "dateTimeDirectionModified": "2022-01-01T00:00:00",
+                "previousDates": []
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-application-started.json",
+      "replacements": {
+        "currentCaseStateVisibleToJudge": "applicationSubmitted",
+        "currentCaseStateVisibleToAllUsers": "applicationSubmitted",
+        "currentCaseStateVisibleToHomeOffice": "applicationSubmitted",
+        "currentCaseStateVisibleToAdminOfficer": "applicationSubmitted",
+        "currentCaseStateVisibleToLegalRepresentative": "applicationSubmitted",
+        "directions": [
+          {
+            "id": "1",
+            "value": {
+              "sendDirectionDescription": "Direction test",
+              "sendDirectionList": "Applicant",
+              "dateOfCompliance": "2100-02-01",
+              "dateSent": "{$TODAY}",
+              "dateTimeDirectionCreated": "$/\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.?\\d*/",
+              "dateTimeDirectionModified": "$/\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.?\\d*/",
+              "previousDates": [
+                {
+                  "id": "1",
+                  "value": {
+                    "dateDue": "2100-01-01",
+                    "dateSent": "{$TODAY}"
+                  }
+                }
+              ]
+            }
+          }
+        ],
+        "notificationsSent": [
+          { "id": "1111_CHANGE_BAIL_DIRECTION_DUE_DATE_HOME_OFFICE",
+            "value":"$/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/"
+          }
+        ]
+      }
+    }
+  }
+}

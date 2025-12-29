@@ -2,6 +2,9 @@
 /build/
 /target/
 !gradle/wrapper/gradle-wrapper.jar
+*.class
+bin/main/application.yaml
+/target
 /node_modules
 /infrastructure/.terraform/
 bin/contractTest/
@@ -24,6 +27,7 @@ yarn.lock
 
 ### IntelliJ IDEA ###
 .idea
+/out
 *.iws
 *.iml
 *.ipr

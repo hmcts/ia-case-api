@@ -1,0 +1,142 @@
+{
+  "provider": {
+    "name": "referenceData_court_venues"
+  },
+  "consumer": {
+    "name": "ia_caseApi"
+  },
+  "interactions": [
+    {
+      "description": "A request for court venues",
+      "request": {
+        "method": "GET",
+        "path": "/refdata/location/court-venues/services",
+        "headers": {
+          "Authorization": "Bearer some-access-token",
+          "ServiceAuthorization": "someServiceAuthToken"
+        },
+        "query": {
+          "service_code": [
+            "some-id"
+          ]
+        },
+        "matchingRules": {
+          "query": {
+            "service_code": {
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "some-id"
+                }
+              ],
+              "combine": "AND"
+            }
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json; charset=UTF-8"
+        },
+        "body": {
+          "court_venues": [
+            {
+              "site_name": "siteName",
+              "epimms_id": "epimmsId",
+              "court_name": "courtName"
+            }
+          ],
+          "court_type": "courtType",
+          "service_code": "serviceCode",
+          "court_type_id": "courtTypeId"
+        },
+        "matchingRules": {
+          "body": {
+            "$.service_code": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ],
+              "combine": "AND"
+            },
+            "$.court_type_id": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ],
+              "combine": "AND"
+            },
+            "$.court_type": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ],
+              "combine": "AND"
+            },
+            "$.court_venues": {
+              "matchers": [
+                {
+                  "match": "type",
+                  "min": 1
+                }
+              ],
+              "combine": "AND"
+            },
+            "$.court_venues[*].site_name": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ],
+              "combine": "AND"
+            },
+            "$.court_venues[*].court_name": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ],
+              "combine": "AND"
+            },
+            "$.court_venues[*].epimms_id": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ],
+              "combine": "AND"
+            }
+          },
+          "header": {
+            "Content-Type": {
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "application/json(;\\s?charset=[\\w\\-]+)?"
+                }
+              ],
+              "combine": "AND"
+            }
+          }
+        }
+      },
+      "providerStates": [
+        {
+          "name": "Service ID"
+        }
+      ]
+    }
+  ],
+  "metadata": {
+    "pactSpecification": {
+      "version": "3.0.0"
+    },
+    "pact-jvm": {
+      "version": "4.1.7"
+    }
+  }
+}

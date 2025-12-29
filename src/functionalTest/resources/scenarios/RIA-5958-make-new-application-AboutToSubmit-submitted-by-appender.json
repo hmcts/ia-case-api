@@ -1,0 +1,39 @@
+{
+  "description": "Make new application - application submitted by LR appender",
+  "request": {
+    "uri": "/bail/ccdAboutToSubmit",
+    "credentials": "LegalRepresentativeOrgSuccess",
+    "input": {
+      "id": 1111,
+      "eventId": "makeNewApplication",
+      "state": "decisionDecided",
+      "caseData": {
+        "template": "minimal-application-started.json",
+        "replacements": {
+          "applicationSubmittedBy": "Legal Representative",
+          "isAdmin": "No",
+          "isLegalRep": "Yes",
+          "sentByChecklist": ""
+        }
+      },
+      "caseDataBefore": {
+        "template": "minimal-application-started.json"
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "state": "APPLICATION_SUBMITTED",
+    "caseData": {
+      "template": "minimal-application-make-new-application.json",
+      "replacements": {
+        "applicationSubmittedBy": "Legal Representative",
+        "isAdmin": "No",
+        "isLegalRep": "Yes",
+        "sentByChecklist": "",
+        "isLegallyRepresentedForFlag": "Yes"
+      }
+    }
+  }
+}

@@ -1,0 +1,51 @@
+{
+  "description": "RIA-8197 Record the decision - append decision type REFUSED_UNDER_IMA (refusedUnderIma)",
+  "disabled": "true",
+  "request": {
+    "uri": "/bail/ccdAboutToSubmit",
+    "credentials": "AdminOfficer",
+    "input": {
+      "id": 2222,
+      "eventId": "recordTheDecision",
+      "state": "bailSummaryUploaded",
+      "caseData": {
+        "template": "minimal-application-submitted-record-conditions.json",
+        "replacements": {
+          "recordTheDecisionList": "refusedUnderIma"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-application-submitted-record-conditions.json",
+      "replacements": {
+        "recordDecisionType": "refusedUnderIma",
+        "tribunalDocumentsWithMetadata":
+        [
+          {
+            "id": "1",
+            "value": {
+              "document": {
+                "document_url": "$/http:\/\/dm-store:8080\/documents\/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/",
+                "document_binary_url": "$/http://dm-store:8080/documents/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\/binary/",
+                "document_filename": "LastName-decision-notice-UNSIGNED.PDF"
+              },
+              "description":"",
+              "dateUploaded": "{$TODAY}",
+              "tag":"bailDecisionUnsigned",
+              "suppliedBy":""
+            }
+          }
+        ],
+        "decisionUnsignedDocument": {
+          "document_url": "$/http:\/\/dm-store:8080\/documents\/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/",
+          "document_binary_url": "$/http://dm-store:8080/documents/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\/binary/",
+          "document_filename": "LastName-decision-notice-UNSIGNED.PDF"
+        }
+      }
+    }
+  }
+}

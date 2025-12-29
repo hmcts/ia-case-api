@@ -1,0 +1,37 @@
+{
+  "description": "Edit the application to remove nationality (post-submit REST call)",
+  "request": {
+    "uri": "/bail/ccdAboutToSubmit",
+    "credentials": "AdminOfficer",
+    "input": {
+      "id": 1111,
+      "eventId": "editBailApplicationAfterSubmit",
+      "state": "applicationSubmitted",
+      "caseData": {
+        "template": "minimal-application-submitted.json",
+        "replacements": {
+          "applicantNationality": "STATELESS"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-application-submitted.json",
+      "replacements": {
+        "applicantNationality": "STATELESS",
+        "applicantNationalities": [
+          {
+            "id": "1",
+            "value": {
+              "code": "Stateless"
+            }
+          }
+        ],
+        "interpreterLanguages": null
+      }
+    }
+  }
+}

@@ -1,0 +1,55 @@
+{
+  "description": "Make new application by admin - clear unrelated fields",
+  "request": {
+    "uri": "/bail/ccdAboutToStart",
+    "credentials": "AdminOfficer",
+    "input": {
+      "id": 1111,
+      "eventId": "makeNewApplication",
+      "state": "decisionDecided",
+      "caseData": {
+        "template": "minimal-application-started.json"
+      },
+      "caseDataBefore": {
+        "template": "minimal-application-started.json"
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-application-make-new-application.json",
+      "replacements": {
+        "applicantFullName": null,
+        "currentCaseStateVisibleToJudge": null,
+        "currentCaseStateVisibleToAllUsers": null,
+        "currentCaseStateVisibleToHomeOffice": null,
+        "currentCaseStateVisibleToAdminOfficer": null,
+        "currentCaseStateVisibleToLegalRepresentative": null,
+        "immigrationRemovalCentre": null,
+        "applicantDetained": null,
+        "hearingCentre": null,
+        "videoHearing1": null,
+        "sentByChecklist": null,
+        "interpreterYesNo": null,
+        "applicantDetainedLoc": null,
+        "applicantDisability1": null,
+        "ircName": null,
+        "hasLegalRep": null,
+        "detentionFacility": null,
+        "applicantHasMobile": null,
+        "applicantHasAddress": null,
+        "groundsForBailReasons": null,
+        "applicationSubmittedBy": null,
+        "hasAppealHearingPending": null,
+        "hasFinancialCondSupporter": null,
+        "hasPreviousBailApplication": null,
+        "isLegallyRepresentedForFlag": null,
+        "agreesToBoundByFinancialCond": null,
+        "transferBailManagementObjectionYesOrNo": null,
+        "groundsForBailProvideEvidenceOption": null
+      }
+    }
+  }
+}

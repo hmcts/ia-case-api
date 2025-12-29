@@ -1,0 +1,61 @@
+{
+  "description": "Make new application by admin - upload b1 document",
+  "request": {
+    "uri": "/bail/ccdAboutToSubmit",
+    "credentials": "AdminOfficer",
+    "input": {
+      "id": 1111,
+      "eventId": "makeNewApplication",
+      "state": "decisionDecided",
+      "caseData": {
+        "template": "minimal-application-started.json",
+        "replacements": {
+          "uploadB1FormDocs":
+          [
+            {
+              "id":"1",
+              "value":{
+                "document":{
+                  "document_url": "http:\/\/dm-store:8080\/documents\/aaaaaaaa-bbbb-1ccc-8ddd-eeeeeeeeeeee",
+                  "document_filename": "B1-doc.pdf",
+                  "document_binary_url": "http://dm-store:8080/documents/aaaaaaaa-bbbb-1ccc-8ddd-eeeeeeeeeeee\/binary"
+                },
+                "description":"B1 document"
+              }
+            }
+          ]
+        }
+      },
+      "caseDataBefore": {
+        "template": "minimal-application-started.json"
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "state": "APPLICATION_SUBMITTED",
+    "caseData": {
+      "template": "minimal-application-make-new-application.json",
+      "replacements": {
+        "applicantDocumentsWithMetadata":
+        [
+          {
+            "id": "2",
+            "value": {
+              "document": {
+                "document_url": "$/http:\/\/dm-store:8080\/documents\/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/",
+                "document_binary_url": "$/http://dm-store:8080/documents/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\/binary/",
+                "document_filename": "B1-doc.pdf"
+              },
+              "description": "B1 document",
+              "dateUploaded": "{$TODAY}",
+              "tag": "b1Document",
+              "suppliedBy": null
+            }
+          }
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,83 @@
+{
+  "description": "Create case flag should display FCS party role for fcsLevelFlags with existing flags",
+  "request": {
+    "uri": "/bail/ccdAboutToStart",
+    "credentials": "AdminOfficer",
+    "input": {
+      "id": 1111,
+      "eventId": "createFlag",
+      "state": "applicationSubmitted",
+      "caseData": {
+        "template": "minimal-application-started.json",
+        "replacements": {
+          "fcs1InterpreterLanguageCategory": ["spokenLanguageInterpreter", "signLanguageInterpreter"],
+          "supporterGivenNames" : "Fcs1FirstName",
+          "supporterFamilyNames" : "Fcs1LastName",
+          "fcs2InterpreterLanguageCategory": ["spokenLanguageInterpreter"],
+          "supporter2GivenNames" : "Fcs2FirstName",
+          "supporter2FamilyNames" : "Fcs2LastName",
+          "fcs3InterpreterLanguageCategory": [],
+          "supporter3GivenNames" : "Fcs3FirstName",
+          "supporter3FamilyNames" : "Fcs3LastName",
+          "supporter1PartyId": "fcs1-12345",
+          "supporter2PartyId": "fcs2-67890",
+          "hasFinancialCondSupporter": "Yes",
+          "hasFinancialCondSupporter2": "Yes",
+          "fcsLevelFlags": [{
+            "id": "fcs1-12345",
+            "value": {
+              "details": [{
+                "id": "00000-0000-0000-0000-00000000",
+                "value": {
+                  "name": "Unacceptable/disruptive customer behaviour",
+                  "status": "Active",
+                  "flagCode": "PF0007",
+                  "dateTimeCreated": "2023-12-08T14:59:42.769Z",
+                  "hearingRelevant": "Yes"
+                  }
+                }],
+              "partyName": "Fcs1FirstName Fcs1LastName",
+              "roleOnCase": "FCS"
+            }
+          }]
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-application-started.json",
+      "replacements": {
+        "hasFinancialCondSupporter": "Yes",
+        "hasFinancialCondSupporter2": "Yes",
+        "fcsLevelFlags": [{
+          "id": "fcs1-12345",
+          "value": {
+            "details": [{
+              "id": "00000-0000-0000-0000-00000000",
+              "value": {
+                "name": "Unacceptable/disruptive customer behaviour",
+                "status": "Active",
+                "flagCode": "PF0007",
+                "dateTimeCreated": "2023-12-08T14:59:42.769Z",
+                "hearingRelevant": "Yes"
+              }
+            }],
+            "partyName": "Fcs1FirstName Fcs1LastName",
+            "roleOnCase": "FCS"
+          }
+        },
+        {
+          "id": "fcs2-67890",
+          "value": {
+            "details": [],
+            "partyName": "Fcs2FirstName Fcs2LastName",
+            "roleOnCase": "FCS"
+          }
+        }]
+      }
+    }
+  }
+}

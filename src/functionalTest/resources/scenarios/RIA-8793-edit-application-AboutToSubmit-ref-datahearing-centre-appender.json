@@ -1,0 +1,40 @@
+{
+  "description": "Edit application - append hearing centre from reference data",
+  "request": {
+    "uri": "/bail/ccdAboutToSubmit",
+    "credentials": "AdminOfficer",
+    "input": {
+      "id": 87931,
+      "eventId": "editBailApplication",
+      "state": "applicationStarted",
+      "caseData": {
+        "template": "minimal-application-started.json",
+        "replacements": {
+          "ircName": "Brookhouse",
+          "isBailsLocationReferenceDataEnabledFt": "Yes"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-application-started.json",
+      "replacements": {
+        "hasFinancialCondSupporter": null,
+        "interpreterLanguages": null,
+        "ircName": "Brookhouse",
+        "detentionFacility": "Brookhouse",
+        "hearingCentre": "taylorHouse",
+        "isBailsLocationReferenceDataEnabled": "Yes",
+        "hearingCentreRefData": {
+          "value": {
+            "code": "765324",
+            "label": "Taylor House Tribunal Hearing Centre"
+          }
+        }
+      }
+    }
+  }
+}

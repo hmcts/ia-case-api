@@ -1,0 +1,23 @@
+{
+  "description": "Add case note by Admin Officer confirmation (post-submit REST call)",
+  "request": {
+    "uri": "/bail/ccdSubmitted",
+    "credentials": "AdminOfficer",
+    "input": {
+      "id": 1111,
+      "eventId": "addCaseNote",
+      "state": "applicationSubmitted",
+      "caseData": {
+        "template": "minimal-application-started.json"
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "confirmation": {
+      "header": "# You have added a case note",
+      "body": "### What happens next\n\nYou can review this note in the [case notes tab](/case/IA/Bail/1111#Case%20notes)."
+    }
+  }
+}
