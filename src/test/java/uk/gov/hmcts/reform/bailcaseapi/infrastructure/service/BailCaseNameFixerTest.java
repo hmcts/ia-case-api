@@ -5,19 +5,19 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCase;
-import uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.BailCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.BailCaseFieldDefinition;
 
 import java.util.Optional;
-import uk.gov.hmcts.reform.bailcaseapi.domain.service.BailFieldCaseNameFixer;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.BailFieldCaseNameFixer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.APPLICANT_FAMILY_NAME;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.APPLICANT_GIVEN_NAMES;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.CASE_NAME_HMCTS_INTERNAL;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.BailCaseFieldDefinition.APPLICANT_FAMILY_NAME;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.BailCaseFieldDefinition.APPLICANT_GIVEN_NAMES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.BailCaseFieldDefinition.CASE_NAME_HMCTS_INTERNAL;
 
 
 @ExtendWith(MockitoExtension.class)

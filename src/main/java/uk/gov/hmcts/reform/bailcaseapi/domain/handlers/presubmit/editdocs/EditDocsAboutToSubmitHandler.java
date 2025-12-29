@@ -1,9 +1,9 @@
-package uk.gov.hmcts.reform.bailcaseapi.domain.handlers.presubmit.editdocs;
+package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.editdocs;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.APPLICANT_DOCUMENTS_WITH_METADATA;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.HOME_OFFICE_DOCUMENTS_WITH_METADATA;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.TRIBUNAL_DOCUMENTS_WITH_METADATA;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.BailCaseFieldDefinition.APPLICANT_DOCUMENTS_WITH_METADATA;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.BailCaseFieldDefinition.HOME_OFFICE_DOCUMENTS_WITH_METADATA;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.BailCaseFieldDefinition.TRIBUNAL_DOCUMENTS_WITH_METADATA;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,18 +12,18 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCase;
-import uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition;
-import uk.gov.hmcts.reform.bailcaseapi.domain.entities.DocumentTag;
-import uk.gov.hmcts.reform.bailcaseapi.domain.entities.DocumentWithMetadata;
-import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.CaseDetails;
-import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.Event;
-import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.Callback;
-import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
-import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
-import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.IdValue;
-import uk.gov.hmcts.reform.bailcaseapi.domain.handlers.PreSubmitCallbackHandler;
-import uk.gov.hmcts.reform.bailcaseapi.domain.service.EditDocsCaseNoteService;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.BailCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.BailCaseFieldDefinition;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithMetadata;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.EditDocsCaseNoteService;
 
 @Component
 public class EditDocsAboutToSubmitHandler implements PreSubmitCallbackHandler<BailCase> {

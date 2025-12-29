@@ -1,12 +1,12 @@
-package uk.gov.hmcts.reform.bailcaseapi.domain.entities.ref;
+package uk.gov.hmcts.reform.iacaseapi.domain.entities.ref;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import uk.gov.hmcts.reform.bailcaseapi.domain.entities.LegRepAddressUk;
-import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ProfessionalUser;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.LegRepAddressUk;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ProfessionalUser;
 
 import java.util.List;
 

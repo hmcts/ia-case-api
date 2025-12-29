@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.bailcaseapi.domain.service.holidaydates;
+package uk.gov.hmcts.reform.iacaseapi.domain.service.holidaydates;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

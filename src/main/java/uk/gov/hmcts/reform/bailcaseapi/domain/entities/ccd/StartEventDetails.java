@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd;
+package uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
@@ -7,7 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.BailCase;
 
 @AllArgsConstructor
 @NoArgsConstructor

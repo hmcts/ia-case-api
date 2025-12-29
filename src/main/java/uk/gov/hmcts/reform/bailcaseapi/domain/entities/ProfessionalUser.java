@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.bailcaseapi.domain.entities;
+package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.util.List;

@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.bailcaseapi.domain.service;
+package uk.gov.hmcts.reform.iacaseapi.domain.service;
 
 public interface FeatureToggler {
 

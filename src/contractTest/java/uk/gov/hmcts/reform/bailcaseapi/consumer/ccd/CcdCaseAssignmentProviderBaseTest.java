@@ -13,11 +13,11 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.bailcaseapi.domain.UserDetailsProvider;
-import uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCase;
-import uk.gov.hmcts.reform.bailcaseapi.domain.entities.UserDetails;
-import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.CaseDetails;
-import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.Callback;
+import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.BailCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.bailcaseapi.infrastructure.clients.CcdCaseAssignment;
 
 import java.io.IOException;

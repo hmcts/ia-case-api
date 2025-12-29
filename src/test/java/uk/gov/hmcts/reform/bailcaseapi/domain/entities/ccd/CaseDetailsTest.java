@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd;
+package uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -6,7 +6,7 @@ import static org.mockito.Mockito.mock;
 
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.Test;
-import uk.gov.hmcts.reform.bailcaseapi.domain.RequiredFieldMissingException;
+import uk.gov.hmcts.reform.iacaseapi.domain.RequiredFieldMissingException;
 
 public class CaseDetailsTest {
 

@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.bailcaseapi.domain.service.holidaydates;
+package uk.gov.hmcts.reform.iacaseapi.domain.service.holidaydates;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.time.LocalDate;

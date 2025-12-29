@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.bailcaseapi.domain.service;
+package uk.gov.hmcts.reform.iacaseapi.domain.service;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -17,7 +17,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.gov.hmcts.reform.bailcaseapi.domain.service.holidaydates.HolidayService;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.holidaydates.HolidayService;
 
 @ExtendWith(MockitoExtension.class)
 class DueDateServiceTest {

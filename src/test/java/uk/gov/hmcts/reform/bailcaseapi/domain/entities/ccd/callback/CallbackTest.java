@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback;
+package uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback;
 
 import static junit.framework.TestCase.assertTrue;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -12,10 +12,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.gov.hmcts.reform.bailcaseapi.domain.RequiredFieldMissingException;
-import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.CaseData;
-import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.CaseDetails;
-import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.Event;
+import uk.gov.hmcts.reform.iacaseapi.domain.RequiredFieldMissingException;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseData;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 
 
 @ExtendWith(MockitoExtension.class)

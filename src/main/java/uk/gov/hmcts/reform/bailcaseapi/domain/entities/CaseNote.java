@@ -1,10 +1,10 @@
-package uk.gov.hmcts.reform.bailcaseapi.domain.entities;
+package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
 import static java.util.Objects.requireNonNull;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
-import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.Document;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 
 @EqualsAndHashCode
 @ToString

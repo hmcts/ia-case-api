@@ -1,6 +1,6 @@
-package uk.gov.hmcts.reform.bailcaseapi.domain.service;
+package uk.gov.hmcts.reform.iacaseapi.domain.service;
 
-import uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.BailCase;
 
 public interface DataFixer {
     void fix(BailCase bailCase);

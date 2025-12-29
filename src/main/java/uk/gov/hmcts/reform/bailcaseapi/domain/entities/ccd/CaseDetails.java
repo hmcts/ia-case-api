@@ -1,11 +1,11 @@
-package uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd;
+package uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import java.time.LocalDateTime;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
-import uk.gov.hmcts.reform.bailcaseapi.domain.RequiredFieldMissingException;
+import uk.gov.hmcts.reform.iacaseapi.domain.RequiredFieldMissingException;
 
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 @ToString

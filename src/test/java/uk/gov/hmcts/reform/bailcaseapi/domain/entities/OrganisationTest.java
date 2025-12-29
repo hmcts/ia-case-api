@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.bailcaseapi.domain.entities;
+package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -26,5 +26,5 @@ public class OrganisationTest {
         assertThat(organisation.getOrganisationID()).isEqualTo(organisationId);
         assertThat(organisation.getOrganisationName()).isEqualTo(organisationName);
     }
-    
+
 }

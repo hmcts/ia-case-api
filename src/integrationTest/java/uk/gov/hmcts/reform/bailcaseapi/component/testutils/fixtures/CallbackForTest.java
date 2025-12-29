@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.bailcaseapi.component.testutils.fixtures;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.Event;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 
 public class CallbackForTest {
 

@@ -15,7 +15,7 @@ import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.BailCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -105,7 +105,7 @@ public class CcdSupplementaryUpdater {
 
 
     public void setHmctsServiceIdSupplementary(
-        final uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.Callback<BailCase> callback
+        final uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback<BailCase> callback
     ) {
         requireNonNull(callback, "callback must not be null");
 

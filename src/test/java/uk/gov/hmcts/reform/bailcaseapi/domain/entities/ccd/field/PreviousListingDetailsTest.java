@@ -1,8 +1,8 @@
-package uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field;
+package uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field;
 
 import org.junit.jupiter.api.Test;
-import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ListingEvent;
-import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ListingHearingCentre;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ListingEvent;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ListingHearingCentre;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

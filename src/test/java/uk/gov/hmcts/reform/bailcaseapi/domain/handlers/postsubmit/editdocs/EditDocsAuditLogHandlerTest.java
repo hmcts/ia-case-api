@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.bailcaseapi.domain.handlers.postsubmit.editdocs;
+package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit.editdocs;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -22,11 +22,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.slf4j.LoggerFactory;
-import uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCase;
-import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.CaseDetails;
-import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.Event;
-import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.Callback;
-import uk.gov.hmcts.reform.bailcaseapi.domain.service.EditDocsAuditLogService;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.BailCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.EditDocsAuditLogService;
 
 @MockitoSettings(strictness = Strictness.STRICT_STUBS)
 @ExtendWith(MockitoExtension.class)

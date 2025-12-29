@@ -1,7 +1,7 @@
-package uk.gov.hmcts.reform.bailcaseapi.domain.service;
+package uk.gov.hmcts.reform.iacaseapi.domain.service;
 
-import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.CaseData;
-import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.Callback;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseData;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 
 public interface NotificationSender<T extends CaseData> {
 

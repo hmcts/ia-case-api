@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd;
+package uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

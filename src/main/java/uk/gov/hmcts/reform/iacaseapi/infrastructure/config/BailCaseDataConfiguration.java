@@ -2,9 +2,9 @@ package uk.gov.hmcts.reform.iacaseapi.infrastructure.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition;
-import uk.gov.hmcts.reform.bailcaseapi.domain.service.BailFieldCaseNameFixer;
-import uk.gov.hmcts.reform.bailcaseapi.domain.service.DataFixer;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.BailCaseFieldDefinition;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.BailFieldCaseNameFixer;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.DataFixer;
 
 @Configuration
 public class BailCaseDataConfiguration {

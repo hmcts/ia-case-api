@@ -1,10 +1,10 @@
-package uk.gov.hmcts.reform.bailcaseapi.domain.handlers.presubmit;
+package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCase;
-import uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition;
-import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.IdValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.BailCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.BailCaseFieldDefinition;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,8 +12,8 @@ import java.util.Optional;
 
 import static java.util.Collections.emptyList;
 
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.CURRENT_HEARING_ID;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.HEARING_ID_LIST;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.BailCaseFieldDefinition.CURRENT_HEARING_ID;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.BailCaseFieldDefinition.HEARING_ID_LIST;
 
 @Slf4j
 @Component

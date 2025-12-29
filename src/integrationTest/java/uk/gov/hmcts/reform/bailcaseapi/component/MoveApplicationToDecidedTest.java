@@ -4,12 +4,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static uk.gov.hmcts.reform.bailcaseapi.component.testutils.fixtures.CallbackForTest.CallbackForTestBuilder.callback;
 import static uk.gov.hmcts.reform.bailcaseapi.component.testutils.fixtures.CaseDetailsForTest.CaseDetailsForTestBuilder.someCaseDetailsWith;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.APPLICANT_FAMILY_NAME;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.APPLICANT_GIVEN_NAMES;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.OUTCOME_STATE;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.UPLOAD_SIGNED_DECISION_NOTICE_DOCUMENT;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.Event.MOVE_APPLICATION_TO_DECIDED;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.State.DECISION_CONDITIONAL_BAIL;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.BailCaseFieldDefinition.APPLICANT_FAMILY_NAME;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.BailCaseFieldDefinition.APPLICANT_GIVEN_NAMES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.BailCaseFieldDefinition.OUTCOME_STATE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.BailCaseFieldDefinition.UPLOAD_SIGNED_DECISION_NOTICE_DOCUMENT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.MOVE_APPLICATION_TO_DECIDED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.DECISION_CONDITIONAL_BAIL;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -17,8 +17,8 @@ import uk.gov.hmcts.reform.bailcaseapi.component.testutils.SpringBootIntegration
 import uk.gov.hmcts.reform.bailcaseapi.component.testutils.WithUserDetailsStub;
 import uk.gov.hmcts.reform.bailcaseapi.component.testutils.fixtures.BailCaseForTest;
 import uk.gov.hmcts.reform.bailcaseapi.component.testutils.fixtures.PreSubmitCallbackResponseForTest;
-import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.State;
-import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.Document;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 
 class MoveApplicationToDecidedTest extends SpringBootIntegrationTest implements WithUserDetailsStub {
 

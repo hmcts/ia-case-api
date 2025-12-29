@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.bailcaseapi.domain.handlers.postsubmit.editdocs;
+package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit.editdocs;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;

@@ -1,10 +1,10 @@
-package uk.gov.hmcts.reform.bailcaseapi.domain.handlers.presubmit;
+package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.reform.bailcaseapi.component.testutils.SpringBootIntegrationTest;
-import uk.gov.hmcts.reform.bailcaseapi.domain.entities.HearingCentre;
-import uk.gov.hmcts.reform.bailcaseapi.domain.service.HearingCentreFinder;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.HearingCentreFinder;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

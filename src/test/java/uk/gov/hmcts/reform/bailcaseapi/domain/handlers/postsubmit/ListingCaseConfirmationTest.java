@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.bailcaseapi.domain.handlers.postsubmit;
+package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.LISTING_EVENT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.BailCaseFieldDefinition.LISTING_EVENT;
 
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
@@ -16,12 +16,12 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCase;
-import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ListingEvent;
-import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.CaseDetails;
-import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.Event;
-import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.Callback;
-import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.BailCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ListingEvent;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")

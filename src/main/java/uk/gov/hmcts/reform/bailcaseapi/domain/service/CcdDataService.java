@@ -1,6 +1,6 @@
-package uk.gov.hmcts.reform.bailcaseapi.domain.service;
+package uk.gov.hmcts.reform.iacaseapi.domain.service;
 
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.BailCaseFieldDefinition.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -9,14 +9,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCase;
-import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.CaseDataContent;
-import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.CaseDetails;
-import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.Event;
-import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.StartEventDetails;
-import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.SubmitEventDetails;
-import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.Callback;
-import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.AddressUK;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.BailCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDataContent;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.StartEventDetails;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.SubmitEventDetails;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.AddressUK;
 import uk.gov.hmcts.reform.bailcaseapi.infrastructure.clients.CcdDataApi;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.SystemTokenGenerator;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.SystemUserProvider;

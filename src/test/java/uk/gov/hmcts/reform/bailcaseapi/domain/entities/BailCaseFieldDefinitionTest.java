@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.bailcaseapi.domain.entities;
+package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
-import uk.gov.hmcts.reform.bailcaseapi.domain.service.MakeNewApplicationService;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.MakeNewApplicationService;
 
 public class BailCaseFieldDefinitionTest {
     /**

@@ -12,7 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 import uk.gov.hmcts.reform.ccd.document.am.feign.CaseDocumentClient;
 import uk.gov.hmcts.reform.ccd.document.am.model.UploadResponse;
 import uk.gov.hmcts.reform.document.utils.InMemoryMultipartFile;
-import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.Document;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 
 /**
  * This class supersedes DMDocumentManagementUploader. Its usage is driven by a feature flag.

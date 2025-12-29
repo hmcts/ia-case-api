@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.bailcaseapi.domain.entities;
+package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
 import java.util.Collections;
 import java.util.List;
@@ -8,8 +8,8 @@ import org.junit.jupiter.params.provider.ValueSource;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.StrategicCaseFlag.ROLE_ON_CASE_APPLICANT;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.StrategicCaseFlag.ROLE_ON_CASE_FCS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlag.ROLE_ON_CASE_APPLICANT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlag.ROLE_ON_CASE_FCS;
 
 class StrategicCaseFlagTest {
 

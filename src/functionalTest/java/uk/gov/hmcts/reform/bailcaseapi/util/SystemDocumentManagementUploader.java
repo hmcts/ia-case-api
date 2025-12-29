@@ -5,9 +5,9 @@ import com.launchdarkly.sdk.server.interfaces.LDClientInterface;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.bailcaseapi.domain.UserDetailsProvider;
-import uk.gov.hmcts.reform.bailcaseapi.domain.entities.UserDetails;
-import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.Document;
+import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 
 @Service
 @RequiredArgsConstructor

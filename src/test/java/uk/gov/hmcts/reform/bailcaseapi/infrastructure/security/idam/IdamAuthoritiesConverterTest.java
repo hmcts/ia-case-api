@@ -18,7 +18,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import uk.gov.hmcts.reform.bailcaseapi.domain.service.IdamService;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.IdamService;
 import uk.gov.hmcts.reform.bailcaseapi.infrastructure.clients.IdamApi;
 import uk.gov.hmcts.reform.bailcaseapi.infrastructure.clients.model.idam.UserInfo;
 

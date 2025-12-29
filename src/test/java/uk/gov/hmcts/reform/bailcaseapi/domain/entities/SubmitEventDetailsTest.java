@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.bailcaseapi.domain.entities;
+package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -6,8 +6,8 @@ import java.util.HashMap;
 import java.util.Map;
 import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.jupiter.api.Test;
-import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.State;
-import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.SubmitEventDetails;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.SubmitEventDetails;
 
 public class SubmitEventDetailsTest {
     private final long id = 1234;

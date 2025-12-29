@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field;
+package uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field;
 
 import org.junit.jupiter.api.Test;
 

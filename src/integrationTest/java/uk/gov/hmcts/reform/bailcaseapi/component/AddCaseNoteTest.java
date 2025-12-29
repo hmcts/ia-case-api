@@ -3,13 +3,13 @@ package uk.gov.hmcts.reform.bailcaseapi.component;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.bailcaseapi.component.testutils.fixtures.CallbackForTest.CallbackForTestBuilder.callback;
 import static uk.gov.hmcts.reform.bailcaseapi.component.testutils.fixtures.CaseDetailsForTest.CaseDetailsForTestBuilder.someCaseDetailsWith;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.ADD_CASE_NOTE_DESCRIPTION;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.ADD_CASE_NOTE_SUBJECT;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.APPLICANT_FAMILY_NAME;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.APPLICANT_GIVEN_NAMES;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.CASE_NOTES;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.Event.ADD_CASE_NOTE;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.State.APPLICATION_SUBMITTED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.BailCaseFieldDefinition.ADD_CASE_NOTE_DESCRIPTION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.BailCaseFieldDefinition.ADD_CASE_NOTE_SUBJECT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.BailCaseFieldDefinition.APPLICANT_FAMILY_NAME;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.BailCaseFieldDefinition.APPLICANT_GIVEN_NAMES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.BailCaseFieldDefinition.CASE_NOTES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.ADD_CASE_NOTE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.APPLICATION_SUBMITTED;
 
 import java.util.List;
 import java.util.Optional;
@@ -20,8 +20,8 @@ import uk.gov.hmcts.reform.bailcaseapi.component.testutils.SpringBootIntegration
 import uk.gov.hmcts.reform.bailcaseapi.component.testutils.WithUserDetailsStub;
 import uk.gov.hmcts.reform.bailcaseapi.component.testutils.fixtures.BailCaseForTest;
 import uk.gov.hmcts.reform.bailcaseapi.component.testutils.fixtures.PreSubmitCallbackResponseForTest;
-import uk.gov.hmcts.reform.bailcaseapi.domain.entities.CaseNote;
-import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.IdValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseNote;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 
 class AddCaseNoteTest extends SpringBootIntegrationTest implements WithUserDetailsStub {
 

@@ -5,7 +5,7 @@ import com.launchdarkly.sdk.server.interfaces.LDClientInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientResponseException;
-import uk.gov.hmcts.reform.bailcaseapi.domain.entities.UserDetails;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.bailcaseapi.infrastructure.clients.IdamApi;
 import uk.gov.hmcts.reform.bailcaseapi.infrastructure.clients.model.idam.UserInfo;
 import uk.gov.hmcts.reform.bailcaseapi.infrastructure.security.idam.IdamUserDetails;

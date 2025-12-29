@@ -16,8 +16,8 @@ import java.util.HashMap;
 import java.util.Map;
 import uk.gov.hmcts.reform.bailcaseapi.component.testutils.fixtures.BailCaseForTest;
 import uk.gov.hmcts.reform.bailcaseapi.component.testutils.fixtures.PreSubmitCallbackResponseForTest;
-import uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCase;
-import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.Callback;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.BailCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 
 
 import static uk.gov.hmcts.reform.bailcaseapi.component.testutils.fixtures.BailCaseForTest.anBailCase;

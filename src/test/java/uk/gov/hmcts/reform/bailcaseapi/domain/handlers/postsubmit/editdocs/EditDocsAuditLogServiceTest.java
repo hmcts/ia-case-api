@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.bailcaseapi.domain.handlers.postsubmit.editdocs;
+package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit.editdocs;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -17,11 +17,11 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-import uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCase;
-import uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition;
-import uk.gov.hmcts.reform.bailcaseapi.domain.entities.UserDetails;
-import uk.gov.hmcts.reform.bailcaseapi.domain.service.EditDocsAuditLogService;
-import uk.gov.hmcts.reform.bailcaseapi.domain.service.EditDocsAuditService;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.BailCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.BailCaseFieldDefinition;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.EditDocsAuditLogService;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.EditDocsAuditService;
 import uk.gov.hmcts.reform.bailcaseapi.infrastructure.security.idam.IdamUserDetailsHelper;
 
 @MockitoSettings(strictness = Strictness.STRICT_STUBS)

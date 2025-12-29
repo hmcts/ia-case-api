@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback;
+package uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback;
 
 public enum DispatchPriority {
 

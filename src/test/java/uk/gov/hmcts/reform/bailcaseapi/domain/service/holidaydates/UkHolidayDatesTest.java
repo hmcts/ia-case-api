@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.bailcaseapi.domain.service.holidaydates;
+package uk.gov.hmcts.reform.iacaseapi.domain.service.holidaydates;
 
 import org.junit.jupiter.api.Test;
 

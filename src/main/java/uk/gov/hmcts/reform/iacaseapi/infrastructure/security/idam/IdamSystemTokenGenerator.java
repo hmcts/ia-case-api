@@ -2,7 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.infrastructure.security.idam;
 
 import feign.FeignException;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.bailcaseapi.domain.service.IdamService;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.IdamService;
 import uk.gov.hmcts.reform.bailcaseapi.infrastructure.clients.model.idam.Token;
 import uk.gov.hmcts.reform.bailcaseapi.infrastructure.security.idam.IdentityManagerResponseException;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.SystemTokenGenerator;

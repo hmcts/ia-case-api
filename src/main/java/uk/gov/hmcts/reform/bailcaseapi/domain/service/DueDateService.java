@@ -1,11 +1,11 @@
-package uk.gov.hmcts.reform.bailcaseapi.domain.service;
+package uk.gov.hmcts.reform.iacaseapi.domain.service;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.bailcaseapi.domain.service.holidaydates.HolidayService;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.holidaydates.HolidayService;
 
 @Component
 public class DueDateService {
