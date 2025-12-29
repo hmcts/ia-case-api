@@ -40,28 +40,28 @@ class IdamUserDetailsHelperTest {
             switch (roleName) {
                 case "caseworker-ia-caseofficer":
                     assertEquals("Tribunal Caseworker",
-                        idamUserDetailsHelper.getLoggedInUserRoleLabel(userDetails).toString());
+                        idamUserDetailsHelper.getLoggedInUserRoleLabel(userDetails, true).toString());
                     break;
 
                 case "caseworker-ia-admofficer":
                     assertEquals("Admin Officer",
-                        idamUserDetailsHelper.getLoggedInUserRoleLabel(userDetails).toString());
+                        idamUserDetailsHelper.getLoggedInUserRoleLabel(userDetails, true).toString());
                     break;
 
                 case "caseworker-ia-iacjudge":
                 case "caseworker-ia-judiciary":
                     assertEquals("Judge",
-                        idamUserDetailsHelper.getLoggedInUserRoleLabel(userDetails).toString());
+                        idamUserDetailsHelper.getLoggedInUserRoleLabel(userDetails, true).toString());
                     break;
 
                 case "caseworker-ia-legalrep-solicitor":
                     assertEquals("Legal Representative",
-                        idamUserDetailsHelper.getLoggedInUserRoleLabel(userDetails).toString());
+                        idamUserDetailsHelper.getLoggedInUserRoleLabel(userDetails, true).toString());
                     break;
 
                 default:
                     assertEquals("System",
-                        idamUserDetailsHelper.getLoggedInUserRoleLabel(userDetails).toString());
+                        idamUserDetailsHelper.getLoggedInUserRoleLabel(userDetails, true).toString());
             }
         });
     }
@@ -89,7 +89,7 @@ class IdamUserDetailsHelperTest {
             when(userDetails.getRoles()).thenReturn(expectedRoles);
 
             assertEquals(roleName, idamUserDetailsHelper.getLoggedInUserRole(userDetails).toString());
-            assertEquals("Home Office", idamUserDetailsHelper.getLoggedInUserRoleLabel(userDetails).toString());
+            assertEquals("Home Office", idamUserDetailsHelper.getLoggedInUserRoleLabel(userDetails, true).toString());
         });
 
     }

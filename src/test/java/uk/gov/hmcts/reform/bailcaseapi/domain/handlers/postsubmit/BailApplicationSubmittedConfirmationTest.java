@@ -97,7 +97,7 @@ public class BailApplicationSubmittedConfirmationTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(bailCase);
         when(callback.getCaseDetails().getId()).thenReturn(caseId);
-        when(userDetailsHelper.getLoggedInUserRoleLabel(any())).thenReturn(UserRoleLabel.LEGAL_REPRESENTATIVE);
+        when(userDetailsHelper.getLoggedInUserRoleLabel(any(), any())).thenReturn(UserRoleLabel.LEGAL_REPRESENTATIVE);
         when(bailCase.read(BailCaseFieldDefinition.LOCAL_AUTHORITY_POLICY, OrganisationPolicy.class)).thenReturn(
             Optional.of(organisationPolicy));
         when(professionalOrganisationRetriever.retrieve()).thenReturn(organisationEntityResponse);
@@ -135,7 +135,7 @@ public class BailApplicationSubmittedConfirmationTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getCaseDetails().getId()).thenReturn(caseId);
         when(caseDetails.getCaseData()).thenReturn(bailCase);
-        when(userDetailsHelper.getLoggedInUserRoleLabel(any())).thenReturn(UserRoleLabel.LEGAL_REPRESENTATIVE);
+        when(userDetailsHelper.getLoggedInUserRoleLabel(any(), any())).thenReturn(UserRoleLabel.LEGAL_REPRESENTATIVE);
         when(bailCase.read(BailCaseFieldDefinition.LOCAL_AUTHORITY_POLICY, OrganisationPolicy.class)).thenReturn(
             Optional.of(organisationPolicy));
         when(professionalOrganisationRetriever.retrieve()).thenReturn(organisationEntityResponse);
@@ -160,7 +160,7 @@ public class BailApplicationSubmittedConfirmationTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getCaseDetails().getId()).thenReturn(caseId);
         when(callback.getCaseDetails().getCaseData()).thenReturn(bailCase);
-        when(userDetailsHelper.getLoggedInUserRoleLabel(any())).thenReturn(UserRoleLabel.LEGAL_REPRESENTATIVE);
+        when(userDetailsHelper.getLoggedInUserRoleLabel(any(), any())).thenReturn(UserRoleLabel.LEGAL_REPRESENTATIVE);
         when(bailCase.read(BailCaseFieldDefinition.LOCAL_AUTHORITY_POLICY, OrganisationPolicy.class)).thenReturn(
             Optional.of(organisationPolicy));
         when(professionalOrganisationRetriever.retrieve()).thenReturn(organisationEntityResponse);
@@ -179,7 +179,7 @@ public class BailApplicationSubmittedConfirmationTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getCaseDetails().getId()).thenReturn(caseId);
         when(callback.getCaseDetails().getCaseData()).thenReturn(bailCase);
-        when(userDetailsHelper.getLoggedInUserRoleLabel(any())).thenReturn(UserRoleLabel.ADMIN_OFFICER);
+        when(userDetailsHelper.getLoggedInUserRoleLabel(any(), any())).thenReturn(UserRoleLabel.ADMIN_OFFICER);
         when(bailCase.read(BailCaseFieldDefinition.LOCAL_AUTHORITY_POLICY, OrganisationPolicy.class)).thenReturn(
             Optional.of(organisationPolicy));
 
@@ -207,7 +207,7 @@ public class BailApplicationSubmittedConfirmationTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(bailCase);
         when(callback.getCaseDetails().getId()).thenReturn(caseId);
-        when(userDetailsHelper.getLoggedInUserRoleLabel(any())).thenReturn(UserRoleLabel.LEGAL_REPRESENTATIVE);
+        when(userDetailsHelper.getLoggedInUserRoleLabel(any(), any())).thenReturn(UserRoleLabel.LEGAL_REPRESENTATIVE);
         when(bailCase.read(BailCaseFieldDefinition.LOCAL_AUTHORITY_POLICY, OrganisationPolicy.class)).thenReturn(
             Optional.of(organisationPolicy));
         when(professionalOrganisationRetriever.retrieve()).thenReturn(organisationEntityResponse);

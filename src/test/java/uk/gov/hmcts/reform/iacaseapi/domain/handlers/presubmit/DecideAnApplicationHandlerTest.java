@@ -71,7 +71,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.IaHearingsApiService;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.AsylumCaseServiceResponseException;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.ServiceResponseException;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -309,7 +309,7 @@ class DecideAnApplicationHandlerTest {
             .thenReturn(Optional.of("A reason of the decision"));
         when(featureToggler.getValue("wa-R2-feature", false)).thenReturn(true);
         when(iaHearingsApiService.aboutToSubmit(callback))
-            .thenThrow(new AsylumCaseServiceResponseException("Error", new RestClientException("Error")));
+            .thenThrow(new ServiceResponseException("Error", new RestClientException("Error")));
         when(caseDetails.getState()).thenReturn(LISTING);
         when(asylumCase.read(IS_INTEGRATED, YesOrNo.class)).thenReturn(Optional.of(YES));
 

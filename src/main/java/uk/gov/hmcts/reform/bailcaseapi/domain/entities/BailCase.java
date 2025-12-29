@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Optional;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.CaseData;
 
-public class BailCase extends HashMap<String, Object> implements CaseData {
+public class BailCase extends HashMap<String, Object> implements CaseData, uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseData {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 

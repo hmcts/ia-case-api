@@ -14,6 +14,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCase;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.Callback;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.BailCaseDocumentApiGenerator;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CallbackApiDelegator;
 
 @ExtendWith(MockitoExtension.class)
 public class BailCaseDocumentApiGeneratorTest {
@@ -22,7 +24,7 @@ public class BailCaseDocumentApiGeneratorTest {
     private static final String ABOUT_TO_START_PATH = "/path";
 
     @Mock
-    private BailCaseCallbackApiDelegator bailCaseCallbackApiDelegator;
+    private CallbackApiDelegator callbackApiDelegator;
     @Mock
     private Callback<BailCase> callback;
 
@@ -33,7 +35,7 @@ public class BailCaseDocumentApiGeneratorTest {
 
         bailCaseDocumentApiGenerator =
             new BailCaseDocumentApiGenerator(
-                bailCaseCallbackApiDelegator,
+                callbackApiDelegator,
                 ENDPOINT,
                 ABOUT_TO_SUBMIT_PATH,
                 ABOUT_TO_START_PATH
@@ -45,12 +47,12 @@ public class BailCaseDocumentApiGeneratorTest {
 
         final BailCase submittedBailCase = mock(BailCase.class);
 
-        when(bailCaseCallbackApiDelegator.delegate(callback, ENDPOINT + ABOUT_TO_SUBMIT_PATH))
+        when(callbackApiDelegator.delegate(callback, ENDPOINT + ABOUT_TO_SUBMIT_PATH))
             .thenReturn(submittedBailCase);
 
         final BailCase actualBailCase = bailCaseDocumentApiGenerator.generate(callback);
 
-        verify(bailCaseCallbackApiDelegator, times(1))
+        verify(callbackApiDelegator, times(1))
             .delegate(callback, ENDPOINT + ABOUT_TO_SUBMIT_PATH);
 
         assertEquals(submittedBailCase, actualBailCase);
@@ -61,12 +63,12 @@ public class BailCaseDocumentApiGeneratorTest {
 
         final BailCase submittedBailCase = mock(BailCase.class);
 
-        when(bailCaseCallbackApiDelegator.delegate(callback, ENDPOINT + ABOUT_TO_START_PATH))
+        when(callbackApiDelegator.delegate(callback, ENDPOINT + ABOUT_TO_START_PATH))
             .thenReturn(submittedBailCase);
 
         final BailCase actualBailCase = bailCaseDocumentApiGenerator.aboutToStart(callback);
 
-        verify(bailCaseCallbackApiDelegator, times(1))
+        verify(callbackApiDelegator, times(1))
             .delegate(callback, ENDPOINT + ABOUT_TO_START_PATH);
 
         assertEquals(submittedBailCase, actualBailCase);

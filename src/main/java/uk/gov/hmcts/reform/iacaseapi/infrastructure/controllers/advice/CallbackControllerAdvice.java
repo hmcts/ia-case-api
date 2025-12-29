@@ -14,7 +14,7 @@ import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.RequiredFieldMissingException;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.AsylumCaseServiceResponseException;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.ServiceResponseException;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.ReferenceDataIntegrationException;
 
 @Slf4j
@@ -51,7 +51,7 @@ public class CallbackControllerAdvice extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler({
-        AsylumCaseServiceResponseException.class,
+        ServiceResponseException.class,
         IllegalStateException.class,
         IllegalArgumentException.class
     })

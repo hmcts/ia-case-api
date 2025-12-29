@@ -10,7 +10,7 @@ import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PreSubmitCal
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.bailcaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.bailcaseapi.domain.utils.InterpreterLanguagesUtils;
-import uk.gov.hmcts.reform.bailcaseapi.infrastructure.service.RefDataUserService;
+import uk.gov.hmcts.reform.bailcaseapi.domain.service.RefDataUserService;
 
 import java.util.List;
 import java.util.Optional;

@@ -25,9 +25,9 @@ public class FeatureToggleConfiguration {
     public LDConfig ldConfig() {
         return new LDConfig.Builder()
             .http(Components
-                .httpConfiguration()
-                .connectTimeout(Duration.ofMillis(connectionTimeout))
-                .socketTimeout(Duration.ofMillis(socketTimeout))
+                      .httpConfiguration()
+                      .connectTimeout(Duration.ofMillis(connectionTimeout))
+                      .socketTimeout(Duration.ofMillis(socketTimeout))
             )
             .build();
     }

@@ -7,21 +7,21 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.AsylumCaseCallbackApiDelegator;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CallbackApiDelegator;
 
 @Service
 public class AsylumCasePostFeePaymentService implements PostFeePayment<AsylumCase> {
 
-    private final AsylumCaseCallbackApiDelegator asylumCaseCallbackApiDelegator;
+    private final CallbackApiDelegator callbackApiDelegator;
     private final String feePaymentApiEndpoint;
     private final String ccdSubmittedPath;
 
     public AsylumCasePostFeePaymentService(
-        AsylumCaseCallbackApiDelegator asylumCaseCallbackApiDelegator,
+        CallbackApiDelegator callbackApiDelegator,
         @Value("${paymentApi.endpoint}") String feePaymentApiEndpoint,
         @Value("${paymentApi.ccdSubmittedPath}") String ccdSubmittedPath
     ) {
-        this.asylumCaseCallbackApiDelegator = asylumCaseCallbackApiDelegator;
+        this.callbackApiDelegator = callbackApiDelegator;
         this.feePaymentApiEndpoint = feePaymentApiEndpoint;
         this.ccdSubmittedPath = ccdSubmittedPath;
     }
@@ -31,7 +31,7 @@ public class AsylumCasePostFeePaymentService implements PostFeePayment<AsylumCas
     ) {
         requireNonNull(callback, "callback must not be null");
 
-        return asylumCaseCallbackApiDelegator.delegatePostSubmit(
+        return callbackApiDelegator.delegatePostSubmit(
             callback,
             feePaymentApiEndpoint + ccdSubmittedPath
         );

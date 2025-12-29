@@ -131,7 +131,7 @@ public class LegalRepOrganisationFormatter implements PreSubmitCallbackHandler<B
     }
 
     private boolean isLegalRep(UserDetails userDetails, UserDetailsHelper userDetailsHelper) {
-        UserRoleLabel userRoleLabel = userDetailsHelper.getLoggedInUserRoleLabel(userDetails);
+        UserRoleLabel userRoleLabel = userDetailsHelper.getLoggedInUserRoleLabel(userDetails, true);
         return userRoleLabel.equals(UserRoleLabel.LEGAL_REPRESENTATIVE);
     }
 }

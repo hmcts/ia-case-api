@@ -18,7 +18,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.AsylumCaseCallbackApiDelegator;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CallbackApiDelegator;
 
 
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -30,7 +30,7 @@ public class NoticeOfChangeSetOrganisationToRemoveTest {
     private NoticeOfChangeSetOrganisationToRemove noticeOfChangeSetOrganisationToRemove;
 
     @Mock
-    private AsylumCaseCallbackApiDelegator apiDelegator;
+    private CallbackApiDelegator apiDelegator;
     @Mock
     private Callback<AsylumCase> callback;
     @Mock private CaseDetails<AsylumCase> caseDetails;

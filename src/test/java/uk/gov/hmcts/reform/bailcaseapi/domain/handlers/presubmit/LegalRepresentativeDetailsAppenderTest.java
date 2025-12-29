@@ -82,7 +82,7 @@ class LegalRepresentativeDetailsAppenderTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(bailCase);
         when(userDetails.getEmailAddress()).thenReturn(legalRepEmailAddress);
-        when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(UserRoleLabel.LEGAL_REPRESENTATIVE);
+        when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails, true)).thenReturn(UserRoleLabel.LEGAL_REPRESENTATIVE);
         when(organisationResponse.getName()).thenReturn(organisationName);
         when(professionalOrganisationRetriever.retrieve()).thenReturn(organisationResponse);
         when(organisationResponse.getOrganisationIdentifier()).thenReturn(organisationIdentifier);
@@ -112,7 +112,7 @@ class LegalRepresentativeDetailsAppenderTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(bailCase);
         when(userDetails.getEmailAddress()).thenReturn(legalRepEmailAddress);
-        when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(UserRoleLabel.ADMIN_OFFICER);
+        when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails, true)).thenReturn(UserRoleLabel.ADMIN_OFFICER);
 
         PreSubmitCallbackResponse<BailCase> response =
             legalRepresentativeDetailsAppender.handle(ABOUT_TO_START, callback);

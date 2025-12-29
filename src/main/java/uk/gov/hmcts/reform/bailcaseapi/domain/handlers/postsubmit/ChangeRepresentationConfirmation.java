@@ -11,7 +11,7 @@ import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
 import uk.gov.hmcts.reform.bailcaseapi.domain.handlers.PostSubmitCallbackHandler;
 import uk.gov.hmcts.reform.bailcaseapi.domain.service.PostNotificationSender;
-import uk.gov.hmcts.reform.bailcaseapi.infrastructure.service.CcdDataService;
+import uk.gov.hmcts.reform.bailcaseapi.domain.service.CcdDataService;
 import uk.gov.hmcts.reform.bailcaseapi.infrastructure.clients.CcdCaseAssignment;
 
 @Slf4j

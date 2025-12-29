@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCase;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition;
 
 import java.util.Optional;
+import uk.gov.hmcts.reform.bailcaseapi.domain.service.BailFieldCaseNameFixer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.times;

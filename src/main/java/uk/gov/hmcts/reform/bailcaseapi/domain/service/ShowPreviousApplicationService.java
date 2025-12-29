@@ -90,7 +90,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.bailcaseapi.domain.BailCaseUtils;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.BailCaseUtils;
 import uk.gov.hmcts.reform.bailcaseapi.domain.RequiredFieldMissingException;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCase;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition;

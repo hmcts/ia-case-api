@@ -12,6 +12,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.bailcaseapi.domain.service.IdamService;
 import uk.gov.hmcts.reform.bailcaseapi.infrastructure.clients.model.idam.Token;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.idam.IdamSystemTokenGenerator;
 
 @ExtendWith(MockitoExtension.class)
 class IdamSystemTokenGeneratorTest {

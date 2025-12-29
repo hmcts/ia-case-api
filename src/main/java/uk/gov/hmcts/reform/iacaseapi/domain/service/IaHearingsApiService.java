@@ -13,8 +13,8 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.AsylumCaseCallbackApiDelegator;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.AsylumCaseServiceResponseException;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CallbackApiDelegator;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.ServiceResponseException;
 
 @Slf4j
 @Service
@@ -25,16 +25,16 @@ public class IaHearingsApiService {
     private final String midEventPath;
     private final String aboutToSubmitPath;
 
-    AsylumCaseCallbackApiDelegator asylumCaseCallbackApiDelegator;
+    CallbackApiDelegator callbackApiDelegator;
 
     public IaHearingsApiService(
-        AsylumCaseCallbackApiDelegator asylumCaseCallbackApiDelegator,
+        CallbackApiDelegator callbackApiDelegator,
         @Value("${hearingsApi.endpoint}") String hearingsApiEndpoint,
         @Value("${hearingsApi.aboutToStartPath}") String aboutToStartPath,
         @Value("${hearingsApi.midEventPath}") String midEventPath,
         @Value("${hearingsApi.aboutToSubmitPath}") String aboutToSubmitPath
     ) {
-        this.asylumCaseCallbackApiDelegator = asylumCaseCallbackApiDelegator;
+        this.callbackApiDelegator = callbackApiDelegator;
         this.hearingsApiEndpoint = hearingsApiEndpoint;
         this.aboutToStartPath = aboutToStartPath;
         this.midEventPath = midEventPath;
@@ -42,15 +42,15 @@ public class IaHearingsApiService {
     }
 
     public AsylumCase aboutToStart(Callback<AsylumCase> callback) {
-        return asylumCaseCallbackApiDelegator.delegate(callback, hearingsApiEndpoint + aboutToStartPath);
+        return callbackApiDelegator.delegate(callback, hearingsApiEndpoint + aboutToStartPath);
     }
 
     public AsylumCase midEvent(Callback<AsylumCase> callback) {
-        return asylumCaseCallbackApiDelegator.delegate(callback, hearingsApiEndpoint + midEventPath);
+        return callbackApiDelegator.delegate(callback, hearingsApiEndpoint + midEventPath);
     }
 
     public AsylumCase aboutToSubmit(Callback<AsylumCase> callback) {
-        return asylumCaseCallbackApiDelegator.delegate(callback, hearingsApiEndpoint + aboutToSubmitPath);
+        return callbackApiDelegator.delegate(callback, hearingsApiEndpoint + aboutToSubmitPath);
     }
 
     public AsylumCase updateHearing(Callback<AsylumCase> callback) {
@@ -61,14 +61,14 @@ public class IaHearingsApiService {
 
         try {
 
-            asylumCase = asylumCaseCallbackApiDelegator.delegate(
+            asylumCase = callbackApiDelegator.delegate(
                 callback, hearingsApiEndpoint + aboutToSubmitPath);
 
             if (asylumCase.read(UPDATE_HMC_REQUEST_SUCCESS, YesOrNo.class).isEmpty()) {
                 asylumCase.write(UPDATE_HMC_REQUEST_SUCCESS, YES);
             }
 
-        } catch (AsylumCaseServiceResponseException e) {
+        } catch (ServiceResponseException e) {
 
             log.error("Failed to update hearing for case ID {} during event {} with error: {}",
                 callback.getCaseDetails().getId(),
@@ -89,14 +89,14 @@ public class IaHearingsApiService {
         AsylumCase asylumCase;
         try {
 
-            asylumCase = asylumCaseCallbackApiDelegator.delegate(
+            asylumCase = callbackApiDelegator.delegate(
                 callback, hearingsApiEndpoint + aboutToSubmitPath);
 
             if (asylumCase.read(MANUAL_CANCEL_HEARINGS_REQUIRED, YesOrNo.class).isEmpty()) {
                 asylumCase.write(MANUAL_CANCEL_HEARINGS_REQUIRED, NO);
             }
 
-        } catch (AsylumCaseServiceResponseException e) {
+        } catch (ServiceResponseException e) {
 
             log.error("Failed to cancel hearing for case ID {} during event {} with error: {}",
                 callback.getCaseDetails().getId(),
@@ -117,14 +117,14 @@ public class IaHearingsApiService {
         AsylumCase asylumCase;
         try {
 
-            asylumCase = asylumCaseCallbackApiDelegator.delegate(
+            asylumCase = callbackApiDelegator.delegate(
                 callback, hearingsApiEndpoint + aboutToSubmitPath);
 
             if (asylumCase.read(MANUAL_CREATE_HEARING_REQUIRED, YesOrNo.class).isEmpty()) {
                 asylumCase.write(MANUAL_CREATE_HEARING_REQUIRED, NO);
             }
 
-        } catch (AsylumCaseServiceResponseException e) {
+        } catch (ServiceResponseException e) {
 
             log.error("Failed to auto create hearing for case ID {} during event {} with error: {}",
                 callback.getCaseDetails().getId(),

@@ -13,8 +13,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCase;
-import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.Callback;
-import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.BailCasePostNotificationApiSender;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CallbackApiDelegator;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
@@ -24,7 +26,7 @@ class BailCasePostNotificationApiSenderTest {
     private static final String CCD_SUBMITTED_PATH = "/path";
 
     @Mock
-    private BailCaseCallbackApiDelegator bailCaseCallbackApiDelegator;
+    private CallbackApiDelegator callbackApiDelegator;
     @Mock
     private Callback<BailCase> callback;
 
@@ -35,7 +37,7 @@ class BailCasePostNotificationApiSenderTest {
 
         bailCasePostNotificationApiSender =
             new BailCasePostNotificationApiSender(
-                bailCaseCallbackApiDelegator,
+                callbackApiDelegator,
                 ENDPOINT,
                 CCD_SUBMITTED_PATH
             );
@@ -46,12 +48,12 @@ class BailCasePostNotificationApiSenderTest {
 
         final PostSubmitCallbackResponse notifiedBailCase = mock(PostSubmitCallbackResponse.class);
 
-        when(bailCaseCallbackApiDelegator.delegatePostSubmit(callback, ENDPOINT + CCD_SUBMITTED_PATH))
+        when(callbackApiDelegator.delegatePostSubmit(callback, ENDPOINT + CCD_SUBMITTED_PATH))
             .thenReturn(notifiedBailCase);
 
         final PostSubmitCallbackResponse postSubmitCallbackResponse = bailCasePostNotificationApiSender.send(callback);
 
-        verify(bailCaseCallbackApiDelegator, times(1))
+        verify(callbackApiDelegator, times(1))
             .delegatePostSubmit(callback, ENDPOINT + CCD_SUBMITTED_PATH);
 
         assertEquals(notifiedBailCase, postSubmitCallbackResponse);
@@ -63,13 +65,13 @@ class BailCasePostNotificationApiSenderTest {
 
         final PostSubmitCallbackResponse notifiedBailCase = mock(PostSubmitCallbackResponse.class);
 
-        when(bailCaseCallbackApiDelegator.delegatePostSubmit(callback, ENDPOINT + CCD_SUBMITTED_PATH))
+        when(callbackApiDelegator.delegatePostSubmit(callback, ENDPOINT + CCD_SUBMITTED_PATH))
             .thenReturn(notifiedBailCase);
 
         final PostSubmitCallbackResponse actualBailCase = bailCasePostNotificationApiSender.send(callback);
 
 
-        verify(bailCaseCallbackApiDelegator, times(1))
+        verify(callbackApiDelegator, times(1))
             .delegatePostSubmit(callback, ENDPOINT + CCD_SUBMITTED_PATH);
 
         assertEquals(notifiedBailCase, actualBailCase);

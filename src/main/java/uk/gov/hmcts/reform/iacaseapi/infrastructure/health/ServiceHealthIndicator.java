@@ -35,6 +35,7 @@ public class ServiceHealthIndicator implements HealthIndicator {
                 .map(body -> body.replaceAll("\\s", ""))
                 .orElse("");
 
+            log.info("{}", response.getStatusCode());
             if (response.getStatusCode() == HttpStatus.OK
                 && responseBody.contains(matcher)
                 && !responseBody.contains("DOWN")) {

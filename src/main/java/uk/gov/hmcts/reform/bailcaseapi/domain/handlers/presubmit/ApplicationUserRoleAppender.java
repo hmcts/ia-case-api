@@ -52,7 +52,7 @@ public class ApplicationUserRoleAppender implements PreSubmitCallbackHandler<Bai
 
         final BailCase bailCase = callback.getCaseDetails().getCaseData();
 
-        UserRoleLabel userRoleLabel = userDetailsHelper.getLoggedInUserRoleLabel(userDetails);
+        UserRoleLabel userRoleLabel = userDetailsHelper.getLoggedInUserRoleLabel(userDetails, true);
         if (userRoleLabel.equals(UserRoleLabel.ADMIN_OFFICER)) {
             bailCase.write(BailCaseFieldDefinition.IS_ADMIN, YesOrNo.YES);
         } else {

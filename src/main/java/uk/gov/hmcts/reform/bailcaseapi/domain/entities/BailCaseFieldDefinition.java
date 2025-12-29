@@ -1,9 +1,12 @@
 package uk.gov.hmcts.reform.bailcaseapi.domain.entities;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.NationalityFieldValue;
-import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.*;
-import uk.gov.hmcts.reform.bailcaseapi.infrastructure.clients.model.refdata.CourtVenue;
+import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.AddressUK;
+import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.PreviousDecisionDetails;
+import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.PreviousListingDetails;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.NationalityFieldValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.*;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.refdata.CourtVenue;
 
 import java.util.Arrays;
 import java.util.List;

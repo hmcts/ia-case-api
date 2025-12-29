@@ -10,7 +10,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.NextHearingDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.AsylumCaseServiceResponseException;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.ServiceResponseException;
 
 @Slf4j
 @Component
@@ -35,7 +35,7 @@ public class NextHearingDateService {
                     : iaHearingsApiService.aboutToSubmit(callback);
             nextHearingDetails = asylumCase.read(NEXT_HEARING_DETAILS, NextHearingDetails.class)
                 .orElse(null);
-        } catch (AsylumCaseServiceResponseException e) {
+        } catch (ServiceResponseException e) {
             log.error("Setting next hearing date from hearings failed: ", e);
         }
 

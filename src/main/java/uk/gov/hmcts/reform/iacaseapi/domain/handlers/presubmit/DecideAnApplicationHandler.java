@@ -43,7 +43,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.IaHearingsApiService;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.AsylumCaseServiceResponseException;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.ServiceResponseException;
 
 @Component
 public class DecideAnApplicationHandler implements PreSubmitCallbackHandler<AsylumCase> {
@@ -163,7 +163,7 @@ public class DecideAnApplicationHandler implements PreSubmitCallbackHandler<Asyl
             if (!isDeletionRequestSuccessful(asylumCase)) {
                 response.addError(HEARING_DELETION_CALLBACK_ERROR);
             }
-        } catch (AsylumCaseServiceResponseException e) {
+        } catch (ServiceResponseException e) {
             response.addError(HEARING_DELETION_CALLBACK_ERROR);
         }
     }

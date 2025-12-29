@@ -8,7 +8,7 @@ import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.DispatchPrio
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.bailcaseapi.domain.handlers.PreSubmitCallbackHandler;
-import uk.gov.hmcts.reform.bailcaseapi.infrastructure.service.DataFixer;
+import uk.gov.hmcts.reform.bailcaseapi.domain.service.DataFixer;
 
 
 import java.util.List;

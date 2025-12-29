@@ -61,7 +61,7 @@ public class BailApplicationSubmittedConfirmation implements PostSubmitCallbackH
             throw new IllegalStateException("Cannot handle callback");
         }
 
-        UserRoleLabel userRoleLabel = userDetailsHelper.getLoggedInUserRoleLabel(userDetails);
+        UserRoleLabel userRoleLabel = userDetailsHelper.getLoggedInUserRoleLabel(userDetails, true);
 
         final BailCase bailCase = callback.getCaseDetails().getCaseData();
 

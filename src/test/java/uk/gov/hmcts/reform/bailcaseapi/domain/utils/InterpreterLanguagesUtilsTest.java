@@ -10,7 +10,7 @@ import uk.gov.hmcts.reform.bailcaseapi.domain.entities.InterpreterLanguageRefDat
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.Value;
 import uk.gov.hmcts.reform.bailcaseapi.infrastructure.clients.model.dto.hearingdetails.CategoryValues;
 import uk.gov.hmcts.reform.bailcaseapi.infrastructure.clients.model.dto.hearingdetails.CommonDataResponse;
-import uk.gov.hmcts.reform.bailcaseapi.infrastructure.service.RefDataUserService;
+import uk.gov.hmcts.reform.bailcaseapi.domain.service.RefDataUserService;
 
 import java.util.Collections;
 import java.util.List;

@@ -25,7 +25,7 @@ class AsylumCaseDocumentApiGeneratorTest {
     private static final String ABOUT_TO_START_PATH = "/path";
 
     @Mock
-    private AsylumCaseCallbackApiDelegator asylumCaseCallbackApiDelegator;
+    private CallbackApiDelegator callbackApiDelegator;
     @Mock
     private Callback<AsylumCase> callback;
 
@@ -36,7 +36,7 @@ class AsylumCaseDocumentApiGeneratorTest {
 
         asylumCaseDocumentApiGenerator =
             new AsylumCaseDocumentApiGenerator(
-                asylumCaseCallbackApiDelegator,
+                callbackApiDelegator,
                 ENDPOINT,
                 ABOUT_TO_SUBMIT_PATH,
                 ABOUT_TO_START_PATH
@@ -48,12 +48,12 @@ class AsylumCaseDocumentApiGeneratorTest {
 
         final AsylumCase notifiedAsylumCase = mock(AsylumCase.class);
 
-        when(asylumCaseCallbackApiDelegator.delegate(callback, ENDPOINT + ABOUT_TO_SUBMIT_PATH))
+        when(callbackApiDelegator.delegate(callback, ENDPOINT + ABOUT_TO_SUBMIT_PATH))
             .thenReturn(notifiedAsylumCase);
 
         final AsylumCase actualAsylumCase = asylumCaseDocumentApiGenerator.generate(callback);
 
-        verify(asylumCaseCallbackApiDelegator, times(1))
+        verify(callbackApiDelegator, times(1))
             .delegate(callback, ENDPOINT + ABOUT_TO_SUBMIT_PATH);
 
         assertEquals(notifiedAsylumCase, actualAsylumCase);
@@ -64,12 +64,12 @@ class AsylumCaseDocumentApiGeneratorTest {
 
         final AsylumCase notifiedAsylumCase = mock(AsylumCase.class);
 
-        when(asylumCaseCallbackApiDelegator.delegate(callback, ENDPOINT + ABOUT_TO_START_PATH))
+        when(callbackApiDelegator.delegate(callback, ENDPOINT + ABOUT_TO_START_PATH))
             .thenReturn(notifiedAsylumCase);
 
         final AsylumCase actualAsylumCase = asylumCaseDocumentApiGenerator.generate(callback);
 
-        verify(asylumCaseCallbackApiDelegator, times(1))
+        verify(callbackApiDelegator, times(1))
             .delegate(callback, ENDPOINT + ABOUT_TO_START_PATH);
 
         assertEquals(notifiedAsylumCase, actualAsylumCase);

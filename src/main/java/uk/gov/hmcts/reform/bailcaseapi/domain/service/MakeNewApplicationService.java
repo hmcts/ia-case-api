@@ -68,7 +68,7 @@ public class MakeNewApplicationService {
     }
 
     private void clearRoleDependentFields(BailCase bailCase) {
-        UserRoleLabel userRoleLabel = userDetailsHelper.getLoggedInUserRoleLabel(userDetails);
+        UserRoleLabel userRoleLabel = userDetailsHelper.getLoggedInUserRoleLabel(userDetails, true);
 
         if (userRoleLabel.equals(UserRoleLabel.LEGAL_REPRESENTATIVE)) {
             bailCase.remove(BailCaseFieldDefinition.UPLOAD_B1_FORM_DOCS);

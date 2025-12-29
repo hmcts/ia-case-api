@@ -21,7 +21,7 @@ class AsylumCasePostNotificationApiSenderTest {
     private static final String CCD_SUBMITTED_PATH = "/path";
 
     @Mock
-    private AsylumCaseCallbackApiDelegator asylumCaseCallbackApiDelegator;
+    private CallbackApiDelegator callbackApiDelegator;
     @Mock
     private Callback<AsylumCase> callback;
 
@@ -32,7 +32,7 @@ class AsylumCasePostNotificationApiSenderTest {
 
         asylumCasePostNotificationApiSender =
             new AsylumCasePostNotificationApiSender(
-                asylumCaseCallbackApiDelegator,
+                callbackApiDelegator,
                 ENDPOINT,
                 CCD_SUBMITTED_PATH
             );
@@ -43,12 +43,12 @@ class AsylumCasePostNotificationApiSenderTest {
 
         final PostSubmitCallbackResponse notifiedAsylumCase = mock(PostSubmitCallbackResponse.class);
 
-        when(asylumCaseCallbackApiDelegator.delegatePostSubmit(callback, ENDPOINT + CCD_SUBMITTED_PATH))
+        when(callbackApiDelegator.delegatePostSubmit(callback, ENDPOINT + CCD_SUBMITTED_PATH))
             .thenReturn(notifiedAsylumCase);
 
         final PostSubmitCallbackResponse postSubmitCallbackResponse = asylumCasePostNotificationApiSender.send(callback);
 
-        verify(asylumCaseCallbackApiDelegator, times(1))
+        verify(callbackApiDelegator, times(1))
             .delegatePostSubmit(callback, ENDPOINT + CCD_SUBMITTED_PATH);
 
         assertEquals(notifiedAsylumCase, postSubmitCallbackResponse);
@@ -59,12 +59,12 @@ class AsylumCasePostNotificationApiSenderTest {
 
         final PostSubmitCallbackResponse notifiedAsylumCase = mock(PostSubmitCallbackResponse.class);
 
-        when(asylumCaseCallbackApiDelegator.delegatePostSubmit(callback, ENDPOINT + CCD_SUBMITTED_PATH))
+        when(callbackApiDelegator.delegatePostSubmit(callback, ENDPOINT + CCD_SUBMITTED_PATH))
             .thenReturn(notifiedAsylumCase);
 
         final PostSubmitCallbackResponse actualAsylumCase = asylumCasePostNotificationApiSender.send(callback);
 
-        verify(asylumCaseCallbackApiDelegator, times(1))
+        verify(callbackApiDelegator, times(1))
             .delegatePostSubmit(callback, ENDPOINT + CCD_SUBMITTED_PATH);
 
         assertEquals(notifiedAsylumCase, actualAsylumCase);

@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.bailcaseapi.infrastructure.util.LoggerUtil;
 
 import java.util.Optional;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.eventvalidation.UploadBailSummaryEventValidChecker;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;

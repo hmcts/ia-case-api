@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.bailcaseapi.domain.BailCaseUtils;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.BailCaseUtils;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCase;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.CaseNote;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.Callback;

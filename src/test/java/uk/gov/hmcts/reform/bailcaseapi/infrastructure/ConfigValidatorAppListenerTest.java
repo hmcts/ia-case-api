@@ -6,11 +6,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.env.Environment;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.ConfigValidatorAppListener;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.bailcaseapi.infrastructure.ConfigValidatorAppListener.CLUSTER_NAME;
+import static uk.gov.hmcts.reform.iacaseapi.infrastructure.ConfigValidatorAppListener.CLUSTER_NAME;
 
 @ExtendWith(MockitoExtension.class)
 class ConfigValidatorAppListenerTest {

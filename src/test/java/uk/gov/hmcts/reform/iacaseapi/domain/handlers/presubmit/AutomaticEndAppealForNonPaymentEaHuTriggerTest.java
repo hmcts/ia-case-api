@@ -39,7 +39,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.Scheduler;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.AsylumCaseServiceResponseException;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.ServiceResponseException;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.TimedEvent;
 
 @ExtendWith(MockitoExtension.class)
@@ -145,10 +145,10 @@ class AutomaticEndAppealForNonPaymentEaHuTriggerTest {
         when(asylumCase.read(APPEAL_TYPE, AppealType.class))
             .thenReturn(Optional.of(EA));
 
-        when(scheduler.schedule(any(TimedEvent.class))).thenThrow(AsylumCaseServiceResponseException.class);
+        when(scheduler.schedule(any(TimedEvent.class))).thenThrow(ServiceResponseException.class);
 
         assertThatThrownBy(() -> automaticEndAppealForNonPaymentEaHuTrigger.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
-            .isExactlyInstanceOf(AsylumCaseServiceResponseException.class);
+            .isExactlyInstanceOf(ServiceResponseException.class);
     }
 
     @Test
@@ -311,7 +311,7 @@ class AutomaticEndAppealForNonPaymentEaHuTriggerTest {
         assertEquals(timedEvent.getEvent(), result.getEvent());
         assertEquals("", result.getId());
     }
-    
+
     @Test
     void handling_should_throw_if_can_not_handle() {
         when(callback.getEvent()).thenReturn(Event.RECORD_REMISSION_DECISION); // unqualified event

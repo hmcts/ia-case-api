@@ -21,7 +21,7 @@ import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.bailcaseapi.domain.utils.InterpreterLanguagesUtils;
 import uk.gov.hmcts.reform.bailcaseapi.infrastructure.clients.model.dto.hearingdetails.CommonDataResponse;
-import uk.gov.hmcts.reform.bailcaseapi.infrastructure.service.RefDataUserService;
+import uk.gov.hmcts.reform.bailcaseapi.domain.service.RefDataUserService;
 
 import java.util.List;
 import java.util.Optional;

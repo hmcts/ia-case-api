@@ -14,6 +14,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCase;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.Callback;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.BailCaseNotificationApiSender;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
@@ -23,7 +24,7 @@ class BailCaseNotificationApiSenderTest {
     private static final String CCD_SUBMITTED_PATH = "/path";
 
     @Mock
-    private BailCaseCallbackApiDelegator bailCaseCallbackApiDelegator;
+    private CallbackApiDelegator callbackApiDelegator;
     @Mock
     private Callback<BailCase> callback;
 
@@ -34,7 +35,7 @@ class BailCaseNotificationApiSenderTest {
 
         bailCaseNotificationApiSender =
             new BailCaseNotificationApiSender(
-                bailCaseCallbackApiDelegator,
+                callbackApiDelegator,
                 ENDPOINT,
                 CCD_SUBMITTED_PATH
             );
@@ -45,12 +46,12 @@ class BailCaseNotificationApiSenderTest {
 
         final BailCase notifiedBailCase = mock(BailCase.class);
 
-        when(bailCaseCallbackApiDelegator.delegate(callback, ENDPOINT + CCD_SUBMITTED_PATH))
+        when(callbackApiDelegator.delegate(callback, ENDPOINT + CCD_SUBMITTED_PATH))
             .thenReturn(notifiedBailCase);
 
         final BailCase bailCaseResponse = bailCaseNotificationApiSender.send(callback);
 
-        verify(bailCaseCallbackApiDelegator, times(1))
+        verify(callbackApiDelegator, times(1))
             .delegate(callback, ENDPOINT + CCD_SUBMITTED_PATH);
 
         assertEquals(notifiedBailCase, bailCaseResponse);
@@ -61,12 +62,12 @@ class BailCaseNotificationApiSenderTest {
 
         final BailCase notifiedBailCase = mock(BailCase.class);
 
-        when(bailCaseCallbackApiDelegator.delegate(callback, ENDPOINT + CCD_SUBMITTED_PATH))
+        when(callbackApiDelegator.delegate(callback, ENDPOINT + CCD_SUBMITTED_PATH))
             .thenReturn(notifiedBailCase);
 
         final BailCase actualBailCase = bailCaseNotificationApiSender.send(callback);
 
-        verify(bailCaseCallbackApiDelegator, times(1))
+        verify(callbackApiDelegator, times(1))
             .delegate(callback, ENDPOINT + CCD_SUBMITTED_PATH);
 
         assertEquals(notifiedBailCase, actualBailCase);

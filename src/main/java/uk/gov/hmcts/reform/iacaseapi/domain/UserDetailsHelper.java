@@ -8,6 +8,6 @@ public interface UserDetailsHelper {
 
     UserRole getLoggedInUserRole(UserDetails userDetails);
 
-    UserRoleLabel getLoggedInUserRoleLabel(UserDetails userDetails);
+    UserRoleLabel getLoggedInUserRoleLabel(UserDetails userDetails, boolean isBailCase);
 
 }

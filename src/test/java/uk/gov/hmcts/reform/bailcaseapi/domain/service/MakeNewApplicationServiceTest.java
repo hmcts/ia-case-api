@@ -101,7 +101,7 @@ class MakeNewApplicationServiceTest {
         bailCase.write(CURRENT_USER, "current_user");
         bailCase.write(OUTCOME_STATE, "applicationEnded");
 
-        when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(UserRoleLabel.ADMIN_OFFICER);
+        when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails, true)).thenReturn(UserRoleLabel.ADMIN_OFFICER);
 
         // when
         makeNewApplicationService.clearFieldsAboutToStart(bailCase);
@@ -117,7 +117,7 @@ class MakeNewApplicationServiceTest {
         bailCase.write(CURRENT_USER, "current_user");
         bailCase.write(OUTCOME_STATE, "applicationEnded");
 
-        when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(UserRoleLabel.ADMIN_OFFICER);
+        when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails, true)).thenReturn(UserRoleLabel.ADMIN_OFFICER);
 
         // when
         makeNewApplicationService.clearFieldsAboutToSubmit(bailCase);
@@ -133,7 +133,7 @@ class MakeNewApplicationServiceTest {
         bailCase.write(CURRENT_USER, null);
         bailCase.write(OUTCOME_STATE, null);
 
-        when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(UserRoleLabel.ADMIN_OFFICER);
+        when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails, true)).thenReturn(UserRoleLabel.ADMIN_OFFICER);
 
         // when
         makeNewApplicationService.clearFieldsAboutToSubmit(bailCase);
@@ -153,7 +153,7 @@ class MakeNewApplicationServiceTest {
 
         bailCase.write(UPLOAD_B1_FORM_DOCS, b1DocumentList);
 
-        when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(userRoleLabel);
+        when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails, true)).thenReturn(userRoleLabel);
 
         // when
         makeNewApplicationService.clearFieldsAboutToSubmit(bailCase);
@@ -172,7 +172,7 @@ class MakeNewApplicationServiceTest {
 
         bailCase.write(UPLOAD_B1_FORM_DOCS, b1DocumentList);
 
-        when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(UserRoleLabel.ADMIN_OFFICER);
+        when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails, true)).thenReturn(UserRoleLabel.ADMIN_OFFICER);
 
         // when
         makeNewApplicationService.clearFieldsAboutToSubmit(bailCase);
@@ -222,7 +222,7 @@ class MakeNewApplicationServiceTest {
         BailCase bailCase = new BailCase();
         bailCase.write(CASE_NOTES, "case note");
 
-        when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(UserRoleLabel.ADMIN_OFFICER);
+        when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails, true)).thenReturn(UserRoleLabel.ADMIN_OFFICER);
 
         // when
         makeNewApplicationService.clearFieldsAboutToStart(bailCase);
@@ -237,7 +237,7 @@ class MakeNewApplicationServiceTest {
         BailCase bailCase = new BailCase();
         bailCase.write(CASE_NOTES, "case note");
 
-        when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(UserRoleLabel.ADMIN_OFFICER);
+        when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails, true)).thenReturn(UserRoleLabel.ADMIN_OFFICER);
 
         // when
         makeNewApplicationService.clearFieldsAboutToSubmit(bailCase);
@@ -252,7 +252,7 @@ class MakeNewApplicationServiceTest {
         BailCase bailCase = new BailCase();
         bailCase.write(LISTING_LOCATION, ListingHearingCentre.BIRMINGHAM);
         bailCase.write(LIST_CASE_HEARING_DATE, "2024-04-04T08:00:00.000");
-        when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(UserRoleLabel.ADMIN_OFFICER);
+        when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails, true)).thenReturn(UserRoleLabel.ADMIN_OFFICER);
 
         // when
         makeNewApplicationService.clearFieldsAboutToSubmit(bailCase);

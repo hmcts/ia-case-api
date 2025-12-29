@@ -11,13 +11,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.refdata.CourtLocationCategory;
 
 @FeignClient(name = "location-ref-data-api", url = "${location.ref.data.url}",
-        configuration = FeignClientProperties.FeignClientConfiguration.class)
+    configuration = FeignClientProperties.FeignClientConfiguration.class)
 public interface LocationRefDataApi {
 
     @GetMapping(value = "refdata/location/court-venues/services", produces = "application/json", consumes = "application/json")
     CourtLocationCategory getCourtVenues(
-            @RequestHeader(AUTHORIZATION) String authorization,
-            @RequestHeader(SERVICE_AUTHORIZATION) String serviceAuthorization,
-            @RequestParam("service_code") String serviceCode
+        @RequestHeader(AUTHORIZATION) String authorization,
+        @RequestHeader(SERVICE_AUTHORIZATION) String serviceAuthorization,
+        @RequestParam("service_code") String serviceCode
     );
 }
