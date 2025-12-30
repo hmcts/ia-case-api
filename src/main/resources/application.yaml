@@ -192,13 +192,22 @@ defaultHearingCentre: newport
 
 documentsApi:
   endpoint: ${IA_CASE_DOCUMENTS_API_URL:http://127.0.0.1:8092}
-  aboutToSubmitPath: "/asylum/ccdAboutToSubmit"
-  aboutToStartPath: "/asylum/ccdAboutToStart"
+  asylum:
+    aboutToSubmitPath: "/asylum/ccdAboutToSubmit"
+    aboutToStartPath: "/asylum/ccdAboutToStart"
+  bail:
+    aboutToSubmitPath: "/bail/ccdAboutToSubmit"
+    aboutToStartPath: "/bail/ccdAboutToStart"
+
 
 notificationsApi:
   endpoint: ${IA_CASE_NOTIFICATIONS_API_URL:http://127.0.0.1:8093}
-  aboutToSubmitPath: "/asylum/ccdAboutToSubmit"
-  ccdSubmittedPath: "/asylum/ccdSubmitted"
+  asylum:
+    aboutToSubmitPath: "/asylum/ccdAboutToSubmit"
+    ccdSubmittedPath: "/asylum/ccdSubmitted"
+  bail:
+    aboutToSubmitPath: "/bail/ccdAboutToSubmit"
+    ccdSubmittedPath: "/bail/ccdSubmitted"
 
 paymentApi:
   endpoint: ${IA_CASE_PAYMENTS_API_URL:http://127.0.0.1:8096}

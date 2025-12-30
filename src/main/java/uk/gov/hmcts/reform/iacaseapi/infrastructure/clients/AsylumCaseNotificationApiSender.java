@@ -38,7 +38,7 @@ public class AsylumCaseNotificationApiSender implements NotificationSender<Asylu
     public AsylumCaseNotificationApiSender(
         CallbackApiDelegator callbackApiDelegator,
         @Value("${notificationsApi.endpoint}") String notificationsApiEndpoint,
-        @Value("${notificationsApi.aboutToSubmitPath}") String aboutToSubmitPath,
+        @Value("${notificationsApi.asylum.aboutToSubmitPath}") String aboutToSubmitPath,
         @Value("${featureFlag.timedEventServiceEnabled}") boolean timedEventServiceEnabled,
         @Value("${saveNotificationsData.enabled}") boolean saveNotificationToDataEnabled,
         @Value("${saveNotificationsData.scheduleAtHour}") int saveNotificationScheduleAtHour,

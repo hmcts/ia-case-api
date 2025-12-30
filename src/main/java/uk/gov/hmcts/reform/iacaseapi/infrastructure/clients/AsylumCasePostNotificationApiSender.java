@@ -19,7 +19,7 @@ public class AsylumCasePostNotificationApiSender implements PostNotificationSend
     public AsylumCasePostNotificationApiSender(
         CallbackApiDelegator callbackApiDelegator,
         @Value("${notificationsApi.endpoint}") String notificationsApiEndpoint,
-        @Value("${notificationsApi.ccdSubmittedPath}") String ccdSubmittedPath
+        @Value("${notificationsApi.asylum.ccdSubmittedPath}") String ccdSubmittedPath
     ) {
         this.callbackApiDelegator = callbackApiDelegator;
         this.notificationsApiEndpoint = notificationsApiEndpoint;

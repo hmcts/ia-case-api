@@ -18,7 +18,7 @@ public class BailCaseNotificationApiSender implements NotificationSender<BailCas
     public BailCaseNotificationApiSender(
         CallbackApiDelegator callbackApiDelegator,
         @Value("${notificationsApi.endpoint}") String notificationsApiEndpoint,
-        @Value("${notificationsApi.aboutToSubmitPath}") String aboutToSubmitPath
+        @Value("${notificationsApi.bail.aboutToSubmitPath}") String aboutToSubmitPath
     ) {
         this.callbackApiDelegator = callbackApiDelegator;
         this.notificationsApiEndpoint = notificationsApiEndpoint;

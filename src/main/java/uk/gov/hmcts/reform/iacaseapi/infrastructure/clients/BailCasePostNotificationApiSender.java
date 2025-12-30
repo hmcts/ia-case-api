@@ -19,7 +19,7 @@ public class BailCasePostNotificationApiSender implements PostNotificationSender
     public BailCasePostNotificationApiSender(
         CallbackApiDelegator callbackApiDelegator,
         @Value("${notificationsApi.endpoint}") String notificationsApiEndpoint,
-        @Value("${notificationsApi.ccdSubmittedPath}") String ccdSubmittedPath
+        @Value("${notificationsApi.bail.ccdSubmittedPath}") String ccdSubmittedPath
     ) {
         this.callbackApiDelegator = callbackApiDelegator;
         this.notificationsApiEndpoint = notificationsApiEndpoint;

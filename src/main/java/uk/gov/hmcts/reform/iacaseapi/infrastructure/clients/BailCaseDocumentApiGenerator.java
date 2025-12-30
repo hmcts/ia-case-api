@@ -19,8 +19,8 @@ public class BailCaseDocumentApiGenerator implements DocumentGenerator<BailCase>
     public BailCaseDocumentApiGenerator(
         CallbackApiDelegator callbackApiDelegator,
         @Value("${documentsApi.endpoint}") String documentsApiEndpoint,
-        @Value("${documentsApi.aboutToSubmitPath}")String aboutToSubmitPath,
-        @Value("${documentsApi.aboutToStartPath}")String aboutToStartPath
+        @Value("${documentsApi.bail.aboutToSubmitPath}")String aboutToSubmitPath,
+        @Value("${documentsApi.bail.aboutToStartPath}")String aboutToStartPath
     ) {
         this.callbackApiDelegator = callbackApiDelegator;
         this.documentsApiEndpoint = documentsApiEndpoint;

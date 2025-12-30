@@ -19,8 +19,8 @@ public class AsylumCaseDocumentApiGenerator implements DocumentGenerator<AsylumC
     public AsylumCaseDocumentApiGenerator(
         CallbackApiDelegator callbackApiDelegator,
         @Value("${documentsApi.endpoint}") String documentsApiEndpoint,
-        @Value("${documentsApi.aboutToSubmitPath}") String aboutToSubmitPath,
-        @Value("${documentsApi.aboutToStartPath}") String aboutToStartPath
+        @Value("${documentsApi.asylum.aboutToSubmitPath}") String aboutToSubmitPath,
+        @Value("${documentsApi.asylum.aboutToStartPath}") String aboutToStartPath
     ) {
         this.callbackApiDelegator = callbackApiDelegator;
         this.documentsApiEndpoint = documentsApiEndpoint;
