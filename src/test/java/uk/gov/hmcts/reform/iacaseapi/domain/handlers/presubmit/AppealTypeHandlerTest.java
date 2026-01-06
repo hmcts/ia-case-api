@@ -312,4 +312,37 @@ public class AppealTypeHandlerTest {
         verify(asylumCase, times(1)).write(IS_NABA_ADA_ENABLED, NO);
         verify(asylumCase, times(1)).write(IS_OUT_OF_COUNTRY_ENABLED, NO);
     }
+
+    @Test
+    void should_update_has_legal_rep_details_when_appeal_journey_type_is_changed() {
+        when(callback.getEvent()).thenReturn(EDIT_APPEAL);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getCaseDetailsBefore()).thenReturn(Optional.of(caseDetailsBefore));
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        when(caseDetailsBefore.getCaseData()).thenReturn(asylumCaseBefore);
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.empty());
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.PA));
+        when(asylumCase.read(APPEAL_TYPE_FOR_DISPLAY, AppealTypeForDisplay.class))
+                .thenReturn(Optional.of(AppealTypeForDisplay.PA));
+        when(asylumCase.read(LOCAL_AUTHORITY_POLICY))
+                .thenReturn(Optional.of(OrganisationPolicy.builder()
+                        .orgPolicyCaseAssignedRole("[LEGALREPRESENTATIVE]").build()));
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(asylumCase.read(APPELLANTS_REPRESENTATION, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(asylumCaseBefore.read(APPELLANTS_REPRESENTATION, YesOrNo.class)).thenReturn(Optional.of(NO));
+        when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(NO));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                appealTypeHandler.handle(ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+
+        verify(asylumCase, never()).write(APPEAL_TYPE, AppealType.AG);
+        verify(asylumCase, times(1))
+                .write(APPEAL_TYPE, AppealType.from(AppealTypeForDisplay.PA.getValue()));
+        verify(asylumCase, times(1)).write(HAS_ADDED_LEGAL_REP_DETAILS, NO);
+    }
 }
