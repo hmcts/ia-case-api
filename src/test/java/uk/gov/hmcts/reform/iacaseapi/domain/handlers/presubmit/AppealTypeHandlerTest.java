@@ -344,5 +344,20 @@ public class AppealTypeHandlerTest {
         verify(asylumCase, times(1))
                 .write(APPEAL_TYPE, AppealType.from(AppealTypeForDisplay.PA.getValue()));
         verify(asylumCase, times(1)).write(HAS_ADDED_LEGAL_REP_DETAILS, NO);
+         verify(asylumCase, times(1)).clear(APPEAL_WAS_NOT_SUBMITTED_REASON);
+        verify(asylumCase, times(1)).clear(APPEAL_NOT_SUBMITTED_REASON_DOCUMENTS);
+        verify(asylumCase, times(1)).clear(LEGAL_REP_COMPANY_PAPER_J);
+        verify(asylumCase, times(1)).clear(LEGAL_REP_GIVEN_NAME);
+        verify(asylumCase, times(1)).clear(LEGAL_REP_FAMILY_NAME_PAPER_J);
+        verify(asylumCase, times(1)).clear(LEGAL_REP_EMAIL);
+        verify(asylumCase, times(1)).clear(LEGAL_REP_REF_NUMBER_PAPER_J);
+        verify(asylumCase, times(1)).clear(LEGAL_REP_ADDRESS_U_K);
+        verify(asylumCase, times(1)).clear(OOC_ADDRESS_LINE_1);
+        verify(asylumCase, times(1)).clear(OOC_ADDRESS_LINE_2);
+        verify(asylumCase, times(1)).clear(OOC_ADDRESS_LINE_3);
+        verify(asylumCase, times(1)).clear(OOC_ADDRESS_LINE_4);
+        verify(asylumCase, times(1)).clear(OOC_COUNTRY_LINE);
+        verify(asylumCase, times(1)).clear(OOC_LR_COUNTRY_GOV_UK_ADMIN_J);
+        verify(asylumCase, times(1)).clear(LEGAL_REP_HAS_ADDRESS);
     }
 }
