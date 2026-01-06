@@ -2880,6 +2880,9 @@ public enum AsylumCaseFieldDefinition {
 
     SAVE_NOTIFICATIONS_TO_DATA_DATE(
         "saveNotificationsToDataDate", new TypeReference<String>(){}),
+
+    XUI_BANNER_TEXT(
+        "xuiBannerText", new TypeReference<String>(){})
     ;
 
     private final String value;

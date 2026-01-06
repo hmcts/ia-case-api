@@ -20,17 +20,22 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.AsylumCaseForTest.anAsylumCase;
 import static uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.CallbackForTest.CallbackForTestBuilder.callback;
 import static uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.CaseDetailsForTest.CaseDetailsForTestBuilder.someCaseDetailsWith;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_SUBMISSION_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_FAMILY_NAME;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_GIVEN_NAMES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_NOTES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STATUTORY_TIMEFRAME_24_WEEKS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STATUTORY_TIMEFRAME_24_WEEKS_REASON;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STATUTORY_TIMEFRAME_24_WEEKS_HOME_OFFICE_CASE_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STATUTORY_TIMEFRAME_24_WEEKS_REASON;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.XUI_BANNER_TEXT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.REMOVE_STATUTORY_TIMEFRAME_24_WEEKS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.APPEAL_SUBMITTED;
 
 class RemoveStatutoryTimeframe24WeeksTest extends SpringBootIntegrationTest implements WithUserDetailsStub,
-    WithRoleAssignmentStub, WithServiceAuthStub {
+        WithRoleAssignmentStub, WithServiceAuthStub {
+
+    private static final String APPEAL_SUBMISSION_DATE_STR = "2025-12-10";
+    private static final String BANNER_TEXT = "some text 24 Week STF (27 May 2026)";
 
     @Test
     @WithMockUser(authorities = {"caseworker-ia-iacjudge"})
@@ -41,14 +46,16 @@ class RemoveStatutoryTimeframe24WeeksTest extends SpringBootIntegrationTest impl
         String reason = "some reason";
         String homeOfficeCaseType = "some case type";
         PreSubmitCallbackResponseForTest response = iaCaseApiClient.aboutToSubmit(callback()
-            .event(REMOVE_STATUTORY_TIMEFRAME_24_WEEKS)
-            .caseDetails(someCaseDetailsWith()
-                .state(APPEAL_SUBMITTED)
-                .caseData(anAsylumCase()
-                    .with(STATUTORY_TIMEFRAME_24_WEEKS_REASON, reason)
-                    .with(STATUTORY_TIMEFRAME_24_WEEKS_HOME_OFFICE_CASE_TYPE, homeOfficeCaseType)
-                    .with(APPELLANT_GIVEN_NAMES, "some-given-name")
-                    .with(APPELLANT_FAMILY_NAME, "some-family-name"))));
+                .event(REMOVE_STATUTORY_TIMEFRAME_24_WEEKS)
+                .caseDetails(someCaseDetailsWith()
+                        .state(APPEAL_SUBMITTED)
+                        .caseData(anAsylumCase()
+                                .with(STATUTORY_TIMEFRAME_24_WEEKS_REASON, reason)
+                                .with(APPEAL_SUBMISSION_DATE, APPEAL_SUBMISSION_DATE_STR)
+                                .with(XUI_BANNER_TEXT, BANNER_TEXT)
+                                .with(STATUTORY_TIMEFRAME_24_WEEKS_HOME_OFFICE_CASE_TYPE, homeOfficeCaseType)
+                                .with(APPELLANT_GIVEN_NAMES, "some-given-name")
+                                .with(APPELLANT_FAMILY_NAME, "some-family-name"))));
 
         Optional<List<IdValue<CaseNote>>> caseNotes = response.getAsylumCase().read(CASE_NOTES);
 
@@ -69,5 +76,6 @@ class RemoveStatutoryTimeframe24WeeksTest extends SpringBootIntegrationTest impl
         assertThat(statutoryTimeframe24WeekHistory.get(0).getValue().getStatus()).isEqualTo(YesOrNo.NO);
         assertThat(statutoryTimeframe24WeekHistory.get(0).getValue().getReason()).isEqualTo(reason);
         assertThat(statutoryTimeframe24WeekHistory.get(0).getValue().getHomeOfficeCaseType()).isEqualTo(homeOfficeCaseType);
+        assertThat(response.getAsylumCase().read(XUI_BANNER_TEXT).get()).isEqualTo("some text");
     }
 }
