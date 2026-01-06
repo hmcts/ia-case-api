@@ -344,7 +344,7 @@ public class AppealTypeHandlerTest {
         verify(asylumCase, times(1))
                 .write(APPEAL_TYPE, AppealType.from(AppealTypeForDisplay.PA.getValue()));
         verify(asylumCase, times(1)).write(HAS_ADDED_LEGAL_REP_DETAILS, NO);
-         verify(asylumCase, times(1)).clear(APPEAL_WAS_NOT_SUBMITTED_REASON);
+        verify(asylumCase, times(1)).clear(APPEAL_WAS_NOT_SUBMITTED_REASON);
         verify(asylumCase, times(1)).clear(APPEAL_NOT_SUBMITTED_REASON_DOCUMENTS);
         verify(asylumCase, times(1)).clear(LEGAL_REP_COMPANY_PAPER_J);
         verify(asylumCase, times(1)).clear(LEGAL_REP_GIVEN_NAME);
