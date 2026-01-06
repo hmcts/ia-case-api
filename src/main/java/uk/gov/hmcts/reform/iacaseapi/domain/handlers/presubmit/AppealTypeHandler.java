@@ -61,12 +61,8 @@ public class AppealTypeHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
         if (HandlerUtils.hasRepresentation(asylumCase)
                 && !HandlerUtils.isInternalCase(asylumCase)
-                && !HandlerUtils.isAppellantsRepresentation(asylumCase)
                 && HandlerUtils.hasUpdatedLegalRepFields(callback)) {
             asylumCase.write(HAS_ADDED_LEGAL_REP_DETAILS, YesOrNo.YES);
-        } else {
-            asylumCase.write(HAS_ADDED_LEGAL_REP_DETAILS, YesOrNo.NO);
-            HandlerUtils.clearLegalRepFields(asylumCase);
         }
 
         Optional<YesOrNo> isNabaEnabled = asylumCase.read(IS_NABA_ENABLED, YesOrNo.class);
