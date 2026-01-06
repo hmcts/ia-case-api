@@ -66,8 +66,8 @@ class RehydratedAppealReferenceNumberHandlerTest {
     }
 
     @Test
-    void should_return_earliest_dispatch_priority() {
-        assertEquals(DispatchPriority.EARLIEST, handler.getDispatchPriority());
+    void should_return_late_dispatch_priority() {
+        assertEquals(DispatchPriority.LATE, handler.getDispatchPriority());
     }
 
     @Test
