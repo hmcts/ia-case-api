@@ -20,6 +20,10 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.AppealReferenceNumberValidat
 @Slf4j
 public class RehydratedAppealReferenceNumberHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
+    private static final List<Event> APPLICABLE_EVENTS = List.of(
+        Event.START_APPEAL,
+        Event.EDIT_APPEAL);
+
     private final AppealReferenceNumberValidator validator;
 
     public RehydratedAppealReferenceNumberHandler(AppealReferenceNumberValidator validator) {
@@ -40,7 +44,7 @@ public class RehydratedAppealReferenceNumberHandler implements PreSubmitCallback
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT &&
-            Event.START_APPEAL.equals(callback.getEvent()) &&
+            APPLICABLE_EVENTS.contains(callback.getEvent()) &&
             isRehydratedAppeal(callback.getCaseDetails().getCaseData());
     }
 

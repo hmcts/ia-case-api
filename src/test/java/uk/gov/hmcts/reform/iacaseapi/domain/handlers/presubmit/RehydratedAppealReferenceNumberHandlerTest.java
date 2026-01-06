@@ -24,6 +24,8 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -72,6 +74,8 @@ class RehydratedAppealReferenceNumberHandlerTest {
     void it_can_handle_callback() {
         for (Event event : Event.values()) {
             when(callback.getEvent()).thenReturn(event);
+            when(callback.getCaseDetails()).thenReturn(caseDetails);
+            when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
             for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
                 when(asylumCase.read(IS_REHYDRATED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
@@ -79,7 +83,7 @@ class RehydratedAppealReferenceNumberHandlerTest {
                 boolean canHandle = handler.canHandle(callbackStage, callback);
 
                 if (callbackStage == ABOUT_TO_SUBMIT
-                    && event == Event.START_APPEAL) {
+                    && (event == Event.START_APPEAL || event == Event.EDIT_APPEAL)) {
                     assertTrue(canHandle);
                 } else {
                     assertFalse(canHandle);
@@ -214,5 +218,57 @@ class RehydratedAppealReferenceNumberHandlerTest {
         assertThatThrownBy(() -> handler.canHandle(ABOUT_TO_SUBMIT, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {"START_APPEAL", "EDIT_APPEAL"})
+    void should_validate_appeal_reference_number_for_applicable_events(Event event) {
+        String validAppealReferenceNumber = "PA/10234/2025";
+        when(callback.getEvent()).thenReturn(event);
+        when(asylumCase.read(IS_REHYDRATED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(APPEAL_REFERENCE_NUMBER, String.class))
+            .thenReturn(Optional.of(validAppealReferenceNumber));
+        when(validator.validate(validAppealReferenceNumber)).thenReturn(Collections.emptyList());
+
+        PreSubmitCallbackResponse<AsylumCase> response = handler.handle(ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(response);
+        assertEquals(asylumCase, response.getData());
+        assertThat(response.getErrors()).isEmpty();
+        verify(validator, times(1)).validate(validAppealReferenceNumber);
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {"START_APPEAL", "EDIT_APPEAL"})
+    void should_handle_validation_errors_for_applicable_events(Event event) {
+        String invalidAppealReferenceNumber = "XX/12345/2024";
+        String formatError = "The reference number is in an incorrect format.";
+        when(callback.getEvent()).thenReturn(event);
+        when(asylumCase.read(IS_REHYDRATED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(APPEAL_REFERENCE_NUMBER, String.class))
+            .thenReturn(Optional.of(invalidAppealReferenceNumber));
+        when(validator.validate(invalidAppealReferenceNumber))
+            .thenReturn(Collections.singletonList(formatError));
+
+        PreSubmitCallbackResponse<AsylumCase> response = handler.handle(ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(response);
+        assertEquals(asylumCase, response.getData());
+        assertThat(response.getErrors()).hasSize(1).containsOnly(formatError);
+        verify(validator, times(1)).validate(invalidAppealReferenceNumber);
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {"START_APPEAL", "EDIT_APPEAL"})
+    void should_throw_exception_when_appeal_reference_missing_for_applicable_events(Event event) {
+        when(callback.getEvent()).thenReturn(event);
+        when(asylumCase.read(IS_REHYDRATED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(APPEAL_REFERENCE_NUMBER, String.class)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> handler.handle(ABOUT_TO_SUBMIT, callback))
+            .hasMessage("appealReferenceNumber is missing")
+            .isExactlyInstanceOf(IllegalStateException.class);
+
+        verify(validator, never()).validate(null);
     }
 }
