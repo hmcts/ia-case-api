@@ -89,7 +89,7 @@ class AddStatutoryTimeframe24WeeksTest extends SpringBootIntegrationTest impleme
     void adds_astf_24_weeks_banner_text_with_tribunal_submission_date() {
         addCaseWorkerUserDetailsStub(server);
         addServiceAuthStub(server);
-        addRoleAssignmentActorStub(server);
+        addRoleAssignmentQueryStub(server);
 
         PreSubmitCallbackResponseForTest response = iaCaseApiClient.aboutToSubmit(callback()
                 .event(ADD_STATUTORY_TIMEFRAME_24_WEEKS)
@@ -111,7 +111,7 @@ class AddStatutoryTimeframe24WeeksTest extends SpringBootIntegrationTest impleme
     void adds_astf_24_weeks_banner_text_with_appeal_submission_date() {
         addCaseWorkerUserDetailsStub(server);
         addServiceAuthStub(server);
-        addRoleAssignmentActorStub(server);
+        addRoleAssignmentQueryStub(server);
 
         PreSubmitCallbackResponseForTest response = iaCaseApiClient.aboutToSubmit(callback()
                 .event(ADD_STATUTORY_TIMEFRAME_24_WEEKS)
