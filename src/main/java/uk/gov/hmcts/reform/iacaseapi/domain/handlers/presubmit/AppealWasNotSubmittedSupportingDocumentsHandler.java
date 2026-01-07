@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag;
@@ -106,7 +105,6 @@ public class AppealWasNotSubmittedSupportingDocumentsHandler implements PreSubmi
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 
-    @NotNull
     private static List<IdValue<DocumentWithMetadata>> removeAppealNotSubmittedDocument(List<IdValue<DocumentWithMetadata>> existingLegalRepDocuments) {
         return existingLegalRepDocuments.stream().filter(documentWithMetadataIdValue ->
                 documentWithMetadataIdValue.getValue().getTag() != null
