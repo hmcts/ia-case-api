@@ -25,13 +25,17 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsHelper;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.FeeRemissionType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDecision;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserRoleLabel;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -59,13 +63,19 @@ class RequestFeeRemissionHandlerTest {
 
     @Mock private FeatureToggler featureToggler;
 
+    @Mock private UserDetails userDetails;
+
+    @Mock private UserDetailsHelper userDetailsHelper;
+
     private RequestFeeRemissionHandler requestFeeRemissionHandler;
 
     @BeforeEach
     void setUp() {
         RemissionDetailsAppender remissionDetailsAppender = new RemissionDetailsAppender();
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.REP));
-        requestFeeRemissionHandler = new RequestFeeRemissionHandler(featureToggler, remissionDetailsAppender);
+        requestFeeRemissionHandler = new RequestFeeRemissionHandler(featureToggler, remissionDetailsAppender,
+            userDetails, userDetailsHelper);
+        when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(UserRoleLabel.ADMIN_OFFICER);
     }
 
     @Test
@@ -87,7 +97,7 @@ class RequestFeeRemissionHandlerTest {
 
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
 
-        when(asylumCase.read(FEE_REMISSION_TYPE, String.class)).thenReturn(Optional.of("Asylum support"));
+        when(asylumCase.read(FEE_REMISSION_TYPE, String.class)).thenReturn(Optional.of(FeeRemissionType.ASYLUM_SUPPORT));
         when(asylumCase.read(ASYLUM_SUPPORT_REFERENCE, String.class)).thenReturn(Optional.of("123456"));
         when(asylumCase.read(ASYLUM_SUPPORT_DOCUMENT)).thenReturn(Optional.of(document));
 
@@ -153,7 +163,7 @@ class RequestFeeRemissionHandlerTest {
 
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
 
-        when(asylumCase.read(FEE_REMISSION_TYPE, String.class)).thenReturn(Optional.of("Legal Aid"));
+        when(asylumCase.read(FEE_REMISSION_TYPE, String.class)).thenReturn(Optional.of(FeeRemissionType.LEGAL_AID));
         when(asylumCase.read(LEGAL_AID_ACCOUNT_NUMBER, String.class)).thenReturn(Optional.of("123456"));
 
         when(asylumCase.read(TEMP_PREVIOUS_REMISSION_DETAILS))
@@ -185,7 +195,7 @@ class RequestFeeRemissionHandlerTest {
 
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
 
-        when(asylumCase.read(FEE_REMISSION_TYPE, String.class)).thenReturn(Optional.of("Section 17"));
+        when(asylumCase.read(FEE_REMISSION_TYPE, String.class)).thenReturn(Optional.of(FeeRemissionType.SECTION_17));
         when(asylumCase.read(SECTION17_DOCUMENT)).thenReturn(Optional.of(document));
 
         when(asylumCase.read(TEMP_PREVIOUS_REMISSION_DETAILS))
@@ -249,7 +259,7 @@ class RequestFeeRemissionHandlerTest {
 
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
 
-        when(asylumCase.read(FEE_REMISSION_TYPE, String.class)).thenReturn(Optional.of("Section 20"));
+        when(asylumCase.read(FEE_REMISSION_TYPE, String.class)).thenReturn(Optional.of(FeeRemissionType.SECTION_20));
         when(asylumCase.read(SECTION20_DOCUMENT)).thenReturn(Optional.of(document));
 
         when(asylumCase.read(TEMP_PREVIOUS_REMISSION_DETAILS))
@@ -313,7 +323,7 @@ class RequestFeeRemissionHandlerTest {
 
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
 
-        when(asylumCase.read(FEE_REMISSION_TYPE, String.class)).thenReturn(Optional.of("Home Office fee waiver"));
+        when(asylumCase.read(FEE_REMISSION_TYPE, String.class)).thenReturn(Optional.of(FeeRemissionType.HO_WAIVER));
         when(asylumCase.read(HOME_OFFICE_WAIVER_DOCUMENT)).thenReturn(Optional.of(document));
 
         when(asylumCase.read(TEMP_PREVIOUS_REMISSION_DETAILS))
@@ -377,7 +387,7 @@ class RequestFeeRemissionHandlerTest {
 
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
 
-        when(asylumCase.read(FEE_REMISSION_TYPE, String.class)).thenReturn(Optional.of("Help with Fees"));
+        when(asylumCase.read(FEE_REMISSION_TYPE, String.class)).thenReturn(Optional.of(FeeRemissionType.HELP_WITH_FEES));
         when(asylumCase.read(HELP_WITH_FEES_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of("HW-A1B-123"));
 
         when(asylumCase.read(TEMP_PREVIOUS_REMISSION_DETAILS))
@@ -409,7 +419,7 @@ class RequestFeeRemissionHandlerTest {
 
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
 
-        when(asylumCase.read(FEE_REMISSION_TYPE, String.class)).thenReturn(Optional.of("Exceptional circumstances"));
+        when(asylumCase.read(FEE_REMISSION_TYPE, String.class)).thenReturn(Optional.of(FeeRemissionType.EXCEPTIONAL_CIRCUMSTANCES));
         when(asylumCase.read(EXCEPTIONAL_CIRCUMSTANCES, String.class)).thenReturn(Optional.of("EC"));
         when(asylumCase.read(REMISSION_EC_EVIDENCE_DOCUMENTS)).thenReturn(Optional.of(singletonList(previousDocuments)));
 
@@ -472,7 +482,8 @@ class RequestFeeRemissionHandlerTest {
                 .write(REQUEST_FEE_REMISSION_FLAG_FOR_SERVICE_REQUEST, YesOrNo.YES);
         verify(asylumCase, times(2))
                 .write(ArgumentMatchers.eq(TEMP_PREVIOUS_REMISSION_DETAILS), anyList());
-
+        verify(asylumCase, times(1)).write(REMISSION_TYPE, remissionType);
+        verify(asylumCase, times(1)).write(REMISSION_REQUESTED_BY, UserRoleLabel.ADMIN_OFFICER);
         if (remissionType == HO_WAIVER_REMISSION) {
             switch (remissionClaim) {
                 case "asylumSupport":
@@ -573,35 +584,35 @@ class RequestFeeRemissionHandlerTest {
             Arguments.of(HO_WAIVER_REMISSION, "homeOfficeWaiver", EU, APPROVED),
             Arguments.of(HO_WAIVER_REMISSION, "homeOfficeWaiver", EU, PARTIALLY_APPROVED),
             Arguments.of(HO_WAIVER_REMISSION, "homeOfficeWaiver", EU, REJECTED),
-            Arguments.of(HELP_WITH_FEES, "Help with Fees", EA, APPROVED),
-            Arguments.of(HELP_WITH_FEES, "Help with Fees", EA, PARTIALLY_APPROVED),
-            Arguments.of(HELP_WITH_FEES, "Help with Fees", EA, REJECTED),
-            Arguments.of(HELP_WITH_FEES, "Help with Fees", HU, APPROVED),
-            Arguments.of(HELP_WITH_FEES, "Help with Fees", HU, PARTIALLY_APPROVED),
-            Arguments.of(HELP_WITH_FEES, "Help with Fees", HU, REJECTED),
-            Arguments.of(HELP_WITH_FEES, "Help with Fees", PA, APPROVED),
-            Arguments.of(HELP_WITH_FEES, "Help with Fees", PA, PARTIALLY_APPROVED),
-            Arguments.of(HELP_WITH_FEES, "Help with Fees", PA, REJECTED),
-            Arguments.of(HELP_WITH_FEES, "Help with Fees", EU, APPROVED),
-            Arguments.of(HELP_WITH_FEES, "Help with Fees", EU, PARTIALLY_APPROVED),
-            Arguments.of(HELP_WITH_FEES, "Help with Fees", EU, REJECTED),
-            Arguments.of(EXCEPTIONAL_CIRCUMSTANCES_REMISSION, "Exceptional circumstances", EA, APPROVED),
-            Arguments.of(EXCEPTIONAL_CIRCUMSTANCES_REMISSION, "Exceptional circumstances", EA, PARTIALLY_APPROVED),
-            Arguments.of(EXCEPTIONAL_CIRCUMSTANCES_REMISSION, "Exceptional circumstances", EA, REJECTED),
-            Arguments.of(EXCEPTIONAL_CIRCUMSTANCES_REMISSION, "Exceptional circumstances", HU, APPROVED),
-            Arguments.of(EXCEPTIONAL_CIRCUMSTANCES_REMISSION, "Exceptional circumstances", HU, PARTIALLY_APPROVED),
-            Arguments.of(EXCEPTIONAL_CIRCUMSTANCES_REMISSION, "Exceptional circumstances", HU, REJECTED),
-            Arguments.of(EXCEPTIONAL_CIRCUMSTANCES_REMISSION, "Exceptional circumstances", PA, APPROVED),
-            Arguments.of(EXCEPTIONAL_CIRCUMSTANCES_REMISSION, "Exceptional circumstances", PA, PARTIALLY_APPROVED),
-            Arguments.of(EXCEPTIONAL_CIRCUMSTANCES_REMISSION, "Exceptional circumstances", PA, REJECTED),
-            Arguments.of(EXCEPTIONAL_CIRCUMSTANCES_REMISSION, "Exceptional circumstances", EU, APPROVED),
-            Arguments.of(EXCEPTIONAL_CIRCUMSTANCES_REMISSION, "Exceptional circumstances", EU, PARTIALLY_APPROVED),
-            Arguments.of(EXCEPTIONAL_CIRCUMSTANCES_REMISSION, "Exceptional circumstances", EU, REJECTED)
+            Arguments.of(HELP_WITH_FEES, FeeRemissionType.HELP_WITH_FEES, EA, APPROVED),
+            Arguments.of(HELP_WITH_FEES, FeeRemissionType.HELP_WITH_FEES, EA, PARTIALLY_APPROVED),
+            Arguments.of(HELP_WITH_FEES, FeeRemissionType.HELP_WITH_FEES, EA, REJECTED),
+            Arguments.of(HELP_WITH_FEES, FeeRemissionType.HELP_WITH_FEES, HU, APPROVED),
+            Arguments.of(HELP_WITH_FEES, FeeRemissionType.HELP_WITH_FEES, HU, PARTIALLY_APPROVED),
+            Arguments.of(HELP_WITH_FEES, FeeRemissionType.HELP_WITH_FEES, HU, REJECTED),
+            Arguments.of(HELP_WITH_FEES, FeeRemissionType.HELP_WITH_FEES, PA, APPROVED),
+            Arguments.of(HELP_WITH_FEES, FeeRemissionType.HELP_WITH_FEES, PA, PARTIALLY_APPROVED),
+            Arguments.of(HELP_WITH_FEES, FeeRemissionType.HELP_WITH_FEES, PA, REJECTED),
+            Arguments.of(HELP_WITH_FEES, FeeRemissionType.HELP_WITH_FEES, EU, APPROVED),
+            Arguments.of(HELP_WITH_FEES, FeeRemissionType.HELP_WITH_FEES, EU, PARTIALLY_APPROVED),
+            Arguments.of(HELP_WITH_FEES, FeeRemissionType.HELP_WITH_FEES, EU, REJECTED),
+            Arguments.of(EXCEPTIONAL_CIRCUMSTANCES_REMISSION, FeeRemissionType.EXCEPTIONAL_CIRCUMSTANCES, EA, APPROVED),
+            Arguments.of(EXCEPTIONAL_CIRCUMSTANCES_REMISSION, FeeRemissionType.EXCEPTIONAL_CIRCUMSTANCES, EA, PARTIALLY_APPROVED),
+            Arguments.of(EXCEPTIONAL_CIRCUMSTANCES_REMISSION, FeeRemissionType.EXCEPTIONAL_CIRCUMSTANCES, EA, REJECTED),
+            Arguments.of(EXCEPTIONAL_CIRCUMSTANCES_REMISSION, FeeRemissionType.EXCEPTIONAL_CIRCUMSTANCES, HU, APPROVED),
+            Arguments.of(EXCEPTIONAL_CIRCUMSTANCES_REMISSION, FeeRemissionType.EXCEPTIONAL_CIRCUMSTANCES, HU, PARTIALLY_APPROVED),
+            Arguments.of(EXCEPTIONAL_CIRCUMSTANCES_REMISSION, FeeRemissionType.EXCEPTIONAL_CIRCUMSTANCES, HU, REJECTED),
+            Arguments.of(EXCEPTIONAL_CIRCUMSTANCES_REMISSION, FeeRemissionType.EXCEPTIONAL_CIRCUMSTANCES, PA, APPROVED),
+            Arguments.of(EXCEPTIONAL_CIRCUMSTANCES_REMISSION, FeeRemissionType.EXCEPTIONAL_CIRCUMSTANCES, PA, PARTIALLY_APPROVED),
+            Arguments.of(EXCEPTIONAL_CIRCUMSTANCES_REMISSION, FeeRemissionType.EXCEPTIONAL_CIRCUMSTANCES, PA, REJECTED),
+            Arguments.of(EXCEPTIONAL_CIRCUMSTANCES_REMISSION, FeeRemissionType.EXCEPTIONAL_CIRCUMSTANCES, EU, APPROVED),
+            Arguments.of(EXCEPTIONAL_CIRCUMSTANCES_REMISSION, FeeRemissionType.EXCEPTIONAL_CIRCUMSTANCES, EU, PARTIALLY_APPROVED),
+            Arguments.of(EXCEPTIONAL_CIRCUMSTANCES_REMISSION, FeeRemissionType.EXCEPTIONAL_CIRCUMSTANCES, EU, REJECTED)
         );
     }
 
     private void assertAsylumSupportRemissionDetails(AsylumCase asylumCase) {
-        verify(asylumCase, times(1)).write(FEE_REMISSION_TYPE, "Asylum support");
+        verify(asylumCase, times(1)).write(FEE_REMISSION_TYPE, FeeRemissionType.ASYLUM_SUPPORT);
         verify(asylumCase, times(1)).clear(LEGAL_AID_ACCOUNT_NUMBER);
         verify(asylumCase, times(1)).clear(SECTION17_DOCUMENT);
         verify(asylumCase, times(1)).clear(SECTION20_DOCUMENT);
@@ -612,7 +623,7 @@ class RequestFeeRemissionHandlerTest {
     }
 
     private void assertLegalAidRemissionDetails(AsylumCase asylumCase) {
-        verify(asylumCase, times(1)).write(FEE_REMISSION_TYPE, "Legal Aid");
+        verify(asylumCase, times(1)).write(FEE_REMISSION_TYPE, FeeRemissionType.LEGAL_AID);
         verify(asylumCase, times(1)).clear(ASYLUM_SUPPORT_REFERENCE);
         verify(asylumCase, times(1)).clear(ASYLUM_SUPPORT_DOCUMENT);
         verify(asylumCase, times(1)).clear(SECTION17_DOCUMENT);
@@ -624,7 +635,7 @@ class RequestFeeRemissionHandlerTest {
     }
 
     private void assertSection17RemissionDetails(AsylumCase asylumCase) {
-        verify(asylumCase, times(1)).write(FEE_REMISSION_TYPE, "Section 17");
+        verify(asylumCase, times(1)).write(FEE_REMISSION_TYPE, FeeRemissionType.SECTION_17);
         verify(asylumCase, times(1)).clear(ASYLUM_SUPPORT_REFERENCE);
         verify(asylumCase, times(1)).clear(ASYLUM_SUPPORT_DOCUMENT);
         verify(asylumCase, times(1)).clear(LEGAL_AID_ACCOUNT_NUMBER);
@@ -636,7 +647,7 @@ class RequestFeeRemissionHandlerTest {
     }
 
     private void assertSection20RemissionDetails(AsylumCase asylumCase) {
-        verify(asylumCase, times(1)).write(FEE_REMISSION_TYPE, "Section 20");
+        verify(asylumCase, times(1)).write(FEE_REMISSION_TYPE, FeeRemissionType.SECTION_20);
         verify(asylumCase, times(1)).clear(ASYLUM_SUPPORT_REFERENCE);
         verify(asylumCase, times(1)).clear(ASYLUM_SUPPORT_DOCUMENT);
         verify(asylumCase, times(1)).clear(LEGAL_AID_ACCOUNT_NUMBER);
@@ -648,7 +659,7 @@ class RequestFeeRemissionHandlerTest {
     }
 
     private void assertHomeOfficeWaiverRemissionDetails(AsylumCase asylumCase) {
-        verify(asylumCase, times(1)).write(FEE_REMISSION_TYPE, "Home Office fee waiver");
+        verify(asylumCase, times(1)).write(FEE_REMISSION_TYPE, FeeRemissionType.HO_WAIVER);
         verify(asylumCase, times(1)).clear(ASYLUM_SUPPORT_REFERENCE);
         verify(asylumCase, times(1)).clear(ASYLUM_SUPPORT_DOCUMENT);
         verify(asylumCase, times(1)).clear(LEGAL_AID_ACCOUNT_NUMBER);
@@ -660,7 +671,7 @@ class RequestFeeRemissionHandlerTest {
     }
 
     private void assertHelpWithFees(AsylumCase asylumCase) {
-        verify(asylumCase, times(1)).write(FEE_REMISSION_TYPE, "Help with Fees");
+        verify(asylumCase, times(1)).write(FEE_REMISSION_TYPE, FeeRemissionType.HELP_WITH_FEES);
         verify(asylumCase, times(1)).clear(ASYLUM_SUPPORT_REFERENCE);
         verify(asylumCase, times(1)).clear(ASYLUM_SUPPORT_DOCUMENT);
         verify(asylumCase, times(1)).clear(LEGAL_AID_ACCOUNT_NUMBER);
@@ -671,7 +682,7 @@ class RequestFeeRemissionHandlerTest {
     }
 
     private void assertExceptionalCircumstancesRemissionDetails(AsylumCase asylumCase) {
-        verify(asylumCase, times(1)).write(FEE_REMISSION_TYPE, "Exceptional circumstances");
+        verify(asylumCase, times(1)).write(FEE_REMISSION_TYPE, FeeRemissionType.EXCEPTIONAL_CIRCUMSTANCES);
         verify(asylumCase, times(1)).clear(ASYLUM_SUPPORT_REFERENCE);
         verify(asylumCase, times(1)).clear(ASYLUM_SUPPORT_DOCUMENT);
         verify(asylumCase, times(1)).clear(LEGAL_AID_ACCOUNT_NUMBER);

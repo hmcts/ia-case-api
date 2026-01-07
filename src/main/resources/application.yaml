@@ -349,6 +349,7 @@ security:
       - "generateListCmrTask"
       - "markAppealAsDetained"
       - "removeDetainedStatus"
+      - "addStatutoryTimeframe24Weeks"
     challenged-access-legal-operations:
       - "appellantInPersonManual"
       - "moveToPaymentPending"
@@ -591,6 +592,7 @@ security:
       - "markAppealAsDetained"
       - "removeDetainedStatus"
       - "editDocuments"
+      - "addStatutoryTimeframe24Weeks"
     ctsc:
       - "appellantInPersonManual"
       - "startAppeal"
@@ -656,6 +658,7 @@ security:
       - "markAppealAsDetained"
       - "removeDetainedStatus"
       - "editDocuments"
+      - "addStatutoryTimeframe24Weeks"
     ctsc-team-leader:
       - "appellantInPersonManual"
       - "startAppeal"
@@ -721,6 +724,7 @@ security:
       - "markAppealAsDetained"
       - "removeDetainedStatus"
       - "editDocuments"
+      - "addStatutoryTimeframe24Weeks"
     national-business-centre:
       - "appellantInPersonManual"
       - "startAppeal"
@@ -786,6 +790,7 @@ security:
       - "markAppealAsDetained"
       - "removeDetainedStatus"
       - "editDocuments"
+      - "addStatutoryTimeframe24Weeks"
     challenged-access-ctsc:
       - "appellantInPersonManual"
       - "startAppeal"
@@ -851,6 +856,7 @@ security:
       - "markAppealAsDetained"
       - "removeDetainedStatus"
       - "editDocuments"
+      - "addStatutoryTimeframe24Weeks"
     challenged-access-admin:
       - "appellantInPersonManual"
       - "startAppeal"
@@ -917,6 +923,7 @@ security:
       - "markAppealAsDetained"
       - "removeDetainedStatus"
       - "editDocuments"
+      - "addStatutoryTimeframe24Weeks"
     caseworker-ia-homeofficeapc:
       - "uploadHomeOfficeBundle"
       - "uploadAdditionalEvidenceHomeOffice"
@@ -1004,6 +1011,8 @@ security:
       - "decideCostsApplication"
       - "considerMakingCostsOrder"
       - "updateTribunalDecision"
+      - "addStatutoryTimeframe24Weeks"
+      - "removeStatutoryTimeframe24Weeks"
     judge:
       - "generateDecisionAndReasons"
       - "endAppeal"
@@ -1285,6 +1294,7 @@ security:
       - "updateTribunalDecision"
     caseworker-ia-system:
       - "requestHearingRequirementsFeature"
+      - "changeHearingCentre"
       - "moveToPaymentPending"
       - "rollbackPayment"
       - "rollbackPaymentTimeout"
@@ -1308,10 +1318,12 @@ security:
       - "UpdateNextHearingInfo"
       - "removeCaseManagerBulk"
       - "hearingCancelled"
+      - "rollbackMigration"
+      - "addStatutoryTimeframe24Weeks"
+      - "removeStatutoryTimeframe24Weeks"
     caseworker-ia-internal:
       - "revokeCaseAccess"
       - "removeCaseManagerBulk"
-    caseworker-ia-task-retrigger:
       - "reTriggerWaTasks"
       - "reTriggerWaBulkTasks"
     caseworker-ia-rparobot:
@@ -1380,8 +1392,6 @@ commonData:
 
 govUkHolidays:
   url: https://www.gov.uk/
-
-caseIdListJsonLocation: caseIdForRetrigger.json
 
 saveNotificationsData:
   enabled: ${SAVE_NOTIFICATIONS_TO_DATA_EVENT_ENABLED:true}
