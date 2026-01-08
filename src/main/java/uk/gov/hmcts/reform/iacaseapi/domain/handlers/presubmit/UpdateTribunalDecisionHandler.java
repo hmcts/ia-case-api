@@ -132,98 +132,37 @@ public class UpdateTribunalDecisionHandler implements PreSubmitCallbackHandler<A
 
         } else if (isDecisionRule32(asylumCase)) {
 
-            DynamicList updateTribunalDecisionValue = asylumCase.read(TYPES_OF_UPDATE_TRIBUNAL_DECISION, DynamicList.class)
-                    .orElseThrow(() -> new IllegalStateException("typesOfUpdateTribunalDecision is not present"));
-
-            asylumCase.write(IS_DECISION_RULE32_CHANGED,
-                    updateTribunalDecisionValue.getValue().getLabel().contains("Yes") ? YesOrNo.YES : YesOrNo.NO);
-            asylumCase.write(UPDATED_APPEAL_DECISION, StringUtils.capitalize(updateTribunalDecisionValue.getValue().getCode()));
-
-            final DecisionAndReasons newDecisionAndReasons =
-                    DecisionAndReasons.builder()
-                            .updatedDecisionDate(dateProvider.now().toString())
-                            .build();
-
-            Optional<Document> maybeDecisionAndReasonSingleDocument = asylumCase
-                    .read(DECISION_AND_REASON_DOCS_UPLOAD, Document.class);
-
             List<DocumentWithMetadata> ftpaSetAsideDocuments = new ArrayList<>();
 
             final Document rule32Document =
-                    asylumCase
-                            .read(RULE_32_NOTICE_DOCUMENT, Document.class)
-                            .orElseThrow(
-                                    () -> new IllegalStateException("Rule 32 notice document is not present"));
+                asylumCase
+                        .read(RULE_32_NOTICE_DOCUMENT, Document.class)
+                        .orElseThrow(
+                                () -> new IllegalStateException("Rule 32 notice document is not present"));
 
             ftpaSetAsideDocuments.add(
-                    documentReceiver
-                            .receive(
-                                    rule32Document,
-                                    "",
-                                    DocumentTag.FTPA_SET_ASIDE
-                            )
+                documentReceiver
+                        .receive(
+                                rule32Document,
+                                "",
+                                DocumentTag.FTPA_SET_ASIDE
+                        )
             );
 
             final Optional<List<IdValue<DocumentWithMetadata>>> maybeFtpaSetAsideDocuments = asylumCase.read(ALL_SET_ASIDE_DOCS);
             final List<IdValue<DocumentWithMetadata>> existingAllFtpaSetAsideDocuments = maybeFtpaSetAsideDocuments.orElse(Collections.emptyList());
 
             List<IdValue<DocumentWithMetadata>> allFtpaSetAsideDocuments =
-                    documentsAppender.append(
-                            existingAllFtpaSetAsideDocuments,
-                            ftpaSetAsideDocuments
-                    );
+                documentsAppender.append(
+                        existingAllFtpaSetAsideDocuments,
+                        ftpaSetAsideDocuments
+                );
             asylumCase.write(ALL_SET_ASIDE_DOCS,allFtpaSetAsideDocuments);
             asylumCase.write(UPDATE_TRIBUNAL_DECISION_DATE_RULE_32, dateProvider.now().toString());
             asylumCase.write(REASON_REHEARING_RULE_32, "Set aside and to be reheard under rule 32");
+            asylumCase.write(IS_DECISION_RULE32_CHANGED,
+                    updateTribunalDecisionValue.getValue().getLabel().contains("Yes") ? YesOrNo.YES : YesOrNo.NO);
             setFtpaReheardCaseFlag(asylumCase);
-
-            if (asylumCase.read(UPDATE_TRIBUNAL_DECISION_AND_REASONS_FINAL_CHECK, YesOrNo.class)
-                    .map(flag -> flag.equals(YesOrNo.YES)).orElse(false)) {
-
-                Document correctedDecisionAndReasonsDoc = maybeDecisionAndReasonSingleDocument.orElseThrow(() -> new IllegalStateException("decisionAndReasonDocsUpload is not present"));
-
-                String summariseChanges = asylumCase
-                        .read(SUMMARISE_TRIBUNAL_DECISION_AND_REASONS_DOCUMENT, String.class)
-                        .orElseThrow(() -> new IllegalStateException("summariseTribunalDecisionAndReasonsDocument is not present"));
-
-                newDecisionAndReasons.setDocumentAndReasonsDocument(correctedDecisionAndReasonsDoc);
-                newDecisionAndReasons.setDateDocumentAndReasonsDocumentUploaded(dateProvider.now().toString());
-                newDecisionAndReasons.setSummariseChanges(summariseChanges);
-
-                final Optional<List<IdValue<DocumentWithMetadata>>> maybeDecisionAndReasonsDocuments = asylumCase.read(FINAL_DECISION_AND_REASONS_DOCUMENTS);
-
-                final List<IdValue<DocumentWithMetadata>> existingDecisionAndReasonsDocuments = maybeDecisionAndReasonsDocuments.orElse(Collections.emptyList());
-
-                DocumentWithMetadata updatedDecisionAndReasonsDocument = documentReceiver.receive(
-                        correctedDecisionAndReasonsDoc,
-                        "",
-                        DocumentTag.UPDATED_FINAL_DECISION_AND_REASONS_PDF
-                );
-
-                List<IdValue<DocumentWithMetadata>> newUpdateTribunalDecisionDocs = documentsAppender.append(
-                        existingDecisionAndReasonsDocuments,
-                        singletonList(updatedDecisionAndReasonsDocument)
-                );
-
-                asylumCase.write(FINAL_DECISION_AND_REASONS_DOCUMENTS, newUpdateTribunalDecisionDocs);
-
-            } else {
-                if (maybeDecisionAndReasonSingleDocument.isPresent()) {
-                    asylumCase.clear(DECISION_AND_REASON_DOCS_UPLOAD);
-                    asylumCase.clear(SUMMARISE_TRIBUNAL_DECISION_AND_REASONS_DOCUMENT);
-                }
-            }
-
-            Optional<List<IdValue<DecisionAndReasons>>> maybeExistingDecisionAndReasons =
-                    asylumCase.read(CORRECTED_DECISION_AND_REASONS);
-            List<IdValue<DecisionAndReasons>> allCorrectedDecisions =
-                    decisionAndReasonsAppender.append(newDecisionAndReasons, maybeExistingDecisionAndReasons.orElse(emptyList()));
-
-            asylumCase.write(CORRECTED_DECISION_AND_REASONS, allCorrectedDecisions);
-            asylumCase.write(UPDATE_TRIBUNAL_DECISION_DATE, dateProvider.now().toString());
-            asylumCase.clear(FTPA_APPELLANT_SUBMITTED);
-            asylumCase.clear(FTPA_RESPONDENT_SUBMITTED);
-
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
