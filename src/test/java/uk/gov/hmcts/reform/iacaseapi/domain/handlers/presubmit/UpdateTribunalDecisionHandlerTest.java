@@ -310,14 +310,14 @@ class UpdateTribunalDecisionHandlerTest {
     }
 
     @Test
-    void should_throw_on_missing_rule_32_notice_document() {
+    void should_throw_on_missing_rule_32_notice() {
 
         when(asylumCase.read(UPDATE_TRIBUNAL_DECISION_LIST, UpdateTribunalRules.class))
                 .thenReturn(Optional.of(UNDER_RULE_32));
 
         assertThatThrownBy(() -> updateTribunalDecisionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
                 .isExactlyInstanceOf(IllegalStateException.class)
-                .hasMessage("Rule 32 notice document is not present");
+                .hasMessage("typesOfUpdateTribunalDecision is not present");
     }
 
     @Test

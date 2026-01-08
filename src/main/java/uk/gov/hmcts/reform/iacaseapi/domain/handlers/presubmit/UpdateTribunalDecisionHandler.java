@@ -147,6 +147,36 @@ public class UpdateTribunalDecisionHandler implements PreSubmitCallbackHandler<A
             Optional<Document> maybeDecisionAndReasonSingleDocument = asylumCase
                     .read(DECISION_AND_REASON_DOCS_UPLOAD, Document.class);
 
+            List<DocumentWithMetadata> ftpaSetAsideDocuments = new ArrayList<>();
+
+            final Document rule32Document =
+                    asylumCase
+                            .read(RULE_32_NOTICE_DOCUMENT, Document.class)
+                            .orElseThrow(
+                                    () -> new IllegalStateException("Rule 32 notice document is not present"));
+
+            ftpaSetAsideDocuments.add(
+                    documentReceiver
+                            .receive(
+                                    rule32Document,
+                                    "",
+                                    DocumentTag.FTPA_SET_ASIDE
+                            )
+            );
+
+            final Optional<List<IdValue<DocumentWithMetadata>>> maybeFtpaSetAsideDocuments = asylumCase.read(ALL_SET_ASIDE_DOCS);
+            final List<IdValue<DocumentWithMetadata>> existingAllFtpaSetAsideDocuments = maybeFtpaSetAsideDocuments.orElse(Collections.emptyList());
+
+            List<IdValue<DocumentWithMetadata>> allFtpaSetAsideDocuments =
+                    documentsAppender.append(
+                            existingAllFtpaSetAsideDocuments,
+                            ftpaSetAsideDocuments
+                    );
+            asylumCase.write(ALL_SET_ASIDE_DOCS,allFtpaSetAsideDocuments);
+            asylumCase.write(UPDATE_TRIBUNAL_DECISION_DATE_RULE_32, dateProvider.now().toString());
+            asylumCase.write(REASON_REHEARING_RULE_32, "Set aside and to be reheard under rule 32");
+            setFtpaReheardCaseFlag(asylumCase);
+
             if (asylumCase.read(UPDATE_TRIBUNAL_DECISION_AND_REASONS_FINAL_CHECK, YesOrNo.class)
                     .map(flag -> flag.equals(YesOrNo.YES)).orElse(false)) {
 
