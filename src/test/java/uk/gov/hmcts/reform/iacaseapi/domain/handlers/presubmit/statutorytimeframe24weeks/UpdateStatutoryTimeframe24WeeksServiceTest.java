@@ -38,6 +38,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STATUTORY_TIMEFRAME_24_WEEKS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STATUTORY_TIMEFRAME_24_WEEKS_REASON;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STATUTORY_TIMEFRAME_24_WEEKS_HOME_OFFICE_CASE_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STATUTORY_TIMEFRAME_24_WEEKS_CURRENT_STATUS_AUTO_GENERATED;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -134,6 +135,7 @@ class UpdateStatutoryTimeframe24WeeksServiceTest {
         verify(asylumCase, times(1)).write(STATUTORY_TIMEFRAME_24_WEEKS, new StatutoryTimeframe24Weeks(newStatus, homeOfficeCaseType, allAppendedStatutoryTimeframe24Weeks));
         verify(asylumCase, times(1)).clear(STATUTORY_TIMEFRAME_24_WEEKS_REASON);
         verify(bannerTextService, times(1)).updateBannerText(asylumCaseCaptor.capture(), statutoryTimeframe24WeeksCaptor.capture());
+        verify(asylumCase, times(1)).write(STATUTORY_TIMEFRAME_24_WEEKS_CURRENT_STATUS_AUTO_GENERATED, newStatus);
 
     }
 

@@ -27,6 +27,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STATUTORY_TIMEFRAME_24_WEEKS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STATUTORY_TIMEFRAME_24_WEEKS_HOME_OFFICE_CASE_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STATUTORY_TIMEFRAME_24_WEEKS_REASON;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STATUTORY_TIMEFRAME_24_WEEKS_CURRENT_STATUS_AUTO_GENERATED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.XUI_BANNER_TEXT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.REMOVE_STATUTORY_TIMEFRAME_24_WEEKS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.APPEAL_SUBMITTED;
@@ -77,5 +78,7 @@ class RemoveStatutoryTimeframe24WeeksTest extends SpringBootIntegrationTest impl
         assertThat(statutoryTimeframe24WeekHistory.get(0).getValue().getReason()).isEqualTo(reason);
         assertThat(statutoryTimeframe24WeekHistory.get(0).getValue().getHomeOfficeCaseType()).isEqualTo(homeOfficeCaseType);
         assertThat(response.getAsylumCase().read(XUI_BANNER_TEXT).get()).isEqualTo("some text");
+        assertThat(response.getAsylumCase().read(STATUTORY_TIMEFRAME_24_WEEKS_HOME_OFFICE_CASE_TYPE).get()).isEqualTo(homeOfficeCaseType);
+        assertThat(response.getAsylumCase().read(STATUTORY_TIMEFRAME_24_WEEKS_CURRENT_STATUS_AUTO_GENERATED).get()).isEqualTo(YesOrNo.NO.toString());
     }
 }

@@ -27,6 +27,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STATUTORY_TIMEFRAME_24_WEEKS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STATUTORY_TIMEFRAME_24_WEEKS_HOME_OFFICE_CASE_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STATUTORY_TIMEFRAME_24_WEEKS_REASON;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STATUTORY_TIMEFRAME_24_WEEKS_CURRENT_STATUS_AUTO_GENERATED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.TRIBUNAL_RECEIVED_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.XUI_BANNER_TEXT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.ADD_STATUTORY_TIMEFRAME_24_WEEKS;
@@ -126,4 +127,27 @@ class AddStatutoryTimeframe24WeeksTest extends SpringBootIntegrationTest impleme
 
         assertThat(response.getAsylumCase().read(XUI_BANNER_TEXT).get()).isEqualTo(WEEK_STF_CASE_DEADLINE_27_MAY_2026);
     }
+
+    @Test
+    @WithMockUser(authorities = {"caseworker-ia", "tribunal-caseworker"})
+    void adds_a_stf_24_should_have_correct_case_type_and_status_at_case_level() {
+        addCaseWorkerUserDetailsStub(server);
+        addServiceAuthStub(server);
+        addRoleAssignmentActorStub(server);
+
+        PreSubmitCallbackResponseForTest response = iaCaseApiClient.aboutToSubmit(callback()
+                .event(ADD_STATUTORY_TIMEFRAME_24_WEEKS)
+                .caseDetails(someCaseDetailsWith()
+                        .state(APPEAL_SUBMITTED)
+                        .caseData(anAsylumCase()
+                                .with(APPEAL_SUBMISSION_DATE, APPEAL_SUBMISSION_DATE_STR)
+                                .with(STATUTORY_TIMEFRAME_24_WEEKS_REASON, SOME_REASON)
+                                .with(STATUTORY_TIMEFRAME_24_WEEKS_HOME_OFFICE_CASE_TYPE, SOME_CASE_TYPE)
+                                .with(APPELLANT_GIVEN_NAMES, SOME_GIVEN_NAME)
+                                .with(APPELLANT_FAMILY_NAME, SOME_FAMILY_NAME))));
+
+        assertThat(response.getAsylumCase().read(STATUTORY_TIMEFRAME_24_WEEKS_HOME_OFFICE_CASE_TYPE).get()).isEqualTo(SOME_CASE_TYPE);
+        assertThat(response.getAsylumCase().read(STATUTORY_TIMEFRAME_24_WEEKS_CURRENT_STATUS_AUTO_GENERATED).get()).isEqualTo(YesOrNo.YES.toString());
+    }
+
 }
