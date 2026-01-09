@@ -15,7 +15,8 @@
           "appellantInUk": "Yes",
           "isAcceleratedDetainedAppeal": "No",
           "ftpaApplicantType": "appellant",
-          "ftpaAppellantRjDecisionOutcomeType": "Some outcome"
+          "ftpaAppellantRjDecisionOutcomeType": "Some outcome",
+          "ftpaAppellantDecisionDate": "2025-01-02"
         }
       }
     }
@@ -32,7 +33,8 @@
         "hasBeenFtpaDecided": "Yes",
         "sendDirectionActionAvailable": "No",
         "ftpaAppellantRjDecisionOutcomeType": "Some outcome",
-        "isFtpaListVisible": "Yes"
+        "isFtpaListVisible": "Yes",
+        "ftpaAppellantDecisionDate": "2025-01-02"
       }
     }
   }
