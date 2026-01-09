@@ -25,8 +25,31 @@ public class AppealReferenceNumberValidator {
      * Validates an appeal reference number for format and existence.
      *
      * @param appealReferenceNumber The reference number to validate in format XX/00000/0000
+     * @param ccdRefNumber The current ccd appeal ref
      * @return List of validation error messages. Empty list if validation passes.
      */
+    public List<String> validate(String appealReferenceNumber, String ccdRefNumber) {
+        List<String> errors = new ArrayList<>();
+
+        if (appealReferenceNumber == null || appealReferenceNumber.isEmpty()) {
+            errors.add("Appeal reference number cannot be null or empty");
+            return errors;
+        }
+
+        // Validate format
+        if (!APPEAL_REF_PATTERN.matcher(appealReferenceNumber).matches()) {
+            errors.add(INVALID_FORMAT_ERROR);
+            return errors; // Don't check existence if format is invalid
+        }
+
+        // Check if reference number already exists in CCD using Elasticsearch
+        if (appealReferenceNumberSearchService.appealReferenceNumberExists(appealReferenceNumber, ccdRefNumber)) {
+            errors.add(ALREADY_EXISTS_ERROR);
+        }
+
+        return errors;
+    }
+
     public List<String> validate(String appealReferenceNumber) {
         List<String> errors = new ArrayList<>();
 

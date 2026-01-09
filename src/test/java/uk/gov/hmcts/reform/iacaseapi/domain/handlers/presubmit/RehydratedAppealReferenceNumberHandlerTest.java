@@ -12,6 +12,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_REFERENCE_NUMBER;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CCD_REFERENCE_NUMBER_FOR_DISPLAY;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_REHYDRATED_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
@@ -44,6 +45,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.AppealReferenceNumberValidat
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
 class RehydratedAppealReferenceNumberHandlerTest {
+
+    private static final String CCD_REF_NUMBER = "1234567890123456";
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -119,14 +122,16 @@ class RehydratedAppealReferenceNumberHandlerTest {
         when(asylumCase.read(IS_REHYDRATED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(asylumCase.read(APPEAL_REFERENCE_NUMBER, String.class))
             .thenReturn(Optional.of(validAppealReferenceNumber));
-        when(validator.validate(validAppealReferenceNumber)).thenReturn(Collections.emptyList());
+        when(asylumCase.read(CCD_REFERENCE_NUMBER_FOR_DISPLAY, String.class))
+            .thenReturn(Optional.of(CCD_REF_NUMBER));
+        when(validator.validate(validAppealReferenceNumber, CCD_REF_NUMBER)).thenReturn(Collections.emptyList());
 
         PreSubmitCallbackResponse<AsylumCase> response = handler.handle(ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(response);
         assertEquals(asylumCase, response.getData());
         assertThat(response.getErrors()).isEmpty();
-        verify(validator, times(1)).validate(validAppealReferenceNumber);
+        verify(validator, times(1)).validate(validAppealReferenceNumber, CCD_REF_NUMBER);
     }
 
     @Test
@@ -136,7 +141,9 @@ class RehydratedAppealReferenceNumberHandlerTest {
         when(asylumCase.read(IS_REHYDRATED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(asylumCase.read(APPEAL_REFERENCE_NUMBER, String.class))
             .thenReturn(Optional.of(invalidAppealReferenceNumber));
-        when(validator.validate(invalidAppealReferenceNumber))
+        when(asylumCase.read(CCD_REFERENCE_NUMBER_FOR_DISPLAY, String.class))
+            .thenReturn(Optional.of(CCD_REF_NUMBER));
+        when(validator.validate(invalidAppealReferenceNumber, CCD_REF_NUMBER))
             .thenReturn(Collections.singletonList(formatError));
 
         PreSubmitCallbackResponse<AsylumCase> response = handler.handle(ABOUT_TO_SUBMIT, callback);
@@ -144,7 +151,7 @@ class RehydratedAppealReferenceNumberHandlerTest {
         assertNotNull(response);
         assertEquals(asylumCase, response.getData());
         assertThat(response.getErrors()).hasSize(1).containsOnly(formatError);
-        verify(validator, times(1)).validate(invalidAppealReferenceNumber);
+        verify(validator, times(1)).validate(invalidAppealReferenceNumber, CCD_REF_NUMBER);
     }
 
     @Test
@@ -154,7 +161,9 @@ class RehydratedAppealReferenceNumberHandlerTest {
         when(asylumCase.read(IS_REHYDRATED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(asylumCase.read(APPEAL_REFERENCE_NUMBER, String.class))
             .thenReturn(Optional.of(existingAppealReferenceNumber));
-        when(validator.validate(existingAppealReferenceNumber))
+        when(asylumCase.read(CCD_REFERENCE_NUMBER_FOR_DISPLAY, String.class))
+            .thenReturn(Optional.of(CCD_REF_NUMBER));
+        when(validator.validate(existingAppealReferenceNumber, CCD_REF_NUMBER))
             .thenReturn(Collections.singletonList(alreadyExistsError));
 
         PreSubmitCallbackResponse<AsylumCase> response = handler.handle(ABOUT_TO_SUBMIT, callback);
@@ -162,7 +171,7 @@ class RehydratedAppealReferenceNumberHandlerTest {
         assertNotNull(response);
         assertEquals(asylumCase, response.getData());
         assertThat(response.getErrors()).hasSize(1).containsOnly(alreadyExistsError);
-        verify(validator, times(1)).validate(existingAppealReferenceNumber);
+        verify(validator, times(1)).validate(existingAppealReferenceNumber, CCD_REF_NUMBER);
     }
 
     @Test
@@ -174,14 +183,16 @@ class RehydratedAppealReferenceNumberHandlerTest {
         when(asylumCase.read(IS_REHYDRATED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(asylumCase.read(APPEAL_REFERENCE_NUMBER, String.class))
             .thenReturn(Optional.of(invalidAppealReferenceNumber));
-        when(validator.validate(invalidAppealReferenceNumber)).thenReturn(validationErrors);
+        when(asylumCase.read(CCD_REFERENCE_NUMBER_FOR_DISPLAY, String.class))
+            .thenReturn(Optional.of(CCD_REF_NUMBER));
+        when(validator.validate(invalidAppealReferenceNumber, CCD_REF_NUMBER)).thenReturn(validationErrors);
 
         PreSubmitCallbackResponse<AsylumCase> response = handler.handle(ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(response);
         assertEquals(asylumCase, response.getData());
         assertThat(response.getErrors()).hasSize(2).containsAll(validationErrors);
-        verify(validator, times(1)).validate(invalidAppealReferenceNumber);
+        verify(validator, times(1)).validate(invalidAppealReferenceNumber, CCD_REF_NUMBER);
     }
 
     @Test
@@ -193,7 +204,7 @@ class RehydratedAppealReferenceNumberHandlerTest {
             .hasMessage("appealReferenceNumber is missing")
             .isExactlyInstanceOf(IllegalStateException.class);
 
-        verify(validator, never()).validate(null);
+        verify(validator, never()).validate(null, null);
     }
 
     @Test
@@ -228,14 +239,16 @@ class RehydratedAppealReferenceNumberHandlerTest {
         when(asylumCase.read(IS_REHYDRATED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(asylumCase.read(APPEAL_REFERENCE_NUMBER, String.class))
             .thenReturn(Optional.of(validAppealReferenceNumber));
-        when(validator.validate(validAppealReferenceNumber)).thenReturn(Collections.emptyList());
+        when(asylumCase.read(CCD_REFERENCE_NUMBER_FOR_DISPLAY, String.class))
+            .thenReturn(Optional.of(CCD_REF_NUMBER));
+        when(validator.validate(validAppealReferenceNumber, CCD_REF_NUMBER)).thenReturn(Collections.emptyList());
 
         PreSubmitCallbackResponse<AsylumCase> response = handler.handle(ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(response);
         assertEquals(asylumCase, response.getData());
         assertThat(response.getErrors()).isEmpty();
-        verify(validator, times(1)).validate(validAppealReferenceNumber);
+        verify(validator, times(1)).validate(validAppealReferenceNumber, CCD_REF_NUMBER);
     }
 
     @ParameterizedTest
@@ -247,7 +260,9 @@ class RehydratedAppealReferenceNumberHandlerTest {
         when(asylumCase.read(IS_REHYDRATED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(asylumCase.read(APPEAL_REFERENCE_NUMBER, String.class))
             .thenReturn(Optional.of(invalidAppealReferenceNumber));
-        when(validator.validate(invalidAppealReferenceNumber))
+        when(asylumCase.read(CCD_REFERENCE_NUMBER_FOR_DISPLAY, String.class))
+            .thenReturn(Optional.of(CCD_REF_NUMBER));
+        when(validator.validate(invalidAppealReferenceNumber, CCD_REF_NUMBER))
             .thenReturn(Collections.singletonList(formatError));
 
         PreSubmitCallbackResponse<AsylumCase> response = handler.handle(ABOUT_TO_SUBMIT, callback);
@@ -255,7 +270,7 @@ class RehydratedAppealReferenceNumberHandlerTest {
         assertNotNull(response);
         assertEquals(asylumCase, response.getData());
         assertThat(response.getErrors()).hasSize(1).containsOnly(formatError);
-        verify(validator, times(1)).validate(invalidAppealReferenceNumber);
+        verify(validator, times(1)).validate(invalidAppealReferenceNumber, CCD_REF_NUMBER);
     }
 
     @ParameterizedTest
@@ -269,6 +284,6 @@ class RehydratedAppealReferenceNumberHandlerTest {
             .hasMessage("appealReferenceNumber is missing")
             .isExactlyInstanceOf(IllegalStateException.class);
 
-        verify(validator, never()).validate(null);
+        verify(validator, never()).validate(null, null);
     }
 }
