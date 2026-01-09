@@ -166,11 +166,12 @@ class EventTest {
         assertEquals("addStatutoryTimeframe24Weeks", Event.ADD_STATUTORY_TIMEFRAME_24_WEEKS.toString());
         assertEquals("removeStatutoryTimeframe24Weeks", Event.REMOVE_STATUTORY_TIMEFRAME_24_WEEKS.toString());
         assertEquals("forceDecidedState", Event.FORCE_DECIDED_STATE.toString());
+        assertEquals("forceFtpaDecidedState", Event.FORCE_FTPA_DECIDED_STATE.toString());
 
     }
 
     @Test
     void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(162, Event.values().length);
+        assertEquals(164, Event.values().length);
     }
 }

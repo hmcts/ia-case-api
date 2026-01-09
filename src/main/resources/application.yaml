@@ -597,6 +597,7 @@ security:
       - "forceDecidedState"
       - "forceFtpaDecidedState"
       - "turnOnNotificationsWATasks"
+      - "addStatutoryTimeframe24Weeks"
     ctsc:
       - "appellantInPersonManual"
       - "startAppeal"
@@ -734,6 +735,7 @@ security:
       - "editDocuments"
       - "forceDecidedState"
       - "forceFtpaDecidedState"
+      - "addStatutoryTimeframe24Weeks"
     national-business-centre:
       - "appellantInPersonManual"
       - "startAppeal"
@@ -801,6 +803,7 @@ security:
       - "editDocuments"
       - "forceDecidedState"
       - "forceFtpaDecidedState"
+      - "addStatutoryTimeframe24Weeks"
     challenged-access-ctsc:
       - "appellantInPersonManual"
       - "startAppeal"
@@ -868,6 +871,7 @@ security:
       - "editDocuments"
       - "forceDecidedState"
       - "forceFtpaDecidedState"
+      - "addStatutoryTimeframe24Weeks"
     challenged-access-admin:
       - "appellantInPersonManual"
       - "startAppeal"
@@ -936,6 +940,7 @@ security:
       - "editDocuments"
       - "forceDecidedState"
       - "forceFtpaDecidedState"
+      - "addStatutoryTimeframe24Weeks"
     caseworker-ia-homeofficeapc:
       - "uploadHomeOfficeBundle"
       - "uploadAdditionalEvidenceHomeOffice"
@@ -1332,6 +1337,9 @@ security:
       - "hearingCancelled"
       - "forceDecidedState"
       - "forceFtpaDecidedState"
+      - "rollbackMigration"
+      - "addStatutoryTimeframe24Weeks"
+      - "removeStatutoryTimeframe24Weeks"
     caseworker-ia-internal:
       - "revokeCaseAccess"
       - "removeCaseManagerBulk"
