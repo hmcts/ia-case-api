@@ -37,8 +37,8 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_NOTES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STATUTORY_TIMEFRAME_24_WEEKS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STATUTORY_TIMEFRAME_24_WEEKS_REASON;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STATUTORY_TIMEFRAME_24_WEEKS_HOME_OFFICE_CASE_TYPE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STATUTORY_TIMEFRAME_24_WEEKS_CURRENT_STATUS_AUTO_GENERATED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STF_24W_HOME_OFFICE_COHORT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STF_24W_CURRENT_STATUS_AUTO_GENERATED;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -104,7 +104,7 @@ class UpdateStatutoryTimeframe24WeeksServiceTest {
 
         when(asylumCase.read(STATUTORY_TIMEFRAME_24_WEEKS)).thenReturn(Optional.of(existingStatutoryTimeframe24Weeks));
         when(asylumCase.read(STATUTORY_TIMEFRAME_24_WEEKS_REASON, String.class)).thenReturn(Optional.of(newStatutoryTimeframe24WeeksReason));
-        when(asylumCase.read(STATUTORY_TIMEFRAME_24_WEEKS_HOME_OFFICE_CASE_TYPE, String.class)).thenReturn(Optional.of(homeOfficeCaseType));
+        when(asylumCase.read(STF_24W_HOME_OFFICE_COHORT, String.class)).thenReturn(Optional.of(homeOfficeCaseType));
 
         YesOrNo newStatus = YesOrNo.YES;
         updateStatutoryTimeframe24WeeksService.updateAsylumCase(asylumCase, newStatus);
@@ -135,7 +135,7 @@ class UpdateStatutoryTimeframe24WeeksServiceTest {
         verify(asylumCase, times(1)).write(STATUTORY_TIMEFRAME_24_WEEKS, new StatutoryTimeframe24Weeks(newStatus, homeOfficeCaseType, allAppendedStatutoryTimeframe24Weeks));
         verify(asylumCase, times(1)).clear(STATUTORY_TIMEFRAME_24_WEEKS_REASON);
         verify(bannerTextService, times(1)).updateBannerText(asylumCaseCaptor.capture(), statutoryTimeframe24WeeksCaptor.capture());
-        verify(asylumCase, times(1)).write(STATUTORY_TIMEFRAME_24_WEEKS_CURRENT_STATUS_AUTO_GENERATED, newStatus);
+        verify(asylumCase, times(1)).write(STF_24W_CURRENT_STATUS_AUTO_GENERATED, newStatus);
 
     }
 
@@ -148,7 +148,7 @@ class UpdateStatutoryTimeframe24WeeksServiceTest {
 
         when(asylumCase.read(STATUTORY_TIMEFRAME_24_WEEKS)).thenReturn(Optional.of(existingStatutoryTimeframe24Weeks));
         when(asylumCase.read(STATUTORY_TIMEFRAME_24_WEEKS_REASON, String.class)).thenReturn(Optional.of(newStatutoryTimeframe24WeeksReason));
-        when(asylumCase.read(STATUTORY_TIMEFRAME_24_WEEKS_HOME_OFFICE_CASE_TYPE, String.class)).thenReturn(Optional.of(homeOfficeCaseType));
+        when(asylumCase.read(STF_24W_HOME_OFFICE_COHORT, String.class)).thenReturn(Optional.of(homeOfficeCaseType));
 
         YesOrNo newStatus = YesOrNo.NO;
         updateStatutoryTimeframe24WeeksService.updateAsylumCase(asylumCase, newStatus);
@@ -194,7 +194,7 @@ class UpdateStatutoryTimeframe24WeeksServiceTest {
     void should_write_statutory_timeframe_when_reason_does_not_contain_home_office_initial_determination() {
         when(asylumCase.read(STATUTORY_TIMEFRAME_24_WEEKS_REASON, String.class))
             .thenReturn(Optional.of("Some other reason"));
-        when(asylumCase.read(STATUTORY_TIMEFRAME_24_WEEKS_HOME_OFFICE_CASE_TYPE, String.class))
+        when(asylumCase.read(STF_24W_HOME_OFFICE_COHORT, String.class))
             .thenReturn(Optional.of(homeOfficeCaseType));
         when(asylumCase.read(STATUTORY_TIMEFRAME_24_WEEKS)).thenReturn(Optional.empty());
 
@@ -212,7 +212,7 @@ class UpdateStatutoryTimeframe24WeeksServiceTest {
             .thenReturn(Optional.of(new StatutoryTimeframe24Weeks(YesOrNo.NO, homeOfficeCaseType, emptyList())));
         when(asylumCase.read(STATUTORY_TIMEFRAME_24_WEEKS_REASON, String.class))
             .thenReturn(Optional.of("Home Office Initial Determination"));
-        when(asylumCase.read(STATUTORY_TIMEFRAME_24_WEEKS_HOME_OFFICE_CASE_TYPE, String.class))
+        when(asylumCase.read(STF_24W_HOME_OFFICE_COHORT, String.class))
             .thenReturn(Optional.of(homeOfficeCaseType));
 
         updateStatutoryTimeframe24WeeksService.updateAsylumCase(asylumCase, YesOrNo.YES);
