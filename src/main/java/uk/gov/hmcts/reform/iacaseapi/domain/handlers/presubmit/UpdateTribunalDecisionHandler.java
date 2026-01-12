@@ -162,7 +162,7 @@ public class UpdateTribunalDecisionHandler implements PreSubmitCallbackHandler<A
 
             asylumCase.write(UPDATE_TRIBUNAL_DECISION_DATE_RULE_32, dateProvider.now().toString());
             asylumCase.write(REASON_REHEARING_RULE_32, "Set aside and to be reheard under rule 32");
-            asylumCase.write(IS_DECISION_RULE32_CHANGED, YesOrNo.YES);
+            //asylumCase.write(IS_DECISION_RULE32_CHANGED, YesOrNo.YES);
             setFtpaReheardCaseFlag(asylumCase);
         }
 
