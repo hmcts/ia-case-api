@@ -36,7 +36,7 @@ class AutomaticDirectionHandlerTest extends SpringBootIntegrationTest implements
         addCaseWorkerUserDetailsStub(server);
         addTimedEventServiceStub(server);
         addNotificationsApiTransformerStub(server);
-        addRoleAssignmentActorStub(server);
+        addRoleAssignmentQueryStub(server);
         addDocumentApiTransformerStub(server);
 
         PreSubmitCallbackResponseForTest response = iaCaseApiClient.aboutToSubmit(
