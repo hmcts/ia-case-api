@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentGenerator;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isNotificationTurnedOff;
 
 @Component
 public class GenerateUpdatedHearingBundlePreparer implements PreSubmitCallbackHandler<AsylumCase> {
@@ -31,6 +32,13 @@ public class GenerateUpdatedHearingBundlePreparer implements PreSubmitCallbackHa
 
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
+
+        AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
+
+        if (isNotificationTurnedOff(asylumCase)) {
+            return false;
+        }
+
         return (callbackStage == PreSubmitCallbackStage.ABOUT_TO_START)
                && callback.getEvent() == Event.GENERATE_UPDATED_HEARING_BUNDLE;
     }

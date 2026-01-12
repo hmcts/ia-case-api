@@ -32,8 +32,7 @@ class EventTest {
         assertEquals("uploadAdditionalEvidence", Event.UPLOAD_ADDITIONAL_EVIDENCE.toString());
         assertEquals("listCase", Event.LIST_CASE.toString());
         assertEquals("createCaseSummary", Event.CREATE_CASE_SUMMARY.toString());
-        assertEquals("revertStateToAwaitingRespondentEvidence",
-            Event.REVERT_STATE_TO_AWAITING_RESPONDENT_EVIDENCE.toString());
+        assertEquals("revertStateToAwaitingRespondentEvidence",Event.REVERT_STATE_TO_AWAITING_RESPONDENT_EVIDENCE.toString());
         assertEquals("generateHearingBundle", Event.GENERATE_HEARING_BUNDLE.toString());
         assertEquals("asyncStitchingComplete", Event.ASYNC_STITCHING_COMPLETE.toString());
         assertEquals("customiseHearingBundle", Event.CUSTOMISE_HEARING_BUNDLE.toString());
@@ -78,8 +77,7 @@ class EventTest {
         assertEquals("requestCmaRequirements", Event.REQUEST_CMA_REQUIREMENTS.toString());
         assertEquals("reviewCmaRequirements", Event.REVIEW_CMA_REQUIREMENTS.toString());
         assertEquals("forceCaseToCaseUnderReview", Event.FORCE_CASE_TO_CASE_UNDER_REVIEW.toString());
-        assertEquals("forceCaseToSubmitHearingRequirements",
-            Event.FORCE_CASE_TO_SUBMIT_HEARING_REQUIREMENTS.toString());
+        assertEquals("forceCaseToSubmitHearingRequirements",Event.FORCE_CASE_TO_SUBMIT_HEARING_REQUIREMENTS.toString());
         assertEquals("changeHearingCentre", Event.CHANGE_HEARING_CENTRE.toString());
         assertEquals("updateLegalRepDetails", Event.UPDATE_LEGAL_REPRESENTATIVES_DETAILS.toString());
         assertEquals("linkAppeal", Event.LINK_APPEAL.toString());
@@ -166,11 +164,11 @@ class EventTest {
         assertEquals("addStatutoryTimeframe24Weeks", Event.ADD_STATUTORY_TIMEFRAME_24_WEEKS.toString());
         assertEquals("removeStatutoryTimeframe24Weeks", Event.REMOVE_STATUTORY_TIMEFRAME_24_WEEKS.toString());
         assertEquals("forceDecidedState", Event.FORCE_DECIDED_STATE.toString());
-
+        assertEquals("forceFtpaDecidedState", Event.FORCE_FTPA_DECIDED_STATE.toString());
     }
 
     @Test
     void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(162, Event.values().length);
+        assertEquals(163, Event.values().length);
     }
 }

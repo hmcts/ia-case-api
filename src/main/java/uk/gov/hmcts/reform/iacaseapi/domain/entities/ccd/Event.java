@@ -167,6 +167,7 @@ public enum Event {
     TURN_ON_NOTIFICATIONS_WA_TASKS("turnOnNotificationsWATasks"),
     FORCE_DECIDED_STATE("forceDecidedState"),
     FORCE_FTPA_DECIDED_STATE("forceFtpaDecidedState"),
+    ROLLBACK_MIGRATION("rollbackMigration"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");

@@ -17,7 +17,6 @@ import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.specification.RequestSpecification;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
-import org.junit.jupiter.api.Disabled;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -41,7 +40,6 @@ import uk.gov.hmcts.reform.iacaseapi.util.MapValueExpander;
 @SpringBootTest()
 @ActiveProfiles("functional")
 @DirtiesContext
-@Disabled
 public class CcdCaseCreationTest {
 
     @Value("classpath:templates/start-appeal-aip.json")
@@ -74,8 +72,8 @@ public class CcdCaseCreationTest {
     protected String legalRepUserId;
     protected String citizenUserId;
 
-    private static final String jurisdiction = "IA";
-    private static final String caseType = "Asylum";
+    protected static final String jurisdiction = "IA";
+    protected static final String caseType = "Asylum";
     protected static final String AUTHORIZATION = "Authorization";
     protected static final String SERVICE_AUTHORIZATION = "ServiceAuthorization";
 
@@ -313,6 +311,8 @@ public class CcdCaseCreationTest {
             return caseData;
         }
     }
+
+
 
     @NotNull
     protected Case createAndGetCase(boolean isAipJourney) {
