@@ -126,7 +126,7 @@ class UpdateTribunalDecisionHandlerTest {
         assertEquals(asylumCase, callbackResponse.getData());
 
         verify(asylumCase, times(1)).write(UPDATED_APPEAL_DECISION, "Dismissed");
-        verify(asylumCase, times(1)).write(IS_DECISION_RULE31_CHANGED, NO);
+        verify(asylumCase, times(1)).write(IS_DECISION_RULE31_CHANGED, YES);
     }
 
     @Test
