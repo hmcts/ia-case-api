@@ -79,5 +79,99 @@ class CcdElasticSearchQueryBuilderTest {
         assertThat(query.getSource())
             .contains("reference", "data.appealReferenceNumber", "id");
     }
+
+    @Test
+    void should_build_query_with_must_not_clause_when_excluding_case() {
+        String appealReferenceNumber = "PA/12345/2023";
+        String ccdRefNumber = "1234 5678 9012 3456";
+
+        CcdSearchQuery query = queryBuilder.buildAppealReferenceNumberQuery(appealReferenceNumber, ccdRefNumber);
+
+        assertNotNull(query);
+
+        @SuppressWarnings("unchecked")
+        Map<String, Object> bool = (Map<String, Object>) query.getQuery().get("bool");
+
+        // Should have both must and must_not clauses
+        assertThat(bool).containsKey("must");
+        assertThat(bool).containsKey("must_not");
+
+        @SuppressWarnings("unchecked")
+        List<Map<String, Object>> mustNot = (List<Map<String, Object>>) bool.get("must_not");
+        assertEquals(1, mustNot.size());
+
+        // Verify the must_not clause is a term query for reference
+        Map<String, Object> mustNotClause = mustNot.get(0);
+        assertThat(mustNotClause).containsKey("term");
+
+        @SuppressWarnings("unchecked")
+        Map<String, Object> termClause = (Map<String, Object>) mustNotClause.get("term");
+        assertThat(termClause).containsKey("reference");
+
+        // Should be normalized (spaces removed)
+        assertEquals(1234567890123456L, termClause.get("reference"));
+    }
+
+    @Test
+    void should_not_include_must_not_clause_when_ccd_ref_number_is_null() {
+        String appealReferenceNumber = "PA/12345/2023";
+
+        CcdSearchQuery query = queryBuilder.buildAppealReferenceNumberQuery(appealReferenceNumber, null);
+
+        @SuppressWarnings("unchecked")
+        Map<String, Object> bool = (Map<String, Object>) query.getQuery().get("bool");
+
+        // Should only have must clause, no must_not
+        assertThat(bool).containsKey("must");
+        assertThat(bool).doesNotContainKey("must_not");
+    }
+
+    @Test
+    void should_not_include_must_not_clause_when_ccd_ref_number_is_empty() {
+        String appealReferenceNumber = "PA/12345/2023";
+
+        CcdSearchQuery query = queryBuilder.buildAppealReferenceNumberQuery(appealReferenceNumber, "");
+
+        @SuppressWarnings("unchecked")
+        Map<String, Object> bool = (Map<String, Object>) query.getQuery().get("bool");
+
+        // Should only have must clause, no must_not
+        assertThat(bool).containsKey("must");
+        assertThat(bool).doesNotContainKey("must_not");
+    }
+
+    @Test
+    void should_handle_ccd_ref_without_spaces() {
+        String appealReferenceNumber = "PA/12345/2023";
+        String ccdRefNumber = "1234567890123456"; // No spaces
+
+        CcdSearchQuery query = queryBuilder.buildAppealReferenceNumberQuery(appealReferenceNumber, ccdRefNumber);
+
+        @SuppressWarnings("unchecked")
+        Map<String, Object> bool = (Map<String, Object>) query.getQuery().get("bool");
+
+        @SuppressWarnings("unchecked")
+        List<Map<String, Object>> mustNot = (List<Map<String, Object>>) bool.get("must_not");
+
+        @SuppressWarnings("unchecked")
+        Map<String, Object> termClause = (Map<String, Object>) mustNot.get(0).get("term");
+
+        assertEquals(1234567890123456L, termClause.get("reference"));
+    }
+
+    @Test
+    void should_not_include_must_not_clause_when_ccd_ref_is_invalid() {
+        String appealReferenceNumber = "PA/12345/2023";
+        String invalidCcdRef = "not-a-number";
+
+        CcdSearchQuery query = queryBuilder.buildAppealReferenceNumberQuery(appealReferenceNumber, invalidCcdRef);
+
+        @SuppressWarnings("unchecked")
+        Map<String, Object> bool = (Map<String, Object>) query.getQuery().get("bool");
+
+        // Should gracefully handle invalid number and not include must_not
+        assertThat(bool).containsKey("must");
+        assertThat(bool).doesNotContainKey("must_not");
+    }
 }
 
