@@ -20,7 +20,7 @@ public class CcdCase {
     @JsonProperty("reference")
     private Long reference;
 
-    @JsonProperty("data")
+    @JsonProperty("case_data")
     private Map<String, Object> data;
 
     public CcdCase() {

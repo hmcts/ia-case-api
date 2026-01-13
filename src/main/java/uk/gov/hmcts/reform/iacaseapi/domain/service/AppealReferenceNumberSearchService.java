@@ -33,19 +33,40 @@ public class AppealReferenceNumberSearchService {
      * @return true if the reference number exists, false otherwise
      */
     public boolean appealReferenceNumberExists(String appealReferenceNumber) {
+        return appealReferenceNumberExists(appealReferenceNumber, null);
+    }
+
+    /**
+     * Checks if an appeal reference number already exists in CCD,
+     * optionally excluding the current case when editing.
+     *
+     * <p>The exclusion is handled at the Elasticsearch query level for better performance.
+     * This prevents false positive duplicate detection when a user edits an appeal
+     * without changing the appeal reference number.
+     *
+     * @param appealReferenceNumber The appeal reference number to check
+     * @param ccdRefNumber The CCD reference number of the current case to exclude (can be null)
+     * @return true if the reference number exists in another case, false otherwise
+     */
+    public boolean appealReferenceNumberExists(String appealReferenceNumber, String ccdRefNumber) {
         if (appealReferenceNumber == null || appealReferenceNumber.isEmpty()) {
             log.warn("Attempted to search for null or empty appeal reference number");
             return false;
         }
 
         try {
-            log.info("Searching for existing cases with appeal reference number: {}", appealReferenceNumber);
-            
-            CcdSearchQuery query = queryBuilder.buildAppealReferenceNumberQuery(appealReferenceNumber);
+            if (ccdRefNumber != null) {
+                log.info("Searching for existing cases with appeal reference number: {} (excluding current case: {})",
+                    appealReferenceNumber, ccdRefNumber);
+            } else {
+                log.info("Searching for existing cases with appeal reference number: {}", appealReferenceNumber);
+            }
+
+            CcdSearchQuery query = queryBuilder.buildAppealReferenceNumberQuery(appealReferenceNumber, ccdRefNumber);
             CcdSearchResult result = searchRepository.searchCases(query);
 
-            log.info("CCD search result for appeal reference number {}: total={}, cases={}", 
-                appealReferenceNumber, 
+            log.info("CCD search result for appeal reference number {}: total={}, cases={}",
+                appealReferenceNumber,
                 result != null ? result.getTotal() : "null",
                 result != null && result.getCases() != null ? result.getCases().size() : "null");
 
@@ -55,9 +76,9 @@ public class AppealReferenceNumberSearchService {
             }
 
             boolean exists = result.getTotal() > 0;
-            
+
             if (exists) {
-                log.info("Found {} existing case(s) with appeal reference number: {}", 
+                log.info("Found {} existing case(s) with appeal reference number: {}",
                     result.getTotal(), appealReferenceNumber);
             } else {
                 log.info("No existing cases found with appeal reference number: {}", appealReferenceNumber);

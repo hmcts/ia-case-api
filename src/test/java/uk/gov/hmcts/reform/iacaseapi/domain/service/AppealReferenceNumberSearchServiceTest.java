@@ -20,6 +20,9 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.CcdSearchR
 @ExtendWith(MockitoExtension.class)
 class AppealReferenceNumberSearchServiceTest {
 
+    private static final String CCD_REF_NUMBER = "1234567890123456";
+    private static final String APPEAL_REF_NUMBER = "PA/12345/2023";
+
     @Mock
     private CcdElasticSearchQueryBuilder queryBuilder;
     @Mock
@@ -35,31 +38,59 @@ class AppealReferenceNumberSearchServiceTest {
     }
 
     @Test
-    void should_return_true_when_appeal_reference_number_exists() {
-        String appealReferenceNumber = "PA/12345/2023";
+    void should_return_true_when_appeal_reference_exists() {
         CcdSearchResult result = new CcdSearchResult(1, Collections.emptyList());
 
-        when(queryBuilder.buildAppealReferenceNumberQuery(appealReferenceNumber)).thenReturn(query);
+        when(queryBuilder.buildAppealReferenceNumberQuery(APPEAL_REF_NUMBER, null)).thenReturn(query);
         when(searchRepository.searchCases(query)).thenReturn(result);
 
-        boolean exists = service.appealReferenceNumberExists(appealReferenceNumber);
+        boolean exists = service.appealReferenceNumberExists(APPEAL_REF_NUMBER);
 
         assertTrue(exists);
-        verify(queryBuilder).buildAppealReferenceNumberQuery(appealReferenceNumber);
+        verify(queryBuilder).buildAppealReferenceNumberQuery(APPEAL_REF_NUMBER, null);
+        verify(searchRepository).searchCases(query);
+    }
+
+    @Test
+    void should_return_true_when_appeal_reference_exists_excluding_current_case() {
+        // The query builder will handle excluding the current case via must_not clause
+        CcdSearchResult result = new CcdSearchResult(1, Collections.emptyList());
+
+        when(queryBuilder.buildAppealReferenceNumberQuery(APPEAL_REF_NUMBER, CCD_REF_NUMBER)).thenReturn(query);
+        when(searchRepository.searchCases(query)).thenReturn(result);
+
+        boolean exists = service.appealReferenceNumberExists(APPEAL_REF_NUMBER, CCD_REF_NUMBER);
+
+        assertTrue(exists);
+        verify(queryBuilder).buildAppealReferenceNumberQuery(APPEAL_REF_NUMBER, CCD_REF_NUMBER);
         verify(searchRepository).searchCases(query);
     }
 
     @Test
     void should_return_false_when_appeal_reference_number_does_not_exist() {
-        String appealReferenceNumber = "PA/12345/2023";
         CcdSearchResult result = new CcdSearchResult(0, Collections.emptyList());
 
-        when(queryBuilder.buildAppealReferenceNumberQuery(appealReferenceNumber)).thenReturn(query);
+        when(queryBuilder.buildAppealReferenceNumberQuery(APPEAL_REF_NUMBER, null)).thenReturn(query);
         when(searchRepository.searchCases(query)).thenReturn(result);
 
-        boolean exists = service.appealReferenceNumberExists(appealReferenceNumber);
+        boolean exists = service.appealReferenceNumberExists(APPEAL_REF_NUMBER);
 
         assertFalse(exists);
+    }
+
+    @Test
+    void should_return_false_when_only_result_is_current_case() {
+        // When editing, if the only match is the current case, the query builder excludes it via must_not
+        // So the result will have total=0
+        CcdSearchResult result = new CcdSearchResult(0, Collections.emptyList());
+
+        when(queryBuilder.buildAppealReferenceNumberQuery(APPEAL_REF_NUMBER, CCD_REF_NUMBER)).thenReturn(query);
+        when(searchRepository.searchCases(query)).thenReturn(result);
+
+        boolean exists = service.appealReferenceNumberExists(APPEAL_REF_NUMBER, CCD_REF_NUMBER);
+
+        assertFalse(exists);
+        verify(queryBuilder).buildAppealReferenceNumberQuery(APPEAL_REF_NUMBER, CCD_REF_NUMBER);
     }
 
     @Test
@@ -78,39 +109,35 @@ class AppealReferenceNumberSearchServiceTest {
 
     @Test
     void should_return_false_when_search_result_is_null() {
-        String appealReferenceNumber = "PA/12345/2023";
-
-        when(queryBuilder.buildAppealReferenceNumberQuery(appealReferenceNumber)).thenReturn(query);
+        when(queryBuilder.buildAppealReferenceNumberQuery(APPEAL_REF_NUMBER, null)).thenReturn(query);
         when(searchRepository.searchCases(query)).thenReturn(null);
 
-        boolean exists = service.appealReferenceNumberExists(appealReferenceNumber);
+        boolean exists = service.appealReferenceNumberExists(APPEAL_REF_NUMBER);
 
         assertFalse(exists);
     }
 
     @Test
     void should_return_false_when_search_throws_exception() {
-        String appealReferenceNumber = "PA/12345/2023";
-
-        when(queryBuilder.buildAppealReferenceNumberQuery(appealReferenceNumber)).thenReturn(query);
+        when(queryBuilder.buildAppealReferenceNumberQuery(APPEAL_REF_NUMBER, null)).thenReturn(query);
         when(searchRepository.searchCases(any())).thenThrow(
             new CcdElasticSearchRepository.CcdSearchException("Search failed", new RuntimeException())
         );
 
-        boolean exists = service.appealReferenceNumberExists(appealReferenceNumber);
+        boolean exists = service.appealReferenceNumberExists(APPEAL_REF_NUMBER);
 
         assertFalse(exists);
     }
 
     @Test
     void should_return_true_when_multiple_cases_found() {
-        String appealReferenceNumber = "PA/12345/2023";
+        // Multiple cases means there's definitely a duplicate
         CcdSearchResult result = new CcdSearchResult(3, Collections.emptyList());
 
-        when(queryBuilder.buildAppealReferenceNumberQuery(appealReferenceNumber)).thenReturn(query);
+        when(queryBuilder.buildAppealReferenceNumberQuery(APPEAL_REF_NUMBER, null)).thenReturn(query);
         when(searchRepository.searchCases(query)).thenReturn(result);
 
-        boolean exists = service.appealReferenceNumberExists(appealReferenceNumber);
+        boolean exists = service.appealReferenceNumberExists(APPEAL_REF_NUMBER);
 
         assertTrue(exists);
     }

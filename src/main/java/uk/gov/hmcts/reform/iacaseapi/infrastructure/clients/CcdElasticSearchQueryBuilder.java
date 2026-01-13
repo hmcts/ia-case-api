@@ -23,13 +23,48 @@ public class CcdElasticSearchQueryBuilder {
      * @return CcdSearchQuery object containing the Elasticsearch query
      */
     public CcdSearchQuery buildAppealReferenceNumberQuery(String appealReferenceNumber) {
+        return buildAppealReferenceNumberQuery(appealReferenceNumber, null);
+    }
+
+    /**
+     * Builds an Elasticsearch query to search for cases by appeal reference number,
+     * optionally excluding a specific case by its CCD reference number.
+     *
+     * <p>This is useful when editing an existing appeal to avoid false positive duplicates.
+     * When a user edits an appeal without changing the reference number, we need to exclude
+     * the current case from the duplicate check to avoid incorrectly flagging it as a duplicate.
+     *
+     * <p>The exclusion is implemented using an Elasticsearch must_not clause with a term query
+     * on the case reference field. The CCD reference number is normalized by removing spaces
+     * before comparison (e.g., "1234 5678 9012 3456" becomes "1234567890123456").
+     *
+     * @param appealReferenceNumber The appeal reference number to search for
+     * @param ccdRefNumber The CCD reference number of the current case to exclude (can be null)
+     * @return CcdSearchQuery object containing the Elasticsearch query
+     */
+    public CcdSearchQuery buildAppealReferenceNumberQuery(String appealReferenceNumber, String ccdRefNumber) {
         Map<String, Object> query = new HashMap<>();
         Map<String, Object> bool = new HashMap<>();
+
         List<Map<String, Object>> must = List.of(
             createMatchPhraseQuery("data.appealReferenceNumber", appealReferenceNumber)
         );
-
         bool.put("must", must);
+
+        // Add must_not clause to exclude current case when editing
+        if (ccdRefNumber != null && !ccdRefNumber.isEmpty()) {
+            String ccdRefWithoutSpaces = ccdRefNumber.replaceAll("\\s", "");
+            try {
+                Long caseReference = Long.parseLong(ccdRefWithoutSpaces);
+                Map<String, Object> mustNot = new HashMap<>();
+                mustNot.put("term", Map.of("reference", caseReference));
+                bool.put("must_not", List.of(mustNot));
+            } catch (NumberFormatException e) {
+                // If the CCD reference is not a valid number, skip the exclusion.
+                // This is a defensive check; in normal operation the CCD reference should always be numeric.
+            }
+        }
+
         query.put("bool", bool);
 
         return new CcdSearchQuery(

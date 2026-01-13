@@ -3,11 +3,9 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_REFERENCE_NUMBER;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CCD_REFERENCE_NUMBER_FOR_DISPLAY;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isRehydratedAppeal;
 
 import java.util.List;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -16,21 +14,17 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.AppealReferenceNumberValidator;
 
-@Service
-@Slf4j
-public class RehydratedAppealReferenceNumberHandler implements PreSubmitCallbackHandler<AsylumCase> {
+@Component
+public class EditAppealRefNumberValidationMidEvent implements PreSubmitCallbackHandler<AsylumCase> {
 
-    private static final List<Event> APPLICABLE_EVENTS = List.of(
-        Event.START_APPEAL,
-        Event.EDIT_APPEAL);
+    private static final String ARIA_APPEAL_REFERENCE_PAGE_ID = "appealReferenceNumber";
 
-    private final AppealReferenceNumberValidator validator;
+    private final AppealReferenceNumberValidator appealReferenceNumberValidator;
 
-    public RehydratedAppealReferenceNumberHandler(AppealReferenceNumberValidator validator) {
-        this.validator = validator;
+    public EditAppealRefNumberValidationMidEvent(AppealReferenceNumberValidator appealReferenceNumberValidator) {
+        this.appealReferenceNumberValidator = appealReferenceNumberValidator;
     }
 
-    @Override
     public boolean canHandle(
             PreSubmitCallbackStage callbackStage,
             Callback<AsylumCase> callback
@@ -38,35 +32,34 @@ public class RehydratedAppealReferenceNumberHandler implements PreSubmitCallback
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
-        return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT &&
-            APPLICABLE_EVENTS.contains(callback.getEvent()) &&
-            isRehydratedAppeal(callback.getCaseDetails().getCaseData());
+        return callbackStage == PreSubmitCallbackStage.MID_EVENT
+            && callback.getEvent() == Event.EDIT_APPEAL
+            && callback.getPageId().equals(ARIA_APPEAL_REFERENCE_PAGE_ID);
     }
 
-    @Override
     public PreSubmitCallbackResponse<AsylumCase> handle(
             PreSubmitCallbackStage callbackStage,
-            Callback<AsylumCase> callback) {
-
+            Callback<AsylumCase> callback
+    ) {
         if (!canHandle(callbackStage, callback)) {
             throw new IllegalStateException("Cannot handle callback");
         }
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
+        PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
+
         String appealReferenceNumber = asylumCase
-            .read(APPEAL_REFERENCE_NUMBER, String.class)
-            .orElseThrow(() -> new IllegalStateException("appealReferenceNumber is missing"));
+                .read(APPEAL_REFERENCE_NUMBER, String.class)
+                .orElseThrow(() -> new IllegalStateException("appealReferenceNumber is missing"));
 
         String ccdRefNumber = asylumCase.read(CCD_REFERENCE_NUMBER_FOR_DISPLAY, String.class)
             .orElseThrow(() -> new IllegalStateException("ccdReferenceNumber is missing"));
 
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse = new PreSubmitCallbackResponse<>(asylumCase);
+        List<String> validationErrors = appealReferenceNumberValidator.validate(appealReferenceNumber, ccdRefNumber);
+        validationErrors.forEach(response::addError);
 
-        List<String> validationErrors = validator.validate(appealReferenceNumber, ccdRefNumber);
-        validationErrors.forEach(callbackResponse::addError);
-
-        return callbackResponse;
+        return response;
     }
 
 }
