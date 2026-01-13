@@ -2716,8 +2716,6 @@ public enum AsylumCaseFieldDefinition {
 
     IS_DECISION_RULE31_CHANGED(
             "isDecisionRule31Changed", new TypeReference<YesOrNo>(){}),
-    IS_DECISION_RULE32_CHANGED(
-            "isDecisionRule32Changed", new TypeReference<YesOrNo>(){}),
     APPEAL_NOT_SUBMITTED_REASON_DOCUMENTS(
         "appealNotSubmittedReasonDocuments", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
 

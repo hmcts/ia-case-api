@@ -71,8 +71,7 @@ public class UpdateTribunalDecisionHandler implements PreSubmitCallbackHandler<A
             DynamicList updateTribunalDecisionValue = asylumCase.read(TYPES_OF_UPDATE_TRIBUNAL_DECISION, DynamicList.class)
                 .orElseThrow(() -> new IllegalStateException("typesOfUpdateTribunalDecision is not present"));
 
-            asylumCase.write(IS_DECISION_RULE31_CHANGED,
-                    updateTribunalDecisionValue.getValue().getLabel().contains("Yes") ? YesOrNo.YES : YesOrNo.NO);
+            asylumCase.write(IS_DECISION_RULE31_CHANGED, YesOrNo.YES);
             asylumCase.write(UPDATED_APPEAL_DECISION, StringUtils.capitalize(updateTribunalDecisionValue.getValue().getCode()));
 
             final DecisionAndReasons newDecisionAndReasons =
@@ -162,7 +161,6 @@ public class UpdateTribunalDecisionHandler implements PreSubmitCallbackHandler<A
 
             asylumCase.write(UPDATE_TRIBUNAL_DECISION_DATE_RULE_32, dateProvider.now().toString());
             asylumCase.write(REASON_REHEARING_RULE_32, "Set aside and to be reheard under rule 32");
-            //asylumCase.write(IS_DECISION_RULE32_CHANGED, YesOrNo.YES);
             setFtpaReheardCaseFlag(asylumCase);
         }
 
