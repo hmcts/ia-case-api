@@ -1,0 +1,27 @@
+{
+  "total": 1,
+  "cases": [
+    {
+      "id": 1619513189387098,
+      "jurisdiction": "IA",
+      "state": "ftpaDecided",
+      "version": null,
+      "case_type_id": "Asylum",
+      "created_date": "2021-04-27T08:46:29.308",
+      "last_modified": "2021-04-27T08:59:57.058",
+      "last_state_modified_date": "2021-04-27T08:55:18.528",
+      "security_classification": "PUBLIC",
+      "case_data": {
+        "appealReferenceNumber": "PA/12345/2024",
+        "appellantGivenNames": "José",
+        "appellantFamilyName": "Johnson"
+        }
+      }
+  ],
+  "case_types_results": [
+    {
+      "total": 1,
+      "case_type_id": "Asylum"
+    }
+  ]
+}

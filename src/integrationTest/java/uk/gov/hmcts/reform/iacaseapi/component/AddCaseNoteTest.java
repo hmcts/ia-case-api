@@ -29,7 +29,7 @@ class AddCaseNoteTest extends SpringBootIntegrationTest implements WithUserDetai
     void adds_a_case_note() {
         addCaseWorkerUserDetailsStub(server);
         addServiceAuthStub(server);
-        addRoleAssignmentActorStub(server);
+        addRoleAssignmentQueryStub(server);
         PreSubmitCallbackResponseForTest response = iaCaseApiClient.aboutToSubmit(callback()
             .event(ADD_CASE_NOTE)
             .caseDetails(someCaseDetailsWith()
