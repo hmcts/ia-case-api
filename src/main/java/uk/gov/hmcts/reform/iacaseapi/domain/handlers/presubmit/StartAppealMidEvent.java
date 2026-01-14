@@ -27,6 +27,7 @@ public class StartAppealMidEvent implements PreSubmitCallbackHandler<AsylumCase>
     private static final String SUITABILITY_ATTENDANCE_PAGE_ID = "suitabilityAppellantAttendance";
     private static final String UPPER_TRIBUNAL_REFERENCE_NUMBER_PAGE_ID = "utReferenceNumber";
     private static final String APPELLANTS_ADDRESS_PAGE_ID = "appellantAddress";
+    private static final String INTERNAL_APPELLANTS_CONTACT_DETAILS = "startAppealinternalContactDetails";
     protected static final String APPELLANTS_ADDRESS_ADMIN_J_PAGE_ID = "appellantAddressAdminJ";
     private static final Pattern UPPER_TRIBUNAL_REFERENCE_NUMBER_PATTERN = Pattern.compile("^UI-[0-9]{4}-[0-9]{6}$");
 
@@ -110,6 +111,26 @@ public class StartAppealMidEvent implements PreSubmitCallbackHandler<AsylumCase>
             String detentionFacilityValue = asylumCase.read(AsylumCaseFieldDefinition.DETENTION_FACILITY, String.class).orElse("");
             if (isAda && !detentionFacilityValue.equals("immigrationRemovalCentre")) {
                 response.addError("You cannot update the detention location to a " +  detentionFacilityValue + " because this is an accelerated detained appeal.");
+            }
+        } else if (callback.getPageId().equals(INTERNAL_APPELLANTS_CONTACT_DETAILS)) {
+            Optional<String> email = asylumCase.read(EMAIL, String.class);
+            Optional<String> emailRetype = asylumCase.read(EMAIL_RETYPE, String.class);
+
+            Optional<String> mobileNumber = asylumCase.read(MOBILE_NUMBER, String.class);
+            Optional<String> mobileNumberRetype = asylumCase.read(MOBILE_NUMBER_RETYPE, String.class);
+
+            boolean emailMismatch =
+                    email.isPresent()
+                            && emailRetype.isPresent()
+                            && !email.get().equals(emailRetype.get());
+
+            boolean mobileMismatch =
+                    mobileNumber.isPresent()
+                            && mobileNumberRetype.isPresent()
+                            && !mobileNumber.get().equals(mobileNumberRetype.get());
+
+            if (emailMismatch || mobileMismatch) {
+                response.addError("The details given do not match");
             }
         }
 
