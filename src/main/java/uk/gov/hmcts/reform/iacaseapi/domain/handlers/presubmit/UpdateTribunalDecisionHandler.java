@@ -134,7 +134,7 @@ public class UpdateTribunalDecisionHandler implements PreSubmitCallbackHandler<A
         } else if (isDecisionRule32(asylumCase)) {
 
             //if(asylumCase.read(IS_DECISION_RULE31_CHANGED, YesOrNo.class){
-                //asylumCase.clear(IS_DECISION_RULE31_CHANGED);
+            //    asylumCase.clear(IS_DECISION_RULE31_CHANGED);
             //}
             List<DocumentWithMetadata> ftpaSetAsideDocuments = new ArrayList<>();
 
