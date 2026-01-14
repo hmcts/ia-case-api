@@ -4,8 +4,6 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.List;
 import java.util.Optional;
-
-import com.launchdarkly.shaded.javax.annotation.Nullable;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
@@ -73,7 +71,6 @@ public class PreviousHearing {
         this.finalDecisionAndReasonsDocuments = finalDecisionAndReasonsDocuments;
     }
 
-    @Nullable
     public HearingCentre getListCaseHearingCentre() {
         return listCaseHearingCentre;
     }
