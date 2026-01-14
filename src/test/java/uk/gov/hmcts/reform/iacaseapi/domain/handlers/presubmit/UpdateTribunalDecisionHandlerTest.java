@@ -18,7 +18,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.UpdateTribunalRules.UNDER_RULE_31;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.UpdateTribunalRules.UNDER_RULE_32;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -127,7 +126,7 @@ class UpdateTribunalDecisionHandlerTest {
         assertEquals(asylumCase, callbackResponse.getData());
 
         verify(asylumCase, times(1)).write(UPDATED_APPEAL_DECISION, "Dismissed");
-        verify(asylumCase, times(1)).write(IS_DECISION_RULE31_CHANGED, YES);
+        verify(asylumCase, times(1)).write(IS_DECISION_RULE31_CHANGED, NO);
     }
 
     @Test
