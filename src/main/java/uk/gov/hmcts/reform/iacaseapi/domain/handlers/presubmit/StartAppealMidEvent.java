@@ -29,7 +29,7 @@ public class StartAppealMidEvent implements PreSubmitCallbackHandler<AsylumCase>
     private static final String SUITABILITY_ATTENDANCE_PAGE_ID = "suitabilityAppellantAttendance";
     private static final String UPPER_TRIBUNAL_REFERENCE_NUMBER_PAGE_ID = "utReferenceNumber";
     private static final String APPELLANTS_ADDRESS_PAGE_ID = "appellantAddress";
-    private static final String INTERNAL_APPELLANTS_CONTACT_DETAILS = "appellantContactPreference";
+    private static final String APPELLANTS_CONTACT_DETAILS_PAGE_ID = "appellantContactPreference";
     protected static final String APPELLANTS_ADDRESS_ADMIN_J_PAGE_ID = "appellantAddressAdminJ";
     private static final Pattern UPPER_TRIBUNAL_REFERENCE_NUMBER_PATTERN = Pattern.compile("^UI-[0-9]{4}-[0-9]{6}$");
 
@@ -115,7 +115,7 @@ public class StartAppealMidEvent implements PreSubmitCallbackHandler<AsylumCase>
                 response.addError("You cannot update the detention location to a " +  detentionFacilityValue + " because this is an accelerated detained appeal.");
             }
         }
-        if (callback.getPageId().equals(INTERNAL_APPELLANTS_CONTACT_DETAILS)) {
+        if (callback.getPageId().equals(APPELLANTS_CONTACT_DETAILS_PAGE_ID)) {
             Optional<String> email = asylumCase.read(EMAIL, String.class);
             Optional<String> emailRetype = asylumCase.read(EMAIL_RETYPE, String.class);
 

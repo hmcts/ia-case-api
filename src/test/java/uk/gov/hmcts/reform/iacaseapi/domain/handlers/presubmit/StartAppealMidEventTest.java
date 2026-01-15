@@ -118,6 +118,7 @@ class StartAppealMidEventTest {
         when(callback.getEvent()).thenReturn(Event.START_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getPageId()).thenReturn(HOME_OFFICE_REFERENCE_NUMBER_PAGE_ID);
     }
 
     @ParameterizedTest
