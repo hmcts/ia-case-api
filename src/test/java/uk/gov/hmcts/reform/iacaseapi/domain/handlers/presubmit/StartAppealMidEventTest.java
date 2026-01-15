@@ -353,10 +353,23 @@ class StartAppealMidEventTest {
         when(callback.getEvent()).thenReturn(Event.START_APPEAL);
         when(callback.getPageId()).thenReturn(INTERNAL_APPELLANTS_CONTACT_DETAILS);
 
+        when(asylumCase.read(EMAIL, String.class))
+                .thenReturn(Optional.of("email@test.com"));
+        when(asylumCase.read(EMAIL_RETYPE, String.class))
+                .thenReturn(Optional.of("wrongemail@test.com"));
+
+        when(asylumCase.read(MOBILE_NUMBER, String.class))
+                .thenReturn(Optional.of("07898999999"));
+        when(asylumCase.read(MOBILE_NUMBER_RETYPE, String.class))
+                .thenReturn(Optional.of("07898999991"));
+
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
                 startAppealMidEvent.handle(PreSubmitCallbackStage.MID_EVENT, callback);
 
         assertNotNull(callback);
+        assertEquals(asylumCase, callbackResponse.getData());
+        final Set<String> errors = callbackResponse.getErrors();
+        assertThat(errors).hasSize(1).containsOnly(contactDetailsDoNotMatch);
     }
 
     @ParameterizedTest
