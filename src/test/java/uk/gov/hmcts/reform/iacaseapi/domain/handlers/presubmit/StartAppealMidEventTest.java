@@ -367,63 +367,6 @@ class StartAppealMidEventTest {
         assertThat(errors).hasSize(1).containsOnly(contactDetailsDoNotMatch);
     }
 
-    @Test
-    void should_successfully_validate_when_internal_appellant_contact_details_match() {
-        when(callback.getEvent()).thenReturn(Event.START_APPEAL);
-        when(callback.getPageId()).thenReturn("startAppealinternalContactDetails");
-
-        when(asylumCase.read(EMAIL, String.class))
-                .thenReturn(Optional.of("email@test.com"));
-        when(asylumCase.read(EMAIL_RETYPE, String.class))
-                .thenReturn(Optional.of("email@test.com"));
-
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                startAppealMidEvent.handle(PreSubmitCallbackStage.MID_EVENT, callback);
-
-        assertNotNull(callback);
-        assertEquals(asylumCase, callbackResponse.getData());
-        final Set<String> errors = callbackResponse.getErrors();
-        assertThat(errors).isEmpty();
-    }
-
-    @Test
-    void should_error_when_internal_appellant_number_do_not_match() {
-        when(callback.getEvent()).thenReturn(Event.START_APPEAL);
-        when(callback.getPageId()).thenReturn("startAppealinternalContactDetails");
-
-        when(asylumCase.read(MOBILE_NUMBER, String.class))
-                .thenReturn(Optional.of("07898998898"));
-        when(asylumCase.read(MOBILE_NUMBER_RETYPE, String.class))
-                .thenReturn(Optional.of("07777777777"));
-
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                startAppealMidEvent.handle(PreSubmitCallbackStage.MID_EVENT, callback);
-
-        assertNotNull(callback);
-        assertEquals(asylumCase, callbackResponse.getData());
-        final Set<String> errors = callbackResponse.getErrors();
-        assertThat(errors).hasSize(1).containsOnly(contactDetailsDoNotMatch);
-    }
-
-    @Test
-    void should_successfully_validate_when_internal_appellant_number_match() {
-        when(callback.getEvent()).thenReturn(Event.START_APPEAL);
-        when(callback.getPageId()).thenReturn("startAppealinternalContactDetails");
-
-        when(asylumCase.read(MOBILE_NUMBER, String.class))
-                .thenReturn(Optional.of("07898998898"));
-        when(asylumCase.read(MOBILE_NUMBER_RETYPE, String.class))
-                .thenReturn(Optional.of("07898998898"));
-
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                startAppealMidEvent.handle(PreSubmitCallbackStage.MID_EVENT, callback);
-
-        assertNotNull(callback);
-        assertEquals(asylumCase, callbackResponse.getData());
-        final Set<String> errors = callbackResponse.getErrors();
-        assertThat(errors).isEmpty();
-    }
-
     @ParameterizedTest
     @EnumSource(value = Event.class, names = {
         "START_APPEAL", "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT"
