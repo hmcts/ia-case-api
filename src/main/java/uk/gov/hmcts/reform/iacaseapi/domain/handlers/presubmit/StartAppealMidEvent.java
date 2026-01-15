@@ -112,7 +112,7 @@ public class StartAppealMidEvent implements PreSubmitCallbackHandler<AsylumCase>
             if (isAda && !detentionFacilityValue.equals("immigrationRemovalCentre")) {
                 response.addError("You cannot update the detention location to a " +  detentionFacilityValue + " because this is an accelerated detained appeal.");
             }
-        } else if (callback.getPageId().equals(INTERNAL_APPELLANTS_CONTACT_DETAILS)) {
+        } else if (callback.getPageId().equals(INTERNAL_APPELLANTS_CONTACT_DETAILS) && callback.getEvent() == Event.START_APPEAL && isAdmin.equals(YesOrNo.YES)) {
             Optional<String> email = asylumCase.read(EMAIL, String.class);
             Optional<String> emailRetype = asylumCase.read(EMAIL_RETYPE, String.class);
 
