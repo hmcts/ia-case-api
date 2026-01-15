@@ -7,6 +7,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.HomeOffice
 import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.RequiredFieldMissingException;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
@@ -18,6 +19,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
+@Slf4j
 @Component
 public class StartAppealMidEvent implements PreSubmitCallbackHandler<AsylumCase> {
 
@@ -112,7 +114,8 @@ public class StartAppealMidEvent implements PreSubmitCallbackHandler<AsylumCase>
             if (isAda && !detentionFacilityValue.equals("immigrationRemovalCentre")) {
                 response.addError("You cannot update the detention location to a " +  detentionFacilityValue + " because this is an accelerated detained appeal.");
             }
-        } else if (callback.getPageId().equals(INTERNAL_APPELLANTS_CONTACT_DETAILS)) {
+        }
+        if (callback.getPageId().equals(INTERNAL_APPELLANTS_CONTACT_DETAILS)) {
             Optional<String> email = asylumCase.read(EMAIL, String.class);
             Optional<String> emailRetype = asylumCase.read(EMAIL_RETYPE, String.class);
 
