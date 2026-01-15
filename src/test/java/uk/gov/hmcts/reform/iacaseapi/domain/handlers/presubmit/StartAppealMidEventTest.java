@@ -51,6 +51,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.StartAppea
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.Set;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -71,6 +72,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
+@Slf4j
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
@@ -362,6 +364,8 @@ class StartAppealMidEventTest {
                 .thenReturn(Optional.of("07898999999"));
         when(asylumCase.read(MOBILE_NUMBER_RETYPE, String.class))
                 .thenReturn(Optional.of("07898999991"));
+
+        log.info(EMAIL);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
                 startAppealMidEvent.handle(PreSubmitCallbackStage.MID_EVENT, callback);
