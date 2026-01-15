@@ -51,6 +51,7 @@ class GenerateDocumentMidEventHandlerTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(LIST_CASE);
+        when(callback.getPageId()).thenReturn("listCaseRequirements");
 
         handler = new GenerateDocumentMidEventHandler(true, documentGenerator);
         handlerWithFeatureFlagDisabled = new GenerateDocumentMidEventHandler(false, documentGenerator);
@@ -100,11 +101,12 @@ class GenerateDocumentMidEventHandlerTest {
     void it_can_handle_callback() {
         for (Event event : Event.values()) {
             when(callback.getEvent()).thenReturn(event);
+            when(callback.getPageId()).thenReturn("listCaseRequirements");
 
             for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
                 boolean canHandle = handler.canHandle(callbackStage, callback);
 
-                if (event == LIST_CASE && callbackStage == PreSubmitCallbackStage.MID_EVENT) {
+                if (event == LIST_CASE && callbackStage == PreSubmitCallbackStage.MID_EVENT && callback.getPageId().equals("listCaseRequirements")) {
                     assertTrue(canHandle);
                 } else {
                     assertFalse(canHandle);
