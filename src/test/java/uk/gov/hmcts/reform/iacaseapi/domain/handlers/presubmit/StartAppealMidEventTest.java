@@ -78,6 +78,7 @@ class StartAppealMidEventTest {
     private static final String SUITABILITY_ATTENDANCE_PAGE_ID = "suitabilityAppellantAttendance";
     private static final String UPPER_TRIBUNAL_REFERENCE_NUMBER_PAGE_ID = "utReferenceNumber";
     private static final String APPELLANTS_ADDRESS_PAGE_ID = "appellantAddress";
+    private static final String INTERNAL_APPELLANTS_CONTACT_DETAILS = "startAppealinternalContactDetails";
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -101,6 +102,7 @@ class StartAppealMidEventTest {
     private String wrongUpperTribunalReferenceFormat = "UI-123456-2020";
     private String utReferenceErrorMessage = "Enter the Upper Tribunal reference number in the format UI-Year of submission-6 digit number. For example, UI-2020-123456.";
     private String providePostalAddressError = "The appellant must have provided a postal address";
+    private String contactDetailsDoNotMatch = "The details given do not match";
     private StartAppealMidEvent startAppealMidEvent;
 
     @BeforeEach
@@ -340,6 +342,44 @@ class StartAppealMidEventTest {
         verify(asylumCase, times(1)).clear(SPONSOR_AUTHORISATION);
 
 
+    }
+
+    @Test
+    void should_error_when_contact_details_do_not_match() {
+        when(callback.getEvent()).thenReturn(Event.START_APPEAL);
+        when(callback.getPageId()).thenReturn("startAppealinternalContactDetails");
+
+        when(asylumCase.read(EMAIL, String.class))
+                .thenReturn(Optional.of("email@test.com"));
+        when(asylumCase.read(EMAIL, String.class))
+                .thenReturn(Optional.of("wrongemail@test.com"));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                startAppealMidEvent.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+
+        assertNotNull(callback);
+        assertEquals(asylumCase, callbackResponse.getData());
+        final Set<String> errors = callbackResponse.getErrors();
+        assertThat(errors).hasSize(1).containsOnly(contactDetailsDoNotMatch);
+    }
+
+    @Test
+    void should_successfully_validate_when_contact_details_match() {
+        when(callback.getEvent()).thenReturn(Event.START_APPEAL);
+        when(callback.getPageId()).thenReturn("startAppealinternalContactDetails");
+
+        when(asylumCase.read(EMAIL, String.class))
+                .thenReturn(Optional.of("email@test.com"));
+        when(asylumCase.read(EMAIL, String.class))
+                .thenReturn(Optional.of("email@test.com"));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                startAppealMidEvent.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+
+        assertNotNull(callback);
+        assertEquals(asylumCase, callbackResponse.getData());
+        final Set<String> errors = callbackResponse.getErrors();
+        assertThat(errors).isEmpty();
     }
 
     @ParameterizedTest
