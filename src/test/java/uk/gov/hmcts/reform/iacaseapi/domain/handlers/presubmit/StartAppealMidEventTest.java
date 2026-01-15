@@ -365,7 +365,8 @@ class StartAppealMidEventTest {
         when(asylumCase.read(MOBILE_NUMBER_RETYPE, String.class))
                 .thenReturn(Optional.of("07898999991"));
 
-        log.info("tia " + callback.getPageId());
+        log.info("testtesting " + callback.getPageId());
+        println("print line");
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
                 startAppealMidEvent.handle(PreSubmitCallbackStage.MID_EVENT, callback);
