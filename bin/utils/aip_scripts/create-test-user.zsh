@@ -34,8 +34,6 @@ else
     fi
 fi
 
-echo "Parameter \$3: $3"
-
 json_payload=$(cat <<EOF
 {
     "password": "Apassword123",

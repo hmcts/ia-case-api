@@ -35,5 +35,4 @@ public class RetriggerWaTasksConfirmation implements PostSubmitCallbackHandler<A
         postSubmitResponse.setConfirmationHeader("# WA tasks have been re-triggered");
         return postSubmitResponse;
     }
-    
 }

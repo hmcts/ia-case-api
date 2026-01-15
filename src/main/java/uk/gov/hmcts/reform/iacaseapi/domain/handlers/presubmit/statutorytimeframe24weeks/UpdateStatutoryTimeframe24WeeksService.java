@@ -47,7 +47,6 @@ public class UpdateStatutoryTimeframe24WeeksService {
         this.stf24WeeksBannerTextService = stf24WeeksBannerTextService;
     }
 
-
     public AsylumCase updateAsylumCase(AsylumCase asylumCase, YesOrNo statutoryTimeframe24WeeksStatus) {
 
         Optional<StatutoryTimeframe24Weeks> existingStatutoryTimeframe24Weeks = asylumCase.read(STATUTORY_TIMEFRAME_24_WEEKS);
@@ -77,9 +76,7 @@ public class UpdateStatutoryTimeframe24WeeksService {
             List<IdValue<CaseNote>> allCaseNotes = caseNoteAppender.append(
                 buildNewCaseNote(statutoryTimeframe24WeeksStatus, statutoryTimeframe24WeeksReason, homeOfficeCaseType, userDetails), existingCaseNotes.orElse(Collections.emptyList()));
             asylumCase.write(CASE_NOTES, allCaseNotes);
-            stf24WeeksBannerTextService.updateBannerText(asylumCase, updatedStatutoryTimeframe24Weeks);
-
-            
+            stf24WeeksBannerTextService.updateBannerText(asylumCase, updatedStatutoryTimeframe24Weeks);   
         }
 
         //Clear transient fields, form field will be empty for update event
