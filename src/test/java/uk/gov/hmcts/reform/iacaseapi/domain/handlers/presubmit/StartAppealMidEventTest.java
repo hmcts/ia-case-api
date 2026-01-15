@@ -353,6 +353,9 @@ class StartAppealMidEventTest {
         when(callback.getEvent()).thenReturn(Event.START_APPEAL);
         when(callback.getPageId()).thenReturn("startAppealinternalContactDetails");
 
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class))
+                .thenReturn(Optional.of(YesOrNo.YES));
+
         when(asylumCase.read(EMAIL, String.class))
                 .thenReturn(Optional.of("email@test.com"));
         when(asylumCase.read(EMAIL_RETYPE, String.class))
