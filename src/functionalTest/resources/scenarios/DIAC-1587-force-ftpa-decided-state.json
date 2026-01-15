@@ -14,7 +14,9 @@
           "isRehydratedAppeal": "Yes",
           "appellantInUk": "Yes",
           "isAcceleratedDetainedAppeal": "No",
-          "ftpaApplicantType": "appellant"
+          "ftpaApplicantType": "appellant",
+          "ftpaAppellantRjDecisionOutcomeType": "Some outcome",
+          "ftpaAppellantDecisionDate": "2025-01-02"
         }
       }
     }
@@ -29,7 +31,10 @@
         "isFtpaAppellantDecided": "Yes",
         "hasBeenDecided": "Yes",
         "hasBeenFtpaDecided": "Yes",
-        "sendDirectionActionAvailable": "No"
+        "sendDirectionActionAvailable": "No",
+        "ftpaAppellantRjDecisionOutcomeType": "Some outcome",
+        "isFtpaListVisible": "Yes",
+        "ftpaAppellantDecisionDate": "2025-01-02"
       }
     }
   }
