@@ -48,9 +48,6 @@ json_payload=$(cat <<EOF
 EOF
 )
 
-echo "JSON Payload:"
-echo "$json_payload"
-
 # Run the curl command and capture the JSON response
 response=$(curl -L -X POST "https://idam-testing-support-api.$environment.platform.hmcts.net/test/idam/users" \
 -H "Authorization: Bearer $IDAM_TESTING_ACCESS_TOKEN" \
