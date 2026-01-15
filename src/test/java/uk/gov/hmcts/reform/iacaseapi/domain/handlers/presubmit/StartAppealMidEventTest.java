@@ -20,11 +20,15 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DATE_CUSTODIAL_SENTENCE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DATE_ENTRY_CLEARANCE_DECISION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DETENTION_FACILITY;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.EMAIL;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.EMAIL_RETYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.GWF_REFERENCE_NUMBER;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAS_SPONSOR;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_REFERENCE_NUMBER;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ACCELERATED_DETAINED_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ADMIN;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MOBILE_NUMBER;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MOBILE_NUMBER_RETYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.OUT_OF_COUNTRY_DECISION_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SPONSOR_ADDRESS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SPONSOR_AUTHORISATION;
@@ -345,13 +349,13 @@ class StartAppealMidEventTest {
     }
 
     @Test
-    void should_error_when_contact_details_do_not_match() {
+    void should_error_when_internal_appellant_emails_do_not_match() {
         when(callback.getEvent()).thenReturn(Event.START_APPEAL);
         when(callback.getPageId()).thenReturn("startAppealinternalContactDetails");
 
         when(asylumCase.read(EMAIL, String.class))
                 .thenReturn(Optional.of("email@test.com"));
-        when(asylumCase.read(EMAIL, String.class))
+        when(asylumCase.read(EMAIL_RETYPE, String.class))
                 .thenReturn(Optional.of("wrongemail@test.com"));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -364,14 +368,52 @@ class StartAppealMidEventTest {
     }
 
     @Test
-    void should_successfully_validate_when_contact_details_match() {
+    void should_successfully_validate_when_internal_appellant_contact_details_match() {
         when(callback.getEvent()).thenReturn(Event.START_APPEAL);
         when(callback.getPageId()).thenReturn("startAppealinternalContactDetails");
 
         when(asylumCase.read(EMAIL, String.class))
                 .thenReturn(Optional.of("email@test.com"));
-        when(asylumCase.read(EMAIL, String.class))
+        when(asylumCase.read(EMAIL_RETYPE, String.class))
                 .thenReturn(Optional.of("email@test.com"));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                startAppealMidEvent.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+
+        assertNotNull(callback);
+        assertEquals(asylumCase, callbackResponse.getData());
+        final Set<String> errors = callbackResponse.getErrors();
+        assertThat(errors).isEmpty();
+    }
+
+    @Test
+    void should_error_when_internal_appellant_number_do_not_match() {
+        when(callback.getEvent()).thenReturn(Event.START_APPEAL);
+        when(callback.getPageId()).thenReturn("startAppealinternalContactDetails");
+
+        when(asylumCase.read(MOBILE_NUMBER, String.class))
+                .thenReturn(Optional.of("07898998898"));
+        when(asylumCase.read(MOBILE_NUMBER_RETYPE, String.class))
+                .thenReturn(Optional.of("07777777777"));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                startAppealMidEvent.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+
+        assertNotNull(callback);
+        assertEquals(asylumCase, callbackResponse.getData());
+        final Set<String> errors = callbackResponse.getErrors();
+        assertThat(errors).hasSize(1).containsOnly(contactDetailsDoNotMatch);
+    }
+
+    @Test
+    void should_successfully_validate_when_internal_appellant_number_match() {
+        when(callback.getEvent()).thenReturn(Event.START_APPEAL);
+        when(callback.getPageId()).thenReturn("startAppealinternalContactDetails");
+
+        when(asylumCase.read(MOBILE_NUMBER, String.class))
+                .thenReturn(Optional.of("07898998898"));
+        when(asylumCase.read(MOBILE_NUMBER_RETYPE, String.class))
+                .thenReturn(Optional.of("07898998898"));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
                 startAppealMidEvent.handle(PreSubmitCallbackStage.MID_EVENT, callback);
