@@ -113,11 +113,11 @@ public class StartAppealMidEvent implements PreSubmitCallbackHandler<AsylumCase>
                 response.addError("You cannot update the detention location to a " +  detentionFacilityValue + " because this is an accelerated detained appeal.");
             }
         } else if (callback.getPageId().equals(INTERNAL_APPELLANTS_CONTACT_DETAILS) && callback.getEvent() == Event.START_APPEAL && isAdmin.equals(YesOrNo.YES)) {
-            String email = asylumCase.read(EMAIL, String.class);
-            String emailRetype = asylumCase.read(EMAIL_RETYPE, String.class);
+            Optional<String> email = asylumCase.read(EMAIL, String.class);
+            Optional<String> emailRetype = asylumCase.read(EMAIL_RETYPE, String.class);
 
-            String mobileNumber = asylumCase.read(MOBILE_NUMBER, String.class);
-            String mobileNumberRetype = asylumCase.read(MOBILE_NUMBER_RETYPE, String.class);
+            Optional<String> mobileNumber = asylumCase.read(MOBILE_NUMBER, String.class);
+            Optional<String> mobileNumberRetype = asylumCase.read(MOBILE_NUMBER_RETYPE, String.class);
 
             boolean emailMismatch =
                     email.isPresent()
