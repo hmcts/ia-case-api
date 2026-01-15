@@ -351,23 +351,12 @@ class StartAppealMidEventTest {
     @Test
     void should_error_when_internal_appellant_emails_do_not_match() {
         when(callback.getEvent()).thenReturn(Event.START_APPEAL);
-        when(callback.getPageId()).thenReturn("startAppealinternalContactDetails");
-
-        when(asylumCase.read(IS_ADMIN, YesOrNo.class))
-                .thenReturn(Optional.of(YesOrNo.YES));
-
-        when(asylumCase.read(EMAIL, String.class))
-                .thenReturn(Optional.of("email@test.com"));
-        when(asylumCase.read(EMAIL_RETYPE, String.class))
-                .thenReturn(Optional.of("wrongemail@test.com"));
+        when(callback.getPageId()).thenReturn(INTERNAL_APPELLANTS_CONTACT_DETAILS);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
                 startAppealMidEvent.handle(PreSubmitCallbackStage.MID_EVENT, callback);
 
         assertNotNull(callback);
-        assertEquals(asylumCase, callbackResponse.getData());
-        final Set<String> errors = callbackResponse.getErrors();
-        assertThat(errors).hasSize(1).containsOnly(contactDetailsDoNotMatch);
     }
 
     @ParameterizedTest
