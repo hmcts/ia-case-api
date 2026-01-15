@@ -76,7 +76,7 @@ public class UpdateStatutoryTimeframe24WeeksService {
             List<IdValue<CaseNote>> allCaseNotes = caseNoteAppender.append(
                 buildNewCaseNote(statutoryTimeframe24WeeksStatus, statutoryTimeframe24WeeksReason, homeOfficeCaseType, userDetails), existingCaseNotes.orElse(Collections.emptyList()));
             asylumCase.write(CASE_NOTES, allCaseNotes);
-            stf24WeeksBannerTextService.updateBannerText(asylumCase, updatedStatutoryTimeframe24Weeks);   
+            stf24WeeksBannerTextService.updateBannerText(asylumCase, updatedStatutoryTimeframe24Weeks);
         }
 
         //Clear transient fields, form field will be empty for update event
