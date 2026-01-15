@@ -19,6 +19,7 @@ java:
     IA_HOME_OFFICE_INTEGRATION_ENABLED: "false"
     IA_IDAM_REDIRECT_URI: "https://ia-case-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal/oauth2/callback"
     CCD_URL: "http://ccd-data-store-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
+    CCD_CASE_ACCESS_URL: "http://ccd-data-store-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
     AAC_URL: "http://aac-manage-case-assignment-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
     CCD_GW_URL: "http://dm-store-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
     DM_URL: "http://dm-store-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
@@ -96,6 +97,15 @@ java:
           alias: PG_AUTH_VALUES_YAML_PASS
         - name: docmosis-access-key
           alias: DOCMOSIS_ACCESS_KEY
+        - name: ia-config-validator-secret
+          alias: IA_CONFIG_VALIDATOR_SECRET
+        - name: AppInsightsInstrumentationKey
+          alias: azure.application-insights.instrumentation-key
+        - name: ia-system-access-username
+          alias: IA_SYSTEM_ACCESS_USERNAME
+        - name: ia-system-access-password
+          alias: IA_SYSTEM_ACCESS_PASSWORD
+
 
 ia-case-payments-api:
   enabled: false
