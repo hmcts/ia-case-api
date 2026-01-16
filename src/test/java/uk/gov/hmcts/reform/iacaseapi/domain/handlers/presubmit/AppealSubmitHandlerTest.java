@@ -7,6 +7,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SUBMIT_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 
+import java.time.LocalDate;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,6 +17,7 @@ import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDecision;
@@ -39,14 +41,15 @@ class AppealSubmitHandlerTest {
     private CaseDetails<AsylumCase> caseDetails;
     @Mock
     private AsylumCase asylumCase;
+    @Mock
+    private DateProvider dateProvider;
 
     private AppealSubmitHandler appealSubmitHandler;
 
     @BeforeEach
     public void setUp() {
-
         appealSubmitHandler =
-                new AppealSubmitHandler();
+                new AppealSubmitHandler(dateProvider);
     }
 
     @ParameterizedTest
@@ -59,6 +62,7 @@ class AppealSubmitHandlerTest {
         when(asylumCase.read(PA_APPEAL_TYPE_PAYMENT_OPTION, String.class)).thenReturn(Optional.of("payOffline"));
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.empty());
         when(asylumCase.read(AsylumCaseFieldDefinition.APPEAL_OUT_OF_COUNTRY, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(dateProvider.now()).thenReturn(LocalDate.of(2019, 10, 7));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
                 appealSubmitHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -71,25 +75,33 @@ class AppealSubmitHandlerTest {
 
     @Test
     void should_make_service_request_tab_visible_if_no_remission() {
-
         when(callback.getEvent()).thenReturn(SUBMIT_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.read(PA_APPEAL_TYPE_PAYMENT_OPTION, String.class)).thenReturn(Optional.empty());
-        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.empty());
-        when(asylumCase.read(APPEAL_OUT_OF_COUNTRY, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
-        when(asylumCase.read(REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.of(RemissionType.NO_REMISSION));
-        when(asylumCase.read(REMISSION_DECISION, RemissionDecision.class)).thenReturn(Optional.empty());
+        when(caseDetails.getId()).thenReturn(123L);
+
+        when(asylumCase.read(PA_APPEAL_TYPE_PAYMENT_OPTION, String.class))
+                .thenReturn(Optional.empty());
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class))
+                .thenReturn(Optional.empty());
+        when(asylumCase.read(APPEAL_OUT_OF_COUNTRY, YesOrNo.class))
+                .thenReturn(Optional.of(YesOrNo.NO));
+        when(asylumCase.read(REMISSION_TYPE, RemissionType.class))
+                .thenReturn(Optional.of(RemissionType.NO_REMISSION));
+        when(asylumCase.read(REMISSION_DECISION, RemissionDecision.class))
+                .thenReturn(Optional.empty());
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class))
+                .thenReturn(Optional.of(YesOrNo.NO));
+
+        when(dateProvider.now()).thenReturn(LocalDate.of(2019, 10, 7));
 
         appealSubmitHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
-        ArgumentCaptor<AsylumCaseFieldDefinition> tabVisibleFieldCaptor = ArgumentCaptor.forClass(AsylumCaseFieldDefinition.class);
-        ArgumentCaptor<Object> yesOrNoCaptor = ArgumentCaptor.forClass(YesOrNo.class);
-        verify(asylumCase, times(1))
-            .write(tabVisibleFieldCaptor.capture(), yesOrNoCaptor.capture());
+        verify(asylumCase)
+                .write(IS_SERVICE_REQUEST_TAB_VISIBLE_CONSIDERING_REMISSIONS, YesOrNo.YES);
 
-        assertEquals(IS_SERVICE_REQUEST_TAB_VISIBLE_CONSIDERING_REMISSIONS, tabVisibleFieldCaptor.getValue());
-        assertEquals(YesOrNo.YES, yesOrNoCaptor.getValue());
+        verify(asylumCase)
+                .write(APPEAL_SUBMISSION_DATE, "2019-10-07");
     }
 
     @Test
@@ -102,16 +114,15 @@ class AppealSubmitHandlerTest {
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.empty());
         when(asylumCase.read(APPEAL_OUT_OF_COUNTRY, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         when(asylumCase.read(REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.empty());
+        when(dateProvider.now()).thenReturn(LocalDate.of(2019, 10, 7));
 
         appealSubmitHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
-        ArgumentCaptor<AsylumCaseFieldDefinition> tabVisibleFieldCaptor = ArgumentCaptor.forClass(AsylumCaseFieldDefinition.class);
-        ArgumentCaptor<Object> yesOrNoCaptor = ArgumentCaptor.forClass(YesOrNo.class);
-        verify(asylumCase, times(1))
-            .write(tabVisibleFieldCaptor.capture(), yesOrNoCaptor.capture());
+        verify(asylumCase)
+                .write(IS_SERVICE_REQUEST_TAB_VISIBLE_CONSIDERING_REMISSIONS, YesOrNo.YES);
 
-        assertEquals(IS_SERVICE_REQUEST_TAB_VISIBLE_CONSIDERING_REMISSIONS, tabVisibleFieldCaptor.getValue());
-        assertEquals(YesOrNo.YES, yesOrNoCaptor.getValue());
+        verify(asylumCase)
+                .write(APPEAL_SUBMISSION_DATE, "2019-10-07");
     }
 
     @ParameterizedTest
@@ -127,16 +138,15 @@ class AppealSubmitHandlerTest {
         when(asylumCase.read(REMISSION_TYPE, RemissionType.class))
             .thenReturn(Optional.of(RemissionType.EXCEPTIONAL_CIRCUMSTANCES_REMISSION));
         when(asylumCase.read(REMISSION_DECISION, RemissionDecision.class)).thenReturn(Optional.of(remissionDecision));
+        when(dateProvider.now()).thenReturn(LocalDate.of(2019, 10, 7));
 
         appealSubmitHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
-        ArgumentCaptor<AsylumCaseFieldDefinition> tabVisibleFieldCaptor = ArgumentCaptor.forClass(AsylumCaseFieldDefinition.class);
-        ArgumentCaptor<Object> yesOrNoCaptor = ArgumentCaptor.forClass(YesOrNo.class);
-        verify(asylumCase, times(1))
-            .write(tabVisibleFieldCaptor.capture(), yesOrNoCaptor.capture());
+        verify(asylumCase)
+                .write(IS_SERVICE_REQUEST_TAB_VISIBLE_CONSIDERING_REMISSIONS, YesOrNo.NO);
 
-        assertEquals(IS_SERVICE_REQUEST_TAB_VISIBLE_CONSIDERING_REMISSIONS, tabVisibleFieldCaptor.getValue());
-        assertEquals(YesOrNo.NO, yesOrNoCaptor.getValue());
+        verify(asylumCase)
+                .write(APPEAL_SUBMISSION_DATE, "2019-10-07");
     }
 
     @Test
@@ -147,6 +157,7 @@ class AppealSubmitHandlerTest {
         when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(PA_APPEAL_TYPE_PAYMENT_OPTION, String.class)).thenReturn(Optional.of("payOffline"));
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
+        when(dateProvider.now()).thenReturn(LocalDate.of(2019, 10, 7));
 
         appealSubmitHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 

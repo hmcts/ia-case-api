@@ -19,6 +19,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.DispatchPriority.EARLIEST;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.sourceOfAppealRehydratedAppeal;
 
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -54,8 +55,6 @@ class AppealReferenceNumberHandlerTest {
     @Mock
     private AsylumCase asylumCase;
     @Mock
-    private DateProvider dateProvider;
-    @Mock
     private AppealReferenceNumberGenerator appealReferenceNumberGenerator;
 
     private AppealReferenceNumberHandler appealReferenceNumberHandler;
@@ -64,11 +63,12 @@ class AppealReferenceNumberHandlerTest {
     public void setUp() {
 
         appealReferenceNumberHandler =
-            new AppealReferenceNumberHandler(dateProvider, appealReferenceNumberGenerator);
+            new AppealReferenceNumberHandler(appealReferenceNumberGenerator);
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getId()).thenReturn(123L);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(SOURCE_OF_APPEAL, SourceOfAppeal.class)).thenReturn(Optional.empty());
     }
 
     @Test
@@ -97,8 +97,6 @@ class AppealReferenceNumberHandlerTest {
 
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
 
-        when(dateProvider.now()).thenReturn(LocalDate.of(2019, 10, 7));
-
         when(appealReferenceNumberGenerator.generate(123, AppealType.PA))
             .thenReturn("the-next-appeal-reference-number");
 
@@ -119,8 +117,6 @@ class AppealReferenceNumberHandlerTest {
     void should_set_next_appeal_reference_number_if_not_present_for_submit_appeal() {
 
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
-
-        when(dateProvider.now()).thenReturn(LocalDate.of(2019, 10, 7));
 
         when(appealReferenceNumberGenerator.generate(123, AppealType.PA))
             .thenReturn("the-next-appeal-reference-number");
@@ -173,66 +169,6 @@ class AppealReferenceNumberHandlerTest {
     }
 
     @Test
-    void should_write_to_internal_fields_when_case_is_created_by_admin() {
-
-        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
-
-        when(asylumCase.read(APPEAL_REFERENCE_NUMBER)).thenReturn(Optional.of("DRAFT"));
-        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
-        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.PA));
-        when(asylumCase.read(SOURCE_OF_APPEAL, SourceOfAppeal.class)).thenReturn(Optional.empty());
-
-        when(appealReferenceNumberGenerator.generate(123, AppealType.PA))
-            .thenReturn("the-next-appeal-reference-number");
-
-        final LocalDate now = LocalDate.now();
-        when(dateProvider.now()).thenReturn(now);
-
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                appealReferenceNumberHandler.handle(ABOUT_TO_SUBMIT, callback);
-
-        assertNotNull(callbackResponse);
-        assertEquals(asylumCase, callbackResponse.getData());
-
-        verify(asylumCase, times(1)).write(APPEAL_SUBMISSION_INTERNAL_DATE, now.toString());
-    }
-
-    @Test
-    void should_not_generate_reference_number_for_rehydrated_appeal_on_start_appeal() {
-
-        when(callback.getEvent()).thenReturn(Event.START_APPEAL);
-        when(asylumCase.read(SOURCE_OF_APPEAL, SourceOfAppeal.class))
-            .thenReturn(Optional.of(SourceOfAppeal.REHYDRATED_APPEAL));
-
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            appealReferenceNumberHandler.handle(ABOUT_TO_SUBMIT, callback);
-
-        assertNotNull(callbackResponse);
-        assertEquals(asylumCase, callbackResponse.getData());
-
-        verify(asylumCase, never()).write(eq(APPEAL_REFERENCE_NUMBER), any());
-        verifyNoInteractions(appealReferenceNumberGenerator);
-    }
-
-    @Test
-    void should_not_generate_reference_number_for_rehydrated_appeal_on_submit_appeal() {
-
-        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
-        when(asylumCase.read(SOURCE_OF_APPEAL, SourceOfAppeal.class))
-            .thenReturn(Optional.of(SourceOfAppeal.REHYDRATED_APPEAL));
-        when(asylumCase.read(APPEAL_REFERENCE_NUMBER)).thenReturn(Optional.empty());
-
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            appealReferenceNumberHandler.handle(ABOUT_TO_SUBMIT, callback);
-
-        assertNotNull(callbackResponse);
-        assertEquals(asylumCase, callbackResponse.getData());
-
-        verify(appealReferenceNumberGenerator, never()).generate(anyLong(), any(AppealType.class));
-        verify(asylumCase, never()).write(eq(APPEAL_REFERENCE_NUMBER), any());
-    }
-
-    @Test
     void should_generate_reference_number_when_not_rehydrated_appeal() {
 
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
@@ -242,7 +178,6 @@ class AppealReferenceNumberHandlerTest {
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.PA));
         when(appealReferenceNumberGenerator.generate(123, AppealType.PA))
             .thenReturn("PA/12345/2024");
-        when(dateProvider.now()).thenReturn(LocalDate.of(2024, 1, 1));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             appealReferenceNumberHandler.handle(ABOUT_TO_SUBMIT, callback);
@@ -263,12 +198,16 @@ class AppealReferenceNumberHandlerTest {
 
             for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
 
+                when(callback.getCaseDetails()).thenReturn(caseDetails);
+                when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
                 boolean canHandle = appealReferenceNumberHandler.canHandle(callbackStage, callback);
 
                 if (Arrays.asList(
                     Event.START_APPEAL,
                     Event.SUBMIT_APPEAL)
                         .contains(callback.getEvent())
+                    && !sourceOfAppealRehydratedAppeal(callback.getCaseDetails().getCaseData())
                     && callbackStage == ABOUT_TO_SUBMIT) {
 
                     assertTrue(canHandle);

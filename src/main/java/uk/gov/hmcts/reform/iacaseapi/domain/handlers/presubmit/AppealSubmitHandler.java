@@ -1,16 +1,13 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DISPLAY_MARK_AS_PAID_EVENT_FOR_PARTIAL_REMISSION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_SERVICE_REQUEST_TAB_VISIBLE_CONSIDERING_REMISSIONS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PA_APPEAL_TYPE_PAYMENT_OPTION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMISSION_DECISION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMISSION_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SUBMIT_APPEAL;
 
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDecision;
@@ -28,6 +25,13 @@ public class AppealSubmitHandler implements PreSubmitCallbackHandler<AsylumCase>
 
     private static final String PAY_OFFLINE = "payOffline";
     private static final String PAY_LATER = "payLater";
+    private final DateProvider dateProvider;
+
+    public AppealSubmitHandler(
+            DateProvider dateProvider
+    ) {
+        this.dateProvider = dateProvider;
+    }
 
     public boolean canHandle(
         PreSubmitCallbackStage callbackStage,
@@ -82,6 +86,12 @@ public class AppealSubmitHandler implements PreSubmitCallbackHandler<AsylumCase>
             if (optRemissionDecision.isEmpty()) {
                 asylumCase.write(DISPLAY_MARK_AS_PAID_EVENT_FOR_PARTIAL_REMISSION, YesOrNo.NO);
             }
+        }
+
+        asylumCase.write(APPEAL_SUBMISSION_DATE, dateProvider.now().toString());
+        YesOrNo isAdmin = asylumCase.read(IS_ADMIN, YesOrNo.class).orElse(YesOrNo.NO);
+        if (isAdmin.equals(YesOrNo.YES)) {
+            asylumCase.write(APPEAL_SUBMISSION_INTERNAL_DATE, dateProvider.now().toString());
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
