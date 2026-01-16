@@ -43,7 +43,7 @@ public class GenerateDocumentMidEventHandler implements PreSubmitCallbackHandler
 
         return isDocmosisEnabled
                && callbackStage == PreSubmitCallbackStage.MID_EVENT
-               && callback.getPageId().equals("listCaseRequirements")
+               && callback.getPageId().equals("listCaseHearingFinalPage")
                && allowedEvents.contains(callback.getEvent());
     }
 
