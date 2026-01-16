@@ -4,6 +4,7 @@ import static java.util.Objects.requireNonNull;
 
 import com.google.common.collect.Lists;
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -16,6 +17,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentGenerator;
 
 @Component
+@Slf4j
 public class GenerateDocumentMidEventHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final boolean isDocmosisEnabled;
@@ -50,6 +52,7 @@ public class GenerateDocumentMidEventHandler implements PreSubmitCallbackHandler
             throw new IllegalStateException("Cannot handle callback");
         }
 
+        log.info("delegating to docs api on mid event...");
         AsylumCase asylumCaseWithGeneratedDocument = documentGenerator.generate(callback);
 
         return new PreSubmitCallbackResponse<>(asylumCaseWithGeneratedDocument);
