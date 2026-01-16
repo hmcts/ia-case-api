@@ -359,6 +359,19 @@ class StartAppealMidEventTest {
         when(asylumCase.read(EMAIL_RETYPE, String.class))
                 .thenReturn(Optional.of("wrongemail@test.com"));
 
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                startAppealMidEvent.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+
+        assertNotNull(callback);
+        assertEquals(asylumCase, callbackResponse.getData());
+        final Set<String> errors = callbackResponse.getErrors();
+        assertThat(errors).hasSize(1).containsOnly(contactDetailsDoNotMatch);
+    }
+
+    @Test
+    void should_error_when_internal_appellant_number_do_not_match() {
+        when(callback.getPageId()).thenReturn(INTERNAL_APPELLANTS_CONTACT_DETAILS);
+
         when(asylumCase.read(MOBILE_NUMBER, String.class))
                 .thenReturn(Optional.of("07898999999"));
         when(asylumCase.read(MOBILE_NUMBER_RETYPE, String.class))
@@ -371,6 +384,42 @@ class StartAppealMidEventTest {
         assertEquals(asylumCase, callbackResponse.getData());
         final Set<String> errors = callbackResponse.getErrors();
         assertThat(errors).hasSize(1).containsOnly(contactDetailsDoNotMatch);
+    }
+
+    @Test
+    void should_validate_as_correct_when_internal_appellant_emails_match() {
+        when(callback.getPageId()).thenReturn(INTERNAL_APPELLANTS_CONTACT_DETAILS);
+
+        when(asylumCase.read(EMAIL, String.class))
+                .thenReturn(Optional.of("email@test.com"));
+        when(asylumCase.read(EMAIL_RETYPE, String.class))
+                .thenReturn(Optional.of("email@test.com"));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                startAppealMidEvent.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+
+        assertNotNull(callback);
+        assertEquals(asylumCase, callbackResponse.getData());
+        final Set<String> errors = callbackResponse.getErrors();
+        assertThat(errors).isEmpty();
+    }
+
+    @Test
+    void should_validate_as_correct_when_internal_appellant_number_match() {
+        when(callback.getPageId()).thenReturn(INTERNAL_APPELLANTS_CONTACT_DETAILS);
+
+        when(asylumCase.read(MOBILE_NUMBER, String.class))
+                .thenReturn(Optional.of("07898999999"));
+        when(asylumCase.read(MOBILE_NUMBER_RETYPE, String.class))
+                .thenReturn(Optional.of("07898999999"));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                startAppealMidEvent.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+
+        assertNotNull(callback);
+        assertEquals(asylumCase, callbackResponse.getData());
+        final Set<String> errors = callbackResponse.getErrors();
+        assertThat(errors).isEmpty();
     }
 
     @ParameterizedTest
