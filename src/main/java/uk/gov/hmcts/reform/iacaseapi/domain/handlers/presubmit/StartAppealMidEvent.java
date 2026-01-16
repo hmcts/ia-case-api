@@ -51,7 +51,8 @@ public class StartAppealMidEvent implements PreSubmitCallbackHandler<AsylumCase>
                     || callback.getPageId().equals(SUITABILITY_ATTENDANCE_PAGE_ID)
                     || callback.getPageId().equals(UPPER_TRIBUNAL_REFERENCE_NUMBER_PAGE_ID)
                     || callback.getPageId().equals(APPELLANTS_ADDRESS_PAGE_ID)
-                    || callback.getPageId().equals(APPELLANTS_ADDRESS_ADMIN_J_PAGE_ID));
+                    || callback.getPageId().equals(APPELLANTS_ADDRESS_ADMIN_J_PAGE_ID)
+                    || callback.getPageId().equals(APPELLANTS_CONTACT_DETAILS_PAGE_ID));
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(

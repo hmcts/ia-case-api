@@ -368,9 +368,9 @@ class StartAppealMidEventTest {
                 startAppealMidEvent.handle(PreSubmitCallbackStage.MID_EVENT, callback);
 
         assertNotNull(callback);
-//        assertEquals(asylumCase, callbackResponse.getData());
-//        final Set<String> errors = callbackResponse.getErrors();
-//        assertThat(errors).hasSize(1).containsOnly(contactDetailsDoNotMatch);
+        assertEquals(asylumCase, callbackResponse.getData());
+        final Set<String> errors = callbackResponse.getErrors();
+        assertThat(errors).hasSize(1).containsOnly(contactDetailsDoNotMatch);
     }
 
     @ParameterizedTest
