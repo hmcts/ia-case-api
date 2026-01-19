@@ -282,3 +282,11 @@ If you want to clean up the environment just run:
 ```shell
 npx @hmcts/dev-env@latest --delete
 ```
+## Uploading DMN files to ia-case-api PR
+To upload DMN files to an ia-case-api PR, you can use the following script:
+
+```shell
+./bin/local-upload-to-pr-dmn-files.sh <PR_NUMBER> <TASK_CONFIG_BRANCH_NAME>
+```
+
+Where `<PR_NUMBER>` is the number of the ia-case-api PR you want to upload the DMN files to, and `<TASK_CONFIG_BRANCH_NAME>` is the branch name of ia-task-configuration you want to upload (branch must be uploaded to github).
