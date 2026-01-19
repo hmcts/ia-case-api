@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.statutorytimefra
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
@@ -39,6 +40,7 @@ public class RemoveStatutoryTimeframe24WeeksHandler implements PreSubmitCallback
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
         YesOrNo status = YesOrNo.NO;
+        asylumCase.write(AsylumCaseFieldDefinition.STF_24W_CURRENT_STATUS_AUTO_GENERATED, status);
         AsylumCase updatedAsylum = updateStatutoryTimeframe24WeeksService.updateAsylumCase(asylumCase, status);
 
         return new PreSubmitCallbackResponse<>(updatedAsylum);

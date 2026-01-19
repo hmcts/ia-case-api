@@ -12,7 +12,6 @@ public class StatutoryTimeframe24WeeksHistory {
 
     private YesOrNo status;
     private String reason;
-    private String homeOfficeCohort;
     private String user;
     private String dateTimeAdded;
 
@@ -22,13 +21,11 @@ public class StatutoryTimeframe24WeeksHistory {
     public StatutoryTimeframe24WeeksHistory(
         YesOrNo status,
         String reason,
-        String homeOfficeCohort,
         String user,
         String dateTimeAdded
     ) {
         this.status = requireNonNull(status);
         this.reason = requireNonNull(reason);
-        this.homeOfficeCohort = requireNonNull(homeOfficeCohort);
         this.user = requireNonNull(user);
         this.dateTimeAdded = requireNonNull(dateTimeAdded);
     }
@@ -39,10 +36,6 @@ public class StatutoryTimeframe24WeeksHistory {
 
     public String getReason() {
         return requireNonNull(reason);
-    }
-
-    public String getHomeOfficeCohort() {
-        return requireNonNull(homeOfficeCohort);
     }
 
     public String getUser() {
