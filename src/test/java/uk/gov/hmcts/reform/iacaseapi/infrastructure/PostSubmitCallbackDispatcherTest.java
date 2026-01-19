@@ -27,7 +27,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit.AppealResponseAd
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit.BuildCaseConfirmation;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit.GenerateHearingBundleConfirmation;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit.RequestCaseEditConfirmation;
-import uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit.SendDirectionConfirmation;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit.SendBailDirectionConfirmation;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit.UploadRespondentEvidenceConfirmation;
 
 @ExtendWith(MockitoExtension.class)
@@ -131,7 +131,7 @@ class PostSubmitCallbackDispatcherTest {
         PostSubmitCallbackHandler<AsylumCase> h2 = new BuildCaseConfirmation();
         PostSubmitCallbackHandler<AsylumCase> h3 = new GenerateHearingBundleConfirmation();
         PostSubmitCallbackHandler<AsylumCase> h4 = new RequestCaseEditConfirmation();
-        PostSubmitCallbackHandler<AsylumCase> h5 = new SendDirectionConfirmation();
+        PostSubmitCallbackHandler<AsylumCase> h5 = new SendBailDirectionConfirmation();
         PostSubmitCallbackHandler<AsylumCase> h6 = new UploadRespondentEvidenceConfirmation();
 
         PostSubmitCallbackDispatcher<AsylumCase> dispatcher = new PostSubmitCallbackDispatcher<>(

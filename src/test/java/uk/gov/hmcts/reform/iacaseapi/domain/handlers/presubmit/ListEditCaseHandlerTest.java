@@ -101,7 +101,7 @@ class ListEditCaseHandlerTest {
     @Mock
     private NextHearingDateService nextHearingDateService;
     @Mock
-    private HearingIdListProcessor hearingIdListProcessor;
+    private uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.HearingIdBailListProcessor hearingIdBailListProcessor;
 
     private final String directionExplanation = "You have a direction for this case.\n"
                                           + "\n"
@@ -127,7 +127,7 @@ class ListEditCaseHandlerTest {
             directionAppender,
             locationRefDataService,
             nextHearingDateService,
-            hearingIdListProcessor
+                                                      hearingIdBailListProcessor
         );
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);

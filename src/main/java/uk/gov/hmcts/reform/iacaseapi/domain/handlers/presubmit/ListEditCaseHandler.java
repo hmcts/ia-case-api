@@ -65,7 +65,7 @@ public class ListEditCaseHandler implements PreSubmitCallbackHandler<AsylumCase>
     private final int dueInDaysSinceSubmission;
     private final DirectionAppender directionAppender;
     private final NextHearingDateService nextHearingDateService;
-    private final HearingIdListProcessor hearingIdListProcessor;
+    private final HearingIdBailListProcessor hearingIdBailListProcessor;
 
     public ListEditCaseHandler(
         HearingCentreFinder hearingCentreFinder,
@@ -74,7 +74,7 @@ public class ListEditCaseHandler implements PreSubmitCallbackHandler<AsylumCase>
         DirectionAppender directionAppender,
         LocationRefDataService locationRefDataService,
         NextHearingDateService nextHearingDateService,
-        HearingIdListProcessor hearingIdListProcessor
+        HearingIdBailListProcessor hearingIdBailListProcessor
     ) {
         this.hearingCentreFinder = hearingCentreFinder;
         this.caseManagementLocationService = caseManagementLocationService;
@@ -82,7 +82,7 @@ public class ListEditCaseHandler implements PreSubmitCallbackHandler<AsylumCase>
         this.directionAppender = directionAppender;
         this.locationRefDataService = locationRefDataService;
         this.nextHearingDateService = nextHearingDateService;
-        this.hearingIdListProcessor = hearingIdListProcessor;
+        this.hearingIdBailListProcessor = hearingIdBailListProcessor;
     }
 
     public boolean canHandle(

@@ -168,9 +168,9 @@ def replace_specific_field_in_csv_file_of_jsons(
 # example usage
 
 # will use command line argument as filepath if passed in
-# redact_values_from_json(
-#     var1 if var1 else 'latest_data.json', replace_mapping_keys
-# )
+redact_values_from_json(
+    var1 if var1 else 'latest_data.json', replace_mapping_keys
+)
 
 # redact_values_from_csv(
 #     'case_event_202401261547.csv')

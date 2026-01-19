@@ -38,18 +38,18 @@ public class CaseListingHandler implements PreSubmitCallbackHandler<BailCase> {
     private final Appender<PreviousListingDetails> previousListingDetailsAppender;
     private final DueDateService dueDateService;
     private final LocationRefDataService locationRefDataService;
-    private final HearingIdListProcessor hearingIdListProcessor;
+    private final HearingIdBailListProcessor hearingIdBailListProcessor;
 
     public CaseListingHandler(
         Appender<PreviousListingDetails> previousListingDetailsAppender,
         DueDateService dueDateService,
         LocationRefDataService locationRefDataService,
-        HearingIdListProcessor hearingIdListProcessor
+        HearingIdBailListProcessor hearingIdBailListProcessor
     ) {
         this.dueDateService = dueDateService;
         this.previousListingDetailsAppender = previousListingDetailsAppender;
         this.locationRefDataService = locationRefDataService;
-        this.hearingIdListProcessor = hearingIdListProcessor;
+        this.hearingIdBailListProcessor = hearingIdBailListProcessor;
     }
 
     public boolean canHandle(
@@ -106,7 +106,7 @@ public class CaseListingHandler implements PreSubmitCallbackHandler<BailCase> {
             bailCase.write(DATE_OF_COMPLIANCE, dueDate);
             bailCase.write(UPLOAD_BAIL_SUMMARY_ACTION_AVAILABLE, YES);
 
-            hearingIdListProcessor.processHearingId(bailCase);
+            hearingIdBailListProcessor.processHearingId(bailCase);
         } else {
             CaseDetails<BailCase> caseDetailsBefore = callback.getCaseDetailsBefore().orElse(null);
             BailCase bailCaseBefore = caseDetailsBefore == null ? null : caseDetailsBefore.getCaseData();
@@ -144,7 +144,7 @@ public class CaseListingHandler implements PreSubmitCallbackHandler<BailCase> {
                     previousListingDetailsAppender.append(newPreviousListingDetails,
                                                           maybeExistingPreviousListingDetails.orElse(emptyList()));
 
-                hearingIdListProcessor.processPreviousHearingId(bailCaseBefore, bailCase);
+                hearingIdBailListProcessor.processPreviousHearingId(bailCaseBefore, bailCase);
 
                 bailCase.write(PREVIOUS_LISTING_DETAILS, allPreviousListingDetails);
                 bailCase.write(HAS_BEEN_RELISTED, YES);

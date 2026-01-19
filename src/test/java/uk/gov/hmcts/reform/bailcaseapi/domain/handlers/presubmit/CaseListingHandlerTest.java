@@ -65,7 +65,7 @@ class CaseListingHandlerTest {
     @Mock private DueDateService dueDateService;
     @Mock private Appender<PreviousListingDetails> previousListingDetailsAppender;
     @Mock private LocationRefDataService locationRefDataService;
-    @Mock private HearingIdListProcessor hearingIdListProcessor;
+    @Mock private HearingIdBailListProcessor hearingIdBailListProcessor;
 
     @Captor
     private ArgumentCaptor<BailCaseFieldDefinition> bailExtractorCaptor;
@@ -83,7 +83,7 @@ class CaseListingHandlerTest {
             previousListingDetailsAppender,
             dueDateService,
             locationRefDataService,
-            hearingIdListProcessor
+            hearingIdBailListProcessor
         );
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -139,7 +139,7 @@ class CaseListingHandlerTest {
         verify(bailCase, times(1)).write(SEND_DIRECTION_LIST, "Home Office");
         verify(bailCase, times(1)).write(DATE_OF_COMPLIANCE,
                                          zonedDueDateTime.toLocalDate().toString());
-        verify(hearingIdListProcessor).processHearingId(bailCase);
+        verify(hearingIdBailListProcessor).processHearingId(bailCase);
     }
 
     @Test
@@ -159,7 +159,7 @@ class CaseListingHandlerTest {
 
         verify(bailCase, times(0)).write(UPLOAD_BAIL_SUMMARY_ACTION_AVAILABLE, YesOrNo.YES);
         verify(bailCase, times(0)).write(SEND_DIRECTION_LIST, "Home Office");
-        verifyNoInteractions(hearingIdListProcessor);
+        verifyNoInteractions(hearingIdBailListProcessor);
     }
 
     @Test
@@ -186,7 +186,7 @@ class CaseListingHandlerTest {
         assertEquals(bailCase, response.getData());
         verify(bailCase, times(1)).write(LISTING_LOCATION, NEWCASTLE);
         verify(bailCase, times(1)).write(REF_DATA_LISTING_LOCATION_DETAIL, newCastle);
-        verify(hearingIdListProcessor).processHearingId(bailCase);
+        verify(hearingIdBailListProcessor).processHearingId(bailCase);
     }
 
     @Test
@@ -297,7 +297,7 @@ class CaseListingHandlerTest {
             .append(newPreviousListingDetails, emptyList());
         verify(bailCase, times(1)).write(eq(PREVIOUS_LISTING_DETAILS), any(List.class));
         verify(bailCase, times(1)).write(HAS_BEEN_RELISTED, YesOrNo.YES);
-        verify(hearingIdListProcessor).processPreviousHearingId(bailCaseBefore, bailCase);
+        verify(hearingIdBailListProcessor).processPreviousHearingId(bailCaseBefore, bailCase);
     }
 
     @Test
@@ -344,7 +344,7 @@ class CaseListingHandlerTest {
                                                                 idValueStoredPrevListingDetails);
         verify(bailCase, times(1)).write(eq(PREVIOUS_LISTING_DETAILS), any(List.class));
         verify(bailCase, times(1)).write(HAS_BEEN_RELISTED, YesOrNo.YES);
-        verify(hearingIdListProcessor).processPreviousHearingId(bailCaseBefore, bailCase);
+        verify(hearingIdBailListProcessor).processPreviousHearingId(bailCaseBefore, bailCase);
     }
 
     @Test
@@ -366,7 +366,7 @@ class CaseListingHandlerTest {
         Set<String> expectedErrors = new HashSet<>();
         expectedErrors.add("Relisting is only available after an initial listing.");
         assertEquals(response.getErrors(), expectedErrors);
-        verifyNoInteractions(hearingIdListProcessor);
+        verifyNoInteractions(hearingIdBailListProcessor);
     }
 
     @Test
@@ -390,7 +390,7 @@ class CaseListingHandlerTest {
         Set<String> expectedErrors = new HashSet<>();
         expectedErrors.add("Relisting is only available after an initial listing.");
         assertEquals(response.getErrors(), expectedErrors);
-        verifyNoInteractions(hearingIdListProcessor);
+        verifyNoInteractions(hearingIdBailListProcessor);
     }
 
     @Test
@@ -416,7 +416,7 @@ class CaseListingHandlerTest {
         Set<String> expectedErrors = new HashSet<>();
         expectedErrors.add("Relisting is only available after an initial listing.");
         assertEquals(response.getErrors(), expectedErrors);
-        verifyNoInteractions(hearingIdListProcessor);
+        verifyNoInteractions(hearingIdBailListProcessor);
     }
 
     @Test
@@ -443,6 +443,6 @@ class CaseListingHandlerTest {
         Set<String> expectedErrors = new HashSet<>();
         expectedErrors.add("Relisting is only available after an initial listing.");
         assertEquals(response.getErrors(), expectedErrors);
-        verifyNoInteractions(hearingIdListProcessor);
+        verifyNoInteractions(hearingIdBailListProcessor);
     }
 }

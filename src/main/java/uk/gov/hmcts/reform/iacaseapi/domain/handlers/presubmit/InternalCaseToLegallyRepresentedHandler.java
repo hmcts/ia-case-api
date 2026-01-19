@@ -71,7 +71,7 @@ public class InternalCaseToLegallyRepresentedHandler implements PreSubmitCallbac
         asylumCase.clear(INTERNAL_APPELLANT_EMAIL);
         asylumCase.clear(INTERNAL_APPELLANT_MOBILE_NUMBER);
 
-        //Adding legal rep details which aren't present in LegalRepresentativeUpdateDetailsHandler
+        //Adding legal rep details which aren't present in LegalRepresentativeBailUpdateDetailsHandler
         final OrganisationEntityResponse organisationEntityResponse =
                 professionalOrganisationRetriever.retrieve();
 
