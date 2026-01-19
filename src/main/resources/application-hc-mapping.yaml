@@ -61,8 +61,7 @@ hearingCentreMappings:
     - "Leeds"
     - "Lindholme"
     - "Low Newton"
-    - "Moorland Closed"
-    - "Moorland Open"
+    - "Moorland"
     - "New Hall"
     - "Northallerton"
     - "Ranby"
@@ -144,6 +143,7 @@ hearingCentreMappings:
   Newport:
     - "Ashfield"
     - "Bristol"
+    - "Campsfield House"
     - "Cardiff"
     - "Channings Wood"
     - "Dartmoor"
@@ -190,3 +190,4 @@ hearingCentreMappings:
     - "Yarlswood"
   Newcastle:
     - "Northumberland"
+

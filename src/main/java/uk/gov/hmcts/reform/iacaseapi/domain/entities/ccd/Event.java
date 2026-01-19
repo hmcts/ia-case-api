@@ -164,6 +164,7 @@ public enum Event {
     UPDATE_NEXT_HEARING_INFO("UpdateNextHearingInfo"),
     APPELLANT_IN_PERSON_MANUAL("appellantInPersonManual"),
     GENERATE_LIST_CMR_TASK("generateListCmrTask"),
+    ROLLBACK_MIGRATION("rollbackMigration"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");

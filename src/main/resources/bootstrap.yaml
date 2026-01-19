@@ -1,0 +1,15 @@
+spring:
+  cloud:
+    propertiesvolume:
+      prefixed: false
+      paths: /mnt/secrets/ia
+      aliases:
+        ia-system-access-username: IA_SYSTEM_ACCESS_USERNAME
+        ia-system-access-password: IA_SYSTEM_ACCESS_PASSWORD
+        idam-client-id: IA_IDAM_CLIENT_ID
+        idam-secret: IA_IDAM_SECRET
+        idam-redirect-uri: IA_IDAM_REDIRECT_URI
+        s2s-secret: IA_S2S_SECRET
+        s2s-microservice: IA_S2S_MICROSERVICE
+        AppInsightsInstrumentationKey: azure.application-insights.instrumentation-key
+        ia-config-validator-secret: IA_CONFIG_VALIDATOR_SECRET
