@@ -4,7 +4,7 @@ import java.util.function.Consumer;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.ObjectProvider;
 
-public class TimedEventMessageConverterCustomizer<T> implements ObjectProvider<T> {
+public class EmptyObjectProvider<T> implements ObjectProvider<T> {
     @Override
     public T getObject() throws BeansException {
         return null;
