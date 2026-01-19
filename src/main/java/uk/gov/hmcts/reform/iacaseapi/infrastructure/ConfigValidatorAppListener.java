@@ -22,6 +22,11 @@ public class ConfigValidatorAppListener implements ApplicationListener<ContextRe
     @Autowired
     private Environment environment;
 
+    @Autowired
+    public ConfigValidatorAppListener(Environment environment)  {
+        this.environment = environment;
+    }
+
     @Value("${ia.config.validator.secret}")
     private String iaConfigValidatorSecret;
 

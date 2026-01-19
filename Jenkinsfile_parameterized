@@ -33,8 +33,8 @@ def secrets = [
     secret('test-judge-x-password', 'TEST_JUDGE_X_PASSWORD'),
     secret('test-citizen-username', 'TEST_CITIZEN_USERNAME'),
     secret('test-citizen-password', 'TEST_CITIZEN_PASSWORD'),
-    secret('ia-system-access-username', 'IA_SYSTEM_USERNAME'),
-    secret('ia-system-access-password', 'IA_SYSTEM_PASSWORD'),
+    secret('ia-system-access-username', 'IA_SYSTEM_ACCESS_USERNAME'),
+    secret('ia-system-access-password', 'IA_SYSTEM_ACCESS_PASSWORD'),
     secret('test-law-firm-share-case-a-username', 'TEST_LAW_FIRM_SHARE_CASE_A_USERNAME'),
     secret('test-law-firm-share-case-a-password', 'TEST_LAW_FIRM_SHARE_CASE_A_PASSWORD'),
     secret('test-law-firm-org-success-username', 'TEST_LAW_FIRM_ORG_SUCCESS_USERNAME'),
@@ -91,6 +91,7 @@ withParameterizedPipeline(params.TYPE, params.PRODUCT_NAME, params.APP, params.E
   env.IA_HOME_OFFICE_INTEGRATION_API_URL = "http://ia-home-office-integration-api-aat.service.core-compute-aat.internal/"
   env.IA_IDAM_REDIRECT_URI = "https://ia-case-api-aat.service.core-compute-aat.internal/oauth2/callback"
   env.CCD_URL = "http://ccd-data-store-api-aat.service.core-compute-aat.internal"
+  env.CCD_CASE_ACCESS_URL = "http://ccd-data-store-api-aat.service.core-compute-aat.internal"
   env.CCD_GW_URL = "http://dm-store-aat.service.core-compute-aat.internal"
   env.DM_URL = "http://dm-store-aat.service.core-compute-aat.internal"
   env.IDAM_URL = "https://idam-api.aat.platform.hmcts.net"

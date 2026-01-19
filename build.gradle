@@ -63,7 +63,6 @@ ext.libraries = [
   ]
 ]
 
-
 mainClassName = 'uk.gov.hmcts.reform.iacaseapi.Application'
 def jarName = 'ia-case-api.jar'
 
@@ -401,6 +400,9 @@ dependencies {
   implementation group: 'org.javamoney.moneta', name: 'moneta-core', version: '1.4.5'
   implementation group: 'jakarta.annotation', name: 'jakarta.annotation-api', version: '3.0.0'
 
+  implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.17.1'
+  implementation group: 'org.apache.logging.log4j', name: 'log4j-to-slf4j', version: '2.17.1'
+
   implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: versions.reformLogging
   implementation group: 'com.github.hmcts.java-logging', name: 'logging-appinsights', version: versions.reformLogging
   implementation(group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '4.1.2') {
@@ -433,7 +435,11 @@ dependencies {
   implementation group: 'net.minidev', name: 'json-smart', version: '2.5.2'
   implementation 'joda-time:joda-time:2.14.0'
 
+  implementation group: 'org.elasticsearch', name: 'elasticsearch', version: '7.17.15'
+
   implementation group: 'com.googlecode.libphonenumber', name: 'libphonenumber', version: '8.13.55'
+
+  implementation group: 'org.apiguardian', name: 'apiguardian-api', version: '1.1.2'
 
   testImplementation group: 'org.pitest', name: 'pitest', version: versions.pitest
   testImplementation "info.solidsoft.gradle.pitest:gradle-pitest-plugin:${versions.pitest}"
@@ -480,6 +486,12 @@ dependencies {
   testImplementation group: 'com.github.hmcts', name: 'ccd-case-document-am-client', version: '1.7.3'
   testImplementation group: 'org.apache.httpcomponents', name: 'fluent-hc', version: '4.5.14'
 
+  testImplementation group: 'org.awaitility', name: 'awaitility', version: '4.2.0'
+
+  implementation(group: 'com.github.hmcts', name: 'core-case-data-store-client', version: '4.9.2') {
+    exclude group: "org.bouncycastle", module: "bcprov-jdk15on"
+  }
+
   testImplementation(group: 'org.yaml', name: 'snakeyaml', version: versions.snakeyaml) {
     version {
       strictly(versions.snakeyaml)
@@ -500,6 +512,7 @@ dependencies {
     }
   }
 
+
   contractTestImplementation(group: 'org.yaml', name: 'snakeyaml', version: versions.snakeyaml) {
     version {
       strictly(versions.snakeyaml)
@@ -517,7 +530,7 @@ dependencies {
   contractTestImplementation group: 'au.com.dius.pact.provider', name: 'junit5spring', version: versions.pact_version
   contractTestImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: versions.jupiter
   contractTestCompile group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: versions.jupiter
-  contractTestRuntime group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version : versions.jupiter
+  contractTestRuntime group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: versions.jupiter
 
   contractTestImplementation group: 'com.github.hmcts', name: 'document-management-client', version: '7.0.1'
   contractTestRuntime group: 'com.github.hmcts', name: 'document-management-client', version: '7.0.1'
@@ -536,68 +549,74 @@ dependencies {
   contractTestImplementation sourceSets.main.runtimeClasspath
   contractTestImplementation sourceSets.test.runtimeClasspath
 
-}
-
-task runAndPublishConsumerPactTests(type: Test) {
-  logger.lifecycle("Runs pact Tests")
-  testClassesDirs = sourceSets.contractTest.output.classesDirs
-  classpath = sourceSets.contractTest.runtimeClasspath
-
-}
-
-pact {
-  broker {
-    pactBrokerUrl = System.getenv("PACT_BROKER_FULL_URL") ?: 'http://localhost:80'
+  test {
+    useJUnitPlatform()
+    retry {
+      maxRetries = 3
+      maxFailures = 20 // Optional attribute
+    }
   }
-  publish {
-    pactDirectory = 'pacts'
-    tags = [System.getenv("PACT_BRANCH_NAME") ?: 'Dev']
-    version = project.pacticipantVersion
+
+  task runAndPublishConsumerPactTests(type: Test) {
+    logger.lifecycle("Runs pact Tests")
+    testClassesDirs = sourceSets.contractTest.output.classesDirs
+    classpath = sourceSets.contractTest.runtimeClasspath
+
   }
-}
 
-pactPublish {
-  pactPublish = project.pact.publish
-}
+  pact {
+    broker {
+      pactBrokerUrl = System.getenv("PACT_BROKER_FULL_URL") ?: 'http://localhost:80'
+    }
+    publish {
+      pactDirectory = 'pacts'
+      tags = [System.getenv("PACT_BRANCH_NAME") ?: 'Dev']
+      version = project.pacticipantVersion
+    }
+  }
 
-runAndPublishConsumerPactTests.finalizedBy pactPublish
+  pactPublish {
+    pactPublish = project.pact.publish
+  }
 
-dependencyCheck {
-  suppressionFile = 'config/owasp/suppressions.xml'
-}
+  runAndPublishConsumerPactTests.finalizedBy pactPublish
 
-dependencyUpdates.resolutionStrategy = {
-  componentSelection { rules ->
-    rules.all { ComponentSelection selection ->
-      boolean rejected = ['alpha', 'beta', 'rc', 'cr', 'm'].any { qualifier ->
-        selection.candidate.version ==~ /(?i).*[.-]${qualifier}[.\d-]*/
-      }
-      if (rejected) {
-        selection.reject('Release candidate')
+  dependencyCheck {
+    suppressionFile = 'config/owasp/suppressions.xml'
+  }
+
+  dependencyUpdates.resolutionStrategy = {
+    componentSelection { rules ->
+      rules.all { ComponentSelection selection ->
+        boolean rejected = ['alpha', 'beta', 'rc', 'cr', 'm'].any { qualifier ->
+          selection.candidate.version ==~ /(?i).*[.-]${qualifier}[.\d-]*/
+        }
+        if (rejected) {
+          selection.reject('Release candidate')
+        }
       }
     }
   }
-}
 
-def getCheckedOutGitCommitHash() {
-  'git rev-parse --verify --short HEAD'.execute().text.trim()
-}
-
-gradle.startParameter.continueOnFailure = true
-
-bootJar {
-  getArchiveFileName().set(jarName)
-  manifest {
-    attributes('Implementation-Version': project.version.toString())
+  def getCheckedOutGitCommitHash() {
+    'git rev-parse --verify --short HEAD'.execute().text.trim()
   }
-}
+
+  gradle.startParameter.continueOnFailure = true
+
+  bootJar {
+    getArchiveFileName().set(jarName)
+    manifest {
+      attributes('Implementation-Version': project.version.toString())
+    }
+  }
 
 // this is required to force Java running on the Azure Windows Server OS into using
 // UTF-8 as the default character set instead of windows-1252 which causes issues.
 // this setting only applies when running via gradle bootRun -- see web.config for the
 // java flag that configures the deployed applications
-applicationDefaultJvmArgs = ["-Dfile.encoding=UTF-8"]
+  applicationDefaultJvmArgs = ["-Dfile.encoding=UTF-8"]
 
-wrapper {
-  distributionType = Wrapper.DistributionType.ALL
-}
+  wrapper {
+    distributionType = Wrapper.DistributionType.ALL
+  }

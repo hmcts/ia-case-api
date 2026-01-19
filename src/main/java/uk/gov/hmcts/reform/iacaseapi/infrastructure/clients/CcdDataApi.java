@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.clients;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static uk.gov.hmcts.reform.iacaseapi.infrastructure.config.ServiceTokenGeneratorConfiguration.SERVICE_AUTHORIZATION;
 
 import org.springframework.cloud.openfeign.FeignClient;
@@ -86,5 +87,17 @@ public interface CcdDataApi {
         @PathVariable("jid") String jurisdiction,
         @PathVariable("ctid") String caseType,
         @RequestBody CaseDataContent content
+    );
+
+    @GetMapping(value = "/caseworkers/{uid}/jurisdictions/{jid}/case-types/{ctid}/cases/{cid}",
+        produces = APPLICATION_JSON_VALUE,
+        consumes = APPLICATION_JSON_VALUE)
+    CaseDetails get(
+        @RequestHeader(AUTHORIZATION) String userToken,
+        @RequestHeader(SERVICE_AUTHORIZATION) String s2sToken,
+        @PathVariable("uid") String userId,
+        @PathVariable("jid") String jurisdiction,
+        @PathVariable("ctid") String caseType,
+        @PathVariable("cid") String id
     );
 }

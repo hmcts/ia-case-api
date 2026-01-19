@@ -8,8 +8,11 @@ spring:
         em-stitching-enabled: IA_EM_STITCHING_ENABLED
         system-username: IA_SYSTEM_USERNAME
         system-password: IA_SYSTEM_PASSWORD
+        ia-system-access-username: IA_SYSTEM_ACCESS_USERNAME
+        ia-system-access-password: IA_SYSTEM_ACCESS_PASSWORD
         idam-client-id: IA_IDAM_CLIENT_ID
         idam-secret: IA_IDAM_SECRET
+        idam-redirect-uri: IA_IDAM_REDIRECT_URI
         s2s-secret: IA_S2S_SECRET
         s2s-microservice: IA_S2S_MICROSERVICE
         prof-ref-data-url: PROF_REF_DATA_URL
