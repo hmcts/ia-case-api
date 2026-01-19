@@ -53,7 +53,7 @@ public class GenerateDocumentMidEventHandler implements PreSubmitCallbackHandler
         }
 
         log.info("delegating to docs api on mid event...");
-        AsylumCase asylumCaseWithGeneratedDocument = documentGenerator.generate(callback);
+        AsylumCase asylumCaseWithGeneratedDocument = documentGenerator.generateOnMidEvent(callback);
 
         return new PreSubmitCallbackResponse<>(asylumCaseWithGeneratedDocument);
     }

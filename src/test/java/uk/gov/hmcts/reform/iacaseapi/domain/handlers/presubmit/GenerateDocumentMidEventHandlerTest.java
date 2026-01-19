@@ -59,14 +59,14 @@ class GenerateDocumentMidEventHandlerTest {
 
     @Test
     void should_generate_document_and_return_asylum_case() {
-        when(documentGenerator.generate(callback)).thenReturn(asylumCaseWithGeneratedDocument);
+        when(documentGenerator.generateOnMidEvent(callback)).thenReturn(asylumCaseWithGeneratedDocument);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             handler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCaseWithGeneratedDocument, callbackResponse.getData());
-        verify(documentGenerator, times(1)).generate(callback);
+        verify(documentGenerator, times(1)).generateOnMidEvent(callback);
     }
 
     @Test
