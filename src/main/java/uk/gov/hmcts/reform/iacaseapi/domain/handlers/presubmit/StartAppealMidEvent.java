@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_HAS_FIXED_ADDRESS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_HAS_FIXED_ADDRESS_ADMIN_J;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_IN_DETENTION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_IN_UK;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CUSTODIAL_SENTENCE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DATE_CLIENT_LEAVE_UK;
@@ -116,6 +117,9 @@ public class StartAppealMidEvent implements PreSubmitCallbackHandler<AsylumCase>
                 }
             }
         } else if (callback.getPageId().equals(OUT_OF_COUNTRY_PAGE_ID)) {
+            if (!readAsBool(asylumCase, APPELLANT_IN_UK)) {
+                asylumCase.write(APPELLANT_IN_DETENTION, YesOrNo.NO);
+            }
             if (callback.getEvent() == Event.EDIT_APPEAL_AFTER_SUBMIT) {
                 // Will only happen for LR as Admins are not allowed to make a OOC appeal as of now.
                 CaseDetails<AsylumCase> previousCaseDetails = callback.getCaseDetailsBefore().orElseThrow(() -> new RequiredFieldMissingException("Previous Case Details not found"));
@@ -181,6 +185,10 @@ public class StartAppealMidEvent implements PreSubmitCallbackHandler<AsylumCase>
         }
 
         return response;
+    }
+
+    private boolean readAsBool(AsylumCase data, AsylumCaseFieldDefinition fieldDef) {
+        return data.read(fieldDef, YesOrNo.class).orElse(YesOrNo.NO).equals(YesOrNo.YES);
     }
 
     private void clearSponsorDetails(AsylumCase asylumCase) {
