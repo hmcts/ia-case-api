@@ -1,0 +1,37 @@
+{
+  "description": "Edit the application to remove legal rep details (pre-submit REST call)",
+  "request": {
+    "uri": "/bail/ccdAboutToSubmit",
+    "credentials": "AdminOfficer",
+    "input": {
+      "id": 1111,
+      "eventId": "editBailApplication",
+      "state": "applicationStarted",
+      "caseData": {
+        "template": "minimal-application-started.json",
+        "replacements": {
+          "applicationSubmittedBy": "Legal Representative",
+          "isAdmin": "Yes",
+          "hasLegalRep": "No",
+          "legalRepName": "John",
+          "legalRepFamilyName": "Doe"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-application-started.json",
+      "replacements": {
+        "isAdmin": "Yes",
+        "hasLegalRep": "No",
+        "legalRepName": null,
+        "legalRepFamilyName": null,
+        "hasFinancialCondSupporter": null,
+        "interpreterLanguages": null
+      }
+    }
+  }
+}

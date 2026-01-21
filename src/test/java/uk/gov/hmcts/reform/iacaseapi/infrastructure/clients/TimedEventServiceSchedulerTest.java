@@ -78,7 +78,7 @@ class TimedEventServiceSchedulerTest {
         when(timedEventServiceApi.submitTimedEvent(authToken, s2sToken, timedEvent)).thenThrow(FeignException.class);
 
         assertThatThrownBy(() -> timedEventServiceScheduler.schedule(timedEvent))
-            .isInstanceOf(AsylumCaseServiceResponseException.class)
+            .isInstanceOf(ServiceResponseException.class)
             .hasCauseInstanceOf(FeignException.class);
     }
 
@@ -114,7 +114,7 @@ class TimedEventServiceSchedulerTest {
         String caseId = "1234567890";
         ZonedDateTime scheduledDate = ZonedDateTime.now().plusDays(1);
         Event event = Event.REQUEST_HEARING_REQUIREMENTS_FEATURE;
-        
+
         TimedEvent expectedTimedEvent = new TimedEvent(
             "",
             event,
@@ -123,7 +123,7 @@ class TimedEventServiceSchedulerTest {
             "Asylum",
             Long.parseLong(caseId)
         );
-        
+
         when(timedEventServiceApi.submitTimedEvent(eq(authToken), eq(s2sToken), any(TimedEvent.class)))
             .thenReturn(expectedTimedEvent);
 
@@ -140,7 +140,7 @@ class TimedEventServiceSchedulerTest {
         String caseId = "1234567890";
         Event event = Event.REQUEST_HEARING_REQUIREMENTS_FEATURE;
         LocalDateTime now = LocalDateTime.now();
-        
+
         when(timedEventServiceApi.submitTimedEvent(eq(authToken), eq(s2sToken), any(TimedEvent.class)))
             .thenReturn(new TimedEvent("", event, ZonedDateTime.now(), "IA", "Asylum", Long.parseLong(caseId)));
 

@@ -31,21 +31,21 @@ public class PreSubmitCallbackDispatcher<T extends CaseData> {
     private final EventValidCheckers<T> eventValidChecker;
 
     public PreSubmitCallbackDispatcher(
-            CcdEventAuthorizor ccdEventAuthorizor,
-            List<PreSubmitCallbackHandler<T>> callbackHandlers,
-            EventValidCheckers<T> eventValidChecker,
-            List<PreSubmitCallbackStateHandler<T>> callbackStateHandlers
+        CcdEventAuthorizor ccdEventAuthorizor,
+        List<PreSubmitCallbackHandler<T>> callbackHandlers,
+        EventValidCheckers<T> eventValidChecker,
+        List<PreSubmitCallbackStateHandler<T>> callbackStateHandlers
     ) {
         requireNonNull(ccdEventAuthorizor, "ccdEventAuthorizor must not be null");
         requireNonNull(callbackHandlers, "callbackHandlers must not be null");
         this.ccdEventAuthorizor = ccdEventAuthorizor;
+        // sorting handlers by handler class name
         this.sortedCallbackHandlers = callbackHandlers.stream()
-            // sorting handlers by handler class name
             .sorted(Comparator.comparing(h -> h.getClass().getSimpleName()))
             .collect(Collectors.toList());
         this.eventValidChecker = eventValidChecker;
+        // sorting handlers by handler class name
         this.callbackStateHandlers = callbackStateHandlers.stream()
-            // sorting handlers by handler class name
             .sorted(Comparator.comparing(h -> h.getClass().getSimpleName()))
             .collect(Collectors.toList());
     }
@@ -56,8 +56,10 @@ public class PreSubmitCallbackDispatcher<T extends CaseData> {
     ) {
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
-        log.info("Checking user event access for case reference: {}, event: '{}'",
-                callback.getCaseDetails().getId(), callback.getEvent().toString());
+        log.info(
+            "Checking user event access for case reference: {}, event: '{}'",
+            callback.getCaseDetails().getId(), callback.getEvent().toString()
+        );
         ccdEventAuthorizor.throwIfNotAuthorized(callback.getEvent());
 
         T caseData =
@@ -72,8 +74,20 @@ public class PreSubmitCallbackDispatcher<T extends CaseData> {
 
         if (check.isValid()) {
 
-            dispatchToHandlers(callbackStage, callback, sortedCallbackHandlers, callbackResponse, DispatchPriority.EARLIEST);
-            dispatchToHandlers(callbackStage, callback, sortedCallbackHandlers, callbackResponse, DispatchPriority.EARLY);
+            dispatchToHandlers(
+                callbackStage,
+                callback,
+                sortedCallbackHandlers,
+                callbackResponse,
+                DispatchPriority.EARLIEST
+            );
+            dispatchToHandlers(
+                callbackStage,
+                callback,
+                sortedCallbackHandlers,
+                callbackResponse,
+                DispatchPriority.EARLY
+            );
 
             State state = dispatchToStateHandlers(callbackStage, callback, callbackStateHandlers, callbackResponse);
 
@@ -94,9 +108,27 @@ public class PreSubmitCallbackDispatcher<T extends CaseData> {
                 );
             }
 
-            dispatchToHandlers(callbackStage, callback, sortedCallbackHandlers, callbackResponse, DispatchPriority.LATE);
-            dispatchToHandlers(callbackStage, callback, sortedCallbackHandlers, callbackResponse, DispatchPriority.LATEST);
-            dispatchToHandlers(callbackStage, callback, sortedCallbackHandlers, callbackResponse, DispatchPriority.LAST);
+            dispatchToHandlers(
+                callbackStage,
+                callback,
+                sortedCallbackHandlers,
+                callbackResponse,
+                DispatchPriority.LATE
+            );
+            dispatchToHandlers(
+                callbackStage,
+                callback,
+                sortedCallbackHandlers,
+                callbackResponse,
+                DispatchPriority.LATEST
+            );
+            dispatchToHandlers(
+                callbackStage,
+                callback,
+                sortedCallbackHandlers,
+                callbackResponse,
+                DispatchPriority.LAST
+            );
         } else {
             callbackResponse.addError(check.getInvalidReason());
         }
@@ -111,16 +143,16 @@ public class PreSubmitCallbackDispatcher<T extends CaseData> {
 
         State finalState = null;
         for (PreSubmitCallbackStateHandler<T> callbackStateHandler : callbackStateHandlers) {
-
+            CaseDetails<T> caseDetails = callback.getCaseDetails();
             Callback<T> callbackForHandler = new Callback<>(
                 new CaseDetails<>(
-                    callback.getCaseDetails().getId(),
-                    callback.getCaseDetails().getJurisdiction(),
-                    callback.getCaseDetails().getState(),
+                    caseDetails.getId(),
+                    caseDetails.getJurisdiction(),
+                    caseDetails.getState(),
                     callbackResponse.getData(),
-                    callback.getCaseDetails().getCreatedDate(),
-                    callback.getCaseDetails().getSecurityClassification(),
-                    callback.getCaseDetails().getSupplementaryData()
+                    caseDetails.getCreatedDate(),
+                    caseDetails.getSecurityClassification(),
+                    caseDetails.getSupplementaryData()
                 ),
                 callback.getCaseDetailsBefore(),
                 callback.getEvent()
@@ -129,7 +161,6 @@ public class PreSubmitCallbackDispatcher<T extends CaseData> {
             callbackForHandler.setPageId(callback.getPageId());
 
             if (callbackStateHandler.canHandle(callbackStage, callbackForHandler)) {
-
                 PreSubmitCallbackResponse<T> callbackResponseFromHandler =
                     callbackStateHandler.handle(callbackStage, callbackForHandler, callbackResponse);
 
@@ -140,9 +171,7 @@ public class PreSubmitCallbackDispatcher<T extends CaseData> {
                 }
             }
         }
-
         return finalState;
-
     }
 
     private void dispatchToHandlers(
@@ -153,18 +182,17 @@ public class PreSubmitCallbackDispatcher<T extends CaseData> {
         DispatchPriority dispatchPriority
     ) {
         for (PreSubmitCallbackHandler<T> callbackHandler : callbackHandlers) {
-
             if (callbackHandler.getDispatchPriority() == dispatchPriority) {
-
+                CaseDetails<T> caseDetails = callback.getCaseDetails();
                 Callback<T> callbackForHandler = new Callback<>(
                     new CaseDetails<>(
-                        callback.getCaseDetails().getId(),
-                        callback.getCaseDetails().getJurisdiction(),
-                        callback.getCaseDetails().getState(),
+                        caseDetails.getId(),
+                        caseDetails.getJurisdiction(),
+                        caseDetails.getState(),
                         callbackResponse.getData(),
-                        callback.getCaseDetails().getCreatedDate(),
-                        callback.getCaseDetails().getSecurityClassification(),
-                        callback.getCaseDetails().getSupplementaryData()
+                        caseDetails.getCreatedDate(),
+                        caseDetails.getSecurityClassification(),
+                        caseDetails.getSupplementaryData()
                     ),
                     callback.getCaseDetailsBefore(),
                     callback.getEvent()
@@ -173,7 +201,6 @@ public class PreSubmitCallbackDispatcher<T extends CaseData> {
                 callbackForHandler.setPageId(callback.getPageId());
 
                 if (callbackHandler.canHandle(callbackStage, callbackForHandler)) {
-
                     PreSubmitCallbackResponse<T> callbackResponseFromHandler =
                         callbackHandler.handle(callbackStage, callbackForHandler);
 

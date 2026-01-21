@@ -15,9 +15,9 @@ public class EventValidCheckers<T extends CaseData> {
 
     public EventValid check(Callback<T> callback) {
         return checkers.stream()
-                .map(checker -> checker.check(callback))
-                .filter(result -> !result.isValid())
-                .findFirst()
-                .orElse(EventValid.VALID_EVENT);
+            .map(checker -> checker.check(callback))
+            .filter(result -> !result.isValid())
+            .findFirst()
+            .orElse(EventValid.VALID_EVENT);
     }
 }

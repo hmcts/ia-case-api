@@ -1,0 +1,56 @@
+{
+  "description": "Update legal representative details by legal rep role - update LR details",
+  "request": {
+    "uri": "/bail/ccdAboutToSubmit",
+    "credentials": "LegalRepresentativeOrgSuccess",
+    "input": {
+      "id": 1111,
+      "eventId": "updateBailLegalRepDetails",
+      "state": "applicationSubmitted",
+      "caseData": {
+        "template": "minimal-application-started.json",
+        "replacements": {
+          "updateLegalRepCompany": "Company example",
+          "updateLegalRepName": "Legal rep Bob",
+          "updateLegalRepFamilyName": "Jones",
+          "updateLegalRepEmail1": "example123@test.com",
+          "updateLegalRepPhone": "01234567891",
+          "updateLegalRepReference": "ref-678910",
+          "legalRepCompany": "Company original",
+          "legalRepName": "Legal rep John Doe",
+          "legalRepFamilyName": "Tim",
+          "legalRepEmail": "JohnDoe@exampletest.com",
+          "legalRepPhone": "01111111111",
+          "legalRepReference": "ref-12345"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-application-started.json",
+      "replacements": {
+        "currentCaseStateVisibleToJudge": "applicationSubmitted",
+        "currentCaseStateVisibleToAllUsers": "applicationSubmitted",
+        "currentCaseStateVisibleToHomeOffice": "applicationSubmitted",
+        "currentCaseStateVisibleToAdminOfficer": "applicationSubmitted",
+        "currentCaseStateVisibleToLegalRepresentative": "applicationSubmitted",
+        "updateLegalRepCompany": null,
+        "updateLegalRepName": null,
+        "updateLegalRepFamilyName": null,
+        "updateLegalRepEmail1": null,
+        "updateLegalRepPhone": null,
+        "updateLegalRepReference": null,
+        "legalRepCompany": "Company example",
+        "legalRepName": "Legal rep Bob",
+        "legalRepFamilyName": "Jones",
+        "legalRepEmail": "example123@test.com",
+        "legalRepPhone": "01234567891",
+        "legalRepReference": "ref-678910",
+        "isLegallyRepresentedForFlag": "Yes"
+      }
+    }
+  }
+}

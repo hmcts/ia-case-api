@@ -1,21 +1,21 @@
 #!groovy
 
 properties([
-    // H allow predefined but random minute see https://en.wikipedia.org/wiki/Cron#Non-standard_characters
-    pipelineTriggers([cron('H 8 * * 1-5')]),
-    parameters([
-        string(name: 'URL_TO_TEST', defaultValue: 'http://ia-case-api-aat.service.core-compute-aat.internal', description: 'The URL you want to run these tests against'),
-        string(name: 'SecurityRules',
-                defaultValue: 'https://raw.githubusercontent.com/hmcts/security-test-rules/master/conf/security-rules.conf',
-                description: 'The URL you want to run these tests against'),
-        booleanParam(name: 'skipSmokeTest', defaultValue: false, description: 'Tick the checkbox to skip Smoke Test stage'),
-        booleanParam(name: 'skipUnitTests', defaultValue: false, description: 'Tick the checkbox to skip Unit Tests stage'),
-        booleanParam(name: 'skipIntegrationTests', defaultValue: false, description: 'Tick the checkbox to skip Integration Tests stage'),
-        booleanParam(name: 'skipFortifyScan', defaultValue: false, description: 'Tick the checkbox to skip Fortify Scan stage'),
-        booleanParam(name: 'skipSecurityScan', defaultValue: false, description: 'Tick the checkbox to skip Security Scan stage'),
-        booleanParam(name: 'skipMutationTests', defaultValue: false, description: 'Tick the checkbox to skip Mutation Tests stage'),
-        booleanParam(name: 'skipFullFunctionalTests', defaultValue: false, description: 'Tick the checkbox to skip Full Functional Tests stage'),
-    ])
+  // H allow predefined but random minute see https://en.wikipedia.org/wiki/Cron#Non-standard_characters
+  pipelineTriggers([cron('H 8 * * 1-5')]),
+  parameters([
+    string(name: 'URL_TO_TEST', defaultValue: 'http://ia-case-api-aat.service.core-compute-aat.internal', description: 'The URL you want to run these tests against'),
+    string(name: 'SecurityRules',
+      defaultValue: 'https://raw.githubusercontent.com/hmcts/security-test-rules/master/conf/security-rules.conf',
+      description: 'The URL you want to run these tests against'),
+    booleanParam(name: 'skipSmokeTest', defaultValue: false, description: 'Tick the checkbox to skip Smoke Test stage'),
+    booleanParam(name: 'skipUnitTests', defaultValue: false, description: 'Tick the checkbox to skip Unit Tests stage'),
+    booleanParam(name: 'skipIntegrationTests', defaultValue: false, description: 'Tick the checkbox to skip Integration Tests stage'),
+    booleanParam(name: 'skipFortifyScan', defaultValue: false, description: 'Tick the checkbox to skip Fortify Scan stage'),
+    booleanParam(name: 'skipSecurityScan', defaultValue: false, description: 'Tick the checkbox to skip Security Scan stage'),
+    booleanParam(name: 'skipMutationTests', defaultValue: false, description: 'Tick the checkbox to skip Mutation Tests stage'),
+    booleanParam(name: 'skipFullFunctionalTests', defaultValue: false, description: 'Tick the checkbox to skip Full Functional Tests stage'),
+  ])
 ])
 
 @Library("Infrastructure")
@@ -26,238 +26,233 @@ def product = "ia"
 def component = "case-api"
 
 def secrets = [
-        'ia-${env}': [
-
-                secret('test-caseofficer-username', 'TEST_CASEOFFICER_USERNAME'),
-                secret('test-caseofficer-password', 'TEST_CASEOFFICER_PASSWORD'),
-                secret('test-law-firm-a-username', 'TEST_LAW_FIRM_A_USERNAME'),
-                secret('test-law-firm-a-password', 'TEST_LAW_FIRM_A_PASSWORD'),
-                secret('test-adminofficer-username', 'TEST_ADMINOFFICER_USERNAME'),
-                secret('test-adminofficer-password', 'TEST_ADMINOFFICER_PASSWORD'),
-
-                secret('addressLookupToken', 'ADDRESS_LOOKUP_TOKEN'),
-                secret('pcq-token-key', 'PCQ_TOKEN_KEY'),
-                secret('ia-redis-access-key', 'IA_REDIS_ACCESS_KEY'),
-                secret('ia-redis-connection-string', 'IA_REDIS_CONNECTION_STRING'),
-                secret('homeoffice-client-id', 'IA_HOMEOFFICE_CLIENT_ID'),
-                secret('homeoffice-secret', 'IA_HOMEOFFICE_SECRET'),
-                secret('test-homeoffice-apc-username', 'TEST_HOMEOFFICE_APC_USERNAME'),
-                secret('test-homeoffice-apc-password', 'TEST_HOMEOFFICE_APC_PASSWORD'),
-                secret('test-homeoffice-lart-username', 'TEST_HOMEOFFICE_LART_USERNAME'),
-                secret('test-homeoffice-lart-password', 'TEST_HOMEOFFICE_LART_PASSWORD'),
-                secret('test-homeoffice-pou-username', 'TEST_HOMEOFFICE_POU_USERNAME'),
-                secret('test-homeoffice-pou-password', 'TEST_HOMEOFFICE_POU_PASSWORD'),
-                secret('test-homeoffice-generic-username', 'TEST_HOMEOFFICE_GENERIC_USERNAME'),
-                secret('test-homeoffice-generic-password', 'TEST_HOMEOFFICE_GENERIC_PASSWORD'),
-                secret('test-judge-x-username', 'TEST_JUDGE_X_USERNAME'),
-                secret('test-judge-x-password', 'TEST_JUDGE_X_PASSWORD'),
-                secret('test-law-firm-share-case-a-username', 'TEST_LAW_FIRM_SHARE_CASE_A_USERNAME'),
-                secret('test-law-firm-share-case-a-password', 'TEST_LAW_FIRM_SHARE_CASE_A_PASSWORD'),
-                secret('test-citizen-username', 'TEST_CITIZEN_USERNAME'),
-                secret('test-citizen-password', 'TEST_CITIZEN_PASSWORD'),
-                secret('ia-system-access-username', 'IA_SYSTEM_ACCESS_USERNAME'),
-                secret('ia-system-access-password', 'IA_SYSTEM_ACCESS_PASSWORD'),
-
-                secret('test-law-firm-org-success-username', 'TEST_LAW_FIRM_ORG_SUCCESS_USERNAME'),
-                secret('test-law-firm-org-success-password', 'TEST_LAW_FIRM_ORG_SUCCESS_PASSWORD'),
-
-                secret('test-law-firm-org-deleted-username', 'TEST_LAW_FIRM_ORG_DELETED_USERNAME'),
-                secret('test-law-firm-org-deleted-password', 'TEST_LAW_FIRM_ORG_DELETED_PASSWORD'),
-
-                secret('idam-client-id', 'IA_IDAM_CLIENT_ID'),
-                secret('idam-secret', 'IA_IDAM_SECRET'),
-                secret('s2s-secret', 'IA_S2S_SECRET'),
-                secret('s2s-microservice', 'IA_S2S_MICROSERVICE'),
-                secret('prof-ref-data-url', 'PROF_REF_DATA_URL'),
-                secret('docmosis-enabled', 'IA_DOCMOSIS_ENABLED'),
-                secret('em-stitching-enabled', 'IA_EM_STITCHING_ENABLED'),
-                secret('submit-hearing-requirements-enabled', 'IA_SUBMIT_HEARING_REQUIREMENTS_ENABLED'),
-                secret('launch-darkly-sdk-key', 'LAUNCH_DARKLY_SDK_KEY'),
-                secret('ia-gov-notify-key', 'IA_GOV_NOTIFY_KEY'),
-                secret('ia-bail-gov-notify-key', 'IA_BAIL_GOV_NOTIFY_KEY'),
-                secret('app-insights-connection-string', 'app-insights-connection-string'),
-                secret('postgres-auth-values-password', 'PG_AUTH_VALUES_YAML_PASS'),
-                secret('generic-values-preview-password', 'GENERIC_VALUES_PREVIEW_YAML_PASS'),
-                secret('generic-docker-pact-broker-password', 'GENERIC_DOCKER_PACT_BROKER_YAML_PASS'),
-                secret('postgres-auth-values-tes-password', 'POSTGRES_AUTH_VALUES_TES_PASSWORD'),
-
-                secret('hearing-centre-activation-date-bradford', 'IA_HEARING_CENTRE_ACTIVATION_DATE_BRADFORD'),
-                secret('hearing-centre-activation-date-manchester', 'IA_HEARING_CENTRE_ACTIVATION_DATE_MANCHESTER'),
-                secret('hearing-centre-activation-date-newport', 'IA_HEARING_CENTRE_ACTIVATION_DATE_NEWPORT'),
-                secret('hearing-centre-activation-date-taylor-house', 'IA_HEARING_CENTRE_ACTIVATION_DATE_TAYLOR_HOUSE'),
-                secret('hearing-centre-activation-date-north-shields', 'IA_HEARING_CENTRE_ACTIVATION_DATE_NORTH_SHIELDS'),
-                secret('hearing-centre-activation-date-birmingham', 'IA_HEARING_CENTRE_ACTIVATION_DATE_BIRMINGHAM'),
-                secret('hearing-centre-activation-date-hatton-cross', 'IA_HEARING_CENTRE_ACTIVATION_DATE_HATTON_CROSS'),
-                secret('hearing-centre-activation-date-glasgow', 'IA_HEARING_CENTRE_ACTIVATION_DATE_GLASGOW'),
-
-                secret('servicesatcdmiac-password', 'CCD_UPLOAD_PASSWORD'),
-                secret('ccd-client-secret', 'CCD_CLIENT_SECRET'),
-                secret('system-user-username', 'IA_SYSTEM_USERNAME'),
-                secret('system-user-password', 'IA_SYSTEM_PASSWORD')
-
-        ]
+  'ia-${env}': [
+    secret('test-caseofficer-username', 'TEST_CASEOFFICER_USERNAME'),
+    secret('test-caseofficer-password', 'TEST_CASEOFFICER_PASSWORD'),
+    secret('test-law-firm-a-username', 'TEST_LAW_FIRM_A_USERNAME'),
+    secret('test-law-firm-a-password', 'TEST_LAW_FIRM_A_PASSWORD'),
+    secret('test-adminofficer-username', 'TEST_ADMINOFFICER_USERNAME'),
+    secret('test-adminofficer-password', 'TEST_ADMINOFFICER_PASSWORD'),
+    secret('addressLookupToken', 'ADDRESS_LOOKUP_TOKEN'),
+    secret('pcq-token-key', 'PCQ_TOKEN_KEY'),
+    secret('ia-redis-access-key', 'IA_REDIS_ACCESS_KEY'),
+    secret('ia-redis-connection-string', 'IA_REDIS_CONNECTION_STRING'),
+    secret('homeoffice-client-id', 'IA_HOMEOFFICE_CLIENT_ID'),
+    secret('homeoffice-secret', 'IA_HOMEOFFICE_SECRET'),
+    secret('test-homeoffice-apc-username', 'TEST_HOMEOFFICE_APC_USERNAME'),
+    secret('test-homeoffice-apc-password', 'TEST_HOMEOFFICE_APC_PASSWORD'),
+    secret('test-homeoffice-lart-username', 'TEST_HOMEOFFICE_LART_USERNAME'),
+    secret('test-homeoffice-lart-password', 'TEST_HOMEOFFICE_LART_PASSWORD'),
+    secret('test-homeoffice-pou-username', 'TEST_HOMEOFFICE_POU_USERNAME'),
+    secret('test-homeoffice-pou-password', 'TEST_HOMEOFFICE_POU_PASSWORD'),
+    secret('test-homeoffice-generic-username', 'TEST_HOMEOFFICE_GENERIC_USERNAME'),
+    secret('test-homeoffice-generic-password', 'TEST_HOMEOFFICE_GENERIC_PASSWORD'),
+    secret('test-judge-x-username', 'TEST_JUDGE_X_USERNAME'),
+    secret('test-judge-x-password', 'TEST_JUDGE_X_PASSWORD'),
+    secret('test-law-firm-share-case-a-username', 'TEST_LAW_FIRM_SHARE_CASE_A_USERNAME'),
+    secret('test-law-firm-share-case-a-password', 'TEST_LAW_FIRM_SHARE_CASE_A_PASSWORD'),
+    secret('test-citizen-username', 'TEST_CITIZEN_USERNAME'),
+    secret('test-citizen-password', 'TEST_CITIZEN_PASSWORD'),
+    secret('ia-system-access-username', 'IA_SYSTEM_ACCESS_USERNAME'),
+    secret('ia-system-access-password', 'IA_SYSTEM_ACCESS_PASSWORD'),
+    secret('test-law-firm-org-success-username', 'TEST_LAW_FIRM_ORG_SUCCESS_USERNAME'),
+    secret('test-law-firm-org-success-password', 'TEST_LAW_FIRM_ORG_SUCCESS_PASSWORD'),
+    secret('test-law-firm-org-deleted-username', 'TEST_LAW_FIRM_ORG_DELETED_USERNAME'),
+    secret('test-law-firm-org-deleted-password', 'TEST_LAW_FIRM_ORG_DELETED_PASSWORD'),
+    secret('idam-client-id', 'IA_IDAM_CLIENT_ID'),
+    secret('idam-secret', 'IA_IDAM_SECRET'),
+    secret('s2s-secret', 'IA_S2S_SECRET'),
+    secret('s2s-microservice', 'IA_S2S_MICROSERVICE'),
+    secret('prof-ref-data-url', 'PROF_REF_DATA_URL'),
+    secret('docmosis-enabled', 'IA_DOCMOSIS_ENABLED'),
+    secret('em-stitching-enabled', 'IA_EM_STITCHING_ENABLED'),
+    secret('submit-hearing-requirements-enabled', 'IA_SUBMIT_HEARING_REQUIREMENTS_ENABLED'),
+    secret('launch-darkly-sdk-key', 'LAUNCH_DARKLY_SDK_KEY'),
+    secret('ia-gov-notify-key', 'IA_GOV_NOTIFY_KEY'),
+    secret('ia-bail-gov-notify-key', 'IA_BAIL_GOV_NOTIFY_KEY'),
+    secret('app-insights-connection-string', 'app-insights-connection-string'),
+    secret('postgres-auth-values-password', 'PG_AUTH_VALUES_YAML_PASS'),
+    secret('generic-values-preview-password', 'GENERIC_VALUES_PREVIEW_YAML_PASS'),
+    secret('generic-docker-pact-broker-password', 'GENERIC_DOCKER_PACT_BROKER_YAML_PASS'),
+    secret('postgres-auth-values-tes-password', 'POSTGRES_AUTH_VALUES_TES_PASSWORD'),
+    secret('hearing-centre-activation-date-bradford', 'IA_HEARING_CENTRE_ACTIVATION_DATE_BRADFORD'),
+    secret('hearing-centre-activation-date-manchester', 'IA_HEARING_CENTRE_ACTIVATION_DATE_MANCHESTER'),
+    secret('hearing-centre-activation-date-newport', 'IA_HEARING_CENTRE_ACTIVATION_DATE_NEWPORT'),
+    secret('hearing-centre-activation-date-taylor-house', 'IA_HEARING_CENTRE_ACTIVATION_DATE_TAYLOR_HOUSE'),
+    secret('hearing-centre-activation-date-north-shields', 'IA_HEARING_CENTRE_ACTIVATION_DATE_NORTH_SHIELDS'),
+    secret('hearing-centre-activation-date-birmingham', 'IA_HEARING_CENTRE_ACTIVATION_DATE_BIRMINGHAM'),
+    secret('hearing-centre-activation-date-hatton-cross', 'IA_HEARING_CENTRE_ACTIVATION_DATE_HATTON_CROSS'),
+    secret('hearing-centre-activation-date-glasgow', 'IA_HEARING_CENTRE_ACTIVATION_DATE_GLASGOW'),
+    secret('servicesatcdmiac-password', 'CCD_UPLOAD_PASSWORD'),
+    secret('ccd-client-secret', 'CCD_CLIENT_SECRET'),
+    secret('system-user-username', 'IA_SYSTEM_USERNAME'),
+    secret('system-user-password', 'IA_SYSTEM_PASSWORD'),
+    secret('ia-config-validator-secret', 'IA_CONFIG_VALIDATOR_SECRET'),
+    secret('test-homeoffice-bail-username', 'TEST_HOMEOFFICE_BAIL_USERNAME'),
+    secret('test-homeoffice-bail-password', 'TEST_HOMEOFFICE_BAIL_PASSWORD'),
+  ]
 ]
 
 static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
-    [$class     : 'AzureKeyVaultSecret',
-     secretType : 'Secret',
-     name       : secretName,
-     version    : '',
-     envVariable: envVar
-    ]
+  [$class     : 'AzureKeyVaultSecret',
+   secretType : 'Secret',
+   name       : secretName,
+   version    : '',
+   envVariable: envVar
+  ]
 }
 
 GradleBuilder builder = new GradleBuilder(this, product)
 
 withNightlyPipeline(type, product, component) {
-    env.TEST_URL = params.URL_TO_TEST
-    env.Rules = params.SecurityRules
+  env.TEST_URL = params.URL_TO_TEST
+  env.Rules = params.SecurityRules
 
-    env.IA_CASE_DOCUMENTS_API_URL = "http://ia-case-documents-api-aat.service.core-compute-aat.internal/"
-    env.IA_CASE_NOTIFICATIONS_API_URL = "http://ia-case-notifications-api-aat.service.core-compute-aat.internal/"
-    env.IA_TIMED_EVENT_SERVICE_URL = "http://ia-timed-event-service-aat.service.core-compute-aat.internal/"
-    env.IA_CASE_PAYMENTS_API_URL = "http://ia-case-payments-api-aat.service.core-compute-aat.internal/"
-    env.IA_HOME_OFFICE_INTEGRATION_API_URL = "http://ia-home-office-integration-api-aat.service.core-compute-aat.internal/"
-    env.IA_IDAM_REDIRECT_URI = "https://ia-case-api-aat.service.core-compute-aat.internal/oauth2/callback"
-    env.CCD_URL = "http://ccd-data-store-api-aat.service.core-compute-aat.internal"
-    env.CCD_CASE_ACCESS_URL = "http://ccd-data-store-api-aat.service.core-compute-aat.internal"
-    env.CCD_GW_URL = "http://dm-store-aat.service.core-compute-aat.internal"
-    env.DM_URL = "http://dm-store-aat.service.core-compute-aat.internal"
-    env.IDAM_URL = "https://idam-api.aat.platform.hmcts.net"
-    env.OPEN_ID_IDAM_URL = "https://idam-web-public.aat.platform.hmcts.net"
-    env.S2S_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
-    env.CASE_DOCUMENT_AM_URL = "http://ccd-case-document-am-api-aat.service.core-compute-aat.internal"
-    env.IS_SAVE_AND_CONTINUE_ENABLED = "false"
-    env.LOCATION_REF_DATA_URL = "http://rd-location-ref-api-aat.service.core-compute-aat.internal"
+  env.IA_CASE_DOCUMENTS_API_URL = "http://ia-case-documents-api-aat.service.core-compute-aat.internal/"
+  env.IA_CASE_NOTIFICATIONS_API_URL = "http://ia-case-notifications-api-aat.service.core-compute-aat.internal/"
+  env.IA_TIMED_EVENT_SERVICE_URL = "http://ia-timed-event-service-aat.service.core-compute-aat.internal/"
+  env.IA_CASE_PAYMENTS_API_URL = "http://ia-case-payments-api-aat.service.core-compute-aat.internal/"
+  env.IA_HOME_OFFICE_INTEGRATION_API_URL = "http://ia-home-office-integration-api-aat.service.core-compute-aat.internal/"
+  env.IA_IDAM_REDIRECT_URI = "https://ia-case-api-aat.service.core-compute-aat.internal/oauth2/callback"
+  env.CCD_URL = "http://ccd-data-store-api-aat.service.core-compute-aat.internal"
+  env.CCD_GW_URL = "http://dm-store-aat.service.core-compute-aat.internal"
+  env.CCD_CASE_ACCESS_URL = "http://ccd-data-store-api-aat.service.core-compute-aat.internal"
+  env.DM_URL = "http://dm-store-aat.service.core-compute-aat.internal"
+  env.IDAM_URL = "https://idam-api.aat.platform.hmcts.net"
+  env.OPEN_ID_IDAM_URL = "https://idam-web-public.aat.platform.hmcts.net"
+  env.S2S_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
+  env.CASE_DOCUMENT_AM_URL = "http://ccd-case-document-am-api-aat.service.core-compute-aat.internal"
+  env.IS_SAVE_AND_CONTINUE_ENABLED = "false"
+  env.LOCATION_REF_DATA_URL = "http://rd-location-ref-api-aat.service.core-compute-aat.internal"
 
-    loadVaultSecrets(secrets)
-    if (!params.skipFortifyScan) {
-        enableFortifyScan()
-    }
-    if (!params.skipSecurityScan) {
-        enableSecurityScan()
-    }
-    if (!params.skipMutationTests) {
-        enableMutationTest()
-    }
-    if (!params.skipFullFunctionalTests) {
-        enableFullFunctionalTest()
-    }
-    enableSlackNotifications('#ia-tech')
+  loadVaultSecrets(secrets)
+  if (!params.skipFortifyScan) {
+    enableFortifyScan()
+  }
+  if (!params.skipSecurityScan) {
+    enableSecurityScan()
+  }
+  if (!params.skipMutationTests) {
+    enableMutationTest()
+  }
+  if (!params.skipFullFunctionalTests) {
+    enableFullFunctionalTest()
+  }
+  enableSlackNotifications('#ia-tech')
 
-    afterAlways('build') {
-        if (!params.skipSmokeTest) {
-            stage('Smoke Test') {
-                try {
-                    builder.gradle("smoke")
-                } catch (Error) {
-                    unstable(message: "${STAGE_NAME} is unstable")
-                } finally {
-                    publishHTML target: [
-                            allowMissing         : true,
-                            alwaysLinkToLastBuild: true,
-                            keepAll              : true,
-                            reportDir            : "build/reports/tests/smoke",
-                            reportFiles          : "index.html",
-                            reportName           : "Smoke Test Report"
-                    ]
-                }
-            }
+  afterAlways('build') {
+    if (!params.skipSmokeTest) {
+      stage('Smoke Test') {
+        try {
+          builder.gradle("smoke")
+        } catch (Error) {
+          unstable(message: "${STAGE_NAME} is unstable")
+        } finally {
+          publishHTML target: [
+            allowMissing         : true,
+            alwaysLinkToLastBuild: true,
+            keepAll              : true,
+            reportDir            : "build/reports/tests/smoke",
+            reportFiles          : "index.html",
+            reportName           : "Smoke Test Report"
+          ]
         }
-        if (!params.skipUnitTests) {
-            stage('Unit Tests') {
-                try {
-                    builder.gradle('test')
-                } catch (Error) {
-                    unstable(message: "${STAGE_NAME} is unstable")
-                } finally {
-                    publishHTML target: [
-                            allowMissing         : true,
-                            alwaysLinkToLastBuild: true,
-                            keepAll              : true,
-                            reportDir            : "build/reports/tests/test",
-                            reportFiles          : "index.html",
-                            reportName           : "Unit Test Report"
-                    ]
-                }
-            }
+      }
+    }
+    if (!params.skipUnitTests) {
+      stage('Unit Tests') {
+        try {
+          builder.gradle('test')
+        } catch (Error) {
+          unstable(message: "${STAGE_NAME} is unstable")
+        } finally {
+          publishHTML target: [
+            allowMissing         : true,
+            alwaysLinkToLastBuild: true,
+            keepAll              : true,
+            reportDir            : "build/reports/tests/test",
+            reportFiles          : "index.html",
+            reportName           : "Unit Test Report"
+          ]
         }
-        if (!params.skipIntegrationTests) {
-            stage('Integration Tests') {
-                try {
-                    builder.gradle('integration')
-                } catch (Error) {
-                    unstable(message: "${STAGE_NAME} is unstable")
-                } finally {
-                    publishHTML target: [
-                            allowMissing         : true,
-                            alwaysLinkToLastBuild: true,
-                            keepAll              : true,
-                            reportDir            : "build/reports/tests/integration",
-                            reportFiles          : "index.html",
-                            reportName           : "Integration Test Report"
-                    ]
-                }
-            }
+      }
+    }
+    if (!params.skipIntegrationTests) {
+      stage('Integration Tests') {
+        try {
+          builder.gradle('integration')
+        } catch (Error) {
+          unstable(message: "${STAGE_NAME} is unstable")
+        } finally {
+          publishHTML target: [
+            allowMissing         : true,
+            alwaysLinkToLastBuild: true,
+            keepAll              : true,
+            reportDir            : "build/reports/tests/integration",
+            reportFiles          : "index.html",
+            reportName           : "Integration Test Report"
+          ]
         }
+      }
     }
-    afterAlways('DependencyCheckNightly') {
-        publishHTML([
-                allowMissing         : true,
-                alwaysLinkToLastBuild: true,
-                keepAll              : true,
-                reportDir            : "build/reports",
-                reportFiles          : 'dependency-check-report.html',
-                reportName           : 'Dependency Check Report'
-        ])
-    }
+  }
+  afterAlways('DependencyCheckNightly') {
+    publishHTML([
+      allowMissing         : true,
+      alwaysLinkToLastBuild: true,
+      keepAll              : true,
+      reportDir            : "build/reports",
+      reportFiles          : 'dependency-check-report.html',
+      reportName           : 'Dependency Check Report'
+    ])
+  }
 
-    afterAlways('fortify-scan') {
-        publishHTML target: [
-                allowMissing         : true,
-                alwaysLinkToLastBuild: true,
-                keepAll              : true,
-                reportDir            : "Fortify Scan",
-                reportFiles          : "FortifyScanReport.html",
-                reportName           : "Fortify Scan Report"
-        ]
-        steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/Fortify Scan/**/*'
-    }
+  afterAlways('fortify-scan') {
+    publishHTML target: [
+      allowMissing         : true,
+      alwaysLinkToLastBuild: true,
+      keepAll              : true,
+      reportDir            : "Fortify Scan",
+      reportFiles          : "FortifyScanReport.html",
+      reportName           : "Fortify Scan Report"
+    ]
+    steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/Fortify Scan/**/*'
+  }
 
-    afterAlways('securityScan') {
-        publishHTML([
-                allowMissing         : true,
-                alwaysLinkToLastBuild: true,
-                keepAll              : true,
-                reportDir            : "functional-output",
-                reportFiles          : 'api-report.html',
-                reportName           : 'Security Scan Report'
-        ])
-    }
+  afterAlways('securityScan') {
+    publishHTML([
+      allowMissing         : true,
+      alwaysLinkToLastBuild: true,
+      keepAll              : true,
+      reportDir            : "functional-output",
+      reportFiles          : 'api-report.html',
+      reportName           : 'Security Scan Report'
+    ])
+  }
 
-    afterAlways('mutationTest') {
-        publishHTML([
-                allowMissing         : true,
-                alwaysLinkToLastBuild: true,
-                keepAll              : true,
-                reportDir            : "build/reports/pitest",
-                reportFiles          : 'index.html',
-                reportName           : 'Mutation Test Report'
-        ])
-    }
+  afterAlways('mutationTest') {
+    publishHTML([
+      allowMissing         : true,
+      alwaysLinkToLastBuild: true,
+      keepAll              : true,
+      reportDir            : "build/reports/pitest",
+      reportFiles          : 'index.html',
+      reportName           : 'Mutation Test Report'
+    ])
+  }
 
-    afterAlways('fullFunctionalTest') {
-        publishHTML([
-                allowMissing         : true,
-                alwaysLinkToLastBuild: true,
-                keepAll              : true,
-                reportDir            : "build/reports/tests/functional",
-                reportFiles          : 'index.html',
-                reportName           : 'Functional Test Report'
-        ])
+  afterAlways('fullFunctionalTest') {
+    publishHTML([
+      allowMissing         : true,
+      alwaysLinkToLastBuild: true,
+      keepAll              : true,
+      reportDir            : "build/reports/tests/functional",
+      reportFiles          : 'index.html',
+      reportName           : 'Functional Test Report'
+    ])
 
-        steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
-        steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/build/reports/**/*'
-        steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/reports/**/*'
-    }
+    steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
+    steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/build/reports/**/*'
+    steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/reports/**/*'
+  }
 }

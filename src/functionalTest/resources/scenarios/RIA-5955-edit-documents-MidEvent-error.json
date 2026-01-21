@@ -1,0 +1,50 @@
+{
+  "description": "Edit bail documents event - mid-event error on empty document",
+  "request": {
+    "uri": "/bail/ccdMidEvent",
+    "credentials": "AdminOfficer",
+    "input": {
+      "eventId": "editBailDocuments",
+      "state": "applicationSubmitted",
+      "caseData": {
+        "template": "minimal-application-started.json",
+        "replacements": {
+          "applicantDocumentsWithMetadata":
+          [
+            {
+              "id":"1",
+              "value":{
+                "document": null,
+                "description":"updated description for applicant doc",
+                "dateUploaded": "{$TODAY}",
+                "tag":"applicationSubmission",
+                "suppliedBy": null
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": ["If you add a new document you must complete the fields related to that document including Date uploaded, or remove it, before you can submit your change."],
+    "caseData": {
+      "template": "minimal-application-started.json",
+      "replacements": {
+        "applicantDocumentsWithMetadata":
+        [
+          {
+            "id":"1",
+            "value":{
+              "description":"updated description for applicant doc",
+              "dateUploaded": "{$TODAY}",
+              "tag":"applicationSubmission",
+              "suppliedBy": null
+            }
+          }
+        ]
+      }
+    }
+  }
+}

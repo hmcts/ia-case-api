@@ -32,7 +32,8 @@ java:
     CASE_DOCUMENT_AM_URL: https://${SERVICE_NAME}-ccd-case-document-am-api
     AAC_URL: https://aac-${SERVICE_FQDN}
     CCD_DEFINITION_STORE_API_BASE_URL: "https://ccd-definition-store-{{ .Release.Name }}.preview.platform.hmcts.net"
-    LOCATION_REF_DATA_URL: "http://rd-location-ref-api-aat.service.core-compute-aat.internal"
+    PROF_REF_DATA_URL: "http://rd-professional-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
+    LOCATION_REF_DATA_URL: "http://rd-location-ref-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
     FEES_REGISTER_API_URL: "http://fees-register-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
     DUMMY: true
     PAYMENT_REMINDER_DUE_IN_MINUTES: 1
@@ -40,6 +41,8 @@ java:
     SAVE_NOTIFICATIONS_TO_DATA_EVENT_ENABLED: false
     SAVE_NOTIFICATIONS_DATA_SCHEDULE_HOUR: 17
     SAVE_NOTIFICATIONS_DATA_SCHEDULE_MAX_MINUTES: 5
+
+    COMMON_DATA_API: "http://rd-professional-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
   keyVaults:
     ia:
       resourceGroup: ia
@@ -74,6 +77,8 @@ java:
           alias: app-insights-connection-string
         - name: postgres-auth-values-password
           alias: PG_AUTH_VALUES_YAML_PASS
+        - name: s2s-secret
+          alias: IA_S2S_SECRET
         - name: ia-system-access-username
           alias: IA_SYSTEM_ACCESS_USERNAME
         - name: ia-system-access-password
@@ -418,7 +423,7 @@ ia-case-notifications-api:
             alias: IA_DET_PRISON_EMAIL_MAPPINGS
 
 ia-bail-case-api:
-  enabled: true
+  enabled: false
   java:
     imagePullPolicy: Always
     image: hmctspublic.azurecr.io/ia/bail-case-api:latest
@@ -567,7 +572,7 @@ ia-home-office-integration-api:
           - name: system-username
             alias: IA_SYSTEM_USERNAME
           - name: system-password
-            alias: IA_SYSTEM_PASSWORD  
+            alias: IA_SYSTEM_PASSWORD
 
 ia-case-access-api:
   enabled: false
@@ -856,7 +861,7 @@ ccd:
         DATA_STORE_DB_NAME: "pr-${CHANGE_ID}-data-store"
         DATA_STORE_DB_USERNAME: hmcts
         DATA_STORE_DB_PASSWORD: ${GENERIC_VALUES_PREVIEW_YAML_PASS}
-        DATA_STORE_IDAM_KEY: ${DATA_STORE_S2S_KEY}        
+        DATA_STORE_IDAM_KEY: ${DATA_STORE_S2S_KEY}
         DATA_STORE_CROSS_JURISDICTIONAL_ROLES: caseworker-caa,caseworker-approver
         DATA_STORE_S2S_AUTHORISED_SERVICES: ccd_gw,ccd_gateway,ccd_data,ccd_ps,aac_manage_case_assignment,xui_webapp,ccd_case_document_am_api,iac,em_ccd_orchestrator,wa_workflow_api,wa_task_configuration_api,wa_task_management_api,wa_task_monitor,wa_case_event_handler,am_role_assignment_service,ccpay_bubble,ctsc_work_allocation,pcq_consolidation_service,em_npa_app,hmc_cft_hearing_service,ccd_next_hearing_date_updater,em_annotation_app,bulk_scan_orchestrator
         IDAM_API_BASE_URL: https://idam-api.aat.platform.hmcts.net

@@ -1,0 +1,189 @@
+{
+  "description": "Edit bail documents event - update description",
+  "request": {
+    "uri": "/bail/ccdAboutToSubmit",
+    "credentials": "AdminOfficer",
+    "input": {
+      "id": 1111,
+      "eventId": "editBailDocuments",
+      "state": "applicationSubmitted",
+      "caseData": {
+        "template": "minimal-application-started.json",
+        "replacements": {
+          "applicantDocumentsWithMetadata":
+          [
+            {
+              "id":"1",
+              "value":{
+                "document":{
+                  "document_url": "http://dm-store:8080/documents/1488f4de-c9fe-4f3e-a6b6-ee032ca759c1",
+                  "document_binary_url": "http://dm-store:8080/documents/1488f4de-c9fe-4f3e-a6b6-ee032ca759c1/binary",
+                  "document_filename": "application-submission.pdf"
+                },
+                "description":"updated description for applicant doc",
+                "dateUploaded": "{$TODAY}",
+                "tag":"applicationSubmission",
+                "suppliedBy": null
+              }
+            }
+          ],
+          "homeOfficeDocumentsWithMetadata":
+          [
+            {
+              "id":"1",
+              "value":{
+                "document":{
+                  "document_url": "http://dm-store:8080/documents/1488f4de-c9fe-4f3e-a6b6-ee032ca759c2",
+                  "document_binary_url": "http://dm-store:8080/documents/1488f4de-c9fe-4f3e-a6b6-ee032ca759c2/binary",
+                  "document_filename": "Upload-bail-summary.pdf"
+                },
+                "description":"updated description for home office doc",
+                "dateUploaded": "{$TODAY}",
+                "tag":"uploadBailSummary",
+                "suppliedBy": null
+              }
+            }
+          ],
+          "tribunalDocumentsWithMetadata":
+          [
+            {
+              "id":"1",
+              "value":{
+                "document":{
+                  "document_url": "http://dm-store:8080/documents/1488f4de-c9fe-4f3e-a6b6-ee032ca759c3",
+                  "document_binary_url": "http://dm-store:8080/documents/1488f4de-c9fe-4f3e-a6b6-ee032ca759c3/binary",
+                  "document_filename": "Upload-signed-decision-notice.pdf"
+                },
+                "description":"updated description for tribunal doc",
+                "dateUploaded": "{$TODAY}",
+                "tag":"signedDecisionNotice",
+                "suppliedBy": null
+              }
+            }
+          ]
+        }
+      },
+      "caseDataBefore": {
+        "template": "minimal-application-started.json",
+        "replacements": {
+          "applicantDocumentsWithMetadata":
+          [
+            {
+              "id":"1",
+              "value":{
+                "document":{
+                  "document_url": "http://dm-store:8080/documents/1488f4de-c9fe-4f3e-a6b6-ee032ca759c1",
+                  "document_binary_url": "http://dm-store:8080/documents/1488f4de-c9fe-4f3e-a6b6-ee032ca759c1/binary",
+                  "document_filename": "application-submission.pdf"
+                },
+                "description":"",
+                "dateUploaded": "{$TODAY}",
+                "tag":"applicationSubmission",
+                "suppliedBy": null
+              }
+            }
+          ],
+          "homeOfficeDocumentsWithMetadata":
+          [
+            {
+              "id":"1",
+              "value":{
+                "document":{
+                  "document_url": "http://dm-store:8080/documents/1488f4de-c9fe-4f3e-a6b6-ee032ca759c2",
+                  "document_binary_url": "http://dm-store:8080/documents/1488f4de-c9fe-4f3e-a6b6-ee032ca759c2/binary",
+                  "document_filename": "Upload-bail-summary.pdf"
+                },
+                "description":"",
+                "dateUploaded": "{$TODAY}",
+                "tag":"uploadBailSummary",
+                "suppliedBy": null
+              }
+            }
+          ],
+          "tribunalDocumentsWithMetadata":
+          [
+            {
+              "id":"1",
+              "value":{
+                "document":{
+                  "document_url": "http://dm-store:8080/documents/1488f4de-c9fe-4f3e-a6b6-ee032ca759c3",
+                  "document_binary_url": "http://dm-store:8080/documents/1488f4de-c9fe-4f3e-a6b6-ee032ca759c3/binary",
+                  "document_filename": "Upload-signed-decision-notice.pdf"
+                },
+                "description":"",
+                "dateUploaded": "{$TODAY}",
+                "tag":"signedDecisionNotice",
+                "suppliedBy": null
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-application-started.json",
+      "replacements": {
+        "currentCaseStateVisibleToJudge": "applicationSubmitted",
+        "currentCaseStateVisibleToAllUsers": "applicationSubmitted",
+        "currentCaseStateVisibleToHomeOffice": "applicationSubmitted",
+        "currentCaseStateVisibleToAdminOfficer": "applicationSubmitted",
+        "currentCaseStateVisibleToLegalRepresentative": "applicationSubmitted",
+        "applicantDocumentsWithMetadata":
+        [
+          {
+            "id":"1",
+            "value":{
+              "document":{
+                "document_url": "http://dm-store:8080/documents/1488f4de-c9fe-4f3e-a6b6-ee032ca759c1",
+                "document_binary_url": "http://dm-store:8080/documents/1488f4de-c9fe-4f3e-a6b6-ee032ca759c1/binary",
+                "document_filename": "application-submission.pdf"
+              },
+              "description":"updated description for applicant doc",
+              "dateUploaded": "{$TODAY}",
+              "tag":"applicationSubmission",
+              "suppliedBy": null
+            }
+          }
+        ],
+        "homeOfficeDocumentsWithMetadata":
+        [
+          {
+            "id":"1",
+            "value":{
+              "document":{
+                "document_url": "http://dm-store:8080/documents/1488f4de-c9fe-4f3e-a6b6-ee032ca759c2",
+                "document_binary_url": "http://dm-store:8080/documents/1488f4de-c9fe-4f3e-a6b6-ee032ca759c2/binary",
+                "document_filename": "Upload-bail-summary.pdf"
+              },
+              "description":"updated description for home office doc",
+              "dateUploaded": "{$TODAY}",
+              "tag":"uploadBailSummary",
+              "suppliedBy": null
+            }
+          }
+        ],
+        "tribunalDocumentsWithMetadata":
+        [
+          {
+            "id":"1",
+            "value":{
+              "document":{
+                "document_url": "http://dm-store:8080/documents/1488f4de-c9fe-4f3e-a6b6-ee032ca759c3",
+                "document_binary_url": "http://dm-store:8080/documents/1488f4de-c9fe-4f3e-a6b6-ee032ca759c3/binary",
+                "document_filename": "Upload-signed-decision-notice.pdf"
+              },
+              "description":"updated description for tribunal doc",
+              "dateUploaded": "{$TODAY}",
+              "tag":"signedDecisionNotice",
+              "suppliedBy": null
+            }
+          }
+        ]
+      }
+    }
+  }
+}

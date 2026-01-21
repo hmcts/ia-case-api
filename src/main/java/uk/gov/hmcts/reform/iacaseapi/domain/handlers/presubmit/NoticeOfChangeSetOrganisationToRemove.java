@@ -8,17 +8,17 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.AsylumCaseCallbackApiDelegator;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CallbackApiDelegator;
 
 @Component
 public class NoticeOfChangeSetOrganisationToRemove implements PreSubmitCallbackHandler<AsylumCase> {
 
-    private final AsylumCaseCallbackApiDelegator apiDelegator;
+    private final CallbackApiDelegator apiDelegator;
     private final String aacUrl;
     private final String setSetOrganisationToRemoveApiPath;
 
     public NoticeOfChangeSetOrganisationToRemove(
-            AsylumCaseCallbackApiDelegator apiDelegator,
+            CallbackApiDelegator apiDelegator,
             @Value("${assign_case_access_api_url}") String aacUrl,
             @Value("${noc_set_organisation_to_remove_path}") String setSetOrganisationToRemoveApiPath
     ) {

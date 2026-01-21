@@ -1,0 +1,93 @@
+{
+  "description": "Edit the application by admin - application submitted by LR appender(post-submit)",
+  "request": {
+    "uri": "/bail/ccdAboutToSubmit",
+    "credentials": "AdminOfficer",
+    "input": {
+      "id": 8490,
+      "eventId": "editBailApplicationAfterSubmit",
+      "state": "applicationSubmitted",
+      "caseData": {
+        "template": "minimal-application-submitted.json",
+        "replacements": {
+          "supporterGivenNames": "John",
+          "supporterFamilyNames": "Doe",
+          "fcs1InterpreterSignLanguage": {
+            "languageRefData": {
+              "value": {
+                "code": "ase",
+                "label": "American Sign Language (ASL)"
+              },
+              "list_items": [
+                {
+                  "code": "ase",
+                  "label": "American Sign Language (ASL)"
+                }
+              ]
+            },
+            "languageManualEntry": "No",
+            "languageManualEntryDescription": "Test manual sign language"
+          },
+          "fcs1InterpreterSpokenLanguage": {
+            "languageRefData": {
+              "value": {
+                "code": "fre",
+                "label": "French"
+              },
+              "list_items": [
+                {
+                  "code": "fre",
+                  "label": "French"
+                }
+              ]
+            },
+            "languageManualEntry": "Yes",
+            "languageManualEntryDescription": "Test manual spoken language"
+          },
+          "fcsInterpreterYesNo": "Yes",
+          "hasFinancialCondSupporter": "Yes",
+          "fcs1InterpreterLanguageCategory": [
+            "signLanguageInterpreter","spokenLanguageInterpreter"
+          ]
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-application-submitted.json",
+      "replacements": {
+        "isAdmin": "Yes",
+        "interpreterLanguages": null,
+        "fcsInterpreterYesNo": "Yes",
+        "hasFinancialCondSupporter": "Yes",
+        "fcs1InterpreterLanguageCategory": [
+          "signLanguageInterpreter","spokenLanguageInterpreter"
+        ],
+        "fcs1InterpreterSignLanguage": {
+          "languageRefData": {
+            "value": {
+              "code": "ase",
+              "label": "American Sign Language (ASL)"
+            },
+            "list_items": [
+              {
+                "code": "ase",
+                "label": "American Sign Language (ASL)"
+              }
+            ]
+          },
+          "languageManualEntry": "No",
+          "languageManualEntryDescription": null
+        },
+        "fcs1InterpreterSpokenLanguage": {
+          "languageRefData": null,
+          "languageManualEntry": "Yes",
+          "languageManualEntryDescription": "Test manual spoken language"
+        }
+      }
+    }
+  }
+}

@@ -9,7 +9,7 @@ prof.ref.data.path.org.users: /refdata/external/v1/organisations/users
 prof.ref.data.path.org.organisation: /refdata/external/v1/organisations
 
 idam:
-  ia_system_user:
+  system:
     scope: "openid profile authorities"
 
 launchDarkly:

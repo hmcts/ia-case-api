@@ -1,0 +1,37 @@
+{
+  "description": "Edit application - New party IDs generated for financial condition supporter added",
+  "request": {
+    "uri": "/bail/ccdAboutToSubmit",
+    "credentials": "AdminOfficer",
+    "input": {
+      "id": 7996,
+      "eventId": "editBailApplication",
+      "state": "applicationStarted",
+      "caseData": {
+        "template": "minimal-application-started.json",
+        "replacements": {
+          "isLegalRep": "No",
+          "hasLegalRep": "No",
+          "isLegallyRepresentedForFlag": "No",
+          "hasFinancialCondSupporter": "Yes",
+          "supporter1PartyId": null
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-application-started.json",
+      "replacements": {
+        "isLegalRep": "No",
+        "hasLegalRep": "No",
+        "isLegallyRepresentedForFlag": "No",
+        "hasFinancialCondSupporter": "Yes",
+        "supporter1PartyId": "$/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-Ff]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/",
+        "interpreterLanguages": null
+      }
+    }
+  }
+}

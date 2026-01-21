@@ -1,0 +1,22 @@
+{
+  "description": "RIA-8355 Upload bail summary event - about to start bail summary already uploaded",
+  "request": {
+    "uri": "/bail/ccdAboutToStart",
+    "credentials": "HomeOfficeBail",
+    "input": {
+      "id": 8355,
+      "eventId": "uploadBailSummary",
+      "state": "bailSummaryUploaded",
+      "caseData": {
+        "template": "minimal-application-started.json"
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": ["Bail Summary has already been uploaded to this case."],
+    "caseData": {
+      "template": "minimal-application-started.json"
+    }
+  }
+}

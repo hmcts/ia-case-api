@@ -11,18 +11,18 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentGenerator;
 @Service
 public class AsylumCaseDocumentApiGenerator implements DocumentGenerator<AsylumCase> {
 
-    private final AsylumCaseCallbackApiDelegator asylumCaseCallbackApiDelegator;
+    private final CallbackApiDelegator callbackApiDelegator;
     private final String documentsApiEndpoint;
     private final String aboutToSubmitPath;
     private final String aboutToStartPath;
 
     public AsylumCaseDocumentApiGenerator(
-        AsylumCaseCallbackApiDelegator asylumCaseCallbackApiDelegator,
+        CallbackApiDelegator callbackApiDelegator,
         @Value("${documentsApi.endpoint}") String documentsApiEndpoint,
-        @Value("${documentsApi.aboutToSubmitPath}") String aboutToSubmitPath,
-        @Value("${documentsApi.aboutToStartPath}") String aboutToStartPath
+        @Value("${documentsApi.asylum.aboutToSubmitPath}") String aboutToSubmitPath,
+        @Value("${documentsApi.asylum.aboutToStartPath}") String aboutToStartPath
     ) {
-        this.asylumCaseCallbackApiDelegator = asylumCaseCallbackApiDelegator;
+        this.callbackApiDelegator = callbackApiDelegator;
         this.documentsApiEndpoint = documentsApiEndpoint;
         this.aboutToSubmitPath = aboutToSubmitPath;
         this.aboutToStartPath = aboutToStartPath;
@@ -33,7 +33,7 @@ public class AsylumCaseDocumentApiGenerator implements DocumentGenerator<AsylumC
     ) {
         requireNonNull(callback, "callback must not be null");
 
-        return asylumCaseCallbackApiDelegator.delegate(
+        return callbackApiDelegator.delegate(
             callback,
             documentsApiEndpoint + aboutToSubmitPath
         );
@@ -44,7 +44,7 @@ public class AsylumCaseDocumentApiGenerator implements DocumentGenerator<AsylumC
     ) {
         requireNonNull(callback, "callback must not be null");
 
-        return asylumCaseCallbackApiDelegator.delegate(
+        return callbackApiDelegator.delegate(
             callback,
             documentsApiEndpoint + aboutToStartPath
         );

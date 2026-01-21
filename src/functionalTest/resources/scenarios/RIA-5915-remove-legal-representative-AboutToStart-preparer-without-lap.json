@@ -1,0 +1,42 @@
+{
+  "description": "RIA-5915 Remove legal representative (Admin Officer) - localAuthorityPolicy missing",
+  "request": {
+    "uri": "/bail/ccdAboutToStart",
+    "credentials": "AdminOfficer",
+    "input": {
+      "id": 1111,
+      "eventId": "removeBailLegalRepresentative",
+      "state": "applicationSubmitted",
+      "caseData": {
+        "template": "minimal-application-started.json",
+        "replacements": {
+          "localAuthorityPolicy": {
+            "Organisation": {
+              "OrganisationID": "SOME-ID",
+              "OrganisationName": "SOME-NAME"
+            },
+            "OrgPolicyReference": "someRef",
+            "OrgPolicyCaseAssignedRole": "someRole"
+          }
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-application-started.json",
+      "replacements": {
+        "localAuthorityPolicy": {
+          "Organisation": {
+            "OrganisationID": "SOME-ID",
+            "OrganisationName": "SOME-NAME"
+          },
+          "OrgPolicyReference": "someRef",
+          "OrgPolicyCaseAssignedRole": "someRole"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "ircName": "Colnbrook",
+  "isAdmin": "Yes",
+  "hasLegalRep": "No",
+  "isHomeOffice": "No",
+  "hearingCentre": "hattonCross",
+  "videoHearing1": "Yes",
+  "applicantGender": "Male",
+  "sentByChecklist": "Applicant",
+  "interpreterYesNo": "No",
+
+  "applicantFullName": "FirstName LastName",
+  "detentionFacility": "Colnbrook",
+  "applicantHasMobile": "No",
+  "applicantFamilyName": "LastName",
+  "applicantGivenNames": "FirstName",
+  "applicantHasAddress": "No",
+  "bailReferenceNumber": "1111-2222-3333-4444",
+  "applicantDateOfBirth": "1111-01-01",
+  "applicantDetainedLoc": "immigrationRemovalCentre",
+  "applicantDisability1": "No",
+  "applicantNationality": "HAS_NATIONALITY",
+  "groundsForBailReasons": "groundsForBails",
+  "applicantNationalities": [
+    {
+      "id": "3b607d2b-6e29-4bda-a0eb-8320e676f584",
+      "value": {
+        "code": "English"
+      }
+    }
+  ],
+  "applicationSubmittedBy": "Applicant",
+  "hasAppealHearingPending": "No",
+  "applicantArrivalInUKDate": "1111-01-01",
+  "hasFinancialCondSupporter": "No",
+  "homeOfficeReferenceNumber": "00000",
+  "hasPreviousBailApplication": "No",
+  "isLegallyRepresentedForFlag": "No",
+  "agreesToBoundByFinancialCond": "No",
+  "transferBailManagementObjectionYesOrNo": "No",
+  "groundsForBailProvideEvidenceOption": "No",
+  "currentCaseStateVisibleToJudge": "applicationSubmitted",
+  "currentCaseStateVisibleToAllUsers": "applicationSubmitted",
+  "currentCaseStateVisibleToHomeOffice": "applicationSubmitted",
+  "currentCaseStateVisibleToAdminOfficer": "applicationSubmitted",
+  "currentCaseStateVisibleToLegalRepresentative": "applicationSubmitted",
+  "previousApplicationDoneViaCcd": null,
+  "previousApplicationDoneViaAria": null,
+  "interpreterLanguages": null
+}

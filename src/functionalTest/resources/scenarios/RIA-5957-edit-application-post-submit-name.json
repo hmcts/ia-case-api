@@ -1,0 +1,32 @@
+{
+  "description": "5957Edit the application to change appellant name (post-submit REST call)",
+  "request": {
+    "uri": "/bail/ccdAboutToSubmit",
+    "credentials": "AdminOfficer",
+    "input": {
+      "id": 1111,
+      "eventId": "editBailApplicationAfterSubmit",
+      "state": "applicationSubmitted",
+      "caseData": {
+        "template": "minimal-application-submitted.json",
+        "replacements": {
+          "applicantFamilyName": "Sunak",
+          "applicantGivenNames": "Rishi"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-application-submitted.json",
+      "replacements": {
+        "applicantFullName": "Rishi Sunak",
+        "applicantFamilyName": "Sunak",
+        "applicantGivenNames": "Rishi",
+        "interpreterLanguages": null
+      }
+    }
+  }
+}

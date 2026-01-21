@@ -6,23 +6,23 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.AsylumCaseCallbackApiDelegator;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CallbackApiDelegator;
 
 @Service
 public class HomeOfficeApiService implements HomeOfficeApi<AsylumCase> {
 
-    private final AsylumCaseCallbackApiDelegator asylumCaseCallbackApiDelegator;
+    private final CallbackApiDelegator callbackApiDelegator;
     private final String homeOfficeApiEndpoint;
     private final String aboutToStartPath;
     private final String aboutToSubmitPath;
 
     public HomeOfficeApiService(
-        AsylumCaseCallbackApiDelegator asylumCaseCallbackApiDelegator,
+        CallbackApiDelegator callbackApiDelegator,
         @Value("${homeOfficeApi.endpoint}") String homeOfficeApiEndpoint,
         @Value("${homeOfficeApi.aboutToStartPath}") String aboutToStartPath,
         @Value("${homeOfficeApi.aboutToSubmitPath}") String aboutToSubmitPath
     ) {
-        this.asylumCaseCallbackApiDelegator = asylumCaseCallbackApiDelegator;
+        this.callbackApiDelegator = callbackApiDelegator;
         this.homeOfficeApiEndpoint = homeOfficeApiEndpoint;
         this.aboutToStartPath = aboutToStartPath;
         this.aboutToSubmitPath = aboutToSubmitPath;
@@ -32,7 +32,7 @@ public class HomeOfficeApiService implements HomeOfficeApi<AsylumCase> {
     public AsylumCase call(Callback<AsylumCase> callback) {
         requireNonNull(callback, "callback must not be null");
 
-        return asylumCaseCallbackApiDelegator.delegate(
+        return callbackApiDelegator.delegate(
                 callback,
                 homeOfficeApiEndpoint + aboutToSubmitPath
         );
@@ -42,7 +42,7 @@ public class HomeOfficeApiService implements HomeOfficeApi<AsylumCase> {
     public AsylumCase aboutToStart(Callback<AsylumCase> callback) {
         requireNonNull(callback, "callback must not be null");
 
-        return asylumCaseCallbackApiDelegator.delegate(
+        return callbackApiDelegator.delegate(
                 callback,
                 homeOfficeApiEndpoint + aboutToStartPath
         );
@@ -52,7 +52,7 @@ public class HomeOfficeApiService implements HomeOfficeApi<AsylumCase> {
     public AsylumCase aboutToSubmit(Callback<AsylumCase> callback) {
         requireNonNull(callback, "callback must not be null");
 
-        return asylumCaseCallbackApiDelegator.delegate(
+        return callbackApiDelegator.delegate(
             callback,
             homeOfficeApiEndpoint + aboutToSubmitPath
         );

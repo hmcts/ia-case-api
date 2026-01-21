@@ -12,9 +12,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.BailCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseData;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 
 
@@ -52,8 +54,8 @@ public class CcdCaseAssignment {
         this.applyNocAssignmentsApiPath = applyNocAssignmentsApiPath;
     }
 
-    public void revokeAccessToCase(
-        final Callback<AsylumCase> callback,
+    public <T extends CaseData> void revokeAccessToCase(
+        final Callback<T> callback,
         final String organisationIdentifier
     ) {
         requireNonNull(callback, "callback must not be null");
@@ -69,9 +71,9 @@ public class CcdCaseAssignment {
     }
 
     public void revokeLegalRepAccessToCase(
-            final long caseId,
-            final String legalRepIdamUserId,
-            final String organisationIdentifier
+        final long caseId,
+        final String legalRepIdamUserId,
+        final String organisationIdentifier
     ) {
         requireNonNull(caseId, "caseId must not be null");
         requireNonNull(organisationIdentifier, "organisation identifier must not be null");
@@ -82,7 +84,7 @@ public class CcdCaseAssignment {
         final String accessToken = userDetails.getAccessToken();
 
         revokeUserAccessToCase(
-                caseId, organisationIdentifier, legalRepIdamUserId, serviceAuthorizationToken, accessToken);
+            caseId, organisationIdentifier, legalRepIdamUserId, serviceAuthorizationToken, accessToken);
     }
 
     private void revokeUserAccessToCase(long caseId,
@@ -113,19 +115,21 @@ public class CcdCaseAssignment {
         } catch (RestClientResponseException e) {
             throw new CcdDataIntegrationException(
                 "Couldn't revoke CCD case access for case ["
-                + caseId
-                + "] using API: "
-                + ccdUrl + ccdAssignmentsApiPath,
+                    + caseId
+                    + "] using API: "
+                    + ccdUrl + ccdAssignmentsApiPath,
                 e
             );
         }
 
-        log.info("Revoke Access. Http status received from CCD API; {} for case {}",
-                response.getStatusCodeValue(), caseId);
+        log.info(
+            "Revoke Access. Http status received from CCD API; {} for case {}",
+            response.getStatusCodeValue(), caseId
+        );
     }
 
-    public void assignAccessToCase(
-        final Callback<AsylumCase> callback
+    public <T extends CaseData> void assignAccessToCase(
+        final Callback<T> callback
     ) {
         requireNonNull(callback, "callback must not be null");
 
@@ -134,8 +138,9 @@ public class CcdCaseAssignment {
         final UserDetails userDetails = userDetailsProvider.getUserDetails();
         final String accessToken = userDetails.getAccessToken();
         final String idamUserId = userDetails.getId();
+        final T caseData = callback.getCaseDetails().getCaseData();
 
-        Map<String, Object> payload = buildAssignAccessCaseUserMap(caseId, idamUserId);
+        Map<String, Object> payload = buildAssignAccessCaseUserMap(caseId, idamUserId, caseData);
 
         HttpEntity<Map<String, Object>> requestEntity =
             new HttpEntity<>(
@@ -156,19 +161,21 @@ public class CcdCaseAssignment {
         } catch (RestClientResponseException e) {
             throw new CcdDataIntegrationException(
                 "Couldn't set initial AAC case assignment for case ["
-                + callback.getCaseDetails().getId()
-                + "] using API: "
-                + aacUrl + aacAssignmentsApiPath,
+                    + callback.getCaseDetails().getId()
+                    + "] using API: "
+                    + aacUrl + aacAssignmentsApiPath,
                 e
             );
         }
 
-        log.info("Assign Access. Http status received from AAC API; {} for case {}",
-            response.getStatusCodeValue(), callback.getCaseDetails().getId());
+        log.info(
+            "Assign Access. Http status received from AAC API; {} for case {}",
+            response.getStatusCodeValue(), callback.getCaseDetails().getId()
+        );
     }
 
-    public void applyNoc(
-        final Callback<AsylumCase> callback
+    public <T extends CaseData> void applyNoc(
+        final Callback<T> callback
     ) {
         requireNonNull(callback, "callback must not be null");
 
@@ -176,7 +183,7 @@ public class CcdCaseAssignment {
         final UserDetails userDetails = userDetailsProvider.getUserDetails();
         final String accessToken = userDetails.getAccessToken();
 
-        HttpEntity<Callback<AsylumCase>> requestEntity =
+        HttpEntity<Callback<T>> requestEntity =
             new HttpEntity<>(
                 callback,
                 setHeaders(serviceAuthorizationToken, accessToken)
@@ -191,19 +198,21 @@ public class CcdCaseAssignment {
                     requestEntity,
                     Object.class
                 );
-            
+
         } catch (RestClientResponseException e) {
             throw new CcdDataIntegrationException(
                 "Couldn't apply noc AAC case assignment for case ["
-                + callback.getCaseDetails().getId()
-                + "] using API: "
-                + aacUrl + applyNocAssignmentsApiPath,
+                    + callback.getCaseDetails().getId()
+                    + "] using API: "
+                    + aacUrl + applyNocAssignmentsApiPath,
                 e
             );
         }
 
-        log.info("Apply NoC. Http status received from AAC API; {} for case {}",
-            response.getStatusCodeValue(), callback.getCaseDetails().getId());
+        log.info(
+            "Apply NoC. Http status received from AAC API; {} for case {}",
+            response.getStatusCodeValue(), callback.getCaseDetails().getId()
+        );
     }
 
     public Map<String, Object> buildRevokeAccessPayload(String organisationIdentifier, long caseId, String idamUserId) {
@@ -217,15 +226,22 @@ public class CcdCaseAssignment {
         return payload;
     }
 
-    public Map<String, Object> buildAssignAccessCaseUserMap(long caseId, String idamUserId) {
+    public Map<String, Object> buildAssignAccessCaseUserMap(long caseId, String idamUserId, CaseData caseData) {
         Map<String, Object> payload = Maps.newHashMap();
         payload.put("case_id", caseId);
         payload.put("assignee_id", idamUserId);
-        payload.put("case_type_id", "Asylum");
+        if (caseData instanceof AsylumCase) {
+            payload.put("case_type_id", "Asylum");
+        } else if (caseData instanceof BailCase) {
+            payload.put("case_type_id", "Bail");
+        } else {
+            throw new IllegalArgumentException("Unsupported case data type: " + caseData.getClass().getName());
+        }
         return payload;
     }
 
-    private Map<String, Object> buildRevokeAccessCaseUserMap(String organisationIdentifier, long caseId, String idamUserId) {
+    private Map<String, Object> buildRevokeAccessCaseUserMap(String organisationIdentifier,
+                                                             long caseId, String idamUserId) {
         Map<String, Object> caseUser = Maps.newHashMap();
         caseUser.put("case_id", caseId);
         caseUser.put("case_role", "[CREATOR]");

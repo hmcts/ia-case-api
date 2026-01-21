@@ -46,7 +46,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.IaHearingsApiService;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.AsylumCaseServiceResponseException;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.ServiceResponseException;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -338,7 +338,7 @@ class EndAppealHandlerTest {
         when(callback.getEvent()).thenReturn(END_APPEAL);
         when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
         when(iaHearingsApiService.aboutToSubmit(callback))
-            .thenThrow(new AsylumCaseServiceResponseException("Error message", null));
+            .thenThrow(new ServiceResponseException("Error message", null));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             endAppealHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);

@@ -1,0 +1,59 @@
+{
+  "description": "View previous applications - populate previous applications",
+  "request": {
+    "uri": "/bail/ccdAboutToStart",
+    "credentials": "AdminOfficer",
+    "input": {
+      "id": 1111,
+      "eventId": "viewPreviousApplications",
+      "state": "applicationStarted",
+      "caseData": {
+        "template": "minimal-application-started.json",
+        "replacements": {
+          "priorApplications1":
+          [
+            {
+              "id": "1",
+              "value": {
+                "caseDataJson": "{\"applicantDetainedLoc\":\"immigrationRemovalCentre\",\"previousApplicationDoneViaAria\":\"No\",\"interpreterYesNo\":\"No\",\"ircName\":\"Dungavel\",\"applicantDocumentsWithMetadata\":[{\"id\":\"2\",\"value\":{\"tag\":\"b1Document\",\"document\":{\"document_url\":\"http://dm-store:8080/documents/53736810-83b3-4e34-9163-f0047c658dca\",\"document_filename\":\"upload6.pdf\",\"document_binary_url\":\"http://dm-store:8080/documents/53736810-83b3-4e34-9163-f0047c658dca/binary\"},\"description\":\"j\",\"dateUploaded\":\"2022-07-05\"}},{\"id\":\"1\",\"value\":{\"tag\":\"bailSubmission\",\"document\":{\"document_url\":\"http://dm-store:8080/documents/30519937-f46a-4cc1-96d9-bad62349f353\",\"document_filename\":\"Family1-bail-application-details.PDF\",\"document_binary_url\":\"http://dm-store:8080/documents/30519937-f46a-4cc1-96d9-bad62349f353/binary\"},\"suppliedBy\":\"\",\"description\":\"\",\"dateUploaded\":\"2022-07-05\"}}],\"endApplicationOutcome\":\"Not in immigration detention\",\"endApplicationReasons\":\"fe\",\"applicantDateOfBirth\":\"2000-02-02\",\"previousApplicationDoneViaCcd\":\"No\",\"applicationSubmittedBy\":\"Home Office\",\"applicantNationality\":\"STATELESS\",\"hearingCentre\":\"glasgow\",\"currentCaseStateVisibleToHomeOffice\":\"applicationEnded\",\"sentByChecklist\":\"Home Office\",\"isAdmin\":\"Yes\",\"hasLegalRep\":\"No\",\"applicantNationalities\":[{\"id\":\"1\",\"value\":{\"code\":\"Stateless\"}}],\"applicantArrivalInUKDate\":\"2021-12-12\",\"hasPreviousBailApplication\":\"No\",\"directions\":[{\"id\":\"1\",\"value\":{\"dateSent\":\"2022-07-05\",\"previousDates\":[],\"dateOfCompliance\":\"2023-03-03\",\"sendDirectionList\":\"Home Office\",\"dateTimeDirectionCreated\":\"2022-07-05T09:05:47.016803700\",\"sendDirectionDescription\":\"fgbdf\"}}],\"applicantGivenNames\":\"Name1\",\"applicantHasAddress\":\"No\",\"detentionFacility\":\"Dungavel\",\"currentCaseStateVisibleToAdminOfficer\":\"applicationEnded\",\"applicantFamilyName\":\"Family1\",\"agreesToBoundByFinancialCond\":\"No\",\"hasFinancialCondSupporter\":\"No\",\"interpreterLanguages\":[],\"homeOfficeReferenceNumber\":\"A12345\",\"transferBailManagementObjectionYesOrNo\":\"No\",\"tribunalDocumentsWithMetadata\":[{\"id\":\"1\",\"value\":{\"tag\":\"bailEndApplication\",\"document\":{\"document_url\":\"http://dm-store:8080/documents/0a9398e8-9ddb-4498-9e2b-5b49b734b3cf\",\"document_filename\":\"Family1-ended-application-notice.PDF\",\"document_binary_url\":\"http://dm-store:8080/documents/0a9398e8-9ddb-4498-9e2b-5b49b734b3cf/binary\"},\"suppliedBy\":\"\",\"description\":\"\",\"dateUploaded\":\"2022-07-05\"}}],\"currentCaseStateVisibleToLegalRepresentative\":\"applicationEnded\",\"applicantFullName\":\"Name1 Family1\",\"outcomeState\":\"applicationEnded\",\"applicantDisability1\":\"No\",\"priorApplications1\":null,\"groundsForBailReasons\":\"test\",\"hasAppealHearingPending\":\"YesWithoutAppealNumber\",\"bailReferenceNumber\":\"1657-0083-2488-6222\",\"applicantHasMobile\":\"No\",\"currentCaseStateVisibleToJudge\":\"applicationEnded\",\"isLegallyRepresentedForFlag\":\"No\",\"currentCaseStateVisibleToAllUsers\":\"applicationEnded\",\"uploadB1FormDocs\":[{\"id\":\"3aaf6557-f96b-403a-b01f-fb21006cba95\",\"value\":{\"document\":{\"document_url\":\"http://dm-store:8080/documents/53736810-83b3-4e34-9163-f0047c658dca\",\"document_filename\":\"upload6.pdf\",\"document_binary_url\":\"http://dm-store:8080/documents/53736810-83b3-4e34-9163-f0047c658dca/binary\"},\"description\":\"j\"}}],\"groundsForBailProvideEvidenceOption\":\"No\",\"applicantGender\":\"Female\",\"outcomeDate\":\"2022-07-05T09:06:11.783304200\",\"notificationsSent\":[{\"id\":\"1657008324886222_BAIL_APPLICATION_SUBMITTED_HEARING_CENTRE\",\"value\":\"4c929548-07d0-439c-8198-df5351f7c8e5\"},{\"id\":\"1657008324886222_BAIL_APPLICATION_SUBMITTED_HOME_OFFICE\",\"value\":\"54bacd5e-a1a7-439c-aa36-d56c8aec0d33\"},{\"id\":\"1657008324886222_BAIL_SENT_DIRECTION_HOME_OFFICE\",\"value\":\"dfdbfb81-b4a0-4c63-88b6-aa2dc9e79ea2\"},{\"id\":\"1657008324886222_BAIL_APPLICATION_ENDED_HOME_OFFICE\",\"value\":\"e91e15e0-10ab-4ca0-ab16-83e973693868\"}],\"endApplicationDate\":\"2022-06-05\",\"isHomeOffice\":\"No\",\"videoHearing1\":\"Yes\",\"submitNotificationStatus\":\"Failed\",\"caseNotes\":[{\"id\":\"1\",\"value\":{\"user\":\"bradAdmin Officer\",\"dateAdded\":\"2022-07-05\",\"caseNoteSubject\":\"Electricity bill\",\"caseNoteDocument\":{\"document_url\":\"http://dm-store:8080/documents/5e0ba2d3-d46c-4443-a55f-7770b9b76f1a\",\"document_filename\":\"Reformed content.pdf\",\"document_binary_url\":\"http://dm-store:8080/documents/5e0ba2d3-d46c-4443-a55f-7770b9b76f1a/binary\"},\"caseNoteDescription\":\"efs\"}}]}",
+                "applicationId": "1"
+              }
+            },
+            {
+              "id": "2",
+              "value": {
+                "caseDataJson": "{\"applicantDetainedLoc\":\"immigrationRemovalCentre\",\"previousApplicationDoneViaAria\":\"No\",\"interpreterYesNo\":\"No\",\"ircName\":\"Dungavel\",\"applicantDocumentsWithMetadata\":[{\"id\":\"2\",\"value\":{\"tag\":\"b1Document\",\"document\":{\"document_url\":\"http://dm-store:8080/documents/53736810-83b3-4e34-9163-f0047c658dca\",\"document_filename\":\"upload6.pdf\",\"document_binary_url\":\"http://dm-store:8080/documents/53736810-83b3-4e34-9163-f0047c658dca/binary\"},\"description\":\"j\",\"dateUploaded\":\"2022-07-05\"}},{\"id\":\"1\",\"value\":{\"tag\":\"bailSubmission\",\"document\":{\"document_url\":\"http://dm-store:8080/documents/30519937-f46a-4cc1-96d9-bad62349f353\",\"document_filename\":\"Family1-bail-application-details.PDF\",\"document_binary_url\":\"http://dm-store:8080/documents/30519937-f46a-4cc1-96d9-bad62349f353/binary\"},\"suppliedBy\":\"\",\"description\":\"\",\"dateUploaded\":\"2022-07-05\"}}],\"endApplicationOutcome\":\"Not in immigration detention\",\"endApplicationReasons\":\"fe\",\"applicantDateOfBirth\":\"2000-02-02\",\"previousApplicationDoneViaCcd\":\"No\",\"applicationSubmittedBy\":\"Home Office\",\"applicantNationality\":\"STATELESS\",\"hearingCentre\":\"glasgow\",\"currentCaseStateVisibleToHomeOffice\":\"applicationEnded\",\"sentByChecklist\":\"Home Office\",\"isAdmin\":\"Yes\",\"hasLegalRep\":\"No\",\"applicantNationalities\":[{\"id\":\"1\",\"value\":{\"code\":\"Stateless\"}}],\"applicantArrivalInUKDate\":\"2021-12-12\",\"hasPreviousBailApplication\":\"No\",\"directions\":[{\"id\":\"1\",\"value\":{\"dateSent\":\"2022-07-05\",\"previousDates\":[],\"dateOfCompliance\":\"2023-03-03\",\"sendDirectionList\":\"Home Office\",\"dateTimeDirectionCreated\":\"2022-07-05T09:05:47.016803700\",\"sendDirectionDescription\":\"fgbdf\"}}],\"applicantGivenNames\":\"Name1\",\"applicantHasAddress\":\"No\",\"detentionFacility\":\"Dungavel\",\"currentCaseStateVisibleToAdminOfficer\":\"applicationEnded\",\"applicantFamilyName\":\"Family1\",\"agreesToBoundByFinancialCond\":\"No\",\"hasFinancialCondSupporter\":\"No\",\"interpreterLanguages\":[],\"homeOfficeReferenceNumber\":\"A12345\",\"transferBailManagementObjectionYesOrNo\":\"No\",\"tribunalDocumentsWithMetadata\":[{\"id\":\"1\",\"value\":{\"tag\":\"bailEndApplication\",\"document\":{\"document_url\":\"http://dm-store:8080/documents/0a9398e8-9ddb-4498-9e2b-5b49b734b3cf\",\"document_filename\":\"Family1-ended-application-notice.PDF\",\"document_binary_url\":\"http://dm-store:8080/documents/0a9398e8-9ddb-4498-9e2b-5b49b734b3cf/binary\"},\"suppliedBy\":\"\",\"description\":\"\",\"dateUploaded\":\"2022-07-05\"}}],\"currentCaseStateVisibleToLegalRepresentative\":\"applicationEnded\",\"applicantFullName\":\"Name1 Family1\",\"outcomeState\":\"applicationEnded\",\"applicantDisability1\":\"No\",\"priorApplications1\":null,\"groundsForBailReasons\":\"test\",\"hasAppealHearingPending\":\"YesWithoutAppealNumber\",\"bailReferenceNumber\":\"1657-0083-2488-6222\",\"applicantHasMobile\":\"No\",\"currentCaseStateVisibleToJudge\":\"applicationEnded\",\"isLegallyRepresentedForFlag\":\"No\",\"currentCaseStateVisibleToAllUsers\":\"applicationEnded\",\"uploadB1FormDocs\":[{\"id\":\"3aaf6557-f96b-403a-b01f-fb21006cba95\",\"value\":{\"document\":{\"document_url\":\"http://dm-store:8080/documents/53736810-83b3-4e34-9163-f0047c658dca\",\"document_filename\":\"upload6.pdf\",\"document_binary_url\":\"http://dm-store:8080/documents/53736810-83b3-4e34-9163-f0047c658dca/binary\"},\"description\":\"j\"}}],\"groundsForBailProvideEvidenceOption\":\"No\",\"applicantGender\":\"Female\",\"outcomeDate\":\"2022-07-05T09:06:11.783304200\",\"notificationsSent\":[{\"id\":\"1657008324886222_BAIL_APPLICATION_SUBMITTED_HEARING_CENTRE\",\"value\":\"4c929548-07d0-439c-8198-df5351f7c8e5\"},{\"id\":\"1657008324886222_BAIL_APPLICATION_SUBMITTED_HOME_OFFICE\",\"value\":\"54bacd5e-a1a7-439c-aa36-d56c8aec0d33\"},{\"id\":\"1657008324886222_BAIL_SENT_DIRECTION_HOME_OFFICE\",\"value\":\"dfdbfb81-b4a0-4c63-88b6-aa2dc9e79ea2\"},{\"id\":\"1657008324886222_BAIL_APPLICATION_ENDED_HOME_OFFICE\",\"value\":\"e91e15e0-10ab-4ca0-ab16-83e973693868\"}],\"endApplicationDate\":\"2022-07-05\",\"isHomeOffice\":\"No\",\"videoHearing1\":\"Yes\",\"submitNotificationStatus\":\"Failed\",\"caseNotes\":[{\"id\":\"1\",\"value\":{\"user\":\"bradAdmin Officer\",\"dateAdded\":\"2022-07-05\",\"caseNoteSubject\":\"Electricity bill\",\"caseNoteDocument\":{\"document_url\":\"http://dm-store:8080/documents/5e0ba2d3-d46c-4443-a55f-7770b9b76f1a\",\"document_filename\":\"Reformed content.pdf\",\"document_binary_url\":\"http://dm-store:8080/documents/5e0ba2d3-d46c-4443-a55f-7770b9b76f1a/binary\"},\"caseNoteDescription\":\"efs\"}}]}",
+                "applicationId": "2"
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-application-started.json",
+      "replacements": {
+        "previousApplicationList": {
+          "value": {
+            "code": "2",
+            "label": "Bail Application 2 - Ended 05-07-2022"
+          },
+          "list_items":[
+            {
+              "code":"2",
+              "label":"Bail Application 2 - Ended 05-07-2022"
+            },
+            {
+              "code":"1",
+              "label":"Bail Application 1 - Ended 05-06-2022"
+            }
+          ]
+        }
+      }
+    }
+  }
+}

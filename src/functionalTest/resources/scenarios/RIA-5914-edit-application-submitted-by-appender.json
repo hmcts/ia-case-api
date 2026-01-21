@@ -1,0 +1,37 @@
+{
+  "description": "Edit the application by admin - application submitted by LR appender(pre-submit)",
+  "request": {
+    "uri": "/bail/ccdAboutToSubmit",
+    "credentials": "LegalRepresentative",
+    "input": {
+      "id": 1111,
+      "eventId": "editBailApplication",
+      "state": "applicationStarted",
+      "caseData": {
+        "template": "minimal-application-started.json",
+        "replacements": {
+          "applicationSubmittedBy": "Legal Representative",
+          "isAdmin": "No",
+          "isLegalRep": "Yes",
+          "sentByChecklist": ""
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-application-started.json",
+      "replacements": {
+        "applicationSubmittedBy": "Legal Representative",
+        "isAdmin": "No",
+        "isLegalRep": "Yes",
+        "sentByChecklist": "",
+        "isLegallyRepresentedForFlag": "Yes",
+        "interpreterLanguages": null,
+        "hasFinancialCondSupporter": null
+      }
+    }
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "description": "Upload hearing recording confirmation",
+  "request": {
+    "uri": "/bail/ccdSubmitted",
+    "credentials": "AdminOfficer",
+    "input": {
+      "id": 1111,
+      "eventId": "uploadHearingRecording",
+      "state": "decisionDecided",
+      "caseData": {
+        "template": "minimal-application-submitted.json"
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "confirmation": {
+      "header": "# You’ve uploaded the hearing recording",
+      "body": "#### What happens next\nThis file is now available in the Documents tab and the Hearing and appointment tab."
+    }
+  }
+}

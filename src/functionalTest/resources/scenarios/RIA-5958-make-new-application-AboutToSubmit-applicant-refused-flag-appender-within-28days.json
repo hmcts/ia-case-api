@@ -1,0 +1,33 @@
+{
+  "description": "Make new application by admin - applicant has been refused within 28 days flag appender",
+  "request": {
+    "uri": "/bail/ccdAboutToSubmit",
+    "credentials": "AdminOfficer",
+    "input": {
+      "id": 1111,
+      "eventId": "makeNewApplication",
+      "state": "decisionDecided",
+      "caseData": {
+        "template": "minimal-application-started.json"
+      },
+      "caseDataBefore": {
+        "template": "minimal-application-started.json",
+        "replacements": {
+          "recordDecisionType": "refused",
+          "decisionDetailsDate": "{$TODAY-2}"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "state": "APPLICATION_SUBMITTED",
+    "caseData": {
+      "template": "minimal-application-make-new-application.json",
+      "replacements": {
+        "applicantBeenRefusedBail": "Yes"
+      }
+    }
+  }
+}

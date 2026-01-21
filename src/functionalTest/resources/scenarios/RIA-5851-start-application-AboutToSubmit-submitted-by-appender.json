@@ -1,0 +1,39 @@
+{
+  "description": "Start the application by admin - application submitted by LR appender",
+  "request": {
+    "uri": "/bail/ccdAboutToSubmit",
+    "credentials": "LegalRepresentativeOrgSuccess",
+    "input": {
+      "id": 1111,
+      "eventId": "startApplication",
+      "state": "applicationStarted",
+      "caseData": {
+        "template": "minimal-application-started.json",
+        "replacements": {
+          "applicationSubmittedBy": "Legal Representative",
+          "isAdmin": "No",
+          "isLegalRep": "Yes",
+          "sentByChecklist": "",
+          "legalRepName": "John",
+          "legalRepFamilyName": "Doe"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-application-started.json",
+      "replacements": {
+        "applicationSubmittedBy": "Legal Representative",
+        "isAdmin": "No",
+        "isLegalRep": "Yes",
+        "sentByChecklist": "",
+        "isLegallyRepresentedForFlag": "Yes",
+        "legalRepName": "John",
+        "legalRepFamilyName": "Doe"
+      }
+    }
+  }
+}

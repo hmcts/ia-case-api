@@ -1,0 +1,57 @@
+{
+  "ircName": "Colnbrook",
+  "isAdmin": "Yes",
+  "hasLegalRep": "No",
+  "isHomeOffice": "No",
+  "hearingCentre": "hattonCross",
+  "videoHearing1": "Yes",
+  "applicantGender": "Male",
+  "sentByChecklist": "Applicant",
+  "interpreterYesNo": "No",
+
+  "applicantFullName": "FirstName LastName",
+  "detentionFacility": "Colnbrook",
+  "applicantHasMobile": "No",
+  "applicantFamilyName": "LastName",
+  "applicantGivenNames": "FirstName",
+  "applicantHasAddress": "No",
+  "bailReferenceNumber": "1111-2222-3333-4444",
+  "applicantDateOfBirth": "1111-01-01",
+  "applicantDetainedLoc": "immigrationRemovalCentre",
+  "applicantDisability1": "No",
+  "applicantNationality": "HAS_NATIONALITY",
+  "interpreterLanguages": [],
+  "groundsForBailReasons": "groundsForBails",
+  "applicantNationalities": [
+    {
+      "id": "3b607d2b-6e29-4bda-a0eb-8320e676f584",
+      "value": {
+        "code": "English"
+      }
+    }
+  ],
+  "applicationSubmittedBy": "Applicant",
+  "hasAppealHearingPending": "No",
+  "applicantArrivalInUKDate": "1111-01-01",
+  "hasFinancialCondSupporter": "No",
+  "homeOfficeReferenceNumber": "00000",
+  "hasPreviousBailApplication": "No",
+  "isLegallyRepresentedForFlag": "No",
+  "agreesToBoundByFinancialCond": "No",
+  "previousApplicationDoneViaCcd": "No",
+  "transferBailManagementObjectionYesOrNo": "No",
+  "currentCaseStateVisibleToJudge": "bailSummaryUploaded",
+  "previousApplicationDoneViaAria": "No",
+  "currentCaseStateVisibleToAllUsers": "bailSummaryUploaded",
+  "currentCaseStateVisibleToHomeOffice": "bailSummaryUploaded",
+  "groundsForBailProvideEvidenceOption": "No",
+  "currentCaseStateVisibleToAdminOfficer": "bailSummaryUploaded",
+  "currentCaseStateVisibleToLegalRepresentative": "bailSummaryUploaded",
+  "conditionsForBailAppearance": "The applicant is to appear before an Immigration Officer at [location] between [times] on [date] or any other place and on any other date and time that may be required by the Home Office or an Immigration Officer.\n\n-OR-\n\nThe Applicant must appear before an Immigration Officer on a date and time and by such means as may be notified to him by the Home Office in writing.",
+  "conditionsForBailActivities": "The Applicant shall not undertake the activities listed below while on immigration bail without further order:\n\nThe Applicant is not allowed to work\n\nThe Applicant is not allowed to study",
+  "conditionsForBailResidence": "The applicant must reside at ADDRESS.\n\nWhere an Immigration Judge makes a conditional grant with deferred commencement:\n\nThe applicant will reside at an address approved by the probation/offender manager.\n\nBy virtue of para 3(8) of schedule 10 of The Immigration Act 2016 this grant of bail will not commence until such address has been approved by probation.\n\nThe approval of a residence address will be reviewed by the Tribunal on the first available date after [ ] days unless the Tribunal is notified prior to that date that accommodation has been approved and bail commenced in which case the matter will be dealt with administratively.\n\nIn the event that the applicant has not been released then at least 2 clear days before the bail review hearing, the Secretary of State is to update the Tribunal in writing as to the progress made in relation to sourcing and/or approving accommodation for the applicant.",
+  "conditionsForBailReporting": "The Applicant must report to an Immigration Officer at [ADDRESS, TIME, DATE AND FREQUENCY].",
+  "conditionsForBailElectronicMonitoring": "Note: Where the Tribunal has directed that the Applicant should be subject to an electronic monitoring condition there may be a delay of release of up to 72 hours pending arrangements for the electronic monitoring device.\n\nBail is granted conditional upon:\n\nthe applicant being compliant with the fitting of an electronic monitoring device at the point of release from detention; and\n\nthe Secretary of State promptly arranging the fitting of the electronic monitoring device at the place of the Applicant's detention. If the secretary of State does not complete the fitting of the electronic monitoring device within 72 hours then this grant of bail will commence and the applicant is to be released subject to the other conditions of this grant of bail. In such an event the Secretary of State will make arrangements for the fitting of the electronic monitoring device post release.",
+  "bailTransferDirections": "The Tribunal directs that on commencement of bail future management including any application for variation shall be exercised by the Secretary of State pursuant by paragraph 6(3) of Schedule 10 to the Immigration Act 2016.\n\nPlease note: Where the Tribunal directs that bail management shall be transferred to the Secretary of State, all future proceedings will be conducted by the Secretary of State (including any hearing to determine liability for payment of a financial condition).",
+  "secretaryOfStateRefusalReasons": "The Tribunal was minded to grant bail for the reasons given. The Home Office have refused to consent to the grant of bail so in accordance with paragraph 3(4) of Schedule 10 Immigration Act 2016 bail is refused."
+}

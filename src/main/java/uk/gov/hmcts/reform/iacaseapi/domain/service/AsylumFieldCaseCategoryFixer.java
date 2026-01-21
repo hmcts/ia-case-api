@@ -7,7 +7,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 
-public class AsylumFieldCaseCategoryFixer implements DataFixer {
+public class AsylumFieldCaseCategoryFixer implements DataFixer<AsylumCase> {
 
     private final AsylumCaseFieldDefinition hmctsCaseCategory;
     private final AsylumCaseFieldDefinition appealType;

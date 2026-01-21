@@ -1,0 +1,28 @@
+{
+  "description": "Edit the application by admin - show error message (redirect) if applicant has application already",
+  "request": {
+    "uri": "/bail/ccdMidEvent?pageId=redirectToPreviousApplicationOrNoc",
+    "credentials": "AdminOfficer",
+    "input": {
+      "id": 1111,
+      "eventId": "editBailApplicationAfterSubmit",
+      "state": "applicationSubmitted",
+      "caseData": {
+        "template": "minimal-application-submitted.json",
+        "replacements": {
+          "previousApplicationDoneViaCcd": "Yes"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": ["contains(A case record already exists for this applicant.)"],
+    "caseData": {
+      "template": "minimal-application-submitted.json",
+      "replacements": {
+        "previousApplicationDoneViaCcd": "Yes"
+      }
+    }
+  }
+}

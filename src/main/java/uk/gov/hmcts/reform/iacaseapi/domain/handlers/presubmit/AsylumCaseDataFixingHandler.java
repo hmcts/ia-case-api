@@ -14,9 +14,9 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.DataFixer;
 @Component
 public class AsylumCaseDataFixingHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
-    private final List<DataFixer> dataFixers;
+    private final List<DataFixer<AsylumCase>> dataFixers;
 
-    public AsylumCaseDataFixingHandler(List<DataFixer> dataFixers) {
+    public AsylumCaseDataFixingHandler(List<DataFixer<AsylumCase>> dataFixers) {
         this.dataFixers = dataFixers;
     }
 

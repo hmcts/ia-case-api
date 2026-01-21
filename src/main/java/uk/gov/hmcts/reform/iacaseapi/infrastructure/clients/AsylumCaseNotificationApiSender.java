@@ -23,7 +23,7 @@ import java.time.ZonedDateTime;
 @Service
 public class AsylumCaseNotificationApiSender implements NotificationSender<AsylumCase> {
 
-    private final AsylumCaseCallbackApiDelegator asylumCaseCallbackApiDelegator;
+    private final CallbackApiDelegator callbackApiDelegator;
     private final String notificationsApiEndpoint;
     private final String aboutToSubmitPath;
     private final boolean timedEventServiceEnabled;
@@ -36,9 +36,9 @@ public class AsylumCaseNotificationApiSender implements NotificationSender<Asylu
     SecureRandom random = new SecureRandom();
 
     public AsylumCaseNotificationApiSender(
-        AsylumCaseCallbackApiDelegator asylumCaseCallbackApiDelegator,
+        CallbackApiDelegator callbackApiDelegator,
         @Value("${notificationsApi.endpoint}") String notificationsApiEndpoint,
-        @Value("${notificationsApi.aboutToSubmitPath}") String aboutToSubmitPath,
+        @Value("${notificationsApi.asylum.aboutToSubmitPath}") String aboutToSubmitPath,
         @Value("${featureFlag.timedEventServiceEnabled}") boolean timedEventServiceEnabled,
         @Value("${saveNotificationsData.enabled}") boolean saveNotificationToDataEnabled,
         @Value("${saveNotificationsData.scheduleAtHour}") int saveNotificationScheduleAtHour,
@@ -47,7 +47,7 @@ public class AsylumCaseNotificationApiSender implements NotificationSender<Asylu
         Scheduler scheduler,
         FeatureToggler featureToggler
     ) {
-        this.asylumCaseCallbackApiDelegator = asylumCaseCallbackApiDelegator;
+        this.callbackApiDelegator = callbackApiDelegator;
         this.notificationsApiEndpoint = notificationsApiEndpoint;
         this.aboutToSubmitPath = aboutToSubmitPath;
         this.timedEventServiceEnabled = timedEventServiceEnabled;
@@ -74,7 +74,7 @@ public class AsylumCaseNotificationApiSender implements NotificationSender<Asylu
             log.info("Skipping saveNotificationsToDate event schedule");
         }
 
-        return asylumCaseCallbackApiDelegator.delegate(
+        return callbackApiDelegator.delegate(
             callback,
             notificationsApiEndpoint + aboutToSubmitPath
         );
@@ -94,7 +94,7 @@ public class AsylumCaseNotificationApiSender implements NotificationSender<Asylu
                                 callback.getCaseDetails().getId()
                         )
                 );
-            } catch (AsylumCaseServiceResponseException e) {
+            } catch (ServiceResponseException e) {
                 log.error("Scheduling SAVE_NOTIFICATIONS_TO_DATA event failed: ", e);
             }
         }

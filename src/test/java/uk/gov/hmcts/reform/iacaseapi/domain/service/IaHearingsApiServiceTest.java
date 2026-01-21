@@ -24,8 +24,8 @@ import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.AsylumCaseCallbackApiDelegator;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.AsylumCaseServiceResponseException;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CallbackApiDelegator;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.ServiceResponseException;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -37,7 +37,7 @@ public class IaHearingsApiServiceTest {
     private static final String ABOUT_TO_SUBMIT_PATH = "/ccdAboutToSubmit";
 
     @Mock
-    private AsylumCaseCallbackApiDelegator asylumCaseCallbackApiDelegator;
+    private CallbackApiDelegator callbackApiDelegator;
     @Mock
     private Callback<AsylumCase> callback;
     @Mock
@@ -53,7 +53,7 @@ public class IaHearingsApiServiceTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
         iaHearingsApiService = new IaHearingsApiService(
-            asylumCaseCallbackApiDelegator,
+            callbackApiDelegator,
             IA_HEARINGS_API_URL,
             ABOUT_TO_START_PATH,
             MID_EVENT_PATH,
@@ -64,24 +64,24 @@ public class IaHearingsApiServiceTest {
     @Test
     void should_delegate_aboutToStart_call() {
         iaHearingsApiService.aboutToStart(callback);
-        verify(asylumCaseCallbackApiDelegator).delegate(callback, IA_HEARINGS_API_URL + ABOUT_TO_START_PATH);
+        verify(callbackApiDelegator).delegate(callback, IA_HEARINGS_API_URL + ABOUT_TO_START_PATH);
     }
 
     @Test
     void should_delegate_midEvent_call() {
         iaHearingsApiService.midEvent(callback);
-        verify(asylumCaseCallbackApiDelegator).delegate(callback, IA_HEARINGS_API_URL + MID_EVENT_PATH);
+        verify(callbackApiDelegator).delegate(callback, IA_HEARINGS_API_URL + MID_EVENT_PATH);
     }
 
     @Test
     void should_delegate_aboutToSubmit_call() {
         iaHearingsApiService.aboutToSubmit(callback);
-        verify(asylumCaseCallbackApiDelegator).delegate(callback, IA_HEARINGS_API_URL + ABOUT_TO_SUBMIT_PATH);
+        verify(callbackApiDelegator).delegate(callback, IA_HEARINGS_API_URL + ABOUT_TO_SUBMIT_PATH);
     }
 
     @Test
     void createHearing_should_successfully_call_hearings_service() {
-        when(asylumCaseCallbackApiDelegator
+        when(callbackApiDelegator
             .delegate(callback, IA_HEARINGS_API_URL + ABOUT_TO_SUBMIT_PATH)).thenReturn(asylumCase);
 
         iaHearingsApiService.createHearing(callback);
@@ -92,8 +92,8 @@ public class IaHearingsApiServiceTest {
     @Test
     void createHearing_should_set_request_status_when_call_fails() {
         when(callback.getEvent()).thenReturn(REVIEW_HEARING_REQUIREMENTS);
-        doThrow(AsylumCaseServiceResponseException.class)
-            .when(asylumCaseCallbackApiDelegator).delegate(callback, IA_HEARINGS_API_URL + ABOUT_TO_SUBMIT_PATH);
+        doThrow(ServiceResponseException.class)
+            .when(callbackApiDelegator).delegate(callback, IA_HEARINGS_API_URL + ABOUT_TO_SUBMIT_PATH);
 
         iaHearingsApiService.createHearing(callback);
 
@@ -102,7 +102,7 @@ public class IaHearingsApiServiceTest {
 
     @Test
     void updateHearing_should_successfully_call_hearings_service() {
-        when(asylumCaseCallbackApiDelegator
+        when(callbackApiDelegator
             .delegate(callback, IA_HEARINGS_API_URL + ABOUT_TO_SUBMIT_PATH)).thenReturn(asylumCase);
 
         iaHearingsApiService.updateHearing(callback);
@@ -113,8 +113,8 @@ public class IaHearingsApiServiceTest {
     @Test
     void updateHearing_should_set_request_status_when_call_fails() {
         when(callback.getEvent()).thenReturn(UPDATE_HEARING_REQUEST);
-        doThrow(AsylumCaseServiceResponseException.class)
-            .when(asylumCaseCallbackApiDelegator).delegate(callback, IA_HEARINGS_API_URL + ABOUT_TO_SUBMIT_PATH);
+        doThrow(ServiceResponseException.class)
+            .when(callbackApiDelegator).delegate(callback, IA_HEARINGS_API_URL + ABOUT_TO_SUBMIT_PATH);
 
         iaHearingsApiService.updateHearing(callback);
 
@@ -124,7 +124,7 @@ public class IaHearingsApiServiceTest {
 
     @Test
     void deleteHearing_should_successfully_call_hearings_service() {
-        when(asylumCaseCallbackApiDelegator
+        when(callbackApiDelegator
             .delegate(callback, IA_HEARINGS_API_URL + ABOUT_TO_SUBMIT_PATH)).thenReturn(asylumCase);
 
         iaHearingsApiService.deleteHearing(callback);
@@ -135,8 +135,8 @@ public class IaHearingsApiServiceTest {
     @Test
     void deleteHearing_should_set_request_status_when_call_fails() {
         when(callback.getEvent()).thenReturn(END_APPEAL);
-        doThrow(AsylumCaseServiceResponseException.class)
-            .when(asylumCaseCallbackApiDelegator).delegate(callback, IA_HEARINGS_API_URL + ABOUT_TO_SUBMIT_PATH);
+        doThrow(ServiceResponseException.class)
+            .when(callbackApiDelegator).delegate(callback, IA_HEARINGS_API_URL + ABOUT_TO_SUBMIT_PATH);
 
         iaHearingsApiService.deleteHearing(callback);
 

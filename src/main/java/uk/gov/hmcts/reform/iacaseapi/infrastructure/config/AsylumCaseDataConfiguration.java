@@ -10,35 +10,35 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.*;
 public class AsylumCaseDataConfiguration {
 
     @Bean
-    public DataFixer respondentsAgreedScheduleOfIssuesDescription_to_appellantsAgreedScheduleOfIssuesDescription() {
+    public DataFixer<AsylumCase> respondentsAgreedScheduleOfIssuesDescription_to_appellantsAgreedScheduleOfIssuesDescription() {
         return new AsylumFieldNameFixer(
             AsylumCaseFieldDefinition.RESPONDENTS_AGREED_SCHEDULE_OF_ISSUES_DESCRIPTION,
             AsylumCaseFieldDefinition.APPELLANTS_AGREED_SCHEDULE_OF_ISSUES_DESCRIPTION);
     }
 
     @Bean
-    public DataFixer respondentsDisputedScheduleOfIssuesDescription_to_appellantsDisputedScheduleOfIssuesDescription() {
+    public DataFixer<AsylumCase> respondentsDisputedScheduleOfIssuesDescription_to_appellantsDisputedScheduleOfIssuesDescription() {
         return new AsylumFieldNameFixer(
             AsylumCaseFieldDefinition.RESPONDENTS_DISPUTED_SCHEDULE_OF_ISSUES_DESCRIPTION,
             AsylumCaseFieldDefinition.APPELLANTS_DISPUTED_SCHEDULE_OF_ISSUES_DESCRIPTION);
     }
 
     @Bean
-    public DataFixer decisionAndReasonsDocuments_to_draftDecisionAndReasonsDocuments() {
+    public DataFixer<AsylumCase> decisionAndReasonsDocuments_to_draftDecisionAndReasonsDocuments() {
         return new AsylumFieldNameFixer(
             AsylumCaseFieldDefinition.DECISION_AND_REASONS_DOCUMENTS,
             AsylumCaseFieldDefinition.DRAFT_DECISION_AND_REASONS_DOCUMENTS);
     }
 
     @Bean
-    public DataFixer hearingAttendeesAndDurationInitializer() {
+    public DataFixer<AsylumCase> hearingAttendeesAndDurationInitializer() {
         return new AsylumCaseValueInitializerFixer<>(
             AsylumCaseFieldDefinition.HAVE_HEARING_ATTENDEES_AND_DURATION_BEEN_RECORDED,
             YesOrNo.NO);
     }
 
     @Bean
-    public DataFixer caseNameAppender(FeatureToggler featureToggler) {
+    public DataFixer<AsylumCase> caseNameAppender(FeatureToggler featureToggler) {
         return new AsylumFieldCaseNameFixer(
             AsylumCaseFieldDefinition.HMCTS_CASE_NAME_INTERNAL,
             AsylumCaseFieldDefinition.APPELLANT_GIVEN_NAMES,
@@ -46,7 +46,7 @@ public class AsylumCaseDataConfiguration {
     }
 
     @Bean
-    public DataFixer hmctsCaseCategoryAppender() {
+    public DataFixer<AsylumCase> hmctsCaseCategoryAppender() {
         return new AsylumFieldCaseCategoryFixer(
             AsylumCaseFieldDefinition.HMCTS_CASE_CATEGORY,
             AsylumCaseFieldDefinition.APPEAL_TYPE);

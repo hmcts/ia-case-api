@@ -1,0 +1,23 @@
+{
+  "description": "Move the application to decided state by Admin Officer confirmation (post-submit REST call)",
+  "request": {
+    "uri": "/bail/ccdSubmitted",
+    "credentials": "AdminOfficer",
+    "input": {
+      "id": 1111,
+      "eventId": "moveApplicationToDecided",
+      "state": "decisionConditionalBail",
+      "caseData": {
+        "template": "minimal-application-started.json"
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "confirmation": {
+      "header": null,
+      "body": null
+    }
+  }
+}

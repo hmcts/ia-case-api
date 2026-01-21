@@ -6,23 +6,23 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.AsylumCaseCallbackApiDelegator;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CallbackApiDelegator;
 
 @Service
 public class AsylumCaseFeePaymentService implements FeePayment<AsylumCase> {
 
-    private final AsylumCaseCallbackApiDelegator asylumCaseCallbackApiDelegator;
+    private final CallbackApiDelegator callbackApiDelegator;
     private final String feePaymentApiEndpoint;
     private final String aboutToSubmitPath;
     private final String aboutToStartPath;
 
     public AsylumCaseFeePaymentService(
-        AsylumCaseCallbackApiDelegator asylumCaseCallbackApiDelegator,
+        CallbackApiDelegator callbackApiDelegator,
         @Value("${paymentApi.endpoint}") String feePaymentApiEndpoint,
         @Value("${paymentApi.aboutToSubmitPath}") String aboutToSubmitPath,
         @Value("${paymentApi.aboutToStartPath}") String aboutToStartPath
     ) {
-        this.asylumCaseCallbackApiDelegator = asylumCaseCallbackApiDelegator;
+        this.callbackApiDelegator = callbackApiDelegator;
         this.feePaymentApiEndpoint = feePaymentApiEndpoint;
         this.aboutToSubmitPath = aboutToSubmitPath;
         this.aboutToStartPath = aboutToStartPath;
@@ -33,7 +33,7 @@ public class AsylumCaseFeePaymentService implements FeePayment<AsylumCase> {
     ) {
         requireNonNull(callback, "callback must not be null");
 
-        return asylumCaseCallbackApiDelegator.delegate(
+        return callbackApiDelegator.delegate(
                 callback,
                 feePaymentApiEndpoint + aboutToStartPath
         );
@@ -44,7 +44,7 @@ public class AsylumCaseFeePaymentService implements FeePayment<AsylumCase> {
     ) {
         requireNonNull(callback, "callback must not be null");
 
-        return asylumCaseCallbackApiDelegator.delegate(
+        return callbackApiDelegator.delegate(
                 callback,
                 feePaymentApiEndpoint + aboutToSubmitPath
         );

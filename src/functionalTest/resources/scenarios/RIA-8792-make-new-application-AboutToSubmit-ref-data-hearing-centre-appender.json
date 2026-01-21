@@ -1,0 +1,43 @@
+{
+  "description": "Make new application by admin - append hearing centre from ref data",
+  "request": {
+    "uri": "/bail/ccdAboutToSubmit",
+    "credentials": "AdminOfficer",
+    "input": {
+      "id": 8792,
+      "eventId": "makeNewApplication",
+      "state": "decisionDecided",
+      "caseData": {
+        "template": "minimal-application-started.json",
+        "replacements": {
+          "ircName": "Albany",
+          "isBailsLocationReferenceDataEnabledFt": "Yes"
+        }
+      },
+      "caseDataBefore": {
+        "template": "minimal-application-started.json"
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "state": "APPLICATION_SUBMITTED",
+    "caseData": {
+      "template": "minimal-application-make-new-application.json",
+      "replacements": {
+        "hasFinancialCondSupporter": null,
+        "isBailsLocationReferenceDataEnabled": "Yes",
+        "ircName": "Albany",
+        "detentionFacility": "Albany",
+        "hearingCentre": "hattonCross",
+        "hearingCentreRefData": {
+          "value": {
+            "code": "386417",
+            "label": "Hatton Cross Tribunal Hearing Centre"
+          }
+        }
+      }
+    }
+  }
+}

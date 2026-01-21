@@ -54,6 +54,19 @@ public class RefDataUserService {
 
     }
 
+    public List<CategoryValues> filterCategoryValuesByCategoryId(CommonDataResponse commonDataResponse, String categoryId) {
+        List<CategoryValues> filteredCategoryValues = new ArrayList<>();
+
+        if (null != commonDataResponse) {
+            filteredCategoryValues = commonDataResponse.getCategoryValues().stream()
+                .filter(response -> response.getCategoryKey().equalsIgnoreCase(categoryId))
+                .collect(Collectors.toList());
+
+            filteredCategoryValues.sort((a, b) -> a.getKey().compareToIgnoreCase(b.getKey()));
+        }
+
+        return filteredCategoryValues;
+    }
     public List<Value> mapCategoryValuesToDynamicListValues(List<CategoryValues> categoryValues) {
 
         return categoryValues
@@ -74,6 +87,20 @@ public class RefDataUserService {
                 .collect(Collectors.toList());
     }
 
+    public List<CategoryValues> filterCategoryValuesByCategoryIdWithActiveFlag(CommonDataResponse commonDataResponse, String categoryId) {
+        List<CategoryValues> filteredCategoryValues = new ArrayList<>();
+
+        if (null != commonDataResponse) {
+            filteredCategoryValues = commonDataResponse.getCategoryValues().stream()
+                .filter(response -> response.getCategoryKey().equalsIgnoreCase(categoryId))
+                .filter(response -> IS_ACTIVE_FLAG.equals(response.getActiveFlag()))
+                .collect(Collectors.toList());
+
+            filteredCategoryValues.sort((a, b) -> a.getKey().compareToIgnoreCase(b.getKey()));
+        }
+
+        return filteredCategoryValues;
+    }
 }
 
 

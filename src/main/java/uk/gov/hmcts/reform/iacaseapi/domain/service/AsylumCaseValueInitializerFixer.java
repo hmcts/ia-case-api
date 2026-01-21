@@ -3,7 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.service;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 
-public class AsylumCaseValueInitializerFixer<T> implements DataFixer {
+public class AsylumCaseValueInitializerFixer<T> implements DataFixer<AsylumCase> {
 
     private final AsylumCaseFieldDefinition field;
     private final T value;

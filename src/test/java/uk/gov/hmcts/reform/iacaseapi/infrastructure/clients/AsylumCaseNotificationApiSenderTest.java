@@ -39,7 +39,7 @@ class AsylumCaseNotificationApiSenderTest {
     private static final String CCD_SUBMITTED_PATH = "/path";
 
     @Mock
-    private AsylumCaseCallbackApiDelegator asylumCaseCallbackApiDelegator;
+    private CallbackApiDelegator callbackApiDelegator;
     @Mock
     private Callback<AsylumCase> callback;
     @Mock
@@ -63,7 +63,7 @@ class AsylumCaseNotificationApiSenderTest {
     public void setUp() {
         asylumCaseNotificationApiSender =
             new AsylumCaseNotificationApiSender(
-                asylumCaseCallbackApiDelegator,
+                callbackApiDelegator,
                 ENDPOINT,
                 CCD_SUBMITTED_PATH,
                 false,
@@ -76,17 +76,17 @@ class AsylumCaseNotificationApiSenderTest {
             );
         when(featureToggler.getValue("save-notifications-feature", false)).thenReturn(true);
     }
-    
+
     @Test
     void should_delegate_callback_to_downstream_api() {
         final AsylumCase notifiedAsylumCase = mock(AsylumCase.class);
 
-        when(asylumCaseCallbackApiDelegator.delegate(callback, ENDPOINT + CCD_SUBMITTED_PATH))
+        when(callbackApiDelegator.delegate(callback, ENDPOINT + CCD_SUBMITTED_PATH))
             .thenReturn(notifiedAsylumCase);
 
         final AsylumCase callbackResponse = asylumCaseNotificationApiSender.send(callback);
         verify(scheduler, never()).schedule(any(TimedEvent.class));
-        verify(asylumCaseCallbackApiDelegator, times(1))
+        verify(callbackApiDelegator, times(1))
             .delegate(callback, ENDPOINT + CCD_SUBMITTED_PATH);
 
         assertEquals(notifiedAsylumCase, callbackResponse);
@@ -96,12 +96,12 @@ class AsylumCaseNotificationApiSenderTest {
     void should_delegate_about_to_start_callback_to_downstream_api() {
         final AsylumCase notifiedAsylumCase = mock(AsylumCase.class);
 
-        when(asylumCaseCallbackApiDelegator.delegate(callback, ENDPOINT + CCD_SUBMITTED_PATH))
+        when(callbackApiDelegator.delegate(callback, ENDPOINT + CCD_SUBMITTED_PATH))
             .thenReturn(notifiedAsylumCase);
 
         final AsylumCase actualAsylumCase = asylumCaseNotificationApiSender.send(callback);
         verify(scheduler, never()).schedule(any(TimedEvent.class));
-        verify(asylumCaseCallbackApiDelegator, times(1))
+        verify(callbackApiDelegator, times(1))
             .delegate(callback, ENDPOINT + CCD_SUBMITTED_PATH);
 
         assertEquals(notifiedAsylumCase, actualAsylumCase);
@@ -118,7 +118,7 @@ class AsylumCaseNotificationApiSenderTest {
     void schedules_save_notification_to_data_event_if_tes_enabled() {
         asylumCaseNotificationApiSender =
             new AsylumCaseNotificationApiSender(
-                asylumCaseCallbackApiDelegator,
+                callbackApiDelegator,
                 ENDPOINT,
                 CCD_SUBMITTED_PATH,
                 true,
@@ -131,7 +131,7 @@ class AsylumCaseNotificationApiSenderTest {
             );
         final AsylumCase notifiedAsylumCase = mock(AsylumCase.class);
 
-        when(asylumCaseCallbackApiDelegator.delegate(callback, ENDPOINT + CCD_SUBMITTED_PATH))
+        when(callbackApiDelegator.delegate(callback, ENDPOINT + CCD_SUBMITTED_PATH))
             .thenReturn(notifiedAsylumCase);
         LocalDateTime localDateTime = LocalDateTime.now();
         when(dateProvider.nowWithTime()).thenReturn(localDateTime);
@@ -145,7 +145,7 @@ class AsylumCaseNotificationApiSenderTest {
         verifyTimedEventSchedule(scheduledTimedEventValue);
         assertEquals(scheduledTimedEventValue.getScheduledDateTime().toLocalDate(), LocalDate.now());
 
-        verify(asylumCaseCallbackApiDelegator, times(1))
+        verify(callbackApiDelegator, times(1))
             .delegate(callback, ENDPOINT + CCD_SUBMITTED_PATH);
 
         assertEquals(notifiedAsylumCase, callbackResponse);
@@ -155,7 +155,7 @@ class AsylumCaseNotificationApiSenderTest {
     void should_schedule_to_next_day_when_tes_enabled_and_current_time_is_past_the_schedule_hour() {
         asylumCaseNotificationApiSender =
                 new AsylumCaseNotificationApiSender(
-                        asylumCaseCallbackApiDelegator,
+                    callbackApiDelegator,
                         ENDPOINT,
                         CCD_SUBMITTED_PATH,
                         true,
@@ -168,7 +168,7 @@ class AsylumCaseNotificationApiSenderTest {
                 );
         final AsylumCase notifiedAsylumCase = mock(AsylumCase.class);
 
-        when(asylumCaseCallbackApiDelegator.delegate(callback, ENDPOINT + CCD_SUBMITTED_PATH))
+        when(callbackApiDelegator.delegate(callback, ENDPOINT + CCD_SUBMITTED_PATH))
                 .thenReturn(notifiedAsylumCase);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getId()).thenReturn(1L);
@@ -182,7 +182,7 @@ class AsylumCaseNotificationApiSenderTest {
         verifyTimedEventSchedule(timedEventCaptorValue);
         assertTrue(timedEventCaptorValue.getScheduledDateTime().isAfter(ZonedDateTime.now().plusDays(1)));
 
-        verify(asylumCaseCallbackApiDelegator, times(1))
+        verify(callbackApiDelegator, times(1))
                 .delegate(callback, ENDPOINT + CCD_SUBMITTED_PATH);
 
         assertEquals(notifiedAsylumCase, callbackResponse);
@@ -213,7 +213,7 @@ class AsylumCaseNotificationApiSenderTest {
     ) {
         asylumCaseNotificationApiSender =
                 new AsylumCaseNotificationApiSender(
-                        asylumCaseCallbackApiDelegator,
+                    callbackApiDelegator,
                         ENDPOINT,
                         CCD_SUBMITTED_PATH,
                         timedEventEnabled,
@@ -226,7 +226,7 @@ class AsylumCaseNotificationApiSenderTest {
                 );
         final AsylumCase notifiedAsylumCase = mock(AsylumCase.class);
 
-        when(asylumCaseCallbackApiDelegator.delegate(callback, ENDPOINT + CCD_SUBMITTED_PATH))
+        when(callbackApiDelegator.delegate(callback, ENDPOINT + CCD_SUBMITTED_PATH))
                 .thenReturn(notifiedAsylumCase);
         LocalDateTime localDateTime =
                 LocalDateTime.of(2004, Month.FEBRUARY, 5, 10, 57, 33);
@@ -239,7 +239,7 @@ class AsylumCaseNotificationApiSenderTest {
         final AsylumCase callbackResponse = asylumCaseNotificationApiSender.send(callback);
 
         verify(scheduler, never()).schedule(any());
-        verify(asylumCaseCallbackApiDelegator, times(1))
+        verify(callbackApiDelegator, times(1))
                 .delegate(callback, ENDPOINT + CCD_SUBMITTED_PATH);
 
         assertEquals(notifiedAsylumCase, callbackResponse);

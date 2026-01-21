@@ -17,7 +17,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.RequiredFieldMissingException;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.AsylumCaseCallbackApiDelegator;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CallbackApiDelegator;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
@@ -28,7 +28,7 @@ class HomeOfficeApiServiceTest {
     private static final String ABOUT_TO_SUBMIT_PATH = "some-path";
 
     @Mock
-    private AsylumCaseCallbackApiDelegator asylumCaseCallbackApiDelegator;
+    private CallbackApiDelegator callbackApiDelegator;
     @Mock
     private Callback<AsylumCase> callback;
 
@@ -39,7 +39,7 @@ class HomeOfficeApiServiceTest {
 
         homeOfficeApiService =
             new HomeOfficeApiService(
-                asylumCaseCallbackApiDelegator,
+                callbackApiDelegator,
                 ENDPOINT,
                 ABOUT_TO_START_PATH,
                 ABOUT_TO_SUBMIT_PATH
@@ -52,12 +52,12 @@ class HomeOfficeApiServiceTest {
 
         final AsylumCase asylumCaseWithHomeOfficeData = mock(AsylumCase.class);
 
-        when(asylumCaseCallbackApiDelegator.delegate(callback, ENDPOINT + path))
+        when(callbackApiDelegator.delegate(callback, ENDPOINT + path))
                 .thenReturn(asylumCaseWithHomeOfficeData);
 
         final AsylumCase actualAsylumCase = homeOfficeApiService.call(callback);
 
-        verify(asylumCaseCallbackApiDelegator, times(1))
+        verify(callbackApiDelegator, times(1))
                 .delegate(callback, ENDPOINT + path);
 
         assertEquals(asylumCaseWithHomeOfficeData, actualAsylumCase);
@@ -69,13 +69,13 @@ class HomeOfficeApiServiceTest {
 
         final AsylumCase asylumCaseWithHomeOfficeData = mock(AsylumCase.class);
 
-        when(asylumCaseCallbackApiDelegator.delegate(callback, ENDPOINT + path))
+        when(callbackApiDelegator.delegate(callback, ENDPOINT + path))
             .thenReturn(asylumCaseWithHomeOfficeData);
 
         final AsylumCase actualAsylumCase = path.equals(ABOUT_TO_START_PATH)
                 ? homeOfficeApiService.aboutToStart(callback) : homeOfficeApiService.aboutToSubmit(callback);
 
-        verify(asylumCaseCallbackApiDelegator, times(1))
+        verify(callbackApiDelegator, times(1))
             .delegate(callback, ENDPOINT + path);
 
         assertEquals(asylumCaseWithHomeOfficeData, actualAsylumCase);
@@ -93,7 +93,7 @@ class HomeOfficeApiServiceTest {
     @ValueSource(strings = { ABOUT_TO_START_PATH, ABOUT_TO_SUBMIT_PATH })
     void should_handle_error_from_downstream_api(String path) {
 
-        when(asylumCaseCallbackApiDelegator.delegate(callback, ENDPOINT + path))
+        when(callbackApiDelegator.delegate(callback, ENDPOINT + path))
             .thenThrow(new RequiredFieldMissingException("Home office reference number is a required field"));
 
         assertThatThrownBy(() -> homeOfficeApiService.aboutToSubmit(callback))

@@ -12,16 +12,16 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.PostNotificationSender;
 @Service
 public class AsylumCasePostNotificationApiSender implements PostNotificationSender<AsylumCase> {
 
-    private final AsylumCaseCallbackApiDelegator asylumCaseCallbackApiDelegator;
+    private final CallbackApiDelegator callbackApiDelegator;
     private final String notificationsApiEndpoint;
     private final String ccdSubmittedPath;
 
     public AsylumCasePostNotificationApiSender(
-        AsylumCaseCallbackApiDelegator asylumCaseCallbackApiDelegator,
+        CallbackApiDelegator callbackApiDelegator,
         @Value("${notificationsApi.endpoint}") String notificationsApiEndpoint,
-        @Value("${notificationsApi.ccdSubmittedPath}") String ccdSubmittedPath
+        @Value("${notificationsApi.asylum.ccdSubmittedPath}") String ccdSubmittedPath
     ) {
-        this.asylumCaseCallbackApiDelegator = asylumCaseCallbackApiDelegator;
+        this.callbackApiDelegator = callbackApiDelegator;
         this.notificationsApiEndpoint = notificationsApiEndpoint;
         this.ccdSubmittedPath = ccdSubmittedPath;
     }
@@ -30,7 +30,7 @@ public class AsylumCasePostNotificationApiSender implements PostNotificationSend
     public PostSubmitCallbackResponse send(Callback<AsylumCase> callback) {
         requireNonNull(callback, "callback must not be null");
 
-        return asylumCaseCallbackApiDelegator.delegatePostSubmit(
+        return callbackApiDelegator.delegatePostSubmit(
             callback,
             notificationsApiEndpoint + ccdSubmittedPath
         );

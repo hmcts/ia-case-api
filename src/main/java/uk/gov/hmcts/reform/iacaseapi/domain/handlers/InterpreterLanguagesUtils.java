@@ -1,5 +1,33 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers;
 
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.BailCaseFieldDefinition.FCS1_INTERPRETER_LANGUAGE_CATEGORY;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.BailCaseFieldDefinition.FCS1_INTERPRETER_SIGN_LANGUAGE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.BailCaseFieldDefinition.FCS1_INTERPRETER_SPOKEN_LANGUAGE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.BailCaseFieldDefinition.FCS2_INTERPRETER_LANGUAGE_CATEGORY;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.BailCaseFieldDefinition.FCS2_INTERPRETER_SIGN_LANGUAGE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.BailCaseFieldDefinition.FCS2_INTERPRETER_SPOKEN_LANGUAGE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.BailCaseFieldDefinition.FCS3_INTERPRETER_LANGUAGE_CATEGORY;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.BailCaseFieldDefinition.FCS3_INTERPRETER_SIGN_LANGUAGE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.BailCaseFieldDefinition.FCS3_INTERPRETER_SPOKEN_LANGUAGE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.BailCaseFieldDefinition.FCS4_INTERPRETER_LANGUAGE_CATEGORY;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.BailCaseFieldDefinition.FCS4_INTERPRETER_SIGN_LANGUAGE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.BailCaseFieldDefinition.FCS4_INTERPRETER_SPOKEN_LANGUAGE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.BailCaseFieldDefinition.FCS_INTERPRETER_SIGN_LANGUAGE_BOOKING_1;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.BailCaseFieldDefinition.FCS_INTERPRETER_SIGN_LANGUAGE_BOOKING_2;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.BailCaseFieldDefinition.FCS_INTERPRETER_SIGN_LANGUAGE_BOOKING_3;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.BailCaseFieldDefinition.FCS_INTERPRETER_SIGN_LANGUAGE_BOOKING_4;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.BailCaseFieldDefinition.FCS_INTERPRETER_SIGN_LANGUAGE_BOOKING_STATUS_1;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.BailCaseFieldDefinition.FCS_INTERPRETER_SIGN_LANGUAGE_BOOKING_STATUS_2;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.BailCaseFieldDefinition.FCS_INTERPRETER_SIGN_LANGUAGE_BOOKING_STATUS_3;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.BailCaseFieldDefinition.FCS_INTERPRETER_SIGN_LANGUAGE_BOOKING_STATUS_4;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.BailCaseFieldDefinition.FCS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_1;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.BailCaseFieldDefinition.FCS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_2;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.BailCaseFieldDefinition.FCS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_3;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.BailCaseFieldDefinition.FCS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_4;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.BailCaseFieldDefinition.FCS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_STATUS_1;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.BailCaseFieldDefinition.FCS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_STATUS_2;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.BailCaseFieldDefinition.FCS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_STATUS_3;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.BailCaseFieldDefinition.FCS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_STATUS_4;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterLanguageCategory.SIGN_LANGUAGE_INTERPRETER;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterLanguageCategory.SPOKEN_LANGUAGE_INTERPRETER;
@@ -8,6 +36,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.BailCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.BailCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
@@ -15,6 +45,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterLanguageRefData;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Value;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.WitnessDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.RefDataUserService;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.ServiceResponseException;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.dto.hearingdetails.CategoryValues;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.dto.hearingdetails.CommonDataResponse;
 
@@ -294,5 +325,93 @@ public final class InterpreterLanguagesUtils {
     public static void sanitizeAppellantLanguageComplexType(AsylumCase asylumCase) {
         sanitizeInterpreterLanguageRefDataComplexType(asylumCase, APPELLANT_INTERPRETER_SPOKEN_LANGUAGE);
         sanitizeInterpreterLanguageRefDataComplexType(asylumCase, APPELLANT_INTERPRETER_SIGN_LANGUAGE);
+    }
+
+
+    public static final List<BailCaseFieldDefinition> FCS_N_INTERPRETER_LANGUAGE_CATEGORY_FIELD = List.of(
+        FCS1_INTERPRETER_LANGUAGE_CATEGORY,
+        FCS2_INTERPRETER_LANGUAGE_CATEGORY,
+        FCS3_INTERPRETER_LANGUAGE_CATEGORY,
+        FCS4_INTERPRETER_LANGUAGE_CATEGORY
+    );
+
+    public static final List<BailCaseFieldDefinition> FCS_N_INTERPRETER_SPOKEN_LANGUAGE = List.of(
+        FCS1_INTERPRETER_SPOKEN_LANGUAGE,
+        FCS2_INTERPRETER_SPOKEN_LANGUAGE,
+        FCS3_INTERPRETER_SPOKEN_LANGUAGE,
+        FCS4_INTERPRETER_SPOKEN_LANGUAGE
+    );
+
+    public static final List<BailCaseFieldDefinition> FCS_N_INTERPRETER_SIGN_LANGUAGE = List.of(
+        FCS1_INTERPRETER_SIGN_LANGUAGE,
+        FCS2_INTERPRETER_SIGN_LANGUAGE,
+        FCS3_INTERPRETER_SIGN_LANGUAGE,
+        FCS4_INTERPRETER_SIGN_LANGUAGE
+    );
+
+    public static final List<BailCaseFieldDefinition> FCS_INTERPRETER_SPOKEN_LANGUAGE_BOOKINGS = List.of(
+        FCS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_1,
+        FCS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_2,
+        FCS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_3,
+        FCS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_4
+    );
+
+    public static final List<BailCaseFieldDefinition> FCS_INTERPRETER_SIGN_LANGUAGE_BOOKINGS = List.of(
+        FCS_INTERPRETER_SIGN_LANGUAGE_BOOKING_1,
+        FCS_INTERPRETER_SIGN_LANGUAGE_BOOKING_2,
+        FCS_INTERPRETER_SIGN_LANGUAGE_BOOKING_3,
+        FCS_INTERPRETER_SIGN_LANGUAGE_BOOKING_4
+    );
+
+    public static final List<BailCaseFieldDefinition> FCS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_STATUSES = List.of(
+        FCS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_STATUS_1,
+        FCS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_STATUS_2,
+        FCS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_STATUS_3,
+        FCS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_STATUS_4
+    );
+
+    public static final List<BailCaseFieldDefinition> FCS_INTERPRETER_SIGN_LANGUAGE_BOOKING_STATUSES = List.of(
+        FCS_INTERPRETER_SIGN_LANGUAGE_BOOKING_STATUS_1,
+        FCS_INTERPRETER_SIGN_LANGUAGE_BOOKING_STATUS_2,
+        FCS_INTERPRETER_SIGN_LANGUAGE_BOOKING_STATUS_3,
+        FCS_INTERPRETER_SIGN_LANGUAGE_BOOKING_STATUS_4
+    );
+
+    public static InterpreterLanguageRefData generateDynamicList(uk.gov.hmcts.reform.iacaseapi.domain.service.RefDataUserService refDataUserService, String languageCategory) {
+        List<CategoryValues> languages;
+        DynamicList dynamicListOfLanguages;
+
+        try {
+            CommonDataResponse commonDataResponse = refDataUserService.retrieveCategoryValues(
+                languageCategory,
+                IS_CHILD_REQUIRED
+            );
+
+            languages = refDataUserService.filterCategoryValuesByCategoryId(commonDataResponse, languageCategory);
+
+            dynamicListOfLanguages = new DynamicList(new Value("", ""),
+                                                                                                     refDataUserService.mapCategoryValuesToDynamicListValues(languages));
+
+        } catch (Exception e) {
+            throw new ServiceResponseException(String.format("Could not read response by RefData service for %s(s)", languageCategory), e);
+        }
+
+        return new InterpreterLanguageRefData(
+            dynamicListOfLanguages,
+            List.of(""),
+            "");
+    }
+
+    public static void sanitizeInterpreterLanguageRefDataComplexType(BailCase bailCase, BailCaseFieldDefinition bailCaseFieldDefinition) {
+        InterpreterLanguageRefData sanitizedComplexType;
+        Optional<InterpreterLanguageRefData> language =
+            bailCase.read(bailCaseFieldDefinition, InterpreterLanguageRefData.class);
+
+        if (language.isPresent()) {
+            InterpreterLanguageRefData spokenComplexType = language.get();
+
+            sanitizedComplexType = clearComplexTypeField(spokenComplexType);
+            bailCase.write(bailCaseFieldDefinition, sanitizedComplexType);
+        }
     }
 }

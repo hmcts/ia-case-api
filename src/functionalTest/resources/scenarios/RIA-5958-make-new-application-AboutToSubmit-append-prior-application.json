@@ -1,0 +1,30 @@
+{
+  "description": "Make new application by admin - append prior applications",
+  "disabled" : true,
+  "request": {
+    "uri": "/bail/ccdAboutToSubmit",
+    "credentials": "AdminOfficer",
+    "input": {
+      "id": 1111,
+      "eventId": "makeNewApplication",
+      "state": "decisionDecided",
+      "caseData": {
+        "template": "minimal-application-started.json"
+      },
+      "caseDataBefore": {
+        "template": "minimal-application-started.json"
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "state": "APPLICATION_SUBMITTED",
+    "caseData": {
+      "template": "minimal-application-make-new-application.json",
+      "replacements": {
+        "priorApplications1": [{"id": "1", "value": {"caseDataJson": "{\"currentCaseStateVisibleToLegalRepresentative\":\"applicationStarted\",\"applicantDetainedLoc\":\"immigrationRemovalCentre\",\"previousApplicationDoneViaAria\":\"No\",\"interpreterYesNo\":\"No\",\"applicantFullName\":\"FirstName LastName\",\"ircName\":\"Colnbrook\",\"applicantDisability1\":\"No\",\"priorApplications1\":null,\"applicantDateOfBirth\":\"1111-01-01\",\"previousApplicationDoneViaCcd\":\"No\",\"groundsForBailReasons\":\"groundsForBails\",\"applicationSubmittedBy\":\"Applicant\",\"applicantNationality\":\"HAS_NATIONALITY\",\"hearingCentre\":\"hattonCross\",\"hasAppealHearingPending\":\"No\",\"bailReferenceNumber\":\"1111-2222-3333-4444\",\"currentCaseStateVisibleToHomeOffice\":\"applicationStarted\",\"sentByChecklist\":\"Applicant\",\"applicantHasMobile\":\"No\",\"currentCaseStateVisibleToJudge\":\"applicationStarted\",\"isLegallyRepresentedForFlag\":\"No\",\"currentCaseStateVisibleToAllUsers\":\"applicationStarted\",\"isAdmin\":\"Yes\",\"hasLegalRep\":\"No\",\"applicantNationalities\":[{\"id\":\"3b607d2b-6e29-4bda-a0eb-8320e676f584\",\"value\":{\"code\":\"English\"}}],\"applicantArrivalInUKDate\":\"1111-01-01\",\"hasPreviousBailApplication\":\"No\",\"groundsForBailProvideEvidenceOption\":\"No\",\"applicantGender\":\"Male\",\"applicantGivenNames\":\"FirstName\",\"applicantHasAddress\":\"No\",\"detentionFacility\":\"Colnbrook\",\"currentCaseStateVisibleToAdminOfficer\":\"applicationStarted\",\"applicantFamilyName\":\"LastName\",\"agreesToBoundByFinancialCond\":\"No\",\"isHomeOffice\":\"No\",\"hasFinancialCondSupporter\":\"No\",\"videoHearing1\":\"Yes\",\"interpreterLanguages\":[],\"homeOfficeReferenceNumber\":\"00000\",\"transferBailManagementObjectionYesOrNo\":\"No\"}", "applicationId": "1"}}]
+      }
+    }
+  }
+}

@@ -16,7 +16,7 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.AsylumCaseCallbackApiDelegator;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CallbackApiDelegator;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -28,7 +28,7 @@ class AsylumCaseFeePaymentServiceTest {
     private static final String ABOUT_TO_SUBMIT_PATH = "/asylum/ccdAboutToSubmit";
 
     @Mock
-    private AsylumCaseCallbackApiDelegator asylumCaseCallbackApiDelegator;
+    private CallbackApiDelegator callbackApiDelegator;
     @Mock
     private Callback<AsylumCase> callback;
 
@@ -39,7 +39,7 @@ class AsylumCaseFeePaymentServiceTest {
 
         asylumCaseFeeApiPayment =
             new AsylumCaseFeePaymentService(
-                asylumCaseCallbackApiDelegator,
+                callbackApiDelegator,
                 ENDPOINT,
                 ABOUT_TO_SUBMIT_PATH,
                 ABOUT_TO_START_PATH
@@ -51,12 +51,12 @@ class AsylumCaseFeePaymentServiceTest {
 
         final AsylumCase feePaymentAsylumCase = mock(AsylumCase.class);
 
-        when(asylumCaseCallbackApiDelegator.delegate(callback, ENDPOINT + ABOUT_TO_SUBMIT_PATH))
+        when(callbackApiDelegator.delegate(callback, ENDPOINT + ABOUT_TO_SUBMIT_PATH))
             .thenReturn(feePaymentAsylumCase);
 
         final AsylumCase actualAsylumCase = asylumCaseFeeApiPayment.aboutToSubmit(callback);
 
-        verify(asylumCaseCallbackApiDelegator, times(1))
+        verify(callbackApiDelegator, times(1))
             .delegate(callback, ENDPOINT + ABOUT_TO_SUBMIT_PATH);
 
         assertEquals(feePaymentAsylumCase, actualAsylumCase);

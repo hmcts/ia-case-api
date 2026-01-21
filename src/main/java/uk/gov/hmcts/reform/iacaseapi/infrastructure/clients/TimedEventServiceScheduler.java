@@ -48,7 +48,7 @@ public class TimedEventServiceScheduler implements Scheduler {
 
         } catch (FeignException e) {
 
-            throw new AsylumCaseServiceResponseException(
+            throw new ServiceResponseException(
                 String.format(
                     "Couldn't schedule timed event for caseId: %d, event: %s",
                     timedEvent.getCaseId(),
@@ -93,7 +93,7 @@ public class TimedEventServiceScheduler implements Scheduler {
                     )
             );
             log.info("Scheduled event " + event + " for case ID " + caseId);
-        } catch (AsylumCaseServiceResponseException e) {
+        } catch (ServiceResponseException e) {
             log.error(e.getMessage());
         }
     }
@@ -104,5 +104,5 @@ public class TimedEventServiceScheduler implements Scheduler {
         scheduleTimedEvent(caseId, now, event, "");
     }
 
-    
+
 }

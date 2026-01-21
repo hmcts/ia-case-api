@@ -97,6 +97,8 @@ java:
           alias: PG_AUTH_VALUES_YAML_PASS
         - name: docmosis-access-key
           alias: DOCMOSIS_ACCESS_KEY
+        - name: s2s-secret
+          alias: IA_S2S_SECRET
         - name: ia-config-validator-secret
           alias: IA_CONFIG_VALIDATOR_SECRET
         - name: AppInsightsInstrumentationKey

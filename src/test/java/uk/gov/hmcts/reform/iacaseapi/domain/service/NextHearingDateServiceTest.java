@@ -28,7 +28,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.AsylumCaseServiceResponseException;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.ServiceResponseException;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -110,7 +110,7 @@ class NextHearingDateServiceTest {
     public void should_get_next_hearing_date_from_case_data_when_calculating_from_hearings_throws_exception() {
         when(asylumCase.read(LIST_CASE_HEARING_DATE, String.class)).thenReturn(Optional.of(listCaseHearingDate));
         when(iaHearingsApiService.aboutToStart(callback))
-            .thenThrow(new AsylumCaseServiceResponseException("error message", null));
+            .thenThrow(new ServiceResponseException("error message", null));
 
         NextHearingDetails nextHearingDetails =
             nextHearingDateService.calculateNextHearingDateFromHearings(callback, ABOUT_TO_START);

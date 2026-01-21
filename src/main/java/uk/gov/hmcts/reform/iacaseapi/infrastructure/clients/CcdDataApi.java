@@ -10,10 +10,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.BailCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDataContent;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.StartEventDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.SubmitEventDetails;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.config.FeignConfiguration;
 
 @FeignClient(
@@ -23,14 +25,29 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.config.FeignConfiguration;
 )
 public interface CcdDataApi {
     String EXPERIMENTAL = "experimental=true";
-    String CONTENT_TYPE = "content-type";
+    String CONTENT_TYPE = "content-type=application/json";
 
     @GetMapping(
         value = "/caseworkers/{uid}/jurisdictions/{jid}/case-types/{ctid}/cases/{cid}/event-triggers/{etid}"
             + "/token?ignore-warning=true",
-        headers = CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE
+        headers = CONTENT_TYPE
     )
-    StartEventDetails startEvent(
+    StartEventDetails<AsylumCase> startEvent(
+        @RequestHeader(AUTHORIZATION) String userToken,
+        @RequestHeader(SERVICE_AUTHORIZATION) String s2sToken,
+        @PathVariable("uid") String userId,
+        @PathVariable("jid") String jurisdiction,
+        @PathVariable("ctid") String caseType,
+        @PathVariable("cid") String id,
+        @PathVariable("etid") String eventId
+    );
+
+    @GetMapping(
+        value = "/caseworkers/{uid}/jurisdictions/{jid}/case-types/{ctid}/cases/{cid}/event-triggers/{etid}"
+            + "/token?ignore-warning=true",
+        headers = CONTENT_TYPE
+    )
+    StartEventDetails<BailCase> startBailEvent(
         @RequestHeader(AUTHORIZATION) String userToken,
         @RequestHeader(SERVICE_AUTHORIZATION) String s2sToken,
         @PathVariable("uid") String userId,
@@ -42,12 +59,34 @@ public interface CcdDataApi {
 
     @PostMapping(
         value = "/cases/{cid}/events",
-        headers = { CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE, EXPERIMENTAL })
+        headers = { CONTENT_TYPE, EXPERIMENTAL })
     SubmitEventDetails submitEvent(
         @RequestHeader(AUTHORIZATION) String userToken,
         @RequestHeader(SERVICE_AUTHORIZATION) String s2sToken,
         @PathVariable("cid") String id,
         @RequestBody CaseDataContent requestBody
+    );
+
+    @GetMapping(value = "/caseworkers/{uid}/jurisdictions/{jid}/case-types/{ctid}/event-triggers/{etid}"
+        + "/token?ignore-warning=true", produces = "application/json", consumes = "application/json")
+    StartEventDetails startCaseCreation(
+        @RequestHeader(AUTHORIZATION) String userToken,
+        @RequestHeader(SERVICE_AUTHORIZATION) String s2sToken,
+        @PathVariable("uid") String userId,
+        @PathVariable("jid") String jurisdiction,
+        @PathVariable("ctid") String caseType,
+        @PathVariable("etid") String eventId
+    );
+
+    @PostMapping(value = "/caseworkers/{uid}/jurisdictions/{jid}/case-types/{ctid}/cases",
+        produces = {"application/json; charset=UTF-8"}, consumes = "application/json")
+    CaseDetails<BailCase> submitCaseCreation(
+        @RequestHeader(AUTHORIZATION) String userToken,
+        @RequestHeader(SERVICE_AUTHORIZATION) String s2sToken,
+        @PathVariable("uid") String userId,
+        @PathVariable("jid") String jurisdiction,
+        @PathVariable("ctid") String caseType,
+        @RequestBody CaseDataContent content
     );
 
     @GetMapping(value = "/caseworkers/{uid}/jurisdictions/{jid}/case-types/{ctid}/cases/{cid}",
@@ -62,4 +101,3 @@ public interface CcdDataApi {
         @PathVariable("cid") String id
     );
 }
-

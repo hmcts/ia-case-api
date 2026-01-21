@@ -10,16 +10,20 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseData;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PostSubmitCallbackHandler;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.CcdEventAuthorizor;
 
 @Component
 public class PostSubmitCallbackDispatcher<T extends CaseData> {
 
+    private final CcdEventAuthorizor ccdEventAuthorizor;
     private final List<PostSubmitCallbackHandler<T>> sortedCallbackHandlers;
 
     public PostSubmitCallbackDispatcher(
+        CcdEventAuthorizor ccdEventAuthorizor,
         List<PostSubmitCallbackHandler<T>> callbackHandlers
     ) {
-        requireNonNull(callbackHandlers, "callbackHandlers must not be null");
+        requireNonNull(callbackHandlers, "callbackHandlers cannot be null");
+        this.ccdEventAuthorizor = ccdEventAuthorizor;
         this.sortedCallbackHandlers = callbackHandlers.stream()
             // sorting handlers by handler class name
             .sorted(Comparator.comparing(h -> h.getClass().getSimpleName()))
@@ -29,15 +33,14 @@ public class PostSubmitCallbackDispatcher<T extends CaseData> {
     public PostSubmitCallbackResponse handle(
         Callback<T> callback
     ) {
-        requireNonNull(callback, "callback must not be null");
+        requireNonNull(callback, "callback cannot be null");
+        ccdEventAuthorizor.throwIfNotAuthorized(callback.getEvent());
 
         PostSubmitCallbackResponse callbackResponse =
             new PostSubmitCallbackResponse();
 
         for (PostSubmitCallbackHandler<T> callbackHandler : sortedCallbackHandlers) {
-
             if (callbackHandler.canHandle(callback)) {
-
                 PostSubmitCallbackResponse callbackResponseFromHandler =
                     callbackHandler.handle(callback);
 
@@ -50,7 +53,6 @@ public class PostSubmitCallbackDispatcher<T extends CaseData> {
                     .ifPresent(callbackResponse::setConfirmationBody);
             }
         }
-
         return callbackResponse;
     }
 }

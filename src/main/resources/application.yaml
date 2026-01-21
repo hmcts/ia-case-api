@@ -61,6 +61,7 @@ fees-register:
 files:
   detention-facilities-addresses: "/detention-facilities.csv"
 
+#If you use a database then uncomment below lines and update db properties accordingly
 spring:
   config:
     import: "optional:configtree:/mnt/secrets/ia/"
@@ -82,7 +83,7 @@ spring:
         jwt:
           jwk-set-uri: ${OPEN_ID_IDAM_URL:http://127.0.0.1:5000}/o/jwks
   cache:
-    cache-names: userInfoCache, accessTokenCache, homeOfficeReferenceDataCache
+    cache-names: userInfoCache, accessTokenCache, homeOfficeReferenceDataCache, systemTokenCache
     caffeine:
       spec: expireAfterWrite=3600s
   datasource:
@@ -110,13 +111,13 @@ spring:
       abandon-when-percentage-full: 0
   profiles:
     include:
+      - hearingcentre-mapping
       - postcodes
       - hc-mapping
   flyway.enabled: true
   flyway.baselineOnMigrate: true
   flyway.schemas: ${POSTGRES_NAME:ia_case_api}
   jackson.date-format: yyyy-MM-dd
-
 featureFlag:
   docmosisEnabled: ${IA_DOCMOSIS_ENABLED:false}
   isEmStitchingEnabled: ${IA_EM_STITCHING_ENABLED:false}
@@ -186,13 +187,22 @@ defaultHearingCentre: newport
 
 documentsApi:
   endpoint: ${IA_CASE_DOCUMENTS_API_URL:http://127.0.0.1:8092}
-  aboutToSubmitPath: "/asylum/ccdAboutToSubmit"
-  aboutToStartPath: "/asylum/ccdAboutToStart"
+  asylum:
+    aboutToSubmitPath: "/asylum/ccdAboutToSubmit"
+    aboutToStartPath: "/asylum/ccdAboutToStart"
+  bail:
+    aboutToSubmitPath: "/bail/ccdAboutToSubmit"
+    aboutToStartPath: "/bail/ccdAboutToStart"
+
 
 notificationsApi:
   endpoint: ${IA_CASE_NOTIFICATIONS_API_URL:http://127.0.0.1:8093}
-  aboutToSubmitPath: "/asylum/ccdAboutToSubmit"
-  ccdSubmittedPath: "/asylum/ccdSubmitted"
+  asylum:
+    aboutToSubmitPath: "/asylum/ccdAboutToSubmit"
+    ccdSubmittedPath: "/asylum/ccdSubmitted"
+  bail:
+    aboutToSubmitPath: "/bail/ccdAboutToSubmit"
+    ccdSubmittedPath: "/bail/ccdSubmitted"
 
 paymentApi:
   endpoint: ${IA_CASE_PAYMENTS_API_URL:http://127.0.0.1:8096}
@@ -227,6 +237,7 @@ security:
     - "/loggers/**"
     - "/swagger-ui.html"
     - "/swagger-ui/**"
+    - "/swagger-resources/**"
     - "/v3/api-docs/**"
     - "/favicon.ico"
     - "/csrf"
@@ -235,6 +246,91 @@ security:
     - "caseworker-ia"
     - "citizen"
   roleEventAccess:
+    caseworker-ia-system:
+      - "clearLegalRepresentativeDetails"
+      - "caseListing"
+      - "testTimedEventSchedule"
+    caseworker-caa:
+      - "nocRequest"
+      - "clearLegalRepresentativeDetails"
+    caseworker-approver:
+      - "applyNocDecision"
+    caseworker-ia-rparobot:
+      - "addCaseNote"
+    caseworker-ia-legalrep-solicitor:
+      - "startApplication"
+      - "submitApplication"
+      - "uploadDocuments"
+      - "editBailApplication"
+      - "makeNewApplication"
+      - "viewPreviousApplications"
+      - "stopLegalRepresenting"
+      - "updateBailLegalRepDetails"
+      - "nocRequest"
+      - "nocRequestBail"
+    caseworker-ia-admofficer:
+      - "startApplication"
+      - "submitApplication"
+      - "recordTheDecision"
+      - "addCaseNote"
+      - "sendBailDirection"
+      - "changeBailDirectionDueDate"
+      - "uploadSignedDecisionNotice"
+      - "uploadSignedDecisionNoticeConditionalGrant"
+      - "moveApplicationToDecided"
+      - "endApplication"
+      - "uploadDocuments"
+      - "editBailDocuments"
+      - "editBailApplication"
+      - "makeNewApplication"
+      - "editBailApplicationAfterSubmit"
+      - "viewPreviousApplications"
+      - "removeBailLegalRepresentative"
+      - "createBailCaseLink"
+      - "maintainBailCaseLinks"
+      - "createFlag"
+      - "confirmDetentionLocation"
+      - "updateInterpreterDetails"
+      - "updateInterpreterBookingStatus"
+      - "caseListing"
+      - "imaStatus"
+      - "forceCaseToHearing"
+      - "changeTribunalCentre"
+      - "testTimedEventSchedule"
+      - "uploadHearingRecording"
+    caseworker-ia-homeofficebail:
+      - "startApplication"
+      - "uploadBailSummary"
+      - "submitApplication"
+      - "uploadDocuments"
+      - "editBailApplication"
+      - "makeNewApplication"
+      - "viewPreviousApplications"
+    caseworker-ia-homeofficepou:
+      - "startApplication"
+      - "uploadBailSummary"
+      - "submitApplication"
+      - "uploadDocuments"
+      - "editBailApplication"
+      - "makeNewApplication"
+      - "viewPreviousApplications"
+    caseworker-ia-iacjudge:
+      - "recordTheDecision"
+      - "addCaseNote"
+      - "sendBailDirection"
+      - "changeBailDirectionDueDate"
+      - "uploadSignedDecisionNotice"
+      - "uploadSignedDecisionNoticeConditionalGrant"
+      - "moveApplicationToDecided"
+      - "endApplication"
+      - "uploadDocuments"
+      - "editBailDocuments"
+      - "viewPreviousApplications"
+      - "createBailCaseLink"
+      - "maintainBailCaseLinks"
+      - "createFlag"
+      - "forceCaseToHearing"
+      - "uploadHearingRecording"
     caseworker-caa:
       - "nocRequest"
     caseworker-approver:
@@ -1346,6 +1442,17 @@ idam.s2s-auth.totp_secret: ${IA_S2S_SECRET:AAAAAAAAAAAAAAAC}
 idam.s2s-auth.microservice: ${IA_S2S_MICROSERVICE:ia}
 idam.s2s-auth.url: ${S2S_URL:http://127.0.0.1:4502}
 
+documentsApi:
+  endpoint: ${IA_CASE_DOCUMENTS_API_URL:http://127.0.0.1:8092}
+  aboutToSubmitPath: "/bail/ccdAboutToSubmit"
+  aboutToStartPath: "/bail/ccdAboutToStart"
+
+notificationsApi:
+  endpoint: ${IA_CASE_NOTIFICATIONS_API_URL:http://127.0.0.1:8093}
+  aboutToSubmitPath: "/bail/ccdAboutToSubmit"
+  ccdSubmittedPath: "/bail/ccdSubmitted"
+
+
 feign:
   hystrix:
     enabled: true
@@ -1356,6 +1463,7 @@ feign:
         readTimeout: 5000
         loggerLevel: full
 
+
 hystrix:
   command:
     default:
@@ -1363,10 +1471,13 @@ hystrix:
         isolation:
           thread:
             timeoutInMilliseconds: 5000
+
+
 #OpenID
 idam:
   baseUrl: ${OPEN_ID_IDAM_URL:http://127.0.0.1:5000}
   redirectUrl: ${IA_IDAM_REDIRECT_URI:http://localhost:3002/oauth2/callback}
+  scope: "openid profile authorities acr roles create-user manage-user search-user"
   s2s-auth:
     totp_secret: ${IA_S2S_SECRET:AAAAAAAAAAAAAAAC}
     microservice: ${IA_S2S_MICROSERVICE:ia}
@@ -1386,6 +1497,13 @@ prof.ref.data.path.org.organisation: ${PROF_REF_DATA_ORG_ORGANISATION_PATH:/refd
 
 location.ref.data.url: ${LOCATION_REF_DATA_URL:http://localhost:8991}
 
+timed-event-service:
+  url: ${IA_TIMED_EVENT_SERVICE_URL:http://127.0.0.1:8095}
+
+featureFlag:
+  isDocumentGenerationEnabled: ${IA_DOCUMENT_GENERATION_ENABLED:true}
+  timedEventServiceEnabled: ${IA_TIMED_EVENT_SERVICE_ENABLED:false}
+
 launchDarkly:
   sdkKey: ${LAUNCH_DARKLY_SDK_KEY:sdk-key}
   connectionTimeout: 5000
@@ -1393,6 +1511,23 @@ launchDarkly:
 
 timed-event-service:
   url: ${IA_TIMED_EVENT_SERVICE_URL:http://127.0.0.1:8095}
+
+bailRefusalWithInDays: 28
+
+core_case_data_api_supplementary_data_path: "/cases/{caseId}/supplementary-data"
+hmcts_service_id: "BFA1"
+
+core_case_data_api_assignments_url: ${CCD_URL:http://127.0.0.1:4452}
+assign_case_access_api_url: ${AAC_URL:http://127.0.0.1:4454}
+core_case_data_api_assignments_path: "/case-users"
+assign_case_access_api_assignments_path: "/case-assignments"
+apply_noc_access_api_assignments_path: "/noc/check-noc-approval"
+
+ia:
+  config:
+    validator:
+      secret: ${IA_CONFIG_VALIDATOR_SECRET:}
+
 
 commonData:
   api:

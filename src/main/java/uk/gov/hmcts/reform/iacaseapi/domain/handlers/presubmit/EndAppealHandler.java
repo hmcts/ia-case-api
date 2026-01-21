@@ -25,7 +25,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.IaHearingsApiService;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.AsylumCaseServiceResponseException;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.ServiceResponseException;
 
 @Slf4j
 @Component
@@ -114,7 +114,7 @@ public class EndAppealHandler implements PreSubmitCallbackHandler<AsylumCase> {
     private boolean deleteHearings(Callback<AsylumCase> callback) {
         try {
             return isDeletionRequestSuccessful(iaHearingsApiService.aboutToSubmit(callback));
-        } catch (AsylumCaseServiceResponseException e) {
+        } catch (ServiceResponseException e) {
             log.error(e.getMessage(), e);
             return false;
         }

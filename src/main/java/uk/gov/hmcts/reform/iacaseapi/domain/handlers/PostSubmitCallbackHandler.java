@@ -7,15 +7,11 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCall
 
 public interface PostSubmitCallbackHandler<T extends CaseData> {
 
-    boolean canHandle(
-        Callback<T> callback
-    );
+    boolean canHandle(Callback<T> callback);
 
     default DispatchPriority getDispatchPriority() {
         return DispatchPriority.LATE;
     }
 
-    PostSubmitCallbackResponse handle(
-        Callback<T> callback
-    );
+    PostSubmitCallbackResponse handle(Callback<T> callback);
 }

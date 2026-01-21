@@ -4,5 +4,5 @@ logging.level:
   uk.gov.hmcts: debug
 
 idam:
-  ia_system_user:
+  system:
     scope: "openid profile authorities"

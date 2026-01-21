@@ -25,9 +25,7 @@ public class IdamUserDetailsHelper implements UserDetailsHelper {
             .orElseThrow(() -> new IllegalStateException("No valid user role is present."));
     }
 
-    @Override
     public UserRoleLabel getLoggedInUserRoleLabel(UserDetails userDetails) {
-
         return switch (getLoggedInUserRole(userDetails)) {
             case HOME_OFFICE_APC, HOME_OFFICE_POU, HOME_OFFICE_LART, HOME_OFFICE_GENERIC ->
                 UserRoleLabel.HOME_OFFICE_GENERIC;
@@ -39,6 +37,22 @@ public class IdamUserDetailsHelper implements UserDetailsHelper {
             case IDAM_JUDGE, JUDICIARY, JUDGE, SENIOR_JUDGE, LEADERSHIP_JUDGE, FEE_PAID_JUDGE, LEAD_JUDGE,
                  HEARING_JUDGE, FTPA_JUDGE, HEARING_PANEL_JUDGE, CHALLENGED_ACCESS_JUDICIARY -> UserRoleLabel.JUDGE;
             case CITIZEN -> UserRoleLabel.CITIZEN;
+            case SYSTEM -> UserRoleLabel.SYSTEM;
+            default -> throw new IllegalStateException("Unauthorized role to make an application");
+        };
+    }
+
+    @Override
+    public UserRoleLabel getLoggedInUserRoleLabel(UserDetails userDetails, boolean isBailCase) {
+        if (!isBailCase) {
+            return getLoggedInUserRoleLabel(userDetails);
+        }
+        return switch (getLoggedInUserRole(userDetails)) {
+            case HOME_OFFICE_BAIL, HOME_OFFICE_POU -> UserRoleLabel.HOME_OFFICE_BAIL;
+            case LEGAL_REPRESENTATIVE -> UserRoleLabel.LEGAL_REPRESENTATIVE;
+            case CASE_OFFICER -> UserRoleLabel.TRIBUNAL_CASEWORKER;
+            case ADMIN_OFFICER -> UserRoleLabel.ADMIN_OFFICER;
+            case JUDICIARY, JUDGE -> UserRoleLabel.JUDGE;
             case SYSTEM -> UserRoleLabel.SYSTEM;
             default -> throw new IllegalStateException("Unauthorized role to make an application");
         };

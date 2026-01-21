@@ -1,0 +1,29 @@
+{
+  "description": "RIA-5949 Record the decision - append conditions",
+  "request": {
+    "uri": "/bail/ccdAboutToStart",
+    "credentials": "AdminOfficer",
+    "input": {
+      "id": 1111,
+      "eventId": "recordTheDecision",
+      "state": "bailSummaryUploaded",
+      "caseData": {
+        "template": "minimal-application-started.json",
+        "replacements": {
+          "currentCaseStateVisibleToJudge": "bailSummaryUploaded",
+          "currentCaseStateVisibleToAllUsers": "bailSummaryUploaded",
+          "currentCaseStateVisibleToHomeOffice": "bailSummaryUploaded",
+          "currentCaseStateVisibleToAdminOfficer": "bailSummaryUploaded",
+          "currentCaseStateVisibleToLegalRepresentative": "bailSummaryUploaded"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-application-submitted-record-conditions.json"
+    }
+  }
+}
