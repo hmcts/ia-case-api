@@ -1,7 +1,7 @@
 #!/bin/zsh
 
 if [ -z "$1" ]; then
-    echo "Missing environment variable. Usage: $0 <environment> <email(optional)>"
+    echo "Missing environment variable. Usage: $0 <environment> <email(optional)> <roleNames(optional)>"
     exit 1
 fi
 environment=$1
@@ -12,11 +12,26 @@ if [ -z "$IDAM_TESTING_ACCESS_TOKEN" ]; then
 fi
 # Generate a random UUID
 uuid=$(uuidgen | tr A-F a-f)
-if [ -z "$2" ]; then
-    echo "Missing email so generating one automatically. Usage: $0 <environment> <email(optional)>"
+
+# Check if $2 looks like a JSON array (starts with [)
+if [[ "$2" == \[* ]]; then
+    # $2 is roles, generate email
     email_address="citizen-$uuid@mailnesia.com"
+    roles=$2
+elif [ -z "$2" ]; then
+    # No $2, generate email and use default roles
+    echo "Missing email so generating one automatically. Usage: $0 <environment> <email(optional)> <roleNames(optional)>"
+    email_address="citizen-$uuid@mailnesia.com"
+    roles='["citizen"]'
 else
-  email_address=$2
+    # $2 is email
+    email_address=$2
+    # Parse roleNames parameter (default to ["citizen"])
+    if [ -z "$3" ]; then
+        roles='["citizen"]'
+    else
+        roles=$3
+    fi
 fi
 
 json_payload=$(cat <<EOF
@@ -27,9 +42,7 @@ json_payload=$(cat <<EOF
         "email":"$email_address",
         "forename":"fn_$uuid",
         "surname":"sn_$uuid",
-        "roleNames": [
-            "citizen"
-        ]
+        "roleNames": $roles
     }
 }
 EOF
