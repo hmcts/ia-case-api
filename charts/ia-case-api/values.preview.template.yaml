@@ -149,9 +149,9 @@ ia-case-documents-api:
     releaseNameOverride: ${SERVICE_NAME}-case-documents-api
     ingressHost: ${SERVICE_NAME}-documents-api.preview.platform.hmcts.net
     devcpuRequests: 500m
-    devmemoryRequests: 2Gi
+    devmemoryRequests: 1Gi
     devcpuLimits: 1
-    devmemoryLimits: 6Gi
+    devmemoryLimits: 4Gi
     environment:
       DOCMOSIS_ENDPOINT: https://docmosis.aat.platform.hmcts.net
       DM_URL: http://dm-store-aat.service.core-compute-aat.internal
@@ -1174,10 +1174,10 @@ em-stitching:
     releaseNameOverride: ${SERVICE_NAME}-em-stitching
     image: hmctspublic.azurecr.io/em/stitching:latest
     ingressHost: em-stitching-${SERVICE_FQDN}
-    devcpuRequests: 1000m
-    devmemoryRequests: 2Gi
-    devcpuLimits: 4
-    devmemoryLimits: 8Gi
+    devcpuRequests: 500m
+    devmemoryRequests: 1Gi
+    devcpuLimits: 2
+    devmemoryLimits: 4Gi
     environment:
       SPRING_DATASOURCE_HOST: ia-preview.postgres.database.azure.com
       SPRING_DATASOURCE_USERNAME: hmcts
