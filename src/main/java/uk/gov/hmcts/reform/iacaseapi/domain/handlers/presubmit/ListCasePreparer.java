@@ -38,8 +38,9 @@ public class ListCasePreparer implements PreSubmitCallbackHandler<AsylumCase> {
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
-        return callbackStage == PreSubmitCallbackStage.ABOUT_TO_START
-               && callback.getEvent() == Event.LIST_CASE;
+        return callback.getEvent() == Event.LIST_CASE
+                && ((callbackStage == PreSubmitCallbackStage.ABOUT_TO_START)
+                        || (callbackStage == PreSubmitCallbackStage.MID_EVENT && callback.getPageId().equals("listCaseHearingFinalPage")));
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(

@@ -12,4 +12,8 @@ public interface DocumentGenerator<T extends CaseData> {
     T aboutToStart(
         Callback<T> callback
     );
+
+    T generateOnMidEvent(
+        Callback<T> callback
+    );
 }

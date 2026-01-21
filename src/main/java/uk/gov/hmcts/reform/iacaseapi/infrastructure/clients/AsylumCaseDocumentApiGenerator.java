@@ -49,4 +49,11 @@ public class AsylumCaseDocumentApiGenerator implements DocumentGenerator<AsylumC
             documentsApiEndpoint + aboutToStartPath
         );
     }
+
+    public AsylumCase generateOnMidEvent(Callback<AsylumCase> callback) {
+        return asylumCaseCallbackApiDelegator.delegate(
+            callback,
+            documentsApiEndpoint + "/asylum/ccdMidEvent"
+        );
+    }
 }
