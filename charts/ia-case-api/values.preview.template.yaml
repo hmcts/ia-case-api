@@ -74,6 +74,14 @@ java:
           alias: app-insights-connection-string
         - name: postgres-auth-values-password
           alias: PG_AUTH_VALUES_YAML_PASS
+        - name: ia-system-access-username
+          alias: IA_SYSTEM_ACCESS_USERNAME
+        - name: ia-system-access-password
+          alias: IA_SYSTEM_ACCESS_PASSWORD
+        - name: AppInsightsInstrumentationKey
+          alias: azure.application-insights.instrumentation-key
+        - name: ia-config-validator-secret
+          alias: IA_CONFIG_VALIDATOR_SECRET
   secrets:
     POSTGRES_PASSWORD:
       secretRef: postgres
@@ -562,10 +570,9 @@ ia-home-office-integration-api:
             alias: IA_SYSTEM_PASSWORD  
 
 ia-case-access-api:
-  enabled: true
+  enabled: false
   java:
     image: hmctspublic.azurecr.io/ia/case-access-api:latest
-    # image: hmctspublic.azurecr.io/ia/case-access-api:pr-56
     ingressHost: ${SERVICE_FQDN}-case-access-api.preview.platform.hmcts.net
     keyVaults:
       ia:
@@ -614,7 +621,6 @@ ia-aip-frontend:
       PAYMENTS_API_URL: http://payment-api-aat.service.core-compute-aat.internal
       DOCMOSIS_RENDER_URL: "https://docmosis.aat.platform.hmcts.net/rs/render"
       IDAM_WEB_URL: https://idam-web-public.aat.platform.hmcts.net
-      # IDAM_WEB_URL: https://xui-ia-case-api-pr-1389.preview.platform.hmcts.net
       IDAM_API_URL: https://idam-api.aat.platform.hmcts.net
       # IDAM_API_URL: http://{{ .Release.Name }}-xui-webapp
       S2S_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal

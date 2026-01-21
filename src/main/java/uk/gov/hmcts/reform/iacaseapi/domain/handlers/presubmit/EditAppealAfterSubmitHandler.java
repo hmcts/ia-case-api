@@ -53,7 +53,7 @@ public class EditAppealAfterSubmitHandler implements PreSubmitCallbackHandler<As
     private final DocumentsAppender documentsAppender;
 
     private final DueDateService dueDateService;
-    private static final String HOME_OFFICE_DECISION_PAGE_ID = "homeOfficeDecision";
+    private static final String HOME_OFFICE_DECISION_PAGE_ID = "homeOfficeDecisionLetter";
 
     public EditAppealAfterSubmitHandler(
         DateProvider dateProvider,
@@ -170,8 +170,8 @@ public class EditAppealAfterSubmitHandler implements PreSubmitCallbackHandler<As
                 asylumCase.write(LEGAL_REPRESENTATIVE_DOCUMENTS, allLegalRepDocuments);
             }
 
-            if (isInternalCase(asylumCase)) {
-                clearLegalRepFields(asylumCase);
+            if (isInternalCase(asylumCase) && HandlerUtils.isAppellantsRepresentation(asylumCase)) {
+                HandlerUtils.clearLegalRepFields(asylumCase);
             } else if (HandlerUtils.hasRepresentation(asylumCase)
                 && HandlerUtils.hasUpdatedLegalRepFields(callback)) {
                 asylumCase.write(HAS_ADDED_LEGAL_REP_DETAILS, YesOrNo.YES);
@@ -210,28 +210,6 @@ public class EditAppealAfterSubmitHandler implements PreSubmitCallbackHandler<As
                         }
                     }
             );
-        }
-    }
-
-    private void clearLegalRepFields(AsylumCase asylumCase) {
-        YesOrNo appellantsRepresentation = asylumCase.read(APPELLANTS_REPRESENTATION, YesOrNo.class).orElse(NO);
-        if (YES.equals(appellantsRepresentation)) {
-            asylumCase.clear(APPEAL_WAS_NOT_SUBMITTED_REASON);
-            asylumCase.clear(APPEAL_NOT_SUBMITTED_REASON_DOCUMENTS);
-            asylumCase.clear(LEGAL_REP_COMPANY_PAPER_J);
-            asylumCase.clear(LEGAL_REP_GIVEN_NAME);
-            asylumCase.clear(LEGAL_REP_FAMILY_NAME_PAPER_J);
-            asylumCase.clear(LEGAL_REP_EMAIL);
-            asylumCase.clear(LEGAL_REP_REF_NUMBER_PAPER_J);
-
-            asylumCase.clear(LEGAL_REP_ADDRESS_U_K);
-            asylumCase.clear(OOC_ADDRESS_LINE_1);
-            asylumCase.clear(OOC_ADDRESS_LINE_2);
-            asylumCase.clear(OOC_ADDRESS_LINE_3);
-            asylumCase.clear(OOC_ADDRESS_LINE_4);
-            asylumCase.clear(OOC_COUNTRY_LINE);
-            asylumCase.clear(OOC_LR_COUNTRY_GOV_UK_ADMIN_J);
-            asylumCase.clear(LEGAL_REP_HAS_ADDRESS);
         }
     }
 

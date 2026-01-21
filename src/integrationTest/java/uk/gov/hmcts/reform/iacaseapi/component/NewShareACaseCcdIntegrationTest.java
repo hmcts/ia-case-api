@@ -22,7 +22,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 
 @Slf4j
 class NewShareACaseCcdIntegrationTest extends SpringBootIntegrationTest implements WithServiceAuthStub,
-    WithCcdAssignmentsStub, WithAcaAssignmentsStub, WithUserDetailsStub, WithReferenceDataStub {
+    WithCcdStub, WithAcaAssignmentsStub, WithUserDetailsStub, WithReferenceDataStub {
 
     @org.springframework.beans.factory.annotation.Value("classpath:prd-org-users-response.json")
     private Resource resourceFile;
