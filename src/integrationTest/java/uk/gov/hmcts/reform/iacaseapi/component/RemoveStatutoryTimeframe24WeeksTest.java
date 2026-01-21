@@ -74,5 +74,6 @@ class RemoveStatutoryTimeframe24WeeksTest extends SpringBootIntegrationTest impl
 
         assertThat(response.getAsylumCase().read(XUI_BANNER_TEXT).get()).isEqualTo("some text");
         assertThat(response.getAsylumCase().read(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class).get()).isEqualTo(YesOrNo.NO);
+        
     }
 }
