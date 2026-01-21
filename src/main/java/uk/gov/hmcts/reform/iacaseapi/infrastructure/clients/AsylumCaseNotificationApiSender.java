@@ -1,6 +1,8 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.clients;
 
+import static java.time.LocalDate.parse;
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SAVE_NOTIFICATIONS_TO_DATA_DATE;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,9 +17,11 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.Scheduler;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.TimedEvent;
 
 import java.security.SecureRandom;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -69,9 +73,19 @@ public class AsylumCaseNotificationApiSender implements NotificationSender<Asylu
         log.info("save-notifications-feature LD flag value: {}", featureTogglerValue);
 
         if (featureTogglerValue && saveNotificationToDataEnabled) {
-            scheduleSaveNotificationToData(callback);
+            AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
+            Optional<String> saveNotificationToDataDateOpt = asylumCase.read(SAVE_NOTIFICATIONS_TO_DATA_DATE, String.class);
+            if (saveNotificationToDataDateOpt.isEmpty()
+                    || parse(saveNotificationToDataDateOpt.get()).isBefore(LocalDate.now())) {
+                scheduleSaveNotificationToData(callback);
+                String saveNotificationsToDataDate = LocalDate.now().toString();
+                log.info("Writing saveNotificationsToDataDate to caseData: {}", saveNotificationsToDataDate);
+                asylumCase.write(SAVE_NOTIFICATIONS_TO_DATA_DATE, saveNotificationsToDataDate);
+            } else {
+                log.info("saveNotificationsToDataDate field already present: {}", saveNotificationToDataDateOpt.get());
+            }
         } else {
-            log.info("Skipping saveNotificationsToDate event schedule");
+            log.info("Skipping saveNotificationsToData event schedule");
         }
 
         return asylumCaseCallbackApiDelegator.delegate(
