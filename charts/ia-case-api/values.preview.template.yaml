@@ -1174,10 +1174,10 @@ em-stitching:
     releaseNameOverride: ${SERVICE_NAME}-em-stitching
     image: hmctspublic.azurecr.io/em/stitching:latest
     ingressHost: em-stitching-${SERVICE_FQDN}
-    devcpuRequests: 500m
-    devmemoryRequests: 1Gi
+    devcpuRequests: 1Gi
+    devmemoryRequests: 2Gi
     devcpuLimits: 2
-    devmemoryLimits: 4Gi
+    devmemoryLimits: 8Gi
     environment:
       SPRING_DATASOURCE_HOST: ia-preview.postgres.database.azure.com
       SPRING_DATASOURCE_USERNAME: hmcts
