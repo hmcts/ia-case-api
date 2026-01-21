@@ -20,7 +20,7 @@ import java.util.Optional;
 import static java.util.Collections.emptyList;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_NOTES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STATUTORY_TIMEFRAME_24_WEEKS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STATUTORY_TIMEFRAME_24_WEEKS_REASON;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STF_24W_CURRENT_REASON_AUTO_GENERATED;
 
 @Slf4j
 @Service
@@ -53,7 +53,7 @@ public class UpdateStatutoryTimeframe24WeeksService {
         String userDetails = buildFullName();
 
         String statutoryTimeframe24WeeksReason = asylumCase
-            .read(STATUTORY_TIMEFRAME_24_WEEKS_REASON, String.class)
+            .read(STF_24W_CURRENT_REASON_AUTO_GENERATED, String.class)
             .orElseThrow(() -> new IllegalStateException("statutoryTimeframe24WeeksReason is not present"));
 
         StatutoryTimeframe24Weeks updatedStatutoryTimeframe24Weeks =
@@ -67,7 +67,7 @@ public class UpdateStatutoryTimeframe24WeeksService {
         stf24WeeksBannerTextService.updateBannerText(asylumCase);
 
         //Clear transient fields, form field will be empty for update event
-        asylumCase.clear(STATUTORY_TIMEFRAME_24_WEEKS_REASON);
+        asylumCase.clear(STF_24W_CURRENT_REASON_AUTO_GENERATED);
 
         return asylumCase;
     }

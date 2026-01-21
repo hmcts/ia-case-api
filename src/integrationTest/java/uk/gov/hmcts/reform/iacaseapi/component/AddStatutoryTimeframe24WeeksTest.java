@@ -25,7 +25,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_GIVEN_NAMES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_NOTES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STATUTORY_TIMEFRAME_24_WEEKS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STATUTORY_TIMEFRAME_24_WEEKS_REASON;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STF_24W_CURRENT_REASON_AUTO_GENERATED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STF_24W_CURRENT_STATUS_AUTO_GENERATED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.TRIBUNAL_RECEIVED_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.XUI_BANNER_TEXT;
@@ -56,7 +56,7 @@ class AddStatutoryTimeframe24WeeksTest extends SpringBootIntegrationTest impleme
                 .caseDetails(someCaseDetailsWith()
                         .state(APPEAL_SUBMITTED)
                         .caseData(anAsylumCase()
-                                .with(STATUTORY_TIMEFRAME_24_WEEKS_REASON, reason)
+                                .with(STF_24W_CURRENT_REASON_AUTO_GENERATED, reason)
                                 .with(APPEAL_SUBMISSION_DATE, APPEAL_SUBMISSION_DATE_STR)
                                 .with(APPELLANT_GIVEN_NAMES, "some-given-name")
                                 .with(APPELLANT_FAMILY_NAME, "some-family-name"))));
@@ -93,7 +93,7 @@ class AddStatutoryTimeframe24WeeksTest extends SpringBootIntegrationTest impleme
                         .caseData(anAsylumCase()
                                 .with(TRIBUNAL_RECEIVED_DATE, TRIBUNAL_SUBMISSION_DATE_STR)
                                 .with(APPEAL_SUBMISSION_DATE, APPEAL_SUBMISSION_DATE_STR)
-                                .with(STATUTORY_TIMEFRAME_24_WEEKS_REASON, SOME_REASON)
+                                .with(STF_24W_CURRENT_REASON_AUTO_GENERATED, SOME_REASON)
                                 .with(APPELLANT_GIVEN_NAMES, SOME_GIVEN_NAME)
                                 .with(APPELLANT_FAMILY_NAME, SOME_FAMILY_NAME))));
         assertThat(response.getAsylumCase().read(XUI_BANNER_TEXT).get()).isEqualTo(WEEK_STF_CASE_DEADLINE_28_MAY_2026);
@@ -113,7 +113,7 @@ class AddStatutoryTimeframe24WeeksTest extends SpringBootIntegrationTest impleme
                         .state(APPEAL_SUBMITTED)
                         .caseData(anAsylumCase()
                                 .with(APPEAL_SUBMISSION_DATE, APPEAL_SUBMISSION_DATE_STR)
-                                .with(STATUTORY_TIMEFRAME_24_WEEKS_REASON, SOME_REASON)
+                                .with(STF_24W_CURRENT_REASON_AUTO_GENERATED, SOME_REASON)
                                 .with(APPELLANT_GIVEN_NAMES, SOME_GIVEN_NAME)
                                 .with(APPELLANT_FAMILY_NAME, SOME_FAMILY_NAME))));
 
@@ -132,7 +132,7 @@ class AddStatutoryTimeframe24WeeksTest extends SpringBootIntegrationTest impleme
                         .state(APPEAL_SUBMITTED)
                         .caseData(anAsylumCase()
                                 .with(APPEAL_SUBMISSION_DATE, APPEAL_SUBMISSION_DATE_STR)
-                                .with(STATUTORY_TIMEFRAME_24_WEEKS_REASON, SOME_REASON)
+                                .with(STF_24W_CURRENT_REASON_AUTO_GENERATED, SOME_REASON)
                                 .with(APPELLANT_GIVEN_NAMES, SOME_GIVEN_NAME)
                                 .with(APPELLANT_FAMILY_NAME, SOME_FAMILY_NAME))));
 
