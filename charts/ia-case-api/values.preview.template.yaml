@@ -1174,7 +1174,7 @@ em-stitching:
     releaseNameOverride: ${SERVICE_NAME}-em-stitching
     image: hmctspublic.azurecr.io/em/stitching:latest
     ingressHost: em-stitching-${SERVICE_FQDN}
-    devcpuRequests: 1Gi
+    devcpuRequests: 500m
     devmemoryRequests: 2Gi
     devcpuLimits: 2
     devmemoryLimits: 8Gi
