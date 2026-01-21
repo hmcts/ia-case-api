@@ -149,9 +149,9 @@ ia-case-documents-api:
     releaseNameOverride: ${SERVICE_NAME}-case-documents-api
     ingressHost: ${SERVICE_NAME}-documents-api.preview.platform.hmcts.net
     devcpuRequests: 500m
-    devmemoryRequests: 1Gi
+    devmemoryRequests: 2Gi
     devcpuLimits: 1
-    devmemoryLimits: 4Gi
+    devmemoryLimits: 6Gi
     environment:
       DOCMOSIS_ENDPOINT: https://docmosis.aat.platform.hmcts.net
       DM_URL: http://dm-store-aat.service.core-compute-aat.internal
