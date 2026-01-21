@@ -32,7 +32,7 @@ To build and run local tests:
 
 ### Running the application
 
-To run the API quickly use the docker helper script as follows: (make sure to have the required environment variables set as under functional tests section)
+To run the API quickly use the docker helper script as follows (making sure to have the required environment variables set as described in the section on running functional tests):
 
 ```
 ./bin/run-in-docker.sh --clean --install
