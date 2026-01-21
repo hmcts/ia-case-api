@@ -18,9 +18,9 @@ public class AsylumCaseFeePaymentService implements FeePayment<AsylumCase> {
 
     public AsylumCaseFeePaymentService(
         AsylumCaseCallbackApiDelegator asylumCaseCallbackApiDelegator,
-        @Value("${paymentApi.endpoint}") String feePaymentApiEndpoint,
-        @Value("${paymentApi.aboutToSubmitPath}") String aboutToSubmitPath,
-        @Value("${paymentApi.aboutToStartPath}") String aboutToStartPath
+        @Value("${documentsApi.endpoint}") String feePaymentApiEndpoint,
+        @Value("${documentsApi.aboutToSubmitPath}") String aboutToSubmitPath,
+        @Value("${documentsApi.aboutToStartPath}") String aboutToStartPath
     ) {
         this.asylumCaseCallbackApiDelegator = asylumCaseCallbackApiDelegator;
         this.feePaymentApiEndpoint = feePaymentApiEndpoint;

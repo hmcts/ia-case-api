@@ -188,15 +188,10 @@ documentsApi:
   endpoint: ${IA_CASE_DOCUMENTS_API_URL:http://127.0.0.1:8092}
   aboutToSubmitPath: "/asylum/ccdAboutToSubmit"
   aboutToStartPath: "/asylum/ccdAboutToStart"
+  ccdSubmittedPath: "/asylum/ccdSubmitted"
 
 notificationsApi:
   endpoint: ${IA_CASE_NOTIFICATIONS_API_URL:http://127.0.0.1:8093}
-  aboutToSubmitPath: "/asylum/ccdAboutToSubmit"
-  ccdSubmittedPath: "/asylum/ccdSubmitted"
-
-paymentApi:
-  endpoint: ${IA_CASE_PAYMENTS_API_URL:http://127.0.0.1:8096}
-  aboutToStartPath: "/asylum/ccdAboutToStart"
   aboutToSubmitPath: "/asylum/ccdAboutToSubmit"
   ccdSubmittedPath: "/asylum/ccdSubmitted"
 

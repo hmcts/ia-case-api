@@ -18,8 +18,8 @@ public class AsylumCasePostFeePaymentService implements PostFeePayment<AsylumCas
 
     public AsylumCasePostFeePaymentService(
         AsylumCaseCallbackApiDelegator asylumCaseCallbackApiDelegator,
-        @Value("${paymentApi.endpoint}") String feePaymentApiEndpoint,
-        @Value("${paymentApi.ccdSubmittedPath}") String ccdSubmittedPath
+        @Value("${documentsApi.endpoint}") String feePaymentApiEndpoint,
+        @Value("${documentsApi.ccdSubmittedPath}") String ccdSubmittedPath
     ) {
         this.asylumCaseCallbackApiDelegator = asylumCaseCallbackApiDelegator;
         this.feePaymentApiEndpoint = feePaymentApiEndpoint;
