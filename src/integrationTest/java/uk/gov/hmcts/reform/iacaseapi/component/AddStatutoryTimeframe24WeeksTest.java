@@ -57,6 +57,7 @@ class AddStatutoryTimeframe24WeeksTest extends SpringBootIntegrationTest impleme
                         .state(APPEAL_SUBMITTED)
                         .caseData(anAsylumCase()
                                 .with(STF_24W_CURRENT_REASON_AUTO_GENERATED, reason)
+                                .with(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.NO)
                                 .with(APPEAL_SUBMISSION_DATE, APPEAL_SUBMISSION_DATE_STR)
                                 .with(APPELLANT_GIVEN_NAMES, "some-given-name")
                                 .with(APPELLANT_FAMILY_NAME, "some-family-name"))));
@@ -94,6 +95,7 @@ class AddStatutoryTimeframe24WeeksTest extends SpringBootIntegrationTest impleme
                                 .with(TRIBUNAL_RECEIVED_DATE, TRIBUNAL_SUBMISSION_DATE_STR)
                                 .with(APPEAL_SUBMISSION_DATE, APPEAL_SUBMISSION_DATE_STR)
                                 .with(STF_24W_CURRENT_REASON_AUTO_GENERATED, SOME_REASON)
+                                .with(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.NO)
                                 .with(APPELLANT_GIVEN_NAMES, SOME_GIVEN_NAME)
                                 .with(APPELLANT_FAMILY_NAME, SOME_FAMILY_NAME))));
         assertThat(response.getAsylumCase().read(XUI_BANNER_TEXT).get()).isEqualTo(WEEK_STF_CASE_DEADLINE_28_MAY_2026);
@@ -114,6 +116,7 @@ class AddStatutoryTimeframe24WeeksTest extends SpringBootIntegrationTest impleme
                         .caseData(anAsylumCase()
                                 .with(APPEAL_SUBMISSION_DATE, APPEAL_SUBMISSION_DATE_STR)
                                 .with(STF_24W_CURRENT_REASON_AUTO_GENERATED, SOME_REASON)
+                                .with(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.NO)
                                 .with(APPELLANT_GIVEN_NAMES, SOME_GIVEN_NAME)
                                 .with(APPELLANT_FAMILY_NAME, SOME_FAMILY_NAME))));
 
@@ -133,6 +136,7 @@ class AddStatutoryTimeframe24WeeksTest extends SpringBootIntegrationTest impleme
                         .caseData(anAsylumCase()
                                 .with(APPEAL_SUBMISSION_DATE, APPEAL_SUBMISSION_DATE_STR)
                                 .with(STF_24W_CURRENT_REASON_AUTO_GENERATED, SOME_REASON)
+                                .with(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.NO)
                                 .with(APPELLANT_GIVEN_NAMES, SOME_GIVEN_NAME)
                                 .with(APPELLANT_FAMILY_NAME, SOME_FAMILY_NAME))));
 

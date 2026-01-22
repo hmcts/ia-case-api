@@ -50,6 +50,7 @@ class RemoveStatutoryTimeframe24WeeksTest extends SpringBootIntegrationTest impl
                         .state(APPEAL_SUBMITTED)
                         .caseData(anAsylumCase()
                                 .with(STF_24W_CURRENT_REASON_AUTO_GENERATED, reason)
+                                .with(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.YES)
                                 .with(APPEAL_SUBMISSION_DATE, APPEAL_SUBMISSION_DATE_STR)
                                 .with(XUI_BANNER_TEXT, BANNER_TEXT)
                                 .with(APPELLANT_GIVEN_NAMES, "some-given-name")

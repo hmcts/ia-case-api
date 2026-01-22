@@ -76,8 +76,6 @@ public class UpdateStatutoryTimeframe24WeeksService {
 
         //Clear transient fields, form field will be empty for update event
         asylumCase.clear(STF_24W_CURRENT_REASON_AUTO_GENERATED);
-        asylumCase.clear(STF_24W_CURRENT_STATUS_AUTO_GENERATED);
-        asylumCase.clear(STATUTORY_TIMEFRAME_24_WEEKS);
 
         return asylumCase;
     }
