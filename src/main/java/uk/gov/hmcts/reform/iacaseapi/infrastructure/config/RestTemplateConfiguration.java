@@ -30,7 +30,7 @@ public class RestTemplateConfiguration {
         log.info("--------------------------------Creating rest template ia-case-api");
         RequestConfig requestConfig = RequestConfig.custom()
                 .setConnectTimeout(30_000)
-                .setSocketTimeout(30_000)
+                .setSocketTimeout(120_000)
                 .build();
 
         CloseableHttpClient httpClient = HttpClients.custom()
