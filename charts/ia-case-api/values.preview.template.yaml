@@ -40,6 +40,7 @@ java:
     SAVE_NOTIFICATIONS_TO_DATA_EVENT_ENABLED: false
     SAVE_NOTIFICATIONS_DATA_SCHEDULE_HOUR: 17
     SAVE_NOTIFICATIONS_DATA_SCHEDULE_MAX_MINUTES: 5
+    logging.level.root: DEBUG
   keyVaults:
     ia:
       resourceGroup: ia
@@ -165,6 +166,7 @@ ia-case-documents-api:
       OPEN_ID_IDAM_URL: https://idam-web-public.aat.platform.hmcts.net
       CASE_DOCUMENT_AM_URL: http://${SERVICE_NAME}-ccd-case-document-am-api
       ROLE_ASSIGNMENT_URL: https://am-role-assignment-${SERVICE_FQDN}
+      logging.level.root: DEBUG
     keyVaults:
       ia:
         resourceGroup: ia
@@ -236,6 +238,7 @@ ia-case-notifications-api:
       IDAM_URL: https://idam-web-public.aat.platform.hmcts.net
       ROLE_ASSIGNMENT_URL: https://am-role-assignment-${SERVICE_FQDN}
       S2S_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
+      logging.level.root: DEBUG
     keyVaults:
       ia:
         resourceGroup: ia
@@ -874,6 +877,7 @@ ccd:
         ENABLE_ATTRIBUTE_BASED_ACCESS_CONTROL: true
         ENABLE_PSEUDO_ROLE_ASSIGNMENTS_GENERATION: true
         ENABLE_PSEUDO_ACCESS_PROFILES_GENERATION: true
+        logging.level.root: DEBUG
       keyVaults: []
       ingressHost: ccd-data-store-api-${SERVICE_FQDN}
 
@@ -1158,6 +1162,7 @@ em-ccdorc:
       CCD_DATA_API_URL: https://ccd-data-store-api-${SERVICE_FQDN}
       CALLBACK_DOMAIN: em-ccdorc-${SERVICE_FQDN}
       CALLBACK_HTTP_SCHEME: https
+      logging.level.root: DEBUG
     keyVaults:
       em-ccdorc:
         resourceGroup: em-ccdorc
@@ -1193,6 +1198,7 @@ em-stitching:
       DM_STORE_APP_URL: http://dm-store-aat.service.core-compute-aat.internal
       CDAM_URL: http://${SERVICE_NAME}-ccd-case-document-am-api
       APPINSIGHTS_INSTRUMENTATIONKEY: '00000000-0000-0000-0000-000000000000'
+      logging.level.root: DEBUG
     keyVaults:
       em-stitching:
         resourceGroup: em-stitching
