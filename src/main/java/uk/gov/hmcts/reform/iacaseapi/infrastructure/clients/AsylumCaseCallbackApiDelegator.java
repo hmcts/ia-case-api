@@ -55,7 +55,8 @@ public class AsylumCaseCallbackApiDelegator {
         log.info("----------AsylumCaseCallbackApiDelegator111 {}", endpoint);
         Optional<AppealType> appealType0Opt = asylumCase0.read(APPEAL_TYPE, AppealType.class);
         log.info("{}", appealType0Opt);
-        log.info("----------AsylumCaseCallbackApiDelegator222 {}", endpoint);
+        log.info("----------AsylumCaseCallbackApiDelegator222: {}", endpoint);
+        log.info("----------AsylumCaseCallbackApiDelegator222 interceptors: {}", restTemplate.getInterceptors().size());
 
         try {
 
