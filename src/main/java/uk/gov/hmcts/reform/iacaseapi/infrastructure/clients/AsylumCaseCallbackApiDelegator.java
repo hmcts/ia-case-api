@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.infrastructure.clients;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_IN_UK;
 
 import java.util.Optional;
 
@@ -83,6 +84,8 @@ public class AsylumCaseCallbackApiDelegator {
                     .map(ResponseEntity::getBody)
                     .map(PreSubmitCallbackResponse::getData)
                     .orElse(new AsylumCase());
+            log.info("-------------appealType {}", asylumCase.read(APPEAL_TYPE));
+            log.info("-------------appellantInUk {}", asylumCase.read(APPELLANT_IN_UK));
             log.info("----------AsylumCaseCallbackApiDelegator333");
             Optional<AppealType> appealTypeOpt = asylumCase.read(APPEAL_TYPE, AppealType.class);
             log.info("{}", appealTypeOpt);
