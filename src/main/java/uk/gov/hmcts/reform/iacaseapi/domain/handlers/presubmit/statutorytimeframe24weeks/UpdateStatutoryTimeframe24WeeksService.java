@@ -72,11 +72,6 @@ public class UpdateStatutoryTimeframe24WeeksService {
             asylumCase.write(CASE_NOTES, allCaseNotes);
             stf24WeeksBannerTextService.updateBannerText(asylumCase);
         }
-
-
-        //Clear transient fields, form field will be empty for update event
-        asylumCase.clear(STF_24W_CURRENT_REASON_AUTO_GENERATED);
-
         return asylumCase;
     }
 
