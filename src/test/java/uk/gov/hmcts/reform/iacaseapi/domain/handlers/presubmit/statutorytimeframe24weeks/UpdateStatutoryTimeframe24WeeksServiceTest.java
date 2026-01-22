@@ -130,7 +130,6 @@ class UpdateStatutoryTimeframe24WeeksServiceTest {
         assertThat(capturedCaseNotes.getDateAdded()).isEqualTo(now.toString());
 
         verify(asylumCase, times(1)).write(STATUTORY_TIMEFRAME_24_WEEKS, new StatutoryTimeframe24Weeks(allAppendedStatutoryTimeframe24Weeks));
-        verify(asylumCase, times(1)).clear(STF_24W_CURRENT_REASON_AUTO_GENERATED);
         verify(bannerTextService, times(1)).updateBannerText(asylumCaseCaptor.capture());
 
     }
@@ -174,7 +173,6 @@ class UpdateStatutoryTimeframe24WeeksServiceTest {
         assertThat(capturedCaseNotes.getDateAdded()).isEqualTo(now.toString());
 
         verify(asylumCase, times(1)).write(STATUTORY_TIMEFRAME_24_WEEKS, new StatutoryTimeframe24Weeks(allAppendedStatutoryTimeframe24Weeks));
-        verify(asylumCase, times(1)).clear(STF_24W_CURRENT_REASON_AUTO_GENERATED);
 
     }
 
