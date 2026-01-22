@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
@@ -12,6 +13,7 @@ import org.springframework.web.client.RestOperations;
 import org.springframework.web.client.RestTemplate;
 
 @Configuration
+@Slf4j
 public class RestTemplateConfiguration {
 
     @Bean
@@ -25,6 +27,7 @@ public class RestTemplateConfiguration {
     public RestTemplate restTemplate(
         ObjectMapper objectMapper
     ) {
+        log.info("--------------------------------Creating rest template ia-case-api");
         RequestConfig requestConfig = RequestConfig.custom()
                 .setConnectTimeout(30_000)
                 .setSocketTimeout(30_000)
