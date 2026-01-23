@@ -82,7 +82,7 @@ class ListingPaPayLaterDirectionHandlerTest {
         when(asylumCase.read(PA_APPEAL_TYPE_PAYMENT_OPTION, String.class))
                 .thenReturn(Optional.of("payLater"));
 
-        boolean canHandle = ListingPaPayLaterDirectionHandler.canHandle(
+        boolean canHandle = listingPaPayLaterDirectionHandler.canHandle(
                 PreSubmitCallbackStage.ABOUT_TO_SUBMIT,
                 callback
         );
@@ -102,7 +102,7 @@ class ListingPaPayLaterDirectionHandlerTest {
         when(asylumCase.read(PA_APPEAL_TYPE_PAYMENT_OPTION, String.class))
                 .thenReturn(Optional.of("payLater"));
 
-        boolean canHandle = ListingPaPayLaterDirectionHandler.canHandle(
+        boolean canHandle = listingPaPayLaterDirectionHandler.canHandle(
                 PreSubmitCallbackStage.ABOUT_TO_SUBMIT,
                 callback
         );
@@ -162,7 +162,7 @@ class ListingPaPayLaterDirectionHandlerTest {
     @Test
     void should_not_allow_null_arguments() {
 
-        assertThatThrownBy(() -> listinggPaPayLaterDirectionHandler.canHandle(null, callback))
+        assertThatThrownBy(() -> listingPaPayLaterDirectionHandler.canHandle(null, callback))
                 .hasMessage("callbackStage must not be null")
                 .isExactlyInstanceOf(NullPointerException.class);
 
