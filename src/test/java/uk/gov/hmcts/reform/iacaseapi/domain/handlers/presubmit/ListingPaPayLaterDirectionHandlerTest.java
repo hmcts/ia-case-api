@@ -79,7 +79,7 @@ class ListingPaPayLaterDirectionHandlerTest {
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class))
                 .thenReturn(Optional.of(JourneyType.AIP));
 
-        when(asylumCase.read(PA_APPEAL_TYPE_PAYMENT_OPTION, String.class))
+        when(asylumCase.read(PA_APPEAL_TYPE_AIP_PAYMENT_OPTION, String.class))
                 .thenReturn(Optional.of("payLater"));
 
         boolean canHandle = listingPaPayLaterDirectionHandler.canHandle(
