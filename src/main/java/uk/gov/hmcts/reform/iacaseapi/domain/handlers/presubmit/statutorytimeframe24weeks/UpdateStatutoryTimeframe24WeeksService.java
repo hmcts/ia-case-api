@@ -54,14 +54,13 @@ public class UpdateStatutoryTimeframe24WeeksService {
         Optional<YesOrNo> currentStatus = asylumCase
                 .read(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class);
         boolean statusHasChanged = currentStatus.isPresent() && !currentStatus.get().equals(statutoryTimeframe24WeeksStatus);
-        Optional<StatutoryTimeframe24Weeks> existingStatutoryTimeframe24Weeks = asylumCase.read(STATUTORY_TIMEFRAME_24_WEEKS, StatutoryTimeframe24Weeks.class);
-        log.info("existingStatutoryTimeframe24Weeks: {}", existingStatutoryTimeframe24Weeks);
         log.info("statusHasChanged: {}", statusHasChanged);
         if (!statusHasChanged) {
             log.warn("The current status is already set to {}", statutoryTimeframe24WeeksStatus);
             //After home office integration call success, for the second time call, updating the banner text
         } else {
             String userDetails = buildFullName();
+            Optional<StatutoryTimeframe24Weeks> existingStatutoryTimeframe24Weeks = asylumCase.read(STATUTORY_TIMEFRAME_24_WEEKS, StatutoryTimeframe24Weeks.class);
             StatutoryTimeframe24Weeks updatedStatutoryTimeframe24Weeks =
                     buildNewStatutoryTimeframe24Weeks(statutoryTimeframe24WeeksStatus, statutoryTimeframe24WeeksReason, userDetails, existingStatutoryTimeframe24Weeks);
             asylumCase.write(STF_24W_CURRENT_STATUS_AUTO_GENERATED, statutoryTimeframe24WeeksStatus);
