@@ -87,7 +87,6 @@ public class ListingPaPayLaterDirectionHandler implements PreSubmitCallbackHandl
                                 "1. Call the tribunal on +44 (0)300 123 1711, then select option 3 \n" +
                                 "2. Provide your 16-digit online case reference number:\n" +
                                 "3. Make the payment with a debit or credit card\n",
-                        resolvePartiesForHearingRequirements(asylumCase),
                         dateProvider
                                 .now()
                                 .plusDays(hearingRequirementsDueInDays)
