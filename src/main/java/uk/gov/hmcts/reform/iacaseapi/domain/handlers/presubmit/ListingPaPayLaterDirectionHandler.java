@@ -48,7 +48,9 @@ public class ListingPaPayLaterDirectionHandler implements PreSubmitCallbackHandl
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-                && callback.getEvent() == Event.LI;
+                && callback.getCaseDetails().getState() == State.LISTING
+                && (HandlerUtils.isAipJourney(callback.getCaseDetails().getCaseData())
+                || HandlerUtils.isLegalRepJourney(callback.getCaseDetails().getCaseData()));
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
@@ -96,16 +98,5 @@ public class ListingPaPayLaterDirectionHandler implements PreSubmitCallbackHandl
         asylumCase.write(DIRECTIONS, allDirections);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
-    }
-
-    private Parties resolvePartiesForHearingRequirements(AsylumCase asylumCase) {
-
-        boolean isInternalDetainedNonAda = (isInternalCase(asylumCase) && isAppellantInDetention(asylumCase) && !isAcceleratedDetainedAppeal(asylumCase));
-        boolean isEjpUnrepNonDetained = (isEjpCase(asylumCase) && !isAppellantInDetention(asylumCase) && !isLegallyRepresentedEjpCase(asylumCase));
-
-        if (HandlerUtils.isAipJourney(asylumCase) || isInternalDetainedNonAda || isEjpUnrepNonDetained) {
-            return Parties.APPELLANT;
-        }
-        return Parties.LEGAL_REPRESENTATIVE;
     }
 }
