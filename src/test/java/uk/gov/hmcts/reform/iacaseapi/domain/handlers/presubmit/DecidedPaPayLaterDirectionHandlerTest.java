@@ -37,6 +37,7 @@ import static org.mockito.Mockito.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre.DECISION_WITHOUT_HEARING;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre.NEWPORT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
@@ -75,7 +76,7 @@ class DecidedPaPayLaterDirectionHandlerTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class))
-                .thenReturn(Optional.of(JourneyType.REPRESENTED));
+                .thenReturn(Optional.of(JourneyType.REP));
 
 
         when(asylumCase.read(PA_APPEAL_TYPE_PAYMENT_OPTION, String.class))
@@ -103,7 +104,7 @@ class DecidedPaPayLaterDirectionHandlerTest {
         when(asylumCase.read(PA_APPEAL_TYPE_PAYMENT_OPTION, String.class))
                 .thenReturn(Optional.of("payLater"));
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class))
-                .thenReturn(Optional.of(JourneyType.REPRESENTED));
+                .thenReturn(Optional.of(JourneyType.REP));
 
         when(asylumCase.read(DIRECTIONS))
                 .thenReturn(Optional.of(existingDirections));
