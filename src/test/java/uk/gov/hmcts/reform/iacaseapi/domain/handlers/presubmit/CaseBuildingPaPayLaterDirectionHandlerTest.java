@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DirectionAppender;
@@ -70,7 +71,27 @@ class CaseBuildingPaPayLaterDirectionHandlerTest {
     }
 
     @Test
-    void should_handle_case_building_pay_later() {
+    void should_handle_case_building_aip_pay_later() {
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getState()).thenReturn(State.CASE_BUILDING);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class))
+                .thenReturn(Optional.of(JourneyType.AIP));
+
+        when(asylumCase.read(PA_APPEAL_TYPE_PAYMENT_OPTION, String.class))
+                .thenReturn(Optional.of("payLater"));
+
+        boolean canHandle = decidedPaPayLaterDirectionHandler.canHandle(
+                PreSubmitCallbackStage.ABOUT_TO_SUBMIT,
+                callback
+        );
+
+        assertTrue(canHandle);
+    }
+
+    @Test
+    void should_handle_case_building_lr_pay_later() {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getState()).thenReturn(State.CASE_BUILDING);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -78,11 +99,10 @@ class CaseBuildingPaPayLaterDirectionHandlerTest {
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class))
                 .thenReturn(Optional.of(JourneyType.REP));
 
-
         when(asylumCase.read(PA_APPEAL_TYPE_PAYMENT_OPTION, String.class))
                 .thenReturn(Optional.of("payLater"));
 
-        boolean canHandle = caseBuildingPaPayLaterDirectionHandler.canHandle(
+        boolean canHandle = decidedPaPayLaterDirectionHandler.canHandle(
                 PreSubmitCallbackStage.ABOUT_TO_SUBMIT,
                 callback
         );
