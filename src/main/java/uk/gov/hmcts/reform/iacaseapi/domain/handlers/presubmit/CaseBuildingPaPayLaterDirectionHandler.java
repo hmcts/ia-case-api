@@ -50,6 +50,8 @@ public class CaseBuildingPaPayLaterDirectionHandler implements PreSubmitCallback
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
+        final AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
+
         String paAppealTypePaymentOption = asylumCase.read(PA_APPEAL_TYPE_PAYMENT_OPTION, String.class).orElse("");
         String paAppealTypeAipPaymentOption = asylumCase.read(PA_APPEAL_TYPE_AIP_PAYMENT_OPTION, String.class).orElse("");
 
