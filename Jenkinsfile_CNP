@@ -45,8 +45,8 @@ def secrets = [
                 secret('test-law-firm-share-case-a-password', 'TEST_LAW_FIRM_SHARE_CASE_A_PASSWORD'),
                 secret('test-citizen-username', 'TEST_CITIZEN_USERNAME'),
                 secret('test-citizen-password', 'TEST_CITIZEN_PASSWORD'),
-                secret('ia-system-access-username', 'IA_SYSTEM_USERNAME'),
-                secret('ia-system-access-password', 'IA_SYSTEM_PASSWORD'),
+                secret('ia-system-access-username', 'IA_SYSTEM_ACCESS_USERNAME'),
+                secret('ia-system-access-password', 'IA_SYSTEM_ACCESS_PASSWORD'),
 
                 secret('test-law-firm-share-case-a-username', 'TEST_LAW_FIRM_ORG_SUCCESS_USERNAME'),
                 secret('test-law-firm-share-case-a-password', 'TEST_LAW_FIRM_ORG_SUCCESS_PASSWORD'),
@@ -74,6 +74,12 @@ def secrets = [
                 secret('wa-test-judge-password', 'IA_WA_JUDGE_PASSWORD'),
                 secret('wa-test-ctsc-admin-username-2', 'IA_WA_CTSC_ADMIN_USERNAME_2'),
                 secret('wa-test-ctsc-admin-password-2', 'IA_WA_CTSC_ADMIN_PASSWORD_2'),
+                secret('wa-test-adminofficer-no-idam-username', 'IA_WA_ADMINOFFICER_NO_IDAM_USERNAME'),
+                secret('wa-test-adminofficer-no-idam-password', 'IA_WA_ADMINOFFICER_NO_IDAM_PASSWORD'),
+                secret('wa-test-caseofficer-no-idam-username', 'IA_WA_CASEOFFICER_NO_IDAM_USERNAME'),
+                secret('wa-test-caseofficer-no-idam-password', 'IA_WA_CASEOFFICER_NO_IDAM_PASSWORD'),
+                secret('wa-test-judge-no-idam-username', 'IA_WA_JUDGE_NO_IDAM_USERNAME'),
+                secret('wa-test-judge-no-idam-password', 'IA_WA_JUDGE_NO_IDAM_PASSWORD'),
 
                 secret('addressLookupToken', 'ADDRESS_LOOKUP_TOKEN'),
                 secret('pcq-token-key', 'PCQ_TOKEN_KEY'),
@@ -110,7 +116,9 @@ def secrets = [
                 secret('servicesatcdmiac-password', 'CCD_UPLOAD_PASSWORD'),
                 secret('ccd-client-secret', 'CCD_CLIENT_SECRET'),
                 secret('system-username', 'IA_SYSTEM_USERNAME'),
-                secret('system-password', 'IA_SYSTEM_PASSWORD')
+                secret('system-password', 'IA_SYSTEM_PASSWORD'),
+                secret('ia-det-prison-email-mappings', 'IA_DET_PRISON_EMAIL_MAPPINGS')        
+          
         ],
         's2s-${env}': [
                 secret('microservicekey-ccd-data', 'DATA_STORE_S2S_KEY'),
@@ -161,6 +169,7 @@ withPipeline(type, product, component) {
     env.IA_HOME_OFFICE_INTEGRATION_API_URL = "http://ia-home-office-integration-api-aat.service.core-compute-aat.internal/"
     env.IA_IDAM_REDIRECT_URI = "https://ia-case-api-aat.service.core-compute-aat.internal/oauth2/callback"
     env.CCD_URL = "http://ccd-data-store-api-aat.service.core-compute-aat.internal"
+    env.CCD_CASE_ACCESS_URL = "http://ccd-data-store-api-aat.service.core-compute-aat.internal"
     env.CCD_GW_URL = "http://dm-store-aat.service.core-compute-aat.internal"
     env.DM_URL = "http://dm-store-aat.service.core-compute-aat.internal"
     env.IDAM_URL = "https://idam-api.aat.platform.hmcts.net"
@@ -205,14 +214,16 @@ enableSecurityScan()
         }
     }
 
-    afterAlways('functionalTest:preview') {
+    before('functionalTest:preview') {
         //steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
         env.IDAM_API_URL = "https://idam-api.aat.platform.hmcts.net"
         env.ROLE_ASSIGNMENT_URL = "https://am-role-assignment-ia-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
-        env.SERVICE_AUTH_PROVIDER_API_BASE_URL="http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
+        env.SERVICE_AUTH_PROVIDER_API_BASE_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
         sh """
       ./bin/add-org-roles-to-users.sh
     """
+    }
+    afterAlways('functionalTest:preview') {
         publishHTML([
                 allowMissing         : true,
                 alwaysLinkToLastBuild: true,
@@ -224,7 +235,7 @@ enableSecurityScan()
 
     }
 
-        afterAlways('functionalTest:aat') {
+    afterAlways('functionalTest:aat') {
         steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
         steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/**/*'
     }

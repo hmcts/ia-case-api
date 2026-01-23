@@ -47,6 +47,20 @@ echo "Setting up WA Users and role assignments..."
 ./bin/utils/organisational-role-assignment.sh "${IA_WA_CTSC_ADMIN_USERNAME_2}" "${IA_WA_CTSC_ADMIN_PASSWORD_2}" "PUBLIC" "hearing-viewer" '{"jurisdiction":"IA","primaryLocation":"765324"}' "CTSC"
 ./bin/utils/organisational-role-assignment.sh "${IA_WA_CTSC_ADMIN_USERNAME_2}" "${IA_WA_CTSC_ADMIN_PASSWORD_2}" "PUBLIC" "hearing-manager" '{"jurisdiction":"IA","primaryLocation":"765324"}' "CTSC"
 
-./bin/utils/system-user-role-assignment.sh "${IA_SYSTEM_USERNAME}" "${IA_SYSTEM_PASSWORD}"
+./bin/utils/organisational-role-assignment.sh "${IA_WA_JUDGE_NO_IDAM_USERNAME}" "${IA_WA_JUDGE_NO_IDAM_PASSWORD}" "PUBLIC" "leadership-judge" '{"jurisdiction":"IA","primaryLocation":"765324","workTypes":"hearing_work,upper_tribunal,decision_making_work,applications,access_requests"}' "JUDICIAL"
+./bin/utils/organisational-role-assignment.sh "${IA_WA_JUDGE_NO_IDAM_USERNAME}" "${IA_WA_JUDGE_NO_IDAM_PASSWORD}" "PUBLIC" "case-allocator" '{"jurisdiction":"IA","primaryLocation":"765324"}' "JUDICIAL"
+./bin/utils/organisational-role-assignment.sh "${IA_WA_JUDGE_NO_IDAM_USERNAME}" "${IA_WA_JUDGE_NO_IDAM_PASSWORD}" "PUBLIC" "judge" '{"jurisdiction":"IA","primaryLocation":"765324","workTypes":"hearing_work,upper_tribunal,decision_making_work,applications"}' "JUDICIAL"
+./bin/utils/organisational-role-assignment.sh "${IA_WA_JUDGE_NO_IDAM_USERNAME}" "${IA_WA_JUDGE_NO_IDAM_PASSWORD}" "PUBLIC" "task-supervisor" '{"jurisdiction":"IA","primaryLocation":"765324"}' "JUDICIAL"
 
+./bin/utils/organisational-role-assignment.sh "${IA_WA_ADMINOFFICER_NO_IDAM_USERNAME}" "${IA_WA_ADMINOFFICER_NO_IDAM_PASSWORD}" "PUBLIC" "case-allocator" '{"jurisdiction":"IA","primaryLocation":"765324"}' "ADMIN"
+./bin/utils/organisational-role-assignment.sh "${IA_WA_ADMINOFFICER_NO_IDAM_USERNAME}" "${IA_WA_ADMINOFFICER_NO_IDAM_PASSWORD}" "PUBLIC" "task-supervisor" '{"jurisdiction":"IA","primaryLocation":"765324"}' "ADMIN"
+./bin/utils/organisational-role-assignment.sh "${IA_WA_ADMINOFFICER_NO_IDAM_USERNAME}" "${IA_WA_ADMINOFFICER_NO_IDAM_PASSWORD}" "PUBLIC" "hearing-centre-admin" '{"jurisdiction":"IA","primaryLocation":"765324","workTypes":"hearing_work,upper_tribunal,routine_work,review_case"}' "ADMIN"
+./bin/utils/organisational-role-assignment.sh "${IA_WA_ADMINOFFICER_NO_IDAM_USERNAME}" "${IA_WA_ADMINOFFICER_NO_IDAM_PASSWORD}" "PUBLIC" "hmcts-admin" '{"jurisdiction":"IA","primaryLocation":"765324"}' "ADMIN"
 
+./bin/utils/organisational-role-assignment.sh "${IA_WA_CASEOFFICER_NO_IDAM_USERNAME}" "${IA_WA_CASEOFFICER_NO_IDAM_PASSWORD}" "PUBLIC" "case-allocator" '{"jurisdiction":"IA","primaryLocation":"765324"}' "LEGAL_OPERATIONS"
+./bin/utils/organisational-role-assignment.sh "${IA_WA_CASEOFFICER_NO_IDAM_USERNAME}" "${IA_WA_CASEOFFICER_NO_IDAM_PASSWORD}" "PUBLIC" "task-supervisor" '{"jurisdiction":"IA","primaryLocation":"765324"}' "LEGAL_OPERATIONS"
+./bin/utils/organisational-role-assignment.sh "${IA_WA_CASEOFFICER_NO_IDAM_USERNAME}" "${IA_WA_CASEOFFICER_NO_IDAM_PASSWORD}" "PUBLIC" "tribunal-caseworker" '{"jurisdiction":"IA","primaryLocation":"765324","workTypes":"hearing_work,routine_work,decision_making_work,applications"}' "LEGAL_OPERATIONS"
+
+echo -e "\nAdding system user roles..."
+./bin/utils/system-hearings-user-role-assignment.sh "${IA_SYSTEM_USERNAME}" "${IA_SYSTEM_PASSWORD}"
+./bin/utils/system-allocator-user-role-assignment.sh "${IA_SYSTEM_USERNAME}" "${IA_SYSTEM_PASSWORD}"

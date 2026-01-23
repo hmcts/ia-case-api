@@ -25,6 +25,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.em.Bundle;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.Appender;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentReceiver;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
@@ -201,6 +202,10 @@ public class AdvancedFinalBundlingStitchingCallbackHandler implements PreSubmitC
                     DocumentTag.HEARING_BUNDLE
                 );
         }
+        handleReheardDocumentsWrite(asylumCase, isReheardCase, isRemittedFeature, allHearingDocuments);
+    }
+
+    public static void handleReheardDocumentsWrite(AsylumCase asylumCase, boolean isReheardCase, boolean isRemittedFeature, List<IdValue<DocumentWithMetadata>> allHearingDocuments) {
         if (isReheardCase) {
             if (isRemittedFeature) {
                 Optional<List<IdValue<ReheardHearingDocuments>>> maybeExistingReheardDocuments =
@@ -208,8 +213,13 @@ public class AdvancedFinalBundlingStitchingCallbackHandler implements PreSubmitC
                 List<IdValue<ReheardHearingDocuments>> existingReheardDocuments = maybeExistingReheardDocuments.orElse(emptyList());
                 if (!existingReheardDocuments.isEmpty()) {
                     existingReheardDocuments.get(0).getValue().setReheardHearingDocs(allHearingDocuments);
-                    asylumCase.write(REHEARD_HEARING_DOCUMENTS_COLLECTION, existingReheardDocuments);
+                } else {
+                    Appender<ReheardHearingDocuments> documentsCollectionAppender =
+                        new Appender<>();
+                    ReheardHearingDocuments reheardHearingDocuments = new ReheardHearingDocuments(allHearingDocuments);
+                    existingReheardDocuments = documentsCollectionAppender.append(reheardHearingDocuments, existingReheardDocuments);
                 }
+                asylumCase.write(REHEARD_HEARING_DOCUMENTS_COLLECTION, existingReheardDocuments);
             } else {
                 asylumCase.write(REHEARD_HEARING_DOCUMENTS, allHearingDocuments);
             }

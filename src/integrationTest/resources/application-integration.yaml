@@ -16,3 +16,5 @@ featureFlag:
 idam:
   s2s-authorised:
     services: ia
+ccdGatewayUrl: ${CCD_GW_URL:http://localhost:3453}
+document_management.url: ${DM_URL:http://127.0.0.1:4506}

@@ -152,6 +152,11 @@ public enum AsylumCaseFieldDefinition {
     SEND_DIRECTION_EXPLANATION(
         "sendDirectionExplanation", new TypeReference<String>(){}),
 
+    END_APPEAL_OUTCOME(
+            "endAppealOutcome", new TypeReference<String>(){}),
+    END_APPEAL_OUTCOME_REASON(
+            "endAppealOutcomeReason", new TypeReference<String>(){}),
+
     SEND_DIRECTION_PARTIES(
         "sendDirectionParties", new TypeReference<Parties>(){}),
 
@@ -1348,6 +1353,9 @@ public enum AsylumCaseFieldDefinition {
     FEE_WITHOUT_HEARING(
         "feeWithoutHearing", new TypeReference<String>(){}),
 
+    DATES_TO_AVOID_YES_NO(
+        "datesToAvoidYesNo", new TypeReference<YesOrNo>(){}),
+
     DATES_TO_AVOID(
         "datesToAvoid", new TypeReference<List<IdValue<DatesToAvoid>>>(){}),
 
@@ -1600,7 +1608,7 @@ public enum AsylumCaseFieldDefinition {
     SCHEDULE_OF_ISSUES_AGREEMENT(
         "scheduleOfIssuesAgreement", new TypeReference<YesOrNo>() {}),
 
-   SCHEDULE_OF_ISSUES_DISAGREEMENT_DESCRIPTION(
+    SCHEDULE_OF_ISSUES_DISAGREEMENT_DESCRIPTION(
         "scheduleOfIssuesDisagreementDescription", new TypeReference<String>(){}),
 
     ANONYMITY_ORDER(
@@ -1632,6 +1640,9 @@ public enum AsylumCaseFieldDefinition {
 
     LATE_REMISSION_TYPE(
         "lateRemissionType", new TypeReference<RemissionType>(){}),
+
+    HAS_PREVIOUS_REMISSION(
+        "hasPreviousRemission", new TypeReference<YesOrNo>(){}),
 
     REMISSION_CLAIM(
         "remissionClaim", new TypeReference<String>(){}),
@@ -1947,10 +1958,10 @@ public enum AsylumCaseFieldDefinition {
         "otherDetentionFacilityName", new TypeReference<OtherDetentionFacilityName>(){}),
 
     CUSTODIAL_SENTENCE(
-        "custodialSentence", new TypeReference<YesOrNo>(){}),
+        "releaseDateProvided", new TypeReference<YesOrNo>(){}),
 
     DATE_CUSTODIAL_SENTENCE(
-        "dateCustodialSentence", new TypeReference<CustodialSentenceDate>(){}),
+        "releaseDate", new TypeReference<CustodialSentenceDate>(){}),
 
     DATE_CUSTODIAL_SENTENCE_AO(
         "dateCustodialSentenceAo", new TypeReference<CustodialSentenceDate>(){}),
@@ -2696,6 +2707,8 @@ public enum AsylumCaseFieldDefinition {
 
     CASE_MANAGEMENT_LOCATION_REF_DATA("caseManagementLocationRefData", new TypeReference<CaseManagementLocationRefData>(){}),
 
+    IS_VIRTUAL_HEARING("isVirtualHearing", new TypeReference<YesOrNo>(){}),
+
     NEXT_HEARING_DETAILS("nextHearingDetails", new TypeReference<NextHearingDetails>(){}),
 
     OOC_APPEAL_ADMIN_J(
@@ -2753,7 +2766,7 @@ public enum AsylumCaseFieldDefinition {
     OOC_ADDRESS_LINE_3(
         "oocAddressLine3", new TypeReference<String>(){}),
 
-   FEE_UPDATE_TRIBUNAL_ACTION(
+    FEE_UPDATE_TRIBUNAL_ACTION(
            "feeUpdateTribunalAction", new TypeReference<FeeTribunalAction>(){}),
 
     AUTOMATIC_REMISSION_REMINDER_LEGAL_REP(
@@ -2823,9 +2836,49 @@ public enum AsylumCaseFieldDefinition {
     HEARING_ID_LIST(
             "hearingIdList", new TypeReference<List<IdValue<String>>>(){}),
 
+    CASE_ID_LIST(
+        "caseIdList", new TypeReference<String>() {}),
+
     HEARING_DECISION_LIST(
             "hearingDecisionList", new TypeReference<List<IdValue<HearingDecision>>>(){}),
 
+    REMISSION_REQUESTED_BY(
+        "remissionRequestedBy", new TypeReference<UserRoleLabel>(){}),
+  
+    GENERATE_LIST_CMR_TASK_REQUESTED(
+            "generateListCmrTaskRequested", new TypeReference<YesOrNo>(){}),
+
+    DETENTION_BUILDING(
+          "detentionBuilding", new TypeReference<String>(){}),
+
+    DETENTION_ADDRESS_LINES(
+          "detentionAddressLines", new TypeReference<String>(){}),
+
+    DETENTION_POSTCODE(
+          "detentionPostcode", new TypeReference<String>(){}),
+
+    DETENTION_REMOVAL_DATE("detentionRemovalDate",
+            new TypeReference<String>(){}),
+
+    DETENTION_REMOVAL_REASON("detentionRemovalReason",
+            new TypeReference<String>(){}),
+
+    REASON_APPELLANT_WAS_DETAINED("addReasonAppellantWasDetained",
+            new TypeReference<String>(){}),
+
+    APPELLANT_DETAINED_DATE("appellantDetainedDate",
+            new TypeReference<String>(){}),
+
+    STATUTORY_TIMEFRAME_24_WEEKS(
+      "statutoryTimeframe24Weeks", new TypeReference<StatutoryTimeframe24Weeks>(){}),
+
+    STATUTORY_TIMEFRAME_24_WEEKS_REASON(
+        "statutoryTimeframe24WeeksReason", new TypeReference<String>(){}),
+
+    STATUTORY_TIMEFRAME_24_WEEKS_HOME_OFFICE_CASE_TYPE(
+        "statutoryTimeframe24WeeksHomeOfficeCaseType", new TypeReference<String>(){}),
+    XUI_BANNER_TEXT(
+            "xuiBannerText", new TypeReference<String>(){})
     ;
 
     private final String value;

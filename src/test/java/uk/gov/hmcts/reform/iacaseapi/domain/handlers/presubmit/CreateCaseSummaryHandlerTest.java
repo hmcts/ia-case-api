@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.refEq;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.reset;
@@ -23,11 +24,15 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubm
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 import org.assertj.core.util.Lists;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
@@ -108,12 +113,21 @@ class CreateCaseSummaryHandlerTest {
         )).thenReturn(allHearingDocuments);
     }
 
-    @Test
-    void should_append_case_summary_to_hearing_documents_for_the_case() {
+    static Stream<Arguments> emptyOrNoArguments() {
+        return Stream.of(
+            Arguments.of(Optional.empty()),
+            Arguments.of(Optional.of(YesOrNo.NO))
+        );
+    }
 
+    @SuppressWarnings({"OptionalUsedAsFieldOrParameterType", "rawtypes"})
+    @ParameterizedTest
+    @MethodSource("emptyOrNoArguments")
+    void should_append_case_summary_to_hearing_documents_for_the_case(Optional caseFlagSetAsideReheardExists) {
         when(asylumCase.read(HEARING_DOCUMENTS)).thenReturn(Optional.of(existingHearingDocuments));
         when(asylumCase.read(CASE_SUMMARY_DOCUMENT, Document.class)).thenReturn(Optional.of(caseSummaryDocument));
         when(asylumCase.read(CASE_SUMMARY_DESCRIPTION, String.class)).thenReturn(Optional.of(caseSummaryDescription));
+        when(asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS)).thenReturn(caseFlagSetAsideReheardExists);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             createCaseSummaryHandler.handle(ABOUT_TO_SUBMIT, callback);
@@ -279,7 +293,44 @@ class CreateCaseSummaryHandlerTest {
         verify(asylumCase, times(0)).write(HEARING_DOCUMENTS, allHearingDocuments);
         verify(asylumCase, times(0)).write(REHEARD_HEARING_DOCUMENTS, allHearingDocuments);
         verify(asylumCase, times(1)).write(REHEARD_HEARING_DOCUMENTS_COLLECTION, listOfReheardDocs);
+    }
 
+    @Test
+    void should_add_case_summary_to_the_reheard_documents_complex_collection_when_empty() {
+        IdValue<DocumentWithMetadata> hearingDocWithMetadata = getDocumentWithMetadataIdValue();
+        final List<IdValue<DocumentWithMetadata>> listOfDocumentsWithMetadata = Lists.newArrayList(hearingDocWithMetadata);
+        IdValue<ReheardHearingDocuments> reheardHearingDocuments =
+            new IdValue<>("1", new ReheardHearingDocuments(listOfDocumentsWithMetadata));
+        final List<IdValue<ReheardHearingDocuments>> listOfReheardDocs = Lists.newArrayList(reheardHearingDocuments);
+
+        when(asylumCase.read(REHEARD_HEARING_DOCUMENTS)).thenReturn(Optional.empty());
+        when(asylumCase.read(CASE_SUMMARY_DOCUMENT, Document.class)).thenReturn(Optional.of(caseSummaryDocument));
+        when(asylumCase.read(CASE_SUMMARY_DESCRIPTION, String.class)).thenReturn(Optional.of(caseSummaryDescription));
+        when(asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS)).thenReturn(Optional.of(YesOrNo.YES));
+        when(featureToggler.getValue("dlrm-remitted-feature-flag", false)).thenReturn(true);
+        when(asylumCase.read(REHEARD_HEARING_DOCUMENTS_COLLECTION)).thenReturn(Optional.empty());
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            createCaseSummaryHandler.handle(ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, times(1)).read(CASE_SUMMARY_DOCUMENT, Document.class);
+        verify(asylumCase, times(1)).read(CASE_SUMMARY_DESCRIPTION, String.class);
+
+        verify(documentReceiver, times(1))
+            .receive(caseSummaryDocument, caseSummaryDescription, DocumentTag.CASE_SUMMARY);
+
+        verify(documentsAppender, times(1)).append(
+            hearingDocumentsCaptor.capture(),
+            eq(Collections.singletonList(caseSummaryWithMetadata)),
+            eq(DocumentTag.CASE_SUMMARY)
+        );
+
+        verify(asylumCase, times(0)).write(HEARING_DOCUMENTS, allHearingDocuments);
+        verify(asylumCase, times(0)).write(REHEARD_HEARING_DOCUMENTS, allHearingDocuments);
+        verify(asylumCase, times(1)).write(eq(REHEARD_HEARING_DOCUMENTS_COLLECTION), refEq(listOfReheardDocs));
     }
 
     @NotNull

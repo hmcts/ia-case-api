@@ -1,12 +1,13 @@
 package uk.gov.hmcts.reform.iacaseapi.util;
 
+import com.launchdarkly.sdk.LDContext;
 import com.launchdarkly.sdk.LDUser;
 import com.launchdarkly.sdk.server.interfaces.LDClientInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientResponseException;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.IdamApi;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.IdamService;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.idam.UserInfo;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.idam.IdamUserDetails;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.idam.IdentityManagerResponseException;
@@ -14,7 +15,7 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.idam.IdentityManage
 @Component
 public class LaunchDarklyFunctionalTestClient {
 
-    @Autowired private IdamApi idamApi;
+    @Autowired private IdamService idamService;
     @Autowired private LDClientInterface ldClient;
 
     public boolean getKey(String key, String accessToken) {
@@ -27,13 +28,13 @@ public class LaunchDarklyFunctionalTestClient {
             .email(userDetails.getEmailAddress())
             .build();
 
-        return ldClient.boolVariation(key, ldUser, false);
+        return ldClient.boolVariation(key, LDContext.fromUser(ldUser), false);
     }
 
     private IdamUserDetails getUserDetails(String accessToken) {
         try {
 
-            UserInfo userInfo = idamApi.userInfo(accessToken);
+            UserInfo userInfo = idamService.getUserInfo(accessToken);
 
             return new IdamUserDetails(
                 accessToken,

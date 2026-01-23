@@ -19,6 +19,7 @@ java:
     IA_HOME_OFFICE_INTEGRATION_ENABLED: "false"
     IA_IDAM_REDIRECT_URI: "https://ia-case-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal/oauth2/callback"
     CCD_URL: "http://ccd-data-store-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
+    CCD_CASE_ACCESS_URL: "http://ccd-data-store-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
     AAC_URL: "http://aac-manage-case-assignment-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
     CCD_GW_URL: "http://dm-store-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
     DM_URL: "http://dm-store-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
@@ -39,13 +40,16 @@ java:
     LEGAL_REP_REVIEW_DUE_IN_DAYS: 5
     REQUEST_RESPONDENT_EVIDENCE_DUE_IN_DAYS: 14
     REQUEST_RESPONDENT_EVIDENCE_ADA_DUE_IN_DAYS: 3
+    REQUEST_RESPONDENT_EVIDENCE_DETAINED_DUE_IN_DAYS: 7
     REQUEST_RESPONDENT_REVIEW_DUE_IN_DAYS: 14
     REQUEST_RESPONDENT_REVIEW_ADA_DUE_IN_DAYS: 2
+    REQUEST_RESPONDENT_REVIEW_DETAINED_DUE_IN_DAYS: 7
     APPELLANT_REASONS_FOR_APPEAL_DUE_IN_DAYS: 28
     PAYMENT_AFTER_REMISSION_REJECTION_DUE_IN_MINUTES: 20160
     PAYMENT_EA_HU_NO_REMISSION_DUE_IN_MINUTES: 20160
     ADA_CASE_LISTED_DIRECTION_DUE_IN_DAYS: 15
     PAYMENT_REMINDER_DUE_IN_MINUTES: 10080
+    SAVE_NOTIFICATIONS_TO_DATA_EVENT_ENABLED: true
     SAVE_NOTIFICATIONS_DATA_SCHEDULE_HOUR: 23
     SAVE_NOTIFICATIONS_DATA_SCHEDULE_MAX_MINUTES: 50
   postgresql:
@@ -93,6 +97,15 @@ java:
           alias: PG_AUTH_VALUES_YAML_PASS
         - name: docmosis-access-key
           alias: DOCMOSIS_ACCESS_KEY
+        - name: ia-config-validator-secret
+          alias: IA_CONFIG_VALIDATOR_SECRET
+        - name: AppInsightsInstrumentationKey
+          alias: azure.application-insights.instrumentation-key
+        - name: ia-system-access-username
+          alias: IA_SYSTEM_ACCESS_USERNAME
+        - name: ia-system-access-password
+          alias: IA_SYSTEM_ACCESS_PASSWORD
+
 
 ia-case-payments-api:
   enabled: false

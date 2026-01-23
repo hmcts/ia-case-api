@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCall
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PostSubmitCallbackHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.IdamService;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.PostNotificationSender;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.RoleAssignmentService;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CcdCaseAssignment;
@@ -25,16 +26,19 @@ public class ChangeRepresentationConfirmation implements PostSubmitCallbackHandl
     private final RoleAssignmentService roleAssignmentService;
     private final CcdCaseAssignment ccdCaseAssignment;
     private final PostNotificationSender<AsylumCase> postNotificationSender;
+    private final IdamService idamService;
 
     public ChangeRepresentationConfirmation(
         CcdCaseAssignment ccdCaseAssignment,
         PostNotificationSender<AsylumCase> postNotificationSender,
-        RoleAssignmentService roleAssignmentService
+        RoleAssignmentService roleAssignmentService,
+        IdamService idamService
     ) {
 
         this.ccdCaseAssignment = ccdCaseAssignment;
         this.postNotificationSender = postNotificationSender;
         this.roleAssignmentService = roleAssignmentService;
+        this.idamService = idamService;
     }
 
     public boolean canHandle(
@@ -44,7 +48,8 @@ public class ChangeRepresentationConfirmation implements PostSubmitCallbackHandl
         return (callback.getEvent() == Event.REMOVE_REPRESENTATION
                 || callback.getEvent() == Event.REMOVE_LEGAL_REPRESENTATIVE
                 || callback.getEvent() == Event.NOC_REQUEST
-                || callback.getEvent() == Event.APPELLANT_IN_PERSON_MANUAL);
+                || callback.getEvent() == Event.APPELLANT_IN_PERSON_MANUAL
+                || callback.getEvent() == Event.MARK_APPEAL_AS_DETAINED);
     }
 
     /**
@@ -61,16 +66,16 @@ public class ChangeRepresentationConfirmation implements PostSubmitCallbackHandl
             new PostSubmitCallbackResponse();
 
         try {
-            if (!isAipManualEvent(callback.getEvent())) {
+            if (!isAipManualEvent(callback.getEvent()) && !isMarkAppealAsDetainedEvent(callback.getEvent())) {
                 ccdCaseAssignment.applyNoc(callback);
             }
 
             if (shouldRevokeAppellantAccess(callback.getEvent(), callback.getCaseDetails().getCaseData())
-                    || isAipManualEvent(callback.getEvent())) {
+                    || isAipManualEvent(callback.getEvent()) || isMarkAppealAsDetainedEvent(callback.getEvent())) {
                 revokeAppellantAccessToCase(String.valueOf(callback.getCaseDetails().getId()));
             }
 
-            if (!isAipManualEvent(callback.getEvent())) {
+            if (!isAipManualEvent(callback.getEvent()) && !isMarkAppealAsDetainedEvent(callback.getEvent())) {
                 postNotificationSender.send(callback);
             }
 
@@ -99,6 +104,13 @@ public class ChangeRepresentationConfirmation implements PostSubmitCallbackHandl
                         "#### What happens next\n\n"
                                 + "This appeal will have to be continued by internal users\n\n"
                 );
+            } else if (callback.getEvent() == Event.MARK_APPEAL_AS_DETAINED) {
+                postSubmitResponse.setConfirmationHeader(
+                        "# You have marked the appeal as detained");
+                postSubmitResponse.setConfirmationBody(
+                        "#### What happens next\n\nAll parties will be notified that the appeal has been marked an detained.\n\n"
+                                + "You should update the hearing center, if necessary."
+                );
             } else {
                 postSubmitResponse.setConfirmationHeader(
                     "# You have removed the legal representative from this appeal"
@@ -109,7 +121,7 @@ public class ChangeRepresentationConfirmation implements PostSubmitCallbackHandl
                 );
             }
         } catch (Exception e) {
-            if (isAipManualEvent(callback.getEvent())) {
+            if (isAipManualEvent(callback.getEvent()) || isMarkAppealAsDetainedEvent(callback.getEvent())) {
                 log.error("Revoking Appellant's access to appeal with case id {} failed. Cause: {}",
                         callback.getCaseDetails().getId(), e);
                 postSubmitResponse.setConfirmationBody(
@@ -134,6 +146,7 @@ public class ChangeRepresentationConfirmation implements PostSubmitCallbackHandl
                                 + "/trigger/removeRepresentation/removeRepresentationSingleFormPageWithComplex) feature to try again."
                 );
             }
+
         }
 
         return postSubmitResponse;
@@ -161,7 +174,7 @@ public class ChangeRepresentationConfirmation implements PostSubmitCallbackHandl
         if (roleAssignment.isPresent()) {
             log.info("Revoking Appellant's access to appeal with case ID {}", caseId);
 
-            roleAssignmentService.deleteRoleAssignment(roleAssignment.get().getId());
+            roleAssignmentService.deleteRoleAssignment(roleAssignment.get().getId(), idamService.getServiceUserToken());
 
             log.info("Successfully revoked Appellant's access to appeal with case ID {}", caseId);
         } else {
@@ -175,5 +188,9 @@ public class ChangeRepresentationConfirmation implements PostSubmitCallbackHandl
 
     private boolean isAipManualEvent(Event event) {
         return event == Event.APPELLANT_IN_PERSON_MANUAL;
+    }
+
+    private boolean isMarkAppealAsDetainedEvent(Event event) {
+        return event == Event.MARK_APPEAL_AS_DETAINED;
     }
 }

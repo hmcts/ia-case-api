@@ -5,11 +5,16 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_NOT_SUBMITTED_REASON_DOCUMENTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANTS_REPRESENTATION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ADMIN;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LEGAL_REPRESENTATIVE_DOCUMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag.APPEAL_WAS_NOT_SUBMITTED_SUPPORTING_DOCUMENT;
@@ -60,16 +65,24 @@ class AppealWasNotSubmittedSupportingDocumentsHandlerTest {
     @Mock
     private DocumentWithMetadata appealWasNotSubmittedWithMetadata;
     @Mock
+    private DocumentWithDescription updatedAppealWasNotSubmitted;
+    @Mock
+    private DocumentWithMetadata updatedAppealWasNotSubmittedWithMetadata;
+    @Mock
     FeatureToggler featureToggler;
 
     private List<IdValue<DocumentWithMetadata>> allLegalRepDocuments;
     private AppealWasNotSubmittedSupportingDocumentsHandler appealWasNotSubmittedSupportingDocumentsHandler;
 
-
     private final Document someDoc = new Document(
         "some url",
         "some binary url",
         "some filename");
+
+    private final Document appealNotSubmittedDoc = new Document(
+            "appeal not submitted url",
+            "appeal not submitted binary url",
+            "appeal not submitted filename");
 
     private final DocumentWithMetadata someLegalRepDocument = new DocumentWithMetadata(
         someDoc,
@@ -183,10 +196,83 @@ class AppealWasNotSubmittedSupportingDocumentsHandlerTest {
 
         assertThat(callbackResponse).isNotNull();
 
-        verify(documentsAppender, times(1)).prepend(
+        verify(documentsAppender, times(1)).append(
             allLegalRepDocuments,
-            notSubmittedWithMetadata
+            notSubmittedWithMetadata,
+            APPEAL_WAS_NOT_SUBMITTED_SUPPORTING_DOCUMENT
         );
+    }
+
+    @Test
+    void should_update_appeal_was_not_submitted_doc_when_legal_rep_documents_is_present_and_updated() {
+
+        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+
+        final DocumentWithMetadata legalRepAppealNotSubmittedDocument = new DocumentWithMetadata(
+                appealNotSubmittedDoc,
+                "appeal not submitted description",
+                "21/07/2021",
+                APPEAL_WAS_NOT_SUBMITTED_SUPPORTING_DOCUMENT,
+                "some supplier"
+        );
+
+        allLegalRepDocuments = List.of(
+                new IdValue<>("1", someLegalRepDocument),
+                new IdValue<>("2", legalRepAppealNotSubmittedDocument)
+        );
+
+        final List<IdValue<DocumentWithDescription>> notSubmittedDocuments =
+                List.of(new IdValue<>("1", updatedAppealWasNotSubmitted));
+
+        when(updatedAppealWasNotSubmitted.getDescription()).thenReturn(Optional.of("Updated document description"));
+        when(asylumCase.read(APPEAL_NOT_SUBMITTED_REASON_DOCUMENTS)).thenReturn(Optional.of(notSubmittedDocuments));
+        when(asylumCase.read(LEGAL_REPRESENTATIVE_DOCUMENTS)).thenReturn(Optional.of(allLegalRepDocuments));
+
+        when(documentReceiver.tryReceive(updatedAppealWasNotSubmitted, APPEAL_WAS_NOT_SUBMITTED_SUPPORTING_DOCUMENT))
+            .thenReturn(Optional.of(updatedAppealWasNotSubmittedWithMetadata));
+
+        final List<IdValue<DocumentWithMetadata>> allLegalRepDocumentsUpdated = List.of(
+                new IdValue<>("1", someLegalRepDocument),
+                new IdValue<>("2", updatedAppealWasNotSubmittedWithMetadata)
+        );
+
+        when(documentsAppender.append(allLegalRepDocuments,
+                List.of(updatedAppealWasNotSubmittedWithMetadata),
+                APPEAL_WAS_NOT_SUBMITTED_SUPPORTING_DOCUMENT)).thenReturn(allLegalRepDocumentsUpdated);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse
+                = appealWasNotSubmittedSupportingDocumentsHandler.handle(ABOUT_TO_SUBMIT, callback);
+
+        assertThat(callbackResponse).isNotNull();
+
+        verify(documentsAppender, times(1)).append(
+                allLegalRepDocuments,
+                List.of(updatedAppealWasNotSubmittedWithMetadata),
+                APPEAL_WAS_NOT_SUBMITTED_SUPPORTING_DOCUMENT);
+
+    }
+
+    @Test
+    void should_remove_appeal_was_not_submitted_doc_to_legal_rep_documents_for_appellant_manual_appeals() {
+
+        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+        when(asylumCase.read(APPELLANTS_REPRESENTATION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+
+        when(appealWasNotSubmittedWithMetadata.getTag()).thenReturn(APPEAL_WAS_NOT_SUBMITTED_SUPPORTING_DOCUMENT);
+        allLegalRepDocuments = List.of(
+            new IdValue<>("1", someLegalRepDocument),
+            new IdValue<>("2", appealWasNotSubmittedWithMetadata)
+        );
+
+        when(asylumCase.read(LEGAL_REPRESENTATIVE_DOCUMENTS)).thenReturn(Optional.of(allLegalRepDocuments));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse = appealWasNotSubmittedSupportingDocumentsHandler.handle(ABOUT_TO_SUBMIT, callback);
+
+        assertThat(callbackResponse).isNotNull();
+        verify(asylumCase, times(1)).write(eq(LEGAL_REPRESENTATIVE_DOCUMENTS), anyList());
+        verify(asylumCase, never()).read(APPEAL_NOT_SUBMITTED_REASON_DOCUMENTS);
+        verifyNoInteractions(documentReceiver);
+        verifyNoInteractions(documentsAppender);
     }
 
     @Test

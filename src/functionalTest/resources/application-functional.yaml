@@ -4,12 +4,13 @@ targetInstance: ${TEST_URL:http://localhost:8090}
 targetInstanceForHearingsTests: ${CASE_API_URL:http://localhost:8090}
 
 ccdGatewayUrl: ${CCD_GW_URL:http://localhost:3453}
+document_management.url: ${DM_URL:http://127.0.0.1:4506}
 
 spring.flyway.enabled: false
 
 idam:
   redirectUrl: ${IA_IDAM_REDIRECT_URI:http://localhost:3002/oauth2/callback}
-  scope: "openid profile roles"
+  scope: "openid profile authorities acr roles create-user manage-user search-user"
 
 feign:
   hystrix:
@@ -28,9 +29,9 @@ core_case_data:
 
 spring:
   cache:
-    cache-names: userInfoCache, accessTokenCache, legalRepATokenCache, caseOfficerTokenCache, adminOfficerTokenCache, homeOfficeApcTokenCache, homeOfficeLartTokenCache, homeOfficePouTokenCache, homeOfficeGenericTokenCache, legalRepShareCaseATokenCache, legalRepOrgSuccessTokenCache, legalRepOrgDeletedTokenCache, judgeTokenCache, citizenTokenCache, systemTokenCache
+    cache-names: userInfoCache, accessTokenCache, homeOfficeReferenceDataCache, legalRepATokenCache, caseOfficerTokenCache, adminOfficerTokenCache, homeOfficeApcTokenCache, homeOfficeLartTokenCache, homeOfficePouTokenCache, homeOfficeGenericTokenCache, legalRepShareCaseATokenCache, legalRepOrgSuccessTokenCache, legalRepOrgDeletedTokenCache, judgeTokenCache, citizenTokenCache, systemTokenCache
     caffeine:
-      spec: expireAfterAccess=3600s
+      spec: expireAfterWrite=3600s
   security:
     oauth2:
       client:
