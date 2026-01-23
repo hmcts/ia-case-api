@@ -87,6 +87,7 @@ public class CaseBuildingPaPayLaterDirectionHandler implements PreSubmitCallback
                                 "1. Call the tribunal on +44 (0)300 123 1711, then select option 3 \n" +
                                 "2. Provide your 16-digit online case reference number:\n" +
                                 "3. Make the payment with a debit or credit card\n",
+                        getParty(asylumCase),
                         dateProvider
                                 .now()
                                 .plusDays(hearingRequirementsDueInDays)
@@ -98,5 +99,14 @@ public class CaseBuildingPaPayLaterDirectionHandler implements PreSubmitCallback
         asylumCase.write(DIRECTIONS, allDirections);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
+    }
+
+    private Parties getParty(AsylumCase asylumCase) {
+        if (HandlerUtils.isAipJourney(asylumCase)) {
+            return Parties.APPELLANT;
+        }
+        else if (HandlerUtils.isLegalRepJourney(asylumCase)) {
+            return Parties.LEGAL_REPRESENTATIVE;
+        }
     }
 }
