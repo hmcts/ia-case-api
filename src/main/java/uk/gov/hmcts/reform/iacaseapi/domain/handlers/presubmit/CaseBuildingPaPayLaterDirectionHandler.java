@@ -57,7 +57,7 @@ public class CaseBuildingPaPayLaterDirectionHandler implements PreSubmitCallback
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
                 && callback.getCaseDetails().getState() == State.CASE_BUILDING
-                && (paAppealTypePaymentOption == "payLater" || paAppealTypeAipPaymentOption == "payLater")
+                && ("payLater".equals(paAppealTypePaymentOption) || "payLater".equals(paAppealTypeAipPaymentOption))
                 && (HandlerUtils.isAipJourney(callback.getCaseDetails().getCaseData())
                 || HandlerUtils.isLegalRepJourney(callback.getCaseDetails().getCaseData()));
     }
@@ -110,11 +110,8 @@ public class CaseBuildingPaPayLaterDirectionHandler implements PreSubmitCallback
     }
 
     private Parties getParty(AsylumCase asylumCase) {
-        if (HandlerUtils.isAipJourney(asylumCase)) {
-            return Parties.APPELLANT;
-        }
-        else if (HandlerUtils.isLegalRepJourney(asylumCase)) {
-            return Parties.LEGAL_REPRESENTATIVE;
-        }
+        return HandlerUtils.isAipJourney(asylumCase)
+                ? Parties.APPELLANT
+                : Parties.LEGAL_REPRESENTATIVE;
     }
 }
