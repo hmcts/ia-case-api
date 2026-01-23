@@ -5,6 +5,7 @@ import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isIntegrated;
 
+import lombok.extern.slf4j.Slf4j;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,6 +32,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.PreviousHearingAppender;
 
 @Component
+@Slf4j
 public class RequestNewHearingRequirementsDirectionHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final int hearingRequirementsDueInDays;
@@ -175,10 +177,14 @@ public class RequestNewHearingRequirementsDirectionHandler implements PreSubmitC
             finalDecisionAndReasonsDocuments
         );
 
+        log.info("previous hearing: " + previousHearing);
+
         List<IdValue<PreviousHearing>> allPreviousHearings =
             previousHearingAppender.append(
                 existingPreviousHearings,
                 previousHearing);
+
+        log.info("all previous hearings: " + previousHearing);
 
         asylumCase.write(PREVIOUS_HEARINGS, allPreviousHearings);
 
