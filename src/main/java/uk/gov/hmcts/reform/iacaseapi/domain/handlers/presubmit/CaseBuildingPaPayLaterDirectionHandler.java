@@ -83,7 +83,9 @@ public class CaseBuildingPaPayLaterDirectionHandler implements PreSubmitCallback
                 directionAppender.append(
                         asylumCase,
                         existingDirections,
-                        "Your appeal requires a fee to be paid. To avoid the Tribunal taking any action to recover this fee you should pay [HEARING_METHOD] (Oral/Paper amount @ Tia can this be automated on what has been selected?).\n" +
+                        "Your appeal requires a fee to be paid. To avoid the Tribunal " +
+                                "taking any action to recover this fee you should pay [HEARING_METHOD] " +
+                                "(Oral/Paper amount @ Tia can this be automated on what has been selected?).\n" +
                                 "Instructions for making a payment are: \n" +
                                 "For appeals submitted online \n" +
                                 "(Legal Representative to make payment by PBA)\n" +

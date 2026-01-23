@@ -83,7 +83,9 @@ public class DecidedPaPayLaterDirectionHandler implements PreSubmitCallbackHandl
                 directionAppender.append(
                         asylumCase,
                         existingDirections,
-                        "Your appeal has now been decided but still have not paid your fee. The tribunal has sent two notifications regarding the outstanding amount. If you do not pay [HEARING_METHOD] (Oral/Paper amount) the Tribunal may instigate legal proceedings to recover the fee.\n" +
+                        "Your appeal has now been decided but still have not paid your fee. " +
+                                "The tribunal has sent two notifications regarding the outstanding amount. If you do not pay [HEARING_METHOD] " +
+                                "(Oral/Paper amount) the Tribunal may instigate legal proceedings to recover the fee.\n" +
                                 "Instructions for making a payment are: \n" +
                                 "For appeals submitted online \n" +
                                 "(Legal Representative to make payment by PBA)\n" +

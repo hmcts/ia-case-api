@@ -83,7 +83,9 @@ public class ListingPaPayLaterDirectionHandler implements PreSubmitCallbackHandl
                 directionAppender.append(
                         asylumCase,
                         existingDirections,
-                        "Your appeal is going to be decided by a Judge at a hearing and still requires a fee to be paid of [HEARING_METHOD] (Oral/Paper amount). No payment has been received and to avoid further action being taken to recover the fee you should make a payment of pay [HEARING_METHOD] (Oral/Paper amount) without delay.\n" +
+                        "Your appeal is going to be decided by a Judge at a hearing and still requires a fee to be paid " +
+                                "of [HEARING_METHOD] (Oral/Paper amount). No payment has been received and to avoid further action " +
+                                "being taken to recover the fee you should make a payment of pay [HEARING_METHOD] (Oral/Paper amount) without delay.\n" +
                                 "Instructions for making a payment are: \n" +
                                 "For appeals submitted online \n" +
                                 "(Legal Representative to make payment by PBA)\n" +
