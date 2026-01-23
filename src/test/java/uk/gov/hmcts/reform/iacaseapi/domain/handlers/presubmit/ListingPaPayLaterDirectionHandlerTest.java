@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DirectionAppender;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.PreviousHearingAppender;
@@ -36,6 +37,7 @@ import static org.mockito.Mockito.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre.DECISION_WITHOUT_HEARING;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre.NEWPORT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
@@ -60,7 +62,7 @@ class ListingPaPayLaterDirectionHandlerTest {
     @BeforeEach
     public void setUp() {
         listingPaPayLaterDirectionHandler =
-                new listingPaPayLaterDirectionHandler(
+                new ListingPaPayLaterDirectionHandler(
                         HEARING_REQUIREMENTS_DUE_IN_DAYS,
                         dateProvider,
                         directionAppender
@@ -140,21 +142,21 @@ class ListingPaPayLaterDirectionHandlerTest {
     @Test
     void should_not_allow_null_arguments() {
 
-        assertThatThrownBy(() -> caseBuildingPaPayLaterDirectionHandler.canHandle(null, callback))
+        assertThatThrownBy(() -> listinggPaPayLaterDirectionHandler.canHandle(null, callback))
                 .hasMessage("callbackStage must not be null")
                 .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(
-                () -> caseBuildingPaPayLaterDirectionHandler.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
+                () -> listingPaPayLaterDirectionHandler.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
                 .hasMessage("callback must not be null")
                 .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> caseBuildingPaPayLaterDirectionHandler.handle(null, callback))
+        assertThatThrownBy(() -> listingPaPayLaterDirectionHandler.handle(null, callback))
                 .hasMessage("callbackStage must not be null")
                 .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(
-                () -> caseBuildingPaPayLaterDirectionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
+                () -> listingPaPayLaterDirectionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
                 .hasMessage("callback must not be null")
                 .isExactlyInstanceOf(NullPointerException.class);
     }
