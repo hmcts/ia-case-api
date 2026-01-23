@@ -82,7 +82,7 @@ class ListingPaPayLaterDirectionHandlerTest {
         when(asylumCase.read(PA_APPEAL_TYPE_PAYMENT_OPTION, String.class))
                 .thenReturn(Optional.of("payLater"));
 
-        boolean canHandle = decidedPaPayLaterDirectionHandler.canHandle(
+        boolean canHandle = ListingPaPayLaterDirectionHandler.canHandle(
                 PreSubmitCallbackStage.ABOUT_TO_SUBMIT,
                 callback
         );
@@ -102,7 +102,7 @@ class ListingPaPayLaterDirectionHandlerTest {
         when(asylumCase.read(PA_APPEAL_TYPE_PAYMENT_OPTION, String.class))
                 .thenReturn(Optional.of("payLater"));
 
-        boolean canHandle = decidedPaPayLaterDirectionHandler.canHandle(
+        boolean canHandle = ListingPaPayLaterDirectionHandler.canHandle(
                 PreSubmitCallbackStage.ABOUT_TO_SUBMIT,
                 callback
         );
