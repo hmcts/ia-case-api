@@ -58,7 +58,7 @@ public class DecidedPaPayLaterDirectionHandler implements PreSubmitCallbackHandl
                 && callback.getCaseDetails().getState() == State.DECIDED
                 && ("payLater".equals(paAppealTypePaymentOption) || "payLater".equals(paAppealTypeAipPaymentOption))
                 && (HandlerUtils.isAipJourney(callback.getCaseDetails().getCaseData())
-                || HandlerUtils.isLegalRepJourney(callback.getCaseDetails().getCaseData()));
+                || HandlerUtils.isRepJourney(callback.getCaseDetails().getCaseData()));
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
@@ -111,8 +111,14 @@ public class DecidedPaPayLaterDirectionHandler implements PreSubmitCallbackHandl
     }
 
     private Parties getParty(AsylumCase asylumCase) {
-        return HandlerUtils.isAipJourney(asylumCase)
-                ? Parties.APPELLANT
-                : Parties.LEGAL_REPRESENTATIVE;
+        if (HandlerUtils.isAipJourney(asylumCase)) {
+            return Parties.APPELLANT;
+        }
+        if (HandlerUtils.isRepJourney(asylumCase)) {
+            return Parties.LEGAL_REPRESENTATIVE;
+        }
+        throw new IllegalStateException(
+                "Cannot determine party: neither AIP nor legal representative journey"
+        );
     }
 }
