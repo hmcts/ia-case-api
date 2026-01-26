@@ -242,7 +242,7 @@ ia-case-notifications-api:
         secrets:
           - name: ia-gov-notify-key
             alias: IA_GOV_NOTIFY_KEY
-          - name: ia-bail-gov-notify-key
+          - name: ia-gov-notify-key
             alias: IA_BAIL_GOV_NOTIFY_KEY
           - name: admin-office-newport-email
             alias: IA_ADMIN_NEWPORT_EMAIL
