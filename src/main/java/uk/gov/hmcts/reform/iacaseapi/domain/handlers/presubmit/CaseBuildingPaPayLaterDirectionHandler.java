@@ -101,8 +101,7 @@ public class CaseBuildingPaPayLaterDirectionHandler implements PreSubmitCallback
                                 .now()
                                 .plusDays(hearingRequirementsDueInDays)
                                 .toString(),
-                        DirectionTag.LEGAL_REPRESENTATIVE_HEARING_REQUIREMENTS,
-                        callback.getEvent().toString()
+                        DirectionTag.LEGAL_REPRESENTATIVE_HEARING_REQUIREMENTS
                 );
 
         asylumCase.write(DIRECTIONS, allDirections);
