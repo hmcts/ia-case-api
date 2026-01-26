@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.Parties;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DirectionAppender;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.PreviousHearingAppender;
@@ -82,6 +83,13 @@ class CaseBuildingPaPayLaterDirectionHandlerTest {
         when(asylumCase.read(PA_APPEAL_TYPE_AIP_PAYMENT_OPTION, String.class))
                 .thenReturn(Optional.of("payLater"));
 
+        caseBuildingPaPayLaterDirectionHandler =
+                new CaseBuildingPaPayLaterDirectionHandler(
+                        HEARING_REQUIREMENTS_DUE_IN_DAYS,
+                        dateProvider,
+                        directionAppender
+                );
+
         boolean canHandle = caseBuildingPaPayLaterDirectionHandler.canHandle(
                 PreSubmitCallbackStage.ABOUT_TO_SUBMIT,
                 callback
@@ -101,6 +109,13 @@ class CaseBuildingPaPayLaterDirectionHandlerTest {
 
         when(asylumCase.read(PA_APPEAL_TYPE_PAYMENT_OPTION, String.class))
                 .thenReturn(Optional.of("payLater"));
+
+        caseBuildingPaPayLaterDirectionHandler =
+                new CaseBuildingPaPayLaterDirectionHandler(
+                        HEARING_REQUIREMENTS_DUE_IN_DAYS,
+                        dateProvider,
+                        directionAppender
+                );
 
         boolean canHandle = caseBuildingPaPayLaterDirectionHandler.canHandle(
                 PreSubmitCallbackStage.ABOUT_TO_SUBMIT,

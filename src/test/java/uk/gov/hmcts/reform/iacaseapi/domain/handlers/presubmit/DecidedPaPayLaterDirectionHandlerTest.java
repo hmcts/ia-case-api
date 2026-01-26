@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.Parties;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DirectionAppender;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.PreviousHearingAppender;
@@ -71,7 +72,7 @@ class DecidedPaPayLaterDirectionHandlerTest {
     }
 
     @Test
-    void should_handle_case_building_aip_pay_later() {
+    void should_handle_decided_aip_pay_later() {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getState()).thenReturn(State.DECIDED);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -82,6 +83,13 @@ class DecidedPaPayLaterDirectionHandlerTest {
         when(asylumCase.read(PA_APPEAL_TYPE_AIP_PAYMENT_OPTION, String.class))
                 .thenReturn(Optional.of("payLater"));
 
+        decidedPaPayLaterDirectionHandler =
+                new DecidedPaPayLaterDirectionHandler(
+                        HEARING_REQUIREMENTS_DUE_IN_DAYS,
+                        dateProvider,
+                        directionAppender
+                );
+
         boolean canHandle = decidedPaPayLaterDirectionHandler.canHandle(
                 PreSubmitCallbackStage.ABOUT_TO_SUBMIT,
                 callback
@@ -91,7 +99,7 @@ class DecidedPaPayLaterDirectionHandlerTest {
     }
 
     @Test
-    void should_handle_case_building_lr_pay_later() {
+    void should_handle_decided_lr_pay_later() {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getState()).thenReturn(State.DECIDED);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -101,6 +109,13 @@ class DecidedPaPayLaterDirectionHandlerTest {
 
         when(asylumCase.read(PA_APPEAL_TYPE_PAYMENT_OPTION, String.class))
                 .thenReturn(Optional.of("payLater"));
+
+        decidedPaPayLaterDirectionHandler =
+                new DecidedPaPayLaterDirectionHandler(
+                        HEARING_REQUIREMENTS_DUE_IN_DAYS,
+                        dateProvider,
+                        directionAppender
+                );
 
         boolean canHandle = decidedPaPayLaterDirectionHandler.canHandle(
                 PreSubmitCallbackStage.ABOUT_TO_SUBMIT,
