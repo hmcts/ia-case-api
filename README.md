@@ -1,7 +1,7 @@
  
 # ia-case-api
 
-Immigration &amp; Asylum case API
+Immigration &amp; Asylum case API.
  
 ## Purpose
 
