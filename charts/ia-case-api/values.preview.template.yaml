@@ -525,10 +525,10 @@ ia-timed-event-service:
             alias: IA_CONFIG_VALIDATOR_SECRET
 
 ia-home-office-integration-api:
-  enabled: true #set to true if testing against a local branch
+  enabled: true
   java:
     imagePullPolicy: Always
-    image: hmctspublic.azurecr.io/ia/home-office-integration-api:latest
+    image: hmctspublic.azurecr.io/ia/home-office-integration-api:pr-445
     releaseNameOverride: ${SERVICE_NAME}-home-office-integration-api
     ingressHost: ${SERVICE_NAME}-home-office-integration-api.preview.platform.hmcts.net
     devcpuRequests: 500m
