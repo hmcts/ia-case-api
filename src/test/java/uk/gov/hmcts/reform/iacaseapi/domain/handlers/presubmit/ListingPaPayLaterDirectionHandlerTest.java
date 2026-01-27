@@ -66,6 +66,8 @@ class ListingPaPayLaterDirectionHandlerTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getState()).thenReturn(State.LISTING);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(DECISION_HEARING_FEE_OPTION, String.class)).thenReturn(Optional.of("decisionWithHearing"));
+        when(asylumCase.read(FEE_WITH_HEARING, String.class)).thenReturn(Optional.of("140"));
 
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class))
                 .thenReturn(Optional.of(JourneyType.AIP));
@@ -93,6 +95,9 @@ class ListingPaPayLaterDirectionHandlerTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getState()).thenReturn(State.LISTING);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        when(asylumCase.read(DECISION_HEARING_FEE_OPTION, String.class)).thenReturn(Optional.of("decisionWithHearing"));
+        when(asylumCase.read(FEE_WITH_HEARING, String.class)).thenReturn(Optional.of("140"));
 
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class))
                 .thenReturn(Optional.of(JourneyType.REP));
@@ -125,6 +130,8 @@ class ListingPaPayLaterDirectionHandlerTest {
         when(caseDetails.getState()).thenReturn(State.LISTING);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(dateProvider.now()).thenReturn(LocalDate.parse("2024-04-01"));
+        when(asylumCase.read(DECISION_HEARING_FEE_OPTION, String.class)).thenReturn(Optional.of("decisionWithHearing"));
+        when(asylumCase.read(FEE_WITH_HEARING, String.class)).thenReturn(Optional.of("140"));
 
         when(asylumCase.read(PA_APPEAL_TYPE_PAYMENT_OPTION, String.class))
                 .thenReturn(Optional.of("payLater"));
@@ -159,7 +166,9 @@ class ListingPaPayLaterDirectionHandlerTest {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(caseDetails.getState()).thenReturn(State.DECIDED); // or any non-matching state
+        when(caseDetails.getState()).thenReturn(State.DECIDED);
+        when(asylumCase.read(DECISION_HEARING_FEE_OPTION, String.class)).thenReturn(Optional.of("decisionWithHearing"));
+        when(asylumCase.read(FEE_WITH_HEARING, String.class)).thenReturn(Optional.of("140"));
 
         assertThatThrownBy(() -> listingPaPayLaterDirectionHandler
                 .handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
