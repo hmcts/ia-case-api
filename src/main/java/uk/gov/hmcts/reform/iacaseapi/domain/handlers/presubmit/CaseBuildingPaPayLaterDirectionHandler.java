@@ -3,12 +3,17 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DIRECTIONS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DECISION_HEARING_FEE_OPTION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FEE_WITH_HEARING;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FEE_WITHOUT_HEARING;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PA_APPEAL_TYPE_AIP_PAYMENT_OPTION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PA_APPEAL_TYPE_PAYMENT_OPTION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.math.BigDecimal;
+import org.javamoney.moneta.Money;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
@@ -31,6 +36,7 @@ public class CaseBuildingPaPayLaterDirectionHandler implements PreSubmitCallback
     private final int hearingRequirementsDueInDays;
     private final DateProvider dateProvider;
     private final DirectionAppender directionAppender;
+    private static final String GBP = "GBP";
 
     public CaseBuildingPaPayLaterDirectionHandler(
             @Value("${legalRepresentativeHearingRequirements.dueInDays}") int hearingRequirementsDueInDays,
@@ -74,6 +80,15 @@ public class CaseBuildingPaPayLaterDirectionHandler implements PreSubmitCallback
                         .getCaseDetails()
                         .getCaseData();
 
+        String decisionHearingFeeOption = asylumCase.read(DECISION_HEARING_FEE_OPTION, String.class).orElse("");
+        String feeAmount = decisionHearingFeeOption.equals("decisionWithHearing")
+                ? asylumCase.read(FEE_WITH_HEARING, String.class)
+                .orElseThrow(() -> new IllegalStateException("Fee with hearing is not present"))
+                : asylumCase.read(FEE_WITHOUT_HEARING, String.class)
+                .orElseThrow(() -> new IllegalStateException("Fee without hearing is not present"));
+
+        Money feeAmountInGbp = Money.of(new BigDecimal(feeAmount), GBP);
+
         Optional<List<IdValue<Direction>>> maybeDirections = asylumCase.read(DIRECTIONS);
 
         final List<IdValue<Direction>> existingDirections =
@@ -84,8 +99,7 @@ public class CaseBuildingPaPayLaterDirectionHandler implements PreSubmitCallback
                         asylumCase,
                         existingDirections,
                         "Your appeal requires a fee to be paid. To avoid the Tribunal " +
-                                "taking any action to recover this fee you should pay [HEARING_METHOD] " +
-                                "(Oral/Paper amount @ Tia can this be automated on what has been selected?).\n" +
+                                "taking any action to recover this fee you should pay " + feeAmountInGbp +
                                 "Instructions for making a payment are: \n" +
                                 "For appeals submitted online \n" +
                                 "(Legal Representative to make payment by PBA)\n" +
