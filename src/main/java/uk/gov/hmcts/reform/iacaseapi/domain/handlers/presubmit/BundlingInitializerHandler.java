@@ -50,6 +50,7 @@ public class BundlingInitializerHandler implements PreSubmitCallbackHandler<Asyl
                 .getCaseDetails()
                 .getCaseData();
 
+        log.info("Initializing caseBundles");
         asylumCase.write(AsylumCaseFieldDefinition.CASE_BUNDLES, Lists.newArrayList());
 
 
