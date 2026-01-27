@@ -72,7 +72,6 @@ public class PreviousHearing {
     }
 
     public HearingCentre getListCaseHearingCentre() {
-        requireNonNull(listCaseHearingCentre);
         return listCaseHearingCentre;
     }
 
