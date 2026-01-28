@@ -12,8 +12,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.*;
 
 import java.util.List;
 import java.util.Optional;
-import java.math.BigDecimal;
-import org.javamoney.moneta.Money;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
@@ -87,8 +85,6 @@ public class DecidedPaPayLaterDirectionHandler implements PreSubmitCallbackHandl
                 : asylumCase.read(FEE_WITHOUT_HEARING, String.class)
                 .orElseThrow(() -> new IllegalStateException("Fee without hearing is not present"));
 
-        Money feeAmountInGbp = Money.of(new BigDecimal(feeAmount), GBP);
-
         Optional<List<IdValue<Direction>>> maybeDirections = asylumCase.read(DIRECTIONS);
 
         final List<IdValue<Direction>> existingDirections =
@@ -99,8 +95,8 @@ public class DecidedPaPayLaterDirectionHandler implements PreSubmitCallbackHandl
                         asylumCase,
                         existingDirections,
                         "Your appeal has now been decided but still have not paid your fee. " +
-                                "The tribunal has sent two notifications regarding the outstanding amount. If you do not pay " +
-                                feeAmountInGbp +
+                                "The tribunal has sent two notifications regarding the outstanding amount. If you do not pay £" +
+                                feeAmount +
                                 "(Oral/Paper amount) the Tribunal may instigate legal proceedings to recover the fee.\n" +
                                 "Instructions for making a payment are: \n" +
                                 "For appeals submitted online \n" +

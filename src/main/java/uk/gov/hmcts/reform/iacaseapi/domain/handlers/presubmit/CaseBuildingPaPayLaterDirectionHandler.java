@@ -12,8 +12,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.*;
 
 import java.util.List;
 import java.util.Optional;
-import java.math.BigDecimal;
-import org.javamoney.moneta.Money;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
@@ -87,8 +85,6 @@ public class CaseBuildingPaPayLaterDirectionHandler implements PreSubmitCallback
                 : asylumCase.read(FEE_WITHOUT_HEARING, String.class)
                 .orElseThrow(() -> new IllegalStateException("Fee without hearing is not present"));
 
-        Money feeAmountInGbp = Money.of(new BigDecimal(feeAmount), GBP);
-
         Optional<List<IdValue<Direction>>> maybeDirections = asylumCase.read(DIRECTIONS);
 
         final List<IdValue<Direction>> existingDirections =
@@ -99,7 +95,7 @@ public class CaseBuildingPaPayLaterDirectionHandler implements PreSubmitCallback
                         asylumCase,
                         existingDirections,
                         "Your appeal requires a fee to be paid. To avoid the Tribunal " +
-                                "taking any action to recover this fee you should pay " + feeAmountInGbp +
+                                "taking any action to recover this fee you should pay £" + feeAmount +
                                 "Instructions for making a payment are: \n" +
                                 "For appeals submitted online \n" +
                                 "(Legal Representative to make payment by PBA)\n" +

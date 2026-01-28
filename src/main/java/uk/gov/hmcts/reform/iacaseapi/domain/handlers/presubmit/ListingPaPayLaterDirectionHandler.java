@@ -12,8 +12,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.*;
 
 import java.util.List;
 import java.util.Optional;
-import java.math.BigDecimal;
-import org.javamoney.moneta.Money;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
@@ -87,8 +85,6 @@ public class ListingPaPayLaterDirectionHandler implements PreSubmitCallbackHandl
                 : asylumCase.read(FEE_WITHOUT_HEARING, String.class)
                 .orElseThrow(() -> new IllegalStateException("Fee without hearing is not present"));
 
-        Money feeAmountInGbp = Money.of(new BigDecimal(feeAmount), GBP);
-
         Optional<List<IdValue<Direction>>> maybeDirections = asylumCase.read(DIRECTIONS);
 
         final List<IdValue<Direction>> existingDirections =
@@ -98,10 +94,10 @@ public class ListingPaPayLaterDirectionHandler implements PreSubmitCallbackHandl
                 directionAppender.append(
                         asylumCase,
                         existingDirections,
-                        "Your appeal is going to be decided by a Judge at a hearing and still requires a fee to be paid " + feeAmountInGbp +
-                                "No payment has been received and to avoid further action " +
-                                "being taken to recover the fee you should make a payment of pay " +
-                                feeAmountInGbp + " without delay.\n" +
+                        "Your appeal is going to be decided by a Judge at a hearing and still requires a fee to be paid £" + feeAmount +
+                                " No payment has been received and to avoid further action " +
+                                "being taken to recover the fee you should make a payment of pay £" +
+                                feeAmount + " without delay.\n" +
                                 "Instructions for making a payment are: \n" +
                                 "For appeals submitted online \n" +
                                 "(Legal Representative to make payment by PBA)\n" +
