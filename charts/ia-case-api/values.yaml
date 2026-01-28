@@ -107,6 +107,7 @@ java:
           alias: IA_SYSTEM_ACCESS_PASSWORD
 
 
+
 ia-case-payments-api:
   enabled: false
 ia-case-documents-api:
