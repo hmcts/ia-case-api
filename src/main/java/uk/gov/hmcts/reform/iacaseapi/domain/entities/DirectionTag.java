@@ -19,6 +19,9 @@ public enum DirectionTag {
     REQUEST_REASONS_FOR_APPEAL("requestReasonsForAppeal"),
     REQUEST_CLARIFYING_QUESTIONS("requestClarifyingQuestions"),
     REQUEST_CMA_REQUIREMENTS("requestCmaRequirements"),
+    LISTING_PA_PAY_LATER("listingPaPayLater"),
+    CASE_BUILDING_PA_PAY_LATER("caseBuildingPaPayLater"),
+    DECIDED_PA_PAY_LATER("decidedPaPayLater"),
 
     @JsonEnumDefaultValue
     NONE("");

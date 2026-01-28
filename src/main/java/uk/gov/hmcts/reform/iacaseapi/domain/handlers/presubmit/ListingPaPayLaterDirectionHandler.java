@@ -113,7 +113,7 @@ public class ListingPaPayLaterDirectionHandler implements PreSubmitCallbackHandl
                                 .now()
                                 .plusDays(hearingRequirementsDueInDays)
                                 .toString(),
-                        DirectionTag.LEGAL_REPRESENTATIVE_HEARING_REQUIREMENTS
+                        DirectionTag.LISTING_PA_PAY_LATER
                 );
 
         asylumCase.write(DIRECTIONS, allDirections);
