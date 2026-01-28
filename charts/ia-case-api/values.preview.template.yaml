@@ -40,6 +40,7 @@ java:
     SAVE_NOTIFICATIONS_TO_DATA_EVENT_ENABLED: false
     SAVE_NOTIFICATIONS_DATA_SCHEDULE_HOUR: 17
     SAVE_NOTIFICATIONS_DATA_SCHEDULE_MAX_MINUTES: 5
+    logging.level.root: DEBUG
   keyVaults:
     ia:
       resourceGroup: ia
@@ -145,7 +146,7 @@ ia-case-documents-api:
   enabled: true #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
-    image: hmctspublic.azurecr.io/ia/case-documents-api:latest
+    image: hmctspublic.azurecr.io/ia/case-documents-api:pr-1147
     releaseNameOverride: ${SERVICE_NAME}-case-documents-api
     ingressHost: ${SERVICE_NAME}-documents-api.preview.platform.hmcts.net
     devcpuRequests: 500m
@@ -1158,6 +1159,7 @@ em-ccdorc:
       CCD_DATA_API_URL: https://ccd-data-store-api-${SERVICE_FQDN}
       CALLBACK_DOMAIN: em-ccdorc-${SERVICE_FQDN}
       CALLBACK_HTTP_SCHEME: https
+      logging.level.root: DEBUG
     keyVaults:
       em-ccdorc:
         resourceGroup: em-ccdorc
@@ -1193,6 +1195,7 @@ em-stitching:
       DM_STORE_APP_URL: http://dm-store-aat.service.core-compute-aat.internal
       CDAM_URL: http://${SERVICE_NAME}-ccd-case-document-am-api
       APPINSIGHTS_INSTRUMENTATIONKEY: '00000000-0000-0000-0000-000000000000'
+      logging.level.root: DEBUG
     keyVaults:
       em-stitching:
         resourceGroup: em-stitching
