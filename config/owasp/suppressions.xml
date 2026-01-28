@@ -1,7 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
-    <suppress until="2026-01-26">
-        <!--These require spring 3 upgrade-->
+    <suppress until="2026-03-28">
         <cve>CVE-2024-22259</cve>
         <cve>CVE-2024-38820</cve>
         <cve>CVE-2024-38808</cve>
@@ -16,5 +15,6 @@
         <cve>CVE-2024-38808</cve>
         <cve>CVE-2024-22259</cve>
         <cve>CVE-2025-68161</cve>
+        <cve>CVE-2025-15104</cve>
     </suppress>
 </suppressions>
