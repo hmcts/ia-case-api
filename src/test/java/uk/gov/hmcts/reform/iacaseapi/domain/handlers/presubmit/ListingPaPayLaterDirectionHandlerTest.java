@@ -166,7 +166,7 @@ class ListingPaPayLaterDirectionHandlerTest {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(caseDetails.getState()).thenReturn(State.DECIDED);
+        when(caseDetails.getState()).thenReturn(State.DECISION);
         when(asylumCase.read(DECISION_HEARING_FEE_OPTION, String.class)).thenReturn(Optional.of("decisionWithHearing"));
         when(asylumCase.read(FEE_WITH_HEARING, String.class)).thenReturn(Optional.of("140"));
 
