@@ -220,6 +220,7 @@ public class ListEditCaseHandler implements PreSubmitCallbackHandler<AsylumCase>
             }
         }
 
+        log.info("Case data in About to submit stage: {}", asylumCase.toString());
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 

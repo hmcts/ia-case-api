@@ -105,6 +105,8 @@ public class HomeOfficeCaseNotificationsHandler implements PreSubmitCallbackHand
             callback
                 .getCaseDetails()
                 .getCaseData();
+        log.info("Case data: {}", asylumCaseWithHomeOfficeData.toString());
+        log.info("Appeal type: {}", asylumCaseWithHomeOfficeData.read(APPEAL_TYPE, AppealType.class).toString());
 
         AppealType appealType = asylumCaseWithHomeOfficeData.read(APPEAL_TYPE, AppealType.class)
                 .orElseThrow(() -> new IllegalStateException("AppealType is not present."));
