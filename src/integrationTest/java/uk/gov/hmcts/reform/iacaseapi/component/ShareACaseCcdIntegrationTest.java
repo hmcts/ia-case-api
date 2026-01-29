@@ -70,7 +70,7 @@ class ShareACaseCcdIntegrationTest extends SpringBootIntegrationTest implements 
         addServiceAuthStub(server);
         addLegalRepUserDetailsStub(server);
         addReferenceDataPrdResponseStub(server, refDataPath, prdResponseJson);
-        addRoleAssignmentActorStub(server);
+        addRoleAssignmentQueryStub(server);
         dynamicList = new DynamicList(value2, values);
 
         //Userdetails stub will always return uid 1
@@ -103,7 +103,7 @@ class ShareACaseCcdIntegrationTest extends SpringBootIntegrationTest implements 
         addServiceAuthStub(server);
         addLegalRepUserDetailsStub(server);
         addReferenceDataPrdResponseStub(server, refDataPath, prdResponseJson);
-        addRoleAssignmentActorStub(server);
+        addRoleAssignmentQueryStub(server);
 
         // invalid user is chosen in dropdown
         dynamicList = new DynamicList(value1, values);
