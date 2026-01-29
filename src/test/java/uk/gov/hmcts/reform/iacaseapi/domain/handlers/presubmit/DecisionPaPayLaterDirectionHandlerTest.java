@@ -36,7 +36,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyTyp
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-class DecidedPaPayLaterDirectionHandlerTest {
+class DecisionPaPayLaterDirectionHandlerTest {
 
     private static final int HEARING_REQUIREMENTS_DUE_IN_DAYS = 5;
     @Mock
@@ -49,12 +49,12 @@ class DecidedPaPayLaterDirectionHandlerTest {
     private CaseDetails<AsylumCase> caseDetails;
     @Mock
     private AsylumCase asylumCase;
-    private DecidedPaPayLaterDirectionHandler decidedPaPayLaterDirectionHandler;
+    private DecisionPaPayLaterDirectionHandler decisionPaPayLaterDirectionHandler;
 
     @BeforeEach
     public void setUp() {
-        decidedPaPayLaterDirectionHandler =
-                new DecidedPaPayLaterDirectionHandler(
+        decisionPaPayLaterDirectionHandler =
+                new DecisionPaPayLaterDirectionHandler(
                         HEARING_REQUIREMENTS_DUE_IN_DAYS,
                         dateProvider,
                         directionAppender
@@ -62,9 +62,9 @@ class DecidedPaPayLaterDirectionHandlerTest {
     }
 
     @Test
-    void should_handle_decided_aip_pay_later() {
+    void should_handle_decision_aip_pay_later() {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getState()).thenReturn(State.DECIDED);
+        when(caseDetails.getState()).thenReturn(State.DECISION);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class))
@@ -75,14 +75,14 @@ class DecidedPaPayLaterDirectionHandlerTest {
         when(asylumCase.read(PA_APPEAL_TYPE_AIP_PAYMENT_OPTION, String.class))
                 .thenReturn(Optional.of("payLater"));
 
-        decidedPaPayLaterDirectionHandler =
-                new DecidedPaPayLaterDirectionHandler(
+        decisionPaPayLaterDirectionHandler =
+                new DecisionPaPayLaterDirectionHandler(
                         HEARING_REQUIREMENTS_DUE_IN_DAYS,
                         dateProvider,
                         directionAppender
                 );
 
-        boolean canHandle = decidedPaPayLaterDirectionHandler.canHandle(
+        boolean canHandle = decisionPaPayLaterDirectionHandler.canHandle(
                 PreSubmitCallbackStage.ABOUT_TO_SUBMIT,
                 callback
         );
@@ -91,9 +91,9 @@ class DecidedPaPayLaterDirectionHandlerTest {
     }
 
     @Test
-    void should_handle_decided_lr_pay_later() {
+    void should_handle_decision_lr_pay_later() {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getState()).thenReturn(State.DECIDED);
+        when(caseDetails.getState()).thenReturn(State.DECISION);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class))
@@ -104,14 +104,14 @@ class DecidedPaPayLaterDirectionHandlerTest {
         when(asylumCase.read(PA_APPEAL_TYPE_PAYMENT_OPTION, String.class))
                 .thenReturn(Optional.of("payLater"));
 
-        decidedPaPayLaterDirectionHandler =
-                new DecidedPaPayLaterDirectionHandler(
+        decisionPaPayLaterDirectionHandler =
+                new DecisionPaPayLaterDirectionHandler(
                         HEARING_REQUIREMENTS_DUE_IN_DAYS,
                         dateProvider,
                         directionAppender
                 );
 
-        boolean canHandle = decidedPaPayLaterDirectionHandler.canHandle(
+        boolean canHandle = decisionPaPayLaterDirectionHandler.canHandle(
                 PreSubmitCallbackStage.ABOUT_TO_SUBMIT,
                 callback
         );
@@ -126,7 +126,7 @@ class DecidedPaPayLaterDirectionHandlerTest {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
-        when(caseDetails.getState()).thenReturn(State.DECIDED);
+        when(caseDetails.getState()).thenReturn(State.DECISION);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(dateProvider.now()).thenReturn(LocalDate.parse("2024-04-01"));
 
@@ -146,12 +146,12 @@ class DecidedPaPayLaterDirectionHandlerTest {
                 contains("Your appeal requires a fee to be paid"),
                 eq(Parties.LEGAL_REPRESENTATIVE),
                 eq("2024-04-06"),
-                eq(DirectionTag.DECIDED_PA_PAY_LATER),
+                eq(DirectionTag.DECISION_PA_PAY_LATER),
                 eq(Event.SUBMIT_APPEAL.toString())
         )).thenReturn(allDirections);
 
         PreSubmitCallbackResponse<AsylumCase> response =
-                decidedPaPayLaterDirectionHandler.handle(
+                decisionPaPayLaterDirectionHandler.handle(
                         PreSubmitCallbackStage.ABOUT_TO_SUBMIT,
                         callback
                 );
@@ -171,7 +171,7 @@ class DecidedPaPayLaterDirectionHandlerTest {
         when(asylumCase.read(DECISION_HEARING_FEE_OPTION, String.class)).thenReturn(Optional.of("decisionWithHearing"));
         when(asylumCase.read(FEE_WITH_HEARING, String.class)).thenReturn(Optional.of("140"));
 
-        assertThatThrownBy(() -> decidedPaPayLaterDirectionHandler
+        assertThatThrownBy(() -> decisionPaPayLaterDirectionHandler
                 .handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
                 .hasMessage("Cannot handle callback")
                 .isExactlyInstanceOf(IllegalStateException.class);
@@ -181,21 +181,21 @@ class DecidedPaPayLaterDirectionHandlerTest {
     @Test
     void should_not_allow_null_arguments() {
 
-        assertThatThrownBy(() -> decidedPaPayLaterDirectionHandler.canHandle(null, callback))
+        assertThatThrownBy(() -> decisionPaPayLaterDirectionHandler.canHandle(null, callback))
                 .hasMessage("callbackStage must not be null")
                 .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(
-                () -> decidedPaPayLaterDirectionHandler.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
+                () -> decisionPaPayLaterDirectionHandler.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
                 .hasMessage("callback must not be null")
                 .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> decidedPaPayLaterDirectionHandler.handle(null, callback))
+        assertThatThrownBy(() -> decisionPaPayLaterDirectionHandler.handle(null, callback))
                 .hasMessage("callbackStage must not be null")
                 .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(
-                () -> decidedPaPayLaterDirectionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
+                () -> decisionPaPayLaterDirectionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
                 .hasMessage("callback must not be null")
                 .isExactlyInstanceOf(NullPointerException.class);
     }

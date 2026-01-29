@@ -21,7 +21,7 @@ public enum DirectionTag {
     REQUEST_CMA_REQUIREMENTS("requestCmaRequirements"),
     LISTING_PA_PAY_LATER("listingPaPayLater"),
     CASE_BUILDING_PA_PAY_LATER("caseBuildingPaPayLater"),
-    DECIDED_PA_PAY_LATER("decidedPaPayLater"),
+    DECISION_PA_PAY_LATER("decisionPaPayLater"),
 
     @JsonEnumDefaultValue
     NONE("");

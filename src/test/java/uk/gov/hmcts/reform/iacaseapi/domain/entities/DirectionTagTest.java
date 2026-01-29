@@ -25,7 +25,7 @@ class DirectionTagTest {
         assertEquals("requestCmaRequirements", DirectionTag.REQUEST_CMA_REQUIREMENTS.toString());
         assertEquals("listingPaPayLater", DirectionTag.LISTING_PA_PAY_LATER.toString());
         assertEquals("caseBuildingPaPayLater", DirectionTag.CASE_BUILDING_PA_PAY_LATER.toString());
-        assertEquals("decidedPaPayLater", DirectionTag.DECIDED_PA_PAY_LATER.toString());
+        assertEquals("decisionPaPayLater", DirectionTag.DECISION_PA_PAY_LATER.toString());
         assertEquals("", DirectionTag.NONE.toString());
     }
 

@@ -29,14 +29,14 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DirectionAppender;
 
 @Component
-public class DecidedPaPayLaterDirectionHandler implements PreSubmitCallbackHandler<AsylumCase> {
+public class DecisionPaPayLaterDirectionHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final int hearingRequirementsDueInDays;
     private final DateProvider dateProvider;
     private final DirectionAppender directionAppender;
     private static final String GBP = "GBP";
 
-    public DecidedPaPayLaterDirectionHandler(
+    public DecisionPaPayLaterDirectionHandler(
             @Value("${legalRepresentativeHearingRequirements.dueInDays}") int hearingRequirementsDueInDays,
             DateProvider dateProvider,
             DirectionAppender directionAppender
@@ -59,7 +59,7 @@ public class DecidedPaPayLaterDirectionHandler implements PreSubmitCallbackHandl
         String paAppealTypeAipPaymentOption = asylumCase.read(PA_APPEAL_TYPE_AIP_PAYMENT_OPTION, String.class).orElse("");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-                && callback.getCaseDetails().getState() == State.DECIDED
+                && callback.getCaseDetails().getState() == State.DECISION
                 && ("payLater".equals(paAppealTypePaymentOption) || "payLater".equals(paAppealTypeAipPaymentOption))
                 && (HandlerUtils.isAipJourney(callback.getCaseDetails().getCaseData())
                 || HandlerUtils.isRepJourney(callback.getCaseDetails().getCaseData()));
@@ -97,7 +97,7 @@ public class DecidedPaPayLaterDirectionHandler implements PreSubmitCallbackHandl
                         "Your appeal has now been decided but still have not paid your fee. " +
                                 "The tribunal has sent two notifications regarding the outstanding amount. If you do not pay £" +
                                 feeAmount +
-                                "(Oral/Paper amount) the Tribunal may instigate legal proceedings to recover the fee.\n" +
+                                " the Tribunal may instigate legal proceedings to recover the fee.\n" +
                                 "Instructions for making a payment are: \n" +
                                 "For appeals submitted online \n" +
                                 "(Legal Representative to make payment by PBA)\n" +
@@ -113,7 +113,7 @@ public class DecidedPaPayLaterDirectionHandler implements PreSubmitCallbackHandl
                                 .now()
                                 .plusDays(hearingRequirementsDueInDays)
                                 .toString(),
-                        DirectionTag.DECIDED_PA_PAY_LATER
+                        DirectionTag.DECISION_PA_PAY_LATER
                 );
 
         asylumCase.write(DIRECTIONS, allDirections);
