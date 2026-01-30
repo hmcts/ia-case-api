@@ -101,10 +101,7 @@ public class HomeOfficeCaseNotificationsHandler implements PreSubmitCallbackHand
             throw new IllegalStateException("Cannot handle callback");
         }
 
-        AsylumCase asylumCaseWithHomeOfficeData =
-            callback
-                .getCaseDetails()
-                .getCaseData();
+        AsylumCase asylumCaseWithHomeOfficeData = callback.getCaseDetails().getCaseData();
         log.info("Case data: {}", asylumCaseWithHomeOfficeData.toString());
         log.info("Appeal type: {}", asylumCaseWithHomeOfficeData.read(APPEAL_TYPE, AppealType.class).toString());
 
