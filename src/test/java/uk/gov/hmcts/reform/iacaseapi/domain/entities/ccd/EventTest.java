@@ -94,6 +94,7 @@ class EventTest {
         assertEquals("forceRequestCaseBuilding", Event.FORCE_REQUEST_CASE_BUILDING.toString());
         assertEquals("markAppealPaid", Event.MARK_APPEAL_PAID.toString());
         assertEquals("requestHomeOfficeData", Event.REQUEST_HOME_OFFICE_DATA.toString());
+        assertEquals("getHomeOfficeAppellantData", Event.GET_HOME_OFFICE_APPELLANT_DATA.toString());
         assertEquals("makeAnApplication", Event.MAKE_AN_APPLICATION.toString());
         assertEquals("reinstateAppeal", Event.REINSTATE_APPEAL.toString());
         assertEquals("decideAnApplication", Event.DECIDE_AN_APPLICATION.toString());
@@ -168,6 +169,6 @@ class EventTest {
 
     @Test
     void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(160, Event.values().length);
+        assertEquals(161, Event.values().length);
     }
 }
