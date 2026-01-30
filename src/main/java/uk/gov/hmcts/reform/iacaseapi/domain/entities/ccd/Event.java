@@ -102,6 +102,7 @@ public enum Event {
     UPLOAD_SENSITIVE_DOCUMENTS("uploadSensitiveDocuments"),
     MARK_APPEAL_PAID("markAppealPaid"),
     REQUEST_HOME_OFFICE_DATA("requestHomeOfficeData"),
+    GET_HOME_OFFICE_APPELLANT_DATA("getHomeOfficeAppellantData"),
     MAKE_AN_APPLICATION("makeAnApplication"),
     REINSTATE_APPEAL("reinstateAppeal"),
     DECIDE_AN_APPLICATION("decideAnApplication"),
