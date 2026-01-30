@@ -8,11 +8,15 @@ import static org.powermock.api.mockito.PowerMockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.START_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -52,12 +56,16 @@ class InternalCaseCreationContactDetailsAppenderTest {
         when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
 
     }
-    
-    @Test
-    void handler_checks_internal_contact_details_and_appends_to_main_fields() {
+
+    @ParameterizedTest
+    @EnumSource(value = YesOrNo.class, names = {"NO", "YES"})
+    void handler_checks_internal_contact_details_and_appends_to_main_fields_and_clears_legal_rep_details(
+            YesOrNo isAppellantsRepresentation
+    ) {
 
         when(asylumCase.read(INTERNAL_APPELLANT_MOBILE_NUMBER, String.class)).thenReturn(Optional.of(internalMobileNumber));
         when(asylumCase.read(INTERNAL_APPELLANT_EMAIL, String.class)).thenReturn(Optional.of(internalEmailAddress));
+        when(asylumCase.read(APPELLANTS_REPRESENTATION, YesOrNo.class)).thenReturn(Optional.of(isAppellantsRepresentation));
 
         PreSubmitCallbackResponse<AsylumCase> response =
                 internalCaseCreationContactDetailsAppender.handle(ABOUT_TO_SUBMIT, callback);
@@ -66,6 +74,27 @@ class InternalCaseCreationContactDetailsAppenderTest {
 
         verify(asylumCase, times(1)).write(MOBILE_NUMBER, Optional.of(internalMobileNumber));
         verify(asylumCase, times(1)).write(EMAIL, Optional.of(internalEmailAddress));
+
+        if (isAppellantsRepresentation == YES) {
+            verify(asylumCase).write(HAS_ADDED_LEGAL_REP_DETAILS, NO);
+            verify(asylumCase).clear(APPEAL_WAS_NOT_SUBMITTED_REASON);
+            verify(asylumCase).clear(APPEAL_NOT_SUBMITTED_REASON_DOCUMENTS);
+            verify(asylumCase).clear(LEGAL_REP_COMPANY_PAPER_J);
+            verify(asylumCase).clear(LEGAL_REP_GIVEN_NAME);
+            verify(asylumCase).clear(LEGAL_REP_FAMILY_NAME_PAPER_J);
+            verify(asylumCase).clear(LEGAL_REP_EMAIL);
+            verify(asylumCase).clear(LEGAL_REP_REF_NUMBER_PAPER_J);
+            verify(asylumCase).clear(LEGAL_REP_ADDRESS_U_K);
+            verify(asylumCase).clear(OOC_ADDRESS_LINE_1);
+            verify(asylumCase).clear(OOC_ADDRESS_LINE_2);
+            verify(asylumCase).clear(OOC_ADDRESS_LINE_3);
+            verify(asylumCase).clear(OOC_ADDRESS_LINE_4);
+            verify(asylumCase).clear(OOC_COUNTRY_LINE);
+            verify(asylumCase).clear(OOC_LR_COUNTRY_GOV_UK_ADMIN_J);
+            verify(asylumCase).clear(LEGAL_REP_HAS_ADDRESS);
+        } else {
+            verify(asylumCase, never()).clear();
+        }
     }
 
     @Test
