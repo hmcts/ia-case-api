@@ -306,7 +306,7 @@ class AppealWasNotSubmittedSupportingDocumentsHandlerTest {
         );
     }
     
-   @Test
+    @Test
     void should_append_appeal_was_not_submitted_doc_when_no_legal_rep_documents_appellants_rep() {
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
         when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
