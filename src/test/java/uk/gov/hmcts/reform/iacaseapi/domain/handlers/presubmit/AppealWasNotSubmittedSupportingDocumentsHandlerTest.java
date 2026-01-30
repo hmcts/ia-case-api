@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
+import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -302,6 +303,23 @@ class AppealWasNotSubmittedSupportingDocumentsHandlerTest {
         verify(documentsAppender, times(0)).prepend(
             any(),
             any()
+        );
+    }
+    
+    @Test
+    void should_append_appeal_was_not_submitted_doc_should_not_fail_if_no_legal_rep_documents() {
+        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+
+        when(asylumCase.read(LEGAL_REPRESENTATIVE_DOCUMENTS)).thenReturn(Optional.of(emptyList()));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse = appealWasNotSubmittedSupportingDocumentsHandler.handle(ABOUT_TO_SUBMIT, callback);
+
+        assertThat(callbackResponse).isNotNull();
+
+        verify(documentsAppender, times(0)).prepend(
+                any(),
+                any()
         );
     }
 
