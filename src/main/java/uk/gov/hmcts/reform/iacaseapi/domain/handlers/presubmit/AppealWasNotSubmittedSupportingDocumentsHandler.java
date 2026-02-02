@@ -7,6 +7,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LEGAL_REPRESENTATIVE_DOCUMENTS;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -75,9 +76,8 @@ public class AppealWasNotSubmittedSupportingDocumentsHandler implements PreSubmi
             List<IdValue<DocumentWithMetadata>> existingLegalRepDocuments =
                     maybeExistingLegalRepDocuments.orElse(emptyList());
 
-            if (HandlerUtils.isAppellantsRepresentation(asylumCase)) {
-                asylumCase.write(LEGAL_REPRESENTATIVE_DOCUMENTS, removeAppealNotSubmittedDocument(existingLegalRepDocuments));
-
+            if (HandlerUtils.isAppellantsRepresentation(asylumCase)) {               
+                asylumCase.write(LEGAL_REPRESENTATIVE_DOCUMENTS, removeAppealNotSubmittedDocument(existingLegalRepDocuments));               
                 return new PreSubmitCallbackResponse<>(asylumCase);
             }
 
@@ -106,10 +106,15 @@ public class AppealWasNotSubmittedSupportingDocumentsHandler implements PreSubmi
     }
 
     private static List<IdValue<DocumentWithMetadata>> removeAppealNotSubmittedDocument(List<IdValue<DocumentWithMetadata>> existingLegalRepDocuments) {
-        return existingLegalRepDocuments.stream().filter(documentWithMetadataIdValue ->
-                documentWithMetadataIdValue.getValue().getTag() != null
-                        && !documentWithMetadataIdValue.getValue().getTag()
-                        .equals(DocumentTag.APPEAL_WAS_NOT_SUBMITTED_SUPPORTING_DOCUMENT)).collect(Collectors.toList());
+        return Optional.ofNullable(existingLegalRepDocuments)
+                    .orElse(emptyList())
+                    .stream()
+                    .filter(Objects::nonNull)
+                    .filter(doc -> doc.getValue() != null)
+                    .filter(doc -> doc.getValue().getTag() != DocumentTag.APPEAL_WAS_NOT_SUBMITTED_SUPPORTING_DOCUMENT)
+                    .collect(Collectors.toList());
     }
 
 }
+
+
