@@ -19,7 +19,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Direction;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DirectionTag;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Parties;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
@@ -59,7 +59,7 @@ public class ListingPaPayLaterDirectionHandler implements PreSubmitCallbackHandl
         String paAppealTypeAipPaymentOption = asylumCase.read(PA_APPEAL_TYPE_AIP_PAYMENT_OPTION, String.class).orElse("");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-                && callback.getCaseDetails().getState() == State.LISTING
+                && callback.getEvent() == Event.LIST_CASE
                 && ("payLater".equals(paAppealTypePaymentOption) || "payLater".equals(paAppealTypeAipPaymentOption))
                 && (HandlerUtils.isAipJourney(callback.getCaseDetails().getCaseData())
                 || HandlerUtils.isRepJourney(callback.getCaseDetails().getCaseData()));

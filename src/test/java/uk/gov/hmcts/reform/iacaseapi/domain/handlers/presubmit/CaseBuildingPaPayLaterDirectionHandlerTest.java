@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Parties;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DirectionAppender;
 
@@ -64,7 +63,7 @@ class CaseBuildingPaPayLaterDirectionHandlerTest {
     @Test
     void should_handle_case_building_aip_pay_later() {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getState()).thenReturn(State.CASE_BUILDING);
+        when(callback.getEvent()).thenReturn(Event.BUILD_CASE);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class))
@@ -93,7 +92,7 @@ class CaseBuildingPaPayLaterDirectionHandlerTest {
     @Test
     void should_handle_case_building_lr_pay_later() {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getState()).thenReturn(State.CASE_BUILDING);
+        when(callback.getEvent()).thenReturn(Event.BUILD_CASE);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class))
@@ -126,7 +125,7 @@ class CaseBuildingPaPayLaterDirectionHandlerTest {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
-        when(caseDetails.getState()).thenReturn(State.CASE_BUILDING);
+        when(callback.getEvent()).thenReturn(Event.BUILD_CASE);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(dateProvider.now()).thenReturn(LocalDate.parse("2024-04-01"));
         when(asylumCase.read(DECISION_HEARING_FEE_OPTION, String.class)).thenReturn(Optional.of("decisionWithHearing"));
@@ -165,7 +164,7 @@ class CaseBuildingPaPayLaterDirectionHandlerTest {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(caseDetails.getState()).thenReturn(State.LISTING);
+        when(callback.getEvent()).thenReturn(Event.LIST_CASE);
         when(asylumCase.read(DECISION_HEARING_FEE_OPTION, String.class)).thenReturn(Optional.of("decisionWithHearing"));
         when(asylumCase.read(FEE_WITH_HEARING, String.class)).thenReturn(Optional.of("140"));
 
