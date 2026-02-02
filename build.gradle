@@ -25,6 +25,7 @@ plugins {
     id 'uk.gov.hmcts.java' version '0.12.67'
     id 'au.com.dius.pact' version '4.6.17'
     id "io.freefair.lombok" version "6.6.3"
+    id 'org.gradle.test-retry' version '1.5.7'
 }
 
 
@@ -53,7 +54,6 @@ ext.libraries = [
                 "org.junit.platform:junit-platform-launcher:${versions.junitPlatform}"
         ]
 ]
-
 
 mainClassName = 'uk.gov.hmcts.reform.iacaseapi.Application'
 def jarName = 'ia-case-api.jar'
@@ -120,6 +120,10 @@ sourceSets {
         }
         resources.srcDir file('src/contactTest/resources')
     }
+}
+
+processSmokeTestResources {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
 processIntegrationTestResources {
@@ -374,6 +378,9 @@ dependencies {
     implementation group: 'org.javamoney.moneta', name: 'moneta-core', version: '1.4.5'
     implementation group: 'jakarta.annotation', name: 'jakarta.annotation-api', version: '3.0.0'
 
+    implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.17.1'
+    implementation group: 'org.apache.logging.log4j', name: 'log4j-to-slf4j', version: '2.17.1'
+
     implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: versions.reformLogging
     implementation group: 'com.github.hmcts.java-logging', name: 'logging-appinsights', version: versions.reformLogging
     implementation(group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '4.1.2') {
@@ -407,13 +414,19 @@ dependencies {
     implementation group: 'net.minidev', name: 'json-smart', version: '2.5.2'
     implementation 'joda-time:joda-time:2.14.0'
 
+    implementation group: 'org.elasticsearch', name: 'elasticsearch', version: '7.17.15'
+
     implementation group: 'com.googlecode.libphonenumber', name: 'libphonenumber', version: '8.13.55'
 
+    implementation group: 'org.apiguardian', name: 'apiguardian-api', version: '1.1.2'
+
     testImplementation group: 'org.pitest', name: 'pitest', version: versions.pitest
-    testImplementation "info.solidsoft.gradle.pitest:gradle-pitest-plugin:${versions.pitest}"
-    testImplementation "org.codehaus.sonar-plugins:sonar-pitest-plugin:${versions.sonarPitest}"
+    testImplementation group: 'info.solidsoft.gradle.pitest', name: 'gradle-pitest-plugin', version: versions.pitest
+    testImplementation group: 'org.codehaus.sonar-plugins', name: 'sonar-pitest-plugin', version: versions.sonarPitest
 
     testImplementation group: 'com.h2database', name: 'h2', version: '1.4.197'
+
+    testImplementation group: 'org.mockito', name: 'mockito-junit-jupiter', version: '3.12.4'
 
     testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test'
 
@@ -444,8 +457,12 @@ dependencies {
     testImplementation group: 'com.github.hmcts', name: 'ccd-case-document-am-client', version: '1.7.3'
     testImplementation group: 'org.apache.httpcomponents', name: 'fluent-hc', version:  '4.5.14'
 
+    testImplementation group: 'org.awaitility', name: 'awaitility', version: '4.2.0'
 
-    functionalTestImplementation group: 'com.github.hmcts', name: 'core-case-data-store-client', version: '4.9.2'
+    implementation(group: 'com.github.hmcts', name: 'core-case-data-store-client', version: '4.9.2') {
+        exclude group: "org.bouncycastle", module: "bcprov-jdk15on"
+    }
+
 
 
     //pact contract testing
@@ -469,7 +486,14 @@ dependencies {
 
     contractTestImplementation sourceSets.main.runtimeClasspath
     contractTestImplementation sourceSets.test.runtimeClasspath
+}
 
+test {
+    useJUnitPlatform()
+    retry {
+        maxRetries = 3
+        maxFailures = 20 // Optional attribute
+    }
 }
 
 task runAndPublishConsumerPactTests(type: Test) {

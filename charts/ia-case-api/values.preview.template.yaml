@@ -74,6 +74,14 @@ java:
           alias: app-insights-connection-string
         - name: postgres-auth-values-password
           alias: PG_AUTH_VALUES_YAML_PASS
+        - name: ia-system-access-username
+          alias: IA_SYSTEM_ACCESS_USERNAME
+        - name: ia-system-access-password
+          alias: IA_SYSTEM_ACCESS_PASSWORD
+        - name: AppInsightsInstrumentationKey
+          alias: azure.application-insights.instrumentation-key
+        - name: ia-config-validator-secret
+          alias: IA_CONFIG_VALIDATOR_SECRET
   secrets:
     POSTGRES_PASSWORD:
       secretRef: postgres
@@ -562,7 +570,7 @@ ia-home-office-integration-api:
             alias: IA_SYSTEM_PASSWORD  
 
 ia-case-access-api:
-  enabled: true
+  enabled: false
   java:
     image: hmctspublic.azurecr.io/ia/case-access-api:latest
     ingressHost: ${SERVICE_FQDN}-case-access-api.preview.platform.hmcts.net
