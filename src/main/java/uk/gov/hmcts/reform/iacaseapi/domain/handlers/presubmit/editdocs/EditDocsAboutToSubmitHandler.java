@@ -34,6 +34,10 @@ public class EditDocsAboutToSubmitHandler implements PreSubmitCallbackHandler<As
     @Autowired
     private EditDocsService editDocService;
 
+    public DispatchPriority getDispatchPriority() {
+        return DispatchPriority.EARLIEST;
+    }
+    
     @Override
     public boolean canHandle(PreSubmitCallbackStage callbackStage, Callback<AsylumCase> callback) {
         requireNonNull(callbackStage, "callbackStage must not be null");
