@@ -87,9 +87,13 @@ public enum AsylumCaseFieldDefinition {
 
     EMAIL(
         "email", new TypeReference<String>(){}),
+    EMAIL_RETYPE(
+            "emailRetype", new TypeReference<String>(){}),
 
     MOBILE_NUMBER(
         "mobileNumber", new TypeReference<String>(){}),
+    MOBILE_NUMBER_RETYPE(
+            "mobileNumberRetype", new TypeReference<String>(){}),
 
     APPEAL_TYPE(
         "appealType", new TypeReference<AppealType>(){}),
