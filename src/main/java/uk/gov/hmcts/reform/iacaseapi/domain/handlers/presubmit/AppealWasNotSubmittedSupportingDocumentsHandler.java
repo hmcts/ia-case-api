@@ -76,8 +76,9 @@ public class AppealWasNotSubmittedSupportingDocumentsHandler implements PreSubmi
                     maybeExistingLegalRepDocuments.orElse(emptyList());
 
             if (HandlerUtils.isAppellantsRepresentation(asylumCase)) {
-                asylumCase.write(LEGAL_REPRESENTATIVE_DOCUMENTS, removeAppealNotSubmittedDocument(existingLegalRepDocuments));
-
+                if (!existingLegalRepDocuments.isEmpty()) {
+                    asylumCase.write(LEGAL_REPRESENTATIVE_DOCUMENTS, removeAppealNotSubmittedDocument(existingLegalRepDocuments));
+                }
                 return new PreSubmitCallbackResponse<>(asylumCase);
             }
 
@@ -113,3 +114,4 @@ public class AppealWasNotSubmittedSupportingDocumentsHandler implements PreSubmi
     }
 
 }
+
