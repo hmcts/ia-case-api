@@ -33,7 +33,8 @@ public enum AsylumCaseFieldDefinition {
 
     HOME_OFFICE_REFERENCE_NUMBER(
         "homeOfficeReferenceNumber", new TypeReference<String>(){}),
-
+    APPELLANT_CONTACT_PREFERENCE(
+            "appellantContactPreference", new TypeReference<String>(){}),
     HOME_OFFICE_DECISION_DATE(
         "homeOfficeDecisionDate", new TypeReference<String>(){}),
 

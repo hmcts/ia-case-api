@@ -29,7 +29,7 @@ public class StartAppealMidEvent implements PreSubmitCallbackHandler<AsylumCase>
     private static final String SUITABILITY_ATTENDANCE_PAGE_ID = "suitabilityAppellantAttendance";
     private static final String UPPER_TRIBUNAL_REFERENCE_NUMBER_PAGE_ID = "utReferenceNumber";
     private static final String APPELLANTS_ADDRESS_PAGE_ID = "appellantAddress";
-    private static final String APPELLANTS_CONTACT_DETAILS_PAGE_ID = "appellantContactPreference";
+    private static final String APPELLANTS_CONTACT_PREFERENCE_PAGE_ID = "appellantContactPreference";
     protected static final String APPELLANTS_ADDRESS_ADMIN_J_PAGE_ID = "appellantAddressAdminJ";
     private static final Pattern UPPER_TRIBUNAL_REFERENCE_NUMBER_PATTERN = Pattern.compile("^UI-[0-9]{4}-[0-9]{6}$");
 
@@ -52,7 +52,7 @@ public class StartAppealMidEvent implements PreSubmitCallbackHandler<AsylumCase>
                     || callback.getPageId().equals(UPPER_TRIBUNAL_REFERENCE_NUMBER_PAGE_ID)
                     || callback.getPageId().equals(APPELLANTS_ADDRESS_PAGE_ID)
                     || callback.getPageId().equals(APPELLANTS_ADDRESS_ADMIN_J_PAGE_ID)
-                    || callback.getPageId().equals(APPELLANTS_CONTACT_DETAILS_PAGE_ID));
+                    || callback.getPageId().equals(APPELLANTS_CONTACT_PREFERENCE_PAGE_ID));
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
@@ -118,8 +118,8 @@ public class StartAppealMidEvent implements PreSubmitCallbackHandler<AsylumCase>
             }
         }
 
-        if (callback.getPageId().equals(APPELLANTS_CONTACT_DETAILS_PAGE_ID)) {
-            log.info("This is the APPELLANTS_CONTACT_DETAILS_PAGE_ID page");
+        if (callback.getPageId().equals(APPELLANTS_CONTACT_PREFERENCE_PAGE_ID)) {
+            log.info("This is the APPELLANTS_CONTACT_PREFERENCE_PAGE_ID page");
             Optional<String> email = asylumCase.read(EMAIL, String.class);
             Optional<String> emailRetype = asylumCase.read(EMAIL_RETYPE, String.class);
 
