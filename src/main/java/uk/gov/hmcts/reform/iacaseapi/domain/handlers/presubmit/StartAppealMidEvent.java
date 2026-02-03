@@ -81,6 +81,7 @@ public class StartAppealMidEvent implements PreSubmitCallbackHandler<AsylumCase>
         }
 
         if (callback.getPageId().equals(HOME_OFFICE_REFERENCE_NUMBER_PAGE_ID)) {
+            log.info("This is the HOME_OFFICE_REFERENCE_NUMBER_PAGE_ID page");
             if (!asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class).map(
                 value -> (OutOfCountryDecisionType.REFUSAL_OF_HUMAN_RIGHTS.equals(value)
                     || OutOfCountryDecisionType.REFUSE_PERMIT.equals(value))).orElse(false)) {
