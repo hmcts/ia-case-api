@@ -100,5 +100,5 @@ class AddStatutoryTimeframe24WeeksHandlerTest {
         assertThatThrownBy(() -> addStatutoryTimeframe24WeeksHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
-    }
+    } 
 }
