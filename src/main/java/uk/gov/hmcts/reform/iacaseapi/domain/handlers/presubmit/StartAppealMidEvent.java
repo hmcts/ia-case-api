@@ -118,7 +118,7 @@ public class StartAppealMidEvent implements PreSubmitCallbackHandler<AsylumCase>
         }
 
         if (callback.getPageId().equals(APPELLANTS_CONTACT_DETAILS_PAGE_ID)) {
-            log.info("This is the APPELLANTS_CONTACT_DETAILS_PAGE_ID page for ", caseId);
+            log.info("This is the APPELLANTS_CONTACT_DETAILS_PAGE_ID page");
             Optional<String> email = asylumCase.read(EMAIL, String.class);
             Optional<String> emailRetype = asylumCase.read(EMAIL_RETYPE, String.class);
 
