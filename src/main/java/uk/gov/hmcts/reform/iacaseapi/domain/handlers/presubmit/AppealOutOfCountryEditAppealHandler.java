@@ -142,6 +142,8 @@ public class AppealOutOfCountryEditAppealHandler implements PreSubmitCallbackHan
                 clearAdaSuitabilityFields(asylumCase);
             }
 
+            clearHomeOfficeOrReceivedDateIfRequired(asylumCase);
+
         } else {
             if (!sourceOfAppealEjp(asylumCase)) {
                 throw new IllegalStateException("Cannot verify if appeal is in UK or out of country");
@@ -241,6 +243,28 @@ public class AppealOutOfCountryEditAppealHandler implements PreSubmitCallbackHan
         asylumCase.clear(SUITABILITY_APPELLANT_ATTENDANCE_YES_OR_NO_2);
         asylumCase.clear(SUITABILITY_INTERPRETER_SERVICES_YES_OR_NO);
         asylumCase.clear(SUITABILITY_INTERPRETER_SERVICES_LANGUAGE);
+    }
+
+    private void clearHomeOfficeOrReceivedDateIfRequired(AsylumCase asylumCase) {
+
+        boolean isRehydratedAppeal = HandlerUtils.sourceOfAppealRehydratedAppeal(asylumCase);
+
+        if (isRehydratedAppeal) {
+            Optional<YesOrNo> optionalAppellantInUk = asylumCase.read(APPELLANT_IN_UK, YesOrNo.class);
+            if (optionalAppellantInUk.isPresent()) {
+                YesOrNo appellantInUk = optionalAppellantInUk.get();
+
+                if (appellantInUk.equals(YES)) {
+                    if (asylumCase.read(HOME_OFFICE_DECISION_DATE).isPresent()) {
+                        asylumCase.clear(DECISION_LETTER_RECEIVED_DATE);
+                    }
+                } else {
+                    if (asylumCase.read(DECISION_LETTER_RECEIVED_DATE).isPresent()) {
+                        asylumCase.clear(HOME_OFFICE_DECISION_DATE);
+                    }
+                }
+            }
+        }
     }
 
 }

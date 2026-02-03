@@ -51,6 +51,8 @@ class AppealOutOfCountryEditAppealHandlerTest {
         appealOutOfCountryEditAppealHandler = new AppealOutOfCountryEditAppealHandler(featureToggler);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(SOURCE_OF_APPEAL, SourceOfAppeal.class))
+                .thenReturn(Optional.of(SourceOfAppeal.PAPER_FORM));
     }
 
     @ParameterizedTest
@@ -451,6 +453,81 @@ class AppealOutOfCountryEditAppealHandlerTest {
         verify(asylumCase, times(1)).clear(SUITABILITY_APPELLANT_ATTENDANCE_YES_OR_NO_2);
         verify(asylumCase, times(1)).clear(SUITABILITY_INTERPRETER_SERVICES_YES_OR_NO);
         verify(asylumCase, times(1)).clear(SUITABILITY_INTERPRETER_SERVICES_LANGUAGE);
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {"START_APPEAL", "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT"})
+    void should_clear_decision_letter_received_date_when_appellant_in_uk_and_home_office_decision_date_present(Event event) {
+        when(callback.getEvent()).thenReturn(event);
+        when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(HOME_OFFICE_DECISION_DATE)).thenReturn(Optional.of("2023-10-01"));
+        when(asylumCase.read(SOURCE_OF_APPEAL, SourceOfAppeal.class))
+                .thenReturn(Optional.of(SourceOfAppeal.REHYDRATED_APPEAL));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                appealOutOfCountryEditAppealHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+        // cleared once by clearHomeOfficeOrReceivedDateIfRequired and once by other logic
+        verify(asylumCase, times(2)).clear(DECISION_LETTER_RECEIVED_DATE);
+        verify(asylumCase, never()).clear(HOME_OFFICE_DECISION_DATE);
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {"START_APPEAL", "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT"})
+    void should_clear_home_office_decision_date_when_appellant_not_in_uk_and_decision_letter_received_date_present(Event event) {
+        when(callback.getEvent()).thenReturn(event);
+        when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(asylumCase.read(DECISION_LETTER_RECEIVED_DATE)).thenReturn(Optional.of("2023-10-01"));
+        when(asylumCase.read(SOURCE_OF_APPEAL, SourceOfAppeal.class))
+                .thenReturn(Optional.of(SourceOfAppeal.REHYDRATED_APPEAL));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                appealOutOfCountryEditAppealHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+        // cleared by clearHomeOfficeOrReceivedDateIfRequired logic
+        verify(asylumCase, times(1)).clear(HOME_OFFICE_DECISION_DATE);
+        verify(asylumCase, never()).clear(DECISION_LETTER_RECEIVED_DATE);
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {"START_APPEAL", "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT"})
+    void should_not_clear_any_dates_when_appellant_in_uk_and_home_office_decision_date_not_present(Event event) {
+        when(callback.getEvent()).thenReturn(event);
+        when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(HOME_OFFICE_DECISION_DATE)).thenReturn(Optional.empty());
+        when(asylumCase.read(SOURCE_OF_APPEAL, SourceOfAppeal.class))
+                .thenReturn(Optional.of(SourceOfAppeal.REHYDRATED_APPEAL));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                appealOutOfCountryEditAppealHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+        // cleared only once by non clearHomeOfficeOrReceivedDateIfRequired logic
+        verify(asylumCase, times(1)).clear(DECISION_LETTER_RECEIVED_DATE);
+        verify(asylumCase, never()).clear(HOME_OFFICE_DECISION_DATE);
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {"START_APPEAL", "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT"})
+    void should_not_clear_any_dates_when_appellant_not_in_uk_and_decision_letter_received_date_not_present(Event event) {
+        when(callback.getEvent()).thenReturn(event);
+        when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(asylumCase.read(DECISION_LETTER_RECEIVED_DATE)).thenReturn(Optional.empty());
+        when(asylumCase.read(SOURCE_OF_APPEAL, SourceOfAppeal.class))
+                .thenReturn(Optional.of(SourceOfAppeal.REHYDRATED_APPEAL));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                appealOutOfCountryEditAppealHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+        verify(asylumCase, never()).clear(HOME_OFFICE_DECISION_DATE);
+        verify(asylumCase, never()).clear(DECISION_LETTER_RECEIVED_DATE);
     }
 
 }

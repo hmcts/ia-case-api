@@ -165,4 +165,12 @@ class EjpEditAppealHandlerTest {
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
     }
+
+    @Test
+    void handling_should_throw_if_cannot_actually_handle_isAdmin_false() {
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(NO));
+        assertThatThrownBy(() -> ejpEditAppealHandler.handle(ABOUT_TO_START, callback))
+                .hasMessage("Cannot handle callback")
+                .isExactlyInstanceOf(IllegalStateException.class);
+    }
 }

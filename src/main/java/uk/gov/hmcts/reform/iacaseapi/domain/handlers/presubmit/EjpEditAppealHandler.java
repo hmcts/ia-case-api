@@ -32,7 +32,8 @@ public class EjpEditAppealHandler implements PreSubmitCallbackHandler<AsylumCase
 
         return (callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
                 && callback.getEvent() == Event.EDIT_APPEAL)
-                && isInternalCase(callback.getCaseDetails().getCaseData());
+                && isInternalCase(callback.getCaseDetails().getCaseData())
+                && !sourceOfAppealRehydratedAppeal(callback.getCaseDetails().getCaseData());
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
