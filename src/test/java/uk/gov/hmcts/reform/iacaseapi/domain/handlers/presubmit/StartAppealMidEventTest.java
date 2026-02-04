@@ -82,7 +82,7 @@ class StartAppealMidEventTest {
     private static final String SUITABILITY_ATTENDANCE_PAGE_ID = "suitabilityAppellantAttendance";
     private static final String UPPER_TRIBUNAL_REFERENCE_NUMBER_PAGE_ID = "utReferenceNumber";
     private static final String APPELLANTS_ADDRESS_PAGE_ID = "appellantAddress";
-    private static final String INTERNAL_APPELLANTS_CONTACT_DETAILS = "contactPreference";
+    private static final String INTERNAL_APPELLANTS_CONTACT_DETAILS = "appellantContactPreference";
 
     @Mock
     private Callback<AsylumCase> callback;
