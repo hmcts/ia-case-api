@@ -31,6 +31,7 @@ public class StartAppealMidEvent implements PreSubmitCallbackHandler<AsylumCase>
     private static final String APPELLANTS_ADDRESS_PAGE_ID = "appellantAddress";
     private static final String APPELLANTS_CONTACT_PREFERENCE_PAGE_ID = "appellantContactPreference";
     protected static final String APPELLANTS_ADDRESS_ADMIN_J_PAGE_ID = "appellantAddressAdminJ";
+    private static final String LEGAL_REPRESENTATIVE_DETAILS = "legalRepresentativeDetails";
     private static final Pattern UPPER_TRIBUNAL_REFERENCE_NUMBER_PATTERN = Pattern.compile("^UI-[0-9]{4}-[0-9]{6}$");
 
     public boolean canHandle(
@@ -90,7 +91,6 @@ public class StartAppealMidEvent implements PreSubmitCallbackHandler<AsylumCase>
         }
 
         if (callback.getPageId().equals(HOME_OFFICE_REFERENCE_NUMBER_PAGE_ID)) {
-            log.info("This is the HOME_OFFICE_REFERENCE_NUMBER_PAGE_ID page");
             if (!asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class).map(
                 value -> (OutOfCountryDecisionType.REFUSAL_OF_HUMAN_RIGHTS.equals(value)
                     || OutOfCountryDecisionType.REFUSE_PERMIT.equals(value))).orElse(false)) {
@@ -128,13 +128,6 @@ public class StartAppealMidEvent implements PreSubmitCallbackHandler<AsylumCase>
         }
 
         if (callback.getPageId().equals(APPELLANTS_CONTACT_PREFERENCE_PAGE_ID)) {
-            log.info(
-                    "canHandle called: stage={}, event={}, pageId={}",
-                    callbackStage,
-                    callback.getEvent(),
-                    callback.getPageId()
-            );
-            log.info("This is the APPELLANTS_CONTACT_PREFERENCE_PAGE_ID page");
             Optional<String> email = asylumCase.read(EMAIL, String.class);
             Optional<String> emailRetype = asylumCase.read(EMAIL_RETYPE, String.class);
 
@@ -153,6 +146,15 @@ public class StartAppealMidEvent implements PreSubmitCallbackHandler<AsylumCase>
 
             if (emailMismatch || mobileMismatch) {
                 response.addError("The details given do not match");
+            }
+        }
+
+        if (callback.getPageId().equals(LEGAL_REPRESENTATIVE_DETAILS)) {
+            Optional<String> appellantsMobileNumber = asylumCase.read(MOBILE_NUMBER, String.class);
+            Optional<String> legalRepMobileNumber = asylumCase.read(LEGAL_REP_MOBILE_PHONE_NUMBER, String.class);
+
+            if (appellantsMobileNumber == legalRepMobileNumber) {
+                response.addError("Contact number is already in use for the appellant.  Please amend the appellant's mobile phone number before proceeding.");
             }
         }
 
