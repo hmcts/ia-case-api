@@ -27,6 +27,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_REFERENCE_NUMBER;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ACCELERATED_DETAINED_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ADMIN;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LEGAL_REP_MOBILE_PHONE_NUMBER;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MOBILE_NUMBER;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MOBILE_NUMBER_RETYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.OUT_OF_COUNTRY_DECISION_TYPE;
@@ -83,6 +84,7 @@ class StartAppealMidEventTest {
     private static final String UPPER_TRIBUNAL_REFERENCE_NUMBER_PAGE_ID = "utReferenceNumber";
     private static final String APPELLANTS_ADDRESS_PAGE_ID = "appellantAddress";
     private static final String INTERNAL_APPELLANTS_CONTACT_DETAILS = "appellantContactPreference";
+    private static final String LEGAL_REPRESENTATIVE_DETAILS = "legalRepresentativeDetails";
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -107,6 +109,7 @@ class StartAppealMidEventTest {
     private String utReferenceErrorMessage = "Enter the Upper Tribunal reference number in the format UI-Year of submission-6 digit number. For example, UI-2020-123456.";
     private String providePostalAddressError = "The appellant must have provided a postal address";
     private String contactDetailsDoNotMatch = "The details given do not match";
+    private String appellantAndLrPhoneNumberMatch = "Contact number is already in use for the appellant. Please amend the appellant's mobile phone number before proceeding.";
     private StartAppealMidEvent startAppealMidEvent;
 
     @BeforeEach
@@ -663,6 +666,42 @@ class StartAppealMidEventTest {
         assertEquals(asylumCase, callbackResponse.getData());
         final Set<String> errors = callbackResponse.getErrors();
         assertThat(errors).isEmpty();
+    }
+
+    @Test
+    void should_validate_as_correct_when_appellant_number_and_lr_number_do_not_match() {
+        when(callback.getPageId()).thenReturn(LEGAL_REPRESENTATIVE_DETAILS);
+
+        when(asylumCase.read(MOBILE_NUMBER, String.class))
+                .thenReturn(Optional.of("07898999999"));
+        when(asylumCase.read(LEGAL_REP_MOBILE_PHONE_NUMBER, String.class))
+                .thenReturn(Optional.of("07898999991"));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                startAppealMidEvent.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+
+        assertNotNull(callback);
+        assertEquals(asylumCase, callbackResponse.getData());
+        final Set<String> errors = callbackResponse.getErrors();
+        assertThat(errors).isEmpty();
+    }
+
+    @Test
+    void should_error_when_appellant_number_and_lr_number_match() {
+        when(callback.getPageId()).thenReturn(LEGAL_REPRESENTATIVE_DETAILS);
+
+        when(asylumCase.read(MOBILE_NUMBER, String.class))
+                .thenReturn(Optional.of("07898999999"));
+        when(asylumCase.read(LEGAL_REP_MOBILE_PHONE_NUMBER, String.class))
+                .thenReturn(Optional.of("07898999999"));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                startAppealMidEvent.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+
+        assertNotNull(callback);
+        assertEquals(asylumCase, callbackResponse.getData());
+        final Set<String> errors = callbackResponse.getErrors();
+        assertThat(errors).hasSize(1).containsOnly(appellantAndLrPhoneNumberMatch);
     }
 
 }
