@@ -150,6 +150,7 @@ public class StartAppealMidEvent implements PreSubmitCallbackHandler<AsylumCase>
         }
 
         if (callback.getPageId().equals(LEGAL_REPRESENTATIVE_DETAILS)) {
+            log.info("This is the LEGAL_REPRESENTATIVE_DETAILS page");
             Optional<String> appellantsMobileNumber = asylumCase.read(MOBILE_NUMBER, String.class);
             Optional<String> legalRepMobileNumber = asylumCase.read(LEGAL_REP_MOBILE_PHONE_NUMBER, String.class);
 
