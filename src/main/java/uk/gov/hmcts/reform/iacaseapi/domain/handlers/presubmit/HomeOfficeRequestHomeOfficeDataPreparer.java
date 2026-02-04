@@ -57,8 +57,7 @@ public class HomeOfficeRequestHomeOfficeDataPreparer implements PreSubmitCallbac
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
         PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
 
-        if (HandlerUtils.isAppellantInDetention(asylumCase)
-            || HandlerUtils.isAgeAssessmentAppeal(asylumCase)) {
+        if (HandlerUtils.isAgeAssessmentAppeal(asylumCase)) {
             response.addError("You cannot request Home Office data for this appeal");
 
             return response;

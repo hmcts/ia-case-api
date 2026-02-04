@@ -11,6 +11,7 @@ public class SourceOfAppealTest {
     void test_all_values() {
         assertEquals(SourceOfAppeal.PAPER_FORM.getValue(), "paperForm");
         assertEquals(SourceOfAppeal.TRANSFERRED_FROM_UPPER_TRIBUNAL.getValue(), "transferredFromUpperTribunal");
+        assertEquals(SourceOfAppeal.REHYDRATED_APPEAL.getValue(),"rehydratedAppeal");
     }
 
     @Test
@@ -34,7 +35,7 @@ public class SourceOfAppealTest {
 
     @Test
     void should_break_if_new_facility_is_added() {
-        assertEquals(2, SourceOfAppeal.values().length);
+        assertEquals(3, SourceOfAppeal.values().length);
     }
 
 }

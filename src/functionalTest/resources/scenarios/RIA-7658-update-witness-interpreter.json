@@ -178,15 +178,6 @@
         "uploadAdditionalEvidenceActionAvailable": "No",
         "additionalRequestsDescription": "Additional requests description",
         "hearingDateRangeDescription": "Only include dates between 27 Nov 2019 and 5 Feb 2020.",
-        "datesToAvoid": [
-          {
-            "id": "1",
-            "value": {
-              "dateToAvoid": "2019-12-25",
-              "dateToAvoidReason": "Xmas"
-            }
-          }
-        ],
         "witnessLevelFlags": [
           {
             "value": {

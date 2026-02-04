@@ -280,7 +280,8 @@ class ChangeRepresentationConfirmationTest {
             if (event == Event.REMOVE_REPRESENTATION
                 || event == Event.REMOVE_LEGAL_REPRESENTATIVE
                 || event == Event.NOC_REQUEST
-                || event == Event.APPELLANT_IN_PERSON_MANUAL) {
+                || event == Event.APPELLANT_IN_PERSON_MANUAL
+                || event == Event.MARK_APPEAL_AS_DETAINED) {
 
                 assertTrue(canHandle);
             } else {

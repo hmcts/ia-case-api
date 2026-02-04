@@ -37,7 +37,9 @@ management:
     hearingsApi:
       uri: ${IA_HEARINGS_API_URL:http://127.0.0.1:8100}/health
       response: '"status":"UP"'
-
+    ccd:
+      uri: ${CCD_URL:http://127.0.0.1:4452}/health
+      response: '"status":"UP"'
 fees-register:
   api:
     url: ${FEES_REGISTER_API_URL:http://localhost:8991}
@@ -56,6 +58,8 @@ fees-register:
       jurisdiction2: immigration and asylum chamber
       keyword: HearingPaper
       service: other
+files:
+  detention-facilities-addresses: "/detention-facilities.csv"
 
 spring:
   config:
@@ -129,8 +133,10 @@ legalRepresentativeHearingRequirements.dueInDays: ${LEGAL_REP_HEARING_REQUIREMEN
 legalRepresentativeReview.dueInDays: ${LEGAL_REP_REVIEW_DUE_IN_DAYS:5}
 requestRespondentEvidence.dueInDays: ${REQUEST_RESPONDENT_EVIDENCE_DUE_IN_DAYS:14}
 requestRespondentEvidence.dueInDaysAda: ${REQUEST_RESPONDENT_EVIDENCE_ADA_DUE_IN_DAYS:3}
+requestRespondentEvidence.dueInDaysDetained: ${REQUEST_RESPONDENT_EVIDENCE_DETAINED_DUE_IN_DAYS:7}
 requestRespondentReview.dueInDays: ${REQUEST_RESPONDENT_REVIEW_DUE_IN_DAYS:14}
 requestRespondentReviewAda.dueInDays: ${REQUEST_RESPONDENT_REVIEW_ADA_DUE_IN_DAYS:2}
+requestRespondentReviewDetained.dueInDays: ${REQUEST_RESPONDENT_REVIEW_DETAINED_DUE_IN_DAYS:7}
 appellantReasonsForAppeal.dueInDays: ${APPELLANT_REASONS_FOR_APPEAL_DUE_IN_DAYS:28}
 paymentAfterRemissionRejection.dueInMinutes: ${PAYMENT_AFTER_REMISSION_REJECTION_DUE_IN_MINUTES:20160}
 legalRepresentativeRemissionReminder.dueInMinutes: ${LEGAL_REP_REMISSION_REMINDER_DUE_IN_MINUTES:10080}
@@ -223,6 +229,8 @@ security:
     - "/swagger-ui/**"
     - "/v3/api-docs/**"
     - "/favicon.ico"
+    - "/csrf"
+    - "/testing-support/**"
   authorisedRoles:
     - "caseworker-ia"
     - "citizen"
@@ -342,6 +350,10 @@ security:
       - "uploadHearingRecording"
       - "turnOnNotifications"
       - "updateTribunalDecision"
+      - "generateListCmrTask"
+      - "markAppealAsDetained"
+      - "removeDetainedStatus"
+      - "addStatutoryTimeframe24Weeks"
     challenged-access-legal-operations:
       - "appellantInPersonManual"
       - "moveToPaymentPending"
@@ -427,6 +439,9 @@ security:
       - "uploadHearingRecording"
       - "turnOnNotifications"
       - "updateTribunalDecision"
+      - "generateListCmrTask"
+      - "markAppealAsDetained"
+      - "removeDetainedStatus"
     senior-tribunal-caseworker:
       - "appellantInPersonManual"
       - "moveToPaymentPending"
@@ -512,6 +527,9 @@ security:
       - "uploadHearingRecording"
       - "turnOnNotifications"
       - "updateTribunalDecision"
+      - "generateListCmrTask"
+      - "markAppealAsDetained"
+      - "removeDetainedStatus"
     hearing-centre-admin:
       - "appellantInPersonManual"
       - "startAppeal"
@@ -572,8 +590,13 @@ security:
       - "saveNotificationsToData"
       - "refundConfirmation"
       - "progressMigratedCase"
+      - "generateListCmrTask"
       - "hearingCancelled"
+      - "generateListCmrTask"
+      - "markAppealAsDetained"
+      - "removeDetainedStatus"
       - "editDocuments"
+      - "addStatutoryTimeframe24Weeks"
     ctsc:
       - "appellantInPersonManual"
       - "startAppeal"
@@ -635,7 +658,11 @@ security:
       - "refundConfirmation"
       - "progressMigratedCase"
       - "hearingCancelled"
+      - "generateListCmrTask"
+      - "markAppealAsDetained"
+      - "removeDetainedStatus"
       - "editDocuments"
+      - "addStatutoryTimeframe24Weeks"
     ctsc-team-leader:
       - "appellantInPersonManual"
       - "startAppeal"
@@ -697,7 +724,11 @@ security:
       - "refundConfirmation"
       - "progressMigratedCase"
       - "hearingCancelled"
+      - "generateListCmrTask"
+      - "markAppealAsDetained"
+      - "removeDetainedStatus"
       - "editDocuments"
+      - "addStatutoryTimeframe24Weeks"
     national-business-centre:
       - "appellantInPersonManual"
       - "startAppeal"
@@ -759,7 +790,11 @@ security:
       - "refundConfirmation"
       - "progressMigratedCase"
       - "hearingCancelled"
+      - "generateListCmrTask"
+      - "markAppealAsDetained"
+      - "removeDetainedStatus"
       - "editDocuments"
+      - "addStatutoryTimeframe24Weeks"
     challenged-access-ctsc:
       - "appellantInPersonManual"
       - "startAppeal"
@@ -821,7 +856,11 @@ security:
       - "refundConfirmation"
       - "progressMigratedCase"
       - "hearingCancelled"
+      - "generateListCmrTask"
+      - "markAppealAsDetained"
+      - "removeDetainedStatus"
       - "editDocuments"
+      - "addStatutoryTimeframe24Weeks"
     challenged-access-admin:
       - "appellantInPersonManual"
       - "startAppeal"
@@ -884,7 +923,11 @@ security:
       - "progressMigratedCase"
       - "hearingCancelled"
       - "appellantInPersonManual"
+      - "generateListCmrTask"
+      - "markAppealAsDetained"
+      - "removeDetainedStatus"
       - "editDocuments"
+      - "addStatutoryTimeframe24Weeks"
     caseworker-ia-homeofficeapc:
       - "uploadHomeOfficeBundle"
       - "uploadAdditionalEvidenceHomeOffice"
@@ -972,6 +1015,8 @@ security:
       - "decideCostsApplication"
       - "considerMakingCostsOrder"
       - "updateTribunalDecision"
+      - "addStatutoryTimeframe24Weeks"
+      - "removeStatutoryTimeframe24Weeks"
     judge:
       - "generateDecisionAndReasons"
       - "endAppeal"
@@ -1253,6 +1298,7 @@ security:
       - "updateTribunalDecision"
     caseworker-ia-system:
       - "requestHearingRequirementsFeature"
+      - "changeHearingCentre"
       - "moveToPaymentPending"
       - "rollbackPayment"
       - "rollbackPaymentTimeout"
@@ -1276,10 +1322,12 @@ security:
       - "UpdateNextHearingInfo"
       - "removeCaseManagerBulk"
       - "hearingCancelled"
+      - "rollbackMigration"
+      - "addStatutoryTimeframe24Weeks"
+      - "removeStatutoryTimeframe24Weeks"
     caseworker-ia-internal:
       - "revokeCaseAccess"
       - "removeCaseManagerBulk"
-    caseworker-ia-task-retrigger:
       - "reTriggerWaTasks"
       - "reTriggerWaBulkTasks"
     caseworker-ia-rparobot:
@@ -1290,6 +1338,8 @@ security:
 ### dependency configuration
 ccdGatewayUrl: ${CCD_GW_URL:http://localhost:3453}
 core_case_data_api_url: ${CCD_URL:http://127.0.0.1:4452}
+case_access:
+  core_case_data_api_url: ${CCD_CASE_ACCESS_URL:http://127.0.0.1:4452}
 document_management.url: ${DM_URL:http://127.0.0.1:4506}
 case_document_am.url: ${CASE_DOCUMENT_AM_URL:http://127.0.0.1:4455}
 idam.s2s-auth.totp_secret: ${IA_S2S_SECRET:AAAAAAAAAAAAAAAC}
@@ -1322,12 +1372,14 @@ idam:
     microservice: ${IA_S2S_MICROSERVICE:ia}
     url: ${S2S_URL:http://127.0.0.1:4502}
   s2s-authorised:
-    services: ${IA_S2S_AUTHORIZED_SERVICES:ccd,ccd_data,ccd_gw,ccd_ps,iac}
+    services: ${IA_S2S_AUTHORIZED_SERVICES:ccd,ccd_data,ccd_gw,ccd_ps,iac,payment_app,refunds_api}
   ia_system_user:
     username: ${IA_SYSTEM_USERNAME:system-user}
     password: ${IA_SYSTEM_PASSWORD:system-password}
     scope: "openid profile authorities acr roles create-user manage-user search-user"
-
+  system:
+    username: ${IA_SYSTEM_ACCESS_USERNAME:}
+    password: ${IA_SYSTEM_ACCESS_PASSWORD:}
 prof.ref.data.url: ${PROF_REF_DATA_URL:http://localhost:8991}
 prof.ref.data.path.org.users: ${PROF_REF_DATA_ORG_USERS_PATH:/refdata/external/v1/organisations/users}
 prof.ref.data.path.org.organisation: ${PROF_REF_DATA_ORG_ORGANISATION_PATH:/refdata/external/v1/organisations}
@@ -1349,8 +1401,6 @@ commonData:
 govUkHolidays:
   url: https://www.gov.uk/
 
-caseIdListJsonLocation: caseIdForRetrigger.json
-
 saveNotificationsData:
   enabled: ${SAVE_NOTIFICATIONS_TO_DATA_EVENT_ENABLED:true}
   scheduleAtHour: ${SAVE_NOTIFICATIONS_DATA_SCHEDULE_HOUR:23}
@@ -1361,3 +1411,11 @@ govnotify:
   key: ${IA_GOV_NOTIFY_KEY:gov-key}
   bail:
     key: ${IA_BAIL_GOV_NOTIFY_KEY:gov-bail-key}
+
+requestPagination.maxRecords: 100
+executorService.threadPoolSize: 10
+
+ia:
+  config:
+    validator:
+      secret: ${IA_CONFIG_VALIDATOR_SECRET:}

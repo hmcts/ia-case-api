@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMOVE_CASE_MANAGER_CASE_ID_LIST;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_ID_LIST;
 
 import java.util.Arrays;
 import lombok.extern.slf4j.Slf4j;
@@ -47,11 +47,11 @@ public class RemoveCaseManagerBulkHandler implements PreSubmitCallbackHandler<As
             throw new IllegalStateException("Cannot handle callback");
         }
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
-        String removeCaseManageCaseIdList = asylumCase.read(REMOVE_CASE_MANAGER_CASE_ID_LIST, String.class)
+        String caseIdList = asylumCase.read(CASE_ID_LIST, String.class)
             .orElse("");
-        Arrays.stream(removeCaseManageCaseIdList.split(","))
+        Arrays.stream(caseIdList.split(","))
             .forEach(caseId -> roleAssignmentService.removeCaseManagerRole(caseId, idamService.getServiceUserToken()));
-        asylumCase.clear(REMOVE_CASE_MANAGER_CASE_ID_LIST);
+        asylumCase.clear(CASE_ID_LIST);
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 }
