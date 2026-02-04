@@ -134,7 +134,7 @@ class StartAppealMidEventTest {
 
                 if ((event == Event.START_APPEAL || event == Event.EDIT_APPEAL || event == Event.EDIT_APPEAL_AFTER_SUBMIT
                     || event == Event.UPDATE_DETENTION_LOCATION)
-                    && (callbackStage == MID_EVENT || callbackStage == ABOUT_TO_SUBMIT)
+                    && callbackStage == MID_EVENT
                     && (callback.getPageId().equals(DETENTION_FACILITY_PAGE_ID)
                         || callback.getPageId().equals(HOME_OFFICE_REFERENCE_NUMBER_PAGE_ID)
                         || callback.getPageId().equals(APPELLANTS_ADDRESS_PAGE_ID)
@@ -152,8 +152,9 @@ class StartAppealMidEventTest {
     @Test
     void handling_should_throw_if_cannot_actually_handle() {
 
-        when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class))
-                .thenReturn(Optional.of(correctHomeOfficeReferenceFormatCid));
+        assertThatThrownBy(() -> startAppealMidEvent.handle(ABOUT_TO_SUBMIT, callback))
+            .hasMessage("Cannot handle callback")
+            .isExactlyInstanceOf(IllegalStateException.class);
 
         assertThatThrownBy(() -> startAppealMidEvent.handle(ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")

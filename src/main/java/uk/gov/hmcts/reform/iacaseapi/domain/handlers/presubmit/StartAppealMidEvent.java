@@ -45,9 +45,11 @@ public class StartAppealMidEvent implements PreSubmitCallbackHandler<AsylumCase>
                 callback.getEvent(),
                 callback.getPageId()
         );
+        if (callback.getPageId() == null || callback.getPageId().isBlank()) {
+            return false;
+        }
 
-        return (callbackStage == PreSubmitCallbackStage.MID_EVENT
-                || callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT)
+        return callbackStage == PreSubmitCallbackStage.MID_EVENT
                 && (callback.getEvent() == Event.START_APPEAL
                     || callback.getEvent() == Event.EDIT_APPEAL
                     || callback.getEvent() == Event.EDIT_APPEAL_AFTER_SUBMIT
