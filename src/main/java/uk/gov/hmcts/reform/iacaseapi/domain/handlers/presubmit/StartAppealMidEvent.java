@@ -39,8 +39,15 @@ public class StartAppealMidEvent implements PreSubmitCallbackHandler<AsylumCase>
     ) {
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
+        log.info(
+                "canHandle called: stage={}, event={}, pageId={}",
+                callbackStage,
+                callback.getEvent(),
+                callback.getPageId()
+        );
 
-        return callbackStage == PreSubmitCallbackStage.MID_EVENT
+        return (callbackStage == PreSubmitCallbackStage.MID_EVENT
+                || callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT)
                 && (callback.getEvent() == Event.START_APPEAL
                     || callback.getEvent() == Event.EDIT_APPEAL
                     || callback.getEvent() == Event.EDIT_APPEAL_AFTER_SUBMIT
@@ -119,6 +126,12 @@ public class StartAppealMidEvent implements PreSubmitCallbackHandler<AsylumCase>
         }
 
         if (callback.getPageId().equals(APPELLANTS_CONTACT_PREFERENCE_PAGE_ID)) {
+            log.info(
+                    "canHandle called: stage={}, event={}, pageId={}",
+                    callbackStage,
+                    callback.getEvent(),
+                    callback.getPageId()
+            );
             log.info("This is the APPELLANTS_CONTACT_PREFERENCE_PAGE_ID page");
             Optional<String> email = asylumCase.read(EMAIL, String.class);
             Optional<String> emailRetype = asylumCase.read(EMAIL_RETYPE, String.class);
