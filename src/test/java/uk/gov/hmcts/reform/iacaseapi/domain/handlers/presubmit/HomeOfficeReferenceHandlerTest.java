@@ -29,6 +29,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.CcdDataService;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.HomeOfficeReferenceService;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.homeoffice.HomeOfficeReferenceData;
 
@@ -46,18 +47,23 @@ class HomeOfficeReferenceHandlerTest {
     private CaseDetails<AsylumCase> caseDetails;
     @Mock
     private AsylumCase asylumCase;
+    // @Mock
+    // private HomeOfficeReferenceService homeOfficeReferenceService;
     @Mock
-    private HomeOfficeReferenceService homeOfficeReferenceService;
+    private CcdDataService ccdDataService;
 
+    private HomeOfficeReferenceService homeOfficeReferenceService;
     private HomeOfficeReferenceHandler homeOfficeReferenceHandler;
 
     @BeforeEach
     public void setUp() {
+        homeOfficeReferenceService = new HomeOfficeReferenceService(ccdDataService);
         homeOfficeReferenceHandler = new HomeOfficeReferenceHandler(homeOfficeReferenceService);
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(callback.getPageId()).thenReturn("homeOfficeReferenceNumber_TEMPORARILY_DISABLED");
+        when(callback.getPageId()).thenReturn("homeOfficeReferenceNumber");
+        //when(callback.getPageId()).thenReturn("homeOfficeReferenceNumber_TEMPORARILY_DISABLED");
     }
 
     @ParameterizedTest
@@ -97,7 +103,8 @@ class HomeOfficeReferenceHandlerTest {
     @Test
     void should_handle_correct_events_and_stages() {
         when(callback.getEvent()).thenReturn(START_APPEAL);
-        when(callback.getPageId()).thenReturn("homeOfficeReferenceNumber_TEMPORARILY_DISABLED");
+        when(callback.getPageId()).thenReturn("homeOfficeReferenceNumber");
+        //when(callback.getPageId()).thenReturn("homeOfficeReferenceNumber_TEMPORARILY_DISABLED");
         
         assertTrue(homeOfficeReferenceHandler.canHandle(MID_EVENT, callback));
         
@@ -115,10 +122,12 @@ class HomeOfficeReferenceHandlerTest {
     void should_handle_correct_page_ids() {
         when(callback.getEvent()).thenReturn(START_APPEAL);
         
-        when(callback.getPageId()).thenReturn("homeOfficeReferenceNumber_TEMPORARILY_DISABLED");
+        //when(callback.getPageId()).thenReturn("homeOfficeReferenceNumber_TEMPORARILY_DISABLED");
+        when(callback.getPageId()).thenReturn("homeOfficeReferenceNumber");
         assertTrue(homeOfficeReferenceHandler.canHandle(MID_EVENT, callback));
         
-        when(callback.getPageId()).thenReturn("appellantBasicDetails_TEMPORARILY_DISABLED");
+        //when(callback.getPageId()).thenReturn("appellantBasicDetails_TEMPORARILY_DISABLED");
+        when(callback.getPageId()).thenReturn("appellantBasicDetails");
         assertTrue(homeOfficeReferenceHandler.canHandle(MID_EVENT, callback));
         
         when(callback.getPageId()).thenReturn("otherPage");
@@ -128,7 +137,8 @@ class HomeOfficeReferenceHandlerTest {
     @Test
     void should_throw_exception_when_home_office_reference_missing() {
         when(callback.getEvent()).thenReturn(START_APPEAL);
-        when(callback.getPageId()).thenReturn("homeOfficeReferenceNumber_TEMPORARILY_DISABLED");
+        //when(callback.getPageId()).thenReturn("homeOfficeReferenceNumber_TEMPORARILY_DISABLED");
+        when(callback.getPageId()).thenReturn("homeOfficeReferenceNumber");
         when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> homeOfficeReferenceHandler.handle(MID_EVENT, callback))
@@ -167,10 +177,7 @@ class HomeOfficeReferenceHandlerTest {
         String reference = "123456789";
         HomeOfficeReferenceData mockData = new HomeOfficeReferenceData();
         mockData.setUan(reference);
-        
-        when(homeOfficeReferenceService.getHomeOfficeReferenceData(reference))
-            .thenReturn(Optional.of(mockData));
-        
+                
         boolean result = homeOfficeReferenceHandler.isMatchingHomeOfficeCaseNumber(reference);
         
         assertThat(result).isTrue();
@@ -182,9 +189,6 @@ class HomeOfficeReferenceHandlerTest {
         HomeOfficeReferenceData mockData = new HomeOfficeReferenceData();
         mockData.setUan("987654321");
         
-        when(homeOfficeReferenceService.getHomeOfficeReferenceData(reference))
-            .thenReturn(Optional.of(mockData));
-        
         boolean result = homeOfficeReferenceHandler.isMatchingHomeOfficeCaseNumber(reference);
         
         assertThat(result).isFalse();
@@ -195,10 +199,7 @@ class HomeOfficeReferenceHandlerTest {
         String reference = "123456789";
         HomeOfficeReferenceData mockData = new HomeOfficeReferenceData();
         mockData.setUan(null);
-        
-        when(homeOfficeReferenceService.getHomeOfficeReferenceData(reference))
-            .thenReturn(Optional.of(mockData));
-        
+         
         boolean result = homeOfficeReferenceHandler.isMatchingHomeOfficeCaseNumber(reference);
         
         assertThat(result).isFalse();
@@ -207,9 +208,6 @@ class HomeOfficeReferenceHandlerTest {
     @Test
     void should_return_false_when_home_office_data_not_found() {
         String reference = "123456789";
-        
-        when(homeOfficeReferenceService.getHomeOfficeReferenceData(reference))
-            .thenReturn(Optional.empty());
         
         boolean result = homeOfficeReferenceHandler.isMatchingHomeOfficeCaseNumber(reference);
         
@@ -228,9 +226,6 @@ class HomeOfficeReferenceHandlerTest {
         HomeOfficeReferenceData mockData = new HomeOfficeReferenceData();
         mockData.setAppellants(null);
         
-        when(homeOfficeReferenceService.getHomeOfficeReferenceData(reference))
-            .thenReturn(Optional.of(mockData));
-        
         boolean result = homeOfficeReferenceHandler.isMatchingHomeOfficeCaseDetails(reference, asylumCase);
         
         assertThat(result).isFalse();
@@ -241,9 +236,6 @@ class HomeOfficeReferenceHandlerTest {
         String reference = "123456789";
         HomeOfficeReferenceData mockData = new HomeOfficeReferenceData();
         mockData.setAppellants(Collections.emptyList());
-        
-        when(homeOfficeReferenceService.getHomeOfficeReferenceData(reference))
-            .thenReturn(Optional.of(mockData));
         
         boolean result = homeOfficeReferenceHandler.isMatchingHomeOfficeCaseDetails(reference, asylumCase);
         
@@ -261,8 +253,7 @@ class HomeOfficeReferenceHandlerTest {
         mockData.setAppellants(Arrays.asList(appellant));
         
         String reference = "123456789";
-        when(homeOfficeReferenceService.getHomeOfficeReferenceData(reference))
-            .thenReturn(Optional.of(mockData));
+        
         when(asylumCase.read(APPELLANT_GIVEN_NAMES, String.class)).thenReturn(Optional.of("John"));
         when(asylumCase.read(APPELLANT_FAMILY_NAME, String.class)).thenReturn(Optional.of("Smith"));
         when(asylumCase.read(APPELLANT_DATE_OF_BIRTH, String.class)).thenReturn(Optional.of("1990-01-01"));
@@ -283,8 +274,7 @@ class HomeOfficeReferenceHandlerTest {
         mockData.setAppellants(Arrays.asList(appellant));
         
         String reference = "123456789";
-        when(homeOfficeReferenceService.getHomeOfficeReferenceData(reference))
-            .thenReturn(Optional.of(mockData));
+        
         when(asylumCase.read(APPELLANT_GIVEN_NAMES, String.class)).thenReturn(Optional.of("john"));
         when(asylumCase.read(APPELLANT_FAMILY_NAME, String.class)).thenReturn(Optional.of("smith"));
         when(asylumCase.read(APPELLANT_DATE_OF_BIRTH, String.class)).thenReturn(Optional.of("1990-01-01"));
@@ -305,8 +295,7 @@ class HomeOfficeReferenceHandlerTest {
         mockData.setAppellants(Arrays.asList(appellant));
         
         String reference = "123456789";
-        when(homeOfficeReferenceService.getHomeOfficeReferenceData(reference))
-            .thenReturn(Optional.of(mockData));
+        
         when(asylumCase.read(APPELLANT_GIVEN_NAMES, String.class)).thenReturn(Optional.of("John"));
         when(asylumCase.read(APPELLANT_FAMILY_NAME, String.class)).thenReturn(Optional.of("Jones"));
         when(asylumCase.read(APPELLANT_DATE_OF_BIRTH, String.class)).thenReturn(Optional.of("1990-01-01"));
@@ -327,8 +316,7 @@ class HomeOfficeReferenceHandlerTest {
         mockData.setAppellants(Arrays.asList(appellant));
         
         String reference = "123456789";
-        when(homeOfficeReferenceService.getHomeOfficeReferenceData(reference))
-            .thenReturn(Optional.of(mockData));
+        
         when(asylumCase.read(APPELLANT_GIVEN_NAMES, String.class)).thenReturn(Optional.of("John"));
         when(asylumCase.read(APPELLANT_FAMILY_NAME, String.class)).thenReturn(Optional.of("Smith"));
         when(asylumCase.read(APPELLANT_DATE_OF_BIRTH, String.class)).thenReturn(Optional.of("1990-01-02"));
@@ -341,9 +329,6 @@ class HomeOfficeReferenceHandlerTest {
     @Test
     void should_return_false_when_home_office_case_details_not_found() {
         String reference = "123456789";
-        
-        when(homeOfficeReferenceService.getHomeOfficeReferenceData(reference))
-            .thenReturn(Optional.empty());
         
         boolean result = homeOfficeReferenceHandler.isMatchingHomeOfficeCaseDetails(reference, asylumCase);
         
@@ -366,8 +351,7 @@ class HomeOfficeReferenceHandlerTest {
         mockData.setAppellants(Arrays.asList(appellant1, appellant2));
 
         String reference = "123456789";
-        when(homeOfficeReferenceService.getHomeOfficeReferenceData(reference))
-            .thenReturn(Optional.of(mockData));
+        
         when(asylumCase.read(APPELLANT_GIVEN_NAMES, String.class)).thenReturn(Optional.of("John"));
         when(asylumCase.read(APPELLANT_FAMILY_NAME, String.class)).thenReturn(Optional.of("Smith"));
         when(asylumCase.read(APPELLANT_DATE_OF_BIRTH, String.class)).thenReturn(Optional.of("1990-01-01"));
@@ -380,7 +364,8 @@ class HomeOfficeReferenceHandlerTest {
     @Test
     void should_add_error_for_malformed_home_office_reference_on_homeOfficeDecision_page() {
         when(callback.getEvent()).thenReturn(START_APPEAL);
-        when(callback.getPageId()).thenReturn("homeOfficeReferenceNumber_TEMPORARILY_DISABLED");
+        //when(callback.getPageId()).thenReturn("homeOfficeReferenceNumber_TEMPORARILY_DISABLED");
+        when(callback.getPageId()).thenReturn("homeOfficeReferenceNumber");
         when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of("invalid-ref"));
 
         PreSubmitCallbackResponse<AsylumCase> response = 
@@ -392,9 +377,9 @@ class HomeOfficeReferenceHandlerTest {
     @Test
     void should_add_error_for_non_matching_home_office_case_number() {
         when(callback.getEvent()).thenReturn(START_APPEAL);
-        when(callback.getPageId()).thenReturn("homeOfficeReferenceNumber_TEMPORARILY_DISABLED");
+        //when(callback.getPageId()).thenReturn("homeOfficeReferenceNumber_TEMPORARILY_DISABLED");
+        when(callback.getPageId()).thenReturn("homeOfficeReferenceNumber");
         when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of("123456789"));
-        when(homeOfficeReferenceService.getHomeOfficeReferenceData("123456789")).thenReturn(Optional.empty());
 
         PreSubmitCallbackResponse<AsylumCase> response = 
             homeOfficeReferenceHandler.handle(MID_EVENT, callback);
@@ -405,7 +390,8 @@ class HomeOfficeReferenceHandlerTest {
     @Test
     void should_add_error_for_non_matching_appellant_details_on_appellantBasicDetails_page() {
         when(callback.getEvent()).thenReturn(START_APPEAL);
-        when(callback.getPageId()).thenReturn("appellantBasicDetails_TEMPORARILY_DISABLED");
+        //when(callback.getPageId()).thenReturn("appellantBasicDetails_TEMPORARILY_DISABLED");
+        when(callback.getPageId()).thenReturn("appellantBasicDetails");
         
         String reference = "123456789";
         when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of(reference));
@@ -413,7 +399,6 @@ class HomeOfficeReferenceHandlerTest {
         HomeOfficeReferenceData mockData = new HomeOfficeReferenceData();
         mockData.setUan(reference);
         mockData.setAppellants(Collections.emptyList());
-        when(homeOfficeReferenceService.getHomeOfficeReferenceData(reference)).thenReturn(Optional.of(mockData));
 
         PreSubmitCallbackResponse<AsylumCase> response = 
             homeOfficeReferenceHandler.handle(MID_EVENT, callback);

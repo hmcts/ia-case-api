@@ -1,17 +1,5 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
-import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
-import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.HomeOfficeReferenceService;
-
-import java.text.Normalizer;
-import java.util.regex.Pattern;
-
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_DATE_OF_BIRTH;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_FAMILY_NAME;
@@ -19,6 +7,19 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isEntryClearanceDecision;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isInternalCase;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.outOfCountryDecisionTypeIsRefusalOfHumanRightsOrPermit;
+
+import java.text.Normalizer;
+import java.util.regex.Pattern;
+
+import org.springframework.stereotype.Component;
+
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.HomeOfficeReferenceService;
 
 
 @Component
@@ -43,10 +44,14 @@ public class HomeOfficeReferenceHandler implements PreSubmitCallbackHandler<Asyl
         return callbackStage == PreSubmitCallbackStage.MID_EVENT
                 && (callback.getEvent() == Event.START_APPEAL
                 || callback.getEvent() == Event.EDIT_APPEAL)
-                && (callback.getPageId().equals("homeOfficeReferenceNumber_TEMPORARILY_DISABLED") || 
+                // && (callback.getPageId().equals("homeOfficeReferenceNumber_TEMPORARILY_DISABLED") || 
+                //     // TODO - add logic for this case below (the other two have been implemented, whereas this one hasn't)
+                //     callback.getPageId().equals("oocHomeOfficeReferenceNumber_TEMPORARILY_DISABLED") ||
+                //     callback.getPageId().equals("appellantBasicDetails_TEMPORARILY_DISABLED"));
+                && (callback.getPageId().equals("homeOfficeReferenceNumber") || 
                     // TODO - add logic for this case below (the other two have been implemented, whereas this one hasn't)
-                    callback.getPageId().equals("oocHomeOfficeReferenceNumber_TEMPORARILY_DISABLED") ||
-                    callback.getPageId().equals("appellantBasicDetails_TEMPORARILY_DISABLED"));
+                    callback.getPageId().equals("oocHomeOfficeReferenceNumber") ||
+                    callback.getPageId().equals("appellantBasicDetails"));
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
@@ -68,7 +73,6 @@ public class HomeOfficeReferenceHandler implements PreSubmitCallbackHandler<Asyl
                 .read(HOME_OFFICE_REFERENCE_NUMBER, String.class)
                 .orElseThrow(() -> new IllegalStateException("homeOfficeReferenceNumber is missing"));
 
-                
             if (callback.getPageId().equals("homeOfficeReferenceNumber_TEMPORARILY_DISABLED")) {    
                 if (!isWellFormedHomeOfficeReference(homeOfficeReferenceNumber)) {
                     PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
