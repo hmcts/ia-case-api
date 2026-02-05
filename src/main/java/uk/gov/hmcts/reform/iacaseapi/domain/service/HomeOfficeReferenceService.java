@@ -11,16 +11,29 @@ import java.util.Optional;
 @Service
 public class HomeOfficeReferenceService {
 
+    private final CcdDataService ccdDataService;
+
+    public HomeOfficeReferenceService(CcdDataService ccdDataService) {
+        this.ccdDataService = ccdDataService;
+    }
+
     @Cacheable(value = "homeOfficeReferenceDataCache")
     public Optional<HomeOfficeReferenceData> getHomeOfficeReferenceData(String homeOfficeReferenceString) {
-        log.info("Getting Home Office reference data for: {}", homeOfficeReferenceString);
         
         if (homeOfficeReferenceString == null || homeOfficeReferenceString.trim().isEmpty()) {
-            log.warn("Home Office reference string provided is null or empty");
+            log.warn("Home Office reference number is null or empty");
             return Optional.empty();
         }
+
+        log.info("Getting Home Office reference data for: {}", homeOfficeReferenceString);
         
         // Put there the code fetching home office data
+
+
+        //                 ccdDataService.raiseEvent(trimmedCaseId, Event.RE_TRIGGER_WA_TASKS);
+        //        String appellantFamilyName = asylumCase.read(APPELLANT_FAMILY_NAME, String.class).orElse("");
+
+
         return Optional.empty();
     }
 

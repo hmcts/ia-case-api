@@ -41,7 +41,7 @@ public class CcdDataService {
                 caseId,
                 Event.RE_TRIGGER_WA_TASKS
             );
-        log.info("Case details found for the caseId: {}", caseId);
+        log.debug("Case details found for the caseId: {}", caseId);
 
         return submitEvent(
             tokens,
@@ -52,19 +52,37 @@ public class CcdDataService {
         );
     }
 
+    public SubmitEventDetails raiseEvent(String caseId, Event eventName) {
+        log.debug("Event name: {}", eventName);
+        Tokens tokens = getTokens(caseId, eventName);
+
+        final StartEventDetails startEventDetails =
+            getCase(
+                tokens,
+                caseId,
+                eventName
+            );
+        log.debug("Case details found for caseId {}", caseId);
+
+        return submitEvent(
+            tokens,
+            caseId,
+            startEventDetails,
+            eventName,
+            new HashMap<>()
+        );
+    }
+
     private Tokens getTokens(String caseId, Event event) {
         Tokens tokens = new Tokens();
         try {
             String userToken = idamService.getServiceUserToken();
             tokens.setUserToken(userToken);
-            log.info("System user token has been generated for event: {}, caseId: {}.", event, caseId);
-
+            log.debug("System user token has been generated for event: {}, caseId: {}.", event, caseId);
             tokens.setS2sToken(serviceAuthorization.generate());
-
-            log.info("S2S token has been generated for event: {}, caseId: {}.", event, caseId);
-
+            log.debug("S2S token has been generated for event: {}, caseId: {}.", event, caseId);
             tokens.setUid(idamService.getUserInfo(userToken).getUid());
-            log.info("System user id has been fetched for event: {}, caseId: {}.", event, caseId);
+            log.debug("System user id has been fetched for event: {}, caseId: {}.", event, caseId);
 
         } catch (IdentityManagerResponseException ex) {
 
@@ -76,7 +94,7 @@ public class CcdDataService {
 
     private StartEventDetails getCase(Tokens tokens, String caseId, Event event) {
         return ccdDataApi.startEvent(
-            tokens.getUserToken(), tokens.getS2sToken(), tokens.getUid(), CcdDataService.JURISDICTION, CcdDataService.CASE_TYPE,
+            tokens.getUserToken(), tokens.getS2sToken(), tokens.getUid(), JURISDICTION, CASE_TYPE,
             caseId, event.toString()
         );
     }

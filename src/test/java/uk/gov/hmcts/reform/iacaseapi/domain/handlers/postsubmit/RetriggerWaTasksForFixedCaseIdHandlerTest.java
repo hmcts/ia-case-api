@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.CcdDataService;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -103,7 +104,7 @@ public class RetriggerWaTasksForFixedCaseIdHandlerTest {
 
         retriggerWaTasksForFixedCaseIdHandler.handle(callbackStage, callback);
 
-        verify(ccdDataService, times(0)).retriggerWaTasks(anyString());
+        verify(ccdDataService, times(0)).raiseEvent(anyString(), eq(Event.RE_TRIGGER_WA_TASKS));
         verify(asylumCase, times(0)).clear(AsylumCaseFieldDefinition.CASE_ID_LIST);
     }
 
@@ -117,7 +118,7 @@ public class RetriggerWaTasksForFixedCaseIdHandlerTest {
 
         retriggerWaTasksForFixedCaseIdHandler.handle(callbackStage, callback);
 
-        verify(ccdDataService, times(0)).retriggerWaTasks(anyString());
+        verify(ccdDataService, times(0)).raiseEvent(anyString(), eq(Event.RE_TRIGGER_WA_TASKS));
         verify(asylumCase, times(0)).clear(AsylumCaseFieldDefinition.CASE_ID_LIST);
 
     }
@@ -131,7 +132,7 @@ public class RetriggerWaTasksForFixedCaseIdHandlerTest {
             .thenReturn(java.util.Optional.of("1,2,3,5,6,8,2,1,26,8,1677132005196104"));
         retriggerWaTasksForFixedCaseIdHandler.handle(callbackStage, callback);
 
-        verify(ccdDataService, times(1)).retriggerWaTasks(caseIdCaptor.capture());
+        verify(ccdDataService, times(1)).raiseEvent(caseIdCaptor.capture(), eq(Event.RE_TRIGGER_WA_TASKS));
         verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.CASE_ID_LIST);
 
         String finalCaseId = caseIdCaptor.getValue();
@@ -152,7 +153,7 @@ public class RetriggerWaTasksForFixedCaseIdHandlerTest {
                 "1682542357170697,3673342967892569,1677132005196104"));
         retriggerWaTasksForFixedCaseIdHandler.handle(callbackStage, callback);
 
-        verify(ccdDataService, times(10)).retriggerWaTasks(caseIdCaptor.capture());
+        verify(ccdDataService, times(10)).raiseEvent(caseIdCaptor.capture(), eq(Event.RE_TRIGGER_WA_TASKS));
         verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.CASE_ID_LIST);
 
         String finalCaseId = caseIdCaptor.getValue();
@@ -185,7 +186,7 @@ public class RetriggerWaTasksForFixedCaseIdHandlerTest {
             .thenReturn(java.util.Optional.of("5260728023204485"));
         retriggerWaTasksForFixedCaseIdHandler.handle(callbackStage, callback);
 
-        verify(ccdDataService, times(1)).retriggerWaTasks(caseIdCaptor.capture());
+        verify(ccdDataService, times(1)).raiseEvent(caseIdCaptor.capture(), eq(Event.RE_TRIGGER_WA_TASKS));
         verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.CASE_ID_LIST);
 
         String finalCaseId = caseIdCaptor.getValue();
