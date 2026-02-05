@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
+import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -304,5 +305,50 @@ class AppealWasNotSubmittedSupportingDocumentsHandlerTest {
             any()
         );
     }
+    
+    @Test
+    void should_append_appeal_was_not_submitted_doc_when_no_legal_rep_documents_appellants_rep() {
+        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(APPELLANTS_REPRESENTATION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+
+        when(asylumCase.read(LEGAL_REPRESENTATIVE_DOCUMENTS)).thenReturn(Optional.of(emptyList()));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse = appealWasNotSubmittedSupportingDocumentsHandler.handle(ABOUT_TO_SUBMIT, callback);
+
+        assertThat(callbackResponse).isNotNull();
+
+        verify(asylumCase, times(1)).write(eq(LEGAL_REPRESENTATIVE_DOCUMENTS), anyList());
+    }
+
+    @Test
+    void should_append_appeal_was_not_submitted_doc_should_add_legal_rep_documents_appellants_rep() {
+        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(APPELLANTS_REPRESENTATION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+
+        final DocumentWithMetadata legalRepAppealNotSubmittedDocument = new DocumentWithMetadata(
+                appealNotSubmittedDoc,
+                "appeal not submitted description",
+                "21/07/2021",
+                APPEAL_WAS_NOT_SUBMITTED_SUPPORTING_DOCUMENT,
+                "some supplier"
+        );
+
+        allLegalRepDocuments = List.of(
+                new IdValue<>("1", someLegalRepDocument),
+                new IdValue<>("2", legalRepAppealNotSubmittedDocument)
+        );
+
+        when(asylumCase.read(LEGAL_REPRESENTATIVE_DOCUMENTS)).thenReturn(Optional.of(allLegalRepDocuments));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse = appealWasNotSubmittedSupportingDocumentsHandler.handle(ABOUT_TO_SUBMIT, callback);
+
+        assertThat(callbackResponse).isNotNull();
+
+        verify(asylumCase, times(1)).write(eq(LEGAL_REPRESENTATIVE_DOCUMENTS), anyList());
+    }
 
 }
+
+
