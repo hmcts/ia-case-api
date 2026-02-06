@@ -141,6 +141,8 @@ public class StartAppealMidEvent implements PreSubmitCallbackHandler<AsylumCase>
             if (emailMismatch || mobileMismatch) {
                 response.addError("The details given do not match");
             }
+            asylumCase.clear(EMAIL_RETYPE);
+            asylumCase.clear(MOBILE_NUMBER_RETYPE);
         }
 
         if (callback.getPageId().equals(LEGAL_REPRESENTATIVE_DETAILS)) {
