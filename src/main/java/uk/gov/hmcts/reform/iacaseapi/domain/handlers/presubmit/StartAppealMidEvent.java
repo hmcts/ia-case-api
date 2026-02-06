@@ -7,7 +7,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.HomeOffice
 import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.RequiredFieldMissingException;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
@@ -19,7 +18,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
-@Slf4j
 @Component
 public class StartAppealMidEvent implements PreSubmitCallbackHandler<AsylumCase> {
 

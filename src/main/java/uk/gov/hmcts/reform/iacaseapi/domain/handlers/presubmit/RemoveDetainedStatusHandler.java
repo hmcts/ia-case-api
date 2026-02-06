@@ -23,8 +23,8 @@ public class RemoveDetainedStatusHandler implements PreSubmitCallbackHandler<Asy
 
     @Override
     public boolean canHandle(
-            PreSubmitCallbackStage callbackStage,
-            Callback<AsylumCase> callback
+        PreSubmitCallbackStage callbackStage,
+        Callback<AsylumCase> callback
     ) {
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
@@ -44,15 +44,16 @@ public class RemoveDetainedStatusHandler implements PreSubmitCallbackHandler<Asy
 
     @Override
     public PreSubmitCallbackResponse<AsylumCase> handle(
-            PreSubmitCallbackStage callbackStage,
-            Callback<AsylumCase> callback
-    ) {
+        PreSubmitCallbackStage callbackStage,
+        Callback<AsylumCase> callback) {
         if (!canHandle(callbackStage, callback)) {
             throw new IllegalStateException("Cannot handle callback");
         }
 
         AsylumCase asylumCase =
-                callback.getCaseDetails().getCaseData();
+                callback
+                        .getCaseDetails()
+                        .getCaseData();
 
         PreSubmitCallbackResponse<AsylumCase> response =
                 new PreSubmitCallbackResponse<>(asylumCase);
@@ -91,6 +92,7 @@ public class RemoveDetainedStatusHandler implements PreSubmitCallbackHandler<Asy
 
     private void clearDetentionRelatedFields(AsylumCase asylumCase) {
 
+        log.info("Event: Remove Detained status - Clearing Detention related fields");
         asylumCase.clear(DETENTION_FACILITY);
         asylumCase.clear(IRC_NAME);
         asylumCase.clear(PRISON_NAME);
