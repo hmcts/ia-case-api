@@ -40,12 +40,7 @@ public class StartAppealMidEvent implements PreSubmitCallbackHandler<AsylumCase>
     ) {
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
-        log.info(
-                "canHandle called: stage={}, event={}, pageId={}",
-                callbackStage,
-                callback.getEvent(),
-                callback.getPageId()
-        );
+
         if (callback.getPageId() == null || callback.getPageId().isBlank()) {
             return false;
         }

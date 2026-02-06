@@ -524,6 +524,8 @@ public enum AsylumCaseFieldDefinition {
             "legalRepMobilePhoneNumber", new TypeReference<String>(){}),
     LEGAL_REPRESENTATIVE_DETAILS(
             "legalRepresentativeDetails", new TypeReference<String>(){}),
+    DETENTION_REMOVAL_APPELLANT_CONTACT_PREFERENCE(
+            "detentionRemoval_appellantContactPreference", new TypeReference<String>(){}),
 
     CHANGE_DIRECTION_DUE_DATE_ACTION_AVAILABLE(
         "changeDirectionDueDateActionAvailable", new TypeReference<YesOrNo>(){}),
