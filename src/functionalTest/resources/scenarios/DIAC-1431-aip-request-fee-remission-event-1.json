@@ -1,5 +1,5 @@
 {
-  "description": "DIAC-1431 AiP journey admin officer apply for asylumSupport when previous asylumSupportFromHo decided",
+  "description": "DIAC-1431 AiP journey admin officer  apply for asylumSupport when previous asylumSupportFromHo decided",
   "launchDarklyKey": "dlrm-refund-feature-flag:true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
