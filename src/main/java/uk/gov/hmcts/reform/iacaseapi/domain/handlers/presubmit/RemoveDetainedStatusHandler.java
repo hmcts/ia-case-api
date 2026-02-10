@@ -77,6 +77,8 @@ public class RemoveDetainedStatusHandler implements PreSubmitCallbackHandler<Asy
             if (emailMismatch || mobileMismatch) {
                 response.addError("The details given do not match");
             }
+            asylumCase.clear(EMAIL_RETYPE);
+            asylumCase.clear(MOBILE_NUMBER_RETYPE);
         }
 
         return response;
