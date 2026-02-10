@@ -30,7 +30,7 @@ public class RemoveDetainedStatusHandler implements PreSubmitCallbackHandler<Asy
         requireNonNull(callback, "callback must not be null");
 
         return callback.getEvent() == REMOVE_DETAINED_STATUS && (callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT || (callbackStage == PreSubmitCallbackStage.MID_EVENT
-                && REMOVE_DETAINED_STATUS_PAGE_ID.equals(callback.getPageId()));
+                && REMOVE_DETAINED_STATUS_PAGE_ID.equals(callback.getPageId())));
     }
 
 
