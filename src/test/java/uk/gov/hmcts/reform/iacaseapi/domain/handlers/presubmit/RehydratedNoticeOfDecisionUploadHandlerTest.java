@@ -78,7 +78,7 @@ class RehydratedNoticeOfDecisionUploadHandlerTest {
 
         verify(asylumCase, times(1)).write(
                 UPLOAD_THE_NOTICE_OF_DECISION_DOCS,
-                Optional.of(noticeOfDecisionDocument)
+                noticeOfDecisionDocument
         );
 
         verify(asylumCase, times(1)).clear(UPLOAD_THE_NOTICE_OF_DECISION_DOCS_REHYDRATED);
