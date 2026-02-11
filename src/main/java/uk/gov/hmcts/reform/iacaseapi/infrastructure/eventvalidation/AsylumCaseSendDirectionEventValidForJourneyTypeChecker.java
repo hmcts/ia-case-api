@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.eventvalidation;
 
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SEND_DIRECTION_PARTIES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isAppellantInPersonManual;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isInternalCase;
 
 import java.util.Arrays;
@@ -32,7 +33,7 @@ public class AsylumCaseSendDirectionEventValidForJourneyTypeChecker implements E
                 log.error("Cannot send a legal representative a direction for an appellant in person case");
                 return new EventValid("This is an appellant in person case. You cannot select legal representative as the recipient.");
             }
-            if (isInternalCase(asylumCase) && (directionTo == Parties.BOTH || directionTo == Parties.LEGAL_REPRESENTATIVE)) {
+            if (isAppellantInPersonManual(asylumCase) && (directionTo == Parties.BOTH || directionTo == Parties.LEGAL_REPRESENTATIVE)) {
                 log.error("Cannot send legal representative a direction for an internal case");
                 return new EventValid("This is an appellant in person case. You cannot select legal representative as the recipient.");
             }

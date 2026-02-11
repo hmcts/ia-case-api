@@ -110,6 +110,17 @@ class AsylumCaseSendDirectionEventValidForJourneyTypeCheckerTest {
         assertThat(eventValid).isEqualTo(EventValid.VALID_EVENT);
     }
 
+    @ParameterizedTest
+    @EnumSource(value = Parties.class, names = {
+            "LEGAL_REPRESENTATIVE", "BOTH"
+    })
+    void canSendDirectionToLegalRepInternalCase(Parties party) {
+        setupInternalCaseCallback(party);
+        EventValid eventValid = new AsylumCaseSendDirectionEventValidForJourneyTypeChecker().check(callback);
+
+        assertThat(eventValid).isEqualTo(EventValid.VALID_EVENT);
+    }
+
     private void setupCallback(Event event, JourneyType journeyType, Parties party) {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(event);
@@ -123,8 +134,10 @@ class AsylumCaseSendDirectionEventValidForJourneyTypeCheckerTest {
     @EnumSource(value = Parties.class, names = {
         "LEGAL_REPRESENTATIVE", "BOTH"
     })
-    void cannotSendDirectionToLegalRepForInternalCase(Parties party) {
+    void cannotSendDirectionToLegalRepForAppellantInPersonalInternalCase(Parties party) {
         setupInternalCaseCallback(party);
+        when(asylumCase.read(AsylumCaseFieldDefinition.APPELLANTS_REPRESENTATION, YesOrNo.class))
+                .thenReturn(Optional.of(YesOrNo.YES));
         EventValid eventValid = new AsylumCaseSendDirectionEventValidForJourneyTypeChecker().check(callback);
 
         assertThat(eventValid).isEqualTo(
