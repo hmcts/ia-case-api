@@ -51,11 +51,21 @@ public class RehydratedNoticeOfDecisionUploadHandler implements PreSubmitCallbac
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
-        Optional<List<IdValue<DocumentWithDescription>>>  maybeRehydratedNoticeOfDecisionDoc = asylumCase.read(UPLOAD_THE_NOTICE_OF_DECISION_DOCS_REHYDRATED);
-        if (asylumCase.read(UPLOAD_THE_NOTICE_OF_DECISION_DOCS).isEmpty() && maybeRehydratedNoticeOfDecisionDoc.isPresent()) {
-            asylumCase.write(UPLOAD_THE_NOTICE_OF_DECISION_DOCS, maybeRehydratedNoticeOfDecisionDoc);
+        Optional<List<IdValue<DocumentWithDescription>>> rehydratedDocs =
+                asylumCase.read(UPLOAD_THE_NOTICE_OF_DECISION_DOCS_REHYDRATED);
+
+        Optional<List<IdValue<DocumentWithDescription>>> existingDocs =
+                asylumCase.read(UPLOAD_THE_NOTICE_OF_DECISION_DOCS);
+
+        if (rehydratedDocs.isPresent()) {
+
+            if (existingDocs.isEmpty()) {
+                asylumCase.write(UPLOAD_THE_NOTICE_OF_DECISION_DOCS, rehydratedDocs.get());
+            }
+
             asylumCase.clear(UPLOAD_THE_NOTICE_OF_DECISION_DOCS_REHYDRATED);
         }
+
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 }
