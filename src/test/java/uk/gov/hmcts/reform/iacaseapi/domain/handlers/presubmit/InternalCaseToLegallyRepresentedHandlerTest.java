@@ -111,6 +111,8 @@ class InternalCaseToLegallyRepresentedHandlerTest {
         verify(asylumCase, times(1)).clear(eq(TRIBUNAL_RECEIVED_DATE));
         verify(asylumCase, times(1)).clear(eq(INTERNAL_APPELLANT_EMAIL));
         verify(asylumCase, times(1)).clear(eq(INTERNAL_APPELLANT_MOBILE_NUMBER));
+        verify(asylumCase, times(1)).clear(eq(EMAIL));
+        verify(asylumCase, times(1)).clear(eq(MOBILE_NUMBER));
 
         verify(asylumCase, times(1)).write(LEGAL_REP_COMPANY_NAME, companyName);
 

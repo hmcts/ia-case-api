@@ -2,9 +2,11 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_SUBMISSION_INTERNAL_DATE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.EMAIL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.INTERNAL_APPELLANT_EMAIL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.INTERNAL_APPELLANT_MOBILE_NUMBER;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ADMIN;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MOBILE_NUMBER;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.TRIBUNAL_RECEIVED_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isInternalCase;
 
@@ -70,6 +72,8 @@ public class InternalCaseToLegallyRepresentedHandler implements PreSubmitCallbac
         asylumCase.clear(TRIBUNAL_RECEIVED_DATE);
         asylumCase.clear(INTERNAL_APPELLANT_EMAIL);
         asylumCase.clear(INTERNAL_APPELLANT_MOBILE_NUMBER);
+        asylumCase.clear(EMAIL);
+        asylumCase.clear(MOBILE_NUMBER);
 
         //Adding legal rep details which aren't present in LegalRepresentativeUpdateDetailsHandler
         final OrganisationEntityResponse organisationEntityResponse =
