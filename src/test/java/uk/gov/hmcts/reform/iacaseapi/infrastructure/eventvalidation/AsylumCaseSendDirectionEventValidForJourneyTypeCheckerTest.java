@@ -112,7 +112,7 @@ class AsylumCaseSendDirectionEventValidForJourneyTypeCheckerTest {
 
     @ParameterizedTest
     @EnumSource(value = Parties.class, names = {
-            "LEGAL_REPRESENTATIVE", "BOTH"
+        "LEGAL_REPRESENTATIVE", "BOTH"
     })
     void canSendDirectionToLegalRepInternalCase(Parties party) {
         setupInternalCaseCallback(party);
