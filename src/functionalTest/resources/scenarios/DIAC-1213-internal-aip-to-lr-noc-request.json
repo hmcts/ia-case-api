@@ -1,0 +1,47 @@
+{
+  "description": "RIA-6335 AIP to LR NoC, when case state is reasonsForAppealSubmitted change case state to caseUnderReview",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "LegalRepresentative",
+    "input": {
+      "id": 6335,
+      "eventId": "nocRequest",
+      "state": "reasonsForAppealSubmitted",
+      "caseData": {
+        "template": "minimal-aip-appeal-submitted.json",
+        "replacements": {
+          "journeyType": "aip",
+          "isAdmin": "Yes",
+          "subscriptions": [
+            {
+              "value": {
+                "subscriber":"appellant",
+                "email":"citizen@example.com",
+                "wantsEmail":"Yes",
+                "mobileNumber":"01234123123",
+                "wantsSms":"No"
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "state": "caseUnderReview",
+    "caseData": {
+      "template": "minimal-aip-appeal-submitted.json",
+      "replacements": {
+        "journeyType": null,
+        "prevJourneyType": "aip",
+        "email": null,
+        "mobileNumber": null,
+        "contactPreference": "wantsEmail",
+        "contactPreferenceDescription": "Email",
+        "uploadAdditionalEvidenceActionAvailable": "Yes"
+      }
+    }
+  }
+}
