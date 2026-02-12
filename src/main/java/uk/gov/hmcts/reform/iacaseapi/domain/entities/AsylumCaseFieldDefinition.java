@@ -437,6 +437,9 @@ public enum AsylumCaseFieldDefinition {
     UPLOAD_THE_NOTICE_OF_DECISION_DOCS(
         "uploadTheNoticeOfDecisionDocs", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
 
+    UPLOAD_THE_NOTICE_OF_DECISION_DOCS_REHYDRATED(
+            "uploadRehydratedNod", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
+
     UPLOAD_THE_APPEAL_FORM_DOCS(
         "uploadTheAppealFormDocs", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
 
