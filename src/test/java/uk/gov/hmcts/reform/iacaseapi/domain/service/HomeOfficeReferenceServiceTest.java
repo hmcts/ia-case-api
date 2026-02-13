@@ -235,4 +235,92 @@ class HomeOfficeReferenceServiceTest {
             String.class
         )).thenReturn(Optional.of(status));
     }
+
+    @Test
+    void shouldReturnEmptyOptionalWhenStatus200ButNoAppellants() {
+
+        Mockito.when(asylumCase.read(
+            AsylumCaseFieldDefinition.HOME_OFFICE_APPELLANTS
+        )).thenReturn(Optional.empty());
+
+        Mockito.when(asylumCase.read(
+            AsylumCaseFieldDefinition.HOME_OFFICE_APPELLANT_API_HTTP_STATUS,
+            String.class
+        )).thenReturn(Optional.of("200"));
+
+        Optional<List<HomeOfficeAppellant>> result =
+            service.getHomeOfficeReferenceData("REF", 123L, asylumCase);
+
+        Assertions.assertTrue(result.isEmpty());
+
+        Mockito.verify(ccdDataService)
+            .raiseEvent(123L, Event.GET_HOME_OFFICE_APPELLANT_DATA);
+    }
+
+    @Test
+    void shouldHandleMissingHttpStatus() {
+
+        Mockito.when(asylumCase.read(
+            AsylumCaseFieldDefinition.HOME_OFFICE_APPELLANTS
+        )).thenReturn(Optional.empty());
+
+        Mockito.when(asylumCase.read(
+            AsylumCaseFieldDefinition.HOME_OFFICE_APPELLANT_API_HTTP_STATUS,
+            String.class
+        )).thenReturn(Optional.empty());
+
+        HomeOfficeMissingApplicationException ex =
+            Assertions.assertThrows(
+                HomeOfficeMissingApplicationException.class,
+                () -> service.getHomeOfficeReferenceData("REF", 123L, asylumCase)
+            );
+
+        Assertions.assertEquals(0, ex.getHttpStatus());
+        Assertions.assertTrue(ex.getMessage().contains("could not be found"));
+    }
+
+    @Test
+    void shouldHandle503ServerError() {
+
+        configureErrorStatus("503");
+
+        HomeOfficeMissingApplicationException ex =
+            Assertions.assertThrows(
+                HomeOfficeMissingApplicationException.class,
+                () -> service.getHomeOfficeReferenceData("REF", 123L, asylumCase)
+            );
+
+        Assertions.assertEquals(503, ex.getHttpStatus());
+        Assertions.assertTrue(ex.getMessage().contains("not available"));
+    }
+
+    @Test
+    void shouldHandleUnknownNumericStatusCode() {
+
+        configureErrorStatus("777");
+
+        HomeOfficeMissingApplicationException ex =
+            Assertions.assertThrows(
+                HomeOfficeMissingApplicationException.class,
+                () -> service.getHomeOfficeReferenceData("REF", 123L, asylumCase)
+            );
+
+        Assertions.assertEquals(777, ex.getHttpStatus());
+        Assertions.assertTrue(ex.getMessage().contains("HTTP status code was 777"));
+    }
+
+    @Test
+    void shouldRaiseEventEvenWhenApiFails() {
+
+        configureErrorStatus("404");
+
+        Assertions.assertThrows(
+            HomeOfficeMissingApplicationException.class,
+            () -> service.getHomeOfficeReferenceData("REF", 456L, asylumCase)
+        );
+
+        Mockito.verify(ccdDataService)
+            .raiseEvent(456L, Event.GET_HOME_OFFICE_APPELLANT_DATA);
+    }
+
 }

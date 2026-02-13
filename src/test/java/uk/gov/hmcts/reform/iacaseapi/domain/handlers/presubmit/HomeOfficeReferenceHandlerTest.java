@@ -15,11 +15,42 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.HomeOfficeAppellant;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.HomeOfficeReferenceService;
 
+import org.mockito.ArgumentMatchers;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
+
+
 class HomeOfficeReferenceHandlerTest {
 
     private HomeOfficeReferenceService homeOfficeReferenceService;
     private HomeOfficeReferenceHandler handler;
     private AsylumCase asylumCase;
+
+    private Callback<AsylumCase> buildValidCallback(String reference) {
+
+        @SuppressWarnings("unchecked")
+        Callback<AsylumCase> callback = (Callback<AsylumCase>) Mockito.mock(Callback.class);
+        @SuppressWarnings("unchecked")
+        CaseDetails<AsylumCase> caseDetails = (CaseDetails<AsylumCase>) Mockito.mock(CaseDetails.class);
+        AsylumCase asylumCase = Mockito.mock(AsylumCase.class);
+
+        Mockito.when(callback.getEvent()).thenReturn(Event.START_APPEAL);
+        Mockito.when(callback.getPageId()).thenReturn("homeOfficeReferenceNumber");
+        Mockito.when(callback.getCaseDetails()).thenReturn(caseDetails);
+        Mockito.when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        Mockito.when(caseDetails.getId()).thenReturn(123L);
+
+        Mockito.when(asylumCase.read(
+            uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_REFERENCE_NUMBER,
+            String.class
+        )).thenReturn(Optional.of(reference));
+
+        return callback;
+    }
+
 
     @BeforeEach
     void setUp() {
@@ -244,4 +275,139 @@ class HomeOfficeReferenceHandlerTest {
 
         Assertions.assertFalse(result);
     }
+
+    @Test
+    void canHandleShouldReturnTrueForValidCombination() {
+
+        @SuppressWarnings("unchecked")
+        Callback<AsylumCase> callback = (Callback<AsylumCase>) Mockito.mock(Callback.class);
+
+        Mockito.when(callback.getEvent()).thenReturn(Event.START_APPEAL);
+        Mockito.when(callback.getPageId()).thenReturn("homeOfficeReferenceNumber");
+
+        boolean result = handler.canHandle(
+            PreSubmitCallbackStage.MID_EVENT,
+            callback
+        );
+
+        Assertions.assertTrue(result);
+    }
+
+    @Test
+    void canHandleShouldReturnFalseForWrongStage() {
+
+        @SuppressWarnings("unchecked")
+        Callback<AsylumCase> callback = (Callback<AsylumCase>) Mockito.mock(Callback.class);
+
+        boolean result = handler.canHandle(
+            PreSubmitCallbackStage.ABOUT_TO_SUBMIT,
+            callback
+        );
+
+        Assertions.assertFalse(result);
+    }
+
+    @Test
+    void canHandleShouldThrowIfStageNull() {
+
+        @SuppressWarnings("unchecked")
+        Callback<AsylumCase> callback = (Callback<AsylumCase>) Mockito.mock(Callback.class);
+
+        Assertions.assertThrows(
+            NullPointerException.class,
+            () -> handler.canHandle(null, callback)
+        );
+    }
+
+    @Test
+    void handleShouldThrowIfCannotHandle() {
+
+        @SuppressWarnings("unchecked")
+        Callback<AsylumCase> callback = (Callback<AsylumCase>) Mockito.mock(Callback.class);
+
+        Assertions.assertThrows(
+            IllegalStateException.class,
+            () -> handler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback)
+        );
+    }
+
+    @Test
+    void shouldReturnErrorWhenReferenceFormatInvalid() {
+
+        Callback<AsylumCase> callback = buildValidCallback("INVALID");
+
+        PreSubmitCallbackResponse<AsylumCase> response =
+            handler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+
+        Assertions.assertFalse(response.getErrors().isEmpty());
+    }
+
+    @Test
+    void shouldReturnCaseNotFoundMessageWhen404() {
+
+        Callback<AsylumCase> callback = buildValidCallback("1234-5678-9012-3456");
+
+        Mockito.when(homeOfficeReferenceService.getHomeOfficeReferenceData(
+            ArgumentMatchers.anyString(),
+            ArgumentMatchers.anyLong(),
+            ArgumentMatchers.any(AsylumCase.class)
+        )).thenThrow(new HomeOfficeMissingApplicationException(404, "Not found"));
+
+        PreSubmitCallbackResponse<AsylumCase> response =
+            handler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+
+        Assertions.assertEquals(1, response.getErrors().size());
+        Assertions.assertTrue(
+            response.getErrors().contains("The Home Office reference number 1234-5678-9012-3456 does not match any existing case records in Home Office systems.  Please check your decision letter and try again.")
+        );
+    }
+
+    @Test
+    void shouldReturnClientErrorMessage() {
+
+        Callback<AsylumCase> callback = buildValidCallback("1234-5678-9012-3456");
+
+        Mockito.when(homeOfficeReferenceService.getHomeOfficeReferenceData(
+            ArgumentMatchers.anyString(),
+            ArgumentMatchers.anyLong(),
+            ArgumentMatchers.any(AsylumCase.class)
+        )).thenThrow(new HomeOfficeMissingApplicationException(400, "Client"));
+
+        PreSubmitCallbackResponse<AsylumCase> response =
+            handler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+
+        Assertions.assertEquals(1, response.getErrors().size());
+        Assertions.assertTrue(
+            response.getErrors().contains("An error occurred.  Please report this to HMCTS.")
+        );
+    }
+
+    @Test
+    void shouldReturnServerErrorMessage() {
+
+        Callback<AsylumCase> callback = buildValidCallback("1234-5678-9012-3456");
+
+        Mockito.when(homeOfficeReferenceService.getHomeOfficeReferenceData(
+            ArgumentMatchers.anyString(),
+            ArgumentMatchers.anyLong(),
+            ArgumentMatchers.any(AsylumCase.class)
+        )).thenThrow(new HomeOfficeMissingApplicationException(500, "Server"));
+
+        PreSubmitCallbackResponse<AsylumCase> response =
+            handler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+
+        Assertions.assertEquals(1, response.getErrors().size());
+        Assertions.assertTrue(
+            response.getErrors().contains("An error occurred.  Please try again in 15-20 minutes.  If it occurs again, please report this to HMCTS.")
+        );
+    }
+
+    @Test
+    void matchesNameShouldReturnFalseIfEitherNull() {
+
+        Assertions.assertFalse(
+            HomeOfficeReferenceHandler.normalizeName(null).equals("something")
+        );
+    }
+
 }
