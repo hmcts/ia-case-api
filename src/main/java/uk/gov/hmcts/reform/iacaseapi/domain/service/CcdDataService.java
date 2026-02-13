@@ -1,10 +1,13 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.service;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.springframework.stereotype.Service;
+
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDataContent;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -32,24 +35,8 @@ public class CcdDataService {
         this.serviceAuthorization = serviceAuthorization;
     }
 
-    public SubmitEventDetails retriggerWaTasks(String caseId) {
-        Tokens tokens = getTokens(caseId, Event.RE_TRIGGER_WA_TASKS);
-
-        final StartEventDetails startEventDetails =
-            getCase(
-                tokens,
-                caseId,
-                Event.RE_TRIGGER_WA_TASKS
-            );
-        log.debug("Case details found for the caseId: {}", caseId);
-
-        return submitEvent(
-            tokens,
-            caseId,
-            startEventDetails,
-            Event.RE_TRIGGER_WA_TASKS,
-            new HashMap<>()
-        );
+    public SubmitEventDetails raiseEvent(long caseId, Event eventName) {
+        return raiseEvent(String.valueOf(caseId), eventName);
     }
 
     public SubmitEventDetails raiseEvent(String caseId, Event eventName) {
@@ -69,7 +56,7 @@ public class CcdDataService {
             caseId,
             startEventDetails,
             eventName,
-            new HashMap<>()
+            Collections.emptyMap()
         );
     }
 
