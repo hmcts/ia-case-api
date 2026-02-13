@@ -29,7 +29,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CcdDataApi;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.idam.UserInfo;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.idam.IdentityManagerResponseException;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -93,7 +92,7 @@ class CcdDataServiceTest {
     @Test
     void service_should_throw_on_unable_to_generate_s2s_token() {
         when(serviceAuthorization.generate()).thenThrow(IdentityManagerResponseException.class);
-        assertThrows(IdentityManagerResponseException.class, () -> ccdDataService.raiseEvent(caseReference, Event.RE_TRIGGER_WA_TASKS));
+        assertThrows(IdentityManagerResponseException.class, () -> ccdDataService.raiseEvent(caseId, Event.RE_TRIGGER_WA_TASKS)); // use caseId this time
     }
 
     @Test
