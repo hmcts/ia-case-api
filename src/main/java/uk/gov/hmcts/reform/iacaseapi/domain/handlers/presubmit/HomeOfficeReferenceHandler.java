@@ -249,9 +249,7 @@ public class HomeOfficeReferenceHandler implements PreSubmitCallbackHandler<Asyl
                 // This means we somehow lost the response from the Home Office
                 causeOfHomeOfficeException = CauseOfHomeOfficeException.CLIENT_ERROR;
                 break;
-            case 400:
-            case 401:
-            case 403:
+            case 400, 401, 403:
                 // If the request is malformed, unauthenticated or unauthorised, it's a problem in our code
                 causeOfHomeOfficeException = CauseOfHomeOfficeException.CLIENT_ERROR;
                 break;
@@ -259,11 +257,7 @@ public class HomeOfficeReferenceHandler implements PreSubmitCallbackHandler<Asyl
                 // This will happen regularly due to user error; the code is fine
                 causeOfHomeOfficeException = CauseOfHomeOfficeException.CASE_NOT_FOUND;
                 break;
-            case 500:
-            case 501:
-            case 502:
-            case 503:
-            case 504:
+            case 500, 501, 502, 503, 504:
                 // One of these signifies a problem at the Home Office's end - nothing we can do
                 causeOfHomeOfficeException = CauseOfHomeOfficeException.SERVER_ERROR;
                 break;

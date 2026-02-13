@@ -69,11 +69,7 @@ public class HomeOfficeReferenceService {
                 case 404:
                     message += "\n\nNo application matching this HMCTS reference number was found.";
                     break;
-                case 500:
-                case 501:
-                case 502:
-                case 503:
-                case 504:
+                case 500, 501, 502, 503, 504:
                     message += "\n\nThe Home Office validation API was not available.";
                     break;            
                 default:
