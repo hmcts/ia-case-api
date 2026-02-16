@@ -34,12 +34,33 @@ class HomeOfficeReferenceHandlerTest {
     private HomeOfficeReferenceHandler handler;
     private AsylumCase asylumCase;
 
-    private Callback<AsylumCase> buildValidCallback(String reference) {
+    private Callback<AsylumCase> buildValidCallbackForHomeOfficeRefNo(String reference) {
 
         @SuppressWarnings("unchecked")
         Callback<AsylumCase> callback = (Callback<AsylumCase>) Mockito.mock(Callback.class);
         Mockito.when(callback.getEvent()).thenReturn(Event.START_APPEAL);
         Mockito.when(callback.getPageId()).thenReturn("homeOfficeReferenceNumber");
+
+        @SuppressWarnings("unchecked")
+        CaseDetails<AsylumCase> caseDetails = (CaseDetails<AsylumCase>) Mockito.mock(CaseDetails.class);
+        Mockito.when(callback.getCaseDetails()).thenReturn(caseDetails);
+        Mockito.when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        Mockito.when(caseDetails.getId()).thenReturn(123L);
+
+        Mockito.when(asylumCase.read(
+            uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_REFERENCE_NUMBER,
+            String.class
+        )).thenReturn(Optional.of(reference));
+
+        return callback;
+    }
+
+    private Callback<AsylumCase> buildValidCallbackForAppellantBasicDetails(String reference) {
+
+        @SuppressWarnings("unchecked")
+        Callback<AsylumCase> callback = (Callback<AsylumCase>) Mockito.mock(Callback.class);
+        Mockito.when(callback.getEvent()).thenReturn(Event.START_APPEAL);
+        Mockito.when(callback.getPageId()).thenReturn("appellantBasicDetails");
 
         @SuppressWarnings("unchecked")
         CaseDetails<AsylumCase> caseDetails = (CaseDetails<AsylumCase>) Mockito.mock(CaseDetails.class);
@@ -344,7 +365,7 @@ class HomeOfficeReferenceHandlerTest {
     @Test
     void shouldReturnErrorWhenReferenceFormatInvalid() {
 
-        Callback<AsylumCase> callback = buildValidCallback("INVALID");
+        Callback<AsylumCase> callback = buildValidCallbackForHomeOfficeRefNo("INVALID");
 
         PreSubmitCallbackResponse<AsylumCase> response =
             handler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
@@ -353,14 +374,14 @@ class HomeOfficeReferenceHandlerTest {
     }
 
     @ParameterizedTest
-    @MethodSource("homeOfficeExceptionScenarios")
-    void shouldReturnCorrectErrorMessageForAllHomeOfficeExceptionStatuses(
+    @MethodSource("homeOfficeExceptionRefNoScenarios")
+    void shouldReturnCorrectErrorMessageForAllHomeOfficeRefNoExceptionStatuses(
         int httpStatus,
         String expectedMessage
     ) {
 
         String reference = "1234-5678-9012-3456";
-        Callback<AsylumCase> callback = buildValidCallback(reference);
+        Callback<AsylumCase> callback = buildValidCallbackForHomeOfficeRefNo(reference);
 
         Mockito.when(homeOfficeReferenceService.getHomeOfficeReferenceData(
             ArgumentMatchers.anyString(),
@@ -375,7 +396,7 @@ class HomeOfficeReferenceHandlerTest {
         Assertions.assertTrue(response.getErrors().contains(expectedMessage));
     }
 
-    private static Stream<Arguments> homeOfficeExceptionScenarios() {
+    private static Stream<Arguments> homeOfficeExceptionRefNoScenarios() {
 
         String reference = "1234-5678-9012-3456";
 
@@ -411,6 +432,110 @@ class HomeOfficeReferenceHandlerTest {
             Arguments.of(999, clientError)
         );
     }
+
+    @ParameterizedTest
+    @MethodSource("homeOfficeExceptionAppellantDetailsScenarios")
+    void shouldReturnCorrectErrorMessageForAllHomeOfficeAppellantDetailsExceptionStatuses(
+        int httpStatus,
+        String expectedMessage
+    ) {
+
+        String reference = "1234-5678-9012-3456";
+        Callback<AsylumCase> callback = buildValidCallbackForAppellantBasicDetails(reference);
+
+        Mockito.when(homeOfficeReferenceService.getHomeOfficeReferenceData(
+            ArgumentMatchers.anyString(),
+            ArgumentMatchers.anyLong(),
+            ArgumentMatchers.any(AsylumCase.class)
+        )).thenThrow(new HomeOfficeMissingApplicationException(httpStatus, "error"));
+
+        PreSubmitCallbackResponse<AsylumCase> response =
+            handler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+
+        Assertions.assertEquals(1, response.getErrors().size());
+        Assertions.assertTrue(response.getErrors().contains(expectedMessage));
+    }
+
+    private static Stream<Arguments> homeOfficeExceptionAppellantDetailsScenarios() {
+
+        String reference = "1234-5678-9012-3456";
+
+        String clientError =
+            "An error occurred.  Please report this to HMCTS.";
+
+        String serverError =
+            "An error occurred.  Please try again in 15-20 minutes.  If it occurs again, please report this to HMCTS.";
+
+        String caseNotFound =
+            "The Home Office reference number " + reference +
+            " does not match any existing case records in Home Office systems.  Please check your decision letter and try again.";
+
+        return Stream.of(
+            // --- SERVER_ERROR ---
+            Arguments.of(-1, serverError),
+            Arguments.of(500, serverError),
+            Arguments.of(501, serverError),
+            Arguments.of(502, serverError),
+            Arguments.of(503, serverError),
+            Arguments.of(504, serverError),
+
+            // --- CLIENT_ERROR ---
+            Arguments.of(0, clientError),
+            Arguments.of(400, clientError),
+            Arguments.of(401, clientError),
+            Arguments.of(403, clientError),
+
+            // --- CASE_NOT_FOUND ---
+            Arguments.of(404, caseNotFound),
+
+            // --- DEFAULT branch ---
+            Arguments.of(999, clientError)
+        );
+    }
+
+    @Test
+    void shouldReturnErrorWhenAppellandDetailsDoNotMatch() {
+
+        HomeOfficeAppellant appellant = Mockito.mock(HomeOfficeAppellant.class);
+
+        Mockito.when(appellant.getFamilyName()).thenReturn("Smith");
+        Mockito.when(appellant.getGivenNames()).thenReturn("John");
+        Mockito.when(appellant.getDateOfBirth()).thenReturn(LocalDate.of(1990, 1, 1));
+
+        Mockito.when(homeOfficeReferenceService.getHomeOfficeReferenceData(
+            Mockito.anyString(),
+            Mockito.anyLong(),
+            Mockito.any(AsylumCase.class)
+        )).thenReturn(Optional.of(List.of(appellant)));
+
+        Mockito.when(asylumCase.read(
+            uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_FAMILY_NAME,
+            String.class
+        )).thenReturn(Optional.of("Different"));
+
+        Mockito.when(asylumCase.read(
+            uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_GIVEN_NAMES,
+            String.class
+        )).thenReturn(Optional.of("Person"));
+
+        Mockito.when(asylumCase.read(
+            uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_DATE_OF_BIRTH,
+            String.class
+        )).thenReturn(Optional.of("2000-01-01"));
+
+        String reference = "1234-5678-9012-3456";
+        Callback<AsylumCase> callback = buildValidCallbackForAppellantBasicDetails(reference);
+
+        PreSubmitCallbackResponse<AsylumCase> response =
+            handler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+
+        String expectedMessage = "The details provided do not match those held by the Home Office for reference number " + reference + ".  Please check your decision letter and try again.";    
+
+        Assertions.assertEquals(1, response.getErrors().size());
+        Assertions.assertTrue(response.getErrors().contains(expectedMessage));
+
+    }
+
 
     @Test
     void matchesNameShouldReturnFalseIfEitherNull() {
