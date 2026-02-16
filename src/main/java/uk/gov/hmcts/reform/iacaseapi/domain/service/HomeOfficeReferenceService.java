@@ -11,22 +11,23 @@ import org.springframework.stereotype.Service;
 import lombok.extern.slf4j.Slf4j;
 import uk.gov.hmcts.reform.iacaseapi.domain.HomeOfficeMissingApplicationException;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.HomeOfficeAppellant;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 
 @Slf4j
 @Service
 public class HomeOfficeReferenceService {
 
-    private final CcdDataService ccdDataService;
+    private final HomeOfficeApi<AsylumCase> homeOfficeApi;
 
-    public HomeOfficeReferenceService(CcdDataService ccdDataService) {
-        this.ccdDataService = ccdDataService;
+    public HomeOfficeReferenceService(HomeOfficeApi<AsylumCase> homeOfficeApi) {
+        this.homeOfficeApi = homeOfficeApi;
     }
 
     // Note: don't cache this response, as we want to get fresh data each time in case something changes at the Home Office's end.
-    public Optional<List<HomeOfficeAppellant>> getHomeOfficeReferenceData(String reference, long caseId, AsylumCase asylumCase) {
+    public Optional<List<HomeOfficeAppellant>> getHomeOfficeReferenceData(String reference, Callback<AsylumCase> callback) {
 
+        final AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
         Optional<List<HomeOfficeAppellant>> homeOfficeAppellants = asylumCase.read(HOME_OFFICE_APPELLANTS);
         // If we have a list of appellants already, don't call the API again.
         if (homeOfficeAppellants.isPresent()) {
@@ -34,13 +35,13 @@ public class HomeOfficeReferenceService {
         }
 
         // Home Office API has not been called yet (or was unavailable the last time we tried) - call it now
-        log.info("Getting Home Office reference data for case ID: {}", caseId);
-        // First raise an event here in ia-case-api that will then be propagated to home-office-integration-api in a separate handler
-        ccdDataService.raiseEvent(caseId, Event.GET_HOME_OFFICE_APPELLANT_DATA);
+        log.info("Getting Home Office reference data for case with HMCTS reference {} ...", reference);
+        // Raise an event in home-office-integration-api
+        AsylumCase asylumCaseWithHomeOfficeData = homeOfficeApi.aboutToSubmit(callback);
         // Check return status
-        String httpStatus = asylumCase.read(HOME_OFFICE_APPELLANT_API_HTTP_STATUS, String.class).orElse("");
+        String httpStatus = asylumCaseWithHomeOfficeData.read(HOME_OFFICE_APPELLANT_API_HTTP_STATUS, String.class).orElse("");
         if (httpStatus.equals("200")) {
-            return asylumCase.read(HOME_OFFICE_APPELLANTS);
+            return asylumCaseWithHomeOfficeData.read(HOME_OFFICE_APPELLANTS);
         } else {
             // Throw new exception to be caught by the event handler
             String message = "Biographic information from Home Office application with HMCTS reference " + reference + " could not be retrieved.";

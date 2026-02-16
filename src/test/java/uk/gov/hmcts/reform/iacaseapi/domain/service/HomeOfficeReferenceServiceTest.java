@@ -1,5 +1,8 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.service;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -11,7 +14,8 @@ import org.mockito.Mockito;
 import uk.gov.hmcts.reform.iacaseapi.domain.HomeOfficeMissingApplicationException;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.HomeOfficeAppellant;
 
 import org.junit.jupiter.params.ParameterizedTest;
@@ -21,15 +25,28 @@ import java.util.stream.Stream;
 
 class HomeOfficeReferenceServiceTest {
 
-    private CcdDataService ccdDataService;
     private AsylumCase asylumCase;
+    private AsylumCase asylumCaseWithHomeOfficeData;
     private HomeOfficeReferenceService service;
+    private HomeOfficeApi<AsylumCase> homeOfficeApi;
 
+    private Callback<AsylumCase> callback;
+    private CaseDetails<AsylumCase> caseDetails;
+
+    @SuppressWarnings("unchecked")
     @BeforeEach
     void setUp() {
-        ccdDataService = Mockito.mock(CcdDataService.class);
         asylumCase = Mockito.mock(AsylumCase.class);
-        service = new HomeOfficeReferenceService(ccdDataService);
+        asylumCaseWithHomeOfficeData = Mockito.mock(AsylumCase.class);
+        callback = (Callback<AsylumCase>) mock(Callback.class);
+        caseDetails = (CaseDetails<AsylumCase>) mock(CaseDetails.class);
+        homeOfficeApi = (HomeOfficeApi<AsylumCase>) Mockito.mock(HomeOfficeApi.class);
+
+        service = new HomeOfficeReferenceService(homeOfficeApi);
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(homeOfficeApi.aboutToSubmit(callback)).thenReturn(asylumCaseWithHomeOfficeData);
     }
 
     // -------------------------------------------------------------------------
@@ -37,7 +54,7 @@ class HomeOfficeReferenceServiceTest {
     // -------------------------------------------------------------------------
 
     @Test
-    void shouldReturnExistingAppellantsWithoutCallingApi() {
+    void shouldCallApiAndReturnAppellantsWhenAlreadyPresent() {
 
         List<HomeOfficeAppellant> appellants =
             List.of(Mockito.mock(HomeOfficeAppellant.class));
@@ -46,41 +63,12 @@ class HomeOfficeReferenceServiceTest {
             .thenReturn(Optional.of(appellants));
 
         Optional<List<HomeOfficeAppellant>> result =
-            service.getHomeOfficeReferenceData("REF", 123L, asylumCase);
+            service.getHomeOfficeReferenceData("REF", callback);
 
         Assertions.assertTrue(result.isPresent());
         Assertions.assertEquals(appellants, result.get());
 
-        Mockito.verifyNoInteractions(ccdDataService);
-    }
-
-    // -------------------------------------------------------------------------
-    // HTTP 200 → should return fresh data
-    // -------------------------------------------------------------------------
-
-    @Test
-    void shouldCallApiAndReturnAppellantsWhenStatus200() {
-
-        List<HomeOfficeAppellant> appellants =
-            List.of(Mockito.mock(HomeOfficeAppellant.class));
-
-        Mockito.when(asylumCase.read(AsylumCaseFieldDefinition.HOME_OFFICE_APPELLANTS))
-            .thenReturn(Optional.empty())
-            .thenReturn(Optional.of(appellants));
-
-        Mockito.when(asylumCase.read(
-            AsylumCaseFieldDefinition.HOME_OFFICE_APPELLANT_API_HTTP_STATUS,
-            String.class
-        )).thenReturn(Optional.of("200"));
-
-        Optional<List<HomeOfficeAppellant>> result =
-            service.getHomeOfficeReferenceData("REF", 123L, asylumCase);
-
-        Assertions.assertTrue(result.isPresent());
-        Assertions.assertEquals(appellants, result.get());
-
-        Mockito.verify(ccdDataService)
-            .raiseEvent(123L, Event.GET_HOME_OFFICE_APPELLANT_DATA);
+        Mockito.verifyNoInteractions(homeOfficeApi);
     }
 
     // -------------------------------------------------------------------------
@@ -96,7 +84,7 @@ class HomeOfficeReferenceServiceTest {
         HomeOfficeMissingApplicationException ex =
             Assertions.assertThrows(
                 HomeOfficeMissingApplicationException.class,
-                () -> service.getHomeOfficeReferenceData("REF", 123L, asylumCase)
+                () -> service.getHomeOfficeReferenceData("REF", callback)
             );
 
         Assertions.assertEquals(expectedStatus, ex.getHttpStatus());
@@ -127,10 +115,10 @@ class HomeOfficeReferenceServiceTest {
 
     private void configureErrorStatus(String status) {
 
-        Mockito.when(asylumCase.read(AsylumCaseFieldDefinition.HOME_OFFICE_APPELLANTS))
+        Mockito.when(asylumCaseWithHomeOfficeData.read(AsylumCaseFieldDefinition.HOME_OFFICE_APPELLANTS))
             .thenReturn(Optional.empty());
 
-        Mockito.when(asylumCase.read(
+        Mockito.when(asylumCaseWithHomeOfficeData.read(
             AsylumCaseFieldDefinition.HOME_OFFICE_APPELLANT_API_HTTP_STATUS,
             String.class
         )).thenReturn(Optional.of(status));
@@ -139,32 +127,32 @@ class HomeOfficeReferenceServiceTest {
     @Test
     void shouldReturnEmptyOptionalWhenStatus200ButNoAppellants() {
 
-        Mockito.when(asylumCase.read(
+        Mockito.when(asylumCaseWithHomeOfficeData.read(
             AsylumCaseFieldDefinition.HOME_OFFICE_APPELLANTS
         )).thenReturn(Optional.empty());
 
-        Mockito.when(asylumCase.read(
+        Mockito.when(asylumCaseWithHomeOfficeData.read(
             AsylumCaseFieldDefinition.HOME_OFFICE_APPELLANT_API_HTTP_STATUS,
             String.class
         )).thenReturn(Optional.of("200"));
 
         Optional<List<HomeOfficeAppellant>> result =
-            service.getHomeOfficeReferenceData("REF", 123L, asylumCase);
+            service.getHomeOfficeReferenceData("REF", callback);
 
         Assertions.assertTrue(result.isEmpty());
 
-        Mockito.verify(ccdDataService)
-            .raiseEvent(123L, Event.GET_HOME_OFFICE_APPELLANT_DATA);
+        Mockito.verify(homeOfficeApi)
+            .aboutToSubmit(callback);
     }
 
     @Test
     void shouldHandleMissingHttpStatus() {
 
-        Mockito.when(asylumCase.read(
+        Mockito.when(asylumCaseWithHomeOfficeData.read(
             AsylumCaseFieldDefinition.HOME_OFFICE_APPELLANTS
         )).thenReturn(Optional.empty());
 
-        Mockito.when(asylumCase.read(
+        Mockito.when(asylumCaseWithHomeOfficeData.read(
             AsylumCaseFieldDefinition.HOME_OFFICE_APPELLANT_API_HTTP_STATUS,
             String.class
         )).thenReturn(Optional.empty());
@@ -172,7 +160,7 @@ class HomeOfficeReferenceServiceTest {
         HomeOfficeMissingApplicationException ex =
             Assertions.assertThrows(
                 HomeOfficeMissingApplicationException.class,
-                () -> service.getHomeOfficeReferenceData("REF", 123L, asylumCase)
+                () -> service.getHomeOfficeReferenceData("REF", callback)
             );
 
         Assertions.assertEquals(0, ex.getHttpStatus());
@@ -186,11 +174,11 @@ class HomeOfficeReferenceServiceTest {
 
         Assertions.assertThrows(
             HomeOfficeMissingApplicationException.class,
-            () -> service.getHomeOfficeReferenceData("REF", 456L, asylumCase)
+            () -> service.getHomeOfficeReferenceData("REF", callback)
         );
 
-        Mockito.verify(ccdDataService)
-            .raiseEvent(456L, Event.GET_HOME_OFFICE_APPELLANT_DATA);
+        Mockito.verify(homeOfficeApi)
+            .aboutToSubmit(callback);
     }
 
 }
