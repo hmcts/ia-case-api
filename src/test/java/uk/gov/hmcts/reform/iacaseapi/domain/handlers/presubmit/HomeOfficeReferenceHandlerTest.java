@@ -22,6 +22,11 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+import java.util.stream.Stream;
+
 
 class HomeOfficeReferenceHandlerTest {
 
@@ -33,12 +38,11 @@ class HomeOfficeReferenceHandlerTest {
 
         @SuppressWarnings("unchecked")
         Callback<AsylumCase> callback = (Callback<AsylumCase>) Mockito.mock(Callback.class);
-        @SuppressWarnings("unchecked")
-        CaseDetails<AsylumCase> caseDetails = (CaseDetails<AsylumCase>) Mockito.mock(CaseDetails.class);
-        AsylumCase asylumCase = Mockito.mock(AsylumCase.class);
-
         Mockito.when(callback.getEvent()).thenReturn(Event.START_APPEAL);
         Mockito.when(callback.getPageId()).thenReturn("homeOfficeReferenceNumber");
+
+        @SuppressWarnings("unchecked")
+        CaseDetails<AsylumCase> caseDetails = (CaseDetails<AsylumCase>) Mockito.mock(CaseDetails.class);
         Mockito.when(callback.getCaseDetails()).thenReturn(caseDetails);
         Mockito.when(caseDetails.getCaseData()).thenReturn(asylumCase);
         Mockito.when(caseDetails.getId()).thenReturn(123L);
@@ -142,30 +146,36 @@ class HomeOfficeReferenceHandlerTest {
         Assertions.assertFalse(result);
     }
 
-    @Test
-    void shouldHandleHomeOfficeMissingApplicationException404() {
+    @ParameterizedTest
+    @MethodSource("caseNumberExceptionStatuses")
+    void shouldReturnFalseForAllExceptionStatusesInCaseNumberLookup(int httpStatus) {
+
         Mockito.when(homeOfficeReferenceService.getHomeOfficeReferenceData(
-            Mockito.anyString(),
-            Mockito.anyLong(),
-            Mockito.any(AsylumCase.class)
-        )).thenThrow(new HomeOfficeMissingApplicationException(404, "Not found"));
+            ArgumentMatchers.anyString(),
+            ArgumentMatchers.anyLong(),
+            ArgumentMatchers.any(AsylumCase.class)
+        )).thenThrow(new HomeOfficeMissingApplicationException(httpStatus, "error"));
 
         boolean result = handler.isMatchingHomeOfficeCaseNumber("REF", 123L, asylumCase);
 
         Assertions.assertFalse(result);
     }
 
-    @Test
-    void shouldHandleHomeOfficeMissingApplicationException500() {
-        Mockito.when(homeOfficeReferenceService.getHomeOfficeReferenceData(
-            Mockito.anyString(),
-            Mockito.anyLong(),
-            Mockito.any(AsylumCase.class)
-        )).thenThrow(new HomeOfficeMissingApplicationException(500, "Server error"));
-
-        boolean result = handler.isMatchingHomeOfficeCaseNumber("REF", 123L, asylumCase);
-
-        Assertions.assertFalse(result);
+    private static Stream<Arguments> caseNumberExceptionStatuses() {
+        return Stream.of(
+            Arguments.of(-1),
+            Arguments.of(0),
+            Arguments.of(400),
+            Arguments.of(401),
+            Arguments.of(403),
+            Arguments.of(404),
+            Arguments.of(500),
+            Arguments.of(501),
+            Arguments.of(502),
+            Arguments.of(503),
+            Arguments.of(504),
+            Arguments.of(999) // default branch
+        );
     }
 
     // -------------------------------------------------------------------------
@@ -342,63 +352,63 @@ class HomeOfficeReferenceHandlerTest {
         Assertions.assertFalse(response.getErrors().isEmpty());
     }
 
-    @Test
-    void shouldReturnCaseNotFoundMessageWhen404() {
+    @ParameterizedTest
+    @MethodSource("homeOfficeExceptionScenarios")
+    void shouldReturnCorrectErrorMessageForAllHomeOfficeExceptionStatuses(
+        int httpStatus,
+        String expectedMessage
+    ) {
 
-        Callback<AsylumCase> callback = buildValidCallback("1234-5678-9012-3456");
+        String reference = "1234-5678-9012-3456";
+        Callback<AsylumCase> callback = buildValidCallback(reference);
 
         Mockito.when(homeOfficeReferenceService.getHomeOfficeReferenceData(
             ArgumentMatchers.anyString(),
             ArgumentMatchers.anyLong(),
             ArgumentMatchers.any(AsylumCase.class)
-        )).thenThrow(new HomeOfficeMissingApplicationException(404, "Not found"));
+        )).thenThrow(new HomeOfficeMissingApplicationException(httpStatus, "error"));
 
         PreSubmitCallbackResponse<AsylumCase> response =
             handler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
 
         Assertions.assertEquals(1, response.getErrors().size());
-        Assertions.assertTrue(
-            response.getErrors().contains("The Home Office reference number 1234-5678-9012-3456 does not match any existing case records in Home Office systems.  Please check your decision letter and try again.")
-        );
+        Assertions.assertTrue(response.getErrors().contains(expectedMessage));
     }
 
-    @Test
-    void shouldReturnClientErrorMessage() {
+    private static Stream<Arguments> homeOfficeExceptionScenarios() {
 
-        Callback<AsylumCase> callback = buildValidCallback("1234-5678-9012-3456");
+        String reference = "1234-5678-9012-3456";
 
-        Mockito.when(homeOfficeReferenceService.getHomeOfficeReferenceData(
-            ArgumentMatchers.anyString(),
-            ArgumentMatchers.anyLong(),
-            ArgumentMatchers.any(AsylumCase.class)
-        )).thenThrow(new HomeOfficeMissingApplicationException(400, "Client"));
+        String clientError =
+            "An error occurred.  Please report this to HMCTS.";
 
-        PreSubmitCallbackResponse<AsylumCase> response =
-            handler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+        String serverError =
+            "An error occurred.  Please try again in 15-20 minutes.  If it occurs again, please report this to HMCTS.";
 
-        Assertions.assertEquals(1, response.getErrors().size());
-        Assertions.assertTrue(
-            response.getErrors().contains("An error occurred.  Please report this to HMCTS.")
-        );
-    }
+        String caseNotFound =
+            "The Home Office reference number " + reference +
+            " does not match any existing case records in Home Office systems.  Please check your decision letter and try again.";
 
-    @Test
-    void shouldReturnServerErrorMessage() {
+        return Stream.of(
+            // --- SERVER_ERROR ---
+            Arguments.of(-1, serverError),
+            Arguments.of(500, serverError),
+            Arguments.of(501, serverError),
+            Arguments.of(502, serverError),
+            Arguments.of(503, serverError),
+            Arguments.of(504, serverError),
 
-        Callback<AsylumCase> callback = buildValidCallback("1234-5678-9012-3456");
+            // --- CLIENT_ERROR ---
+            Arguments.of(0, clientError),
+            Arguments.of(400, clientError),
+            Arguments.of(401, clientError),
+            Arguments.of(403, clientError),
 
-        Mockito.when(homeOfficeReferenceService.getHomeOfficeReferenceData(
-            ArgumentMatchers.anyString(),
-            ArgumentMatchers.anyLong(),
-            ArgumentMatchers.any(AsylumCase.class)
-        )).thenThrow(new HomeOfficeMissingApplicationException(500, "Server"));
+            // --- CASE_NOT_FOUND ---
+            Arguments.of(404, caseNotFound),
 
-        PreSubmitCallbackResponse<AsylumCase> response =
-            handler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
-
-        Assertions.assertEquals(1, response.getErrors().size());
-        Assertions.assertTrue(
-            response.getErrors().contains("An error occurred.  Please try again in 15-20 minutes.  If it occurs again, please report this to HMCTS.")
+            // --- DEFAULT branch ---
+            Arguments.of(999, clientError)
         );
     }
 
