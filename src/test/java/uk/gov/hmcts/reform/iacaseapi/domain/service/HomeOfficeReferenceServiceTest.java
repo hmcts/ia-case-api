@@ -14,6 +14,11 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.HomeOfficeAppellant;
 
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.Arguments;
+import java.util.stream.Stream;
+
 class HomeOfficeReferenceServiceTest {
 
     private CcdDataService ccdDataService;
@@ -82,10 +87,11 @@ class HomeOfficeReferenceServiceTest {
     // Error scenarios
     // -------------------------------------------------------------------------
 
-    @Test
-    void shouldThrowExceptionFor404() {
+    @ParameterizedTest
+    @MethodSource("clientErrorStatuses")
+    void shouldThrowClientErrors(String status, int expectedStatus, String expectedMessagePart) {
 
-        configureErrorStatus("404");
+        configureErrorStatus(status);
 
         HomeOfficeMissingApplicationException ex =
             Assertions.assertThrows(
@@ -93,123 +99,23 @@ class HomeOfficeReferenceServiceTest {
                 () -> service.getHomeOfficeReferenceData("REF", 123L, asylumCase)
             );
 
-        Assertions.assertEquals(404, ex.getHttpStatus());
-        Assertions.assertTrue(ex.getMessage().contains("No application matching this HMCTS reference number was found."));
+        Assertions.assertEquals(expectedStatus, ex.getHttpStatus());
+        Assertions.assertTrue(ex.getMessage().contains(expectedMessagePart));
     }
 
-    @Test
-    void shouldThrowExceptionFor400() {
-
-        configureErrorStatus("400");
-
-        HomeOfficeMissingApplicationException ex =
-            Assertions.assertThrows(
-                HomeOfficeMissingApplicationException.class,
-                () -> service.getHomeOfficeReferenceData("REF", 123L, asylumCase)
-            );
-
-        Assertions.assertEquals(400, ex.getHttpStatus());
-        Assertions.assertTrue(ex.getMessage().contains("not correctly formed"));
-    }
-
-    @Test
-    void shouldThrowExceptionFor401() {
-
-        configureErrorStatus("401");
-
-        HomeOfficeMissingApplicationException ex =
-            Assertions.assertThrows(
-                HomeOfficeMissingApplicationException.class,
-                () -> service.getHomeOfficeReferenceData("REF", 123L, asylumCase)
-            );
-
-        Assertions.assertEquals(401, ex.getHttpStatus());
-        Assertions.assertTrue(ex.getMessage().contains("could not be authenticated"));
-    }
-
-    @Test
-    void shouldThrowExceptionFor403() {
-
-        configureErrorStatus("403");
-
-        HomeOfficeMissingApplicationException ex =
-            Assertions.assertThrows(
-                HomeOfficeMissingApplicationException.class,
-                () -> service.getHomeOfficeReferenceData("REF", 123L, asylumCase)
-            );
-
-        Assertions.assertEquals(403, ex.getHttpStatus());
-        Assertions.assertTrue(ex.getMessage().contains("not authorised"));
-    }
-
-    @Test
-    void shouldThrowExceptionForServerErrors() {
-
-        configureErrorStatus("500");
-
-        HomeOfficeMissingApplicationException ex =
-            Assertions.assertThrows(
-                HomeOfficeMissingApplicationException.class,
-                () -> service.getHomeOfficeReferenceData("REF", 123L, asylumCase)
-            );
-
-        Assertions.assertEquals(500, ex.getHttpStatus());
-        Assertions.assertTrue(ex.getMessage().contains("not available"));
-    }
-
-    @Test
-    void shouldThrowExceptionForTimeoutMinusOne() {
-
-        configureErrorStatus("-1");
-
-        HomeOfficeMissingApplicationException ex =
-            Assertions.assertThrows(
-                HomeOfficeMissingApplicationException.class,
-                () -> service.getHomeOfficeReferenceData("REF", 123L, asylumCase)
-            );
-
-        Assertions.assertEquals(-1, ex.getHttpStatus());
-        Assertions.assertTrue(ex.getMessage().contains("did not respond"));
-    }
-
-    @Test
-    void shouldThrowExceptionForZeroStatus() {
-
-        configureErrorStatus("0");
-
-        HomeOfficeMissingApplicationException ex =
-            Assertions.assertThrows(
-                HomeOfficeMissingApplicationException.class,
-                () -> service.getHomeOfficeReferenceData("REF", 123L, asylumCase)
-            );
-
-        Assertions.assertEquals(0, ex.getHttpStatus());
-        Assertions.assertTrue(ex.getMessage().contains("could not be found"));
-    }
-
-    @Test
-    void shouldHandleNonNumericStatusCode() {
-
-        configureErrorStatus("ABC");
-
-        HomeOfficeMissingApplicationException ex =
-            Assertions.assertThrows(
-                HomeOfficeMissingApplicationException.class,
-                () -> service.getHomeOfficeReferenceData("REF", 123L, asylumCase)
-            );
-
-        Assertions.assertEquals(0, ex.getHttpStatus());
-        Assertions.assertTrue(
-            ex.getMessage().contains(
-                "The response from the Home Office validation API could not be found."
-            )
+    private static Stream<Arguments> clientErrorStatuses() {
+        return Stream.of(
+            Arguments.of("400", 400, "not correctly formed"),
+            Arguments.of("401", 401, "could not be authenticated"),
+            Arguments.of("403", 403, "not authorised")
         );
     }
 
-    @Test
-    void shouldHandleUnknownStatusCode() {
+    @ParameterizedTest
+    @MethodSource("serverErrorStatuses")
+    void shouldThrowServerErrors(String status, int expectedStatus) {
 
-        configureErrorStatus("999");
+        configureErrorStatus(status);
 
         HomeOfficeMissingApplicationException ex =
             Assertions.assertThrows(
@@ -217,8 +123,65 @@ class HomeOfficeReferenceServiceTest {
                 () -> service.getHomeOfficeReferenceData("REF", 123L, asylumCase)
             );
 
-        Assertions.assertEquals(999, ex.getHttpStatus());
-        Assertions.assertTrue(ex.getMessage().contains("HTTP status code was 999"));
+        Assertions.assertEquals(expectedStatus, ex.getHttpStatus());
+        Assertions.assertTrue(ex.getMessage().contains("not available"));
+    }
+
+    private static Stream<Arguments> serverErrorStatuses() {
+        return Stream.of(
+            Arguments.of("500", 500),
+            Arguments.of("503", 503)
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("specialStatuses")
+    void shouldHandleSpecialStatuses(String status, int expectedStatus, String expectedMessagePart) {
+
+        configureErrorStatus(status);
+
+        HomeOfficeMissingApplicationException ex =
+            Assertions.assertThrows(
+                HomeOfficeMissingApplicationException.class,
+                () -> service.getHomeOfficeReferenceData("REF", 123L, asylumCase)
+            );
+
+        Assertions.assertEquals(expectedStatus, ex.getHttpStatus());
+        Assertions.assertTrue(ex.getMessage().contains(expectedMessagePart));
+    }
+
+    private static Stream<Arguments> specialStatuses() {
+        return Stream.of(
+            Arguments.of("-1", -1, "did not respond"),
+            Arguments.of("0", 0, "could not be found")
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("unknownStatuses")
+    void shouldHandleUnknownStatuses(String status, int expectedStatus, String expectedMessagePart) {
+
+        configureErrorStatus(status);
+
+        HomeOfficeMissingApplicationException ex =
+            Assertions.assertThrows(
+                HomeOfficeMissingApplicationException.class,
+                () -> service.getHomeOfficeReferenceData("REF", 123L, asylumCase)
+            );
+
+        Assertions.assertEquals(expectedStatus, ex.getHttpStatus());
+        Assertions.assertTrue(ex.getMessage().contains(expectedMessagePart));
+    }
+
+    private static Stream<Arguments> unknownStatuses() {
+        return Stream.of(
+            Arguments.of("ABC", 0,
+                "The response from the Home Office validation API could not be found."),
+            Arguments.of("999", 999,
+                "HTTP status code was 999"),
+            Arguments.of("777", 777,
+                "HTTP status code was 777")
+        );
     }
 
     // -------------------------------------------------------------------------
@@ -277,36 +240,6 @@ class HomeOfficeReferenceServiceTest {
 
         Assertions.assertEquals(0, ex.getHttpStatus());
         Assertions.assertTrue(ex.getMessage().contains("could not be found"));
-    }
-
-    @Test
-    void shouldHandle503ServerError() {
-
-        configureErrorStatus("503");
-
-        HomeOfficeMissingApplicationException ex =
-            Assertions.assertThrows(
-                HomeOfficeMissingApplicationException.class,
-                () -> service.getHomeOfficeReferenceData("REF", 123L, asylumCase)
-            );
-
-        Assertions.assertEquals(503, ex.getHttpStatus());
-        Assertions.assertTrue(ex.getMessage().contains("not available"));
-    }
-
-    @Test
-    void shouldHandleUnknownNumericStatusCode() {
-
-        configureErrorStatus("777");
-
-        HomeOfficeMissingApplicationException ex =
-            Assertions.assertThrows(
-                HomeOfficeMissingApplicationException.class,
-                () -> service.getHomeOfficeReferenceData("REF", 123L, asylumCase)
-            );
-
-        Assertions.assertEquals(777, ex.getHttpStatus());
-        Assertions.assertTrue(ex.getMessage().contains("HTTP status code was 777"));
     }
 
     @Test

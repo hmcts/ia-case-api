@@ -163,7 +163,12 @@ public class HomeOfficeReferenceHandler implements PreSubmitCallbackHandler<Asyl
         }
                 
         try {
-            return !homeOfficeReferenceService.getHomeOfficeReferenceData(reference, caseId, asylumCase).get().isEmpty();
+            Optional<List<HomeOfficeAppellant>> appellants = homeOfficeReferenceService.getHomeOfficeReferenceData(reference, caseId, asylumCase);
+            if (appellants.isEmpty()) {
+                return false;
+            } else {
+                return !appellants.get().isEmpty();
+            }
         } catch (HomeOfficeMissingApplicationException exception) {
             handleHomeOfficeException(exception);
             return false;
