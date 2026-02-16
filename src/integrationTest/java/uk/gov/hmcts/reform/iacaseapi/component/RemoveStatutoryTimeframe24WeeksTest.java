@@ -28,6 +28,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STATUTORY_TIMEFRAME_24_WEEKS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STF_24W_CURRENT_REASON_AUTO_GENERATED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STF_24W_CURRENT_STATUS_AUTO_GENERATED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.XUI_BANNER_TEXT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.REMOVE_STATUTORY_TIMEFRAME_24_WEEKS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.APPEAL_SUBMITTED;
@@ -53,6 +54,7 @@ class RemoveStatutoryTimeframe24WeeksTest extends SpringBootIntegrationTest impl
                         .caseData(anAsylumCase()
                                 .with(STF_24W_CURRENT_REASON_AUTO_GENERATED, reason)
                                 .with(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.YES)
+                                .with(STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED, YesOrNo.YES)
                                 .with(APPEAL_SUBMISSION_DATE, APPEAL_SUBMISSION_DATE_STR)
                                 .with(XUI_BANNER_TEXT, BANNER_TEXT)
                                 .with(APPELLANT_GIVEN_NAMES, "some-given-name")
@@ -77,6 +79,7 @@ class RemoveStatutoryTimeframe24WeeksTest extends SpringBootIntegrationTest impl
 
         assertThat(response.getAsylumCase().read(XUI_BANNER_TEXT).get()).isEqualTo("some text");
         assertThat(response.getAsylumCase().read(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class).get()).isEqualTo(YesOrNo.NO);
+        assertThat(response.getAsylumCase().read(STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED, YesOrNo.class).get()).isEqualTo(YesOrNo.YES);
 
     }
 }
