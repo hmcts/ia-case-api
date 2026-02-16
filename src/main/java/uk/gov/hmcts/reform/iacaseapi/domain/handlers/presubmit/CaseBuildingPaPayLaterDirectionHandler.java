@@ -8,7 +8,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FEE_WITHOUT_HEARING;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PA_APPEAL_TYPE_AIP_PAYMENT_OPTION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PA_APPEAL_TYPE_PAYMENT_OPTION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.*;
+
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Value;
@@ -35,7 +35,7 @@ public class CaseBuildingPaPayLaterDirectionHandler implements PreSubmitCallback
     private static final String GBP = "GBP";
 
     public CaseBuildingPaPayLaterDirectionHandler(
-            @Value("${legalRepresentativeHearingRequirements.dueInDays}")
+            @Value("${paPayLaterDueDate}")
             int hearingRequirementsDueInDays,
             DateProvider dateProvider,
             DirectionAppender directionAppender
