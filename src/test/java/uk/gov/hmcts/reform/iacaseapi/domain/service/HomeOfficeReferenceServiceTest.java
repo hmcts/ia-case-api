@@ -88,8 +88,8 @@ class HomeOfficeReferenceServiceTest {
     // -------------------------------------------------------------------------
 
     @ParameterizedTest
-    @MethodSource("clientErrorStatuses")
-    void shouldThrowClientErrors(String status, int expectedStatus, String expectedMessagePart) {
+    @MethodSource("errorStatuses")
+    void shouldThrowErrors(String status, int expectedStatus, String expectedMessagePart) {
 
         configureErrorStatus(status);
 
@@ -103,84 +103,21 @@ class HomeOfficeReferenceServiceTest {
         Assertions.assertTrue(ex.getMessage().contains(expectedMessagePart));
     }
 
-    private static Stream<Arguments> clientErrorStatuses() {
+    private static Stream<Arguments> errorStatuses() {
         return Stream.of(
             Arguments.of("400", 400, "not correctly formed"),
             Arguments.of("401", 401, "could not be authenticated"),
-            Arguments.of("403", 403, "not authorised")
-        );
-    }
-
-    @ParameterizedTest
-    @MethodSource("serverErrorStatuses")
-    void shouldThrowServerErrors(String status, int expectedStatus) {
-
-        configureErrorStatus(status);
-
-        HomeOfficeMissingApplicationException ex =
-            Assertions.assertThrows(
-                HomeOfficeMissingApplicationException.class,
-                () -> service.getHomeOfficeReferenceData("REF", 123L, asylumCase)
-            );
-
-        Assertions.assertEquals(expectedStatus, ex.getHttpStatus());
-        Assertions.assertTrue(ex.getMessage().contains("not available"));
-    }
-
-    private static Stream<Arguments> serverErrorStatuses() {
-        return Stream.of(
-            Arguments.of("500", 500),
-            Arguments.of("503", 503)
-        );
-    }
-
-    @ParameterizedTest
-    @MethodSource("specialStatuses")
-    void shouldHandleSpecialStatuses(String status, int expectedStatus, String expectedMessagePart) {
-
-        configureErrorStatus(status);
-
-        HomeOfficeMissingApplicationException ex =
-            Assertions.assertThrows(
-                HomeOfficeMissingApplicationException.class,
-                () -> service.getHomeOfficeReferenceData("REF", 123L, asylumCase)
-            );
-
-        Assertions.assertEquals(expectedStatus, ex.getHttpStatus());
-        Assertions.assertTrue(ex.getMessage().contains(expectedMessagePart));
-    }
-
-    private static Stream<Arguments> specialStatuses() {
-        return Stream.of(
+            Arguments.of("403", 403, "not authorised"),
+            Arguments.of("500", 500, "not available"),
+            Arguments.of("501", 501, "not available"),
+            Arguments.of("502", 502, "not available"),
+            Arguments.of("503", 503, "not available"),
+            Arguments.of("504", 504, "not available"),
             Arguments.of("-1", -1, "did not respond"),
-            Arguments.of("0", 0, "could not be found")
-        );
-    }
-
-    @ParameterizedTest
-    @MethodSource("unknownStatuses")
-    void shouldHandleUnknownStatuses(String status, int expectedStatus, String expectedMessagePart) {
-
-        configureErrorStatus(status);
-
-        HomeOfficeMissingApplicationException ex =
-            Assertions.assertThrows(
-                HomeOfficeMissingApplicationException.class,
-                () -> service.getHomeOfficeReferenceData("REF", 123L, asylumCase)
-            );
-
-        Assertions.assertEquals(expectedStatus, ex.getHttpStatus());
-        Assertions.assertTrue(ex.getMessage().contains(expectedMessagePart));
-    }
-
-    private static Stream<Arguments> unknownStatuses() {
-        return Stream.of(
-            Arguments.of("ABC", 0,
-                "The response from the Home Office validation API could not be found."),
-            Arguments.of("999", 999,
-                "HTTP status code was 999"),
-            Arguments.of("777", 777,
-                "HTTP status code was 777")
+            Arguments.of("0", 0, "could not be found"),
+            Arguments.of("ABC", 0, "The response from the Home Office validation API could not be found."),
+            Arguments.of("999", 999, "HTTP status code was 999"),
+            Arguments.of("777", 777, "HTTP status code was 777")
         );
     }
 
