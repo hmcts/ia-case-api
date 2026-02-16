@@ -77,7 +77,6 @@ public class HomeOfficeReferenceHandler implements PreSubmitCallbackHandler<Asyl
         }
 
         final AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
-        final long caseId = callback.getCaseDetails().getId();
 
         // >>>ASK DAVID: why these restrictions on when the validation is run?<<< I THINK THEY MAY NEED TO BE REMOVED (at least some of them) because we always want to go through validation, don't we?
         if (!isInternalCase(asylumCase)
@@ -97,7 +96,7 @@ public class HomeOfficeReferenceHandler implements PreSubmitCallbackHandler<Asyl
                     return response;
                 }
 
-                if (!isMatchingHomeOfficeCaseNumber(homeOfficeReferenceNumber, caseId, asylumCase)) {
+                if (!isMatchingHomeOfficeCaseNumber(homeOfficeReferenceNumber, callback)) {
                     PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
                     String errorMessage = "";
                     switch (causeOfHomeOfficeException) {
@@ -122,7 +121,7 @@ public class HomeOfficeReferenceHandler implements PreSubmitCallbackHandler<Asyl
 
             //if (callback.getPageId().equals("appellantBasicDetails_TEMPORARILY_DISABLED")) {  
             if (callback.getPageId().equals("appellantBasicDetails")) {  
-                if (!isMatchingHomeOfficeCaseDetails(homeOfficeReferenceNumber, caseId, asylumCase)) {
+                if (!isMatchingHomeOfficeCaseDetails(homeOfficeReferenceNumber, asylumCase, callback)) {
                     PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
                     String errorMessage = "";
                     // There should be no exception here as this function ought not to be called unless the data has already been retrieved from the Home Office.
@@ -156,14 +155,14 @@ public class HomeOfficeReferenceHandler implements PreSubmitCallbackHandler<Asyl
         return reference != null && HOME_OFFICE_REF_PATTERN.matcher(reference).matches();
     }
 
-    public boolean isMatchingHomeOfficeCaseNumber(String reference, long caseId, AsylumCase asylumCase) {
+    public boolean isMatchingHomeOfficeCaseNumber(String reference, Callback<AsylumCase> callback) {
 
         if (reference == null) {
             return false;
         }
                 
         try {
-            Optional<List<HomeOfficeAppellant>> appellants = homeOfficeReferenceService.getHomeOfficeReferenceData(reference, caseId, asylumCase);
+            Optional<List<HomeOfficeAppellant>> appellants = homeOfficeReferenceService.getHomeOfficeReferenceData(reference, callback);
             if (appellants.isEmpty()) {
                 return false;
             } else {
@@ -175,14 +174,14 @@ public class HomeOfficeReferenceHandler implements PreSubmitCallbackHandler<Asyl
         }
     }
 
-    public boolean isMatchingHomeOfficeCaseDetails(String reference, long caseId, AsylumCase asylumCase) {   
+    public boolean isMatchingHomeOfficeCaseDetails(String reference, AsylumCase asylumCase, Callback<AsylumCase> callback) {   
 
         if (reference == null) {
             return false;
         }
 
         try {
-            Optional<List<HomeOfficeAppellant>> homeOfficeAppellants = homeOfficeReferenceService.getHomeOfficeReferenceData(reference, caseId, asylumCase);
+            Optional<List<HomeOfficeAppellant>> homeOfficeAppellants = homeOfficeReferenceService.getHomeOfficeReferenceData(reference, callback);
 
             if (homeOfficeAppellants.isEmpty() || homeOfficeAppellants.get().isEmpty()) {
                 // This should not have happened - we should always have at least one appellant from the Home Office by this point.  Log an error.
