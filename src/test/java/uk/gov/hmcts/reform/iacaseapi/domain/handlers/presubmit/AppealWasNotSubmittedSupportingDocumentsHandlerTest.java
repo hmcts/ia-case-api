@@ -318,7 +318,7 @@ class AppealWasNotSubmittedSupportingDocumentsHandlerTest {
 
         assertThat(callbackResponse).isNotNull();
 
-        verify(asylumCase, times(0)).write(eq(LEGAL_REPRESENTATIVE_DOCUMENTS), anyList());
+        verify(asylumCase, times(1)).write(eq(LEGAL_REPRESENTATIVE_DOCUMENTS), anyList());
     }
 
     @Test
@@ -350,4 +350,5 @@ class AppealWasNotSubmittedSupportingDocumentsHandlerTest {
     }
 
 }
+
 
