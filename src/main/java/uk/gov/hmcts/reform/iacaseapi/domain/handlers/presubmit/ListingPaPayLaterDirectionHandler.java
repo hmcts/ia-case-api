@@ -31,16 +31,16 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.DirectionAppender;
 public class ListingPaPayLaterDirectionHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private static final String GBP = "GBP";
-    private final int hearingRequirementsDueInDays;
+    private final int paPayLaterDueDate;
     private final DateProvider dateProvider;
     private final DirectionAppender directionAppender;
 
     public ListingPaPayLaterDirectionHandler(
-            @Value("${paPayLaterDueDate}") int hearingRequirementsDueInDays,
+            @Value("${paPayLaterDueDate}") int paPayLaterDueDate,
             DateProvider dateProvider,
             DirectionAppender directionAppender
     ) {
-        this.hearingRequirementsDueInDays = hearingRequirementsDueInDays;
+        this.paPayLaterDueDate = paPayLaterDueDate;
         this.dateProvider = dateProvider;
         this.directionAppender = directionAppender;
     }
@@ -110,7 +110,7 @@ public class ListingPaPayLaterDirectionHandler implements PreSubmitCallbackHandl
                         getParty(asylumCase),
                         dateProvider
                                 .now()
-                                .plusDays(hearingRequirementsDueInDays)
+                                .plusDays(paPayLaterDueDate)
                                 .toString(),
                         DirectionTag.LISTING_PA_PAY_LATER
                 );

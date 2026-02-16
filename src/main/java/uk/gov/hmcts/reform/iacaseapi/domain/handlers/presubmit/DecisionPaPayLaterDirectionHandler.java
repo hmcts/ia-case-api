@@ -30,17 +30,17 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.DirectionAppender;
 @Component
 public class DecisionPaPayLaterDirectionHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
-    private final int hearingRequirementsDueInDays;
+    private final int paPayLaterDueDate;
     private final DateProvider dateProvider;
     private final DirectionAppender directionAppender;
     private static final String GBP = "GBP";
 
     public DecisionPaPayLaterDirectionHandler(
-            @Value("${paPayLaterDueDate}") int hearingRequirementsDueInDays,
+            @Value("${paPayLaterDueDate}") int paPayLaterDueDate,
             DateProvider dateProvider,
             DirectionAppender directionAppender
     ) {
-        this.hearingRequirementsDueInDays = hearingRequirementsDueInDays;
+        this.paPayLaterDueDate = paPayLaterDueDate;
         this.dateProvider = dateProvider;
         this.directionAppender = directionAppender;
     }
@@ -110,7 +110,7 @@ public class DecisionPaPayLaterDirectionHandler implements PreSubmitCallbackHand
                         getParty(asylumCase),
                         dateProvider
                                 .now()
-                                .plusDays(hearingRequirementsDueInDays)
+                                .plusDays(paPayLaterDueDate)
                                 .toString(),
                         DirectionTag.DECISION_PA_PAY_LATER
                 );
