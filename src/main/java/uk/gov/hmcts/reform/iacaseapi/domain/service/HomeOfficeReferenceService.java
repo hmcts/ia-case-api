@@ -37,7 +37,7 @@ public class HomeOfficeReferenceService {
         // Home Office API has not been called yet (or was unavailable the last time we tried) - call it now
         log.info("Getting Home Office reference data for case with HMCTS reference {} ...", reference);
         // Raise an event in home-office-integration-api
-        AsylumCase asylumCaseWithHomeOfficeData = homeOfficeApi.aboutToSubmit(callback);
+        AsylumCase asylumCaseWithHomeOfficeData = homeOfficeApi.midEvent(callback);
         // Check return status
         String httpStatus = asylumCaseWithHomeOfficeData.read(HOME_OFFICE_APPELLANT_API_HTTP_STATUS, String.class).orElse("");
         if (httpStatus.equals("200")) {

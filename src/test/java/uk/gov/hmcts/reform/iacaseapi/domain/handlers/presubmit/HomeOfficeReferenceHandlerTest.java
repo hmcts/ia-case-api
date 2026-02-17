@@ -57,7 +57,7 @@ class HomeOfficeReferenceHandlerTest {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(homeOfficeApi.aboutToSubmit(callback)).thenReturn(asylumCaseWithHomeOfficeData);
+        when(homeOfficeApi.midEvent(callback)).thenReturn(asylumCaseWithHomeOfficeData);
     }
 
     private Callback<AsylumCase> buildValidCallbackForHomeOfficeRefNo(String reference) {

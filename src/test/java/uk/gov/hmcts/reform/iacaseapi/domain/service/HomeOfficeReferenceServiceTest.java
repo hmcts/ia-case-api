@@ -46,7 +46,7 @@ class HomeOfficeReferenceServiceTest {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(homeOfficeApi.aboutToSubmit(callback)).thenReturn(asylumCaseWithHomeOfficeData);
+        when(homeOfficeApi.midEvent(callback)).thenReturn(asylumCaseWithHomeOfficeData);
     }
 
     // -------------------------------------------------------------------------
@@ -142,7 +142,7 @@ class HomeOfficeReferenceServiceTest {
         Assertions.assertTrue(result.isEmpty());
 
         Mockito.verify(homeOfficeApi)
-            .aboutToSubmit(callback);
+            .midEvent(callback);
     }
 
     @Test
@@ -178,7 +178,7 @@ class HomeOfficeReferenceServiceTest {
         );
 
         Mockito.verify(homeOfficeApi)
-            .aboutToSubmit(callback);
+            .midEvent(callback);
     }
 
 }
