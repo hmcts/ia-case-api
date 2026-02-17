@@ -33,7 +33,7 @@ public class CallbackControllerAdvice extends ResponseEntityExceptionHandler {
         HttpServletRequest request,
         RequiredFieldMissingException e
     ) {
-        log.error("Exception for the CCDCaseId: {}",
+        log.error("RequiredFieldMissingException for CCDCaseId: {}",
             RequestContextHolder.currentRequestAttributes().getAttribute("CCDCaseId", RequestAttributes.SCOPE_REQUEST));
         ExceptionUtils.printRootCauseStackTrace(e);
         return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
@@ -44,7 +44,7 @@ public class CallbackControllerAdvice extends ResponseEntityExceptionHandler {
         HttpServletRequest request,
         ReferenceDataIntegrationException e
     ) {
-        log.error("Exception for the CCDCaseId: {}",
+        log.error("ReferenceDataIntegrationException for CCDCaseId: {}",
             RequestContextHolder.currentRequestAttributes().getAttribute("CCDCaseId", RequestAttributes.SCOPE_REQUEST));
         errorResponseLogger.maybeLogException(e.getCause());
         return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -59,10 +59,27 @@ public class CallbackControllerAdvice extends ResponseEntityExceptionHandler {
         HttpServletRequest request,
         Exception ex
     ) {
-        log.error("Exception for the CCDCaseId: {}",
-            RequestContextHolder.currentRequestAttributes().getAttribute("CCDCaseId", RequestAttributes.SCOPE_REQUEST));
-        ExceptionUtils.printRootCauseStackTrace(ex);
+        log.error("Exception for CCDCaseId: {}; request URI: {}",
+            RequestContextHolder.currentRequestAttributes().getAttribute("CCDCaseId", RequestAttributes.SCOPE_REQUEST), request.getRequestURI() + "?" + request.getQueryString());
+        // Print elements of the stack trace that come from our code (otherwise it's enormous and unreadable)
+        log.error(getAbbreviatedStackTrace(ex));
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    private String getAbbreviatedStackTrace(Exception ex) {
+        String[] trace = ExceptionUtils.getRootCauseStackTrace(ex);
+        StringBuilder sb = new StringBuilder();
+        String lastLine = "";
+        for (int i = 0; i < trace.length; i++) {
+            if (i < 4 || trace[i].contains("uk.gov.hmcts.reform")) {
+                lastLine = trace[i];
+                sb.append(lastLine + "\r\n");
+            } else if (lastLine != "        ...") {
+                lastLine = "        ...";
+                sb.append(lastLine + "\r\n");
+            }
+        }
+        return sb.toString();
     }
 
 }
