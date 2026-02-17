@@ -62,20 +62,21 @@ public class CallbackControllerAdvice extends ResponseEntityExceptionHandler {
         log.error("Exception for CCDCaseId: {}; request URI: {}",
             RequestContextHolder.currentRequestAttributes().getAttribute("CCDCaseId", RequestAttributes.SCOPE_REQUEST), request.getRequestURI() + "?" + request.getQueryString());
         // Print elements of the stack trace that come from our code (otherwise it's enormous and unreadable)
-        log.error(getAbbreviatedStackTrace(ex));
+        log.error(getAbbreviatedStackTrace(ex, 4));
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
-    private String getAbbreviatedStackTrace(Exception ex) {
+    private String getAbbreviatedStackTrace(Exception ex, int numInitialLines) {
         String[] trace = ExceptionUtils.getRootCauseStackTrace(ex);
         StringBuilder sb = new StringBuilder();
         String lastLine = "";
+        String continuationLine = "        ...";
         for (int i = 0; i < trace.length; i++) {
-            if (i < 4 || trace[i].contains("uk.gov.hmcts.reform")) {
+            if (i < numInitialLines || trace[i].contains("uk.gov.hmcts.reform")) {
                 lastLine = trace[i];
                 sb.append(lastLine + "\r\n");
-            } else if (lastLine != "        ...") {
-                lastLine = "        ...";
+            } else if (!lastLine.equals(continuationLine)) {
+                lastLine = continuationLine;
                 sb.append(lastLine + "\r\n");
             }
         }
