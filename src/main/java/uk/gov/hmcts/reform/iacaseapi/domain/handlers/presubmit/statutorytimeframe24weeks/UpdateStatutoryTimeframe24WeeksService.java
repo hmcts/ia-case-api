@@ -22,6 +22,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STATUTORY_TIMEFRAME_24_WEEKS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STF_24W_CURRENT_REASON_AUTO_GENERATED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STF_24W_CURRENT_STATUS_AUTO_GENERATED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED;
 
 @Slf4j
 @Service
@@ -63,6 +64,10 @@ public class UpdateStatutoryTimeframe24WeeksService {
             StatutoryTimeframe24Weeks updatedStatutoryTimeframe24Weeks =
                     buildNewStatutoryTimeframe24Weeks(statutoryTimeframe24WeeksStatus, statutoryTimeframe24WeeksReason, userDetails, existingStatutoryTimeframe24Weeks);
             asylumCase.write(STF_24W_CURRENT_STATUS_AUTO_GENERATED, statutoryTimeframe24WeeksStatus);
+            Optional<YesOrNo> previousStatusWasYes = asylumCase.read(STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED, YesOrNo.class);
+            if (previousStatusWasYes.isEmpty() || !previousStatusWasYes.get().equals(YesOrNo.YES)) {
+                asylumCase.write(STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED, statutoryTimeframe24WeeksStatus);
+            }
             asylumCase.write(STATUTORY_TIMEFRAME_24_WEEKS, updatedStatutoryTimeframe24Weeks);
             Optional<List<IdValue<CaseNote>>> existingCaseNotes = asylumCase.read(CASE_NOTES);
             List<IdValue<CaseNote>> allCaseNotes = caseNoteAppender.append(buildNewCaseNote(statutoryTimeframe24WeeksStatus, statutoryTimeframe24WeeksReason, userDetails), existingCaseNotes.orElse(Collections.emptyList()));
