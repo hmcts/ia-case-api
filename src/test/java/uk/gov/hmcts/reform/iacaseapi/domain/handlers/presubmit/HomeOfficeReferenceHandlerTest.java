@@ -338,9 +338,6 @@ class HomeOfficeReferenceHandlerTest {
     @Test
     void canHandleShouldReturnTrueForValidCombination() {
 
-        @SuppressWarnings("unchecked")
-        Callback<AsylumCase> callback = (Callback<AsylumCase>) Mockito.mock(Callback.class);
-
         Mockito.when(callback.getEvent()).thenReturn(Event.START_APPEAL);
         Mockito.when(callback.getPageId()).thenReturn("homeOfficeReferenceNumber");
 
@@ -355,9 +352,6 @@ class HomeOfficeReferenceHandlerTest {
     @Test
     void canHandleShouldReturnFalseForWrongStage() {
 
-        @SuppressWarnings("unchecked")
-        Callback<AsylumCase> callback = (Callback<AsylumCase>) Mockito.mock(Callback.class);
-
         boolean result = handler.canHandle(
             PreSubmitCallbackStage.ABOUT_TO_SUBMIT,
             callback
@@ -369,9 +363,6 @@ class HomeOfficeReferenceHandlerTest {
     @Test
     void canHandleShouldThrowIfStageNull() {
 
-        @SuppressWarnings("unchecked")
-        Callback<AsylumCase> callback = (Callback<AsylumCase>) Mockito.mock(Callback.class);
-
         Assertions.assertThrows(
             NullPointerException.class,
             () -> handler.canHandle(null, callback)
@@ -380,9 +371,6 @@ class HomeOfficeReferenceHandlerTest {
 
     @Test
     void handleShouldThrowIfCannotHandle() {
-
-        @SuppressWarnings("unchecked")
-        Callback<AsylumCase> callback = (Callback<AsylumCase>) Mockito.mock(Callback.class);
 
         Assertions.assertThrows(
             IllegalStateException.class,
@@ -393,10 +381,10 @@ class HomeOfficeReferenceHandlerTest {
     @Test
     void shouldReturnErrorWhenReferenceFormatInvalid() {
 
-        Callback<AsylumCase> callback = buildValidCallbackForHomeOfficeRefNo("INVALID");
+        Callback<AsylumCase> actualCallback = buildValidCallbackForHomeOfficeRefNo("INVALID");
 
         PreSubmitCallbackResponse<AsylumCase> response =
-            handler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+            handler.handle(PreSubmitCallbackStage.MID_EVENT, actualCallback);
 
         Assertions.assertFalse(response.getErrors().isEmpty());
     }
@@ -533,8 +521,8 @@ class HomeOfficeReferenceHandlerTest {
     @Test
     void matchesNameShouldReturnFalseIfEitherNull() {
 
-        Assertions.assertFalse(
-            HomeOfficeReferenceHandler.normalizeName(null).equals("something")
+        Assertions.assertNotEquals(
+            HomeOfficeReferenceHandler.normalizeName(null), "something"
         );
     }
 
