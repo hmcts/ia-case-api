@@ -67,6 +67,7 @@ public class AriaCreateCaseHandler implements PreSubmitCallbackHandler<AsylumCas
         }
 
         String appealSubmissionDate = asylumCase.read(APPEAL_SUBMISSION_DATE, String.class).orElse(dateProvider.now().toString());
+        
 
         AppealType appealType =
             asylumCase
