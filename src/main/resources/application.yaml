@@ -266,8 +266,6 @@ security:
       - "applyForCosts"
       - "respondToCosts"
       - "addEvidenceForCosts"
-      - "queryManagementRaiseQuery"
-      - "queryManagementRespondQuery"
     tribunal-caseworker:
       - "appellantInPersonManual"
       - "moveToPaymentPending"
@@ -987,8 +985,6 @@ security:
       - "pipActivation"
       - "applyForFTPAAppellant"
       - "requestFeeRemission"
-      - "queryManagementRaiseQuery"
-      - "queryManagementRespondQuery"
     caseworker-ia-iacjudge:
       - "generateDecisionAndReasons"
       - "endAppeal"
@@ -1330,8 +1326,6 @@ security:
       - "rollbackMigration"
       - "addStatutoryTimeframe24Weeks"
       - "removeStatutoryTimeframe24Weeks"
-      - "queryManagementRaiseQuery"
-      - "queryManagementRespondQuery"
     caseworker-ia-internal:
       - "revokeCaseAccess"
       - "removeCaseManagerBulk"
