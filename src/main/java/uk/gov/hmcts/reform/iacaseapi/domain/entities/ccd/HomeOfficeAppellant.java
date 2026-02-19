@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import lombok.Data;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
+
 @Data
 public class HomeOfficeAppellant {
 
