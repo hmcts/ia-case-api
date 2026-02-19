@@ -35,7 +35,7 @@ apply plugin: 'project-report'
 apply plugin: 'idea'
 
 def versions = [
-        reformLogging      : '8.0.0',
+        reformLogging      : '6.1.9',
         serenity           : '3.9.8',
         junit              : '5.13.3',
         junitPlatform      : '1.13.3',
