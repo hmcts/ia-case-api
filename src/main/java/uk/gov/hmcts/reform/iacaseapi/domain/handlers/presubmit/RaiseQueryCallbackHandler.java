@@ -1,16 +1,17 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
-import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.QM_LATEST_QUERY;
 
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
@@ -25,9 +26,7 @@ public class RaiseQueryCallbackHandler implements PreSubmitCallbackHandler<Asylu
 
     private final UserDetails userDetails;
 
-    public RaiseQueryCallbackHandler(
-            UserDetails userDetails
-    ) {
+    public RaiseQueryCallbackHandler(UserDetails userDetails) {
         this.userDetails = userDetails;
     }
 
@@ -37,7 +36,7 @@ public class RaiseQueryCallbackHandler implements PreSubmitCallbackHandler<Asylu
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-                && callback.getEvent() == uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.QUERY_MANAGEMENT_RAISE_QUERY;
+                && callback.getEvent() == Event.QUERY_MANAGEMENT_RAISE_QUERY;
     }
 
     @Override
@@ -49,7 +48,7 @@ public class RaiseQueryCallbackHandler implements PreSubmitCallbackHandler<Asylu
             throw new IllegalStateException("Cannot handle callback");
         }
 
-        final AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
+        AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
         AsylumCaseFieldDefinition targetCollection = getQueryCollectionField(asylumCase);
 
@@ -58,11 +57,11 @@ public class RaiseQueryCallbackHandler implements PreSubmitCallbackHandler<Asylu
         }
 
         Optional<List<IdValue<CaseQueriesCollection>>> maybeQueries = asylumCase.read(targetCollection);
+        List<IdValue<CaseQueriesCollection>> queriesList = maybeQueries.orElse(List.of());
 
-        String latestQueryId = maybeQueries
-                .flatMap(list -> list.stream()
-                        .max(Comparator.comparing(IdValue::getId))
-                        .map(IdValue::getId))
+        String latestQueryId = queriesList.stream()
+                .max(Comparator.comparing(IdValue::getId))
+                .map(IdValue::getId)
                 .orElse("1");
 
         LatestQuery latestQuery = LatestQuery.builder()
@@ -72,22 +71,17 @@ public class RaiseQueryCallbackHandler implements PreSubmitCallbackHandler<Asylu
 
         asylumCase.write(QM_LATEST_QUERY, latestQuery);
 
-        if (maybeQueries.isEmpty()) {
-            asylumCase.write(targetCollection, emptyList());
-        }
-
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 
     private AsylumCaseFieldDefinition getQueryCollectionField(AsylumCase asylumCase) {
         if (uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isLegalRepJourney(asylumCase)) {
-            return QM_LEGAL_REPRESENTATIVE_QUERIES;
+            return AsylumCaseFieldDefinition.QM_LEGAL_REPRESENTATIVE_QUERIES;
         } else if (uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isAipJourney(asylumCase)) {
-            return QM_AIP_QUERIES;
+            return AsylumCaseFieldDefinition.QM_AIP_QUERIES;
         } else if (uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isInternalCase(asylumCase)) {
-            return QM_ADMIN_QUERIES;
+            return AsylumCaseFieldDefinition.QM_ADMIN_QUERIES;
         }
         return null;
     }
 }
-

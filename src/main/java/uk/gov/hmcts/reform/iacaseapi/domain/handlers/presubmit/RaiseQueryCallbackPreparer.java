@@ -3,13 +3,10 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.QUERY_MANAGEMENT_RAISE_QUERY;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isAipJourney;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isInternalCase;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isLegalRepJourney;
 
 import java.util.List;
 import java.util.Optional;
+
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
@@ -38,7 +35,7 @@ public class RaiseQueryCallbackPreparer implements PreSubmitCallbackHandler<Asyl
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_START
-                && callback.getEvent() == QUERY_MANAGEMENT_RAISE_QUERY;
+                && callback.getEvent() == uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.QUERY_MANAGEMENT_RAISE_QUERY;
     }
 
     @Override
@@ -46,14 +43,13 @@ public class RaiseQueryCallbackPreparer implements PreSubmitCallbackHandler<Asyl
             PreSubmitCallbackStage callbackStage,
             Callback<AsylumCase> callback
     ) {
-
         if (!canHandle(callbackStage, callback)) {
             throw new IllegalStateException("Cannot handle callback");
         }
 
         final AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
-        AsylumCaseFieldDefinition targetCollection = getQueryCollectionField(asylumCase);
+        var targetCollection = getQueryCollectionField(asylumCase);
 
         if (targetCollection != null) {
             Optional<List<IdValue<CaseQueriesCollection>>> maybeQueries =
@@ -68,15 +64,13 @@ public class RaiseQueryCallbackPreparer implements PreSubmitCallbackHandler<Asyl
     }
 
     private AsylumCaseFieldDefinition getQueryCollectionField(AsylumCase asylumCase) {
-        if (isLegalRepJourney(asylumCase)) {
+        if (uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isLegalRepJourney(asylumCase)) {
             return QM_LEGAL_REPRESENTATIVE_QUERIES;
-        } else if (isAipJourney(asylumCase)) {
+        } else if (uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isAipJourney(asylumCase)) {
             return QM_AIP_QUERIES;
-        } else if (isInternalCase(asylumCase)) {
+        } else if (uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isInternalCase(asylumCase)) {
             return QM_ADMIN_QUERIES;
         }
         return null;
     }
-
 }
-
