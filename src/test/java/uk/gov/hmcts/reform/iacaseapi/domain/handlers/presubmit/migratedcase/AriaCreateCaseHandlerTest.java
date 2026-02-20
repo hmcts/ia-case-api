@@ -111,7 +111,28 @@ class AriaCreateCaseHandlerTest {
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.PA));
         when(asylumCase.read(ARIA_DESIRED_STATE, State.class)).thenReturn(Optional.of(State.LISTING));
         when(asylumCase.read(APPEAL_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of("PA/12345/2024"));
-        when(asylumCase.read(APPEAL_SUBMISSION_DATE, String.class)).thenReturn(Optional.of(now.toString()));
+        when(asylumCase.read(APPEAL_SUBMISSION_DATE, String.class)).thenReturn(Optional.of("2024-01-05"));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                ariaCreateCaseHandler.handle(ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, times(1)).write(APPEAL_REFERENCE_NUMBER, "PA/12345/2024");
+        verify(asylumCase, times(1)).write(APPEAL_SUBMISSION_DATE, "2024-01-05");
+        verify(asylumCase, times(1)).write(IS_ARIA_MIGRATED, YesOrNo.YES);
+        verify(asylumCase, times(1)).write(IS_ARIA_MIGRATED_FILTER, YesOrNo.YES);
+        verify(asylumCase, times(1)).write(ARIA_DESIRED_STATE_SELECTED_VALUE, "Listing");
+    }
+
+    @Test
+    void should_set_case_fields_for_submit_appeal_set_to_now_if_APPEAL_SUBMISSION_DATE_not_present() {
+
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.PA));
+        when(asylumCase.read(ARIA_DESIRED_STATE, State.class)).thenReturn(Optional.of(State.LISTING));
+        when(asylumCase.read(APPEAL_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of("PA/12345/2024"));
+        when(asylumCase.read(APPEAL_SUBMISSION_DATE, String.class)).thenReturn(Optional.ofNullable(null));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
                 ariaCreateCaseHandler.handle(ABOUT_TO_SUBMIT, callback);
