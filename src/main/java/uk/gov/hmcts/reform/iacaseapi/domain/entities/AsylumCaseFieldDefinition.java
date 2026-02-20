@@ -2886,9 +2886,9 @@ public enum AsylumCaseFieldDefinition {
 
     SAVE_NOTIFICATIONS_TO_DATA_DATE(
         "saveNotificationsToDataDate", new TypeReference<String>(){}),
-    QM_LEGAL_REPRESENTATIVE_QUERIES("qmLegalRepresentativeQueries", new TypeReference<CaseQueriesCollection>(){}),
-    QM_AIP_QUERIES("qmAipQueries", new TypeReference<CaseQueriesCollection>(){}),
-    QM_ADMIN_QUERIES("qmAdminQueries", new TypeReference<CaseQueriesCollection>(){}),
+    QM_LEGAL_REPRESENTATIVE_QUERIES("qmLegalRepresentativeQueries", new TypeReference<List<IdValue<CaseQueriesCollection>>>(){}),
+    QM_AIP_QUERIES("qmAipQueries", new TypeReference<List<IdValue<CaseQueriesCollection>>>(){}),
+    QM_ADMIN_QUERIES("qmAdminQueries", new TypeReference<List<IdValue<CaseQueriesCollection>>>(){}),
     CASE_MESSAGE("caseMessage", new TypeReference<CaseMessage>(){}),
     QM_LATEST_QUERY("qmLatestQuery", new TypeReference<LatestQuery>(){}),
     ADD_CASE_MESSAGE_SUBJECT("addCaseMessageSubject", new TypeReference<String>(){}),
