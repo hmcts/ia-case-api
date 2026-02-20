@@ -165,6 +165,7 @@ public enum Event {
     APPELLANT_IN_PERSON_MANUAL("appellantInPersonManual"),
     GENERATE_LIST_CMR_TASK("generateListCmrTask"),
     ROLLBACK_MIGRATION("rollbackMigration"),
+    COMPLETE_CASE_REVIEW("completeCaseReview"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");

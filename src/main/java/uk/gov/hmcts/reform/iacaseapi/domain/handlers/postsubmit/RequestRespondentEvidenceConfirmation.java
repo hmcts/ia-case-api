@@ -18,7 +18,8 @@ public class RequestRespondentEvidenceConfirmation implements PostSubmitCallback
     ) {
         requireNonNull(callback, "callback must not be null");
 
-        return callback.getEvent() == Event.REQUEST_RESPONDENT_EVIDENCE;
+        return callback.getEvent() == Event.REQUEST_RESPONDENT_EVIDENCE
+               || callback.getEvent() == Event.COMPLETE_CASE_REVIEW;
     }
 
     public PostSubmitCallbackResponse handle(

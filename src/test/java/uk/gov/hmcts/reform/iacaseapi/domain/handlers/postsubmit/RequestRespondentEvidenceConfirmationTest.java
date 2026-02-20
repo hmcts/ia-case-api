@@ -104,7 +104,8 @@ class RequestRespondentEvidenceConfirmationTest {
 
             boolean canHandle = requestRespondentEvidenceConfirmation.canHandle(callback);
 
-            if (event == Event.REQUEST_RESPONDENT_EVIDENCE) {
+            if (event == Event.REQUEST_RESPONDENT_EVIDENCE
+                || event == Event.COMPLETE_CASE_REVIEW) {
 
                 assertTrue(canHandle);
             } else {

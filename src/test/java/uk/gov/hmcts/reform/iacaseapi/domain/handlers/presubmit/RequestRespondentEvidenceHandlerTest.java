@@ -117,7 +117,8 @@ class RequestRespondentEvidenceHandlerTest {
 
                 boolean canHandle = requestRespondentEvidenceHandler.canHandle(callbackStage, callback);
 
-                if (event == Event.REQUEST_RESPONDENT_EVIDENCE
+                if ((event == Event.REQUEST_RESPONDENT_EVIDENCE
+                    || event == Event.COMPLETE_CASE_REVIEW)
                     && callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT) {
 
                     assertTrue(canHandle);

@@ -58,6 +58,7 @@ public class DirectionHandler implements PreSubmitCallbackHandler<AsylumCase> {
         Set<Event> eligibleEvents =  Sets.newHashSet(Event.SEND_DIRECTION,
             Event.REQUEST_CASE_EDIT,
             Event.REQUEST_RESPONDENT_EVIDENCE,
+            Event.COMPLETE_CASE_REVIEW,
             Event.REQUEST_RESPONDENT_REVIEW,
             Event.REQUEST_CASE_BUILDING,
             Event.FORCE_REQUEST_CASE_BUILDING,
@@ -108,6 +109,7 @@ public class DirectionHandler implements PreSubmitCallbackHandler<AsylumCase> {
         List<IdValue<Direction>> allDirections;
         if (Arrays.asList(
                 Event.REQUEST_RESPONDENT_EVIDENCE,
+                Event.COMPLETE_CASE_REVIEW,
                 Event.REQUEST_CASE_BUILDING,
                 Event.REQUEST_REASONS_FOR_APPEAL,
                 Event.REQUEST_RESPONDENT_REVIEW,

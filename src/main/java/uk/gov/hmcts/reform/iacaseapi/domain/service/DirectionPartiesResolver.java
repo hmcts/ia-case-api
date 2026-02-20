@@ -41,6 +41,7 @@ public class DirectionPartiesResolver {
 
             case REQUEST_RESPONSE_AMEND:
             case REQUEST_RESPONDENT_EVIDENCE:
+            case COMPLETE_CASE_REVIEW:
             case REQUEST_RESPONDENT_REVIEW:
                 return Parties.RESPONDENT;
 

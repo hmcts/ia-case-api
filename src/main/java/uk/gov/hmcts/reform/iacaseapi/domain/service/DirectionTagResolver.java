@@ -20,6 +20,7 @@ public class DirectionTagResolver {
                 return DirectionTag.CASE_EDIT;
 
             case REQUEST_RESPONDENT_EVIDENCE:
+            case COMPLETE_CASE_REVIEW:
                 return DirectionTag.RESPONDENT_EVIDENCE;
 
             case REQUEST_RESPONDENT_REVIEW:

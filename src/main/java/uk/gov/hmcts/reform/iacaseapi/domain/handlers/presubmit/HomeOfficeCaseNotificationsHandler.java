@@ -59,6 +59,7 @@ public class HomeOfficeCaseNotificationsHandler implements PreSubmitCallbackHand
 
         List<Event> targetEvents = Lists.newArrayList(
             Event.REQUEST_RESPONDENT_EVIDENCE,
+            Event.COMPLETE_CASE_REVIEW,
             Event.REQUEST_RESPONDENT_REVIEW,
             Event.LIST_CASE,
             Event.ADJOURN_HEARING_WITHOUT_DATE,

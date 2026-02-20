@@ -599,6 +599,7 @@ class HomeOfficeCaseNotificationsHandlerTest {
         when(callback.getEvent()).thenReturn(event);
         List<Event> validEvents = List.of(
             REQUEST_RESPONDENT_EVIDENCE,
+            COMPLETE_CASE_REVIEW,
             REQUEST_RESPONDENT_REVIEW,
             LIST_CASE,
             EDIT_CASE_LISTING,
