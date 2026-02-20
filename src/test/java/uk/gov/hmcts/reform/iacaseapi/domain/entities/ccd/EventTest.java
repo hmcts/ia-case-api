@@ -32,8 +32,7 @@ class EventTest {
         assertEquals("uploadAdditionalEvidence", Event.UPLOAD_ADDITIONAL_EVIDENCE.toString());
         assertEquals("listCase", Event.LIST_CASE.toString());
         assertEquals("createCaseSummary", Event.CREATE_CASE_SUMMARY.toString());
-        assertEquals("revertStateToAwaitingRespondentEvidence",
-            Event.REVERT_STATE_TO_AWAITING_RESPONDENT_EVIDENCE.toString());
+        assertEquals("revertStateToAwaitingRespondentEvidence", Event.REVERT_STATE_TO_AWAITING_RESPONDENT_EVIDENCE.toString());
         assertEquals("generateHearingBundle", Event.GENERATE_HEARING_BUNDLE.toString());
         assertEquals("asyncStitchingComplete", Event.ASYNC_STITCHING_COMPLETE.toString());
         assertEquals("customiseHearingBundle", Event.CUSTOMISE_HEARING_BUNDLE.toString());
@@ -78,8 +77,7 @@ class EventTest {
         assertEquals("requestCmaRequirements", Event.REQUEST_CMA_REQUIREMENTS.toString());
         assertEquals("reviewCmaRequirements", Event.REVIEW_CMA_REQUIREMENTS.toString());
         assertEquals("forceCaseToCaseUnderReview", Event.FORCE_CASE_TO_CASE_UNDER_REVIEW.toString());
-        assertEquals("forceCaseToSubmitHearingRequirements",
-            Event.FORCE_CASE_TO_SUBMIT_HEARING_REQUIREMENTS.toString());
+        assertEquals("forceCaseToSubmitHearingRequirements", Event.FORCE_CASE_TO_SUBMIT_HEARING_REQUIREMENTS.toString());
         assertEquals("changeHearingCentre", Event.CHANGE_HEARING_CENTRE.toString());
         assertEquals("updateLegalRepDetails", Event.UPDATE_LEGAL_REPRESENTATIVES_DETAILS.toString());
         assertEquals("linkAppeal", Event.LINK_APPEAL.toString());
@@ -94,7 +92,6 @@ class EventTest {
         assertEquals("forceRequestCaseBuilding", Event.FORCE_REQUEST_CASE_BUILDING.toString());
         assertEquals("markAppealPaid", Event.MARK_APPEAL_PAID.toString());
         assertEquals("requestHomeOfficeData", Event.REQUEST_HOME_OFFICE_DATA.toString());
-        assertEquals("getHomeOfficeAppellantData", Event.GET_HOME_OFFICE_APPELLANT_DATA.toString());
         assertEquals("makeAnApplication", Event.MAKE_AN_APPLICATION.toString());
         assertEquals("reinstateAppeal", Event.REINSTATE_APPEAL.toString());
         assertEquals("decideAnApplication", Event.DECIDE_AN_APPLICATION.toString());
@@ -169,6 +166,6 @@ class EventTest {
 
     @Test
     void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(161, Event.values().length);
+        assertEquals(160, Event.values().length);
     }
 }
