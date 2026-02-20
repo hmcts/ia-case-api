@@ -11,7 +11,11 @@ import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -23,6 +27,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.controllers.model.querymanagement.CaseQueriesCollection;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.controllers.model.querymanagement.LatestQuery;
 
+@MockitoSettings(strictness = Strictness.LENIENT)
+@ExtendWith(MockitoExtension.class)
 class RaiseQueryCallbackHandlerTest {
 
     @Mock
@@ -41,7 +47,6 @@ class RaiseQueryCallbackHandlerTest {
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
         handler = new RaiseQueryCallbackHandler(userDetails);
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -73,7 +78,6 @@ class RaiseQueryCallbackHandlerTest {
 
         when(callback.getEvent()).thenReturn(Event.QUERY_MANAGEMENT_RAISE_QUERY);
 
-        // Mock journey type
         try (MockedStatic<uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils> utils =
                      mockStatic(uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.class)) {
 
