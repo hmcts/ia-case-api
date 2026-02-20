@@ -93,14 +93,14 @@ public class ListingPaPayLaterDirectionHandler implements PreSubmitCallbackHandl
                 directionAppender.append(
                         asylumCase,
                         existingDirections,
-                        "Your appeal is going to be decided by a Judge at a hearing and still requires a fee to be paid £" + feeAmount +
-                                " No payment has been received and to avoid further action " +
-                                "being taken to recover the fee you should make a payment of pay £" +
+                        "Your appeal is going to be decided by a Judge at a hearing and still requires a fee to be paid of £" + feeAmount +
+                                " No payment has been received and to avoid further action being taken to recover the fee you should make a payment of £" +
                                 feeAmount + " without delay.\n" +
                                 "Instructions for making a payment are: \n" +
                                 "For appeals submitted online \n" +
-                                "(Legal Representative to make payment by PBA)\n" +
-                                "Sign in to your account at: Sign in to the service if you’ve already started your appeal..\n" +
+                                "Legal Representative to make payment by PBA\n" +
+                                "Appellants follow these steps to pay the fee: " +
+                                "1. Sign in to your account at: Sign in to the service if you’ve already started your appeal..\n" +
                                 "2. Select 'Pay for this appeal' under the 'I want to' section and follow the steps to make a new payment.\n" +
                                 "For appeals submitted by post or email \n" +
                                 "Follow these steps to pay the fee:\n" +

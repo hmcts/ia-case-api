@@ -93,14 +93,15 @@ public class DecisionPaPayLaterDirectionHandler implements PreSubmitCallbackHand
                 directionAppender.append(
                         asylumCase,
                         existingDirections,
-                        "Your appeal has now been decided but still have not paid your fee. " +
+                        "Your appeal has now been decided but you still have not paid your fee. " +
                                 "The tribunal has sent two notifications regarding the outstanding amount. If you do not pay £" +
                                 feeAmount +
                                 " the Tribunal may instigate legal proceedings to recover the fee.\n" +
                                 "Instructions for making a payment are: \n" +
                                 "For appeals submitted online \n" +
-                                "(Legal Representative to make payment by PBA)\n" +
-                                "Sign in to your account at: Sign in to the service if you’ve already started your appeal..\n" +
+                                "Legal Representative to make payment by PBA\n" +
+                                "Appellants follow these steps to pay the fee: " +
+                                "1. Sign in to your account at: Sign in to the service if you’ve already started your appeal..\n" +
                                 "2. Select 'Pay for this appeal' under the 'I want to' section and follow the steps to make a new payment.\n" +
                                 "For appeals submitted by post or email \n" +
                                 "Follow these steps to pay the fee:\n" +
