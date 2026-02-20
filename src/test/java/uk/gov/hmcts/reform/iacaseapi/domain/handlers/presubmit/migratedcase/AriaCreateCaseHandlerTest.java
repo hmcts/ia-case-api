@@ -120,7 +120,7 @@ class AriaCreateCaseHandlerTest {
         assertEquals(asylumCase, callbackResponse.getData());
 
         verify(asylumCase, times(1)).write(APPEAL_REFERENCE_NUMBER, "PA/12345/2024");
-        verify(asylumCase, times(1)).write(APPEAL_SUBMISSION_DATE, "2024-01-05");
+        verify(asylumCase, times(1)).write(APPEAL_SUBMISSION_DATE, dateProvider.now().toString());
         verify(asylumCase, times(1)).write(IS_ARIA_MIGRATED, YesOrNo.YES);
         verify(asylumCase, times(1)).write(IS_ARIA_MIGRATED_FILTER, YesOrNo.YES);
         verify(asylumCase, times(1)).write(ARIA_DESIRED_STATE_SELECTED_VALUE, "Listing");
