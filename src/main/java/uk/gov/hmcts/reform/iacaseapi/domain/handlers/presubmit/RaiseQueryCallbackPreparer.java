@@ -27,17 +27,11 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.controllers.model.querymanag
 @Component
 public class RaiseQueryCallbackPreparer implements PreSubmitCallbackHandler<AsylumCase> {
 
-    private final Appender<CaseMessage> caseMessageAppender;
-    private final DateProvider dateProvider;
     private final UserDetails userDetails;
 
     public RaiseQueryCallbackPreparer(
-            Appender<CaseMessage> caseMessageAppender,
-            DateProvider dateProvider,
             UserDetails userDetails
     ) {
-        this.caseMessageAppender = caseMessageAppender;
-        this.dateProvider = dateProvider;
         this.userDetails = userDetails;
     }
 
