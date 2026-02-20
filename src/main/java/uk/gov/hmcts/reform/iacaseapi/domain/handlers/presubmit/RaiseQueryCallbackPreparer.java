@@ -50,7 +50,9 @@ public class RaiseQueryCallbackPreparer implements PreSubmitCallbackHandler<Asyl
         var targetCollection = getQueryCollectionField(asylumCase);
 
         if (targetCollection != null) {
-            Optional<List<IdValue<CaseQueriesCollection>>> maybeQueries = readQueryCollection(asylumCase, targetCollection);
+            @SuppressWarnings("unchecked")
+            Optional<List<IdValue<CaseQueriesCollection>>> maybeQueries =
+                    asylumCase.read(targetCollection).map(o -> (List<IdValue<CaseQueriesCollection>>) o);
 
             if (maybeQueries.isEmpty()) {
                 asylumCase.write(targetCollection, emptyList());
