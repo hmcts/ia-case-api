@@ -111,7 +111,7 @@ class AriaCreateCaseHandlerTest {
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.PA));
         when(asylumCase.read(ARIA_DESIRED_STATE, State.class)).thenReturn(Optional.of(State.LISTING));
         when(asylumCase.read(APPEAL_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of("PA/12345/2024"));
-        when(asylumCase.read(APPEAL_SUBMISSION_DATE, String.class)).thenReturn(Optional.of("2024-01-05"));
+        when(asylumCase.read(APPEAL_SUBMISSION_DATE, String.class)).thenReturn(Optional.of(now.toString()));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
                 ariaCreateCaseHandler.handle(ABOUT_TO_SUBMIT, callback);
