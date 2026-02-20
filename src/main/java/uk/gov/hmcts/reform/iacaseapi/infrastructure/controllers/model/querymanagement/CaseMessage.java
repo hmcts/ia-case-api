@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.iacaseapi.infrastructure.controllers.model.queryManagement;
+package uk.gov.hmcts.reform.iacaseapi.infrastructure.controllers.model.querymanagement;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;

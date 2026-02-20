@@ -17,8 +17,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.controllers.model.queryManagement.CaseQueriesCollection;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.controllers.model.queryManagement.LatestQuery;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.controllers.model.querymanagement.CaseQueriesCollection;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.controllers.model.querymanagement.LatestQuery;
 
 @Component
 public class RaiseQueryCallbackHandler implements PreSubmitCallbackHandler<AsylumCase> {

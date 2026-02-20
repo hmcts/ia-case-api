@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.iacaseapi.infrastructure.controllers.model.queryManagement;
+package uk.gov.hmcts.reform.iacaseapi.infrastructure.controllers.model.querymanagement;
 
 import lombok.Builder;
 import lombok.Data;

@@ -165,7 +165,7 @@ class EventTest {
         assertEquals("addStatutoryTimeframe24Weeks", Event.ADD_STATUTORY_TIMEFRAME_24_WEEKS.toString());
         assertEquals("removeStatutoryTimeframe24Weeks", Event.REMOVE_STATUTORY_TIMEFRAME_24_WEEKS.toString());
         assertEquals("queryManagementRaiseQuery", Event.QUERY_MANAGEMENT_RAISE_QUERY.toString());
-        assertEquals("queryManagementRequestQuery", Event.QUERY_MANAGEMENT_RESPOND_QUERY.toString());
+        assertEquals("queryManagementRespondQuery", Event.QUERY_MANAGEMENT_RESPOND_QUERY.toString());
     }
 
     @Test
