@@ -30,7 +30,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.DirectionAppender;
 @Component
 public class ListingPaPayLaterDirectionHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
-    private static final String GBP = "GBP";
     private final int paPayLaterDueDate;
     private final DateProvider dateProvider;
     private final DirectionAppender directionAppender;

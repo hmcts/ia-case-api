@@ -30,14 +30,12 @@ import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType.*;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
-@SuppressWarnings("unchecked")
 class ListingPaPayLaterDirectionHandlerTest {
 
-    private static final int HEARING_REQUIREMENTS_DUE_IN_DAYS = 5;
+    private static final int DUE_IN_DAYS = 5;
     @Mock
     private DateProvider dateProvider;
     @Mock
@@ -54,7 +52,7 @@ class ListingPaPayLaterDirectionHandlerTest {
     public void setUp() {
         listingPaPayLaterDirectionHandler =
                 new ListingPaPayLaterDirectionHandler(
-                        HEARING_REQUIREMENTS_DUE_IN_DAYS,
+                        DUE_IN_DAYS,
                         dateProvider,
                         directionAppender
                 );
@@ -76,7 +74,7 @@ class ListingPaPayLaterDirectionHandlerTest {
 
         listingPaPayLaterDirectionHandler =
                 new ListingPaPayLaterDirectionHandler(
-                        HEARING_REQUIREMENTS_DUE_IN_DAYS,
+                        DUE_IN_DAYS,
                         dateProvider,
                         directionAppender
                 );
@@ -106,7 +104,7 @@ class ListingPaPayLaterDirectionHandlerTest {
 
         listingPaPayLaterDirectionHandler =
                 new ListingPaPayLaterDirectionHandler(
-                        HEARING_REQUIREMENTS_DUE_IN_DAYS,
+                        DUE_IN_DAYS,
                         dateProvider,
                         directionAppender
                 );

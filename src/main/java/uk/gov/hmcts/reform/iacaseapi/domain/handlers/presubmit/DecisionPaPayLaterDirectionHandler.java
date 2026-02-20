@@ -33,7 +33,6 @@ public class DecisionPaPayLaterDirectionHandler implements PreSubmitCallbackHand
     private final int paPayLaterDueDate;
     private final DateProvider dateProvider;
     private final DirectionAppender directionAppender;
-    private static final String GBP = "GBP";
 
     public DecisionPaPayLaterDirectionHandler(
             @Value("${paPayLaterDueDate}") int paPayLaterDueDate,
