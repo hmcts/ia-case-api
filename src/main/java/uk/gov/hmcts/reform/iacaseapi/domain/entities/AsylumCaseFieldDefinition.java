@@ -1,11 +1,15 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import org.jetbrains.annotations.NotNull;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.em.Bundle;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.homeoffice.HomeOfficeCaseStatus;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.OrganisationPolicy;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.controllers.model.queryManagement.CaseMessage;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.controllers.model.queryManagement.CaseQueriesCollection;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.controllers.model.queryManagement.LatestQuery;
 
 import java.util.List;
 
@@ -2883,6 +2887,13 @@ public enum AsylumCaseFieldDefinition {
 
     SAVE_NOTIFICATIONS_TO_DATA_DATE(
         "saveNotificationsToDataDate", new TypeReference<String>(){}),
+    QM_LEGAL_REPRESENTATIVE_QUERIES("qmLegalRepresentativeQueries", new TypeReference<CaseQueriesCollection>(){}),
+    QM_AIP_QUERIES("qmAipQueries", new TypeReference<CaseQueriesCollection>(){}),
+    QM_ADMIN_QUERIES("qmAdminQueries", new TypeReference<CaseQueriesCollection>(){}),
+    CASE_MESSAGE("caseMessage", new TypeReference<CaseMessage>(){}),
+    QM_LATEST_QUERY("qmLatestQuery", new TypeReference<LatestQuery>(){}),
+    ADD_CASE_MESSAGE_SUBJECT("addCaseMessageSubject", new TypeReference<String>(){}),
+    ADD_CASE_MESSAGE_DESCRIPTION("addCaseMessageDescription", new TypeReference<String>(){}),
 
     XUI_BANNER_TEXT(
         "xuiBannerText", new TypeReference<String>(){})
