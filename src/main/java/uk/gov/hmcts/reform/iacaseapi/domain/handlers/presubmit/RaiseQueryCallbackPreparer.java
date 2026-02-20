@@ -49,7 +49,7 @@ public class RaiseQueryCallbackPreparer implements PreSubmitCallbackHandler<Asyl
 
         final AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
-        var targetCollection = getQueryCollectionField(asylumCase);
+        AsylumCaseFieldDefinition targetCollection = getQueryCollectionField(asylumCase);
 
         if (targetCollection != null) {
             Optional<List<IdValue<CaseQueriesCollection>>> maybeQueries =
