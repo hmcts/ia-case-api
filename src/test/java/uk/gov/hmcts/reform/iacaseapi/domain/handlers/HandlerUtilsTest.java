@@ -967,4 +967,26 @@ class HandlerUtilsTest {
         assertFalse(HandlerUtils.isHelpWithFees(ASYLUM_SUPPORT_FROM_HOME_OFFICE, WILL_PAY_FOR_APPEAL));
         assertFalse(HandlerUtils.isHelpWithFees(ASYLUM_SUPPORT_FROM_HOME_OFFICE, ALREADY_APPLIED));
     }
+
+    @Test
+    void test_clearLegalRepFields_clears_legal_rep_details() {
+        HandlerUtils.clearLegalRepFields(asylumCase);
+
+        verify(asylumCase).clear(APPEAL_WAS_NOT_SUBMITTED_REASON);
+        verify(asylumCase).clear(APPEAL_NOT_SUBMITTED_REASON_DOCUMENTS);
+        verify(asylumCase).clear(LEGAL_REP_COMPANY_PAPER_J);
+        verify(asylumCase).clear(LEGAL_REP_GIVEN_NAME);
+        verify(asylumCase).clear(LEGAL_REP_FAMILY_NAME_PAPER_J);
+        verify(asylumCase).clear(LEGAL_REP_EMAIL);
+        verify(asylumCase).clear(LEGAL_REP_REF_NUMBER_PAPER_J);
+        verify(asylumCase).clear(LEGAL_REP_ADDRESS_U_K);
+        verify(asylumCase).clear(OOC_ADDRESS_LINE_1);
+        verify(asylumCase).clear(OOC_ADDRESS_LINE_2);
+        verify(asylumCase).clear(OOC_ADDRESS_LINE_3);
+        verify(asylumCase).clear(OOC_ADDRESS_LINE_4);
+        verify(asylumCase).clear(OOC_COUNTRY_LINE);
+        verify(asylumCase).clear(OOC_LR_COUNTRY_GOV_UK_ADMIN_J);
+        verify(asylumCase).clear(LEGAL_REP_HAS_ADDRESS);
+    }
+
 }
