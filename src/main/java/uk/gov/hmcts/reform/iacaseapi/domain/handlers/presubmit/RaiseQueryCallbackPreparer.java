@@ -46,29 +46,23 @@ public class RaiseQueryCallbackPreparer implements PreSubmitCallbackHandler<Asyl
         }
 
         final AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
+        AsylumCaseFieldDefinition targetCollection = getQueryCollectionField(asylumCase);
 
-        var targetCollection = getQueryCollectionField(asylumCase);
+        if (targetCollection == null) {
+            return new PreSubmitCallbackResponse<>(asylumCase);
+        }
 
-        if (targetCollection != null) {
-            @SuppressWarnings("unchecked")
-            Optional<List<IdValue<CaseQueriesCollection>>> maybeQueries =
-                    asylumCase.read(targetCollection).map(o -> (List<IdValue<CaseQueriesCollection>>) o);
+        Optional<List<IdValue<CaseQueriesCollection>>> maybeQueries =
+                asylumCase.read(targetCollection);
 
-            if (maybeQueries.isEmpty()) {
-                asylumCase.write(targetCollection, emptyList());
-            }
+        List<IdValue<CaseQueriesCollection>> queries =
+                maybeQueries.orElse(emptyList());
+
+        if (maybeQueries.isEmpty()) {
+            asylumCase.write(targetCollection, queries);
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
-    }
-
-    /**
-     * Safely reads a query collection from AsylumCase, suppressing unchecked cast warning.
-     */
-    @SuppressWarnings("unchecked")
-    private Optional<List<IdValue<CaseQueriesCollection>>> readQueryCollection(AsylumCase asylumCase,
-                                                                               AsylumCaseFieldDefinition field) {
-        return asylumCase.read(field).map(list -> (List<IdValue<CaseQueriesCollection>>) list);
     }
 
     private AsylumCaseFieldDefinition getQueryCollectionField(AsylumCase asylumCase) {
