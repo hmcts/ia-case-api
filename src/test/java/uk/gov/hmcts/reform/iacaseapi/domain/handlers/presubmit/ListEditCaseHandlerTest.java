@@ -78,7 +78,7 @@ class ListEditCaseHandlerTest {
 
     private static final String NEWPORT_ADDRESS = "Newport (South Wales) Immigration and Asylum Tribunal, "
                             + "Langstone Business Park, Newport, NP18 2LX";
-    private static final String COVENTRY_ADDRESS = "Coventry Magistrates Court, Little Park Street, CV1 2SQ";
+    private static final String COVENTRY_ADDRESS = "Coventry Magistrates' Court, Little Park Street, CV1 2SQ";
     private static final String MANCHESTER_ADDRESS = "Manchester Crown Court (Crown Square), "
                                                   + "Courts of Justice, Crown Square, M3 3FL";
 

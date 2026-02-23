@@ -6,7 +6,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE_FOR_DISPLAY;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_NABA_ENABLED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isAipJourney;
 
 import java.util.Optional;
 import org.springframework.stereotype.Component;
@@ -31,8 +30,7 @@ public class EditAppealTypePreparer implements PreSubmitCallbackHandler<AsylumCa
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_START
-               && callback.getEvent() == Event.EDIT_APPEAL
-               && !isAipJourney(callback.getCaseDetails().getCaseData());
+               && callback.getEvent() == Event.EDIT_APPEAL;
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(

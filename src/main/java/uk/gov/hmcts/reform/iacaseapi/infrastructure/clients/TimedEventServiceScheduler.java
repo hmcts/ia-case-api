@@ -2,9 +2,14 @@ package uk.gov.hmcts.reform.iacaseapi.infrastructure.clients;
 
 import feign.FeignException;
 import lombok.extern.slf4j.Slf4j;
+
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.Scheduler;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.TimedEvent;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.AccessTokenProvider;
@@ -73,4 +78,31 @@ public class TimedEventServiceScheduler implements Scheduler {
 
         return true;
     }
+
+    @Override
+    public void scheduleTimedEvent(String caseId, ZonedDateTime scheduledDate, Event event, String timedEventId) {
+        try {
+            schedule(
+                    new TimedEvent(
+                            timedEventId,
+                            event,
+                            scheduledDate,
+                            "IA",
+                            "Asylum",
+                            Long.parseLong(caseId)
+                    )
+            );
+            log.info("Scheduled event " + event + " for case ID " + caseId);
+        } catch (AsylumCaseServiceResponseException e) {
+            log.error(e.getMessage());
+        }
+    }
+
+    @Override
+    public void scheduleTimedEventNow(String caseId, Event event) {
+        ZonedDateTime now = ZonedDateTime.now(ZoneId.systemDefault()); ;
+        scheduleTimedEvent(caseId, now, event, "");
+    }
+
+    
 }

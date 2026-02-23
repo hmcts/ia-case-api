@@ -15,6 +15,7 @@
           "isRemoteHearing": "No",
           "isIntegrated": "Yes",
           "hearingCentre": "manchester",
+          "listCaseHearingCentre": "manchester",
           "listingLocation": {
             "value": {
               "code": "512401",
@@ -74,7 +75,7 @@
         "isRemoteHearing": "No",
         "ariaListingReference": "LP/12345/2019",
         "hearingCentre": "manchester",
-        "listCaseHearingCentre": null,
+        "listCaseHearingCentre": "manchester",
         "listingLocation": {
           "value": {
             "code": "512401",

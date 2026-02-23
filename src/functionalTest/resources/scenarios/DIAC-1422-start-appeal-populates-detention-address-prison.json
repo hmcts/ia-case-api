@@ -1,0 +1,43 @@
+{
+  "description": "DIAC-1422 Start Appeal Populates Detention Address - Prison",
+  "launchDarklyKey": "remissions-feature:true",
+  "request": {
+    "uri": "/asylum/ccdMidEvent?pageId=prisonName",
+    "credentials": "LegalRepresentative",
+    "input": {
+      "eventId": "startAppeal",
+      "state": "appealStarted",
+      "caseData": {
+        "template": "minimal-appeal-started.json",
+        "replacements": {
+          "homeOfficeDecisionDate": "{$TODAY-14}",
+          "detentionFacility": "prison",
+          "prisonNOMSNumber": {
+            "prison": "123456"
+          },
+          "appellantInDetention": "Yes",
+          "prisonName": "Ashwell"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-started.json",
+      "replacements": {
+        "homeOfficeDecisionDate": "{$TODAY-14}",
+        "appellantInDetention": "Yes",
+        "prisonName": "Ashwell",
+        "prisonNOMSNumber": {
+          "prison": "123456"
+        },
+        "detentionBuilding": "HMP Ashwell",
+        "detentionFacility": "prison",
+        "detentionPostcode": "LE15 7TU",
+        "detentionAddressLines": "Oakham, Rutland"
+      }
+    }
+  }
+}

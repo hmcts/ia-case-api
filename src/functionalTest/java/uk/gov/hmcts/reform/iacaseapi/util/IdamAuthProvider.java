@@ -8,6 +8,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.IdamService;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.IdamApi;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.idam.Token;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.idam.UserInfo;
@@ -31,6 +32,9 @@ public class IdamAuthProvider {
 
     @Autowired
     private IdamApi idamApi;
+
+    @Autowired
+    private IdamService idamService;
 
     public String getUserToken(String username, String password) {
 
@@ -156,7 +160,7 @@ public class IdamAuthProvider {
 
     public String getUserId(String token) {
         try {
-            UserInfo userInfo = idamApi.userInfo(token);
+            UserInfo userInfo = idamService.getUserInfo(token);
             return userInfo.getUid();
         } catch (FeignException ex) {
             throw new IdentityManagerResponseException("Could not get system user token from IDAM", ex);

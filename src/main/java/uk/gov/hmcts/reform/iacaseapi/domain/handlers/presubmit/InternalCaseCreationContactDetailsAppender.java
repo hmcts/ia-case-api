@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 
 import java.util.Arrays;
 import java.util.Optional;
@@ -12,6 +13,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 
@@ -52,6 +54,11 @@ public class InternalCaseCreationContactDetailsAppender implements PreSubmitCall
             }
             if (internalAppellantEmail.isPresent()) {
                 asylumCase.write(EMAIL, internalAppellantEmail);
+            }
+
+            if (HandlerUtils.isAppellantsRepresentation(asylumCase)) {
+                asylumCase.write(HAS_ADDED_LEGAL_REP_DETAILS, NO);
+                HandlerUtils.clearLegalRepFields(asylumCase);
             }
         }
         return new PreSubmitCallbackResponse<>(asylumCase);

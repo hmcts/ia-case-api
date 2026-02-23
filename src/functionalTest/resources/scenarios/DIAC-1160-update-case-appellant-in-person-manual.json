@@ -24,7 +24,9 @@
       "replacements": {
         "appellantsRepresentation": "Yes",
         "isAdmin": "Yes",
-        "journeyType": null
+        "journeyType": null,
+        "legalRepresentativeName": null,
+        "legalRepresentativeEmailAddress": null
       }
     }
   }

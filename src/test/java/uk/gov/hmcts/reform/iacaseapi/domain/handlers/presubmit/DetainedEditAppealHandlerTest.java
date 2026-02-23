@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -47,6 +48,7 @@ public class DetainedEditAppealHandlerTest {
     void should_remove_appellant_address_and_contact_info() {
         when(asylumCase.read(AsylumCaseFieldDefinition.APPELLANT_IN_DETENTION, YesOrNo.class))
                 .thenReturn(Optional.of(YES));
+        when(asylumCase.read(DETENTION_FACILITY, String.class)).thenReturn(Optional.of("prison"));
         PreSubmitCallbackResponse<AsylumCase> response = detainedEditAppealHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
         assertNotNull(response);
         verify(asylumCase, times(1))
@@ -133,6 +135,7 @@ public class DetainedEditAppealHandlerTest {
     void should_remove_ada_suitability_fields_when_editing_to_detained_non_ada() {
         when(asylumCase.read(AsylumCaseFieldDefinition.APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(YES));
         when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(asylumCase.read(DETENTION_FACILITY, String.class)).thenReturn(Optional.of("prison"));
         PreSubmitCallbackResponse<AsylumCase> response = detainedEditAppealHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(response);
@@ -149,6 +152,7 @@ public class DetainedEditAppealHandlerTest {
         when(asylumCase.read(AsylumCaseFieldDefinition.APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(YES));
         when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YES));
         when(asylumCase.read(SUITABILITY_HEARING_TYPE_YES_OR_NO, YesOrNo.class)).thenReturn(Optional.of(yesOrNo));
+        when(asylumCase.read(DETENTION_FACILITY, String.class)).thenReturn(Optional.of("prison"));
         PreSubmitCallbackResponse<AsylumCase> response = detainedEditAppealHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(response);
@@ -168,6 +172,7 @@ public class DetainedEditAppealHandlerTest {
         when(asylumCase.read(SUITABILITY_HEARING_TYPE_YES_OR_NO, YesOrNo.class)).thenReturn(Optional.of(YES));
         when(asylumCase.read(SUITABILITY_APPELLANT_ATTENDANCE_YES_OR_NO_1, YesOrNo.class)).thenReturn(Optional.of(NO));
         when(asylumCase.read(SUITABILITY_APPELLANT_ATTENDANCE_YES_OR_NO_2, YesOrNo.class)).thenReturn(Optional.of(NO));
+        when(asylumCase.read(DETENTION_FACILITY, String.class)).thenReturn(Optional.of("prison"));
         PreSubmitCallbackResponse<AsylumCase> response = detainedEditAppealHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(response);
@@ -175,5 +180,37 @@ public class DetainedEditAppealHandlerTest {
 
         verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.SUITABILITY_INTERPRETER_SERVICES_YES_OR_NO);
         verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.SUITABILITY_INTERPRETER_SERVICES_LANGUAGE);
+    }
+
+    @Test
+    void should_not_clear_appellant_address_when_detention_facility_is_other() {
+        when(asylumCase.read(AsylumCaseFieldDefinition.APPELLANT_IN_DETENTION, YesOrNo.class))
+                .thenReturn(Optional.of(YES));
+        when(asylumCase.read(DETENTION_FACILITY, String.class)).thenReturn(Optional.of("other"));
+        PreSubmitCallbackResponse<AsylumCase> response = detainedEditAppealHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+        
+        assertNotNull(response);
+        verify(asylumCase, times(1))
+                .clear(AsylumCaseFieldDefinition.APPELLANT_HAS_FIXED_ADDRESS);
+        verify(asylumCase, never()).clear(AsylumCaseFieldDefinition.APPELLANT_ADDRESS);
+        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.SEARCH_POSTCODE);
+        verify(asylumCase, times(1))
+                .clear(AsylumCaseFieldDefinition.HAS_CORRESPONDENCE_ADDRESS);
+        verify(asylumCase, times(1))
+                .clear(AsylumCaseFieldDefinition.APPELLANT_OUT_OF_COUNTRY_ADDRESS);
+        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.CONTACT_PREFERENCE);
+        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.EMAIL);
+        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.MOBILE_NUMBER);
+    }
+
+    @Test
+    void should_throw_exception_when_detention_facility_missing_for_detained_appellant() {
+        when(asylumCase.read(AsylumCaseFieldDefinition.APPELLANT_IN_DETENTION, YesOrNo.class))
+                .thenReturn(Optional.of(YES));
+        when(asylumCase.read(DETENTION_FACILITY, String.class)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> detainedEditAppealHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
+            .hasMessage("detentionFacility missing for appellant in detention")
+            .isExactlyInstanceOf(IllegalStateException.class);
     }
 }
