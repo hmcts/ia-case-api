@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_HAS_FIXED_ADDRESS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_HAS_FIXED_ADDRESS_ADMIN_J;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_IN_DETENTION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_IN_UK;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CUSTODIAL_SENTENCE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DATE_CLIENT_LEAVE_UK;
@@ -11,6 +12,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DETENTION_FACILITY;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.GWF_REFERENCE_NUMBER;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAS_SPONSOR;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_REFERENCE_NUMBER;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ACCELERATED_DETAINED_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ADMIN;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.OUT_OF_COUNTRY_DECISION_TYPE;
@@ -25,6 +27,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SUITABILITY_APPELLANT_ATTENDANCE_YES_OR_NO_2;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SUITABILITY_HEARING_TYPE_YES_OR_NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPPER_TRIBUNAL_REFERENCE_NUMBER;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.HomeOfficeReferenceHandler.HOME_OFFICE_REF_PATTERN;
 
 import java.util.List;
 import java.util.Optional;
@@ -36,6 +39,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.RequiredFieldMissingException;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DetentionFacility;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfCountryDecisionType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -101,6 +105,22 @@ public class StartAppealMidEvent implements PreSubmitCallbackHandler<AsylumCase>
         }
 
         if (callback.getPageId().equals(OUT_OF_COUNTRY_PAGE_ID)) {
+        if (callback.getPageId().equals(HOME_OFFICE_REFERENCE_NUMBER_PAGE_ID)) {
+            if (!asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class).map(
+                value -> (OutOfCountryDecisionType.REFUSAL_OF_HUMAN_RIGHTS.equals(value)
+                    || OutOfCountryDecisionType.REFUSE_PERMIT.equals(value))).orElse(false)) {
+                String homeOfficeReferenceNumber = asylumCase
+                        .read(HOME_OFFICE_REFERENCE_NUMBER, String.class)
+                        .orElseThrow(() -> new IllegalStateException("homeOfficeReferenceNumber is missing"));
+
+                if (!HOME_OFFICE_REF_PATTERN.matcher(homeOfficeReferenceNumber).matches()) { // need to update this as the Case ID is no longer used by the HO
+                    response.addError("Enter the Home office reference or Case ID in the correct format. The Home office reference or Case ID cannot include letters and must be either 9 digits or 16 digits with dashes.");
+                }
+            }
+        } else if (callback.getPageId().equals(OUT_OF_COUNTRY_PAGE_ID)) {
+            if (!readAsBool(asylumCase, APPELLANT_IN_UK)) {
+                asylumCase.write(APPELLANT_IN_DETENTION, YesOrNo.NO);
+            }
             if (callback.getEvent() == Event.EDIT_APPEAL_AFTER_SUBMIT) {
                 // Will only happen for LR as Admins are not allowed to make a OOC appeal as of now.
                 CaseDetails<AsylumCase> previousCaseDetails = callback.getCaseDetailsBefore().orElseThrow(() -> new RequiredFieldMissingException("Previous Case Details not found"));
@@ -166,6 +186,10 @@ public class StartAppealMidEvent implements PreSubmitCallbackHandler<AsylumCase>
         }
 
         return response;
+    }
+
+    private boolean readAsBool(AsylumCase data, AsylumCaseFieldDefinition fieldDef) {
+        return data.read(fieldDef, YesOrNo.class).orElse(YesOrNo.NO).equals(YesOrNo.YES);
     }
 
     private void clearSponsorDetails(AsylumCase asylumCase) {

@@ -354,6 +354,7 @@ security:
       - "generateListCmrTask"
       - "markAppealAsDetained"
       - "removeDetainedStatus"
+      - "turnOnNotificationsWATasks"
       - "addStatutoryTimeframe24Weeks"
     challenged-access-legal-operations:
       - "appellantInPersonManual"
@@ -531,6 +532,7 @@ security:
       - "generateListCmrTask"
       - "markAppealAsDetained"
       - "removeDetainedStatus"
+      - "turnOnNotificationsWATasks"
     hearing-centre-admin:
       - "appellantInPersonManual"
       - "startAppeal"
@@ -597,6 +599,9 @@ security:
       - "markAppealAsDetained"
       - "removeDetainedStatus"
       - "editDocuments"
+      - "forceDecidedState"
+      - "forceFtpaDecidedState"
+      - "turnOnNotificationsWATasks"
       - "addStatutoryTimeframe24Weeks"
     ctsc:
       - "appellantInPersonManual"
@@ -662,8 +667,11 @@ security:
       - "generateListCmrTask"
       - "markAppealAsDetained"
       - "removeDetainedStatus"
+      - "turnOnNotificationsWATasks"
       - "editDocuments"
       - "addStatutoryTimeframe24Weeks"
+      - "forceDecidedState"
+      - "forceFtpaDecidedState"
     ctsc-team-leader:
       - "appellantInPersonManual"
       - "startAppeal"
@@ -706,6 +714,7 @@ security:
       - "editAppealAfterSubmit"
       - "markAppealAsAda"
       - "removeDetainedStatus"
+      - "turnOnNotificationsWATasks"
       - "markAppealAsDetained"
       - "markAsReadyForUtTransfer"
       - "createCaseLink"
@@ -729,6 +738,8 @@ security:
       - "markAppealAsDetained"
       - "removeDetainedStatus"
       - "editDocuments"
+      - "forceDecidedState"
+      - "forceFtpaDecidedState"
       - "addStatutoryTimeframe24Weeks"
     national-business-centre:
       - "appellantInPersonManual"
@@ -795,6 +806,8 @@ security:
       - "markAppealAsDetained"
       - "removeDetainedStatus"
       - "editDocuments"
+      - "forceDecidedState"
+      - "forceFtpaDecidedState"
       - "addStatutoryTimeframe24Weeks"
     challenged-access-ctsc:
       - "appellantInPersonManual"
@@ -861,6 +874,8 @@ security:
       - "markAppealAsDetained"
       - "removeDetainedStatus"
       - "editDocuments"
+      - "forceDecidedState"
+      - "forceFtpaDecidedState"
       - "addStatutoryTimeframe24Weeks"
     challenged-access-admin:
       - "appellantInPersonManual"
@@ -928,6 +943,8 @@ security:
       - "markAppealAsDetained"
       - "removeDetainedStatus"
       - "editDocuments"
+      - "forceDecidedState"
+      - "forceFtpaDecidedState"
       - "addStatutoryTimeframe24Weeks"
     caseworker-ia-homeofficeapc:
       - "uploadHomeOfficeBundle"
@@ -1323,6 +1340,8 @@ security:
       - "UpdateNextHearingInfo"
       - "removeCaseManagerBulk"
       - "hearingCancelled"
+      - "forceDecidedState"
+      - "forceFtpaDecidedState"
       - "rollbackMigration"
       - "addStatutoryTimeframe24Weeks"
       - "removeStatutoryTimeframe24Weeks"
