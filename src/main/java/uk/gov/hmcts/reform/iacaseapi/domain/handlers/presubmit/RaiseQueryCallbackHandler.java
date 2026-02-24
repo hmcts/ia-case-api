@@ -64,9 +64,9 @@ public class RaiseQueryCallbackHandler implements PreSubmitCallbackHandler<Asylu
         );
 
         String latestQueryId = queriesList.getCaseMessages().stream()
-                .map(IdValue::getValue)       // unwrap CaseMessage
-                .map(CaseMessage::getId)      // get the ID
-                .max(String::compareTo)       // pick the highest
+                .map(IdValue::getValue)
+                .map(CaseMessage::getId)
+                .max(String::compareTo)
                 .orElse("1");
 
         LatestQuery latestQuery = LatestQuery.builder()
