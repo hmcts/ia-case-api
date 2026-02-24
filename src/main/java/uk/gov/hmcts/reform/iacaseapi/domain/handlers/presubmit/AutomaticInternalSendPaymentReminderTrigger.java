@@ -68,6 +68,10 @@ public class AutomaticInternalSendPaymentReminderTrigger implements PreSubmitCal
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
+        if (isNotificationTurnedOff(asylumCase)) {
+            return new PreSubmitCallbackResponse<>(asylumCase);
+        }
+
         ZonedDateTime scheduledDate = ZonedDateTime.of(dateProvider.nowWithTime(), ZoneId.systemDefault()).plusMinutes(schedule7DaysInMinutes);
 
         TimedEvent timedEvent = scheduler.schedule(

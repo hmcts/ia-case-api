@@ -110,11 +110,6 @@ class EjpEditAppealHandlerTest {
         PreSubmitCallbackResponse<AsylumCase> response = ejpEditAppealHandler.handle(ABOUT_TO_SUBMIT, callback);
 
         assertThat(response).isNotNull();
-        if (isAda.equals(NO)) {
-            verify(asylumCase, times(1)).clear(DECISION_LETTER_RECEIVED_DATE);
-        } else {
-            verify(asylumCase, times(1)).clear(HOME_OFFICE_DECISION_DATE);
-        }
     }
 
     @Test

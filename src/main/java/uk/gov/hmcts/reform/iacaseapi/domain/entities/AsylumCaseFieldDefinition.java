@@ -440,6 +440,9 @@ public enum AsylumCaseFieldDefinition {
     UPLOAD_THE_NOTICE_OF_DECISION_DOCS(
         "uploadTheNoticeOfDecisionDocs", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
 
+    UPLOAD_THE_NOTICE_OF_DECISION_DOCS_REHYDRATED(
+            "uploadRehydratedNod", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
+
     UPLOAD_THE_APPEAL_FORM_DOCS(
         "uploadTheAppealFormDocs", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
 
@@ -2418,6 +2421,9 @@ public enum AsylumCaseFieldDefinition {
     UPPER_TRIBUNAL_REFERENCE_NUMBER(
         "upperTribunalReferenceNumber", new TypeReference<String>() {}),
 
+    IS_REHYDRATED_APPEAL(
+        "isRehydratedAppeal", new TypeReference<YesOrNo>() {}),
+
     IS_EJP(
         "isEjp", new TypeReference<YesOrNo>() {}),
 
@@ -2895,7 +2901,13 @@ public enum AsylumCaseFieldDefinition {
     ADD_CASE_MESSAGE_DESCRIPTION("addCaseMessageDescription", new TypeReference<String>(){}),
 
     XUI_BANNER_TEXT(
-        "xuiBannerText", new TypeReference<String>(){})
+            "xuiBannerText", new TypeReference<String>(){}),
+  
+    HAS_BEEN_DECIDED("hasBeenDecided",
+        new TypeReference<YesOrNo>(){}),
+
+    HAS_BEEN_FTPA_DECIDED("hasBeenFtpaDecided",
+        new TypeReference<YesOrNo>(){})
     ;
 
     private final String value;
