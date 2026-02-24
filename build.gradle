@@ -259,7 +259,8 @@ sonarqube {
                 "src/main/java/uk/gov/hmcts/reform/iacaseapi/infrastructure/SystemDateProvider.java," +
                 "src/main/java/uk/gov/hmcts/reform/iacaseapi/Application.java," +
                 "src/main/java/uk/gov/hmcts/reform/iacaseapi/infrastructure/security/idam/IdamAuthoritiesConverter.java," +
-                "src/main/java/uk/gov/hmcts/reform/iacaseapi/domain/entities/CaseFlag.java"
+                "src/main/java/uk/gov/hmcts/reform/iacaseapi/domain/entities/CaseFlag.java," +
+                "src/main/java/uk/gov/hmcts/reform/iacaseapi/infrastructure/clients/model/ccd/**"
         property "sonar.cpd.exclusions", "src/main/java/uk/gov/hmcts/reform/iacaseapi/domain/handlers/**"
     }
 }
@@ -463,6 +464,8 @@ dependencies {
         exclude group: "org.bouncycastle", module: "bcprov-jdk15on"
     }
 
+    implementation group: 'com.github.hmcts', name: 'core-case-data-store-client', version: '4.9.2'
+    functionalTestImplementation group: 'com.github.hmcts', name: 'core-case-data-store-client', version: '4.9.2'
 
 
     //pact contract testing
@@ -559,3 +562,4 @@ applicationDefaultJvmArgs = ["-Dfile.encoding=UTF-8"]
 wrapper {
     distributionType = Wrapper.DistributionType.ALL
 }
+
