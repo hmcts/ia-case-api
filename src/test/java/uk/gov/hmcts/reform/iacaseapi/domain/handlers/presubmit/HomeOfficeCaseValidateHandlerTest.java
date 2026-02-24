@@ -227,14 +227,10 @@ class HomeOfficeCaseValidateHandlerTest {
     }
 
     @ParameterizedTest
-    @MethodSource("eventData")
-    void should_not_call_home_office_api_for_aa_appeals(Event event) {
     @MethodSource("eventAndAppealTypesData")
     void should_not_call_home_office_api_when_isNotificationTurnedOff_yes(Event event, AppealType appealType) {
 
         when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
-        when(featureToggler.getValue("home-office-uan-pa-rp-feature", false)).thenReturn(true);
-        when(featureToggler.getValue("home-office-uan-dc-ea-hu-feature", false)).thenReturn(true);
 
         when(callback.getEvent()).thenReturn(event);
 
@@ -391,14 +387,6 @@ class HomeOfficeCaseValidateHandlerTest {
                 Arguments.of(REQUEST_HOME_OFFICE_DATA, EA),
                 Arguments.of(REQUEST_HOME_OFFICE_DATA, HU),
                 Arguments.of(REQUEST_HOME_OFFICE_DATA, EU)
-        );
-    }
-
-    private static Stream<Arguments> eventData() {
-        return Stream.of(
-                Arguments.of(SUBMIT_APPEAL),
-                Arguments.of(MARK_APPEAL_PAID),
-                Arguments.of(REQUEST_HOME_OFFICE_DATA)
         );
     }
 

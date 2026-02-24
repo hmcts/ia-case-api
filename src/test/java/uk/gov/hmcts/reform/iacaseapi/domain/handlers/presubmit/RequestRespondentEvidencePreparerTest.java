@@ -316,10 +316,7 @@ class RequestRespondentEvidencePreparerTest {
     @ParameterizedTest
     @ValueSource(strings = { "FAIL", "MULTIPLE" })
     void handle_should_not_throw_error_for_the_failed_home_office_response_pa_appeal_type_rehydrated_isNotificationTurnedOff_yes(String hoSearchStatus) {
-
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
-        when(featureToggler.getValue("home-office-uan-pa-rp-feature", false)).thenReturn(true);
-
+ 
         when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
         when(dateProvider.now()).thenReturn(LocalDate.parse("2018-11-23"));
         when(callback.getCaseDetails()).thenReturn(caseDetails);
