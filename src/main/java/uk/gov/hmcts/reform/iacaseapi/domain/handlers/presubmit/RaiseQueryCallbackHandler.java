@@ -4,7 +4,6 @@ import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.QM_LATEST_QUERY;
 
 import java.util.Comparator;
-import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Component;
@@ -17,6 +16,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.controllers.model.querymanagement.CaseQueriesCollection;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.controllers.model.querymanagement.LatestQuery;
@@ -51,13 +51,12 @@ public class RaiseQueryCallbackHandler implements PreSubmitCallbackHandler<Asylu
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
         AsylumCaseFieldDefinition targetCollection = getQueryCollectionField(asylumCase);
-
         if (targetCollection == null) {
-            return new PreSubmitCallbackResponse<>(asylumCase);
+            throw new IllegalStateException("Unable to determine query collection for this asylum case");
         }
 
-        Optional<List<IdValue<CaseQueriesCollection>>> maybeQueries = asylumCase.read(targetCollection);
-        List<IdValue<CaseQueriesCollection>> queriesList = maybeQueries.orElse(List.of());
+        Optional<CaseQueriesCollection> maybeQueries = asylumCase.read(targetCollection);
+        CaseQueriesCollection queriesList = maybeQueries.orElse(null);
 
         String latestQueryId = queriesList.stream()
                 .max(Comparator.comparing(IdValue::getId))
@@ -73,13 +72,12 @@ public class RaiseQueryCallbackHandler implements PreSubmitCallbackHandler<Asylu
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
-
     private AsylumCaseFieldDefinition getQueryCollectionField(AsylumCase asylumCase) {
-        if (uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isLegalRepJourney(asylumCase)) {
+        if (HandlerUtils.isLegalRepJourney(asylumCase)) {
             return AsylumCaseFieldDefinition.QM_LEGAL_REPRESENTATIVE_QUERIES;
-        } else if (uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isAipJourney(asylumCase)) {
+        } else if (HandlerUtils.isAipJourney(asylumCase)) {
             return AsylumCaseFieldDefinition.QM_AIP_QUERIES;
-        } else if (uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isInternalCase(asylumCase)) {
+        } else if (HandlerUtils.isInternalCase(asylumCase)) {
             return AsylumCaseFieldDefinition.QM_ADMIN_QUERIES;
         }
         return null;

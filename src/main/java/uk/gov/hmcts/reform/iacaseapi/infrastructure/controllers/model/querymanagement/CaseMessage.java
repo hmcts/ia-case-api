@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
@@ -17,6 +18,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
+@Setter
 @ToString
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
