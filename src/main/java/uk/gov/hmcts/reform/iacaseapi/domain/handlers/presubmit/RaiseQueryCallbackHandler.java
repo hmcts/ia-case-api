@@ -3,7 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.QM_LATEST_QUERY;
 
-import java.util.Comparator;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Component;
@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.controllers.model.querymanagement.CaseMessage;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.controllers.model.querymanagement.CaseQueriesCollection;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.controllers.model.querymanagement.LatestQuery;
 
@@ -55,12 +56,17 @@ public class RaiseQueryCallbackHandler implements PreSubmitCallbackHandler<Asylu
             throw new IllegalStateException("Unable to determine query collection for this asylum case");
         }
 
-        Optional<CaseQueriesCollection> maybeQueries = asylumCase.read(targetCollection);
-        CaseQueriesCollection queriesList = maybeQueries.orElse(null);
+        Optional<CaseQueriesCollection> maybeQueries =
+                asylumCase.read(targetCollection, CaseQueriesCollection.class);
 
-        String latestQueryId = queriesList.stream()
-                .max(Comparator.comparing(IdValue::getId))
-                .map(IdValue::getId)
+        CaseQueriesCollection queriesList = maybeQueries.orElse(
+                CaseQueriesCollection.builder().caseMessages(List.of()).build()
+        );
+
+        String latestQueryId = queriesList.getCaseMessages().stream()
+                .map(IdValue::getValue)       // unwrap CaseMessage
+                .map(CaseMessage::getId)      // get the ID
+                .max(String::compareTo)       // pick the highest
                 .orElse("1");
 
         LatestQuery latestQuery = LatestQuery.builder()
@@ -72,6 +78,7 @@ public class RaiseQueryCallbackHandler implements PreSubmitCallbackHandler<Asylu
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
+
     private AsylumCaseFieldDefinition getQueryCollectionField(AsylumCase asylumCase) {
         if (HandlerUtils.isLegalRepJourney(asylumCase)) {
             return AsylumCaseFieldDefinition.QM_LEGAL_REPRESENTATIVE_QUERIES;
