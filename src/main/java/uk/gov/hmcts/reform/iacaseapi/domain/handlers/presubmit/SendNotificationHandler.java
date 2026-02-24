@@ -87,7 +87,6 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
             Event.SEND_DIRECTION,
             Event.CHANGE_DIRECTION_DUE_DATE,
             Event.REQUEST_RESPONDENT_EVIDENCE,
-            Event.COMPLETE_CASE_REVIEW,
             Event.UPLOAD_RESPONDENT_EVIDENCE,
             Event.REQUEST_RESPONDENT_REVIEW,
             Event.ADD_APPEAL_RESPONSE,
@@ -201,7 +200,6 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
         Set<Event> eventsToHandle = Sets.newHashSet(
             Event.EDIT_APPEAL_AFTER_SUBMIT,
             Event.REQUEST_RESPONDENT_EVIDENCE,
-            Event.COMPLETE_CASE_REVIEW,
             Event.REQUEST_RESPONDENT_REVIEW,
             Event.DECIDE_AN_APPLICATION,
             Event.MAKE_AN_APPLICATION,
