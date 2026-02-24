@@ -36,6 +36,7 @@ apply plugin: 'idea'
 
 def versions = [
         reformLogging      : '8.0.0',
+        reformLoggingAppInsights: '6.1.9',
         serenity           : '3.9.8',
         junit              : '5.13.3',
         junitPlatform      : '1.13.3',
@@ -63,7 +64,7 @@ version = '0.0.1'
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(17)
+        languageVersion = JavaLanguageVersion.of(21)
     }
 }
 
@@ -382,7 +383,7 @@ dependencies {
     implementation group: 'org.apache.logging.log4j', name: 'log4j-to-slf4j', version: '2.17.1'
 
     implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: versions.reformLogging
-    implementation group: 'com.github.hmcts.java-logging', name: 'logging-appinsights', version: versions.reformLogging
+    implementation group: 'com.github.hmcts.java-logging', name: 'logging-appinsights', version: versions.reformLoggingAppInsights
     implementation(group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '4.1.2') {
         exclude group: "org.bouncycastle", module: "bcprov-jdk15on"
     }
