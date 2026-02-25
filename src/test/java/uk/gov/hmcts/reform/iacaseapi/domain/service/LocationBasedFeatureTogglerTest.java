@@ -74,14 +74,14 @@ public class LocationBasedFeatureTogglerTest {
         assertEquals(YES, locationBasedFeatureToggler.isListAssistEnabled(asylumCase));
 
     }
-//
-//    @Test
-//    void isListAssistIntegratedLocated_should_return_no() {
-//        when(baseLocation.getId()).thenReturn(DISABLED_LOCATION);
-//
-//        assertEquals(NO, locationBasedFeatureToggler.isListAssistEnabled(asylumCase));
-//
-//    }
+    //
+    //    @Test
+    //    void isListAssistIntegratedLocated_should_return_no() {
+    //        when(baseLocation.getId()).thenReturn(DISABLED_LOCATION);
+    //
+    //        assertEquals(NO, locationBasedFeatureToggler.isListAssistEnabled(asylumCase));
+    //
+    //    }
 
     @Test
     void isAutoHearingRequestEnabled_should_return_yes() {
@@ -91,13 +91,13 @@ public class LocationBasedFeatureTogglerTest {
 
     }
 
-//    @Test
-//    void isAutoHearingRequestEnabled_should_return_no() {
-//        when(baseLocation.getId()).thenReturn(DISABLED_LOCATION);
-//
-//        assertEquals(NO, locationBasedFeatureToggler.isAutoHearingRequestEnabled(asylumCase));
-//
-//    }
+    //    @Test
+    //    void isAutoHearingRequestEnabled_should_return_no() {
+    //        when(baseLocation.getId()).thenReturn(DISABLED_LOCATION);
+    //
+    //        assertEquals(NO, locationBasedFeatureToggler.isAutoHearingRequestEnabled(asylumCase));
+    //
+    //    }
 
     @Test
     void isAutoHearingRequestEnabled_should_return_yes_when_ref_data_enabled() {
