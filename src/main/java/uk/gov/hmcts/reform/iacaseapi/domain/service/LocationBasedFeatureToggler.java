@@ -34,12 +34,12 @@ public class LocationBasedFeatureToggler {
 
 
     public YesOrNo isListAssistEnabled(AsylumCase asylumCase) {
-
+        if (asylumCase == null) { return YES;}
         return YES;
     }
 
     public YesOrNo isAutoHearingRequestEnabled(AsylumCase asylumCase) {
-
+        if (asylumCase == null) { return YES;}
         return YES;
     }
 
