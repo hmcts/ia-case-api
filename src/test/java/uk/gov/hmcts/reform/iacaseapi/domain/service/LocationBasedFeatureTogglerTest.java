@@ -108,13 +108,13 @@ public class LocationBasedFeatureTogglerTest {
 
     }
 
-//    @Test
-//    void isAutoHearingRequestEnabled_should_return_no_when_ref_data_enabled() {
-//        when(asylumCase.read(IS_CASE_USING_LOCATION_REF_DATA, YesOrNo.class)).thenReturn(Optional.of(YES));
-//        when(refDataBaseLocation.getCode()).thenReturn(DISABLED_LOCATION);
-//
-//        assertEquals(NO, locationBasedFeatureToggler.isAutoHearingRequestEnabled(asylumCase));
-//
-//    }
+    //    @Test
+    //    void isAutoHearingRequestEnabled_should_return_no_when_ref_data_enabled() {
+    //        when(asylumCase.read(IS_CASE_USING_LOCATION_REF_DATA, YesOrNo.class)).thenReturn(Optional.of(YES));
+    //        when(refDataBaseLocation.getCode()).thenReturn(DISABLED_LOCATION);
+    //
+    //        assertEquals(NO, locationBasedFeatureToggler.isAutoHearingRequestEnabled(asylumCase));
+    //
+    //    }
 
 }
