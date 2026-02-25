@@ -2,12 +2,11 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DIRECTIONS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DECISION_HEARING_FEE_OPTION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FEE_WITH_HEARING;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DIRECTIONS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FEE_WITHOUT_HEARING;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PA_APPEAL_TYPE_AIP_PAYMENT_OPTION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PA_APPEAL_TYPE_PAYMENT_OPTION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FEE_WITH_HEARING;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isPayLater;
 
 import java.util.List;
 import java.util.Optional;
@@ -51,16 +50,9 @@ public class DecisionPaPayLaterDirectionHandler implements PreSubmitCallbackHand
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
-        final AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
-
-        String paAppealTypePaymentOption = asylumCase.read(PA_APPEAL_TYPE_PAYMENT_OPTION, String.class).orElse("");
-        String paAppealTypeAipPaymentOption = asylumCase.read(PA_APPEAL_TYPE_AIP_PAYMENT_OPTION, String.class).orElse("");
-
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
                 && callback.getEvent() == Event.SEND_DECISION_AND_REASONS
-                && ("payLater".equals(paAppealTypePaymentOption) || "payLater".equals(paAppealTypeAipPaymentOption))
-                && (HandlerUtils.isAipJourney(callback.getCaseDetails().getCaseData())
-                || HandlerUtils.isRepJourney(callback.getCaseDetails().getCaseData()));
+                && isPayLater(callback.getCaseDetails().getCaseData());
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
