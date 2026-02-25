@@ -143,8 +143,7 @@ class CaseBuildingPaPayLaterDirectionHandlerTest {
                 contains("Your appeal requires a fee to be paid"),
                 eq(Parties.LEGAL_REPRESENTATIVE),
                 eq("2024-04-06"),
-                eq(DirectionTag.CASE_BUILDING_PA_PAY_LATER),
-                eq(Event.SUBMIT_APPEAL.toString())
+                eq(DirectionTag.CASE_BUILDING_PA_PAY_LATER)
         )).thenReturn(allDirections);
 
         PreSubmitCallbackResponse<AsylumCase> response =
