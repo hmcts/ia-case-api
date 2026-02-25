@@ -12,7 +12,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.DispatchPriori
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationBasedFeatureToggler;
 
 @Slf4j
 @Component
