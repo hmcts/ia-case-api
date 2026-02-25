@@ -491,7 +491,9 @@ class SendNotificationHandlerTest {
         Event.RECORD_REMISSION_REMINDER,
         Event.MARK_APPEAL_AS_REMITTED,
         Event.REFUND_CONFIRMATION,
-        Event.REVOKE_CASE_ACCESS_V2,
+        Event.SEND_INVITE_TO_NON_LEGAL_REP,
+        Event.SEND_PIP_TO_NON_LEGAL_REP,
+        Event.JOIN_APPEAL_CONFIRMATION,
         Event.HEARING_CANCELLED
     );
 

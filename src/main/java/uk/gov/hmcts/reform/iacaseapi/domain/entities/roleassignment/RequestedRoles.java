@@ -1,11 +1,18 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment;
 
+import java.time.ZonedDateTime;
 import java.util.Map;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.ToString;
 
+@Getter
 @EqualsAndHashCode
 @ToString
+@AllArgsConstructor
+@Builder
 public class RequestedRoles {
     private final ActorIdType actorIdType;
     private final String actorId;
@@ -16,6 +23,8 @@ public class RequestedRoles {
     private final GrantType grantType;
     private final Boolean readOnly;
     private final Map<String, String> attributes;
+    private final ZonedDateTime startTime;
+    private final ZonedDateTime endTime;
 
     public RequestedRoles(ActorIdType actorIdType,
                           String actorId,
@@ -35,41 +44,7 @@ public class RequestedRoles {
         this.grantType = grantType;
         this.readOnly = readOnly;
         this.attributes = attributes;
-    }
-
-    public ActorIdType getActorIdType() {
-        return actorIdType;
-    }
-
-    public String getActorId() {
-        return actorId;
-    }
-
-    public RoleType getRoleType() {
-        return roleType;
-    }
-
-    public String getRoleName() {
-        return roleName;
-    }
-
-    public RoleCategory getRoleCategory() {
-        return roleCategory;
-    }
-
-    public Classification getClassification() {
-        return classification;
-    }
-
-    public GrantType getGrantType() {
-        return grantType;
-    }
-
-    public Boolean getReadOnly() {
-        return readOnly;
-    }
-
-    public Map<String, String> getAttributes() {
-        return attributes;
+        this.startTime = null;
+        this.endTime = null;
     }
 }

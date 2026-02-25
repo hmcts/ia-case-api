@@ -73,10 +73,36 @@ public class IdamClientApiConsumerTest {
             .toPact();
     }
 
+    @Pact(provider = "idamClientApi_oidc", consumer = "ia_caseApi")
+    public RequestResponsePact generatePactFragmentGetUserFromEmail(PactDslWithProvider builder) throws JSONException {
+        return builder
+            .given("getUserFromEmail is requested")
+            .uponReceiving("A request for a GetUserFromEmail")
+            .path("/api/v2/users-by-email/" + EMAIL)
+            .method("GET")
+            .matchHeader("Authorization", AUTH_TOKEN)
+            .matchHeader(CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+            .willRespondWith()
+            .status(200)
+            .body(createUserResponseEntityResponse())
+            .toPact();
+    }
+
     @Test
     @PactTestFor(pactMethod = "generatePactFragmentGetUser")
     public void verifyIdamUserPactGetUser() {
         User userInfo = idamClientApi.getUser(AUTH_TOKEN, USER_ID).getBody();
+        assertNotNull(userInfo);
+        assertEquals(EMAIL, userInfo.getEmail());
+        assertEquals(USER_ID, userInfo.getId());
+        assertEquals("Case", userInfo.getForename());
+        assertEquals("Officer", userInfo.getSurname());
+    }
+
+    @Test
+    @PactTestFor(pactMethod = "generatePactFragmentGetUserFromEmail")
+    public void verifyIdamUserPactGetUserFromEmail() {
+        User userInfo = idamClientApi.getUserFromEmail(AUTH_TOKEN, EMAIL).getBody();
         assertNotNull(userInfo);
         assertEquals(EMAIL, userInfo.getEmail());
         assertEquals(USER_ID, userInfo.getId());

@@ -222,5 +222,4 @@ public class RoleAssignmentService {
             log.error("Problem removing Case roles for case ID {}. No role assignment(s) found.", caseId);
         }
     }
-
 }

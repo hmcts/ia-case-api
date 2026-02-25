@@ -31,7 +31,9 @@ class RequestedRolesTest {
             + "classification=PRIVATE, "
             + "grantType=BASIC, "
             + "readOnly=true, "
-            + "attributes={})",
+            + "attributes={}, "
+            + "startTime=null, "
+            + "endTime=null)",
             requestedRoles.toString()
         );
         assertEquals(ActorIdType.IDAM, requestedRoles.getActorIdType());
