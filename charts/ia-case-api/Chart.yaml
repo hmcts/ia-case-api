@@ -1,7 +1,7 @@
 apiVersion: v2
 name: ia-case-api
 home: https://github.com/hmcts/ia-case-api
-version: 0.0.69
+version: 0.0.70
 description: Immigration & Asylum Case API
 maintainers:
   - name: HMCTS Immigration & Asylum Team
@@ -100,3 +100,4 @@ dependencies:
     version: 1.1.0
     repository: 'oci://hmctspublic.azurecr.io/helm'
     condition: postgresql.enabled
+  
