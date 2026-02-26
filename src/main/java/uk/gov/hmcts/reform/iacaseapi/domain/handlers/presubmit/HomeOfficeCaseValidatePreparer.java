@@ -79,7 +79,6 @@ public class HomeOfficeCaseValidatePreparer implements PreSubmitCallbackHandler<
                 .orElseThrow(() -> new IllegalStateException("AppealType is not present."));
 
         boolean appealTypeEnabled = HomeOfficeAppealTypeChecker.isAppealTypeEnabled(featureToggler, appealType);
-        boolean isNotificationTurnedOff = HandlerUtils.isNotificationTurnedOff(asylumCase);
 
         if (!appealTypeEnabled) {
 
@@ -90,8 +89,8 @@ public class HomeOfficeCaseValidatePreparer implements PreSubmitCallbackHandler<
             asylumCase.write(IS_HOME_OFFICE_INTEGRATION_ENABLED, YesOrNo.YES);
             boolean homeOfficeUanFeatureEnabled = featureToggler.getValue("home-office-uan-feature", false);
 
-            if (homeOfficeUanFeatureEnabled && appealTypeEnabled && !isAgeAssessmentAppeal && !isEjpCase
-                    && !isNotificationTurnedOff) {
+            if (homeOfficeUanFeatureEnabled
+                && appealTypeEnabled && !isAgeAssessmentAppeal && !isEjpCase) {
                 asylumCase = homeOfficeApi.aboutToStart(callback);
             }
         } else {

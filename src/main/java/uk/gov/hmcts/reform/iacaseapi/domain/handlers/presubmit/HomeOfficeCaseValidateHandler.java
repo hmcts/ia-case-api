@@ -83,10 +83,8 @@ public class HomeOfficeCaseValidateHandler implements PreSubmitCallbackHandler<A
 
             asylumCase.write(IS_HOME_OFFICE_INTEGRATION_ENABLED, YesOrNo.YES);
 
-            boolean isNotificationTurnedOff = HandlerUtils.isNotificationTurnedOff(asylumCase);
-
-            if (HandlerUtils.isEjpCase(asylumCase) || HandlerUtils.isAgeAssessmentAppeal(asylumCase)
-                    || isNotificationTurnedOff) {
+            if (HandlerUtils.isEjpCase(asylumCase)
+                || HandlerUtils.isAgeAssessmentAppeal(asylumCase)) {
                 return new PreSubmitCallbackResponse<>(asylumCase);
             }
 

@@ -20,7 +20,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -46,6 +46,7 @@ class DbAppealReferenceNumberGeneratorTest {
     private ArgumentCaptor<MapSqlParameterSource> selectParametersCaptor;
     private MapSqlParameterSource expectedParameters;
     private String expectedAppealReferenceNumber = "PA/12345/2017";
+    private String expectedDetainedAppealReferenceNumber = "DE/12345/2017";
 
     private DbAppealReferenceNumberGenerator dbAppealReferenceNumberGenerator;
 
@@ -115,11 +116,13 @@ class DbAppealReferenceNumberGeneratorTest {
         assertEquals(SEQUENCE_SEED, actualInsertParameters.getValue("seed"));
 
         MapSqlParameterSource actualSelectParameters =
-            selectParametersCaptor
+            insertParametersCaptor
                 .getAllValues()
                 .get(0);
 
         assertEquals(caseId, actualSelectParameters.getValue("caseId"));
+        assertEquals(appealType.name(), actualSelectParameters.getValue("appealType"));
+        assertEquals(currentYear, actualSelectParameters.getValue("year"));
     }
 
     @Test
@@ -140,7 +143,7 @@ class DbAppealReferenceNumberGeneratorTest {
                 contains("INTO ia_case_api.appeal_reference_numbers")
             ),
             any(MapSqlParameterSource.class)
-        )).thenThrow(new DataIntegrityViolationException("Duplicate key violation"));
+        )).thenThrow(DuplicateKeyException.class);
 
         String appealReferenceNumber =
             dbAppealReferenceNumberGenerator.generate(caseId, appealType);
@@ -151,13 +154,14 @@ class DbAppealReferenceNumberGeneratorTest {
     @Test
     void should_throw_when_appeal_reference_number_for_case_not_found() {
 
-        when(jdbcTemplate.update(
+        when(jdbcTemplate.queryForObject(
             and(
-                contains("INSERT"),
-                contains("INTO ia_case_api.appeal_reference_numbers")
+                contains("SELECT"),
+                contains("FROM ia_case_api.appeal_reference_numbers")
             ),
-            any(MapSqlParameterSource.class)
-        )).thenReturn(0);
+            any(MapSqlParameterSource.class),
+            eq(String.class)
+        )).thenReturn(expectedAppealReferenceNumber);
 
         when(jdbcTemplate.queryForObject(
             and(
