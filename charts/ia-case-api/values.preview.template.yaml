@@ -145,7 +145,8 @@ ia-case-documents-api:
   enabled: true #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
-    image: hmctspublic.azurecr.io/ia/case-documents-api:latest
+    image: hmctspublic.azurecr.io/ia/case-documents-api:pr-1158
+    #image: hmctspublic.azurecr.io/ia/case-documents-api:latest
     releaseNameOverride: ${SERVICE_NAME}-case-documents-api
     ingressHost: ${SERVICE_NAME}-documents-api.preview.platform.hmcts.net
     devcpuRequests: 500m
@@ -211,6 +212,26 @@ ia-case-documents-api:
             alias: IA_HEARING_CENTRE_HATTON_CROSS_EMAIL
           - name: hearing-centre-glasgow-email
             alias: IA_HEARING_CENTRE_GLASGOW_EMAIL
+          - name: hearing-centre-hendon-email
+            alias: IA_HEARING_CENTRE_HENDON_EMAIL
+          - name: hearing-centre-yarlswood-email
+            alias: IA_HEARING_CENTRE_YARLSWOOD_EMAIL
+          - name: hearing-centre-bradford-keighley-email
+            alias: IA_HEARING_CENTRE_BRADFORD_KEIGHLEY_EMAIL
+          - name: hearing-centre-mcc-minshull-email
+            alias: IA_HEARING_CENTRE_MCC_MINSHULL_EMAIL
+          - name: hearing-centre-mcc-crown-square-email
+            alias: IA_HEARING_CENTRE_MCC_CROWN_SQUARE_EMAIL
+          - name: hearing-centre-manchester-email
+            alias: IA_HEARING_CENTRE_MANCHESTER_MAGS_EMAIL
+          - name: hearing-centre-nth-tyne-mags-email
+            alias: IA_HEARING_CENTRE_NTH_TYNE_MAGS_EMAIL
+          - name: hearing-centre-leeds-mags-email
+            alias: IA_HEARING_CENTRE_LEEDS_MAGS_EMAIL
+          - name: hearing-centre-alloa-sherrif-email
+            alias: IA_HEARING_CENTRE_ALLOA_SHERRIF_EMAIL
+          - name: hearing-centre-virtual-region-email
+            alias: IA_HEARING_CENTRE_VIRTUAL_REGION_EMAIL
           - name: app-insights-connection-string
             alias: app-insights-connection-string
 
@@ -218,7 +239,8 @@ ia-case-notifications-api:
   enabled: true #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
-    image: hmctspublic.azurecr.io/ia/case-notifications-api:latest
+    image: hmctspublic.azurecr.io/ia/case-notifications-api:pr-1637
+    #image: hmctspublic.azurecr.io/ia/case-notifications-api:latest
     releaseNameOverride: ${SERVICE_NAME}-case-notifications-api
     ingressHost: ${SERVICE_NAME}-notifications-api.preview.platform.hmcts.net
     devcpuRequests: 500m
