@@ -23,8 +23,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 @Component
 public class InCountryToOutOfCountryHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
-    public static final String OUT_OF_COUNTRY_PAGE_ID = "outOfCountry";
-
     public boolean canHandle(
             PreSubmitCallbackStage callbackStage,
             Callback<AsylumCase> callback
@@ -34,8 +32,7 @@ public class InCountryToOutOfCountryHandler implements PreSubmitCallbackHandler<
 
         return callbackStage == PreSubmitCallbackStage.MID_EVENT
                 && (callback.getEvent() == Event.START_APPEAL || callback.getEvent() == Event.EDIT_APPEAL)
-                && !sourceOfAppealEjp(callback.getCaseDetails().getCaseData())
-                && callback.getPageId().equals(OUT_OF_COUNTRY_PAGE_ID);
+                && !sourceOfAppealEjp(callback.getCaseDetails().getCaseData());
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(

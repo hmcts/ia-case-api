@@ -91,12 +91,11 @@ public class RequestRespondentEvidencePreparer implements PreSubmitCallbackHandl
                 && HomeOfficeAppealTypeChecker.isAppealTypeEnabled(featureToggler, appealType)) {
 
             boolean isInCountryAppeal = asylumCase.read(APPEAL_OUT_OF_COUNTRY, YesOrNo.class).map(ooc -> NO == ooc).orElse(true);
-            boolean isNotificationTurnedOff = HandlerUtils.isNotificationTurnedOff(asylumCase);
 
             if (isInCountryAppeal
                 && shouldMatchAppellantDetails(asylumCase)
-                && appellantDetailsNotMatchedOrFailed(asylumCase)
-                && !isNotificationTurnedOff) {
+                && appellantDetailsNotMatchedOrFailed(asylumCase)) {
+
                 callbackResponse
                     .addError("You need to match the appellant details before you can request the respondent evidence.");
                 return callbackResponse;

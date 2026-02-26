@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isNotificationTurnedOff;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isOnlyRemoteToRemoteHearingChannelUpdate;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.relistCaseImmediately;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
@@ -83,7 +82,6 @@ public class GenerateDocumentHandler implements PreSubmitCallbackHandler<AsylumC
         PreSubmitCallbackStage callbackStage,
         Callback<AsylumCase> callback
     ) {
-
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
@@ -174,10 +172,7 @@ public class GenerateDocumentHandler implements PreSubmitCallbackHandler<AsylumC
             throw new IllegalStateException("Cannot handle callback");
         }
 
-        AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
-
-        AsylumCase asylumCaseWithGeneratedDocument = isNotificationTurnedOff(asylumCase) ?
-            asylumCase : documentGenerator.generate(callback);
+        AsylumCase asylumCaseWithGeneratedDocument = documentGenerator.generate(callback);
 
         if (Event.EDIT_CASE_LISTING.equals(callback.getEvent())) {
             removeFlagsForRecordedApplication(

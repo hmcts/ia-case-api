@@ -74,6 +74,13 @@ public abstract class CallbackTransformer extends ResponseDefinitionTransformer 
         return false;
     }
 
+    public void addAdditionalAsylumCaseData(
+        String fieldname,
+        Object value
+    ) {
+        additionalAsylumCaseData.put(fieldname, value);
+    }
+
     private String writeValue(PreSubmitCallbackResponseForTest preSubmitCallbackResponseForTest) {
         try {
             return objectMapper.writeValueAsString(preSubmitCallbackResponseForTest);
