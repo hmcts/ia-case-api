@@ -93,7 +93,8 @@ public class RequestRespondentEvidencePreparer implements PreSubmitCallbackHandl
             boolean isInCountryAppeal = asylumCase.read(APPEAL_OUT_OF_COUNTRY, YesOrNo.class).map(ooc -> NO == ooc).orElse(true);
             boolean isNotificationTurnedOff = HandlerUtils.isNotificationTurnedOff(asylumCase);
 
-            if (isInCountryAppeal
+            if (callback.getEvent() != Event.COMPLETE_CASE_REVIEW
+                && isInCountryAppeal
                 && shouldMatchAppellantDetails(asylumCase)
                 && appellantDetailsNotMatchedOrFailed(asylumCase)
                 && !isNotificationTurnedOff) {
