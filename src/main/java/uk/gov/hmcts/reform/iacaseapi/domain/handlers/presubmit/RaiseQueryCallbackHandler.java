@@ -72,7 +72,7 @@ public class RaiseQueryCallbackHandler implements PreSubmitCallbackHandler<Asylu
         LatestQuery latestQuery = LatestQuery.builder()
                 .queryId(latestQueryId)
                 .isHearingRelated(YesOrNo.NO)
-                .build();
+                .build().orElse(null);
 
         asylumCase.write(QM_LATEST_QUERY, latestQuery);
 
