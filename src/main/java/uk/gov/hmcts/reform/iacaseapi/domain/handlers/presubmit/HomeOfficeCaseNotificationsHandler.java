@@ -90,7 +90,8 @@ public class HomeOfficeCaseNotificationsHandler implements PreSubmitCallbackHand
                    && isDirectionForRespondentParties(callback.getCaseDetails().getCaseData())
                   )
                )
-               && featureToggler.getValue(HO_NOTIFICATION_FEATURE, false);
+               && featureToggler.getValue(HO_NOTIFICATION_FEATURE, false)
+               && !HandlerUtils.isNotificationTurnedOff(callback.getCaseDetails().getCaseData());
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
