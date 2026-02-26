@@ -224,6 +224,10 @@ public class HandlerUtils {
         return (asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).orElse(NO) == YesOrNo.YES;
     }
 
+    public static boolean isStf24WeekCase(AsylumCase asylumCase) {
+        return (asylumCase.read(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class)).orElse(NO) == YesOrNo.YES;
+    }
+
     public static boolean isAppellantsRepresentation(AsylumCase asylumCase) {
         return (asylumCase.read(APPELLANTS_REPRESENTATION, YesOrNo.class)).orElse(NO) == YesOrNo.YES;
     }
