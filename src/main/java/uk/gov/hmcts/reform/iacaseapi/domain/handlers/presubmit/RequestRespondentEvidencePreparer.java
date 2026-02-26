@@ -77,6 +77,11 @@ public class RequestRespondentEvidencePreparer implements PreSubmitCallbackHandl
                 .getCaseDetails()
                 .getCaseData();
 
+        if (callback.getEvent() == Event.COMPLETE_CASE_REVIEW
+            && HandlerUtils.isStf24WeekCase(asylumCase)) {
+            return new PreSubmitCallbackResponse<>(asylumCase);
+        }
+
         PreSubmitCallbackResponse<AsylumCase> callbackResponse = new PreSubmitCallbackResponse<>(asylumCase);
 
         final AppealType appealType = asylumCase.read(APPEAL_TYPE, AppealType.class)
