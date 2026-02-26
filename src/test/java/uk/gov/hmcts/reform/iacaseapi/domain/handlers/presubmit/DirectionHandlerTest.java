@@ -17,6 +17,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SEND_DIRECTION_DATE_DUE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SEND_DIRECTION_EXPLANATION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SEND_DIRECTION_PARTIES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STF_24W_CURRENT_STATUS_AUTO_GENERATED;
 
 import com.google.common.collect.Sets;
 import java.util.ArrayList;
@@ -427,6 +428,68 @@ class DirectionHandlerTest {
 
             reset(callback);
         }
+    }
+
+    @Test
+    void should_return_early_for_complete_case_review_stf_24_week_case() {
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.COMPLETE_CASE_REVIEW);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(HAS_TRANSFERRED_OUT_OF_ADA, YesOrNo.class)).thenReturn(Optional.empty());
+        when(asylumCase.read(ADA_HEARING_REQUIREMENTS_SUBMITTED, YesOrNo.class)).thenReturn(Optional.empty());
+        when(asylumCase.read(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            directionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, times(0)).read(SEND_DIRECTION_EXPLANATION, String.class);
+        verify(asylumCase, times(0)).read(SEND_DIRECTION_DATE_DUE, String.class);
+        verify(asylumCase, times(0)).write(eq(DIRECTIONS), any());
+    }
+
+    @Test
+    void should_not_return_early_for_complete_case_review_non_stf_24_week_case() {
+
+        final List<IdValue<Direction>> existingDirections = new ArrayList<>();
+        final List<IdValue<Direction>> allDirections = new ArrayList<>();
+        final String expectedExplanation = "Do the thing";
+        final Parties expectedParties = Parties.LEGAL_REPRESENTATIVE;
+        final String expectedDateDue = "2018-12-25";
+        final DirectionTag expectedDirectionTag = DirectionTag.NONE;
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.COMPLETE_CASE_REVIEW);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(HAS_TRANSFERRED_OUT_OF_ADA, YesOrNo.class)).thenReturn(Optional.empty());
+        when(asylumCase.read(ADA_HEARING_REQUIREMENTS_SUBMITTED, YesOrNo.class)).thenReturn(Optional.empty());
+        when(asylumCase.read(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(asylumCase.read(DIRECTIONS)).thenReturn(Optional.of(existingDirections));
+        when(asylumCase.read(SEND_DIRECTION_EXPLANATION, String.class)).thenReturn(Optional.of(expectedExplanation));
+        when(asylumCase.read(SEND_DIRECTION_DATE_DUE, String.class)).thenReturn(Optional.of(expectedDateDue));
+
+        when(directionPartiesResolver.resolve(callback)).thenReturn(expectedParties);
+        when(directionTagResolver.resolve(Event.COMPLETE_CASE_REVIEW)).thenReturn(expectedDirectionTag);
+        when(directionAppender.append(
+            asylumCase,
+            existingDirections,
+            expectedExplanation,
+            expectedParties,
+            expectedDateDue,
+            expectedDirectionTag,
+            Event.COMPLETE_CASE_REVIEW.toString()
+        )).thenReturn(allDirections);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            directionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, times(1)).write(DIRECTIONS, allDirections);
     }
 
     @Test
