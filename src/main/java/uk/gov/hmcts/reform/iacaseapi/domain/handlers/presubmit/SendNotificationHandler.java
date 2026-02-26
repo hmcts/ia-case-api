@@ -167,6 +167,7 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
             Event.RECORD_REMISSION_REMINDER,
             Event.MARK_APPEAL_AS_REMITTED,
             Event.REFUND_CONFIRMATION,
+            Event.REVOKE_CASE_ACCESS_V2,
             Event.HEARING_CANCELLED
         );
         if (!isSaveAndContinueEnabled) {
@@ -257,9 +258,6 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
             Event.HEARING_CANCELLED
         );
 
-        if (!isSaveAndContinueEnabled) {
-            //eventsToHandle.add(Event.BUILD_CASE);
-        }
         if (!isExAdaCaseWithHearingRequirementsSubmitted(callback)) {
             eventsToHandle.add(Event.UPLOAD_HOME_OFFICE_APPEAL_RESPONSE);
         }

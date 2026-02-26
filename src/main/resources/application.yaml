@@ -82,7 +82,7 @@ spring:
         jwt:
           jwk-set-uri: ${OPEN_ID_IDAM_URL:http://127.0.0.1:5000}/o/jwks
   cache:
-    cache-names: userInfoCache, accessTokenCache, homeOfficeReferenceDataCache
+    cache-names: userInfoCache, accessTokenCache, clientCredsCacheV1, clientCredsCache, homeOfficeReferenceDataCache
     caffeine:
       spec: expireAfterWrite=3600s
   datasource:
@@ -355,6 +355,7 @@ security:
       - "removeDetainedStatus"
       - "turnOnNotificationsWATasks"
       - "addStatutoryTimeframe24Weeks"
+      - "revokeCaseAccessV2"
     challenged-access-legal-operations:
       - "appellantInPersonManual"
       - "moveToPaymentPending"
@@ -443,6 +444,7 @@ security:
       - "generateListCmrTask"
       - "markAppealAsDetained"
       - "removeDetainedStatus"
+      - "revokeCaseAccessV2"
     senior-tribunal-caseworker:
       - "appellantInPersonManual"
       - "moveToPaymentPending"
@@ -532,6 +534,7 @@ security:
       - "markAppealAsDetained"
       - "removeDetainedStatus"
       - "turnOnNotificationsWATasks"
+      - "revokeCaseAccessV2"
     hearing-centre-admin:
       - "appellantInPersonManual"
       - "startAppeal"
@@ -602,6 +605,7 @@ security:
       - "forceFtpaDecidedState"
       - "turnOnNotificationsWATasks"
       - "addStatutoryTimeframe24Weeks"
+      - "revokeCaseAccessV2"
     ctsc:
       - "appellantInPersonManual"
       - "startAppeal"
@@ -669,6 +673,7 @@ security:
       - "turnOnNotificationsWATasks"
       - "editDocuments"
       - "addStatutoryTimeframe24Weeks"
+      - "revokeCaseAccessV2"
       - "forceDecidedState"
       - "forceFtpaDecidedState"
     ctsc-team-leader:
@@ -740,6 +745,7 @@ security:
       - "forceDecidedState"
       - "forceFtpaDecidedState"
       - "addStatutoryTimeframe24Weeks"
+      - "revokeCaseAccessV2"
     national-business-centre:
       - "appellantInPersonManual"
       - "startAppeal"
@@ -808,6 +814,7 @@ security:
       - "forceDecidedState"
       - "forceFtpaDecidedState"
       - "addStatutoryTimeframe24Weeks"
+      - "revokeCaseAccessV2"
     challenged-access-ctsc:
       - "appellantInPersonManual"
       - "startAppeal"
@@ -876,6 +883,7 @@ security:
       - "forceDecidedState"
       - "forceFtpaDecidedState"
       - "addStatutoryTimeframe24Weeks"
+      - "revokeCaseAccessV2"
     challenged-access-admin:
       - "appellantInPersonManual"
       - "startAppeal"
@@ -945,6 +953,7 @@ security:
       - "forceDecidedState"
       - "forceFtpaDecidedState"
       - "addStatutoryTimeframe24Weeks"
+      - "revokeCaseAccessV2"
     caseworker-ia-homeofficeapc:
       - "uploadHomeOfficeBundle"
       - "uploadAdditionalEvidenceHomeOffice"
@@ -1344,11 +1353,13 @@ security:
       - "rollbackMigration"
       - "addStatutoryTimeframe24Weeks"
       - "removeStatutoryTimeframe24Weeks"
+      - "revokeCaseAccessV2"
     caseworker-ia-internal:
       - "revokeCaseAccess"
       - "removeCaseManagerBulk"
       - "reTriggerWaTasks"
       - "reTriggerWaBulkTasks"
+      - "revokeCaseAccessV2"
     caseworker-ia-rparobot:
       - "addCaseNote"
     next-hearing-date-admin:
@@ -1385,6 +1396,7 @@ hystrix:
 #OpenID
 idam:
   baseUrl: ${OPEN_ID_IDAM_URL:http://127.0.0.1:5000}
+  apiUrl: ${IDAM_URL:http://127.0.0.1:4501}
   redirectUrl: ${IA_IDAM_REDIRECT_URI:http://localhost:3002/oauth2/callback}
   s2s-auth:
     totp_secret: ${IA_S2S_SECRET:AAAAAAAAAAAAAAAC}
