@@ -82,7 +82,7 @@ class AsylumCaseNotificationApiSenderTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
     }
-    
+
     @Test
     void should_delegate_callback_to_downstream_api_when_previous_scheduled_time_empty() {
         final AsylumCase notifiedAsylumCase = mock(AsylumCase.class);
