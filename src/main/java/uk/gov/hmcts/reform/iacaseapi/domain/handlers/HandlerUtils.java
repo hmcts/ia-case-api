@@ -684,11 +684,13 @@ public class HandlerUtils {
     }
 
     public static boolean isPayLater(AsylumCase asylumCase) {
-        Optional<JourneyType> maybeJourneyType = asylumCase.read(JOURNEY_TYPE, JourneyType.class);
+        boolean isAipJourney = HandlerUtils.isAipJourney(asylumCase);
+        boolean isRepJourney = HandlerUtils.isRepJourney(asylumCase);
         String paAppealTypePaymentOption = asylumCase.read(PA_APPEAL_TYPE_PAYMENT_OPTION, String.class).orElse("");
         String paAppealTypeAipPaymentOption = asylumCase.read(PA_APPEAL_TYPE_AIP_PAYMENT_OPTION, String.class).orElse("");
-        List<String> payLaterOptions = List.of(paAppealTypeAipPaymentOption, paAppealTypePaymentOption);
-        return maybeJourneyType.isPresent() && payLaterOptions.contains("payLater");
+        boolean isAipPayLater = isAipJourney && "payLater".equals(paAppealTypeAipPaymentOption);
+        boolean isLRPayLater = isRepJourney && "payLater".equals(paAppealTypePaymentOption);
+        return isAipPayLater || isLRPayLater;
     }
 
     public static Parties getParty(AsylumCase asylumCase) {

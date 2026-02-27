@@ -22,7 +22,6 @@ public class ListingPaPayLaterDirectionHandler implements PreSubmitCallbackHandl
     private final int paPayLaterDueDate;
     private final DateProvider dateProvider;
     private final DirectionAppender directionAppender;
-    private final List<Event> validEvents = List.of(Event.LIST_CASE, Event.SEND_DECISION_AND_REASONS);
 
     public ListingPaPayLaterDirectionHandler(
         @Value("${paPayLaterDueDate}") int paPayLaterDueDate,
