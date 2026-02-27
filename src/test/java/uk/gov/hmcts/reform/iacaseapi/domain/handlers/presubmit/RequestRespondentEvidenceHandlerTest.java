@@ -92,32 +92,17 @@ class RequestRespondentEvidenceHandlerTest {
     }
 
     @Test
-    void should_return_early_for_complete_case_review_stf_24_week_case() {
+    void should_return_early_for_complete_case_review() {
 
         when(callback.getEvent()).thenReturn(Event.COMPLETE_CASE_REVIEW);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.read(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
 
         requestRespondentEvidenceHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         verify(asylumCase, never()).write(UPLOAD_HOME_OFFICE_BUNDLE_AVAILABLE, YesOrNo.YES);
         verify(asylumCase, never()).write(eq(LISTING_AVAILABLE_FOR_ADA), eq(YesOrNo.YES));
         verify(asylumCase, never()).write(eq(CALCULATED_HEARING_DATE), anyString());
-    }
-
-    @Test
-    void should_not_return_early_for_complete_case_review_non_stf_24_week_case() {
-
-        when(callback.getEvent()).thenReturn(Event.COMPLETE_CASE_REVIEW);
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.read(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
-        when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.empty());
-
-        requestRespondentEvidenceHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
-
-        verify(asylumCase).write(UPLOAD_HOME_OFFICE_BUNDLE_AVAILABLE, YesOrNo.YES);
     }
 
     @Test

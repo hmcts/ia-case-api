@@ -635,12 +635,11 @@ class RequestRespondentEvidencePreparerTest {
     }
 
     @Test
-    void should_return_early_for_complete_case_review_stf_24_week_case() {
+    void should_return_early_for_complete_case_review() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.COMPLETE_CASE_REVIEW);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.read(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             requestRespondentEvidencePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
@@ -653,25 +652,6 @@ class RequestRespondentEvidencePreparerTest {
         verify(asylumCase, times(0)).write(eq(SEND_DIRECTION_PARTIES), any());
         verify(asylumCase, times(0)).write(eq(SEND_DIRECTION_DATE_DUE), any());
         verify(asylumCase, times(0)).write(eq(UPLOAD_HOME_OFFICE_BUNDLE_ACTION_AVAILABLE), any());
-    }
-
-    @Test
-    void should_not_return_early_for_complete_case_review_non_stf_24_week_case() {
-
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getEvent()).thenReturn(Event.COMPLETE_CASE_REVIEW);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.read(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
-        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(PA));
-        when(dateProvider.now()).thenReturn(LocalDate.parse("2018-11-23"));
-
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            requestRespondentEvidencePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
-
-        assertNotNull(callbackResponse);
-        verify(asylumCase, times(1)).write(eq(SEND_DIRECTION_EXPLANATION), any());
-        verify(asylumCase, times(1)).write(eq(SEND_DIRECTION_PARTIES), any());
-        verify(asylumCase, times(1)).write(eq(SEND_DIRECTION_DATE_DUE), any());
     }
 
     @Test

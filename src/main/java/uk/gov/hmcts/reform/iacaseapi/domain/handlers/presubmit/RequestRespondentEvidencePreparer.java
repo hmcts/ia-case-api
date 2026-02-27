@@ -77,8 +77,7 @@ public class RequestRespondentEvidencePreparer implements PreSubmitCallbackHandl
                 .getCaseDetails()
                 .getCaseData();
 
-        if (callback.getEvent() == Event.COMPLETE_CASE_REVIEW
-            && HandlerUtils.isStf24WeekCase(asylumCase)) {
+        if (callback.getEvent() == Event.COMPLETE_CASE_REVIEW) {
             return new PreSubmitCallbackResponse<>(asylumCase);
         }
 
@@ -93,8 +92,7 @@ public class RequestRespondentEvidencePreparer implements PreSubmitCallbackHandl
             boolean isInCountryAppeal = asylumCase.read(APPEAL_OUT_OF_COUNTRY, YesOrNo.class).map(ooc -> NO == ooc).orElse(true);
             boolean isNotificationTurnedOff = HandlerUtils.isNotificationTurnedOff(asylumCase);
 
-            if (callback.getEvent() != Event.COMPLETE_CASE_REVIEW
-                && isInCountryAppeal
+            if (isInCountryAppeal
                 && shouldMatchAppellantDetails(asylumCase)
                 && appellantDetailsNotMatchedOrFailed(asylumCase)
                 && !isNotificationTurnedOff) {

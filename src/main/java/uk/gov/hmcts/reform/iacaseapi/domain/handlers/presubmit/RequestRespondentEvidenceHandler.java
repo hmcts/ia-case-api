@@ -54,8 +54,7 @@ public class RequestRespondentEvidenceHandler implements PreSubmitCallbackHandle
                 .getCaseDetails()
                 .getCaseData();
 
-        if (callback.getEvent() == Event.COMPLETE_CASE_REVIEW
-            && HandlerUtils.isStf24WeekCase(asylumCase)) {
+        if (callback.getEvent() == Event.COMPLETE_CASE_REVIEW) {
             return new PreSubmitCallbackResponse<>(asylumCase);
         }
 
