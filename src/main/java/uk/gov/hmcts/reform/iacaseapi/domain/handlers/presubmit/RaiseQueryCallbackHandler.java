@@ -66,8 +66,7 @@ public class RaiseQueryCallbackHandler implements PreSubmitCallbackHandler<Asylu
         );
 
         String latestQueryId = queriesList.getCaseMessages().stream()
-                .map(IdValue::getValue)
-                .map(CaseMessage::getId)
+                .map(IdValue::getId)
                 .max(String::compareTo)
                 .orElse("1");
 
@@ -75,9 +74,12 @@ public class RaiseQueryCallbackHandler implements PreSubmitCallbackHandler<Asylu
                 .queryId(latestQueryId)
                 .isHearingRelated(YesOrNo.NO)
                 .build();
-        List<LatestQuery> toList = List.of(latestQuery);
 
-        asylumCase.write(QM_LATEST_QUERY, toList);
+        IdValue<LatestQuery> wrapped =
+                new IdValue<>(latestQueryId, latestQuery);
+
+        asylumCase.write(QM_LATEST_QUERY, List.of(wrapped));
+
         log.info("Latest query running on case {}", asylumCase);
 
         return new PreSubmitCallbackResponse<>(asylumCase);

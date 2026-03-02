@@ -39,7 +39,7 @@ class RaiseQueryCallbackHandlerTest {
     @Mock private UserDetails userDetails;
 
     @Captor
-    private ArgumentCaptor<List<LatestQuery>> latestQueryCaptor;
+    private ArgumentCaptor<List<IdValue<LatestQuery>>> latestQueryCaptor;
 
     private RaiseQueryCallbackHandler handler;
 
@@ -92,10 +92,12 @@ class RaiseQueryCallbackHandlerTest {
 
             verify(asylumCase).write(eq(QM_LATEST_QUERY), latestQueryCaptor.capture());
 
-            List<LatestQuery> captured = latestQueryCaptor.getValue();
+            List<IdValue<LatestQuery>> captured = latestQueryCaptor.getValue();
+
             assertEquals(1, captured.size());
-            assertEquals("1", captured.get(0).getQueryId());
-            assertEquals(YesOrNo.NO, captured.get(0).getIsHearingRelated());
+            assertEquals("1", captured.get(0).getId());
+            assertEquals("1", captured.get(0).getValue().getQueryId());
+            assertEquals(YesOrNo.NO, captured.get(0).getValue().getIsHearingRelated());
         }
     }
 
@@ -123,57 +125,20 @@ class RaiseQueryCallbackHandlerTest {
     }
 
     @Test
-    void should_set_is_hearing_related_to_no() {
+    void should_select_largest_collection_id() {
         try (MockedStatic<HandlerUtils> utils = mockStatic(HandlerUtils.class)) {
 
             utils.when(() -> HandlerUtils.isLegalRepJourney(asylumCase))
                     .thenReturn(true);
 
-            CaseMessage message = new CaseMessage();
-            message.setId("7");
-
-            List<IdValue<CaseMessage>> caseMessages =
-                    List.of(new IdValue<>("7", message));
-
-            CaseQueriesCollection collection =
-                    CaseQueriesCollection.builder()
-                            .caseMessages(caseMessages)
-                            .build();
-
-            when(asylumCase.read(QM_LEGAL_REPRESENTATIVE_QUERIES, CaseQueriesCollection.class))
-                    .thenReturn(Optional.of(collection));
-
-            handler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
-
-            verify(asylumCase).write(eq(QM_LATEST_QUERY), latestQueryCaptor.capture());
-
-            LatestQuery captured = latestQueryCaptor.getValue().get(0);
-
-            assertEquals("7", captured.getQueryId());
-            assertEquals(YesOrNo.NO, captured.getIsHearingRelated());
-        }
-    }
-
-    @Test
-    void should_select_lexicographically_largest_query_id() {
-        try (MockedStatic<HandlerUtils> utils = mockStatic(HandlerUtils.class)) {
-
-            utils.when(() -> HandlerUtils.isLegalRepJourney(asylumCase))
-                    .thenReturn(true);
-
-            CaseMessage msgAbc = new CaseMessage();
-            msgAbc.setId("abc");
-
-            CaseMessage msgXyz = new CaseMessage();
-            msgXyz.setId("xyz");
-
-            CaseMessage msgDef = new CaseMessage();
-            msgDef.setId("def");
+            CaseMessage msg1 = new CaseMessage();
+            CaseMessage msg2 = new CaseMessage();
+            CaseMessage msg3 = new CaseMessage();
 
             List<IdValue<CaseMessage>> caseMessages = asList(
-                    new IdValue<>("1", msgAbc),
-                    new IdValue<>("2", msgXyz),
-                    new IdValue<>("3", msgDef)
+                    new IdValue<>("abc", msg1),
+                    new IdValue<>("xyz", msg2),
+                    new IdValue<>("def", msg3)
             );
 
             CaseQueriesCollection collection =
@@ -188,9 +153,11 @@ class RaiseQueryCallbackHandlerTest {
 
             verify(asylumCase).write(eq(QM_LATEST_QUERY), latestQueryCaptor.capture());
 
-            LatestQuery captured = latestQueryCaptor.getValue().get(0);
+            IdValue<LatestQuery> captured = latestQueryCaptor.getValue().get(0);
 
-            assertEquals("xyz", captured.getQueryId());
+            assertEquals("xyz", captured.getId());
+            assertEquals("xyz", captured.getValue().getQueryId());
+            assertEquals(YesOrNo.NO, captured.getValue().getIsHearingRelated());
         }
     }
 }
