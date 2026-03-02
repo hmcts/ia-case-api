@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.HomeOfficeMissingApplicationExceptio
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.HomeOfficeAppellant;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 
 @Slf4j
 @Service
@@ -25,12 +26,13 @@ public class HomeOfficeReferenceService {
     }
 
     // Note: don't cache this response, as we want to get fresh data each time in case something changes at the Home Office's end.
-    public Optional<List<HomeOfficeAppellant>> getHomeOfficeReferenceData(String reference, Callback<AsylumCase> callback) {
+    public Optional<List<IdValue<HomeOfficeAppellant>>> getHomeOfficeReferenceData(String reference, Callback<AsylumCase> callback) {
 
         final AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
-        Optional<List<HomeOfficeAppellant>> homeOfficeAppellants = asylumCase.read(HOME_OFFICE_APPELLANTS);
+        Optional<List<IdValue<HomeOfficeAppellant>>> homeOfficeAppellants = asylumCase.read(HOME_OFFICE_APPELLANTS);
         // If we have a list of appellants already, don't call the API again.
         if (homeOfficeAppellants.isPresent()) {
+            log.info("Returning previously retrieved Home Office reference data for case with HMCTS reference {}.", reference);
             return homeOfficeAppellants;
         }
 
@@ -41,10 +43,14 @@ public class HomeOfficeReferenceService {
         // Check return status
         String httpStatus = asylumCaseWithHomeOfficeData.read(HOME_OFFICE_APPELLANT_API_HTTP_STATUS, String.class).orElse("");
         if (httpStatus.equals("200")) {
-            return asylumCaseWithHomeOfficeData.read(HOME_OFFICE_APPELLANTS);
+            log.info("Home Office reference data retrieved for case with HMCTS reference {}.", reference);
+            // Update the case record object with the Home Office reference data
+            homeOfficeAppellants = asylumCaseWithHomeOfficeData.read(HOME_OFFICE_APPELLANTS);
+            asylumCase.write(HOME_OFFICE_APPELLANTS, homeOfficeAppellants);
+            return homeOfficeAppellants;
         } else {
             // Throw new exception to be caught by the event handler
-            String message = "Biographic information from Home Office application with HMCTS reference " + reference + " could not be retrieved.";
+            String message = "Biographic information from Home Office asylum (etc.) application with HMCTS reference " + reference + " could not be retrieved.";
             int statusCode = 0;
             try {
                 statusCode = Integer.parseInt(httpStatus);

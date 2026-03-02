@@ -13,6 +13,7 @@ import java.text.Normalizer;
 import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 
@@ -24,6 +25,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.HomeOfficeAppellant;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.HomeOfficeReferenceService;
 
@@ -162,7 +164,7 @@ public class HomeOfficeReferenceHandler implements PreSubmitCallbackHandler<Asyl
         }
                 
         try {
-            Optional<List<HomeOfficeAppellant>> appellants = homeOfficeReferenceService.getHomeOfficeReferenceData(reference, callback);
+            Optional<List<IdValue<HomeOfficeAppellant>>> appellants = homeOfficeReferenceService.getHomeOfficeReferenceData(reference, callback);
             if (appellants.isEmpty()) {
                 return false;
             } else {
@@ -181,20 +183,26 @@ public class HomeOfficeReferenceHandler implements PreSubmitCallbackHandler<Asyl
         }
 
         try {
-            Optional<List<HomeOfficeAppellant>> homeOfficeAppellants = homeOfficeReferenceService.getHomeOfficeReferenceData(reference, callback);
+            Optional<List<IdValue<HomeOfficeAppellant>>> homeOfficeAppellants = homeOfficeReferenceService.getHomeOfficeReferenceData(reference, callback);
 
             if (homeOfficeAppellants.isEmpty() || homeOfficeAppellants.get().isEmpty()) {
                 // This should not have happened - we should always have at least one appellant from the Home Office by this point.  Log an error.
                 log.error("No appellants returned from the Home Office for reference number {} although it appeared to match a record in Atlas.", reference);
                 return false;
             }
-
+            // Extract appellants
+            final List<HomeOfficeAppellant> homeOfficeAppellantDataObjects = homeOfficeAppellants
+                .orElseThrow(() -> new IllegalStateException("No appellants were returned by the Home Office."))
+                .stream()
+                .map(IdValue::getValue)
+                .collect(Collectors.toList());
             // Retrieve information currently entered (for comparison).
             String appellantFamilyName = asylumCase.read(APPELLANT_FAMILY_NAME, String.class).orElse("");
             String appellantGivenNames = asylumCase.read(APPELLANT_GIVEN_NAMES, String.class).orElse("");
             String appellantDateOfBirth = asylumCase.read(APPELLANT_DATE_OF_BIRTH, String.class).orElse("");
-            // Loop through the Home Office appellants (usually just one) and see if one of them has details matching those entered. 
-            for (HomeOfficeAppellant homeOfficeAppellant : homeOfficeAppellants.get()) {
+            // Loop through the Home Office appellants (usually just one) and see if one of them has details matching those entered.
+            for (int i = 0; i < homeOfficeAppellantDataObjects.size(); i++) {
+                HomeOfficeAppellant homeOfficeAppellant = homeOfficeAppellantDataObjects.get(i);
                 // Check for matching first name(s), surname and date of birth.
                 if (matchesName(homeOfficeAppellant.getFamilyName(), appellantFamilyName) &&
                     matchesName(homeOfficeAppellant.getGivenNames(), appellantGivenNames) &&
@@ -271,18 +279,19 @@ public class HomeOfficeReferenceHandler implements PreSubmitCallbackHandler<Asyl
                 break;
         }
 
+        String message = exception.getMessage() + "  See the corresponding logs in ia-home-office-integration-api for more details.";
         switch (causeOfHomeOfficeException) {
             case CLIENT_ERROR:
-                log.error(exception.getMessage());
+                log.error(message);
                 break;
             case SERVER_ERROR:
-                log.warn(exception.getMessage());
+                log.warn(message);
                 break;
             case CASE_NOT_FOUND:
-                log.info(exception.getMessage());
+                log.info(message);
                 break;
             default:
-                log.info(exception.getMessage());
+                log.info(message);
                 break;
         }
     }

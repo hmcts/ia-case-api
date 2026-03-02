@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.HomeOfficeMissingApplicationExceptio
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.HomeOfficeAppellant;
 
@@ -62,7 +63,7 @@ class HomeOfficeReferenceServiceTest {
         Mockito.when(asylumCase.read(AsylumCaseFieldDefinition.HOME_OFFICE_APPELLANTS))
             .thenReturn(Optional.of(appellants));
 
-        Optional<List<HomeOfficeAppellant>> result =
+        Optional<List<IdValue<HomeOfficeAppellant>>> result =
             service.getHomeOfficeReferenceData("REF", callback);
 
         Assertions.assertTrue(result.isPresent());
@@ -136,7 +137,7 @@ class HomeOfficeReferenceServiceTest {
             String.class
         )).thenReturn(Optional.of("200"));
 
-        Optional<List<HomeOfficeAppellant>> result =
+        Optional<List<IdValue<HomeOfficeAppellant>>> result =
             service.getHomeOfficeReferenceData("REF", callback);
 
         Assertions.assertTrue(result.isEmpty());
