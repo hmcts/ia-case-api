@@ -23,18 +23,19 @@ public class DbAppealReferenceNumberGenerator implements AppealReferenceNumberGe
     private final NamedParameterJdbcTemplate jdbcTemplate;
 
     public DbAppealReferenceNumberGenerator(
-        @Value("${appealReferenceSequenceSeed}") int appealReferenceSequenceSeed,
-        DateProvider dateProvider,
-        NamedParameterJdbcTemplate jdbcTemplate
+            @Value("${appealReferenceSequenceSeed}") int appealReferenceSequenceSeed,
+            DateProvider dateProvider,
+            NamedParameterJdbcTemplate jdbcTemplate
     ) {
         this.appealReferenceSequenceSeed = appealReferenceSequenceSeed;
         this.dateProvider = dateProvider;
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    @Retryable(include = TransientDataAccessException.class)
     public String generate(
-        long caseId,
-        AppealType appealType) {
+            long caseId,
+            AppealType appealType) {
         final int currentYear = dateProvider.now().getYear();
 
         MapSqlParameterSource parameters = new MapSqlParameterSource();
@@ -63,37 +64,35 @@ public class DbAppealReferenceNumberGenerator implements AppealReferenceNumberGe
         }
     }
 
-    @Retryable(include = TransientDataAccessException.class)
     private void tryInsertNewReferenceNumber(
-        MapSqlParameterSource parameters
+            MapSqlParameterSource parameters
     ) {
         jdbcTemplate.update(
-            "INSERT INTO ia_case_api.appeal_reference_numbers "
-            + "          (case_id, "
-            + "           type, "
-            + "           year, "
-            + "           sequence) "
-            + "   SELECT :caseId, "
-            + "          :appealType, "
-            + "          :year, "
-            + "          COALESCE(MAX(sequence), :seed) + 1 "
-            + "    FROM ia_case_api.appeal_reference_numbers "
-            + "   WHERE type = :appealType "
-            + "     AND year = :year;",
-            parameters
+                "INSERT INTO ia_case_api.appeal_reference_numbers "
+                        + "          (case_id, "
+                        + "           type, "
+                        + "           year, "
+                        + "           sequence) "
+                        + "   SELECT :caseId, "
+                        + "          :appealType, "
+                        + "          :year, "
+                        + "          COALESCE(MAX(sequence), :seed) + 1 "
+                        + "    FROM ia_case_api.appeal_reference_numbers "
+                        + "   WHERE type = :appealType "
+                        + "     AND year = :year;",
+                parameters
         );
     }
 
-    @Retryable(include = TransientDataAccessException.class)
     private String selectAppealReferenceNumberForCase(
-        MapSqlParameterSource parameters
+            MapSqlParameterSource parameters
     ) {
         return jdbcTemplate.queryForObject(
-            " SELECT CONCAT(type, '/', sequence, '/', year) "
-            + " FROM ia_case_api.appeal_reference_numbers "
-            + "WHERE case_id = :caseId;",
-            parameters,
-            String.class
+                " SELECT CONCAT(type, '/', sequence, '/', year) "
+                        + " FROM ia_case_api.appeal_reference_numbers "
+                        + "WHERE case_id = :caseId;",
+                parameters,
+                String.class
         );
     }
 }
