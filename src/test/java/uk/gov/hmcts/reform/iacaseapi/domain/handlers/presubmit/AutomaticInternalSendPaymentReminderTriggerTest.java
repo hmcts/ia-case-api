@@ -126,4 +126,24 @@ class AutomaticInternalSendPaymentReminderTriggerTest {
         assertEquals(timedEvent.getEvent(), result.getEvent());
         assertEquals("", result.getId());
     }
+
+    @Test
+    void should_not_schedule_payment_reminder_for_rehydrated_appeal() {
+        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class))
+                .thenReturn(Optional.of(PaymentStatus.PAYMENT_PENDING));
+
+        when(asylumCase.read(IS_NOTIFICATION_TURNED_OFF, YesOrNo.class))
+                .thenReturn(Optional.of(YesOrNo.YES));
+        boolean result = automaticInternalSendPaymentReminderTrigger
+                .canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+        assertTrue(result);
+        verifyNoInteractions(scheduler);
+    }
+
 }
