@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.QM_LATEST_QUERY;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -80,7 +81,24 @@ public class RaiseQueryCallbackHandler implements PreSubmitCallbackHandler<Asylu
 
             IdValue<LatestQuery> wrapped = new IdValue<>(latestQueryId, latestQuery);
 
-            asylumCase.write(QM_LATEST_QUERY, List.of(wrapped));
+            // Safe reading of existing QM_LATEST_QUERY
+            List<IdValue<LatestQuery>> existingLatestQueries = new ArrayList<>();
+            asylumCase.read(QM_LATEST_QUERY).ifPresent(rawList -> {
+                List<?> list = (List<?>) rawList;
+                for (Object obj : list) {
+                    if (obj instanceof IdValue) {
+                        IdValue<?> idValue = (IdValue<?>) obj;
+                        Object value = idValue.getValue();
+                        if (value instanceof LatestQuery) {
+                            existingLatestQueries.add(new IdValue<>(idValue.getId(), (LatestQuery) value));
+                        }
+                    }
+                }
+            });
+
+            existingLatestQueries.add(wrapped);
+
+            asylumCase.write(QM_LATEST_QUERY, existingLatestQueries);
 
             log.info("Latest query running on case {}", asylumCase);
 
