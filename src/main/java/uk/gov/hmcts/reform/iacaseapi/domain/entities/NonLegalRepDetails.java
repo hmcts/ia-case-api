@@ -17,4 +17,5 @@ public class NonLegalRepDetails {
     @NonNull private String emailAddress;
     @NonNull private String givenNames;
     @NonNull private String familyName;
+    private String phoneNumber;
 }
