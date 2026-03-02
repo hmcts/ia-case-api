@@ -79,29 +79,6 @@ class RaiseQueryCallbackHandlerTest {
     }
 
     @Test
-    void should_default_to_one_when_no_queries_exist() {
-        try (MockedStatic<HandlerUtils> utils = mockStatic(HandlerUtils.class)) {
-
-            utils.when(() -> HandlerUtils.isLegalRepJourney(asylumCase))
-                    .thenReturn(true);
-
-            when(asylumCase.read(QM_LEGAL_REPRESENTATIVE_QUERIES, CaseQueriesCollection.class))
-                    .thenReturn(Optional.empty());
-
-            handler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
-
-            verify(asylumCase).write(eq(QM_LATEST_QUERY), latestQueryCaptor.capture());
-
-            List<IdValue<LatestQuery>> captured = latestQueryCaptor.getValue();
-
-            assertEquals(1, captured.size());
-            assertEquals("1", captured.get(0).getId());
-            assertEquals("1", captured.get(0).getValue().getQueryId());
-            assertEquals(YesOrNo.NO, captured.get(0).getValue().getIsHearingRelated());
-        }
-    }
-
-    @Test
     void should_throw_exception_when_target_collection_is_null() {
         try (MockedStatic<HandlerUtils> utils = mockStatic(HandlerUtils.class)) {
 
@@ -125,26 +102,21 @@ class RaiseQueryCallbackHandlerTest {
     }
 
     @Test
-    void should_select_largest_collection_id() {
+    void should_write_latest_query_with_correct_isHearingRelated() {
         try (MockedStatic<HandlerUtils> utils = mockStatic(HandlerUtils.class)) {
 
             utils.when(() -> HandlerUtils.isLegalRepJourney(asylumCase))
                     .thenReturn(true);
 
-            CaseMessage msg1 = new CaseMessage();
-            CaseMessage msg2 = new CaseMessage();
-            CaseMessage msg3 = new CaseMessage();
+            CaseMessage message = new CaseMessage();
+            message.setId("msg1");
+            message.setIsHearingRelated(YesOrNo.YES);
 
-            List<IdValue<CaseMessage>> caseMessages = asList(
-                    new IdValue<>("abc", msg1),
-                    new IdValue<>("xyz", msg2),
-                    new IdValue<>("def", msg3)
-            );
+            List<IdValue<CaseMessage>> caseMessages = List.of(new IdValue<>("1", message));
 
-            CaseQueriesCollection collection =
-                    CaseQueriesCollection.builder()
-                            .caseMessages(caseMessages)
-                            .build();
+            CaseQueriesCollection collection = CaseQueriesCollection.builder()
+                    .caseMessages(caseMessages)
+                    .build();
 
             when(asylumCase.read(QM_LEGAL_REPRESENTATIVE_QUERIES, CaseQueriesCollection.class))
                     .thenReturn(Optional.of(collection));
@@ -153,11 +125,73 @@ class RaiseQueryCallbackHandlerTest {
 
             verify(asylumCase).write(eq(QM_LATEST_QUERY), latestQueryCaptor.capture());
 
-            IdValue<LatestQuery> captured = latestQueryCaptor.getValue().get(0);
+            List<IdValue<LatestQuery>> captured = latestQueryCaptor.getValue();
 
-            assertEquals("xyz", captured.getId());
-            assertEquals("xyz", captured.getValue().getQueryId());
-            assertEquals(YesOrNo.NO, captured.getValue().getIsHearingRelated());
+            assertEquals(1, captured.size());
+            IdValue<LatestQuery> latest = captured.get(0);
+            assertEquals("1", latest.getId());
+            assertEquals("1", latest.getValue().getQueryId());
+            assertEquals(YesOrNo.YES, latest.getValue().getIsHearingRelated());
+        }
+    }
+
+    @Test
+    void should_pick_lexicographically_largest_id_for_latest_query() {
+        try (MockedStatic<HandlerUtils> utils = mockStatic(HandlerUtils.class)) {
+
+            utils.when(() -> HandlerUtils.isLegalRepJourney(asylumCase))
+                    .thenReturn(true);
+
+            CaseMessage msg1 = new CaseMessage();
+            msg1.setIsHearingRelated(YesOrNo.NO);
+            CaseMessage msg2 = new CaseMessage();
+            msg2.setIsHearingRelated(YesOrNo.YES);
+            CaseMessage msg3 = new CaseMessage();
+            msg3.setIsHearingRelated(YesOrNo.NO);
+
+            List<IdValue<CaseMessage>> caseMessages = asList(
+                    new IdValue<>("abc", msg1),
+                    new IdValue<>("xyz", msg2),
+                    new IdValue<>("def", msg3)
+            );
+
+            CaseQueriesCollection collection = CaseQueriesCollection.builder()
+                    .caseMessages(caseMessages)
+                    .build();
+
+            when(asylumCase.read(QM_LEGAL_REPRESENTATIVE_QUERIES, CaseQueriesCollection.class))
+                    .thenReturn(Optional.of(collection));
+
+            handler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+            verify(asylumCase).write(eq(QM_LATEST_QUERY), latestQueryCaptor.capture());
+
+            IdValue<LatestQuery> latest = latestQueryCaptor.getValue().get(0);
+
+            assertEquals("xyz", latest.getId());
+            assertEquals("xyz", latest.getValue().getQueryId());
+            assertEquals(YesOrNo.YES, latest.getValue().getIsHearingRelated());
+        }
+    }
+
+    @Test
+    void should_not_write_latest_query_when_collection_is_empty() {
+        try (MockedStatic<HandlerUtils> utils = mockStatic(HandlerUtils.class)) {
+
+            utils.when(() -> HandlerUtils.isLegalRepJourney(asylumCase))
+                    .thenReturn(true);
+
+            CaseQueriesCollection emptyCollection = CaseQueriesCollection.builder()
+                    .caseMessages(List.of())
+                    .build();
+
+            when(asylumCase.read(QM_LEGAL_REPRESENTATIVE_QUERIES, CaseQueriesCollection.class))
+                    .thenReturn(Optional.of(emptyCollection));
+
+            handler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+            // Verify write is never called because collection is empty
+            verify(asylumCase, never()).write(eq(QM_LATEST_QUERY), any());
         }
     }
 }

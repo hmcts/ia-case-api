@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.controllers.model.querymanagement.CaseMessage;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.controllers.model.querymanagement.CaseQueriesCollection;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.controllers.model.querymanagement.LatestQuery;
 
@@ -64,22 +65,28 @@ public class RaiseQueryCallbackHandler implements PreSubmitCallbackHandler<Asylu
                 CaseQueriesCollection.builder().caseMessages(List.of()).build()
         );
 
-        String latestQueryId = queriesList.getCaseMessages().stream()
-                .map(IdValue::getId)
-                .max(String::compareTo)
-                .orElse("1");
+        Optional<IdValue<CaseMessage>> latestCaseMessageOpt = queriesList.getCaseMessages().stream()
+                .max((a, b) -> a.getId().compareTo(b.getId()));
 
-        LatestQuery latestQuery = LatestQuery.builder()
-                .queryId(latestQueryId)
-                .isHearingRelated(YesOrNo.NO)
-                .build();
+        if (latestCaseMessageOpt.isPresent()) {
 
-        IdValue<LatestQuery> wrapped =
-                new IdValue<>(latestQueryId, latestQuery);
+            String latestQueryId = latestCaseMessageOpt.get().getId();
+            YesOrNo isHearingRelated = latestCaseMessageOpt.get().getValue().getIsHearingRelated();
 
-        asylumCase.write(QM_LATEST_QUERY, List.of(wrapped));
+            LatestQuery latestQuery = LatestQuery.builder()
+                    .queryId(latestQueryId)
+                    .isHearingRelated(isHearingRelated)
+                    .build();
 
-        log.info("Latest query running on case {}", asylumCase);
+            IdValue<LatestQuery> wrapped = new IdValue<>(latestQueryId, latestQuery);
+
+            asylumCase.write(QM_LATEST_QUERY, List.of(wrapped));
+
+            log.info("Latest query running on case {}", asylumCase);
+
+        } else {
+            log.info("No queries exist yet for this asylum case, QM_LATEST_QUERY not set.");
+        }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
