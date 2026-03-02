@@ -6,6 +6,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import java.util.List;
 import java.util.Optional;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
@@ -22,6 +23,7 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.controllers.model.querymanag
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.controllers.model.querymanagement.CaseQueriesCollection;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.controllers.model.querymanagement.LatestQuery;
 
+@Slf4j
 @Component
 public class RaiseQueryCallbackHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
@@ -73,8 +75,10 @@ public class RaiseQueryCallbackHandler implements PreSubmitCallbackHandler<Asylu
                 .queryId(latestQueryId)
                 .isHearingRelated(YesOrNo.NO)
                 .build();
+        List<LatestQuery> toList = List.of(latestQuery);
 
-        asylumCase.write(QM_LATEST_QUERY, latestQuery);
+        asylumCase.write(QM_LATEST_QUERY, toList);
+        log.info("Latest query running on case {}", asylumCase);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
