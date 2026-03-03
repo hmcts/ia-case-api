@@ -126,7 +126,7 @@ public class HomeOfficeReferenceHandler implements PreSubmitCallbackHandler<Asyl
                 if (!isMatchingHomeOfficeCaseDetails(homeOfficeReferenceNumber, asylumCase, callback)) {
                     PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
                     String errorMessage = "";
-                    // There should be no exception here as this function ought not to be called unless the data has already been retrieved from the Home Office.
+                    // There should be no exception here as the Home Office API ought not to be called, since the data has already been retrieved from the Home Office.
                     // But we'll check for it anyway just in case something unexpected has happened.
                     switch (causeOfHomeOfficeException) {
                         case CLIENT_ERROR:
@@ -164,11 +164,13 @@ public class HomeOfficeReferenceHandler implements PreSubmitCallbackHandler<Asyl
         }
                 
         try {
-            Optional<List<IdValue<HomeOfficeAppellant>>> appellants = homeOfficeReferenceService.getHomeOfficeReferenceData(reference, callback);
-            if (appellants.isEmpty()) {
+            Optional<List<IdValue<HomeOfficeAppellant>>> homeOfficeAppellants = homeOfficeReferenceService.getHomeOfficeReferenceData(reference, callback);
+            // If here, clear any previous exception marker
+            causeOfHomeOfficeException = CauseOfHomeOfficeException.NOT_SET;
+            if (homeOfficeAppellants.isEmpty()) {
                 return false;
             } else {
-                return !appellants.get().isEmpty();
+                return !homeOfficeAppellants.get().isEmpty();
             }
         } catch (HomeOfficeMissingApplicationException exception) {
             handleHomeOfficeException(exception);
@@ -184,7 +186,8 @@ public class HomeOfficeReferenceHandler implements PreSubmitCallbackHandler<Asyl
 
         try {
             Optional<List<IdValue<HomeOfficeAppellant>>> homeOfficeAppellants = homeOfficeReferenceService.getHomeOfficeReferenceData(reference, callback);
-
+            // If here, clear any previous exception marker
+            causeOfHomeOfficeException = CauseOfHomeOfficeException.NOT_SET;
             if (homeOfficeAppellants.isEmpty() || homeOfficeAppellants.get().isEmpty()) {
                 // This should not have happened - we should always have at least one appellant from the Home Office by this point.  Log an error.
                 log.error("No appellants returned from the Home Office for reference number {} although it appeared to match a record in Atlas.", reference);
