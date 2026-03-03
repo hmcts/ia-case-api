@@ -2897,7 +2897,10 @@ public enum AsylumCaseFieldDefinition {
         new TypeReference<YesOrNo>(){}),
 
     HAS_BEEN_FTPA_DECIDED("hasBeenFtpaDecided",
-        new TypeReference<YesOrNo>(){})
+        new TypeReference<YesOrNo>(){}),
+
+    COMPLETE_CASE_REVIEW_DATE("completeCaseReviewDate",
+        new TypeReference<String>(){})
     ;
 
     private final String value;

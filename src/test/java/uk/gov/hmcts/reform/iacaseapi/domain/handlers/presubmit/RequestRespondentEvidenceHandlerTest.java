@@ -91,20 +91,6 @@ class RequestRespondentEvidenceHandlerTest {
     }
 
     @Test
-    void should_return_early_for_complete_case_review() {
-
-        when(callback.getEvent()).thenReturn(Event.COMPLETE_CASE_REVIEW);
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
-
-        requestRespondentEvidenceHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
-
-        verify(asylumCase, never()).write(UPLOAD_HOME_OFFICE_BUNDLE_AVAILABLE, YesOrNo.YES);
-        verify(asylumCase, never()).write(eq(LISTING_AVAILABLE_FOR_ADA), eq(YesOrNo.YES));
-        verify(asylumCase, never()).write(eq(CALCULATED_HEARING_DATE), anyString());
-    }
-
-    @Test
     void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(
@@ -131,8 +117,7 @@ class RequestRespondentEvidenceHandlerTest {
 
                 boolean canHandle = requestRespondentEvidenceHandler.canHandle(callbackStage, callback);
 
-                if ((event == Event.REQUEST_RESPONDENT_EVIDENCE
-                    || event == Event.COMPLETE_CASE_REVIEW)
+                if (event == Event.REQUEST_RESPONDENT_EVIDENCE
                     && callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT) {
 
                     assertTrue(canHandle);

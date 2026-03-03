@@ -60,8 +60,7 @@ public class RequestRespondentEvidencePreparer implements PreSubmitCallbackHandl
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_START
-               && (callback.getEvent() == Event.REQUEST_RESPONDENT_EVIDENCE
-                   || callback.getEvent() == Event.COMPLETE_CASE_REVIEW);
+               && callback.getEvent() == Event.REQUEST_RESPONDENT_EVIDENCE;
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
@@ -76,10 +75,6 @@ public class RequestRespondentEvidencePreparer implements PreSubmitCallbackHandl
             callback
                 .getCaseDetails()
                 .getCaseData();
-
-        if (callback.getEvent() == Event.COMPLETE_CASE_REVIEW) {
-            return new PreSubmitCallbackResponse<>(asylumCase);
-        }
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse = new PreSubmitCallbackResponse<>(asylumCase);
 

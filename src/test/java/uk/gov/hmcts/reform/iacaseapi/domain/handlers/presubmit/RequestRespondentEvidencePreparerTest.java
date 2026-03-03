@@ -417,8 +417,7 @@ class RequestRespondentEvidencePreparerTest {
 
                 boolean canHandle = requestRespondentEvidencePreparer.canHandle(callbackStage, callback);
 
-                if ((event == Event.REQUEST_RESPONDENT_EVIDENCE
-                    || event == Event.COMPLETE_CASE_REVIEW)
+                if (event == Event.REQUEST_RESPONDENT_EVIDENCE
                     && callbackStage == PreSubmitCallbackStage.ABOUT_TO_START) {
 
                     assertTrue(canHandle);
@@ -632,26 +631,6 @@ class RequestRespondentEvidencePreparerTest {
         assertThat(actualExplanation).doesNotContain("directed to supply the documents");
         assertThat(actualExplanation).doesNotContain("Rule 23 or Rule 24 of the Tribunal Procedure Rules 2014");
         assertThat(actualExplanation).doesNotContain("any record of interview with the appellant");
-    }
-
-    @Test
-    void should_return_early_for_complete_case_review() {
-
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getEvent()).thenReturn(Event.COMPLETE_CASE_REVIEW);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
-
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            requestRespondentEvidencePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
-
-        assertNotNull(callbackResponse);
-        assertEquals(asylumCase, callbackResponse.getData());
-        assertTrue(callbackResponse.getErrors().isEmpty());
-
-        verify(asylumCase, times(0)).write(eq(SEND_DIRECTION_EXPLANATION), any());
-        verify(asylumCase, times(0)).write(eq(SEND_DIRECTION_PARTIES), any());
-        verify(asylumCase, times(0)).write(eq(SEND_DIRECTION_DATE_DUE), any());
-        verify(asylumCase, times(0)).write(eq(UPLOAD_HOME_OFFICE_BUNDLE_ACTION_AVAILABLE), any());
     }
 
     @Test

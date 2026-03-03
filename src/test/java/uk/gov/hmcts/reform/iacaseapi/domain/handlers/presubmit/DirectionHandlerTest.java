@@ -406,7 +406,6 @@ class DirectionHandlerTest {
                 Set<Event> eligibleEvents = Sets.newHashSet(Event.SEND_DIRECTION,
                     Event.REQUEST_CASE_EDIT,
                     Event.REQUEST_RESPONDENT_EVIDENCE,
-                    Event.COMPLETE_CASE_REVIEW,
                     Event.REQUEST_RESPONDENT_REVIEW,
                     Event.REQUEST_CASE_BUILDING,
                     Event.FORCE_REQUEST_CASE_BUILDING,
@@ -428,26 +427,6 @@ class DirectionHandlerTest {
 
             reset(callback);
         }
-    }
-
-    @Test
-    void should_return_early_for_complete_case_review() {
-
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getEvent()).thenReturn(Event.COMPLETE_CASE_REVIEW);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.read(HAS_TRANSFERRED_OUT_OF_ADA, YesOrNo.class)).thenReturn(Optional.empty());
-        when(asylumCase.read(ADA_HEARING_REQUIREMENTS_SUBMITTED, YesOrNo.class)).thenReturn(Optional.empty());
-
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            directionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
-
-        assertNotNull(callbackResponse);
-        assertEquals(asylumCase, callbackResponse.getData());
-
-        verify(asylumCase, times(0)).read(SEND_DIRECTION_EXPLANATION, String.class);
-        verify(asylumCase, times(0)).read(SEND_DIRECTION_DATE_DUE, String.class);
-        verify(asylumCase, times(0)).write(eq(DIRECTIONS), any());
     }
 
     @Test

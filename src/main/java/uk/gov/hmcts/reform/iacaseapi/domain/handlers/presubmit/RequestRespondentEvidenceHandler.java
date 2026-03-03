@@ -36,8 +36,7 @@ public class RequestRespondentEvidenceHandler implements PreSubmitCallbackHandle
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-               && (callback.getEvent() == Event.REQUEST_RESPONDENT_EVIDENCE
-                   || callback.getEvent() == Event.COMPLETE_CASE_REVIEW);
+               && callback.getEvent() == Event.REQUEST_RESPONDENT_EVIDENCE;
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
@@ -52,10 +51,6 @@ public class RequestRespondentEvidenceHandler implements PreSubmitCallbackHandle
             callback
                 .getCaseDetails()
                 .getCaseData();
-
-        if (callback.getEvent() == Event.COMPLETE_CASE_REVIEW) {
-            return new PreSubmitCallbackResponse<>(asylumCase);
-        }
 
         // Set a new flag here to be used for validation in the preparer.
         asylumCase.write(UPLOAD_HOME_OFFICE_BUNDLE_AVAILABLE, YES);
