@@ -4,6 +4,7 @@ import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.QM_LATEST_QUERY;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -66,41 +67,43 @@ public class RaiseQueryCallbackHandler implements PreSubmitCallbackHandler<Asylu
                 CaseQueriesCollection.builder().caseMessages(List.of()).build()
         );
 
-        Optional<IdValue<CaseMessage>> latestCaseMessageOpt = queriesList.getCaseMessages().stream()
-                .max((a, b) -> a.getId().compareTo(b.getId()));
+        // Use createdOn timestamp to select the latest query (not UUID)
+        Optional<IdValue<CaseMessage>> latestCaseMessageOpt =
+                queriesList.getCaseMessages().stream()
+                        .filter(m -> m.getValue() != null)
+                        .max(Comparator.comparing(m -> m.getValue().getCreatedOn()));
 
         if (latestCaseMessageOpt.isPresent()) {
 
-            String latestQueryId = latestCaseMessageOpt.get().getId();
-            YesOrNo isHearingRelated = latestCaseMessageOpt.get().getValue().getIsHearingRelated();
+            IdValue<CaseMessage> latestCaseMessage = latestCaseMessageOpt.get();
+
+            String latestQueryId = latestCaseMessage.getId();
+            YesOrNo isHearingRelated = latestCaseMessage.getValue().getIsHearingRelated();
 
             LatestQuery latestQuery = LatestQuery.builder()
                     .queryId(latestQueryId)
                     .isHearingRelated(isHearingRelated)
                     .build();
 
-            IdValue<LatestQuery> wrapped = new IdValue<>(latestQueryId, latestQuery);
+            IdValue<LatestQuery> wrappedLatestQuery = new IdValue<>(latestQueryId, latestQuery);
 
-            // Safe reading of existing QM_LATEST_QUERY
+            // Read existing QM_LATEST_QUERY safely
             List<IdValue<LatestQuery>> existingLatestQueries = new ArrayList<>();
             asylumCase.read(QM_LATEST_QUERY).ifPresent(rawList -> {
-                List<?> list = (List<?>) rawList;
-                for (Object obj : list) {
-                    if (obj instanceof IdValue) {
-                        IdValue<?> idValue = (IdValue<?>) obj;
-                        Object value = idValue.getValue();
-                        if (value instanceof LatestQuery) {
-                            existingLatestQueries.add(new IdValue<>(idValue.getId(), (LatestQuery) value));
+                if (rawList instanceof List<?> list) {
+                    for (Object obj : list) {
+                        if (obj instanceof IdValue<?> idValue && idValue.getValue() instanceof LatestQuery existingLatestQuery) {
+                            existingLatestQueries.add(new IdValue<>(idValue.getId(), existingLatestQuery));
                         }
                     }
                 }
             });
 
-            existingLatestQueries.add(wrapped);
+            existingLatestQueries.add(wrappedLatestQuery);
 
             asylumCase.write(QM_LATEST_QUERY, existingLatestQueries);
 
-            log.info("Latest query running on case {}", asylumCase);
+            log.info("QM_LATEST_QUERY updated for case {}", asylumCase);
 
         } else {
             log.info("No queries exist yet for this asylum case, QM_LATEST_QUERY not set.");
