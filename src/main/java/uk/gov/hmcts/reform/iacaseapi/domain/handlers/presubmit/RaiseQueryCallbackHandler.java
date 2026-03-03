@@ -67,10 +67,10 @@ public class RaiseQueryCallbackHandler implements PreSubmitCallbackHandler<Asylu
                 CaseQueriesCollection.builder().caseMessages(List.of()).build()
         );
 
-        // Use createdOn timestamp to select the latest query (not UUID)
         Optional<IdValue<CaseMessage>> latestCaseMessageOpt =
                 queriesList.getCaseMessages().stream()
                         .filter(m -> m.getValue() != null)
+                        .filter(m -> m.getValue().getCreatedOn() != null)
                         .max(Comparator.comparing(m -> m.getValue().getCreatedOn()));
 
         if (latestCaseMessageOpt.isPresent()) {
