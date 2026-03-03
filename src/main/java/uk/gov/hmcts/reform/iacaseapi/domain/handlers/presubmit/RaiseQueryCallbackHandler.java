@@ -56,6 +56,7 @@ public class RaiseQueryCallbackHandler implements PreSubmitCallbackHandler<Asylu
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
+        // Determine which query collection to use
         AsylumCaseFieldDefinition targetCollection = getQueryCollectionField(asylumCase);
         if (targetCollection == null) {
             throw new IllegalStateException("Unable to determine query collection for this asylum case");
@@ -70,20 +71,24 @@ public class RaiseQueryCallbackHandler implements PreSubmitCallbackHandler<Asylu
         );
         log.info("Read queriesList: {}", queriesList);
 
+        // Find the latest case message by createdOn, using OffsetDateTime.MIN if null
         Optional<IdValue<CaseMessage>> latestCaseMessageOpt =
                 queriesList.getCaseMessages().stream()
                         .filter(m -> m.getValue() != null)
-                        .filter(m -> m.getValue().getCreatedOn() != null)
-                        .max(Comparator.comparing(m -> Optional.ofNullable(m.getValue().getCreatedOn()).orElse(OffsetDateTime.MIN)));
-        log.info("Read latestCaseMessageOpt: {}", latestCaseMessageOpt);
+                        .max(Comparator.comparing(
+                                m -> Optional.ofNullable(m.getValue().getCreatedOn()).orElse(OffsetDateTime.MIN)
+                        ));
+        log.info("Latest case message found: {}", latestCaseMessageOpt);
 
         if (latestCaseMessageOpt.isPresent()) {
 
             IdValue<CaseMessage> latestCaseMessage = latestCaseMessageOpt.get();
+            CaseMessage messageValue = latestCaseMessage.getValue();
 
             String latestQueryId = latestCaseMessage.getId();
-            YesOrNo isHearingRelated = latestCaseMessage.getValue().getIsHearingRelated();
+            YesOrNo isHearingRelated = messageValue.getIsHearingRelated();
 
+            // Build LatestQuery
             LatestQuery latestQuery = LatestQuery.builder()
                     .queryId(latestQueryId)
                     .isHearingRelated(isHearingRelated)
@@ -103,6 +108,7 @@ public class RaiseQueryCallbackHandler implements PreSubmitCallbackHandler<Asylu
                 }
             });
 
+            // Append new latest query
             existingLatestQueries.add(wrappedLatestQuery);
 
             asylumCase.write(QM_LATEST_QUERY, existingLatestQueries);
