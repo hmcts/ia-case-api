@@ -56,66 +56,67 @@ public class RaiseQueryCallbackHandler implements PreSubmitCallbackHandler<Asylu
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
-        // Determine which query collection to use
         AsylumCaseFieldDefinition targetCollection = getQueryCollectionField(asylumCase);
         if (targetCollection == null) {
             throw new IllegalStateException("Unable to determine query collection for this asylum case");
         }
 
-        Optional<CaseQueriesCollection> maybeQueries =
-                asylumCase.read(targetCollection, CaseQueriesCollection.class);
-        log.info("Read queries: {}", maybeQueries);
+        CaseQueriesCollection queriesList = asylumCase
+                .read(targetCollection, CaseQueriesCollection.class)
+                .orElse(CaseQueriesCollection.builder().caseMessages(List.of()).build());
 
-        CaseQueriesCollection queriesList = maybeQueries.orElse(
-                CaseQueriesCollection.builder().caseMessages(List.of()).build()
-        );
-        log.info("Read queriesList: {}", queriesList);
+        if (queriesList.getCaseMessages() == null || queriesList.getCaseMessages().isEmpty()) {
+            log.info("No case messages found, QM_LATEST_QUERY not set.");
+            return new PreSubmitCallbackResponse<>(asylumCase);
+        }
 
-        // Find the latest case message by createdOn, using OffsetDateTime.MIN if null
-        Optional<IdValue<CaseMessage>> latestCaseMessageOpt =
+        IdValue<CaseMessage> latestCaseMessage =
                 queriesList.getCaseMessages().stream()
                         .filter(m -> m.getValue() != null)
                         .max(Comparator.comparing(
-                                m -> Optional.ofNullable(m.getValue().getCreatedOn()).orElse(OffsetDateTime.MIN)
-                        ));
-        log.info("Latest case message found: {}", latestCaseMessageOpt);
+                                m -> Optional.ofNullable(m.getValue().getCreatedOn())
+                                        .orElse(OffsetDateTime.MIN)
+                        ))
+                        .orElse(null);
 
-        if (latestCaseMessageOpt.isPresent()) {
+        if (latestCaseMessage == null) {
+            log.info("No valid case messages found.");
+            return new PreSubmitCallbackResponse<>(asylumCase);
+        }
 
-            IdValue<CaseMessage> latestCaseMessage = latestCaseMessageOpt.get();
-            CaseMessage messageValue = latestCaseMessage.getValue();
+        String latestQueryId = latestCaseMessage.getId();
 
-            String latestQueryId = latestCaseMessage.getId();
-            YesOrNo isHearingRelated = Optional.ofNullable(messageValue.getIsHearingRelated())
-                    .orElse(YesOrNo.NO);
+        YesOrNo isHearingRelated = Optional.ofNullable(
+                latestCaseMessage.getValue().getIsHearingRelated()
+        ).orElse(YesOrNo.NO);
 
-            LatestQuery latestQuery = LatestQuery.builder()
-                    .queryId(latestQueryId)
-                    .isHearingRelated(isHearingRelated)
-                    .build();
+        LatestQuery latestQuery = LatestQuery.builder()
+                .queryId(latestQueryId)
+                .isHearingRelated(isHearingRelated)
+                .build();
 
-            IdValue<LatestQuery> wrappedLatestQuery = new IdValue<>(latestQueryId, latestQuery);
+        IdValue<LatestQuery> wrappedLatestQuery =
+                new IdValue<>(latestQueryId, latestQuery);
 
-            List<IdValue<LatestQuery>> existingLatestQueries = new ArrayList<>();
-            asylumCase.read(QM_LATEST_QUERY).ifPresent(rawList -> {
-                if (rawList instanceof List<?> list) {
-                    for (Object obj : list) {
-                        if (obj instanceof IdValue<?> idValue && idValue.getValue() instanceof LatestQuery existingLatestQuery) {
-                            existingLatestQueries.add(new IdValue<>(idValue.getId(), existingLatestQuery));
-                        }
+        List<IdValue<LatestQuery>> existingLatestQueries = new ArrayList<>();
+        asylumCase.read(QM_LATEST_QUERY).ifPresent(rawList -> {
+            if (rawList instanceof List<?> list) {
+                for (Object obj : list) {
+                    if (obj instanceof IdValue<?> idValue && idValue.getValue() instanceof LatestQuery existingLatestQuery) {
+                        existingLatestQueries.add(new IdValue<>(idValue.getId(), existingLatestQuery));
                     }
                 }
-            });
+            }
+        });
 
-            existingLatestQueries.add(wrappedLatestQuery);
+        existingLatestQueries.removeIf(q -> q.getId().equals(latestQueryId));
 
-            asylumCase.write(QM_LATEST_QUERY, existingLatestQueries);
+        existingLatestQueries.add(wrappedLatestQuery);
 
-            log.info("QM_LATEST_QUERY updated for case {}", asylumCase);
+        asylumCase.write(QM_LATEST_QUERY, existingLatestQueries);
 
-        } else {
-            log.info("No queries exist yet for this asylum case, QM_LATEST_QUERY not set.");
-        }
+        log.info("QM_LATEST_QUERY updated with queryId={} hearingRelated={}",
+                latestQueryId, isHearingRelated);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
