@@ -63,16 +63,19 @@ public class RaiseQueryCallbackHandler implements PreSubmitCallbackHandler<Asylu
 
         Optional<CaseQueriesCollection> maybeQueries =
                 asylumCase.read(targetCollection, CaseQueriesCollection.class);
+        log.info("Read queries: {}", maybeQueries);
 
         CaseQueriesCollection queriesList = maybeQueries.orElse(
                 CaseQueriesCollection.builder().caseMessages(List.of()).build()
         );
+        log.info("Read queriesList: {}", queriesList);
 
         Optional<IdValue<CaseMessage>> latestCaseMessageOpt =
                 queriesList.getCaseMessages().stream()
                         .filter(m -> m.getValue() != null)
                         .filter(m -> m.getValue().getCreatedOn() != null)
                         .max(Comparator.comparing(m -> Optional.ofNullable(m.getValue().getCreatedOn()).orElse(OffsetDateTime.MIN)));
+        log.info("Read latestCaseMessageOpt: {}", latestCaseMessageOpt);
 
         if (latestCaseMessageOpt.isPresent()) {
 
