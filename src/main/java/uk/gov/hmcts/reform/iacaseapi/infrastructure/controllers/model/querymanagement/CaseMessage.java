@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 
 @NoArgsConstructor
@@ -31,7 +32,7 @@ public class CaseMessage {
     private List<Document> attachments;
     private YesOrNo isHearingRelated;
     private LocalDate hearingDate;
-    private LocalDateTime createdOn;
+    private OffsetDateTime createdOn;
     private String createdBy;
     private String parentId;
 

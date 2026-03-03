@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -88,7 +88,7 @@ class RaiseQueryCallbackHandlerTest {
             CaseMessage message = new CaseMessage();
             message.setId("msg1");
             message.setIsHearingRelated(YesOrNo.YES);
-            message.setCreatedOn(LocalDateTime.now());
+            message.setCreatedOn(OffsetDateTime.now());
 
             List<IdValue<CaseMessage>> caseMessages = List.of(new IdValue<>("msg1", message));
             CaseQueriesCollection collection = CaseQueriesCollection.builder().caseMessages(caseMessages).build();
@@ -118,7 +118,7 @@ class RaiseQueryCallbackHandlerTest {
             CaseMessage newMessage = new CaseMessage();
             newMessage.setId("msg2");
             newMessage.setIsHearingRelated(YesOrNo.NO);
-            newMessage.setCreatedOn(LocalDateTime.now());
+            newMessage.setCreatedOn(OffsetDateTime.now());
 
             List<IdValue<CaseMessage>> caseMessages = List.of(new IdValue<>("msg2", newMessage));
             CaseQueriesCollection collection = CaseQueriesCollection.builder().caseMessages(caseMessages).build();
