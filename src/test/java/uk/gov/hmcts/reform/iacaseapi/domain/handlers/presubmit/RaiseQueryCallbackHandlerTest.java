@@ -88,7 +88,7 @@ class RaiseQueryCallbackHandlerTest {
             CaseMessage message = new CaseMessage();
             message.setId("msg1");
             message.setIsHearingRelated(YesOrNo.YES);
-            message.setCreatedOn(OffsetDateTime.now());
+            message.setCreatedOn(OffsetDateTime.parse("2026-03-03T13:26:11.579Z"));
 
             List<IdValue<CaseMessage>> caseMessages = List.of(new IdValue<>("msg1", message));
             CaseQueriesCollection collection = CaseQueriesCollection.builder().caseMessages(caseMessages).build();
@@ -118,7 +118,7 @@ class RaiseQueryCallbackHandlerTest {
             CaseMessage newMessage = new CaseMessage();
             newMessage.setId("msg2");
             newMessage.setIsHearingRelated(YesOrNo.NO);
-            newMessage.setCreatedOn(OffsetDateTime.now());
+            newMessage.setCreatedOn(OffsetDateTime.parse("2026-03-03T13:26:11.579Z"));
 
             List<IdValue<CaseMessage>> caseMessages = List.of(new IdValue<>("msg2", newMessage));
             CaseQueriesCollection collection = CaseQueriesCollection.builder().caseMessages(caseMessages).build();

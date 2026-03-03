@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.QM_LATEST_QUERY;
 
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -71,7 +72,7 @@ public class RaiseQueryCallbackHandler implements PreSubmitCallbackHandler<Asylu
                 queriesList.getCaseMessages().stream()
                         .filter(m -> m.getValue() != null)
                         .filter(m -> m.getValue().getCreatedOn() != null)
-                        .max(Comparator.comparing(m -> m.getValue().getCreatedOn()));
+                        .max(Comparator.comparing(m -> Optional.ofNullable(m.getValue().getCreatedOn()).orElse(OffsetDateTime.MIN)));
 
         if (latestCaseMessageOpt.isPresent()) {
 
