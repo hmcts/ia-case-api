@@ -169,11 +169,11 @@ class RevokeCaseAccessV2PreparerTest {
 
 
     @Test
-    void should_error_if_assignments_exist_but_no_citizens_found() {
+    void should_error_if_assignments_exist_but_no_non_null_found() {
         when(roleAssignmentService.getUsersAssignedToCase(caseId)).thenReturn(roleAssignmentResource);
         when(roleAssignmentResource.getRoleAssignmentResponse()).thenReturn(List.of(assignment));
         when(assignment.getActorId()).thenReturn("user-1");
-        when(idamService.getUserFromIdV1("user-1")).thenReturn(user);
+        when(idamService.getUserFromIdV1("user-1")).thenReturn(null);
         when(user.getId()).thenReturn("user-1");
         when(user.toRevokeAccessDlString(anyString())).thenReturn("User One");
         when(user.getRoles()).thenReturn(Collections.emptyList());
