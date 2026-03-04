@@ -21,7 +21,6 @@ import java.util.List;
 @Setter
 @ToString
 @JsonIgnoreProperties(ignoreUnknown = true)
-@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class CaseMessage {
 
     private String id;

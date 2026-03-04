@@ -112,6 +112,8 @@ public class RaiseQueryCallbackHandler implements PreSubmitCallbackHandler<Asylu
         existingLatestQueries.removeIf(q -> q.getId().equals(latestQueryId));
 
         existingLatestQueries.add(wrappedLatestQuery);
+        log.info("Hearing flag raw value: {}",
+                latestCaseMessage.getValue().getIsHearingRelated());
 
         asylumCase.write(QM_LATEST_QUERY, existingLatestQueries);
 
