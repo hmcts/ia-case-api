@@ -66,7 +66,6 @@ public class RaiseQueryCallbackHandler implements PreSubmitCallbackHandler<Asylu
                 .orElse(CaseQueriesCollection.builder().caseMessages(List.of()).build());
 
         if (queriesList.getCaseMessages() == null || queriesList.getCaseMessages().isEmpty()) {
-            log.info("No case messages found, QM_LATEST_QUERY not set.");
             return new PreSubmitCallbackResponse<>(asylumCase);
         }
 
@@ -79,12 +78,7 @@ public class RaiseQueryCallbackHandler implements PreSubmitCallbackHandler<Asylu
                         ))
                         .orElse(null);
 
-        if (latestCaseMessage == null) {
-            log.info("No valid case messages found.");
-            return new PreSubmitCallbackResponse<>(asylumCase);
-        }
-
-        String latestQueryId = latestCaseMessage.getId();
+        String latestQueryId = latestCaseMessage.getValue().getId();
 
         YesOrNo isHearingRelated = Optional.ofNullable(
                 latestCaseMessage.getValue().getIsHearingRelated()
@@ -112,13 +106,8 @@ public class RaiseQueryCallbackHandler implements PreSubmitCallbackHandler<Asylu
         existingLatestQueries.removeIf(q -> q.getId().equals(latestQueryId));
 
         existingLatestQueries.add(wrappedLatestQuery);
-        log.info("Hearing flag raw value: {} body: {}",
-                latestCaseMessage.getValue().getIsHearingRelated(), latestCaseMessage.getValue().getBody());
 
         asylumCase.write(QM_LATEST_QUERY, existingLatestQueries);
-
-        log.info("QM_LATEST_QUERY updated with queryId={} hearingRelated={}",
-                latestQueryId, isHearingRelated);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
