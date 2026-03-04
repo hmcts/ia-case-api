@@ -166,10 +166,14 @@ class EventTest {
         assertEquals("forceDecidedState", Event.FORCE_DECIDED_STATE.toString());
         assertEquals("forceFtpaDecidedState", Event.FORCE_FTPA_DECIDED_STATE.toString());
         assertEquals("revokeCaseAccessV2", Event.REVOKE_CASE_ACCESS_V2.toString());
+        assertEquals("sendInviteToNonLegalRep", Event.SEND_INVITE_TO_NON_LEGAL_REP.toString());
+        assertEquals("sendPipToNonLegalRep", Event.SEND_PIP_TO_NON_LEGAL_REP.toString());
+        assertEquals("joinAppealConfirmation", Event.JOIN_APPEAL_CONFIRMATION.toString());
+        assertEquals("nlrPhoneNumberSubmitted", Event.NLR_PHONE_NUMBER_SUBMITTED.toString());
     }
 
     @Test
     void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(164, Event.values().length);
+        assertEquals(168, Event.values().length);
     }
 }
