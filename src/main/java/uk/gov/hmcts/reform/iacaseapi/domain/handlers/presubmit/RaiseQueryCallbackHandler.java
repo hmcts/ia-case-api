@@ -37,7 +37,9 @@ public class RaiseQueryCallbackHandler implements PreSubmitCallbackHandler<Asylu
     }
 
     @Override
-    public boolean canHandle(PreSubmitCallbackStage callbackStage, Callback<AsylumCase> callback) {
+    public boolean canHandle(PreSubmitCallbackStage callbackStage,
+                             Callback<AsylumCase> callback) {
+
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
@@ -56,54 +58,67 @@ public class RaiseQueryCallbackHandler implements PreSubmitCallbackHandler<Asylu
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
-        AsylumCaseFieldDefinition targetCollection = getQueryCollectionField(asylumCase);
+        AsylumCaseFieldDefinition targetCollection =
+                determineQueryCollection(asylumCase);
+
         if (targetCollection == null) {
-            throw new IllegalStateException("Unable to determine query collection for this asylum case");
+            throw new IllegalStateException(
+                    "Unable to determine query collection for this asylum case"
+            );
         }
 
-        CaseQueriesCollection queriesList = asylumCase
-                .read(targetCollection, CaseQueriesCollection.class)
-                .orElse(CaseQueriesCollection.builder().caseMessages(List.of()).build());
+        CaseQueriesCollection queries =
+                asylumCase.read(targetCollection, CaseQueriesCollection.class)
+                        .orElse(null);
 
-        if (queriesList.getCaseMessages() == null || queriesList.getCaseMessages().isEmpty()) {
+        if (queries == null
+                || queries.getCaseMessages() == null
+                || queries.getCaseMessages().isEmpty()) {
+
+            log.debug("No case messages found — nothing to update.");
             return new PreSubmitCallbackResponse<>(asylumCase);
         }
 
-        IdValue<CaseMessage> latestCaseMessage =
-                queriesList.getCaseMessages().stream()
+        Optional<IdValue<CaseMessage>> latestMessageOpt =
+                queries.getCaseMessages().stream()
                         .filter(m -> m.getValue() != null)
-                        .max(Comparator.comparing(
-                                m -> Optional.ofNullable(m.getValue().getCreatedOn())
+                        .max(Comparator.comparing(m ->
+                                Optional.ofNullable(m.getValue().getCreatedOn())
                                         .orElse(OffsetDateTime.MIN)
-                        ))
-                        .orElse(null);
+                        ));
 
-        String latestQueryId = latestCaseMessage.getValue().getId();
+        if (latestMessageOpt.isEmpty()) {
+            return new PreSubmitCallbackResponse<>(asylumCase);
+        }
 
-        YesOrNo isHearingRelated = Optional.ofNullable(
-                latestCaseMessage.getValue().getIsHearingRelated()
-        ).orElse(YesOrNo.NO);
+        IdValue<CaseMessage> latestMessage = latestMessageOpt.get();
+
+        String wrapperId = latestMessage.getId(); // CCD collection ID
+        CaseMessage caseMessage = latestMessage.getValue();
+
+        String queryId = caseMessage.getId(); // Query Management ID
+
+        YesOrNo isHearingRelated =
+                Optional.ofNullable(caseMessage.getIsHearingRelated())
+                        .orElse(YesOrNo.NO);
+
+        log.info("Latest query detected. WrapperId={}, QueryId={}, HearingRelated={}",
+                wrapperId, queryId, isHearingRelated);
 
         LatestQuery latestQuery = LatestQuery.builder()
-                .queryId(latestQueryId)
+                .queryId(queryId)
                 .isHearingRelated(isHearingRelated)
                 .build();
 
         IdValue<LatestQuery> wrappedLatestQuery =
-                new IdValue<>(latestQueryId, latestQuery);
+                new IdValue<>(wrapperId, latestQuery);
 
-        List<IdValue<LatestQuery>> existingLatestQueries = new ArrayList<>();
-        asylumCase.read(QM_LATEST_QUERY).ifPresent(rawList -> {
-            if (rawList instanceof List<?> list) {
-                for (Object obj : list) {
-                    if (obj instanceof IdValue<?> idValue && idValue.getValue() instanceof LatestQuery existingLatestQuery) {
-                        existingLatestQueries.add(new IdValue<>(idValue.getId(), existingLatestQuery));
-                    }
-                }
-            }
-        });
+        List<IdValue<LatestQuery>> existingLatestQueries =
+                asylumCase.read(QM_LATEST_QUERY)
+                        .map(this::castLatestQueryList)
+                        .orElse(new ArrayList<>());
 
-        existingLatestQueries.removeIf(q -> q.getId().equals(latestQueryId));
+        existingLatestQueries.removeIf(q -> q.getId().equals(wrapperId));
 
         existingLatestQueries.add(wrappedLatestQuery);
 
@@ -112,14 +127,38 @@ public class RaiseQueryCallbackHandler implements PreSubmitCallbackHandler<Asylu
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 
-    private AsylumCaseFieldDefinition getQueryCollectionField(AsylumCase asylumCase) {
+    @SuppressWarnings("unchecked")
+    private List<IdValue<LatestQuery>> castLatestQueryList(Object raw) {
+        if (raw instanceof List<?> list) {
+            List<IdValue<LatestQuery>> typedList = new ArrayList<>();
+            for (Object obj : list) {
+                if (obj instanceof IdValue<?> idValue
+                        && idValue.getValue() instanceof LatestQuery latestQuery) {
+
+                    typedList.add(
+                            new IdValue<>(idValue.getId(), latestQuery)
+                    );
+                }
+            }
+            return typedList;
+        }
+        return new ArrayList<>();
+    }
+
+    private AsylumCaseFieldDefinition determineQueryCollection(AsylumCase asylumCase) {
+
         if (HandlerUtils.isLegalRepJourney(asylumCase)) {
             return AsylumCaseFieldDefinition.QM_LEGAL_REPRESENTATIVE_QUERIES;
-        } else if (HandlerUtils.isAipJourney(asylumCase)) {
+        }
+
+        if (HandlerUtils.isAipJourney(asylumCase)) {
             return AsylumCaseFieldDefinition.QM_AIP_QUERIES;
-        } else if (HandlerUtils.isInternalCase(asylumCase)) {
+        }
+
+        if (HandlerUtils.isInternalCase(asylumCase)) {
             return AsylumCaseFieldDefinition.QM_ADMIN_QUERIES;
         }
+
         return null;
     }
 }
