@@ -71,7 +71,8 @@ public class CacheConfiguration {
         );
         cacheManager.setAllowNullValues(false);
         cacheManager.setCaffeine(Caffeine.newBuilder()
-                .expireAfterWrite(3300, TimeUnit.SECONDS));        return cacheManager;
+            .expireAfterWrite(3300, TimeUnit.SECONDS));
+        return cacheManager;
     }
 
     @Bean
