@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
-import static java.util.Objects.*;
+import static java.util.Objects.requireNonNull;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCall
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PostSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.IdamService;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.RoleAssignmentService;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.RequestUserAccessTokenProvider;
 
 @Slf4j
 @Component
@@ -18,11 +19,14 @@ public class RemoveAppealFromOnlineConfirmation implements PostSubmitCallbackHan
 
     private final RoleAssignmentService roleAssignmentService;
     private final IdamService idamService;
+    private final RequestUserAccessTokenProvider requestUserAccessTokenProvider;
 
     public RemoveAppealFromOnlineConfirmation(RoleAssignmentService roleAssignmentService,
-                                              IdamService idamService) {
+                                              IdamService idamService,
+                                              RequestUserAccessTokenProvider requestUserAccessTokenProvider) {
         this.roleAssignmentService = roleAssignmentService;
         this.idamService = idamService;
+        this.requestUserAccessTokenProvider = requestUserAccessTokenProvider;
     }
 
     @Override
@@ -38,8 +42,12 @@ public class RemoveAppealFromOnlineConfirmation implements PostSubmitCallbackHan
         if (!canHandle(callback)) {
             throw new IllegalStateException("Cannot handle callback");
         }
-
+        String userToken = requestUserAccessTokenProvider.getAccessToken();
         String caseId = String.valueOf(callback.getCaseDetails().getId());
+        if (!idamService.doesUserHaveCaseAccess(caseId, userToken)) {
+            throw new IllegalStateException("User does not have access to case");
+        }
+
         roleAssignmentService.removeCaseRoleAssignments(caseId, idamService.getServiceUserToken());
 
         PostSubmitCallbackResponse postSubmitResponse =

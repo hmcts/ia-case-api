@@ -165,6 +165,18 @@ public class RoleAssignmentService {
         }
     }
 
+    public List<Assignment> getCaseUserRoleAssignments(String caseId, String idamId) {
+        QueryRequest queryRequest = QueryRequest.builder()
+            .actorId(List.of(idamId))
+            .attributes(Map.of(
+                Attributes.JURISDICTION, List.of(Jurisdiction.IA.name()),
+                Attributes.CASE_TYPE, List.of("Asylum"),
+                Attributes.CASE_ID, List.of(caseId)
+            ))
+            .build();
+        return queryRoleAssignments(queryRequest).getRoleAssignmentResponse();
+    }
+
     public void removeCaseRoleAssignments(String caseId, String authorisation) {
         List<RoleName> roleNames = List.of(
             RoleName.CASE_MANAGER,
