@@ -27,6 +27,11 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SUITABILITY_APPELLANT_ATTENDANCE_YES_OR_NO_2;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SUITABILITY_HEARING_TYPE_YES_OR_NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPPER_TRIBUNAL_REFERENCE_NUMBER;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.EMAIL;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.EMAIL_RETYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MOBILE_NUMBER;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MOBILE_NUMBER_RETYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LEGAL_REP_MOBILE_PHONE_NUMBER;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.HomeOfficeReferenceHandler.HOME_OFFICE_REF_PATTERN;
 
 import java.util.List;
@@ -55,7 +60,9 @@ public class StartAppealMidEvent implements PreSubmitCallbackHandler<AsylumCase>
     private static final String SUITABILITY_ATTENDANCE_PAGE_ID = "suitabilityAppellantAttendance";
     private static final String UPPER_TRIBUNAL_REFERENCE_NUMBER_PAGE_ID = "utReferenceNumber";
     private static final String APPELLANTS_ADDRESS_PAGE_ID = "appellantAddress";
+    private static final String APPELLANTS_CONTACT_PREFERENCE_PAGE_ID = "appellantContactPreference";
     protected static final String APPELLANTS_ADDRESS_ADMIN_J_PAGE_ID = "appellantAddressAdminJ";
+    private static final String LEGAL_REPRESENTATIVE_DETAILS = "legalRepresentativeDetails";
     private static final Pattern UPPER_TRIBUNAL_REFERENCE_NUMBER_PATTERN = Pattern.compile("^UI-[0-9]{4}-[0-9]{6}$");
 
     public boolean canHandle(
@@ -64,6 +71,10 @@ public class StartAppealMidEvent implements PreSubmitCallbackHandler<AsylumCase>
     ) {
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
+
+        if (callback.getPageId().isBlank()) {
+            return false;
+        }
 
         return callbackStage == PreSubmitCallbackStage.MID_EVENT
                 && (callback.getEvent() == Event.START_APPEAL
@@ -76,7 +87,9 @@ public class StartAppealMidEvent implements PreSubmitCallbackHandler<AsylumCase>
                     || callback.getPageId().equals(SUITABILITY_ATTENDANCE_PAGE_ID)
                     || callback.getPageId().equals(UPPER_TRIBUNAL_REFERENCE_NUMBER_PAGE_ID)
                     || callback.getPageId().equals(APPELLANTS_ADDRESS_PAGE_ID)
-                    || callback.getPageId().equals(APPELLANTS_ADDRESS_ADMIN_J_PAGE_ID));
+                    || callback.getPageId().equals(APPELLANTS_ADDRESS_ADMIN_J_PAGE_ID)
+                    || callback.getPageId().equals(APPELLANTS_CONTACT_PREFERENCE_PAGE_ID)
+                    || callback.getPageId().equals(LEGAL_REPRESENTATIVE_DETAILS));
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
@@ -143,6 +156,50 @@ public class StartAppealMidEvent implements PreSubmitCallbackHandler<AsylumCase>
                 response.addError("You cannot update the detention location to a " +  detentionFacilityValue + " because this is an accelerated detained appeal.");
             }
         }
+
+        if (callback.getPageId().equals(APPELLANTS_CONTACT_PREFERENCE_PAGE_ID)) {
+            Optional<String> email = asylumCase.read(EMAIL, String.class);
+            Optional<String> emailRetype = asylumCase.read(EMAIL_RETYPE, String.class);
+
+            Optional<String> mobileNumber = asylumCase.read(MOBILE_NUMBER, String.class);
+            Optional<String> mobileNumberRetype = asylumCase.read(MOBILE_NUMBER_RETYPE, String.class);
+
+            boolean emailMismatch =
+                    email.isPresent()
+                            && emailRetype.isPresent()
+                            && !email.get().equals(emailRetype.get());
+
+            boolean mobileMismatch =
+                    mobileNumber.isPresent()
+                            && mobileNumberRetype.isPresent()
+                            && !mobileNumber.get().equals(mobileNumberRetype.get());
+
+            if (emailMismatch || mobileMismatch) {
+                response.addError("The details given do not match");
+            } else {
+                asylumCase.clear(EMAIL_RETYPE);
+                asylumCase.clear(MOBILE_NUMBER_RETYPE);
+            }
+        }
+
+        if (callback.getPageId().equals(LEGAL_REPRESENTATIVE_DETAILS)) {
+
+            Optional<String> appellantsMobileNumber =
+                    asylumCase.read(MOBILE_NUMBER, String.class);
+
+            Optional<String> legalRepMobileNumber =
+                    asylumCase.read(LEGAL_REP_MOBILE_PHONE_NUMBER, String.class);
+
+            if (appellantsMobileNumber.isPresent()
+                    && legalRepMobileNumber.isPresent()
+                    && appellantsMobileNumber.get().equals(legalRepMobileNumber.get())) {
+
+                response.addError(
+                        "Contact number is already in use for the appellant. Please amend the appellant's mobile phone number before proceeding."
+                );
+            }
+        }
+
 
         if (callback.getPageId().equals(SUITABILITY_ATTENDANCE_PAGE_ID) && (callback.getEvent() == Event.EDIT_APPEAL || callback.getEvent() == Event.EDIT_APPEAL_AFTER_SUBMIT || callback.getEvent() == Event.START_APPEAL)) {
             boolean suitabilityHearingType = asylumCase.read(SUITABILITY_HEARING_TYPE_YES_OR_NO, YesOrNo.class).orElse(YesOrNo.NO).equals(YesOrNo.YES);
