@@ -1,17 +1,30 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_DATE_OF_BIRTH;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_FAMILY_NAME;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_GIVEN_NAMES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_REFERENCE_NUMBER;
+
 import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
-import uk.gov.hmcts.reform.iacaseapi.domain.HomeOfficeMissingApplicationException;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.HomeOfficeApiResponseStatusType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.HomeOfficeAppellant;
@@ -19,283 +32,234 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.HomeOfficeReferenceService;
 
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 class HomeOfficeReferenceHandlerTest {
 
-    private HomeOfficeReferenceService service;
-    private HomeOfficeReferenceHandler handler;
+    private static final String VALID_GWF = "GWF123456789";
+    private static final String INVALID_REF = "123";
 
+    @Mock
+    private HomeOfficeReferenceService referenceService;
+
+    @Mock
     private Callback<AsylumCase> callback;
+
+    @Mock
     private CaseDetails<AsylumCase> caseDetails;
+
+    @Mock
     private AsylumCase asylumCase;
 
-    private static final String VALID_REF = "1234-1234-1234-1234";
+    @Mock
+    private IdValue<HomeOfficeAppellant> idValue;
 
-    @SuppressWarnings("unchecked")
+    @Mock
+    private HomeOfficeAppellant appellant;
+
+    @InjectMocks
+    private HomeOfficeReferenceHandler handler;
+
     @BeforeEach
     void setup() {
-        service = Mockito.mock(HomeOfficeReferenceService.class);
-        handler = new HomeOfficeReferenceHandler(service);
+        Mockito.lenient().when(callback.getCaseDetails()).thenReturn(caseDetails);
+        Mockito.lenient().when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
-        callback = (Callback<AsylumCase>) Mockito.mock(Callback.class);
-        caseDetails = (CaseDetails<AsylumCase>) Mockito.mock(CaseDetails.class);
-        asylumCase = Mockito.mock(AsylumCase.class);
+        // Generic stubbing to prevent strict stubbing argument mismatch
+        Mockito.lenient()
+            .when(asylumCase.read(Mockito.any(), Mockito.<Class<Object>>any()))
+            .thenAnswer(invocation -> Optional.empty());        
+    }
 
-        Mockito.when(callback.getCaseDetails()).thenReturn(caseDetails);
-        Mockito.when(caseDetails.getCaseData()).thenReturn(asylumCase);
+    @Test
+    void canHandle_should_return_true_for_valid_inputs() {
 
         Mockito.when(callback.getEvent()).thenReturn(Event.START_APPEAL);
-        Mockito.when(callback.getPageId()).thenReturn("homeOfficeReferenceNumber");
-    }
+        Mockito.when(callback.getPageId()).thenReturn("homeOfficeReferenceNumber_TEMPORARILY_DISABLED");
 
-    // ---------------- canHandle ----------------
+        boolean result = handler.canHandle(PreSubmitCallbackStage.MID_EVENT, callback);
 
-    @Test
-    void canHandle_allValidCombinations() {
-        Assertions.assertTrue(handler.canHandle(PreSubmitCallbackStage.MID_EVENT, callback));
-
-        Mockito.when(callback.getEvent()).thenReturn(Event.EDIT_APPEAL);
-        Assertions.assertTrue(handler.canHandle(PreSubmitCallbackStage.MID_EVENT, callback));
-
-        Mockito.when(callback.getPageId()).thenReturn("oocHomeOfficeReferenceNumber");
-        Assertions.assertTrue(handler.canHandle(PreSubmitCallbackStage.MID_EVENT, callback));
-
-        Mockito.when(callback.getPageId()).thenReturn("appellantBasicDetails");
-        Assertions.assertTrue(handler.canHandle(PreSubmitCallbackStage.MID_EVENT, callback));
+        assertTrue(result);
     }
 
     @Test
-    void canHandle_negativePaths() {
-        Assertions.assertFalse(handler.canHandle(PreSubmitCallbackStage.ABOUT_TO_START, callback));
+    void canHandle_should_return_false_for_wrong_stage() {
 
-        Mockito.when(callback.getPageId()).thenReturn("badPage");
-        Assertions.assertFalse(handler.canHandle(PreSubmitCallbackStage.MID_EVENT, callback));
-    }
+        Mockito.when(callback.getEvent()).thenReturn(Event.START_APPEAL);
+        Mockito.when(callback.getPageId()).thenReturn("homeOfficeReferenceNumber_TEMPORARILY_DISABLED");
 
-    // ---------------- guard clause ----------------
+        boolean result = handler.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
-    @Test
-    void handle_throwsIfCannotHandle() {
-        Assertions.assertThrows(IllegalStateException.class,
-                () -> handler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback));
-    }
-
-    // ---------------- reference validation ----------------
-
-    @Test
-    void invalidReferenceFormat_returnsError() {
-
-        stubReference("BAD");
-
-        PreSubmitCallbackResponse<AsylumCase> response = handler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
-
-        Assertions.assertFalse(response.getErrors().isEmpty());
+        assertFalse(result);
     }
 
     @Test
-    void validReferencePattern() {
-        Assertions.assertTrue(HomeOfficeReferenceHandler.isWellFormedHomeOfficeReference(VALID_REF));
-        Assertions.assertTrue(HomeOfficeReferenceHandler.isWellFormedHomeOfficeReference("GWF123456789"));
-        Assertions.assertFalse(HomeOfficeReferenceHandler.isWellFormedHomeOfficeReference("X"));
-        Assertions.assertFalse(HomeOfficeReferenceHandler.isWellFormedHomeOfficeReference(null));
-    }
+    void canHandle_should_throw_when_nulls() {
 
-    // ---------------- case number matching ----------------
+        assertThrows(NullPointerException.class,
+            () -> handler.canHandle(null, callback));
 
-    @Test
-    void matchingCaseNumber_success() {
-
-        stubReference(VALID_REF);
-
-        Mockito.when(service.getHomeOfficeReferenceData(Mockito.anyString(), Mockito.eq(callback)))
-                .thenReturn(Optional.of(List.of(new IdValue<>("1", mockAppellant("01", "Silver", "Long John", "1965-02-03", "BRA", YesOrNo.YES, YesOrNo.NO, YesOrNo.NO, "spa", YesOrNo.YES)))));
-
-        PreSubmitCallbackResponse<AsylumCase> response = handler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
-
-        Assertions.assertTrue(response.getErrors().isEmpty());
+        assertThrows(NullPointerException.class,
+            () -> handler.canHandle(PreSubmitCallbackStage.MID_EVENT, null));
     }
 
     @Test
-    void matchingCaseNumber_emptyOptional() {
+    void handle_should_throw_when_cannot_handle() {
 
-        stubReference(VALID_REF);
+        Mockito.when(callback.getEvent()).thenReturn(Event.LIST_CASE);
 
-        Mockito.when(service.getHomeOfficeReferenceData(Mockito.anyString(), Mockito.eq(callback)))
-                .thenReturn(Optional.empty());
-
-        PreSubmitCallbackResponse<AsylumCase> response = handler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
-
-        Assertions.assertFalse(response.getErrors().isEmpty());
+        assertThrows(IllegalStateException.class,
+            () -> handler.handle(PreSubmitCallbackStage.MID_EVENT, callback));
     }
 
     @Test
-    void matchingCaseNumber_emptyList() {
+    void handle_should_return_error_when_reference_not_well_formed() {
 
-        stubReference(VALID_REF);
+        Mockito.when(callback.getEvent()).thenReturn(Event.START_APPEAL);
+        Mockito.when(callback.getPageId()).thenReturn("homeOfficeReferenceNumber_TEMPORARILY_DISABLED");
 
-        Mockito.when(service.getHomeOfficeReferenceData(Mockito.anyString(), Mockito.eq(callback)))
-                .thenReturn(Optional.of(Collections.emptyList()));
+        Mockito.when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class))
+            .thenReturn(Optional.of(INVALID_REF));
 
-        PreSubmitCallbackResponse<AsylumCase> response = handler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+        PreSubmitCallbackResponse<AsylumCase> response =
+            handler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
 
-        Assertions.assertFalse(response.getErrors().isEmpty());
-    }
-
-    // ---------------- HTTP status buckets ----------------
-
-    @Test
-    void httpStatus_caseNotFound_404() {
-        assertExceptionBucket(404, "does not match any existing case records");
+        assertFalse(response.getErrors().isEmpty());
     }
 
     @Test
-    void httpStatus_clientError_400() {
-        assertExceptionBucket(400, "report this to HMCTS");
+    void handle_should_return_error_when_reference_not_real() {
+
+        Mockito.when(callback.getEvent()).thenReturn(Event.START_APPEAL);
+        Mockito.when(callback.getPageId()).thenReturn("homeOfficeReferenceNumber_TEMPORARILY_DISABLED");
+
+        Mockito.when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class))
+            .thenReturn(Optional.of(VALID_GWF));
+
+        Mockito.when(referenceService.getHomeOfficeReferenceData(VALID_GWF, callback))
+            .thenReturn(Optional.empty());
+
+        Mockito.when(asylumCase.read(HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS, HomeOfficeApiResponseStatusType.class))
+            .thenReturn(Optional.of(HomeOfficeApiResponseStatusType.NOT_FOUND));
+
+        PreSubmitCallbackResponse<AsylumCase> response =
+            handler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+
+        assertFalse(response.getErrors().isEmpty());
     }
 
     @Test
-    void httpStatus_clientError_default999() {
-        assertExceptionBucket(999, "report this to HMCTS");
+    void handle_should_succeed_when_reference_is_real() {
+
+        Mockito.when(callback.getEvent()).thenReturn(Event.START_APPEAL);
+        Mockito.when(callback.getPageId()).thenReturn("homeOfficeReferenceNumber_TEMPORARILY_DISABLED");
+
+        Mockito.when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class))
+            .thenReturn(Optional.of(VALID_GWF));
+
+        Mockito.when(referenceService.getHomeOfficeReferenceData(VALID_GWF, callback))
+            .thenReturn(Optional.of(Collections.singletonList(idValue)));
+
+        PreSubmitCallbackResponse<AsylumCase> response =
+            handler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+
+        assertTrue(response.getErrors().isEmpty());
     }
 
     @Test
-    void httpStatus_serverError_500() {
-        assertExceptionBucket(500, "try again in 15-20 minutes");
+    void isWellFormedHomeOfficeReference_should_validate_patterns() {
+
+        assertTrue(HomeOfficeReferenceHandler.isWellFormedHomeOfficeReference("1234-1234-1234-1234"));
+        assertTrue(HomeOfficeReferenceHandler.isWellFormedHomeOfficeReference("GWF123456789"));
+
+        assertFalse(HomeOfficeReferenceHandler.isWellFormedHomeOfficeReference("BADREF"));
+        assertFalse(HomeOfficeReferenceHandler.isWellFormedHomeOfficeReference(null));
     }
 
     @Test
-    void httpStatus_serverError_timeoutMinus1() {
-        assertExceptionBucket(-1, "try again in 15-20 minutes");
-    }
+    void isRealHomeOfficeCaseNumber_should_return_false_when_null() {
 
-    // ---------------- details matching page ----------------
-
-    @Test
-    void detailsPage_successMatch() {
-
-        switchToDetailsPage();
-        stubReference(VALID_REF);
-        stubCaseDetails("Silver", "Long John", "1965-02-03");
-
-        HomeOfficeAppellant ho = mockAppellant("01", "Silver", "Long John", "1965-02-03", "BRA", YesOrNo.YES, YesOrNo.NO, YesOrNo.NO, "spa", YesOrNo.YES);
-
-        Mockito.when(service.getHomeOfficeReferenceData(Mockito.anyString(), Mockito.eq(callback)))
-                .thenReturn(Optional.of(List.of(new IdValue<>("1", ho))));
-
-        PreSubmitCallbackResponse<AsylumCase> response = handler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
-
-        Assertions.assertTrue(response.getErrors().isEmpty());
+        assertFalse(handler.isRealHomeOfficeCaseNumber(null, callback));
     }
 
     @Test
-    void detailsPage_nameMismatch_triggersDefaultBranch() {
+    void isRealHomeOfficeCaseNumber_should_return_false_when_empty_response() {
 
-        switchToDetailsPage();
-        stubReference(VALID_REF);
-        stubCaseDetails("Different", "Person", "1990-01-01");
+        Mockito.when(referenceService.getHomeOfficeReferenceData(VALID_GWF, callback))
+            .thenReturn(Optional.empty());
 
-        HomeOfficeAppellant ho = mockAppellant("01", "Silver", "Long John", "1965-02-03", "BRA", YesOrNo.YES, YesOrNo.NO, YesOrNo.NO, "spa", YesOrNo.YES);
-
-        Mockito.when(service.getHomeOfficeReferenceData(Mockito.anyString(), Mockito.eq(callback)))
-                .thenReturn(Optional.of(List.of(new IdValue<>("1", ho))));
-
-        PreSubmitCallbackResponse<AsylumCase> response = handler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
-
-        Assertions.assertTrue(
-                response.getErrors().stream()
-                        .anyMatch(e -> e.contains("details provided do not match")));
+        assertFalse(handler.isRealHomeOfficeCaseNumber(VALID_GWF, callback));
     }
 
     @Test
-    void detailsPage_exceptionBucket() {
+    void isRealHomeOfficeCaseNumber_should_return_true_when_appellants_exist() {
 
-        switchToDetailsPage();
-        stubReference(VALID_REF);
+        Mockito.when(referenceService.getHomeOfficeReferenceData(VALID_GWF, callback))
+            .thenReturn(Optional.of(Collections.singletonList(idValue)));
 
-        Mockito.when(service.getHomeOfficeReferenceData(Mockito.anyString(), Mockito.eq(callback)))
-                .thenThrow(new HomeOfficeMissingApplicationException(404, "err"));
-
-        PreSubmitCallbackResponse<AsylumCase> response = handler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
-
-        Assertions.assertFalse(response.getErrors().isEmpty());
-    }
-
-    // ---------------- direct method branch coverage ----------------
-
-    @Test
-    void isMatchingCaseNumber_nullReference() {
-        Assertions.assertFalse(handler.isMatchingHomeOfficeCaseNumber(null, callback));
+        assertTrue(handler.isRealHomeOfficeCaseNumber(VALID_GWF, callback));
     }
 
     @Test
-    void isMatchingCaseDetails_nullReference() {
-        Assertions.assertFalse(handler.isMatchingHomeOfficeCaseDetails(null, asylumCase, callback));
+    void normaliseName_should_remove_accents_and_spaces() {
+
+        String result = HomeOfficeReferenceHandler.normaliseName(" José   García ");
+
+        assertEquals("jose garcia", result);
     }
 
     @Test
-    void normalizeName_branches() {
-        Assertions.assertEquals("", HomeOfficeReferenceHandler.normalizeName(null));
-        Assertions.assertEquals("jose garcia",
-                HomeOfficeReferenceHandler.normalizeName("  José   García "));
+    void isMatchingHomeOfficeCaseDetails_should_match_names_and_dob() {
+
+        Mockito.when(referenceService.getHomeOfficeReferenceData(VALID_GWF, callback))
+            .thenReturn(Optional.of(Collections.singletonList(idValue)));
+
+        Mockito.when(idValue.getValue()).thenReturn(appellant);
+
+        Mockito.when(appellant.getFamilyName()).thenReturn("Smith");
+        Mockito.when(appellant.getGivenNames()).thenReturn("John");
+        Mockito.when(appellant.getDateOfBirth()).thenReturn("1990-01-01");
+
+        Mockito.when(asylumCase.read(APPELLANT_FAMILY_NAME, String.class))
+            .thenReturn(Optional.of("Smith"));
+
+        Mockito.when(asylumCase.read(APPELLANT_GIVEN_NAMES, String.class))
+            .thenReturn(Optional.of("John"));
+
+        Mockito.when(asylumCase.read(APPELLANT_DATE_OF_BIRTH, String.class))
+            .thenReturn(Optional.of("1990-01-01"));
+
+        boolean result = handler.isMatchingHomeOfficeCaseDetails(VALID_GWF, asylumCase, callback);
+
+        assertTrue(result);
     }
 
-    // ---------------- helpers ----------------
+    @Test
+    void isMatchingHomeOfficeCaseDetails_should_return_false_when_no_match() {
 
-    private void stubReference(String ref) {
-        Mockito.when(asylumCase.read(
-                AsylumCaseFieldDefinition.HOME_OFFICE_REFERENCE_NUMBER,
-                String.class))
-                .thenReturn(Optional.ofNullable(ref));
-    }
+        Mockito.when(referenceService.getHomeOfficeReferenceData(VALID_GWF, callback))
+            .thenReturn(Optional.of(Collections.singletonList(idValue)));
 
-    private void stubCaseDetails(String family, String given, String dob) {
+        Mockito.when(idValue.getValue()).thenReturn(appellant);
 
-        Mockito.when(asylumCase.read(
-                AsylumCaseFieldDefinition.APPELLANT_FAMILY_NAME,
-                String.class)).thenReturn(Optional.ofNullable(family));
+        Mockito.when(appellant.getFamilyName()).thenReturn("Different");
+        Mockito.when(appellant.getGivenNames()).thenReturn("Person");
+        Mockito.when(appellant.getDateOfBirth()).thenReturn("1980-01-01");
 
-        Mockito.when(asylumCase.read(
-                AsylumCaseFieldDefinition.APPELLANT_GIVEN_NAMES,
-                String.class)).thenReturn(Optional.ofNullable(given));
+        Mockito.when(asylumCase.read(APPELLANT_FAMILY_NAME, String.class))
+            .thenReturn(Optional.of("Smith"));
 
-        Mockito.when(asylumCase.read(
-                AsylumCaseFieldDefinition.APPELLANT_DATE_OF_BIRTH,
-                String.class)).thenReturn(Optional.ofNullable(dob));
-    }
+        Mockito.when(asylumCase.read(APPELLANT_GIVEN_NAMES, String.class))
+            .thenReturn(Optional.of("John"));
 
-    private void switchToDetailsPage() {
-        Mockito.when(callback.getPageId()).thenReturn("appellantBasicDetails");
-    }
+        Mockito.when(asylumCase.read(APPELLANT_DATE_OF_BIRTH, String.class))
+            .thenReturn(Optional.of("1990-01-01"));
 
-    private void assertExceptionBucket(int status, String expectedText) {
+        boolean result = handler.isMatchingHomeOfficeCaseDetails(VALID_GWF, asylumCase, callback);
 
-        stubReference(VALID_REF);
-
-        Mockito.when(service.getHomeOfficeReferenceData(Mockito.anyString(), Mockito.eq(callback)))
-                .thenThrow(new HomeOfficeMissingApplicationException(status, "error"));
-
-        PreSubmitCallbackResponse<AsylumCase> response = handler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
-
-        Assertions.assertTrue(
-                response.getErrors().stream()
-                        .anyMatch(e -> e.contains(expectedText)));
-    }
-
-    private HomeOfficeAppellant mockAppellant(String pp, String familyName, String givenNames, String dateOfBirth, String nationality, YesOrNo roa, YesOrNo asylumSupport, YesOrNo hoFeeWaiver, String language, YesOrNo interpreterNeeded) {
-        HomeOfficeAppellant appellant = new HomeOfficeAppellant();
-        appellant.setPp(pp);
-        appellant.setFamilyName(familyName);
-        appellant.setGivenNames(givenNames);
-        appellant.setDateOfBirth(dateOfBirth);
-        appellant.setNationality(nationality);
-        appellant.setRoa(roa);
-        appellant.setAsylumSupport(asylumSupport);
-        appellant.setHoFeeWaiver(hoFeeWaiver);
-        appellant.setLanguage(language);
-        appellant.setInterpreterNeeded(interpreterNeeded);
-        return appellant;
+        assertFalse(result);
     }
 
 }

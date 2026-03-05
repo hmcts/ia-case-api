@@ -1,185 +1,205 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.service;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_APPELLANTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.extension.ExtendWith;
+
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-import uk.gov.hmcts.reform.iacaseapi.domain.HomeOfficeMissingApplicationException;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.HomeOfficeApiResponseStatusType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.HomeOfficeAppellant;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
-import org.junit.jupiter.params.provider.Arguments;
-import java.util.stream.Stream;
-
+@ExtendWith(MockitoExtension.class)
 class HomeOfficeReferenceServiceTest {
 
-    private AsylumCase asylumCase;
-    private AsylumCase asylumCaseWithHomeOfficeData;
-    private HomeOfficeReferenceService service;
+    private static final String HO_REFERENCE = "HO123456";
+
+    @Mock
     private HomeOfficeApi<AsylumCase> homeOfficeApi;
 
+    @Mock
     private Callback<AsylumCase> callback;
+
+    @Mock
     private CaseDetails<AsylumCase> caseDetails;
 
-    @SuppressWarnings("unchecked")
+    @Mock
+    private AsylumCase asylumCase;
+
+    @Mock
+    private AsylumCase asylumCaseWithApiData;
+
+    @Mock
+    private IdValue<HomeOfficeAppellant> appellant;
+
+    @InjectMocks
+    private HomeOfficeReferenceService service;
+
+    private List<IdValue<HomeOfficeAppellant>> appellants;
+
     @BeforeEach
-    void setUp() {
-        asylumCase = Mockito.mock(AsylumCase.class);
-        asylumCaseWithHomeOfficeData = Mockito.mock(AsylumCase.class);
-        callback = (Callback<AsylumCase>) mock(Callback.class);
-        caseDetails = (CaseDetails<AsylumCase>) mock(CaseDetails.class);
-        homeOfficeApi = (HomeOfficeApi<AsylumCase>) Mockito.mock(HomeOfficeApi.class);
+    void setup() {
+        appellants = Collections.singletonList(appellant);
 
-        service = new HomeOfficeReferenceService(homeOfficeApi);
-
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(homeOfficeApi.midEvent(callback)).thenReturn(asylumCaseWithHomeOfficeData);
+        Mockito.when(callback.getCaseDetails()).thenReturn(caseDetails);
+        Mockito.when(caseDetails.getCaseData()).thenReturn(asylumCase);
     }
 
-    // -------------------------------------------------------------------------
-    // Already cached → should NOT call API
-    // -------------------------------------------------------------------------
-
     @Test
-    void shouldCallApiAndReturnAppellantsWhenAlreadyPresent() {
+    void should_return_existing_appellants_without_calling_api() {
 
-        List<HomeOfficeAppellant> appellants =
-            List.of(Mockito.mock(HomeOfficeAppellant.class));
-
-        Mockito.when(asylumCase.read(AsylumCaseFieldDefinition.HOME_OFFICE_APPELLANTS))
+        Mockito.when(asylumCase.read(HOME_OFFICE_APPELLANTS))
             .thenReturn(Optional.of(appellants));
 
         Optional<List<IdValue<HomeOfficeAppellant>>> result =
-            service.getHomeOfficeReferenceData("REF", callback);
+            service.getHomeOfficeReferenceData(HO_REFERENCE, callback);
 
         Assertions.assertTrue(result.isPresent());
         Assertions.assertEquals(appellants, result.get());
 
-        Mockito.verifyNoInteractions(homeOfficeApi);
+        Mockito.verify(homeOfficeApi, Mockito.never()).midEvent(Mockito.any());
     }
 
-    // -------------------------------------------------------------------------
-    // Error scenarios
-    // -------------------------------------------------------------------------
+    @Test
+    void should_call_api_and_store_data_when_status_ok() {
 
-    @ParameterizedTest
-    @MethodSource("errorStatuses")
-    void shouldThrowErrors(String status, int expectedStatus, String expectedMessagePart) {
-
-        configureErrorStatus(status);
-
-        HomeOfficeMissingApplicationException ex =
-            Assertions.assertThrows(
-                HomeOfficeMissingApplicationException.class,
-                () -> service.getHomeOfficeReferenceData("REF", callback)
-            );
-
-        Assertions.assertEquals(expectedStatus, ex.getHttpStatus());
-        Assertions.assertTrue(ex.getMessage().contains(expectedMessagePart));
-    }
-
-    private static Stream<Arguments> errorStatuses() {
-        return Stream.of(
-            Arguments.of("400", 400, "not correctly formed"),
-            Arguments.of("401", 401, "could not be authenticated"),
-            Arguments.of("403", 403, "not authorised"),
-            Arguments.of("500", 500, "not available"),
-            Arguments.of("501", 501, "not available"),
-            Arguments.of("502", 502, "not available"),
-            Arguments.of("503", 503, "not available"),
-            Arguments.of("504", 504, "not available"),
-            Arguments.of("-1", -1, "did not respond"),
-            Arguments.of("0", 0, "could not be found"),
-            Arguments.of("ABC", 0, "The response from the Home Office validation API could not be found."),
-            Arguments.of("999", 999, "HTTP status code was 999"),
-            Arguments.of("777", 777, "HTTP status code was 777")
-        );
-    }
-
-    // -------------------------------------------------------------------------
-    // Helper
-    // -------------------------------------------------------------------------
-
-    private void configureErrorStatus(String status) {
-
-        Mockito.when(asylumCaseWithHomeOfficeData.read(AsylumCaseFieldDefinition.HOME_OFFICE_APPELLANTS))
+        Mockito.when(asylumCase.read(HOME_OFFICE_APPELLANTS))
             .thenReturn(Optional.empty());
 
-        Mockito.when(asylumCaseWithHomeOfficeData.read(
-            AsylumCaseFieldDefinition.HOME_OFFICE_APPELLANT_API_HTTP_STATUS,
-            String.class
-        )).thenReturn(Optional.of(status));
-    }
+        Mockito.when(homeOfficeApi.midEvent(callback))
+            .thenReturn(asylumCaseWithApiData);
 
-    @Test
-    void shouldReturnEmptyOptionalWhenStatus200ButNoAppellants() {
+        Mockito.when(asylumCaseWithApiData.read(
+            HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS,
+            HomeOfficeApiResponseStatusType.class))
+            .thenReturn(Optional.of(HomeOfficeApiResponseStatusType.OK));
 
-        Mockito.when(asylumCaseWithHomeOfficeData.read(
-            AsylumCaseFieldDefinition.HOME_OFFICE_APPELLANTS
-        )).thenReturn(Optional.empty());
-
-        Mockito.when(asylumCaseWithHomeOfficeData.read(
-            AsylumCaseFieldDefinition.HOME_OFFICE_APPELLANT_API_HTTP_STATUS,
-            String.class
-        )).thenReturn(Optional.of("200"));
+        Mockito.when(asylumCaseWithApiData.read(HOME_OFFICE_APPELLANTS))
+            .thenReturn(Optional.of(appellants));
 
         Optional<List<IdValue<HomeOfficeAppellant>>> result =
-            service.getHomeOfficeReferenceData("REF", callback);
+            service.getHomeOfficeReferenceData(HO_REFERENCE, callback);
 
-        Assertions.assertTrue(result.isEmpty());
+        Assertions.assertTrue(result.isPresent());
+        Assertions.assertEquals(appellants, result.get());
 
-        Mockito.verify(homeOfficeApi)
-            .midEvent(callback);
+        Mockito.verify(asylumCase).write(
+            HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS,
+            HomeOfficeApiResponseStatusType.OK);
+
+        Mockito.verify(asylumCase).write(
+            HOME_OFFICE_APPELLANTS,
+            Optional.of(appellants));
     }
 
     @Test
-    void shouldHandleMissingHttpStatus() {
+    void should_handle_not_found_status() {
 
-        Mockito.when(asylumCaseWithHomeOfficeData.read(
-            AsylumCaseFieldDefinition.HOME_OFFICE_APPELLANTS
-        )).thenReturn(Optional.empty());
+        Mockito.when(asylumCase.read(HOME_OFFICE_APPELLANTS))
+            .thenReturn(Optional.empty());
 
-        Mockito.when(asylumCaseWithHomeOfficeData.read(
-            AsylumCaseFieldDefinition.HOME_OFFICE_APPELLANT_API_HTTP_STATUS,
-            String.class
-        )).thenReturn(Optional.empty());
+        Mockito.when(homeOfficeApi.midEvent(callback))
+            .thenReturn(asylumCaseWithApiData);
 
-        HomeOfficeMissingApplicationException ex =
-            Assertions.assertThrows(
-                HomeOfficeMissingApplicationException.class,
-                () -> service.getHomeOfficeReferenceData("REF", callback)
-            );
+        Mockito.when(asylumCaseWithApiData.read(
+            HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS,
+            HomeOfficeApiResponseStatusType.class))
+            .thenReturn(Optional.of(HomeOfficeApiResponseStatusType.NOT_FOUND));
 
-        Assertions.assertEquals(0, ex.getHttpStatus());
-        Assertions.assertTrue(ex.getMessage().contains("could not be found"));
+        Optional<List<IdValue<HomeOfficeAppellant>>> result =
+            service.getHomeOfficeReferenceData(HO_REFERENCE, callback);
+
+        Assertions.assertFalse(result.isPresent());
+
+        Mockito.verify(asylumCase).write(
+            HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS,
+            HomeOfficeApiResponseStatusType.NOT_FOUND);
     }
 
     @Test
-    void shouldRaiseEventEvenWhenApiFails() {
+    void should_handle_server_error_status() {
 
-        configureErrorStatus("404");
+        Mockito.when(asylumCase.read(HOME_OFFICE_APPELLANTS))
+            .thenReturn(Optional.empty());
 
-        Assertions.assertThrows(
-            HomeOfficeMissingApplicationException.class,
-            () -> service.getHomeOfficeReferenceData("REF", callback)
-        );
+        Mockito.when(homeOfficeApi.midEvent(callback))
+            .thenReturn(asylumCaseWithApiData);
 
-        Mockito.verify(homeOfficeApi)
-            .midEvent(callback);
+        Mockito.when(asylumCaseWithApiData.read(
+            HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS,
+            HomeOfficeApiResponseStatusType.class))
+            .thenReturn(Optional.of(HomeOfficeApiResponseStatusType.INTERNAL_SERVER_ERROR));
+
+        Optional<List<IdValue<HomeOfficeAppellant>>> result =
+            service.getHomeOfficeReferenceData(HO_REFERENCE, callback);
+
+        Assertions.assertFalse(result.isPresent());
+
+        Mockito.verify(asylumCase).write(
+            HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS,
+            HomeOfficeApiResponseStatusType.INTERNAL_SERVER_ERROR);
     }
 
+    @Test
+    void should_handle_client_error_status() {
+
+        Mockito.when(asylumCase.read(HOME_OFFICE_APPELLANTS))
+            .thenReturn(Optional.empty());
+
+        Mockito.when(homeOfficeApi.midEvent(callback))
+            .thenReturn(asylumCaseWithApiData);
+
+        Mockito.when(asylumCaseWithApiData.read(
+            HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS,
+            HomeOfficeApiResponseStatusType.class))
+            .thenReturn(Optional.of(HomeOfficeApiResponseStatusType.BAD_REQUEST));
+
+        Optional<List<IdValue<HomeOfficeAppellant>>> result =
+            service.getHomeOfficeReferenceData(HO_REFERENCE, callback);
+
+        Assertions.assertFalse(result.isPresent());
+
+        Mockito.verify(asylumCase).write(
+            HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS,
+            HomeOfficeApiResponseStatusType.BAD_REQUEST);
+    }
+
+    @Test
+    void should_use_unknown_when_status_missing() {
+
+        Mockito.when(asylumCase.read(HOME_OFFICE_APPELLANTS))
+            .thenReturn(Optional.empty());
+
+        Mockito.when(homeOfficeApi.midEvent(callback))
+            .thenReturn(asylumCaseWithApiData);
+
+        Mockito.when(asylumCaseWithApiData.read(
+            HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS,
+            HomeOfficeApiResponseStatusType.class))
+            .thenReturn(Optional.empty());
+
+        Optional<List<IdValue<HomeOfficeAppellant>>> result =
+            service.getHomeOfficeReferenceData(HO_REFERENCE, callback);
+
+        Assertions.assertFalse(result.isPresent());
+
+        Mockito.verify(asylumCase).write(
+            HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS,
+            HomeOfficeApiResponseStatusType.UNKNOWN);
+    }
 }

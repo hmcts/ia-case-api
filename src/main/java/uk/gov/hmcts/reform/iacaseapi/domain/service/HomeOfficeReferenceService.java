@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.service;
 
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_APPELLANTS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_APPELLANT_API_HTTP_STATUS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS;
 
 import java.util.List;
 import java.util.Optional;
@@ -9,8 +9,8 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 import lombok.extern.slf4j.Slf4j;
-import uk.gov.hmcts.reform.iacaseapi.domain.HomeOfficeMissingApplicationException;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.HomeOfficeApiResponseStatusType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.HomeOfficeAppellant;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
@@ -26,65 +26,48 @@ public class HomeOfficeReferenceService {
     }
 
     // Note: don't cache this response, as we want to get fresh data each time in case something changes at the Home Office's end.
-    public Optional<List<IdValue<HomeOfficeAppellant>>> getHomeOfficeReferenceData(String reference, Callback<AsylumCase> callback) {
+    public Optional<List<IdValue<HomeOfficeAppellant>>> getHomeOfficeReferenceData(String hoReference, Callback<AsylumCase> callback) {
 
         final AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
         Optional<List<IdValue<HomeOfficeAppellant>>> homeOfficeAppellants = asylumCase.read(HOME_OFFICE_APPELLANTS);
         // If we have a list of appellants already, don't call the API again.
         if (homeOfficeAppellants.isPresent()) {
-            log.info("Returning previously retrieved Home Office reference data for case with HMCTS reference {}.", reference);
+            log.info("Returning previously retrieved Home Office reference data for case with Home Office reference {}.", hoReference);
             return homeOfficeAppellants;
         }
 
         // Home Office API has not been called yet (or was unavailable the last time we tried) - call it now
-        log.info("Getting Home Office reference data for case with HMCTS reference {} ...", reference);
+        log.info("Getting Home Office biographic data for case with reference ID {} ...", hoReference);
         // Raise an event in home-office-integration-api
         AsylumCase asylumCaseWithHomeOfficeData = homeOfficeApi.midEvent(callback);
-        // Check return status
-        String httpStatus = asylumCaseWithHomeOfficeData.read(HOME_OFFICE_APPELLANT_API_HTTP_STATUS, String.class).orElse("");
-        if (httpStatus.equals("200")) {
-            log.info("Home Office reference data retrieved for case with HMCTS reference {}.", reference);
+        // Check return status and store it in the case record
+        HomeOfficeApiResponseStatusType responseStatus = 
+                                        asylumCaseWithHomeOfficeData.read(HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS, HomeOfficeApiResponseStatusType.class)
+                                        .orElse(HomeOfficeApiResponseStatusType.UNKNOWN);
+        asylumCase.write(HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS, responseStatus);
+        if (responseStatus.equals(HomeOfficeApiResponseStatusType.OK)) {
+            log.info("Home Office biographic data retrieved for case with reference ID {}.", hoReference);
             // Update the case record object with the Home Office reference data
             homeOfficeAppellants = asylumCaseWithHomeOfficeData.read(HOME_OFFICE_APPELLANTS);
             asylumCase.write(HOME_OFFICE_APPELLANTS, homeOfficeAppellants);
-            return homeOfficeAppellants;
         } else {
-            // Throw new exception to be caught by the event handler
-            String message = "Biographic information from Home Office asylum (etc.) application with HMCTS reference " + reference + " could not be retrieved.";
-            int statusCode = 0;
-            try {
-                statusCode = Integer.parseInt(httpStatus);
-            } catch (NumberFormatException e) {
-                log.warn("HTTP return status code was missing from call to the Home Office validation API.");
+            // The API did not return any data; log the diagnostic message appropriately
+            String logMessage = "Biographic information from Home Office asylum (etc.) application with Home Office reference "
+                              + hoReference + " could not be retrieved.\n\n" + responseStatus.getHoIntegrationErrorText(hoReference)
+                              + "\n\nSee the corresponding logs in ia-home-office-integration-api for more details.";                    
+            int statusCode = responseStatus.getStatusCode();
+            if (statusCode == 404) {
+                // User error (appeal not found)
+                log.info(logMessage);
+            } else if (statusCode <= 0 || statusCode >= 500) {
+                // Server error
+                log.warn(logMessage);
+            } else {
+                // Client error
+                log.error(logMessage);
             }
-            switch (statusCode) {
-                case -1:
-                    message += "\n\nThe Home Office validation API did not respond.";
-                    break;
-                case 0:
-                    message += "\n\nThe response from the Home Office validation API could not be found.";
-                    break;
-                case 400:
-                    message += "\n\nThe request to the Home Office validation API was not correctly formed.";
-                    break;
-                case 401:
-                    message += "\n\nThe request to the Home Office validation API could not be authenticated.";
-                    break;
-                case 403:
-                    message += "\n\nThe request to the Home Office validation API was authenticated but not authorised.";
-                    break;
-                case 404:
-                    message += "\n\nNo application matching this HMCTS reference number was found.";
-                    break;
-                case 500, 501, 502, 503, 504:
-                    message += "\n\nThe Home Office validation API was not available.";
-                    break;            
-                default:
-                    message += "\n\nThe HTTP status code was " + String.valueOf(statusCode) + ".";
-                    break;
-            }
-            throw new HomeOfficeMissingApplicationException(statusCode, message);            
         }
+        return homeOfficeAppellants;
     }
 
 }

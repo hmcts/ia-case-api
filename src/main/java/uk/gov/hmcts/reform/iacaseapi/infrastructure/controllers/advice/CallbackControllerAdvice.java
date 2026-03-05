@@ -62,7 +62,7 @@ public class CallbackControllerAdvice extends ResponseEntityExceptionHandler {
         log.error("Exception for CCDCaseId: {}; request URI: {}",
             RequestContextHolder.currentRequestAttributes().getAttribute("CCDCaseId", RequestAttributes.SCOPE_REQUEST), request.getRequestURI() + "?" + request.getQueryString());
         // Print elements of the stack trace that come from our code (otherwise it's enormous and unreadable)
-        log.error(getAbbreviatedStackTrace(ex, 4));
+        log.error(getAbbreviatedStackTrace(ex, 5));
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
