@@ -11,6 +11,7 @@ import java.util.Optional;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsHelper;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
@@ -31,9 +32,11 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.controllers.model.querymanag
 public class RaiseQueryCallbackHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final UserDetails userDetails;
+    private final UserDetailsHelper userDetailsHelper;
 
-    public RaiseQueryCallbackHandler(UserDetails userDetails) {
+    public RaiseQueryCallbackHandler(UserDetails userDetails, UserDetailsHelper userDetailsHelper) {
         this.userDetails = userDetails;
+        this.userDetailsHelper = userDetailsHelper;
     }
 
     @Override
@@ -123,6 +126,8 @@ public class RaiseQueryCallbackHandler implements PreSubmitCallbackHandler<Asylu
         existingLatestQueries.add(wrappedLatestQuery);
 
         asylumCase.write(QM_LATEST_QUERY, existingLatestQueries);
+
+        log.info("User details role is ", userDetails.getRoles(), "User details helper ", userDetailsHelper.getLoggedInUserRole(userDetails));
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }

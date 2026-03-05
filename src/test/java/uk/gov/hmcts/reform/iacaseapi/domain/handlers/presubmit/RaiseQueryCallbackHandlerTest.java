@@ -16,6 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
+import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsHelper;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
@@ -37,6 +38,7 @@ class RaiseQueryCallbackHandlerTest {
     @Mock private CaseDetails<AsylumCase> caseDetails;
     @Mock private AsylumCase asylumCase;
     @Mock private UserDetails userDetails;
+    @Mock private UserDetailsHelper userDetailsHelper;
 
     @Captor private ArgumentCaptor<List<IdValue<LatestQuery>>> latestQueryCaptor;
 
@@ -44,7 +46,7 @@ class RaiseQueryCallbackHandlerTest {
 
     @BeforeEach
     void setUp() {
-        handler = new RaiseQueryCallbackHandler(userDetails);
+        handler = new RaiseQueryCallbackHandler(userDetails, userDetailsHelper);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(Event.QUERY_MANAGEMENT_RAISE_QUERY);
