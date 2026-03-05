@@ -127,7 +127,7 @@ public class RaiseQueryCallbackHandler implements PreSubmitCallbackHandler<Asylu
 
         asylumCase.write(QM_LATEST_QUERY, existingLatestQueries);
 
-        log.info("User details role is ", userDetails.getRoles(), "User details helper ", userDetailsHelper.getLoggedInUserRole(userDetails));
+        log.info("User details role is " + userDetails.getRoles() + "User details helper " + userDetailsHelper.getLoggedInUserRole(userDetails));
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
