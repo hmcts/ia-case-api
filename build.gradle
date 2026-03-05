@@ -524,7 +524,7 @@ pactPublish {
 runAndPublishConsumerPactTests.finalizedBy pactPublish
 
 dependencyCheck {
-    suppressionFile = 'suppressionFile = \'https://raw.githubusercontent.com/hmcts/ia-owasp-suppressions/refs/heads/master/ia-case-api/suppressions.xml\''
+    suppressionFile = 'https://raw.githubusercontent.com/hmcts/ia-owasp-suppressions/refs/heads/master/ia-case-api/suppressions.xml'
 }
 
 dependencyUpdates.resolutionStrategy = {
