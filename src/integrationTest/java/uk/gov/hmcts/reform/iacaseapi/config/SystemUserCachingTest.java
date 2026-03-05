@@ -6,8 +6,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.IdamService;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.RoleAssignmentService;
@@ -24,10 +28,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Import({ CacheConfiguration.class, IdamService.class })
 @ExtendWith(SpringExtension.class)
 @EnableCaching
-@ImportAutoConfiguration(classes = {
-//        CacheAutoConfiguration.class,
-//        RedisAutoConfiguration.class
-})
 public class SystemUserCachingTest {
 
     private static final String BEARER_AUTH = "Bearer ";
@@ -36,11 +36,17 @@ public class SystemUserCachingTest {
     @Autowired
     private IdamService idamService;
 
+    @Autowired
+    private CacheManager cacheManager;
+
     @MockBean
     private IdamApi idamApi;
 
     @MockBean
     private RoleAssignmentService ras;
+
+    @MockBean
+    private RedisConnectionFactory redisConnectionFactory;
 
     @BeforeEach
     void setUp() {

@@ -140,6 +140,8 @@ ia-case-payments-api:
             alias: IA_SYSTEM_PASSWORD
           - name: ia-config-validator-secret
             alias: IA_CONFIG_VALIDATOR_SECRET
+          - name: ia-redis-connection-string
+            alias: IA_REDIS_CONNECTION_STRING
 
 ia-case-documents-api:
   enabled: true #set to true if testing against a local branch
@@ -566,6 +568,8 @@ ia-home-office-integration-api:
             alias: IA_CONFIG_VALIDATOR_SECRET
           - name: system-username
             alias: IA_SYSTEM_USERNAME
+          - name: system-password
+            alias: IA_SYSTEM_PASSWORD
           - name: system-password
             alias: IA_SYSTEM_PASSWORD
 

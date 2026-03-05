@@ -105,7 +105,10 @@ java:
           alias: IA_SYSTEM_ACCESS_USERNAME
         - name: ia-system-access-password
           alias: IA_SYSTEM_ACCESS_PASSWORD
-
+        - name: ia-redis-access-key
+          alias: IA_REDIS_ACCESS_KEY
+        - name: ia-redis-connection-string
+          alias: IA_REDIS_CONNECTION_STRING
 
 ia-case-payments-api:
   enabled: false

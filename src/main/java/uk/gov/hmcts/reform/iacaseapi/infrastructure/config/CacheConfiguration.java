@@ -1,49 +1,106 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.config;
 
+import com.github.benmanes.caffeine.cache.Caffeine;
+import io.lettuce.core.RedisURI;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.cache.CacheManagerCustomizer;
-//import org.springframework.boot.autoconfigure.cache.RedisCacheManagerBuilderCustomizer;
+import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.caffeine.CaffeineCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-//import org.springframework.data.redis.cache.RedisCacheConfiguration;
-//import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
-//import org.springframework.data.redis.serializer.RedisSerializationContext;
-//
-//import java.time.Duration;
+import org.springframework.context.annotation.Primary;
+import org.springframework.data.redis.cache.RedisCacheConfiguration;
+import org.springframework.data.redis.cache.RedisCacheManager;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
+import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
+import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.RedisSerializationContext;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
+
+import java.time.Duration;
+import java.util.concurrent.TimeUnit;
 
 @EnableCaching
 @Configuration
 public class CacheConfiguration {
+
+    private static final Logger log = LoggerFactory.getLogger(CacheConfiguration.class);
 
     @Bean
     public CacheManagerCustomizer<CaffeineCacheManager> cacheManagerCustomizer() {
         return cacheManager -> cacheManager.setAllowNullValues(false);
     }
 
-    // need this for tests
     @Bean
-    public CaffeineCacheManager cacheManager() {
-        CaffeineCacheManager cacheManager = new CaffeineCacheManager();
-        cacheManager.setAllowNullValues(false);
-        // cacheManager.setCaffeineSpec(CaffeineSpec.parse("expireAfterWrite=1h"));
-        return cacheManager;
+    @Primary
+    public CacheManager cacheManager(RedisConnectionFactory redisConnectionFactory) {
+        try {
+            // test the connection first
+            redisConnectionFactory.getConnection().ping();
+            log.info("Redis connection successful - using Redis for systemTokenCache");
+
+            RedisCacheConfiguration tokenCacheConfig = RedisCacheConfiguration.defaultCacheConfig()
+                    .entryTtl(Duration.ofSeconds(3300))  // 55 mins - buffer before token expiry
+                    .disableCachingNullValues()
+                    .serializeKeysWith(
+                            RedisSerializationContext.SerializationPair
+                                    .fromSerializer(new StringRedisSerializer()))
+                    .serializeValuesWith(
+                            RedisSerializationContext.SerializationPair
+                                    .fromSerializer(new GenericJackson2JsonRedisSerializer()));
+
+            // only systemTokenCache goes to Redis, rest stay as Caffeine
+            return RedisCacheManager.builder(redisConnectionFactory)
+                    .withCacheConfiguration("systemUserTokenCache", tokenCacheConfig)
+                    .build();
+
+        } catch (Exception e) {
+            log.warn("Redis unavailable - falling back to Caffeine for all caches: {}", e.getMessage());
+            return caffeineCacheManager();
+        }
     }
 
-//    @Bean
-//    public RedisCacheConfiguration cacheConfiguration() {
-//        return RedisCacheConfiguration.defaultCacheConfig()
-//                .entryTtl(Duration.ofMinutes(55))
-//                .disableCachingNullValues()
-//                .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer()));
-//    }
-//
-//    @Bean
-//    public RedisCacheManagerBuilderCustomizer redisCacheManagerBuilderCustomizer() {
-//        return (builder) -> builder
-//                .withCacheConfiguration("itemCache",
-//                        RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofMinutes(10)))
-//                .withCacheConfiguration("customerCache",
-//                        RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofMinutes(5)));
-//    }
+    // need this for tests and fallback if redis is down
+    @Bean
+    public CaffeineCacheManager caffeineCacheManager() {
+        CaffeineCacheManager cacheManager = new CaffeineCacheManager(
+                "systemUserTokenCache", "homeOfficeReferenceDataCache", "userInfoCache"
+        );
+        cacheManager.setAllowNullValues(false);
+        cacheManager.setCaffeine(Caffeine.newBuilder()
+                .expireAfterWrite(3300, TimeUnit.SECONDS));        return cacheManager;
+    }
+
+    @Bean
+    public RedisConnectionFactory redisConnectionFactory(
+            @Value("${spring.data.redis.url}") String redisUrl) {
+        try {
+            RedisURI redisURI = RedisURI.create(redisUrl);
+            LettuceConnectionFactory factory = new LettuceConnectionFactory(
+                    new RedisStandaloneConfiguration(
+                            redisURI.getHost(),
+                            redisURI.getPort()
+                    )
+            );
+
+            if (redisURI.getPassword() != null) {
+                RedisStandaloneConfiguration config = new RedisStandaloneConfiguration();
+                config.setHostName(redisURI.getHost());
+                config.setPort(redisURI.getPort());
+                config.setPassword(new String(redisURI.getPassword()));
+                factory = new LettuceConnectionFactory(config);
+            }
+            factory.afterPropertiesSet();
+            log.info("Successful Redis connection.");
+            return factory;
+        } catch (Exception e) {
+            log.error("Failed to create Redis connection factory: {}", e.getMessage());
+            throw e;
+        }
+    }
+
 }
