@@ -39,12 +39,11 @@ public class CacheConfiguration {
     @Primary
     public CacheManager cacheManager(RedisConnectionFactory redisConnectionFactory) {
         try {
-            // test the connection first
             redisConnectionFactory.getConnection().ping();
             log.info("Redis connection successful - using Redis for systemTokenCache");
 
             RedisCacheConfiguration tokenCacheConfig = RedisCacheConfiguration.defaultCacheConfig()
-                    .entryTtl(Duration.ofSeconds(3300))  // 55 mins - buffer before token expiry
+                    .entryTtl(Duration.ofSeconds(3300))  // 55mins (token might expire before cache)
                     .disableCachingNullValues()
                     .serializeKeysWith(
                             RedisSerializationContext.SerializationPair
@@ -64,7 +63,7 @@ public class CacheConfiguration {
         }
     }
 
-    // need this for tests and fallback if redis is down
+    // need this for test and fallback if redis is down
     @Bean
     public CaffeineCacheManager caffeineCacheManager() {
         CaffeineCacheManager cacheManager = new CaffeineCacheManager(
