@@ -2,19 +2,21 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.UserRoleLabel.ADMIN_OFFICER;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.UserRoleLabel.LEGAL_REPRESENTATIVE;
 
 import java.util.Optional;
 
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsHelper;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserRoleLabel;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
-import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.controllers.model.querymanagement.CaseQueriesCollection;
 
@@ -22,9 +24,11 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.controllers.model.querymanag
 public class RaiseQueryCallbackPreparer implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final UserDetails userDetails;
+    private final UserDetailsHelper userDetailsHelper;
 
-    public RaiseQueryCallbackPreparer(UserDetails userDetails) {
+    public RaiseQueryCallbackPreparer(UserDetails userDetails, UserDetailsHelper userDetailsHelper) {
         this.userDetails = userDetails;
+        this.userDetailsHelper = userDetailsHelper;
     }
 
     @Override
@@ -46,7 +50,7 @@ public class RaiseQueryCallbackPreparer implements PreSubmitCallbackHandler<Asyl
         }
 
         final AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
-        AsylumCaseFieldDefinition targetCollection = getQueryCollectionField(asylumCase);
+        AsylumCaseFieldDefinition targetCollection = getQueryCollectionField();
 
         if (targetCollection == null) {
             throw new IllegalStateException("Unable to determine query collection for this asylum case");
@@ -66,16 +70,13 @@ public class RaiseQueryCallbackPreparer implements PreSubmitCallbackHandler<Asyl
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 
-    /*
-     * should this be changed to who is logged in
-     */
-    private AsylumCaseFieldDefinition getQueryCollectionField(AsylumCase asylumCase) {
-        if (HandlerUtils.isLegalRepJourney(asylumCase)) {
-            return QM_LEGAL_REPRESENTATIVE_QUERIES;
-        } else if (HandlerUtils.isAipJourney(asylumCase)) {
-            return QM_AIP_QUERIES;
-        } else if (HandlerUtils.isInternalCase(asylumCase)) {
-            return QM_ADMIN_QUERIES;
+    private AsylumCaseFieldDefinition getQueryCollectionField() {
+
+        UserRoleLabel currentUser = userDetailsHelper.getLoggedInUserRoleLabel(userDetails);
+        if (currentUser.equals(LEGAL_REPRESENTATIVE)) {
+            return AsylumCaseFieldDefinition.QM_LEGAL_REPRESENTATIVE_QUERIES;
+        } else if (currentUser.equals(ADMIN_OFFICER)) {
+            return AsylumCaseFieldDefinition.QM_ADMIN_QUERIES;
         }
         return null;
     }

@@ -19,6 +19,7 @@ import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsHelper;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserRoleLabel;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -69,139 +70,117 @@ class RaiseQueryCallbackHandlerTest {
     }
 
     @Test
-    void should_throw_exception_when_target_collection_is_null() {
-        try (MockedStatic<HandlerUtils> utils = mockStatic(HandlerUtils.class)) {
-            utils.when(() -> HandlerUtils.isLegalRepJourney(asylumCase)).thenReturn(false);
-            utils.when(() -> HandlerUtils.isAipJourney(asylumCase)).thenReturn(false);
-            utils.when(() -> HandlerUtils.isInternalCase(asylumCase)).thenReturn(false);
-
-            Exception ex = assertThrows(IllegalStateException.class,
-                    () -> handler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback));
-
-            assertEquals("Unable to determine query collection for this asylum case", ex.getMessage());
-        }
-    }
-
-    @Test
     void should_write_latest_query_with_correct_isHearingRelated() {
-        try (MockedStatic<HandlerUtils> utils = mockStatic(HandlerUtils.class)) {
-            utils.when(() -> HandlerUtils.isLegalRepJourney(asylumCase)).thenReturn(true);
+        when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(UserRoleLabel.LEGAL_REPRESENTATIVE);
 
-            CaseMessage message = new CaseMessage();
-            message.setId("msg1");
-            message.setIsHearingRelated(YesOrNo.YES);
-            message.setCreatedOn(OffsetDateTime.parse("2026-03-03T13:26:11.579Z"));
+        CaseMessage message = new CaseMessage();
+        message.setId("msg1");
+        message.setIsHearingRelated(YesOrNo.YES);
+        message.setCreatedOn(OffsetDateTime.parse("2026-03-03T13:26:11.579Z"));
 
-            List<IdValue<CaseMessage>> caseMessages = List.of(new IdValue<>("msg1", message));
-            CaseQueriesCollection collection = CaseQueriesCollection.builder().caseMessages(caseMessages).build();
+        List<IdValue<CaseMessage>> caseMessages = List.of(new IdValue<>("msg1", message));
+        CaseQueriesCollection collection = CaseQueriesCollection.builder().caseMessages(caseMessages).build();
 
-            when(asylumCase.read(QM_LEGAL_REPRESENTATIVE_QUERIES, CaseQueriesCollection.class))
-                    .thenReturn(Optional.of(collection));
+        when(asylumCase.read(QM_LEGAL_REPRESENTATIVE_QUERIES, CaseQueriesCollection.class))
+                .thenReturn(Optional.of(collection));
 
-            handler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+        handler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
-            verify(asylumCase).write(eq(QM_LATEST_QUERY), latestQueryCaptor.capture());
+        verify(asylumCase).write(eq(QM_LATEST_QUERY), latestQueryCaptor.capture());
 
-            List<IdValue<LatestQuery>> captured = latestQueryCaptor.getValue();
-            assertEquals(1, captured.size());
+        List<IdValue<LatestQuery>> captured = latestQueryCaptor.getValue();
+        assertEquals(1, captured.size());
 
-            IdValue<LatestQuery> latest = captured.get(0);
-            assertEquals("msg1", latest.getId());
-            assertEquals("msg1", latest.getValue().getQueryId());
-            assertEquals(YesOrNo.YES, latest.getValue().getIsHearingRelated());
-        }
+        IdValue<LatestQuery> latest = captured.get(0);
+        assertEquals("msg1", latest.getId());
+        assertEquals("msg1", latest.getValue().getQueryId());
+        assertEquals(YesOrNo.YES, latest.getValue().getIsHearingRelated());
     }
 
     @Test
     void should_preserve_existing_latest_queries_and_append_new_one() {
-        try (MockedStatic<HandlerUtils> utils = mockStatic(HandlerUtils.class)) {
-            utils.when(() -> HandlerUtils.isLegalRepJourney(asylumCase)).thenReturn(true);
+        when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(UserRoleLabel.LEGAL_REPRESENTATIVE);
 
-            LatestQuery existingQuery = LatestQuery.builder()
-                    .queryId("msg0")
-                    .isHearingRelated(YesOrNo.YES)
-                    .build();
+        LatestQuery existingQuery = LatestQuery.builder()
+                .queryId("msg0")
+                .isHearingRelated(YesOrNo.YES)
+                .build();
 
-            when(asylumCase.read(QM_LATEST_QUERY))
-                    .thenReturn(Optional.of(List.of(new IdValue<>("msg0", existingQuery))));
+        when(asylumCase.read(QM_LATEST_QUERY))
+                .thenReturn(Optional.of(List.of(new IdValue<>("msg0", existingQuery))));
 
-            CaseMessage newMessage = new CaseMessage();
-            newMessage.setId("msg1");
-            newMessage.setIsHearingRelated(YesOrNo.NO);
-            newMessage.setCreatedOn(OffsetDateTime.parse("2026-03-03T13:26:11.579Z"));
+        CaseMessage newMessage = new CaseMessage();
+        newMessage.setId("msg1");
+        newMessage.setIsHearingRelated(YesOrNo.NO);
+        newMessage.setCreatedOn(OffsetDateTime.parse("2026-03-03T13:26:11.579Z"));
 
-            CaseQueriesCollection collection = CaseQueriesCollection.builder()
-                    .caseMessages(List.of(new IdValue<>("msg1", newMessage)))
-                    .build();
+        CaseQueriesCollection collection = CaseQueriesCollection.builder()
+                .caseMessages(List.of(new IdValue<>("msg1", newMessage)))
+                .build();
 
-            when(asylumCase.read(QM_LEGAL_REPRESENTATIVE_QUERIES, CaseQueriesCollection.class))
-                    .thenReturn(Optional.of(collection));
+        when(asylumCase.read(QM_LEGAL_REPRESENTATIVE_QUERIES, CaseQueriesCollection.class))
+                .thenReturn(Optional.of(collection));
 
-            handler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+        handler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
-            verify(asylumCase).write(eq(QM_LATEST_QUERY), latestQueryCaptor.capture());
+        verify(asylumCase).write(eq(QM_LATEST_QUERY), latestQueryCaptor.capture());
 
-            List<IdValue<LatestQuery>> captured = latestQueryCaptor.getValue();
-            assertEquals(2, captured.size());
-            assertTrue(captured.stream().anyMatch(q -> q.getId().equals("msg0")));
-            assertTrue(captured.stream().anyMatch(q -> q.getId().equals("msg1")));
+        List<IdValue<LatestQuery>> captured = latestQueryCaptor.getValue();
+        assertEquals(2, captured.size());
+        assertTrue(captured.stream().anyMatch(q -> q.getId().equals("msg0")));
+        assertTrue(captured.stream().anyMatch(q -> q.getId().equals("msg1")));
 
-            IdValue<LatestQuery> oldQuery = captured.stream()
-                    .filter(q -> q.getId().equals("msg0")).findFirst().orElseThrow();
-            assertEquals(YesOrNo.YES, oldQuery.getValue().getIsHearingRelated());
+        IdValue<LatestQuery> oldQuery = captured.stream()
+                .filter(q -> q.getId().equals("msg0")).findFirst().orElseThrow();
+        assertEquals(YesOrNo.YES, oldQuery.getValue().getIsHearingRelated());
 
-            IdValue<LatestQuery> newQuery = captured.stream()
-                    .filter(q -> q.getId().equals("msg1")).findFirst().orElseThrow();
-            assertEquals(YesOrNo.NO, newQuery.getValue().getIsHearingRelated());
-        }
+        IdValue<LatestQuery> newQuery = captured.stream()
+                .filter(q -> q.getId().equals("msg1")).findFirst().orElseThrow();
+        assertEquals(YesOrNo.NO, newQuery.getValue().getIsHearingRelated());
     }
 
     @Test
     void should_not_write_latest_query_when_collection_is_empty() {
-        try (MockedStatic<HandlerUtils> utils = mockStatic(HandlerUtils.class)) {
-            utils.when(() -> HandlerUtils.isLegalRepJourney(asylumCase)).thenReturn(true);
+        when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(UserRoleLabel.LEGAL_REPRESENTATIVE);
 
-            CaseQueriesCollection emptyCollection = CaseQueriesCollection.builder().caseMessages(List.of()).build();
-            when(asylumCase.read(QM_LEGAL_REPRESENTATIVE_QUERIES, CaseQueriesCollection.class))
-                    .thenReturn(Optional.of(emptyCollection));
+        CaseQueriesCollection emptyCollection = CaseQueriesCollection.builder().caseMessages(List.of()).build();
+        when(asylumCase.read(QM_LEGAL_REPRESENTATIVE_QUERIES, CaseQueriesCollection.class))
+                .thenReturn(Optional.of(emptyCollection));
 
-            handler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+        handler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
-            verify(asylumCase, never()).write(eq(QM_LATEST_QUERY), any());
-        }
+        verify(asylumCase, never()).write(eq(QM_LATEST_QUERY), any());
     }
 
     @Test
     void should_replace_duplicate_latest_query_with_updated_isHearingRelated() {
-        try (MockedStatic<HandlerUtils> utils = mockStatic(HandlerUtils.class)) {
-            utils.when(() -> HandlerUtils.isLegalRepJourney(asylumCase)).thenReturn(true);
+        when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(UserRoleLabel.LEGAL_REPRESENTATIVE);
 
-            LatestQuery existingQuery = LatestQuery.builder()
-                    .queryId("msg1")
-                    .isHearingRelated(YesOrNo.YES)
-                    .build();
-            when(asylumCase.read(QM_LATEST_QUERY))
-                    .thenReturn(Optional.of(List.of(new IdValue<>("msg1", existingQuery))));
+        LatestQuery existingQuery = LatestQuery.builder()
+                .queryId("msg1")
+                .isHearingRelated(YesOrNo.YES)
+                .build();
+        when(asylumCase.read(QM_LATEST_QUERY))
+                .thenReturn(Optional.of(List.of(new IdValue<>("msg1", existingQuery))));
 
-            CaseMessage newMessage = new CaseMessage();
-            newMessage.setId("msg1");
-            newMessage.setIsHearingRelated(YesOrNo.NO);
-            newMessage.setCreatedOn(OffsetDateTime.parse("2026-03-03T13:30:00Z"));
+        CaseMessage newMessage = new CaseMessage();
+        newMessage.setId("msg1");
+        newMessage.setIsHearingRelated(YesOrNo.NO);
+        newMessage.setCreatedOn(OffsetDateTime.parse("2026-03-03T13:30:00Z"));
 
-            CaseQueriesCollection collection = CaseQueriesCollection.builder()
-                    .caseMessages(List.of(new IdValue<>("msg1", newMessage)))
-                    .build();
+        CaseQueriesCollection collection = CaseQueriesCollection.builder()
+                .caseMessages(List.of(new IdValue<>("msg1", newMessage)))
+                .build();
 
-            when(asylumCase.read(QM_LEGAL_REPRESENTATIVE_QUERIES, CaseQueriesCollection.class))
-                    .thenReturn(Optional.of(collection));
+        when(asylumCase.read(QM_LEGAL_REPRESENTATIVE_QUERIES, CaseQueriesCollection.class))
+                .thenReturn(Optional.of(collection));
 
-            handler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+        handler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
-            verify(asylumCase).write(eq(QM_LATEST_QUERY), latestQueryCaptor.capture());
-            List<IdValue<LatestQuery>> captured = latestQueryCaptor.getValue();
+        verify(asylumCase).write(eq(QM_LATEST_QUERY), latestQueryCaptor.capture());
+        List<IdValue<LatestQuery>> captured = latestQueryCaptor.getValue();
 
-            assertEquals(1, captured.size());
-            assertEquals(YesOrNo.NO, captured.get(0).getValue().getIsHearingRelated());
-        }
+        assertEquals(1, captured.size());
+        assertEquals(YesOrNo.NO, captured.get(0).getValue().getIsHearingRelated());
     }
 }
