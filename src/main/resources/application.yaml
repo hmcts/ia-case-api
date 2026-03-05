@@ -267,6 +267,9 @@ security:
       - "addEvidenceForCosts"
       - "queryManagementRaiseQuery"
       - "queryManagementRespondQuery"
+    caseworker-ia-admofficer:
+      - "queryManagementRaiseQuery"
+      - "queryManagementRespondQuery"
     tribunal-caseworker:
       - "appellantInPersonManual"
       - "moveToPaymentPending"
