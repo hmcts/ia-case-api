@@ -6,9 +6,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.UserRoleLabel.ADMIN_
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.UserRoleLabel.LEGAL_REPRESENTATIVE;
 
 import java.time.OffsetDateTime;
-import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.List;
 import java.util.Optional;
 
 import lombok.extern.slf4j.Slf4j;
@@ -42,11 +40,10 @@ public class RaiseQueryCallbackHandler implements PreSubmitCallbackHandler<Asylu
     }
 
     @Override
-    public boolean canHandle(PreSubmitCallbackStage callbackStage,
-                             Callback<AsylumCase> callback) {
+    public boolean canHandle(PreSubmitCallbackStage callbackStage, Callback<AsylumCase> callback) {
 
-        requireNonNull(callbackStage, "callbackStage must not be null");
-        requireNonNull(callback, "callback must not be null");
+        requireNonNull(callbackStage);
+        requireNonNull(callback);
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
                 && callback.getEvent() == Event.QUERY_MANAGEMENT_RAISE_QUERY;
@@ -63,104 +60,53 @@ public class RaiseQueryCallbackHandler implements PreSubmitCallbackHandler<Asylu
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
-        AsylumCaseFieldDefinition targetCollection =
-                determineQueryCollection();
-
-        if (targetCollection == null) {
-            throw new IllegalStateException(
-                    "Unable to determine query collection for this asylum case"
-            );
-        }
+        AsylumCaseFieldDefinition queryCollection = determineQueryCollection();
 
         CaseQueriesCollection queries =
-                asylumCase.read(targetCollection, CaseQueriesCollection.class)
-                        .orElse(null);
+                asylumCase.read(queryCollection, CaseQueriesCollection.class).orElse(null);
 
-        if (queries == null
-                || queries.getCaseMessages() == null
-                || queries.getCaseMessages().isEmpty()) {
-
-            log.debug("No case messages found — nothing to update.");
+        if (queries == null || queries.getCaseMessages() == null || queries.getCaseMessages().isEmpty()) {
+            log.debug("No case messages found.");
             return new PreSubmitCallbackResponse<>(asylumCase);
         }
 
-        Optional<IdValue<CaseMessage>> latestMessageOpt =
+        Optional<CaseMessage> latestMessage =
                 queries.getCaseMessages().stream()
-                        .filter(m -> m.getValue() != null)
+                        .map(IdValue::getValue)
+                        .filter(m -> m != null)
                         .max(Comparator.comparing(m ->
-                                Optional.ofNullable(m.getValue().getCreatedOn())
-                                        .orElse(OffsetDateTime.MIN)
+                                Optional.ofNullable(m.getCreatedOn()).orElse(OffsetDateTime.MIN)
                         ));
 
-        if (latestMessageOpt.isEmpty()) {
+        if (latestMessage.isEmpty()) {
             return new PreSubmitCallbackResponse<>(asylumCase);
         }
 
-        IdValue<CaseMessage> latestMessage = latestMessageOpt.get();
-
-        String wrapperId = latestMessage.getId(); // CCD collection ID
-        CaseMessage caseMessage = latestMessage.getValue();
-
-        String queryId = caseMessage.getId(); // Query Management ID
-
-        YesOrNo isHearingRelated =
-                Optional.ofNullable(caseMessage.getIsHearingRelated())
-                        .orElse(YesOrNo.NO);
-
-        log.info("Latest query detected. WrapperId={}, QueryId={}, HearingRelated={}",
-                wrapperId, queryId, isHearingRelated);
+        CaseMessage message = latestMessage.get();
 
         LatestQuery latestQuery = LatestQuery.builder()
-                .queryId(queryId)
-                .isHearingRelated(isHearingRelated)
+                .queryId(message.getId())
+                .isHearingRelated(Optional.ofNullable(message.getIsHearingRelated()).orElse(YesOrNo.NO))
                 .build();
 
-        IdValue<LatestQuery> wrappedLatestQuery =
-                new IdValue<>(wrapperId, latestQuery);
+        asylumCase.write(QM_LATEST_QUERY, latestQuery);
 
-        List<IdValue<LatestQuery>> existingLatestQueries =
-                asylumCase.read(QM_LATEST_QUERY)
-                        .map(this::castLatestQueryList)
-                        .orElse(new ArrayList<>());
-
-        existingLatestQueries.removeIf(q -> q.getId().equals(wrapperId));
-
-        existingLatestQueries.add(wrappedLatestQuery);
-
-        asylumCase.write(QM_LATEST_QUERY, existingLatestQueries);
-
-        log.info("User details role is " + userDetails.getRoles() + "User details helper " + userDetailsHelper.getLoggedInUserRoleLabel(userDetails));
+        log.info("Latest query stored. QueryId={}, HearingRelated={}",
+                message.getId(), message.getIsHearingRelated());
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 
-    @SuppressWarnings("unchecked")
-    private List<IdValue<LatestQuery>> castLatestQueryList(Object raw) {
-        if (raw instanceof List<?> list) {
-            List<IdValue<LatestQuery>> typedList = new ArrayList<>();
-            for (Object obj : list) {
-                if (obj instanceof IdValue<?> idValue
-                        && idValue.getValue() instanceof LatestQuery latestQuery) {
-
-                    typedList.add(
-                            new IdValue<>(idValue.getId(), latestQuery)
-                    );
-                }
-            }
-            return typedList;
-        }
-        return new ArrayList<>();
-    }
-
     private AsylumCaseFieldDefinition determineQueryCollection() {
 
-        UserRoleLabel currentUser = userDetailsHelper.getLoggedInUserRoleLabel(userDetails);
-        if (currentUser.equals(LEGAL_REPRESENTATIVE)) {
+        UserRoleLabel role = userDetailsHelper.getLoggedInUserRoleLabel(userDetails);
+
+        if (role.equals(LEGAL_REPRESENTATIVE)) {
             return AsylumCaseFieldDefinition.QM_LEGAL_REPRESENTATIVE_QUERIES;
-        } else if (currentUser.equals(ADMIN_OFFICER)) {
+        } else if (role.equals(ADMIN_OFFICER)) {
             return AsylumCaseFieldDefinition.QM_ADMIN_QUERIES;
         }
 
-        return null;
+        throw new IllegalStateException("Unsupported user role: " + role);
     }
 }
