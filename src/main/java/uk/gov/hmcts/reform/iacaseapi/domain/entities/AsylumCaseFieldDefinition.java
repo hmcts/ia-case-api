@@ -38,6 +38,21 @@ public enum AsylumCaseFieldDefinition {
     HOME_OFFICE_DECISION_DATE(
         "homeOfficeDecisionDate", new TypeReference<String>(){}),
 
+    HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS(
+        "homeOfficeAppellantApiResponseStatus", new TypeReference<HomeOfficeApiResponseStatusType>(){}),
+
+    HOME_OFFICE_APPELLANT_CLAIM_DATE(
+        "homeOfficeAppellantClaimDate", new TypeReference<String>(){}),
+
+    HOME_OFFICE_APPELLANT_DECISION_DATE(
+        "homeOfficeAppellantDecisionDate", new TypeReference<String>() {}),
+
+    HOME_OFFICE_APPELLANT_DECISION_LETTER_DATE(
+        "homeOfficeAppellantDecisionLetterDate", new TypeReference<String>(){}),
+
+    HOME_OFFICE_APPELLANTS(
+        "homeOfficeAppellants", new TypeReference<List<IdValue<HomeOfficeAppellant>>>(){}),
+
     APPELLANT_GIVEN_NAMES(
         "appellantGivenNames", new TypeReference<String>(){}),
 
