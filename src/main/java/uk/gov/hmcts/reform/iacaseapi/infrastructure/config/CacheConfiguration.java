@@ -77,7 +77,8 @@ public class CacheConfiguration {
 
     @Bean
     public RedisConnectionFactory redisConnectionFactory(
-            @Value("${spring.data.redis.url}") String redisUrl) {
+            @Value("${spring.data.redis.url}") String redisUrl,
+            @Value("${spring.data.redis.secret}") String accessKey) {
 
         log.info("redis url: " + redisUrl);
 
@@ -100,8 +101,9 @@ public class CacheConfiguration {
                 RedisStandaloneConfiguration config = new RedisStandaloneConfiguration();
                 config.setHostName(redisURI.getHost());
                 config.setPort(redisURI.getPort());
-                config.setPassword(new String(redisURI.getPassword()));
+                config.setPassword(accessKey);
                 factory = new LettuceConnectionFactory(config);
+                log.info("adding password to redis");
             }
             factory.afterPropertiesSet();
             log.info("Successful Redis connection.");

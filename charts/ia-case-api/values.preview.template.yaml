@@ -83,6 +83,8 @@ java:
           alias: IA_CONFIG_VALIDATOR_SECRET
         - name: ia-redis-connection-string
           alias: IA_REDIS_CONNECTION_STRING
+        - name: ia-redis-access-key
+          alias: IA_REDIS_CONNECTION_STRING
   secrets:
     POSTGRES_PASSWORD:
       secretRef: postgres
@@ -141,8 +143,6 @@ ia-case-payments-api:
             alias: IA_SYSTEM_PASSWORD
           - name: ia-config-validator-secret
             alias: IA_CONFIG_VALIDATOR_SECRET
-          - name: ia-redis-connection-string
-            alias: IA_REDIS_CONNECTION_STRING
 
 ia-case-documents-api:
   enabled: true #set to true if testing against a local branch
