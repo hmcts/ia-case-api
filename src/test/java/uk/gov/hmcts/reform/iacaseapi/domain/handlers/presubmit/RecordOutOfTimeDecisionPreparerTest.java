@@ -51,6 +51,12 @@ class RecordOutOfTimeDecisionPreparerTest {
     }
 
     @Test
+    void should_create_instance_with_dependencies() {
+        assertNotNull(recordOutOfTimeDecisionPreparer);
+        assertNotNull(outOfTimeDecisionDetailsAppender);
+    }
+
+    @Test
     void should_not_append_if_not_previous_out_of_time_decision_exists() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -159,6 +165,15 @@ class RecordOutOfTimeDecisionPreparerTest {
                 }
             }
         }
+    }
+
+    @Test
+    void should_handle_null_callback_event_gracefully() {
+        when(callback.getEvent()).thenReturn(null);
+        
+        boolean canHandle = recordOutOfTimeDecisionPreparer.canHandle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+        
+        assertFalse(canHandle);
     }
 
     @Test
