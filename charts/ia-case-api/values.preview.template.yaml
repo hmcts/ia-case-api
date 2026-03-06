@@ -84,7 +84,7 @@ java:
         - name: ia-redis-connection-string
           alias: IA_REDIS_CONNECTION_STRING
         - name: ia-redis-access-key
-          alias: IA_REDIS_CONNECTION_STRING
+          alias: IA_REDIS_ACCESS_KEY
   secrets:
     POSTGRES_PASSWORD:
       secretRef: postgres
