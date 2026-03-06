@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
@@ -20,11 +19,15 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DATE_CUSTODIAL_SENTENCE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DATE_ENTRY_CLEARANCE_DECISION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DETENTION_FACILITY;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.EMAIL;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.EMAIL_RETYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.GWF_REFERENCE_NUMBER;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAS_SPONSOR;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_REFERENCE_NUMBER;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ACCELERATED_DETAINED_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ADMIN;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LEGAL_REP_MOBILE_PHONE_NUMBER;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MOBILE_NUMBER;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MOBILE_NUMBER_RETYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.OUT_OF_COUNTRY_DECISION_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SPONSOR_ADDRESS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SPONSOR_AUTHORISATION;
@@ -37,7 +40,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SUITABILITY_APPELLANT_ATTENDANCE_YES_OR_NO_2;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SUITABILITY_HEARING_TYPE_YES_OR_NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPPER_TRIBUNAL_REFERENCE_NUMBER;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfCountryDecisionType.REFUSAL_OF_HUMAN_RIGHTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.MID_EVENT;
@@ -59,7 +61,6 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DetentionFacility;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfCountryDecisionType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -72,12 +73,13 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 @SuppressWarnings("unchecked")
 class StartAppealMidEventTest {
 
-    private static final String HOME_OFFICE_REFERENCE_NUMBER_PAGE_ID = "homeOfficeReferenceNumber";
     private static final String OUT_OF_COUNTRY_PAGE_ID = "outOfCountry";
     private static final String DETENTION_FACILITY_PAGE_ID = "detentionFacility";
     private static final String SUITABILITY_ATTENDANCE_PAGE_ID = "suitabilityAppellantAttendance";
     private static final String UPPER_TRIBUNAL_REFERENCE_NUMBER_PAGE_ID = "utReferenceNumber";
     private static final String APPELLANTS_ADDRESS_PAGE_ID = "appellantAddress";
+    private static final String INTERNAL_APPELLANTS_CONTACT_DETAILS = "appellantContactPreference";
+    private static final String LEGAL_REPRESENTATIVE_DETAILS = "legalRepresentativeDetails";
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -90,17 +92,14 @@ class StartAppealMidEventTest {
     @Mock
     private AsylumCase asylumCase;
 
-    private String correctHomeOfficeReferenceFormatCid = "123456789";
-    private String correctHomeOfficeReferenceFormatUan = "1234-5678-9876-5432";
-    private String wrongHomeOfficeReferenceFormat = "A234567";
-    private String callbackErrorMessage =
-        "Enter the Home office reference or Case ID in the correct format. The Home office reference or Case ID cannot include letters and must be either 9 digits or 16 digits with dashes.";
     private String detentionFacilityErrorMessage = "You cannot update the detention location to a prison because this is an accelerated detained appeal.";
     private String getCallbackErrorMessageOutOfCountry = "This option is currently unavailable";
     private String correctUpperTribunalReferenceFormat = "UI-2020-123456";
     private String wrongUpperTribunalReferenceFormat = "UI-123456-2020";
     private String utReferenceErrorMessage = "Enter the Upper Tribunal reference number in the format UI-Year of submission-6 digit number. For example, UI-2020-123456.";
     private String providePostalAddressError = "The appellant must have provided a postal address";
+    private String contactDetailsDoNotMatch = "The details given do not match";
+    private String appellantAndLrPhoneNumberMatch = "Contact number is already in use for the appellant. Please amend the appellant's mobile phone number before proceeding.";
     private StartAppealMidEvent startAppealMidEvent;
 
     @BeforeEach
@@ -110,11 +109,10 @@ class StartAppealMidEventTest {
         when(callback.getEvent()).thenReturn(Event.START_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(callback.getPageId()).thenReturn(HOME_OFFICE_REFERENCE_NUMBER_PAGE_ID);
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {HOME_OFFICE_REFERENCE_NUMBER_PAGE_ID, OUT_OF_COUNTRY_PAGE_ID, DETENTION_FACILITY_PAGE_ID, APPELLANTS_ADDRESS_PAGE_ID, ""})
+    @ValueSource(strings = {OUT_OF_COUNTRY_PAGE_ID, DETENTION_FACILITY_PAGE_ID, APPELLANTS_ADDRESS_PAGE_ID, ""})
     void it_can_handle_callback(String pageId) {
 
         for (Event event : Event.values()) {
@@ -130,7 +128,6 @@ class StartAppealMidEventTest {
                     || event == Event.UPDATE_DETENTION_LOCATION)
                     && callbackStage == MID_EVENT
                     && (callback.getPageId().equals(DETENTION_FACILITY_PAGE_ID)
-                        || callback.getPageId().equals(HOME_OFFICE_REFERENCE_NUMBER_PAGE_ID)
                         || callback.getPageId().equals(APPELLANTS_ADDRESS_PAGE_ID)
                         || callback.getPageId().equals(OUT_OF_COUNTRY_PAGE_ID))) {
                     assertTrue(canHandle);
@@ -168,20 +165,6 @@ class StartAppealMidEventTest {
     }
 
     @Test
-    void should_error_when_home_office_reference_format_is_wrong() {
-        when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class))
-            .thenReturn(Optional.of(wrongHomeOfficeReferenceFormat));
-
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            startAppealMidEvent.handle(PreSubmitCallbackStage.MID_EVENT, callback);
-
-        assertNotNull(callback);
-        assertEquals(asylumCase, callbackResponse.getData());
-        final Set<String> errors = callbackResponse.getErrors();
-        assertThat(errors).hasSize(1).containsOnly(callbackErrorMessage);
-    }
-
-    @Test
     void should_error_when_trying_to_select_out_of_country_path_for_internal_case_creation() {
         when(callback.getPageId()).thenReturn(OUT_OF_COUNTRY_PAGE_ID);
 
@@ -198,66 +181,6 @@ class StartAppealMidEventTest {
         assertEquals(asylumCase, callbackResponse.getData());
         final Set<String> errors = callbackResponse.getErrors();
         assertThat(errors).hasSize(1).containsOnly(getCallbackErrorMessageOutOfCountry);
-    }
-
-    @Test
-    void should_successfully_validate_when_home_office_reference_format_is_correct_cid() {
-        when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class))
-            .thenReturn(Optional.of(correctHomeOfficeReferenceFormatCid));
-
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            startAppealMidEvent.handle(PreSubmitCallbackStage.MID_EVENT, callback);
-
-        assertNotNull(callback);
-        assertEquals(asylumCase, callbackResponse.getData());
-        final Set<String> errors = callbackResponse.getErrors();
-        assertThat(errors).isEmpty();
-    }
-
-    @Test
-    void should_successfully_validate_when_home_office_reference_format_is_correct_uan() {
-        when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class))
-            .thenReturn(Optional.of(correctHomeOfficeReferenceFormatUan));
-
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            startAppealMidEvent.handle(PreSubmitCallbackStage.MID_EVENT, callback);
-
-        assertNotNull(callback);
-        assertEquals(asylumCase, callbackResponse.getData());
-        final Set<String> errors = callbackResponse.getErrors();
-        assertThat(errors).isEmpty();
-    }
-
-    @Test
-    void should_not_touch_home_office_reference_numbers_when_ooc_and_refusal_of_human_rights_is_decided() {
-        when(callback.getEvent()).thenReturn(Event.START_APPEAL);
-        when(asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class))
-            .thenReturn(Optional.of(REFUSAL_OF_HUMAN_RIGHTS));
-
-
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            startAppealMidEvent.handle(PreSubmitCallbackStage.MID_EVENT, callback);
-
-        assertNotNull(callbackResponse);
-        assertEquals(asylumCase, callbackResponse.getData());
-
-        verify(asylumCase, never()).write(any(),any());
-    }
-
-    @Test
-    void should_not_touch_home_office_reference_numbers_when_ooc_and_refuse_Permit_is_decided() {
-        when(callback.getEvent()).thenReturn(Event.START_APPEAL);
-        when(asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class))
-                .thenReturn(Optional.of(OutOfCountryDecisionType.REFUSE_PERMIT));
-
-
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                startAppealMidEvent.handle(PreSubmitCallbackStage.MID_EVENT, callback);
-
-        assertNotNull(callbackResponse);
-        assertEquals(asylumCase, callbackResponse.getData());
-
-        verify(asylumCase, never()).write(any(),any());
     }
 
     @ParameterizedTest
@@ -277,10 +200,9 @@ class StartAppealMidEventTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {HOME_OFFICE_REFERENCE_NUMBER_PAGE_ID, OUT_OF_COUNTRY_PAGE_ID, DETENTION_FACILITY_PAGE_ID})
+    @ValueSource(strings = {OUT_OF_COUNTRY_PAGE_ID, DETENTION_FACILITY_PAGE_ID})
     void should_only_set_is_accelerated_detained_if_correct_page_id(String pageId) {
         when(callback.getPageId()).thenReturn(pageId);
-        when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of(correctHomeOfficeReferenceFormatCid));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse = startAppealMidEvent.handle(MID_EVENT, callback);
 
@@ -586,4 +508,113 @@ class StartAppealMidEventTest {
         verify(asylumCase, times(0)).write(CUSTODIAL_SENTENCE, YesOrNo.NO);
         verify(asylumCase, times(0)).clear(DATE_CUSTODIAL_SENTENCE);
     }
+
+    @Test
+    void should_error_when_internal_appellant_emails_do_not_match() {
+        when(callback.getPageId()).thenReturn(INTERNAL_APPELLANTS_CONTACT_DETAILS);
+
+        when(asylumCase.read(EMAIL, String.class))
+                .thenReturn(Optional.of("email@test.com"));
+        when(asylumCase.read(EMAIL_RETYPE, String.class))
+                .thenReturn(Optional.of("wrongemail@test.com"));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                startAppealMidEvent.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+
+        assertNotNull(callback);
+        assertEquals(asylumCase, callbackResponse.getData());
+        final Set<String> errors = callbackResponse.getErrors();
+        assertThat(errors).hasSize(1).containsOnly(contactDetailsDoNotMatch);
+    }
+
+    @Test
+    void should_error_when_internal_appellant_number_do_not_match() {
+        when(callback.getPageId()).thenReturn(INTERNAL_APPELLANTS_CONTACT_DETAILS);
+
+        when(asylumCase.read(MOBILE_NUMBER, String.class))
+                .thenReturn(Optional.of("07898999999"));
+        when(asylumCase.read(MOBILE_NUMBER_RETYPE, String.class))
+                .thenReturn(Optional.of("07898999991"));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                startAppealMidEvent.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+
+        assertNotNull(callback);
+        assertEquals(asylumCase, callbackResponse.getData());
+        final Set<String> errors = callbackResponse.getErrors();
+        assertThat(errors).hasSize(1).containsOnly(contactDetailsDoNotMatch);
+    }
+
+    @Test
+    void should_validate_as_correct_when_internal_appellant_emails_match() {
+        when(callback.getPageId()).thenReturn(INTERNAL_APPELLANTS_CONTACT_DETAILS);
+
+        when(asylumCase.read(EMAIL, String.class))
+                .thenReturn(Optional.of("email@test.com"));
+        when(asylumCase.read(EMAIL_RETYPE, String.class))
+                .thenReturn(Optional.of("email@test.com"));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                startAppealMidEvent.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+
+        assertNotNull(callback);
+        assertEquals(asylumCase, callbackResponse.getData());
+        final Set<String> errors = callbackResponse.getErrors();
+        assertThat(errors).isEmpty();
+    }
+
+    @Test
+    void should_validate_as_correct_when_internal_appellant_number_match() {
+        when(callback.getPageId()).thenReturn(INTERNAL_APPELLANTS_CONTACT_DETAILS);
+
+        when(asylumCase.read(MOBILE_NUMBER, String.class))
+                .thenReturn(Optional.of("07898999999"));
+        when(asylumCase.read(MOBILE_NUMBER_RETYPE, String.class))
+                .thenReturn(Optional.of("07898999999"));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                startAppealMidEvent.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+
+        assertNotNull(callback);
+        assertEquals(asylumCase, callbackResponse.getData());
+        final Set<String> errors = callbackResponse.getErrors();
+        assertThat(errors).isEmpty();
+    }
+
+    @Test
+    void should_validate_as_correct_when_appellant_number_and_lr_number_do_not_match() {
+        when(callback.getPageId()).thenReturn(LEGAL_REPRESENTATIVE_DETAILS);
+
+        when(asylumCase.read(MOBILE_NUMBER, String.class))
+                .thenReturn(Optional.of("07898999999"));
+        when(asylumCase.read(LEGAL_REP_MOBILE_PHONE_NUMBER, String.class))
+                .thenReturn(Optional.of("07898999991"));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                startAppealMidEvent.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+
+        assertNotNull(callback);
+        assertEquals(asylumCase, callbackResponse.getData());
+        final Set<String> errors = callbackResponse.getErrors();
+        assertThat(errors).isEmpty();
+    }
+
+    @Test
+    void should_error_when_appellant_number_and_lr_number_match() {
+        when(callback.getPageId()).thenReturn(LEGAL_REPRESENTATIVE_DETAILS);
+
+        when(asylumCase.read(MOBILE_NUMBER, String.class))
+                .thenReturn(Optional.of("07898999999"));
+        when(asylumCase.read(LEGAL_REP_MOBILE_PHONE_NUMBER, String.class))
+                .thenReturn(Optional.of("07898999999"));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                startAppealMidEvent.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+
+        assertNotNull(callback);
+        assertEquals(asylumCase, callbackResponse.getData());
+        final Set<String> errors = callbackResponse.getErrors();
+        assertThat(errors).hasSize(1).containsOnly(appellantAndLrPhoneNumberMatch);
+    }
+
 }
