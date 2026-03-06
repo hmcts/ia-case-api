@@ -35,7 +35,6 @@ public class CaseMessage {
     private YesOrNo isHearingRelated;
     @JsonProperty("hearingDate")
     private LocalDate hearingDate;
-    @JsonProperty("createdOn")
     private OffsetDateTime createdOn;
     @JsonProperty("createdBy")
     private String createdBy;
