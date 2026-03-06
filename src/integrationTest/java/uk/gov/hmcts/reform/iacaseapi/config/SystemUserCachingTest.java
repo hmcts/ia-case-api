@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.config;
 
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -8,8 +9,10 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Import;
-import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.testcontainers.containers.GenericContainer;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.IdamService;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.RoleAssignmentService;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.IdamApi;
@@ -30,6 +33,21 @@ public class SystemUserCachingTest {
     private static final String BEARER_AUTH = "Bearer ";
     private static final String TOKEN = "SOME_TOKEN";
 
+    // need these static so container starts before spring application context
+    static GenericContainer<?> redis = new GenericContainer<>("redis:7-alpine")
+            .withExposedPorts(6379);
+
+    static {
+        redis.start();
+    }
+
+    @DynamicPropertySource
+    static void redisProperties(DynamicPropertyRegistry registry) {
+        registry.add("spring.data.redis.url", () ->
+                String.format("redis://localhost:%d", redis.getMappedPort(6379))
+        );
+    }
+
     @Autowired
     private IdamService idamService;
 
@@ -42,13 +60,15 @@ public class SystemUserCachingTest {
     @MockBean
     private RoleAssignmentService ras;
 
-    @MockBean
-    private RedisConnectionFactory redisConnectionFactory;
-
     @BeforeEach
     void setUp() {
         given(idamApi.token(any()))
                 .willReturn(new Token(TOKEN, BEARER_AUTH));
+    }
+
+    @AfterAll
+    static void tearDown() {
+        redis.stop();
     }
 
     @Test

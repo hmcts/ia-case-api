@@ -434,6 +434,8 @@ dependencies {
 
     testImplementation group: 'org.mockito', name: 'mockito-core', version :'4.11.0'
     testImplementation group: 'org.mockito', name: 'mockito-inline', version :'5.2.0'
+    testImplementation group: 'org.testcontainers', name: 'testcontainers', version: '2.0.2'
+    testImplementation group: 'org.testcontainers', name: 'testcontainers-junit-jupiter', version: '2.0.2'
 
     testImplementation(group: 'org.springframework.cloud', name: 'spring-cloud-contract-wiremock', version: '3.1.10') {
         exclude group: "com.github.tomakehurst", module: "wiremock-standalone"
