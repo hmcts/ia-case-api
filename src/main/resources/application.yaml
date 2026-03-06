@@ -12,18 +12,18 @@ management:
   endpoints:
     web:
       base-path: "/"
+      exposure:
+        include: health, info, ping
   health:
     redis:
-      enabled: true
-    endpoint:
-      health:
-        group:
-          readiness:
-            include: ping  # redis not included in readiness probe
-          liveness:
-            include: ping
+      enabled: false  # don't let Redis affect pod health
     probes:
       enabled: true
+    group:
+      readiness:
+        include: ping
+      liveness:
+        include: ping
   services:
     documentsApi:
       uri: ${IA_CASE_DOCUMENTS_API_URL:http://127.0.0.1:8092}/health
