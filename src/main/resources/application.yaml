@@ -1326,6 +1326,7 @@ security:
       - "editCaseListing"
       - "handleHearingException"
       - "cmrReListing"
+      - "cmrHearingCancelled"
       - "recordAdjournmentDetails"
       - "cmrListing"
       - "decisionWithoutHearingListed"
