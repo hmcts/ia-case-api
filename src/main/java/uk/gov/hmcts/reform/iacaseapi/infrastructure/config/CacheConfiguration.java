@@ -93,6 +93,7 @@ public class CacheConfiguration {
 
         try {
             RedisURI redisURI = RedisURI.create(redisUrl);
+            redisURI.setTimeout(Duration.ofSeconds(10)); // 64seconds is default, so fail quicker
             LettuceConnectionFactory factory = new LettuceConnectionFactory(
                     new RedisStandaloneConfiguration(
                             redisURI.getHost(),

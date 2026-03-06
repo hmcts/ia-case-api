@@ -13,6 +13,15 @@ management:
     web:
       base-path: "/"
   health:
+    redis:
+      enabled: true
+    endpoint:
+      health:
+        group:
+          readiness:
+            include: ping  # redis not included in readiness probe
+          liveness:
+            include: ping
     probes:
       enabled: true
   services:
