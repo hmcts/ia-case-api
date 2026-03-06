@@ -17,6 +17,7 @@ import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisPassword;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
+import org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
@@ -92,24 +93,24 @@ public class CacheConfiguration {
         try {
             RedisURI redisURI = RedisURI.create(redisUrl);
             redisURI.setTimeout(Duration.ofSeconds(10)); // 64seconds is default, so fail quicker
-            LettuceConnectionFactory factory = new LettuceConnectionFactory(
-                    new RedisStandaloneConfiguration(
-                            redisURI.getHost(),
-                            redisURI.getPort()
-                    )
-            );
+
+            RedisStandaloneConfiguration config = new RedisStandaloneConfiguration();
+            config.setHostName(redisURI.getHost());
+            config.setPort(redisURI.getPort());
 
             if (accessKey != null && !accessKey.isBlank()) {
-                RedisStandaloneConfiguration config = new RedisStandaloneConfiguration();
-                config.setHostName(redisURI.getHost());
-                config.setPort(redisURI.getPort());
                 config.setPassword(RedisPassword.of(accessKey));
-                factory = new LettuceConnectionFactory(config);
                 log.info("adding password to redis");
             }
-            factory.afterPropertiesSet();
-            log.info("Successful Redis connection.");
-            return factory;
+            LettuceClientConfiguration clientConfig = LettuceClientConfiguration.builder()
+                    .useSsl()
+                    .and()
+                    .commandTimeout(Duration.ofSeconds(10))
+                    .build();
+
+            log.info("Successful Redis connection. Redis connection factory created for {}:{}",
+                    redisURI.getHost(), redisURI.getPort());
+            return new LettuceConnectionFactory(config, clientConfig);
         } catch (Exception e) {
             log.error("Failed to create Redis connection factory: {}", e.getMessage());
             throw e;
