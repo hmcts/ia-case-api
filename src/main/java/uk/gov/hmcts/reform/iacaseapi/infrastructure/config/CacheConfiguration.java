@@ -67,9 +67,7 @@ public class CacheConfiguration {
     // need this for test and fallback if redis is down
     @Bean
     public CaffeineCacheManager caffeineCacheManager() {
-        CaffeineCacheManager cacheManager = new CaffeineCacheManager(
-                "systemUserTokenCache", "homeOfficeReferenceDataCache", "userInfoCache"
-        );
+        CaffeineCacheManager cacheManager = new CaffeineCacheManager();
         cacheManager.setAllowNullValues(false);
         cacheManager.setCaffeine(Caffeine.newBuilder()
             .expireAfterWrite(3300, TimeUnit.SECONDS));
