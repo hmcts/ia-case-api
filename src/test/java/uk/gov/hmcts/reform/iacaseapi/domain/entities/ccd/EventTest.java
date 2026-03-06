@@ -130,6 +130,7 @@ class EventTest {
         assertEquals("updateHearingRequest", Event.UPDATE_HEARING_REQUEST.toString());
         assertEquals("handleHearingException", Event.HANDLE_HEARING_EXCEPTION.toString());
         assertEquals("cmrReListing", Event.CMR_RE_LISTING.toString());
+        assertEquals("cmrHearingCancelled", Event.CMR_HEARING_CANCELLED.toString());
         assertEquals("recordAdjournmentDetails", Event.RECORD_ADJOURNMENT_DETAILS.toString());
         assertEquals("listAssistIntegration", Event.LIST_ASSIST_INTEGRATION.toString());
         assertEquals("cmrListing", Event.CMR_LISTING.toString());
@@ -169,6 +170,6 @@ class EventTest {
 
     @Test
     void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(163, Event.values().length);
+        assertEquals(164, Event.values().length);
     }
 }
