@@ -79,6 +79,7 @@ public class CacheConfiguration {
     public RedisConnectionFactory redisConnectionFactory(
             @Value("${spring.data.redis.url}") String redisUrl) {
         try {
+            log.info(redisUrl);
             RedisURI redisURI = RedisURI.create(redisUrl);
             LettuceConnectionFactory factory = new LettuceConnectionFactory(
                     new RedisStandaloneConfiguration(
