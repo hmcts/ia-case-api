@@ -78,8 +78,16 @@ public class CacheConfiguration {
     @Bean
     public RedisConnectionFactory redisConnectionFactory(
             @Value("${spring.data.redis.url}") String redisUrl) {
+
+        log.info("redis url: " + redisUrl);
+
+        if (redisUrl == null || redisUrl.isBlank()) {
+            log.warn("No Redis URL configured - falling back to Caffeine");
+            // return a dummy factory - cacheManager will catch the ping failure and fall back
+            return new LettuceConnectionFactory();
+        }
+
         try {
-            log.info(redisUrl);
             RedisURI redisURI = RedisURI.create(redisUrl);
             LettuceConnectionFactory factory = new LettuceConnectionFactory(
                     new RedisStandaloneConfiguration(
