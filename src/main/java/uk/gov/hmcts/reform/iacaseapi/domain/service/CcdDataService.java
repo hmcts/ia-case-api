@@ -40,7 +40,7 @@ public class CcdDataService {
     }
 
     public SubmitEventDetails raiseEvent(String caseId, Event eventName) {
-        log.debug("Event name: {}", eventName);
+        log.info("Event name: {}", eventName);
         Tokens tokens = getTokens(caseId, eventName);
 
         final StartEventDetails startEventDetails =
