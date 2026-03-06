@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
 import java.time.LocalDate;
@@ -29,7 +30,7 @@ public class CaseMessage {
     private String subject;
     private String name;
     private String body;
-    private List<Document> attachments;
+    private List<IdValue<Document>>  attachments;
     @JsonProperty("isHearingRelated")
     private YesOrNo isHearingRelated;
     private LocalDate hearingDate;
