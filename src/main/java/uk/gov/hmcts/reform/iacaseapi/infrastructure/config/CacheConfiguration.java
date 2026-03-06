@@ -15,6 +15,7 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.connection.RedisPassword;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
@@ -97,11 +98,11 @@ public class CacheConfiguration {
                     )
             );
 
-            if (redisURI.getPassword() != null) {
+            if (accessKey != null && !accessKey.isBlank()) {
                 RedisStandaloneConfiguration config = new RedisStandaloneConfiguration();
                 config.setHostName(redisURI.getHost());
                 config.setPort(redisURI.getPort());
-                config.setPassword(accessKey);
+                config.setPassword(RedisPassword.of(accessKey));
                 factory = new LettuceConnectionFactory(config);
                 log.info("adding password to redis");
             }
