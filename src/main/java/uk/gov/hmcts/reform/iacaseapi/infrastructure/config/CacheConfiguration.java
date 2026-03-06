@@ -73,6 +73,8 @@ public class CacheConfiguration {
         cacheManager.setAllowNullValues(false);
         cacheManager.setCaffeine(Caffeine.newBuilder()
             .expireAfterWrite(3300, TimeUnit.SECONDS));
+
+        log.info("Caffeine connection");
         return cacheManager;
     }
 
