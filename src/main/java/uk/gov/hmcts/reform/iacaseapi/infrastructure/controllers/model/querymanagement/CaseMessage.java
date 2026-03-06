@@ -33,7 +33,6 @@ public class CaseMessage {
     private List<IdValue<Document>>  attachments;
     @JsonProperty("isHearingRelated")
     private YesOrNo isHearingRelated;
-    @JsonProperty("hearingDate")
     private LocalDate hearingDate;
     private OffsetDateTime createdOn;
     @JsonProperty("createdBy")
