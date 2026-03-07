@@ -17,6 +17,7 @@ import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisPassword;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
+import org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
@@ -91,12 +92,31 @@ public class CacheConfiguration {
 
         try {
             RedisURI redisURI = RedisURI.create(redisUrl);
+
+            boolean useSsl = redisUrl.contains("tls=true") || redisUrl.startsWith("rediss://");
+            log.info("Redis SSL enabled: {}", useSsl);
+
+            // checked azure portal,
+            if (useSsl) {
+                redisURI.setSsl(true);
+                redisURI.setVerifyPeer(false); // for Azure (self signed certs)
+            }
+
             redisURI.setTimeout(Duration.ofSeconds(10)); // 64seconds is default, so fail quicker
+
+
+            LettuceClientConfiguration clientConfig = LettuceClientConfiguration.builder()
+                    .commandTimeout(Duration.ofSeconds(5))
+                    .useSsl()
+                    .disablePeerVerification()
+                    .build();
+
             LettuceConnectionFactory factory = new LettuceConnectionFactory(
                     new RedisStandaloneConfiguration(
                             redisURI.getHost(),
                             redisURI.getPort()
-                    )
+                    ),
+                    clientConfig
             );
 
             if (accessKey != null && !accessKey.isBlank()) {
@@ -107,6 +127,10 @@ public class CacheConfiguration {
                 factory = new LettuceConnectionFactory(config);
                 log.info("adding password to redis");
             }
+
+
+
+
             factory.afterPropertiesSet();
             log.info("Successful Redis connection.");
             return factory;
