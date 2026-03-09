@@ -1345,6 +1345,8 @@ security:
       - "rollbackMigration"
       - "addStatutoryTimeframe24Weeks"
       - "removeStatutoryTimeframe24Weeks"
+      - "createCaseLink"
+      - "maintainCaseLinks"
     caseworker-ia-internal:
       - "revokeCaseAccess"
       - "removeCaseManagerBulk"
