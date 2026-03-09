@@ -80,9 +80,4 @@ public class IdamService {
         userInfo.setRoles(roles);
         return userInfo;
     }
-
-    public boolean doesUserHaveCaseAccess(String caseId, String userToken) {
-        UserInfo userInfo = getUserInfo(userToken);
-        return !roleAssignmentService.getCaseUserRoleAssignments(caseId, userInfo.getUid()).isEmpty();
-    }
 }
