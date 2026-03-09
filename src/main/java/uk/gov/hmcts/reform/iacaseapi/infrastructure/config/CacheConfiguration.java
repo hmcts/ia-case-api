@@ -104,6 +104,13 @@ public class CacheConfiguration {
 
             redisURI.setTimeout(Duration.ofSeconds(10)); // 64seconds is default, so fail quicker
 
+            RedisStandaloneConfiguration config = new RedisStandaloneConfiguration();
+            config.setHostName(redisURI.getHost());
+            config.setPort(redisURI.getPort());
+            if (accessKey != null && !accessKey.isBlank()) {
+                config.setPassword(RedisPassword.of(accessKey));
+                log.info("adding password to redis");
+            }
 
             LettuceClientConfiguration clientConfig = LettuceClientConfiguration.builder()
                     .commandTimeout(Duration.ofSeconds(5))
@@ -112,24 +119,9 @@ public class CacheConfiguration {
                     .build();
 
             LettuceConnectionFactory factory = new LettuceConnectionFactory(
-                    new RedisStandaloneConfiguration(
-                            redisURI.getHost(),
-                            redisURI.getPort()
-                    ),
+                    config,
                     clientConfig
             );
-
-            if (accessKey != null && !accessKey.isBlank()) {
-                RedisStandaloneConfiguration config = new RedisStandaloneConfiguration();
-                config.setHostName(redisURI.getHost());
-                config.setPort(redisURI.getPort());
-                config.setPassword(RedisPassword.of(accessKey));
-                factory = new LettuceConnectionFactory(config);
-                log.info("adding password to redis");
-            }
-
-
-
 
             factory.afterPropertiesSet();
             log.info("Successful Redis connection.");
