@@ -1,10 +1,13 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.service;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.springframework.stereotype.Service;
+
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDataContent;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -32,23 +35,28 @@ public class CcdDataService {
         this.serviceAuthorization = serviceAuthorization;
     }
 
-    public SubmitEventDetails retriggerWaTasks(String caseId) {
-        Tokens tokens = getTokens(caseId, Event.RE_TRIGGER_WA_TASKS);
+    public SubmitEventDetails raiseEvent(long caseId, Event eventName) {
+        return raiseEvent(String.valueOf(caseId), eventName);
+    }
+
+    public SubmitEventDetails raiseEvent(String caseId, Event eventName) {
+        log.info("Event name: {}", eventName);
+        Tokens tokens = getTokens(caseId, eventName);
 
         final StartEventDetails startEventDetails =
             getCase(
                 tokens,
                 caseId,
-                Event.RE_TRIGGER_WA_TASKS
+                eventName
             );
-        log.info("Case details found for the caseId: {}", caseId);
+        log.debug("Case details found for caseId {}", caseId);
 
         return submitEvent(
             tokens,
             caseId,
             startEventDetails,
-            Event.RE_TRIGGER_WA_TASKS,
-            new HashMap<>()
+            eventName,
+            Collections.emptyMap()
         );
     }
 
@@ -57,14 +65,11 @@ public class CcdDataService {
         try {
             String userToken = idamService.getServiceUserToken();
             tokens.setUserToken(userToken);
-            log.info("System user token has been generated for event: {}, caseId: {}.", event, caseId);
-
+            log.debug("System user token has been generated for event: {}, caseId: {}.", event, caseId);
             tokens.setS2sToken(serviceAuthorization.generate());
-
-            log.info("S2S token has been generated for event: {}, caseId: {}.", event, caseId);
-
+            log.debug("S2S token has been generated for event: {}, caseId: {}.", event, caseId);
             tokens.setUid(idamService.getUserInfo(userToken).getUid());
-            log.info("System user id has been fetched for event: {}, caseId: {}.", event, caseId);
+            log.debug("System user id has been fetched for event: {}, caseId: {}.", event, caseId);
 
         } catch (IdentityManagerResponseException ex) {
 
@@ -76,7 +81,7 @@ public class CcdDataService {
 
     private StartEventDetails getCase(Tokens tokens, String caseId, Event event) {
         return ccdDataApi.startEvent(
-            tokens.getUserToken(), tokens.getS2sToken(), tokens.getUid(), CcdDataService.JURISDICTION, CcdDataService.CASE_TYPE,
+            tokens.getUserToken(), tokens.getS2sToken(), tokens.getUid(), JURISDICTION, CASE_TYPE,
             caseId, event.toString()
         );
     }
