@@ -5,9 +5,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.QM_LEGAL_REPRESENTATIVE_QUERIES;
 
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsHelper;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
@@ -19,13 +17,8 @@ import java.util.Optional;
 @Component
 public class RespondQueryCallbackHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
-    private final UserDetails userDetails;
-    private final UserDetailsHelper userDetailsHelper;
+    public RespondQueryCallbackHandler() {
 
-    public RespondQueryCallbackHandler(UserDetails userDetails,
-                                       UserDetailsHelper userDetailsHelper) {
-        this.userDetails = userDetails;
-        this.userDetailsHelper = userDetailsHelper;
     }
 
     @Override

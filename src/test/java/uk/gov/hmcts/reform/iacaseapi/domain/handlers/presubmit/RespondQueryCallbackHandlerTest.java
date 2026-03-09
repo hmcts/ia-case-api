@@ -39,7 +39,7 @@ class RespondQueryCallbackHandlerTest {
 
         MockitoAnnotations.openMocks(this);
 
-        handler = new RespondQueryCallbackHandler(userDetails, userDetailsHelper);
+        handler = new RespondQueryCallbackHandler();
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
