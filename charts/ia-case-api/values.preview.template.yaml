@@ -90,6 +90,12 @@ java:
       secretRef: postgres
       key: PASSWORD
       disabled: false
+  redis:
+    enabled: true
+    serviceAccount:
+      create: false
+      name: "iac"
+      automountServiceAccountToken: true
 
 global:
   postgresHostname: "ia-preview.postgres.database.azure.com"
