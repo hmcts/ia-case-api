@@ -20,7 +20,6 @@ public class RetriggerWaTasksForFixedCaseIdHandler implements PreSubmitCallbackH
 
     private final CcdDataService ccdDataService;
 
-
     public RetriggerWaTasksForFixedCaseIdHandler(CcdDataService ccdDataService) {
         this.ccdDataService = ccdDataService;
     }
@@ -56,7 +55,7 @@ public class RetriggerWaTasksForFixedCaseIdHandler implements PreSubmitCallbackH
                 log.info("No valid Case Ids found to re-trigger WA tasks");
                 return new PreSubmitCallbackResponse<>(asylumCase);
             } else {
-                ccdDataService.retriggerWaTasks(trimmedCaseId);
+                ccdDataService.raiseEvent(trimmedCaseId, Event.RE_TRIGGER_WA_TASKS);
                 asylumCase.clear(CASE_ID_LIST);
                 return new PreSubmitCallbackResponse<>(asylumCase);
             }
@@ -70,7 +69,7 @@ public class RetriggerWaTasksForFixedCaseIdHandler implements PreSubmitCallbackH
                         log.info("Invalid Case Id found to re-trigger WA tasks: {}", trimmedCaseId);
                         return;
                     }
-                    ccdDataService.retriggerWaTasks(trimmedCaseId);
+                    ccdDataService.raiseEvent(trimmedCaseId, Event.RE_TRIGGER_WA_TASKS);
                 }
             );
         asylumCase.clear(CASE_ID_LIST);
