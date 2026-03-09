@@ -62,7 +62,7 @@ public class DecisionPaPayLaterDirectionHandler implements PreSubmitCallbackHand
                 "Instructions for making a payment are: \n" +
                 "For appeals submitted online \n" +
                 "Legal Representative to make payment by PBA\n" +
-                "Appellants follow these steps to pay the fee: " +
+                "Appellants follow these steps to pay the fee: \n" +
                 "1. Sign in to your account at: Sign in to the service if you’ve already started your appeal..\n" +
                 "2. Select 'Pay for this appeal' under the 'I want to' section and follow the steps to make a new payment.\n" +
                 "For appeals submitted by post or email \n" +

@@ -56,12 +56,12 @@ public class ListingPaPayLaterDirectionHandler implements PreSubmitCallbackHandl
                 .getCaseData();
         String feeAmount = HandlerUtils.getFeeAmount(asylumCase);
         String content = "Your appeal is going to be decided by a Judge at a hearing and still requires a fee to be paid of £" + feeAmount +
-            " No payment has been received and to avoid further action being taken to recover the fee you should make a payment of £" +
+            ". No payment has been received and to avoid further action being taken to recover the fee you should make a payment of £" +
             feeAmount + " without delay.\n" +
             "Instructions for making a payment are: \n" +
             "For appeals submitted online \n" +
             "Legal Representative to make payment by PBA\n" +
-            "Appellants follow these steps to pay the fee: " +
+            "Appellants follow these steps to pay the fee:\n" +
             "1. Sign in to your account at: Sign in to the service if you’ve already started your appeal..\n" +
             "2. Select 'Pay for this appeal' under the 'I want to' section and follow the steps to make a new payment.\n" +
             "For appeals submitted by post or email \n" +
