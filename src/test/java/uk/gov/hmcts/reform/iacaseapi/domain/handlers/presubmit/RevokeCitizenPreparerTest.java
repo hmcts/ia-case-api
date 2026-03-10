@@ -36,7 +36,7 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.idam.User;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
-class RevokeCaseAccessV2PreparerTest {
+class RevokeCitizenPreparerTest {
 
     @Mock
     private RoleAssignmentService roleAssignmentService;
@@ -61,7 +61,7 @@ class RevokeCaseAccessV2PreparerTest {
     @Captor
     private ArgumentCaptor<DynamicList> captor;
 
-    private RevokeCaseAccessV2Preparer preparer;
+    private RevokeCitizenPreparer preparer;
 
     private final long caseId = 12345L;
     private final String userId1 = "user-1";
@@ -71,9 +71,9 @@ class RevokeCaseAccessV2PreparerTest {
     
     @BeforeEach
     void setUp() {
-        preparer = new RevokeCaseAccessV2Preparer(roleAssignmentService, idamService);
+        preparer = new RevokeCitizenPreparer(roleAssignmentService, idamService);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getEvent()).thenReturn(Event.REVOKE_CASE_ACCESS_V2);
+        when(callback.getEvent()).thenReturn(Event.REVOKE_CITIZEN_ACCESS);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(caseDetails.getId()).thenReturn(caseId);
     }
@@ -233,7 +233,7 @@ class RevokeCaseAccessV2PreparerTest {
         when(callback.getEvent()).thenReturn(event);
         for (PreSubmitCallbackStage stage : PreSubmitCallbackStage.values()) {
             boolean canHandle = preparer.canHandle(stage, callback);
-            if (event == Event.REVOKE_CASE_ACCESS_V2 && stage == PreSubmitCallbackStage.ABOUT_TO_START) {
+            if (event == Event.REVOKE_CITIZEN_ACCESS && stage == PreSubmitCallbackStage.ABOUT_TO_START) {
                 assertTrue(canHandle);
             } else {
                 assertFalse(canHandle);
@@ -248,7 +248,7 @@ class RevokeCaseAccessV2PreparerTest {
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
 
-        when(callback.getEvent()).thenReturn(Event.REVOKE_CASE_ACCESS_V2);
+        when(callback.getEvent()).thenReturn(Event.REVOKE_CITIZEN_ACCESS);
         assertThatThrownBy(() -> preparer.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);

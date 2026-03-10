@@ -17,7 +17,7 @@ public class RevokeCaseAccessConfirmation implements PostSubmitCallbackHandler<A
     ) {
         requireNonNull(callback, "callback must not be null");
 
-        return callback.getEvent() == Event.REVOKE_CASE_ACCESS || callback.getEvent() == Event.REVOKE_CASE_ACCESS_V2;
+        return callback.getEvent() == Event.REVOKE_CASE_ACCESS || callback.getEvent() == Event.REVOKE_CITIZEN_ACCESS;
     }
 
     public PostSubmitCallbackResponse handle(

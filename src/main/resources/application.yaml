@@ -355,7 +355,7 @@ security:
       - "removeDetainedStatus"
       - "turnOnNotificationsWATasks"
       - "addStatutoryTimeframe24Weeks"
-      - "revokeCaseAccessV2"
+      - "revokeCitizenAccess"
     challenged-access-legal-operations:
       - "appellantInPersonManual"
       - "moveToPaymentPending"
@@ -444,7 +444,7 @@ security:
       - "generateListCmrTask"
       - "markAppealAsDetained"
       - "removeDetainedStatus"
-      - "revokeCaseAccessV2"
+      - "revokeCitizenAccess"
     senior-tribunal-caseworker:
       - "appellantInPersonManual"
       - "moveToPaymentPending"
@@ -534,7 +534,7 @@ security:
       - "markAppealAsDetained"
       - "removeDetainedStatus"
       - "turnOnNotificationsWATasks"
-      - "revokeCaseAccessV2"
+      - "revokeCitizenAccess"
     hearing-centre-admin:
       - "appellantInPersonManual"
       - "startAppeal"
@@ -605,7 +605,7 @@ security:
       - "forceFtpaDecidedState"
       - "turnOnNotificationsWATasks"
       - "addStatutoryTimeframe24Weeks"
-      - "revokeCaseAccessV2"
+      - "revokeCitizenAccess"
     ctsc:
       - "appellantInPersonManual"
       - "startAppeal"
@@ -673,7 +673,7 @@ security:
       - "turnOnNotificationsWATasks"
       - "editDocuments"
       - "addStatutoryTimeframe24Weeks"
-      - "revokeCaseAccessV2"
+      - "revokeCitizenAccess"
       - "forceDecidedState"
       - "forceFtpaDecidedState"
     ctsc-team-leader:
@@ -745,7 +745,7 @@ security:
       - "forceDecidedState"
       - "forceFtpaDecidedState"
       - "addStatutoryTimeframe24Weeks"
-      - "revokeCaseAccessV2"
+      - "revokeCitizenAccess"
     national-business-centre:
       - "appellantInPersonManual"
       - "startAppeal"
@@ -814,7 +814,7 @@ security:
       - "forceDecidedState"
       - "forceFtpaDecidedState"
       - "addStatutoryTimeframe24Weeks"
-      - "revokeCaseAccessV2"
+      - "revokeCitizenAccess"
     challenged-access-ctsc:
       - "appellantInPersonManual"
       - "startAppeal"
@@ -883,7 +883,7 @@ security:
       - "forceDecidedState"
       - "forceFtpaDecidedState"
       - "addStatutoryTimeframe24Weeks"
-      - "revokeCaseAccessV2"
+      - "revokeCitizenAccess"
     challenged-access-admin:
       - "appellantInPersonManual"
       - "startAppeal"
@@ -953,7 +953,7 @@ security:
       - "forceDecidedState"
       - "forceFtpaDecidedState"
       - "addStatutoryTimeframe24Weeks"
-      - "revokeCaseAccessV2"
+      - "revokeCitizenAccess"
     caseworker-ia-homeofficeapc:
       - "uploadHomeOfficeBundle"
       - "uploadAdditionalEvidenceHomeOffice"
@@ -1353,13 +1353,13 @@ security:
       - "rollbackMigration"
       - "addStatutoryTimeframe24Weeks"
       - "removeStatutoryTimeframe24Weeks"
-      - "revokeCaseAccessV2"
+      - "revokeCitizenAccess"
     caseworker-ia-internal:
       - "revokeCaseAccess"
       - "removeCaseManagerBulk"
       - "reTriggerWaTasks"
       - "reTriggerWaBulkTasks"
-      - "revokeCaseAccessV2"
+      - "revokeCitizenAccess"
     caseworker-ia-rparobot:
       - "addCaseNote"
     next-hearing-date-admin:

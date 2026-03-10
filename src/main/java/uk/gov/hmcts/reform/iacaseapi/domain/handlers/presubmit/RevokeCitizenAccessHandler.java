@@ -18,12 +18,12 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.RoleAssignmentService;
 
 @Component
 @Slf4j
-public class RevokeCaseAccessV2Handler implements PreSubmitCallbackHandler<AsylumCase> {
+public class RevokeCitizenAccessHandler implements PreSubmitCallbackHandler<AsylumCase> {
     private final RoleAssignmentService roleAssignmentService;
     private final IdamService idamService;
 
-    public RevokeCaseAccessV2Handler(RoleAssignmentService roleAssignmentService,
-                                     IdamService idamService) {
+    public RevokeCitizenAccessHandler(RoleAssignmentService roleAssignmentService,
+                                      IdamService idamService) {
         this.roleAssignmentService = roleAssignmentService;
         this.idamService = idamService;
     }
@@ -35,7 +35,7 @@ public class RevokeCaseAccessV2Handler implements PreSubmitCallbackHandler<Asylu
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-            && callback.getEvent() == Event.REVOKE_CASE_ACCESS_V2;
+            && callback.getEvent() == Event.REVOKE_CITIZEN_ACCESS;
     }
 
     @Override
