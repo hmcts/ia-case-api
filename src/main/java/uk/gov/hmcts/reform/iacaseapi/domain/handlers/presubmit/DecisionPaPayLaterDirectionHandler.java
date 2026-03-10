@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PAYMENT_STATUS;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -12,7 +11,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DirectionAppender;
@@ -40,13 +38,10 @@ public class DecisionPaPayLaterDirectionHandler implements PreSubmitCallbackHand
     ) {
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
-        AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
-        PaymentStatus paymentStatus = asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)
-                .orElseThrow(() -> new IllegalStateException("Payment status is not present"));
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
                 && callback.getEvent().equals(Event.SEND_DECISION_AND_REASONS)
                 && HandlerUtils.isPayLater(callback.getCaseDetails().getCaseData())
-                && !paymentStatus.equals(PaymentStatus.PAID);
+                && !HandlerUtils.isAppealPaid(callback.getCaseDetails().getCaseData());
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
