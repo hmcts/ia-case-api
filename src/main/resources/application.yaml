@@ -82,9 +82,18 @@ spring:
         jwt:
           jwk-set-uri: ${OPEN_ID_IDAM_URL:http://127.0.0.1:5000}/o/jwks
   cache:
-    cache-names: userInfoCache, accessTokenCache
-    caffeine:
-      spec: expireAfterWrite=3600s
+    type: redis
+    cache-names:
+      - userInfoCache
+      - accessTokenCache
+    redis:
+      cache-null-values: false
+      time-to-live: 3600000
+
+  redis:
+    host: ${REDIS_URL:}
+    port: 6379
+
   datasource:
     driverClassName: org.postgresql.Driver
     url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5050}/${POSTGRES_NAME:ia_case_api}${POSTGRES_CONNECTION_OPTIONS:}

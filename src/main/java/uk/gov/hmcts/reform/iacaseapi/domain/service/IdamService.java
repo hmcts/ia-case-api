@@ -47,7 +47,7 @@ public class IdamService {
         this.roleAssignmentService = roleAssignmentService;
     }
 
-    @Cacheable(value = "accessTokenCache")
+    @Cacheable(value = "accessTokenCache", key = "'serviceUserToken'", sync = true)
     public String getServiceUserToken() {
         Map<String, String> idamAuthDetails = new ConcurrentHashMap<>();
 

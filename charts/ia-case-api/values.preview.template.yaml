@@ -678,13 +678,20 @@ ia-aip-frontend:
           - name: customer-services-email
             alias: customer-services-email
   redis:
-    enabled: false
+    enabled: true
     architecture: standalone
     master:
       persistence:
         enabled: false
     auth:
       enabled: false
+
+redis:
+  enabled: true
+  serviceAccount:
+    create: false
+    name: "iac"
+    automountServiceAccountToken: true
 
 ccd-case-document-am-api:
   enabled: true
