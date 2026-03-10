@@ -8,7 +8,10 @@ spring:
     platform: h2
   flyway.enabled: true
   cache:
-    type: none
+    type: caffeine
+    cache-names: userInfoCache, accessTokenCache
+    caffeine:
+      spec: expireAfterWrite=3600s
 
 appealReferenceSequenceSeed: 50000
 
