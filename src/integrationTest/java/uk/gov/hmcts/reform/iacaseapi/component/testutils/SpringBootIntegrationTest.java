@@ -23,10 +23,11 @@ import uk.gov.hmcts.reform.iacaseapi.component.testutils.wiremock.DocumentsApiCa
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.wiremock.NotificationsApiCallbackTransformer;
 
 
-@SpringBootTest(classes = {
-    TestConfiguration.class,
-    Application.class
-})
+@SpringBootTest(classes = {TestConfiguration.class, Application.class},
+    properties = {
+        "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration"
+    }
+)
 @TestPropertySource(properties = {
     "S2S_URL=http://127.0.0.1:8990/serviceAuth",
     "IDAM_URL=http://127.0.0.1:8990/userAuth",
