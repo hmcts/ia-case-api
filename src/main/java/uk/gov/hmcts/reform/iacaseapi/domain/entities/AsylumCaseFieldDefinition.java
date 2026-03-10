@@ -1737,6 +1737,15 @@ public enum AsylumCaseFieldDefinition {
     REVOKE_ACCESS_DL(
         "revokeAccessDl", new TypeReference<DynamicList>(){}),
 
+    NLR_EMAIL(
+        "nlrEmail", new TypeReference<String>(){}),
+
+    JOIN_APPEAL_PIN(
+        "joinAppealPin", new TypeReference<PinInPostDetails>(){}),
+
+    NLR_DETAILS(
+        "nlrDetails", new TypeReference<NonLegalRepDetails>(){}),
+
     FEE_UPDATE_RECORDED(
         "feeUpdateRecorded", new TypeReference<CheckValues<String>>(){}),
 
@@ -2877,7 +2886,7 @@ public enum AsylumCaseFieldDefinition {
 
     REMISSION_REQUESTED_BY(
         "remissionRequestedBy", new TypeReference<UserRoleLabel>(){}),
-  
+
     GENERATE_LIST_CMR_TASK_REQUESTED(
             "generateListCmrTaskRequested", new TypeReference<YesOrNo>(){}),
 

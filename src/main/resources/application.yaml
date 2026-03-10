@@ -357,6 +357,9 @@ security:
       - "turnOnNotificationsWATasks"
       - "addStatutoryTimeframe24Weeks"
       - "revokeCitizenAccess"
+      - "sendInviteToNonLegalRep"
+      - "sendPipToNonLegalRep"
+      - "joinAppealConfirmation"
     challenged-access-legal-operations:
       - "appellantInPersonManual"
       - "moveToPaymentPending"
@@ -446,6 +449,9 @@ security:
       - "markAppealAsDetained"
       - "removeDetainedStatus"
       - "revokeCitizenAccess"
+      - "sendInviteToNonLegalRep"
+      - "sendPipToNonLegalRep"
+      - "joinAppealConfirmation"
     senior-tribunal-caseworker:
       - "appellantInPersonManual"
       - "moveToPaymentPending"
@@ -536,6 +542,9 @@ security:
       - "removeDetainedStatus"
       - "turnOnNotificationsWATasks"
       - "revokeCitizenAccess"
+      - "sendInviteToNonLegalRep"
+      - "sendPipToNonLegalRep"
+      - "joinAppealConfirmation"
     hearing-centre-admin:
       - "appellantInPersonManual"
       - "startAppeal"
@@ -607,6 +616,9 @@ security:
       - "turnOnNotificationsWATasks"
       - "addStatutoryTimeframe24Weeks"
       - "revokeCitizenAccess"
+      - "sendInviteToNonLegalRep"
+      - "sendPipToNonLegalRep"
+      - "joinAppealConfirmation"
     ctsc:
       - "appellantInPersonManual"
       - "startAppeal"
@@ -675,6 +687,9 @@ security:
       - "editDocuments"
       - "addStatutoryTimeframe24Weeks"
       - "revokeCitizenAccess"
+      - "sendInviteToNonLegalRep"
+      - "sendPipToNonLegalRep"
+      - "joinAppealConfirmation"
       - "forceDecidedState"
       - "forceFtpaDecidedState"
     ctsc-team-leader:
@@ -747,6 +762,9 @@ security:
       - "forceFtpaDecidedState"
       - "addStatutoryTimeframe24Weeks"
       - "revokeCitizenAccess"
+      - "sendInviteToNonLegalRep"
+      - "sendPipToNonLegalRep"
+      - "joinAppealConfirmation"
     national-business-centre:
       - "appellantInPersonManual"
       - "startAppeal"
@@ -816,6 +834,9 @@ security:
       - "forceFtpaDecidedState"
       - "addStatutoryTimeframe24Weeks"
       - "revokeCitizenAccess"
+      - "sendInviteToNonLegalRep"
+      - "sendPipToNonLegalRep"
+      - "joinAppealConfirmation"
     challenged-access-ctsc:
       - "appellantInPersonManual"
       - "startAppeal"
@@ -885,6 +906,9 @@ security:
       - "forceFtpaDecidedState"
       - "addStatutoryTimeframe24Weeks"
       - "revokeCitizenAccess"
+      - "sendInviteToNonLegalRep"
+      - "sendPipToNonLegalRep"
+      - "joinAppealConfirmation"
     challenged-access-admin:
       - "appellantInPersonManual"
       - "startAppeal"
@@ -955,6 +979,9 @@ security:
       - "forceFtpaDecidedState"
       - "addStatutoryTimeframe24Weeks"
       - "revokeCitizenAccess"
+      - "sendInviteToNonLegalRep"
+      - "sendPipToNonLegalRep"
+      - "joinAppealConfirmation"
     caseworker-ia-homeofficeapc:
       - "uploadHomeOfficeBundle"
       - "uploadAdditionalEvidenceHomeOffice"
@@ -1011,6 +1038,10 @@ security:
       - "pipActivation"
       - "applyForFTPAAppellant"
       - "requestFeeRemission"
+      - "sendInviteToNonLegalRep"
+      - "sendPipToNonLegalRep"
+      - "joinAppealConfirmation"
+      - "nlrPhoneNumberSubmitted"
     caseworker-ia-iacjudge:
       - "generateDecisionAndReasons"
       - "endAppeal"
@@ -1355,6 +1386,10 @@ security:
       - "addStatutoryTimeframe24Weeks"
       - "removeStatutoryTimeframe24Weeks"
       - "revokeCitizenAccess"
+      - "sendInviteToNonLegalRep"
+      - "sendPipToNonLegalRep"
+      - "joinAppealConfirmation"
+      - "nlrPhoneNumberSubmitted"
     caseworker-ia-internal:
       - "revokeCaseAccess"
       - "removeCaseManagerBulk"

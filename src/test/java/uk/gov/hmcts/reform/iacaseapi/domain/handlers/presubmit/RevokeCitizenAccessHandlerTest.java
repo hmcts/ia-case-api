@@ -25,6 +25,7 @@ import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.NonLegalRepDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Value;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -98,6 +99,14 @@ class RevokeCitizenAccessHandlerTest {
         DynamicList dynamicList = new DynamicList(value, List.of(value));
         when(asylumCase.read(AsylumCaseFieldDefinition.REVOKE_ACCESS_DL, DynamicList.class))
             .thenReturn(Optional.of(dynamicList));
+        NonLegalRepDetails nlrDetails = NonLegalRepDetails.builder()
+            .idamId(idamId)
+            .emailAddress("someEmail")
+            .givenNames("someGivenNames")
+            .familyName("someFamilyName")
+            .build();
+        when(asylumCase.read(AsylumCaseFieldDefinition.NLR_DETAILS, NonLegalRepDetails.class))
+            .thenReturn(Optional.of(nlrDetails));
         Assignment assignment = Assignment.builder().id(roleAssignmentId).build();
         when(roleAssignmentService.getCaseRoleAssignmentsForUser(caseId, idamId))
             .thenReturn(roleAssignmentResource);
@@ -113,6 +122,7 @@ class RevokeCitizenAccessHandlerTest {
 
         verify(roleAssignmentService).getCaseRoleAssignmentsForUser(caseId, idamId);
         verify(roleAssignmentService).deleteRoleAssignment(roleAssignmentId, "token");
+        verify(asylumCase).clear(AsylumCaseFieldDefinition.NLR_DETAILS);
     }
 
 
@@ -122,6 +132,14 @@ class RevokeCitizenAccessHandlerTest {
         DynamicList dynamicList = new DynamicList(value, List.of(value));
         when(asylumCase.read(AsylumCaseFieldDefinition.REVOKE_ACCESS_DL, DynamicList.class))
             .thenReturn(Optional.of(dynamicList));
+        NonLegalRepDetails nlrDetails = NonLegalRepDetails.builder()
+            .idamId("someOtherIdamId")
+            .emailAddress("someEmail")
+            .givenNames("someGivenNames")
+            .familyName("someFamilyName")
+            .build();
+        when(asylumCase.read(AsylumCaseFieldDefinition.NLR_DETAILS, NonLegalRepDetails.class))
+            .thenReturn(Optional.of(nlrDetails));
         Assignment assignment = Assignment.builder().id(roleAssignmentId).build();
         when(roleAssignmentService.getCaseRoleAssignmentsForUser(caseId, idamId))
             .thenReturn(roleAssignmentResource);
@@ -137,6 +155,7 @@ class RevokeCitizenAccessHandlerTest {
 
         verify(roleAssignmentService).getCaseRoleAssignmentsForUser(caseId, idamId);
         verify(roleAssignmentService).deleteRoleAssignment(roleAssignmentId, "token");
+        verify(asylumCase, never()).clear(AsylumCaseFieldDefinition.NLR_DETAILS);
     }
 
     @Test
