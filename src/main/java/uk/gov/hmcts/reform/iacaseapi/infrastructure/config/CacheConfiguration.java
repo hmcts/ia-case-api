@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.config;
 
-import com.github.benmanes.caffeine.cache.Caffeine;
 import io.lettuce.core.RedisURI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,6 +8,7 @@ import org.springframework.boot.autoconfigure.cache.CacheManagerCustomizer;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.caffeine.CaffeineCacheManager;
+import org.springframework.cache.support.NoOpCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -24,7 +24,6 @@ import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 import java.time.Duration;
-import java.util.concurrent.TimeUnit;
 
 @EnableCaching
 @Configuration
@@ -56,25 +55,18 @@ public class CacheConfiguration {
 
             // only systemTokenCache goes to Redis, rest stay as Caffeine
             return RedisCacheManager.builder(redisConnectionFactory)
-                    .withCacheConfiguration("systemUserTokenCache", tokenCacheConfig)
+                    .cacheDefaults(tokenCacheConfig)
+                    .withCacheConfiguration("systemUserTokenCache",
+                            tokenCacheConfig.entryTtl(Duration.ofSeconds(3300)))
+                    .withCacheConfiguration("userInfoCache",
+                            tokenCacheConfig.entryTtl(Duration.ofSeconds(3300)))
                     .build();
 
         } catch (Exception e) {
-            log.warn("Redis unavailable - falling back to Caffeine for all caches: {}", e.getMessage());
-            return caffeineCacheManager();
+            // if redis is down, dont cache make idam calls, until pod restarts
+            log.warn("Redis unavailable: {}", e.getMessage());
+            return new NoOpCacheManager();
         }
-    }
-
-    // need this for test and fallback if redis is down
-    @Bean
-    public CaffeineCacheManager caffeineCacheManager() {
-        CaffeineCacheManager cacheManager = new CaffeineCacheManager();
-        cacheManager.setAllowNullValues(false);
-        cacheManager.setCaffeine(Caffeine.newBuilder()
-            .expireAfterWrite(3300, TimeUnit.SECONDS));
-
-        log.info("Caffeine connection");
-        return cacheManager;
     }
 
     @Bean
