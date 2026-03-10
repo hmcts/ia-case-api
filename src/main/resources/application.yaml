@@ -82,7 +82,7 @@ spring:
         jwt:
           jwk-set-uri: ${OPEN_ID_IDAM_URL:http://127.0.0.1:5000}/o/jwks
   cache:
-    cache-names: userInfoCache, accessTokenCache, clientCredsCacheV1, clientCredsCache, homeOfficeReferenceDataCache
+    cache-names: userInfoCache, accessTokenCache, clientCredsCacheV1, clientCredsCache
     caffeine:
       spec: expireAfterWrite=3600s
   datasource:
@@ -217,6 +217,7 @@ homeOfficeApi:
   endpoint: ${IA_HOME_OFFICE_INTEGRATION_API_URL:http://127.0.0.1:8094}
   aboutToStartPath: "/asylum/ccdAboutToStart"
   aboutToSubmitPath: "/asylum/ccdAboutToSubmit"
+  midEventPath: "/asylum/ccdMidEvent"
 
 security:
   anonymousPaths:
@@ -355,7 +356,7 @@ security:
       - "removeDetainedStatus"
       - "turnOnNotificationsWATasks"
       - "addStatutoryTimeframe24Weeks"
-      - "revokeCaseAccessV2"
+      - "revokeCitizenAccess"
       - "sendInviteToNonLegalRep"
       - "sendPipToNonLegalRep"
       - "joinAppealConfirmation"
@@ -447,7 +448,7 @@ security:
       - "generateListCmrTask"
       - "markAppealAsDetained"
       - "removeDetainedStatus"
-      - "revokeCaseAccessV2"
+      - "revokeCitizenAccess"
       - "sendInviteToNonLegalRep"
       - "sendPipToNonLegalRep"
       - "joinAppealConfirmation"
@@ -540,7 +541,7 @@ security:
       - "markAppealAsDetained"
       - "removeDetainedStatus"
       - "turnOnNotificationsWATasks"
-      - "revokeCaseAccessV2"
+      - "revokeCitizenAccess"
       - "sendInviteToNonLegalRep"
       - "sendPipToNonLegalRep"
       - "joinAppealConfirmation"
@@ -614,7 +615,7 @@ security:
       - "forceFtpaDecidedState"
       - "turnOnNotificationsWATasks"
       - "addStatutoryTimeframe24Weeks"
-      - "revokeCaseAccessV2"
+      - "revokeCitizenAccess"
       - "sendInviteToNonLegalRep"
       - "sendPipToNonLegalRep"
       - "joinAppealConfirmation"
@@ -685,7 +686,7 @@ security:
       - "turnOnNotificationsWATasks"
       - "editDocuments"
       - "addStatutoryTimeframe24Weeks"
-      - "revokeCaseAccessV2"
+      - "revokeCitizenAccess"
       - "sendInviteToNonLegalRep"
       - "sendPipToNonLegalRep"
       - "joinAppealConfirmation"
@@ -760,7 +761,7 @@ security:
       - "forceDecidedState"
       - "forceFtpaDecidedState"
       - "addStatutoryTimeframe24Weeks"
-      - "revokeCaseAccessV2"
+      - "revokeCitizenAccess"
       - "sendInviteToNonLegalRep"
       - "sendPipToNonLegalRep"
       - "joinAppealConfirmation"
@@ -832,7 +833,7 @@ security:
       - "forceDecidedState"
       - "forceFtpaDecidedState"
       - "addStatutoryTimeframe24Weeks"
-      - "revokeCaseAccessV2"
+      - "revokeCitizenAccess"
       - "sendInviteToNonLegalRep"
       - "sendPipToNonLegalRep"
       - "joinAppealConfirmation"
@@ -904,7 +905,7 @@ security:
       - "forceDecidedState"
       - "forceFtpaDecidedState"
       - "addStatutoryTimeframe24Weeks"
-      - "revokeCaseAccessV2"
+      - "revokeCitizenAccess"
       - "sendInviteToNonLegalRep"
       - "sendPipToNonLegalRep"
       - "joinAppealConfirmation"
@@ -977,7 +978,7 @@ security:
       - "forceDecidedState"
       - "forceFtpaDecidedState"
       - "addStatutoryTimeframe24Weeks"
-      - "revokeCaseAccessV2"
+      - "revokeCitizenAccess"
       - "sendInviteToNonLegalRep"
       - "sendPipToNonLegalRep"
       - "joinAppealConfirmation"
@@ -1384,7 +1385,7 @@ security:
       - "rollbackMigration"
       - "addStatutoryTimeframe24Weeks"
       - "removeStatutoryTimeframe24Weeks"
-      - "revokeCaseAccessV2"
+      - "revokeCitizenAccess"
       - "sendInviteToNonLegalRep"
       - "sendPipToNonLegalRep"
       - "joinAppealConfirmation"
@@ -1394,7 +1395,7 @@ security:
       - "removeCaseManagerBulk"
       - "reTriggerWaTasks"
       - "reTriggerWaBulkTasks"
-      - "revokeCaseAccessV2"
+      - "revokeCitizenAccess"
     caseworker-ia-rparobot:
       - "addCaseNote"
     next-hearing-date-admin:

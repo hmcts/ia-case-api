@@ -113,7 +113,7 @@ public enum Event {
     REMOVE_REPRESENTATION("removeRepresentation"),
     REMOVE_LEGAL_REPRESENTATIVE("removeLegalRepresentative"),
     REVOKE_CASE_ACCESS("revokeCaseAccess"),
-    REVOKE_CASE_ACCESS_V2("revokeCaseAccessV2"),
+    REVOKE_CITIZEN_ACCESS("revokeCitizenAccess"),
     SEND_INVITE_TO_NON_LEGAL_REP("sendInviteToNonLegalRep"),
     SEND_PIP_TO_NON_LEGAL_REP("sendPipToNonLegalRep"),
     JOIN_APPEAL_CONFIRMATION("joinAppealConfirmation"),

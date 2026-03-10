@@ -24,12 +24,12 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.idam.User;
 
 @Component
 @Slf4j
-public class RevokeCaseAccessV2Preparer implements PreSubmitCallbackHandler<AsylumCase> {
+public class RevokeCitizenPreparer implements PreSubmitCallbackHandler<AsylumCase> {
     private final RoleAssignmentService roleAssignmentService;
     private final IdamService idamService;
 
-    public RevokeCaseAccessV2Preparer(RoleAssignmentService roleAssignmentService,
-                                      IdamService idamService) {
+    public RevokeCitizenPreparer(RoleAssignmentService roleAssignmentService,
+                                 IdamService idamService) {
         this.roleAssignmentService = roleAssignmentService;
         this.idamService = idamService;
     }
@@ -41,7 +41,7 @@ public class RevokeCaseAccessV2Preparer implements PreSubmitCallbackHandler<Asyl
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_START
-            && callback.getEvent() == Event.REVOKE_CASE_ACCESS_V2;
+            && callback.getEvent() == Event.REVOKE_CITIZEN_ACCESS;
     }
 
     @Override

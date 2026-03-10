@@ -52,7 +52,7 @@ class RevokeCaseAccessConfirmationTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = Event.class, names = {"REVOKE_CASE_ACCESS", "REVOKE_CASE_ACCESS_V2"})
+    @EnumSource(value = Event.class, names = {"REVOKE_CASE_ACCESS", "REVOKE_CITIZEN_ACCESS"})
     void it_can_handle_callback(Event event) {
         when(callback.getEvent()).thenReturn(event);
         assertTrue(revokeCaseAccessConfirmation.canHandle(callback));
@@ -61,7 +61,7 @@ class RevokeCaseAccessConfirmationTest {
 
     @ParameterizedTest
     @EnumSource(value = Event.class, mode = EnumSource.Mode.EXCLUDE,
-        names = {"REVOKE_CASE_ACCESS", "REVOKE_CASE_ACCESS_V2"})
+        names = {"REVOKE_CASE_ACCESS", "REVOKE_CITIZEN_ACCESS"})
     void it_cannot_handle_callback(Event event) {
         when(callback.getEvent()).thenReturn(event);
         assertFalse(revokeCaseAccessConfirmation.canHandle(callback));
