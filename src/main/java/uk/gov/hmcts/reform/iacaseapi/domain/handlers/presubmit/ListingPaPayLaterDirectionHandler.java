@@ -46,7 +46,7 @@ public class ListingPaPayLaterDirectionHandler implements PreSubmitCallbackHandl
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
             && callback.getEvent().equals(Event.LIST_CASE)
             && HandlerUtils.isPayLater(callback.getCaseDetails().getCaseData())
-            && paymentStatus != PaymentStatus.PAID;
+            && !paymentStatus.equals(PaymentStatus.PAID);
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
