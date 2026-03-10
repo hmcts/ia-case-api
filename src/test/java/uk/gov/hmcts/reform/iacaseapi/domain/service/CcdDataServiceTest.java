@@ -86,19 +86,19 @@ class CcdDataServiceTest {
     @Test
     void service_should_throw_on_unable_to_generate_system_user_token() {
         when(idamService.getServiceUserToken()).thenThrow(IdentityManagerResponseException.class);
-        assertThrows(IdentityManagerResponseException.class, () -> ccdDataService.retriggerWaTasks(caseReference));
+        assertThrows(IdentityManagerResponseException.class, () -> ccdDataService.raiseEvent(caseReference, Event.RE_TRIGGER_WA_TASKS));
     }
 
     @Test
     void service_should_throw_on_unable_to_generate_s2s_token() {
         when(serviceAuthorization.generate()).thenThrow(IdentityManagerResponseException.class);
-        assertThrows(IdentityManagerResponseException.class, () -> ccdDataService.retriggerWaTasks(caseReference));
+        assertThrows(IdentityManagerResponseException.class, () -> ccdDataService.raiseEvent(caseId, Event.RE_TRIGGER_WA_TASKS)); // use caseId this time
     }
 
     @Test
     void service_should_throw_on_unable_to_get_system_user_uid() {
         when(idamService.getUserInfo(token)).thenThrow(IdentityManagerResponseException.class);
-        assertThrows(IdentityManagerResponseException.class, () -> ccdDataService.retriggerWaTasks(caseReference));
+        assertThrows(IdentityManagerResponseException.class, () -> ccdDataService.raiseEvent(caseReference, Event.RE_TRIGGER_WA_TASKS));
     }
 
     @Test
@@ -114,7 +114,7 @@ class CcdDataServiceTest {
             caseDataContent)).thenReturn(getSubmitEventResponse());
 
         SubmitEventDetails submitEventDetails =
-            ccdDataService.retriggerWaTasks(caseReference);
+            ccdDataService.raiseEvent(caseReference, Event.RE_TRIGGER_WA_TASKS);
 
         assertNotNull(submitEventDetails);
         assertEquals(caseId, submitEventDetails.getId());
@@ -136,7 +136,7 @@ class CcdDataServiceTest {
                 token, serviceToken, userId,
                 jurisdiction, caseType, caseReference, eventId)).thenThrow(FeignException.class);
 
-        assertThatThrownBy(() -> ccdDataService.retriggerWaTasks(caseReference))
+        assertThatThrownBy(() -> ccdDataService.raiseEvent(caseReference, Event.RE_TRIGGER_WA_TASKS))
             .isExactlyInstanceOf(FeignException.class);
 
     }
