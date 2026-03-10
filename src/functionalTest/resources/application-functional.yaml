@@ -29,9 +29,31 @@ core_case_data:
 
 spring:
   cache:
-    cache-names: userInfoCache, accessTokenCache, legalRepATokenCache, caseOfficerTokenCache, adminOfficerTokenCache, homeOfficeApcTokenCache, homeOfficeLartTokenCache, homeOfficePouTokenCache, homeOfficeGenericTokenCache, legalRepShareCaseATokenCache, legalRepOrgSuccessTokenCache, legalRepOrgDeletedTokenCache, judgeTokenCache, citizenTokenCache, systemTokenCache
-    caffeine:
-      spec: expireAfterWrite=3600s
+    type: redis
+    cache-names:
+      - userInfoCache
+      - accessTokenCache
+      - legalRepATokenCache
+      - caseOfficerTokenCache
+      - adminOfficerTokenCache
+      - homeOfficeApcTokenCache
+      - homeOfficeLartTokenCache
+      - homeOfficePouTokenCache
+      - homeOfficeGenericTokenCache
+      - legalRepShareCaseATokenCache
+      - legalRepOrgSuccessTokenCache
+      - legalRepOrgDeletedTokenCache
+      - judgeTokenCache
+      - citizenTokenCache
+      - systemTokenCache
+    redis:
+      cache-null-values: false
+      time-to-live: 3600000
+
+  redis:
+    host: ${REDIS_URL:}
+    port: 6379
+
   security:
     oauth2:
       client:

@@ -7,6 +7,10 @@ spring:
     password:
     platform: h2
   flyway.enabled: true
+  cache:
+    cache-names: userInfoCache, accessTokenCache
+    caffeine:
+      spec: expireAfterWrite=3600s
 
 appealReferenceSequenceSeed: 50000
 
