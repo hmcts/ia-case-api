@@ -677,6 +677,7 @@ security:
       - "addStatutoryTimeframe24Weeks"
       - "forceDecidedState"
       - "forceFtpaDecidedState"
+      - "queryManagementRespondQuery"
     ctsc-team-leader:
       - "appellantInPersonManual"
       - "startAppeal"
