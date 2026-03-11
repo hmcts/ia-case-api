@@ -170,6 +170,7 @@ public enum Event {
     ROLLBACK_MIGRATION("rollbackMigration"),
     QUERY_MANAGEMENT_RAISE_QUERY("queryManagementRaiseQuery"),
     QUERY_MANAGEMENT_RESPOND_QUERY("queryManagementRespondQuery"),
+    COMPLETE_CASE_REVIEW("completeCaseReview"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");
