@@ -62,7 +62,7 @@ public class IdamService {
         return "Bearer " + idamApi.token(idamAuthDetails).getAccessToken();
     }
 
-    @Cacheable(value = "userInfoCache", key = "#accessToken")
+    @Cacheable(value = "userInfoCache", key = "#result.uid")
     public UserInfo getUserInfo(String accessToken) {
         UserInfo userInfo = idamApi.userInfo(accessToken);
         List<String> amRoles = Collections.emptyList();
