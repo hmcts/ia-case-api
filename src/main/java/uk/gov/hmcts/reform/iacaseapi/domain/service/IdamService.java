@@ -64,6 +64,7 @@ public class IdamService {
 
     @Cacheable(value = "userInfoCache", key = "#accessToken")
     public UserInfo getUserInfo(String accessToken) {
+        log.info("Calling idam userInfo API");
         UserInfo userInfo = idamApi.userInfo(accessToken);
         List<String> amRoles = Collections.emptyList();
         List<String> idamRoles = userInfo.getRoles() == null ?
