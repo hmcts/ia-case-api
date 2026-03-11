@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.IdamApi;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.idam.CachedUserToken;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.idam.UserInfo;
 
 @Slf4j
