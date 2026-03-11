@@ -4,14 +4,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import java.util.HashMap;
 import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseData;
 
 public class AsylumCase extends HashMap<String, Object> implements CaseData {
 
-    private final ObjectMapper objectMapper;
+    @Autowired
+    private ObjectMapper objectMapper;
 
-    public AsylumCase(ObjectMapper objectMapper) {
-        this.objectMapper = new ObjectMapper();
+    public AsylumCase() {
     }
 
     public <T> Optional<T> read(AsylumCaseFieldDefinition extractor, Class<T> type) {
