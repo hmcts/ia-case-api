@@ -62,7 +62,7 @@ public class DbUtils {
         return jdbcTemplate.queryForObject(
                 " SELECT case_id "
                         + " FROM ia_case_api.appeal_reference_numbers "
-                        + "   WHERE type = :appealType "
+                        + "   WHERE type = :type "
                         + "     AND year = :year"
                         + "     AND sequence = :sequence;",
                 parameters,
