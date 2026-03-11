@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.controllers.model.querymanagement;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.AllArgsConstructor;
@@ -21,7 +20,7 @@ import java.util.List;
 @Getter
 @Setter
 @JsonIgnoreProperties(ignoreUnknown = true)
-@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
+@JsonNaming(PropertyNamingStrategies.LowerCamelCaseStrategy.class)
 public class CaseMessage {
 
     private String id;
@@ -29,13 +28,10 @@ public class CaseMessage {
     private String name;
     private String body;
     private List<IdValue<Document>>  attachments;
-    @JsonProperty("isHearingRelated")
     private YesOrNo isHearingRelated;
     private LocalDate hearingDate;
     private OffsetDateTime createdOn;
-    @JsonProperty("createdBy")
     private String createdBy;
-    @JsonProperty("parentId")
     private String parentId;
 
 }
