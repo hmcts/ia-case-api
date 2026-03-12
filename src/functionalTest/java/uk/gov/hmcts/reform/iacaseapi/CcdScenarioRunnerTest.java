@@ -31,6 +31,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.ansi.AnsiColor;
+import org.springframework.boot.ansi.AnsiOutput;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.core.env.AbstractEnvironment;
@@ -83,6 +85,7 @@ public class CcdScenarioRunnerTest {
     @MockBean
     RequestUserAccessTokenProvider requestUserAccessTokenProvider;
 
+    private final String separator = "-------------------------------------------------------------------";
 
     @BeforeEach
     public void setUp() {
@@ -127,9 +130,10 @@ public class CcdScenarioRunnerTest {
                 .load("/scenarios/" + scenarioPattern)
                 .values();
 
-        log.info((char) 27 + "\033[36m" + "-------------------------------------------------------------------");
-        log.info((char) 27 + "\033[33m" + "RUNNING " + scenarioSources.size() + " SCENARIOS");
-        log.info((char) 27 + "\033[36m" + "-------------------------------------------------------------------");
+        log.info(AnsiOutput.toString(AnsiColor.CYAN, separator, AnsiColor.DEFAULT));
+        log.info(AnsiOutput.toString(AnsiColor.YELLOW, "RUNNING " + scenarioSources.size() + " SCENARIOS", AnsiColor.DEFAULT));
+        log.info(AnsiOutput.toString(AnsiColor.CYAN, separator, AnsiColor.DEFAULT));
+
         int maxRetries = 3;
         for (String scenarioSource : scenarioSources) {
             String description = "";
@@ -169,11 +173,11 @@ public class CcdScenarioRunnerTest {
                     }
 
                     if (!((Boolean) scenarioEnabled) || ((Boolean) scenarioDisabled)) {
-                        log.info((char) 27 + "\033[31m" + "SCENARIO: " + description + " **disabled**");
+                        log.info(AnsiOutput.toString(AnsiColor.MAGENTA, "SCENARIO: " + description + " **disabled**", AnsiColor.DEFAULT));
                         break;
                     }
 
-                    log.info((char) 27 + "\033[33m" + "SCENARIO: " + description);
+                    log.info(AnsiOutput.toString(AnsiColor.YELLOW, "SCENARIO: " + description, AnsiColor.DEFAULT));
 
                     Map<String, String> templatesByFilename = StringResourceLoader.load("/templates/*.json");
 
@@ -242,8 +246,8 @@ public class CcdScenarioRunnerTest {
             }
         }
 
-        log.info((char) 27 + "\033[36m" + "-------------------------------------------------------------------");
-        log.info((char) 27 + "\033[0m");
+        log.info(AnsiOutput.toString(AnsiColor.CYAN, separator, AnsiColor.DEFAULT));
+
         if (!haveAllPassed) {
             throw new AssertionError("Not all scenarios passed.\nFailed scenarios are:\n" + failedScenarios.stream().map(Object::toString).collect(Collectors.joining(";\n")));
         }
