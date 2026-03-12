@@ -1,5 +1,8 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.lettuce.core.RedisURI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,6 +46,14 @@ public class CacheConfiguration {
             redisConnectionFactory.getConnection().ping();
             log.info("Redis connection successful - using Redis for systemTokenCache");
 
+            // Configure ObjectMapper to handle type info correctly
+            ObjectMapper objectMapper = new ObjectMapper()
+                    .registerModule(new JavaTimeModule())
+                    .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+
+            GenericJackson2JsonRedisSerializer serializer =
+                    new GenericJackson2JsonRedisSerializer(objectMapper);
+
             RedisCacheConfiguration tokenCacheConfig = RedisCacheConfiguration.defaultCacheConfig()
                     .entryTtl(Duration.ofSeconds(3300))  // 55mins (token might expire before cache)
                     .disableCachingNullValues()
@@ -51,7 +62,7 @@ public class CacheConfiguration {
                                     .fromSerializer(new StringRedisSerializer()))
                     .serializeValuesWith(
                             RedisSerializationContext.SerializationPair
-                                    .fromSerializer(new GenericJackson2JsonRedisSerializer()));
+                                    .fromSerializer(serializer)); // use configured serializer
 
             // only systemTokenCache goes to Redis, rest stay as Caffeine
             return RedisCacheManager.builder(redisConnectionFactory)
