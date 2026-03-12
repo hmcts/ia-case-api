@@ -1,8 +1,5 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.config;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.lettuce.core.RedisURI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,9 +19,10 @@ import org.springframework.data.redis.connection.RedisPassword;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
-import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.idam.UserInfo;
 
 import java.time.Duration;
 
@@ -46,13 +44,22 @@ public class CacheConfiguration {
             redisConnectionFactory.getConnection().ping();
             log.info("Redis connection successful - using Redis for systemTokenCache");
 
-            // Configure ObjectMapper to handle type info correctly
-            ObjectMapper objectMapper = new ObjectMapper()
-                    .registerModule(new JavaTimeModule())
-                    .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+            // Idam user info config
+            Jackson2JsonRedisSerializer<UserInfo> userInfoSerializer =
+                    new Jackson2JsonRedisSerializer<>(UserInfo.class);
 
-            GenericJackson2JsonRedisSerializer serializer =
-                    new GenericJackson2JsonRedisSerializer(objectMapper);
+            RedisCacheConfiguration userInfoCacheConfig = RedisCacheConfiguration.defaultCacheConfig()
+                    .entryTtl(Duration.ofSeconds(3300))
+                    .disableCachingNullValues()
+                    .serializeKeysWith(
+                            RedisSerializationContext.SerializationPair
+                                    .fromSerializer(new StringRedisSerializer()))
+                    .serializeValuesWith(
+                            RedisSerializationContext.SerializationPair
+                                    .fromSerializer(userInfoSerializer));
+
+            // system user token config
+            Jackson2JsonRedisSerializer<String> tokenSerializer = new Jackson2JsonRedisSerializer<>(String.class);
 
             RedisCacheConfiguration tokenCacheConfig = RedisCacheConfiguration.defaultCacheConfig()
                     .entryTtl(Duration.ofSeconds(3300))  // 55mins (token might expire before cache)
@@ -62,15 +69,13 @@ public class CacheConfiguration {
                                     .fromSerializer(new StringRedisSerializer()))
                     .serializeValuesWith(
                             RedisSerializationContext.SerializationPair
-                                    .fromSerializer(serializer)); // use configured serializer
+                                    .fromSerializer(tokenSerializer));
 
             // only systemTokenCache goes to Redis, rest stay as Caffeine
             return RedisCacheManager.builder(redisConnectionFactory)
                     .cacheDefaults(tokenCacheConfig)
-                    .withCacheConfiguration("systemUserTokenCache",
-                            tokenCacheConfig.entryTtl(Duration.ofSeconds(3300)))
-                    .withCacheConfiguration("userInfoCache",
-                            tokenCacheConfig.entryTtl(Duration.ofSeconds(3300)))
+                    .withCacheConfiguration("systemUserTokenCache", tokenCacheConfig)
+                    .withCacheConfiguration("userInfoCache", userInfoCacheConfig)
                     .build();
 
         } catch (Exception e) {
