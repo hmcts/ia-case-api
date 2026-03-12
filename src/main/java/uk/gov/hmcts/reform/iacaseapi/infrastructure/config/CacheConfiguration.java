@@ -71,7 +71,6 @@ public class CacheConfiguration {
                             RedisSerializationContext.SerializationPair
                                     .fromSerializer(tokenSerializer));
 
-            // only systemTokenCache goes to Redis, rest stay as Caffeine
             return RedisCacheManager.builder(redisConnectionFactory)
                     .cacheDefaults(tokenCacheConfig)
                     .withCacheConfiguration("systemUserTokenCache", tokenCacheConfig)
