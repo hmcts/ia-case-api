@@ -35,7 +35,7 @@ public class CaseMessage {
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate hearingDate;
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ssXXX")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSX")
     private OffsetDateTime createdOn;
     private String createdBy;
     private String parentId;
