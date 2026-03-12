@@ -1734,6 +1734,9 @@ public enum AsylumCaseFieldDefinition {
     REVOKE_ACCESS_FOR_USER_ORG_ID(
             "revokeAccessForUserOrgId", new TypeReference<String>(){}),
 
+    REVOKE_ACCESS_DL(
+        "revokeAccessDl", new TypeReference<DynamicList>(){}),
+
     FEE_UPDATE_RECORDED(
         "feeUpdateRecorded", new TypeReference<CheckValues<String>>(){}),
 

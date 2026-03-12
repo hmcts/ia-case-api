@@ -165,6 +165,7 @@ class EventTest {
         assertEquals("removeStatutoryTimeframe24Weeks", Event.REMOVE_STATUTORY_TIMEFRAME_24_WEEKS.toString());
         assertEquals("forceDecidedState", Event.FORCE_DECIDED_STATE.toString());
         assertEquals("forceFtpaDecidedState", Event.FORCE_FTPA_DECIDED_STATE.toString());
+        assertEquals("revokeCitizenAccess", Event.REVOKE_CITIZEN_ACCESS.toString());
     }
 
     @Test

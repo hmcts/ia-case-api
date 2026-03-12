@@ -3,6 +3,8 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -33,7 +35,7 @@ class RevokeCaseAccessConfirmationTest {
         when(callback.getEvent()).thenReturn(Event.REVOKE_CASE_ACCESS);
 
         PostSubmitCallbackResponse callbackResponse =
-                revokeCaseAccessConfirmation.handle(callback);
+            revokeCaseAccessConfirmation.handle(callback);
 
         assertNotNull(callbackResponse);
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
@@ -45,35 +47,36 @@ class RevokeCaseAccessConfirmationTest {
     void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> revokeCaseAccessConfirmation.handle(callback))
-                .hasMessage("Cannot handle callback")
-                .isExactlyInstanceOf(IllegalStateException.class);
+            .hasMessage("Cannot handle callback")
+            .isExactlyInstanceOf(IllegalStateException.class);
     }
 
-    @Test
-    void it_can_handle_callback() {
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {"REVOKE_CASE_ACCESS", "REVOKE_CITIZEN_ACCESS"})
+    void it_can_handle_callback(Event event) {
+        when(callback.getEvent()).thenReturn(event);
+        assertTrue(revokeCaseAccessConfirmation.canHandle(callback));
 
-        for (Event event : Event.values()) {
-            when(callback.getEvent()).thenReturn(event);
-            boolean canHandle = revokeCaseAccessConfirmation.canHandle(callback);
+    }
 
-            if (event == Event.REVOKE_CASE_ACCESS) {
-                assertTrue(canHandle);
-            } else {
-                assertFalse(canHandle);
-            }
-        }
+    @ParameterizedTest
+    @EnumSource(value = Event.class, mode = EnumSource.Mode.EXCLUDE,
+        names = {"REVOKE_CASE_ACCESS", "REVOKE_CITIZEN_ACCESS"})
+    void it_cannot_handle_callback(Event event) {
+        when(callback.getEvent()).thenReturn(event);
+        assertFalse(revokeCaseAccessConfirmation.canHandle(callback));
     }
 
     @Test
     void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> revokeCaseAccessConfirmation.canHandle(null))
-                .hasMessage("callback must not be null")
-                .isExactlyInstanceOf(NullPointerException.class);
+            .hasMessage("callback must not be null")
+            .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(() -> revokeCaseAccessConfirmation.handle(null))
-                .hasMessage("callback must not be null")
-                .isExactlyInstanceOf(NullPointerException.class);
+            .hasMessage("callback must not be null")
+            .isExactlyInstanceOf(NullPointerException.class);
     }
 
 }
