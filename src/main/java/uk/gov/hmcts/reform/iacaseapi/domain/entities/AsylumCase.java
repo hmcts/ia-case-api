@@ -10,16 +10,11 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseData;
 
 public class AsylumCase extends HashMap<String, Object> implements CaseData {
 
-    private final ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     public AsylumCase() {
-        this.objectMapper = new ObjectMapper();
-        this.objectMapper.registerModule(new Jdk8Module());
-        this.objectMapper.registerModule(new JavaTimeModule());
-    }
-
-    public AsylumCase(ObjectMapper objectMapper) {
-        this.objectMapper = objectMapper;
+        objectMapper.registerModule(new Jdk8Module());
+        objectMapper.registerModule(new JavaTimeModule());
     }
 
     public <T> Optional<T> read(AsylumCaseFieldDefinition extractor, Class<T> type) {
