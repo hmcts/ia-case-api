@@ -10,8 +10,13 @@ public class AsylumCase extends HashMap<String, Object> implements CaseData {
 
     private final ObjectMapper objectMapper;
 
-    public AsylumCase(ObjectMapper objectMapper) {
+    public AsylumCase() {
         this.objectMapper = new ObjectMapper();
+        this.objectMapper.registerModule(new Jdk8Module());
+    }
+
+    public AsylumCase(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
     }
 
     public <T> Optional<T> read(AsylumCaseFieldDefinition extractor, Class<T> type) {
