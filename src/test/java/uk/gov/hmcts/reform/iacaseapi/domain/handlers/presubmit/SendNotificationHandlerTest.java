@@ -154,7 +154,8 @@ class SendNotificationHandlerTest {
             Event.REQUEST_RESPONSE_AMEND,
             Event.UPLOAD_ADDENDUM_EVIDENCE_ADMIN_OFFICER,
             Event.MAINTAIN_CASE_LINKS,
-            Event.DECIDE_FTPA_APPLICATION
+            Event.DECIDE_FTPA_APPLICATION,
+            Event.CMR_HEARING_CANCELLED
         ).forEach(event -> {
 
             AsylumCase expectedUpdatedCase = mock(AsylumCase.class);
@@ -325,7 +326,8 @@ class SendNotificationHandlerTest {
                         Event.RECORD_REMISSION_REMINDER,
                         Event.MARK_APPEAL_AS_REMITTED,
                         Event.REFUND_CONFIRMATION,
-                        Event.HEARING_CANCELLED
+                        Event.HEARING_CANCELLED,
+                        Event.CMR_HEARING_CANCELLED
                     ).contains(event)) {
                     assertTrue(canHandle);
                 } else {
@@ -412,7 +414,8 @@ class SendNotificationHandlerTest {
                     Event.SEND_PAYMENT_REMINDER_NOTIFICATION,
                     Event.PROGRESS_MIGRATED_CASE,
                     Event.REFUND_CONFIRMATION,
-                    Event.HEARING_CANCELLED
+                    Event.HEARING_CANCELLED,
+                    Event.CMR_HEARING_CANCELLED
                 ).contains(event)) {
                 assertTrue(canHandle);
             } else {
@@ -500,7 +503,8 @@ class SendNotificationHandlerTest {
                         Event.UPDATE_TRIBUNAL_DECISION,
                         Event.SEND_PAYMENT_REMINDER_NOTIFICATION,
                         Event.REFUND_CONFIRMATION,
-                        Event.HEARING_CANCELLED
+                        Event.HEARING_CANCELLED,
+                        Event.CMR_HEARING_CANCELLED
                     ).contains(event)) {
                     assertTrue(canHandle);
                 } else {
