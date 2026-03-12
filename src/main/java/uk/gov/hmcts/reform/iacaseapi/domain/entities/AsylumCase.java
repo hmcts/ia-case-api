@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import java.util.HashMap;
 import java.util.Optional;
+
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseData;
 
 public class AsylumCase extends HashMap<String, Object> implements CaseData {
@@ -13,6 +15,7 @@ public class AsylumCase extends HashMap<String, Object> implements CaseData {
     public AsylumCase() {
         this.objectMapper = new ObjectMapper();
         this.objectMapper.registerModule(new Jdk8Module());
+        this.objectMapper.registerModule(new JavaTimeModule());
     }
 
     public AsylumCase(ObjectMapper objectMapper) {
