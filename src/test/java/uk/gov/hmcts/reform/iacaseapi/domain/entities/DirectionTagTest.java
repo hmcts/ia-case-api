@@ -26,11 +26,12 @@ class DirectionTagTest {
         assertEquals("listingPaPayLater", DirectionTag.LISTING_PA_PAY_LATER.toString());
         assertEquals("caseBuildingPaPayLater", DirectionTag.CASE_BUILDING_PA_PAY_LATER.toString());
         assertEquals("decisionPaPayLater", DirectionTag.DECISION_PA_PAY_LATER.toString());
+        assertEquals("requestReasonsForAppealPaPayLater", DirectionTag.REQUEST_REASONS_FOR_APPEAL_PA_PAY_LATER.toString());
         assertEquals("", DirectionTag.NONE.toString());
     }
 
     @Test
     void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(18, DirectionTag.values().length);
+        assertEquals(19, DirectionTag.values().length);
     }
 }

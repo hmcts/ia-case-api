@@ -22,6 +22,7 @@ public enum DirectionTag {
     LISTING_PA_PAY_LATER("listingPaPayLater"),
     CASE_BUILDING_PA_PAY_LATER("caseBuildingPaPayLater"),
     DECISION_PA_PAY_LATER("decisionPaPayLater"),
+    REQUEST_REASONS_FOR_APPEAL_PA_PAY_LATER("requestReasonsForAppealPaPayLater"),
 
     @JsonEnumDefaultValue
     NONE("");
