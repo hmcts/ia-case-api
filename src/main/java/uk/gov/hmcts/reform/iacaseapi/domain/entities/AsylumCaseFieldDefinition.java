@@ -2924,7 +2924,21 @@ public enum AsylumCaseFieldDefinition {
         new TypeReference<YesOrNo>(){}),
 
     COMPLETE_CASE_REVIEW_DATE("completeCaseReviewDate",
-        new TypeReference<String>(){})
+        new TypeReference<String>(){}),
+
+    CMR_HEARING_CENTRE("cmrHearingCentre", new TypeReference<HearingCentre>(){}),
+
+    CMR_HEARING_CENTRE_ADDRESS("cmrHearingCentreAddress", new TypeReference<String>(){}),
+
+    CMR_HEARING_LENGTH("cmrHearingLength", new TypeReference<HoursAndMinutes>(){}),
+
+    CMR_HEARING_DATE("cmrHearingDate", new TypeReference<String>(){}),
+
+    CMR_HEARING_CHANNEL("cmrHearingChannel", new TypeReference<DynamicList>(){}),
+
+    CMR_IS_REMOTE_HEARING("cmrIsRemoteHearing", new TypeReference<YesOrNo>(){}),
+
+    CMR_HEARING_ID_LIST("cmrHearingIdList", new TypeReference<List<IdValue<String>>>(){}),
     ;
 
     private final String value;
