@@ -20,7 +20,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -34,7 +33,6 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.idam.Token;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.idam.UserInfo;
 
 @ExtendWith(MockitoExtension.class)
-@Disabled
 class IdamServiceTest {
 
     public static final String SOME_SYSTEM_USER = "some system user";
