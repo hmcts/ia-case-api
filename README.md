@@ -1,7 +1,7 @@
  
 # ia-case-api testing
 
-Immigration &amp; Asylum case API
+Immigration &amp; Asylum case API.
  
 ## Purpose
 
@@ -282,4 +282,3 @@ If you want to clean up the environment just run:
 ```shell
 npx @hmcts/dev-env@latest --delete
 ```
-

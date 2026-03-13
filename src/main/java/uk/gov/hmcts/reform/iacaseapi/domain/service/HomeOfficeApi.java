@@ -15,4 +15,8 @@ public interface HomeOfficeApi<T extends CaseData> {
             Callback<T> callback
     );
 
+    T midEvent(
+            Callback<T> callback
+    );
+
 }
