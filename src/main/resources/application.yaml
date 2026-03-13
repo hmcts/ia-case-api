@@ -82,7 +82,7 @@ spring:
         jwt:
           jwk-set-uri: ${OPEN_ID_IDAM_URL:http://127.0.0.1:5000}/o/jwks
   cache:
-    cache-names: userInfoCache, accessTokenCache, homeOfficeReferenceDataCache
+    cache-names: userInfoCache, accessTokenCache
     caffeine:
       spec: expireAfterWrite=3600s
   datasource:
@@ -217,6 +217,7 @@ homeOfficeApi:
   endpoint: ${IA_HOME_OFFICE_INTEGRATION_API_URL:http://127.0.0.1:8094}
   aboutToStartPath: "/asylum/ccdAboutToStart"
   aboutToSubmitPath: "/asylum/ccdAboutToSubmit"
+  midEventPath: "/asylum/ccdMidEvent"
 
 security:
   anonymousPaths:
@@ -273,6 +274,7 @@ security:
       - "requestCaseEdit"
       - "requestHearingRequirements"
       - "requestRespondentEvidence"
+      - "completeCaseReview"
       - "uploadRespondentEvidence"
       - "requestRespondentReview"
       - "addAppealResponse"
@@ -353,6 +355,7 @@ security:
       - "generateListCmrTask"
       - "markAppealAsDetained"
       - "removeDetainedStatus"
+      - "turnOnNotificationsWATasks"
       - "addStatutoryTimeframe24Weeks"
     challenged-access-legal-operations:
       - "appellantInPersonManual"
@@ -362,6 +365,7 @@ security:
       - "requestCaseEdit"
       - "requestHearingRequirements"
       - "requestRespondentEvidence"
+      - "completeCaseReview"
       - "uploadRespondentEvidence"
       - "requestRespondentReview"
       - "addAppealResponse"
@@ -450,6 +454,7 @@ security:
       - "requestCaseEdit"
       - "requestHearingRequirements"
       - "requestRespondentEvidence"
+      - "completeCaseReview"
       - "uploadRespondentEvidence"
       - "requestRespondentReview"
       - "addAppealResponse"
@@ -530,6 +535,7 @@ security:
       - "generateListCmrTask"
       - "markAppealAsDetained"
       - "removeDetainedStatus"
+      - "turnOnNotificationsWATasks"
     hearing-centre-admin:
       - "appellantInPersonManual"
       - "startAppeal"
@@ -596,6 +602,9 @@ security:
       - "markAppealAsDetained"
       - "removeDetainedStatus"
       - "editDocuments"
+      - "forceDecidedState"
+      - "forceFtpaDecidedState"
+      - "turnOnNotificationsWATasks"
       - "addStatutoryTimeframe24Weeks"
     ctsc:
       - "appellantInPersonManual"
@@ -661,8 +670,11 @@ security:
       - "generateListCmrTask"
       - "markAppealAsDetained"
       - "removeDetainedStatus"
+      - "turnOnNotificationsWATasks"
       - "editDocuments"
       - "addStatutoryTimeframe24Weeks"
+      - "forceDecidedState"
+      - "forceFtpaDecidedState"
     ctsc-team-leader:
       - "appellantInPersonManual"
       - "startAppeal"
@@ -705,6 +717,7 @@ security:
       - "editAppealAfterSubmit"
       - "markAppealAsAda"
       - "removeDetainedStatus"
+      - "turnOnNotificationsWATasks"
       - "markAppealAsDetained"
       - "markAsReadyForUtTransfer"
       - "createCaseLink"
@@ -728,6 +741,8 @@ security:
       - "markAppealAsDetained"
       - "removeDetainedStatus"
       - "editDocuments"
+      - "forceDecidedState"
+      - "forceFtpaDecidedState"
       - "addStatutoryTimeframe24Weeks"
     national-business-centre:
       - "appellantInPersonManual"
@@ -794,6 +809,8 @@ security:
       - "markAppealAsDetained"
       - "removeDetainedStatus"
       - "editDocuments"
+      - "forceDecidedState"
+      - "forceFtpaDecidedState"
       - "addStatutoryTimeframe24Weeks"
     challenged-access-ctsc:
       - "appellantInPersonManual"
@@ -860,6 +877,8 @@ security:
       - "markAppealAsDetained"
       - "removeDetainedStatus"
       - "editDocuments"
+      - "forceDecidedState"
+      - "forceFtpaDecidedState"
       - "addStatutoryTimeframe24Weeks"
     challenged-access-admin:
       - "appellantInPersonManual"
@@ -927,6 +946,8 @@ security:
       - "markAppealAsDetained"
       - "removeDetainedStatus"
       - "editDocuments"
+      - "forceDecidedState"
+      - "forceFtpaDecidedState"
       - "addStatutoryTimeframe24Weeks"
     caseworker-ia-homeofficeapc:
       - "uploadHomeOfficeBundle"
@@ -1322,6 +1343,8 @@ security:
       - "UpdateNextHearingInfo"
       - "removeCaseManagerBulk"
       - "hearingCancelled"
+      - "forceDecidedState"
+      - "forceFtpaDecidedState"
       - "rollbackMigration"
       - "addStatutoryTimeframe24Weeks"
       - "removeStatutoryTimeframe24Weeks"
