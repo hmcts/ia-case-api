@@ -34,11 +34,9 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SPONSOR_AUTHORISATION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SPONSOR_CONTACT_PREFERENCE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SPONSOR_EMAIL;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SPONSOR_EMAIL_ADMIN_J;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SPONSOR_FAMILY_NAME;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SPONSOR_GIVEN_NAMES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SPONSOR_MOBILE_NUMBER;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SPONSOR_MOBILE_NUMBER_ADMIN_J;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SPONSOR_NAME_FOR_DISPLAY;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SPONSOR_PARTY_ID;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SPONSOR_SUBSCRIPTIONS;
@@ -247,10 +245,6 @@ public class AppealOutOfCountryEditAppealAipHandler implements PreSubmitCallback
                 asylumCase.write(AIP_SPONSOR_EMAIL_FOR_DISPLAY, sponsorEmail.getValue().getEmail());
                 asylumCase.write(SPONSOR_MOBILE_NUMBER, sponsorMobileNumber.getValue().getMobileNumber());
                 asylumCase.write(AIP_SPONSOR_MOBILE_NUMBER_FOR_DISPLAY, sponsorMobileNumber.getValue().getMobileNumber());
-
-                // DIAC-1803 attempted fix
-                asylumCase.write(SPONSOR_EMAIL_ADMIN_J, sponsorEmail.getValue().getEmail());
-                asylumCase.write(SPONSOR_MOBILE_NUMBER_ADMIN_J, sponsorMobileNumber.getValue().getMobileNumber());
             }
         }
     }
@@ -319,10 +313,8 @@ public class AppealOutOfCountryEditAppealAipHandler implements PreSubmitCallback
         asylumCase.clear(SPONSOR_CONTACT_PREFERENCE);
         asylumCase.clear(SPONSOR_SUBSCRIPTIONS);
         asylumCase.clear(SPONSOR_EMAIL);
-        asylumCase.clear(SPONSOR_EMAIL_ADMIN_J);
         asylumCase.clear(AIP_SPONSOR_EMAIL_FOR_DISPLAY);
         asylumCase.clear(SPONSOR_MOBILE_NUMBER);
-        asylumCase.clear(SPONSOR_MOBILE_NUMBER_ADMIN_J);
         asylumCase.clear(AIP_SPONSOR_MOBILE_NUMBER_FOR_DISPLAY);
         asylumCase.clear(SPONSOR_AUTHORISATION);
         asylumCase.clear(SPONSOR_NAME_FOR_DISPLAY);
