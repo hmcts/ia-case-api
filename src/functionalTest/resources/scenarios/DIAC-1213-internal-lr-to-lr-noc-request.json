@@ -1,0 +1,34 @@
+{
+  "description": "DIAC-1213 LR Manual to LR Notice of Change",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "LegalRepresentative",
+    "input": {
+      "id": 1213,
+      "eventId": "nocRequest",
+      "state": "appealSubmitted",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "isAdmin": "Yes",
+          "journeyType": null,
+          "email": "appelant@test.com",
+          "mobileNumber": "07983000000"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "isAdmin": "No",
+        "journeyType": null,
+        "email": null,
+        "mobileNumber": null
+      }
+    }
+  }
+}
