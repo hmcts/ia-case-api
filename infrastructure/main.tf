@@ -98,13 +98,21 @@ resource "azurerm_key_vault_secret" "local_ia_config_validator_secret" {
 #   key_vault_id = data.azurerm_key_vault.ia_key_vault.id
 # }
 
-resource "tls_private_key" "password_key" {
-  algorithm = "RSA"
-  rsa_bits  = 2048
-}
+# resource "tls_private_key" "password_key" {
+#   algorithm = "RSA"
+#   rsa_bits  = 2048
+# }
+#
+# resource "azurerm_key_vault_secret" "local_ia_ccd_importer_password" {
+#   name         = "ccd-importer-password"
+#   value        = substr(tls_private_key.password_key.private_key_openssh, 0, 16) # First 16 characters
+#   key_vault_id = data.azurerm_key_vault.ia_key_vault.id
+# }
+
+resource "time_static" "password_time" {}
 
 resource "azurerm_key_vault_secret" "local_ia_ccd_importer_password" {
   name         = "ccd-importer-password"
-  value        = substr(tls_private_key.password_key.private_key_openssh, 0, 16) # First 16 characters
+  value        = substr(md5(time_static.password_time.id), 0, 16) # First 16 characters of the MD5 hash
   key_vault_id = data.azurerm_key_vault.ia_key_vault.id
 }
