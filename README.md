@@ -280,5 +280,5 @@ e.g. the method getCcdEventAuthorizor() in SecurityConfiguration line 93 is a go
 If you want to clean up the environment just run:
 
 ```shell
-npx @hmcts/dev-env@latest --delete
+npx @hmcts/dev-env@latest --delete 
 ```
