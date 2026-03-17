@@ -109,10 +109,16 @@ resource "azurerm_key_vault_secret" "local_ia_config_validator_secret" {
 #   key_vault_id = data.azurerm_key_vault.ia_key_vault.id
 # }
 
-resource "time_static" "password_time" {}
+# resource "time_static" "password_time" {}
+#
+# resource "azurerm_key_vault_secret" "local_ia_ccd_importer_password" {
+#   name         = "ccd-importer-password"
+#   value        = substr(md5(time_static.password_time.id), 0, 16) # First 16 characters of the MD5 hash
+#   key_vault_id = data.azurerm_key_vault.ia_key_vault.id
+# }
 
 resource "azurerm_key_vault_secret" "local_ia_ccd_importer_password" {
   name         = "ccd-importer-password"
-  value        = substr(md5(time_static.password_time.id), 0, 16) # First 16 characters of the MD5 hash
+  value        = substr(uuid(), 0, 16) # First 16 characters of a UUID
   key_vault_id = data.azurerm_key_vault.ia_key_vault.id
 }
