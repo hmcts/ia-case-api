@@ -689,7 +689,7 @@ ia-aip-frontend:
 ccd-case-document-am-api:
   enabled: true
   java:
-    image: hmctspublic.azurecr.io/ccd/case-document-am-api:latest
+    image: hmctsprod.azurecr.io/ccd/case-document-am-api:latest
     releaseNameOverride: ${SERVICE_NAME}-ccd-case-document-am-api
     environment:
       CCD_DATA_STORE_API_BASE_URL: http://{{ .Release.Name }}-ccd-data-store-api
@@ -705,7 +705,7 @@ xui-webapp:
   nodejs:
     imagePullPolicy: Always
     releaseNameOverride: ${SERVICE_NAME}-xui-webapp
-    image: hmctspublic.azurecr.io/xui/webapp:latest
+    image: hmctsprod.azurecr.io/xui/webapp:latest
     ingressHost: xui-${SERVICE_FQDN}
     memoryRequests: 2Gi
     cpuRequests: 2000m
@@ -810,7 +810,7 @@ ccd:
   ccd-api-gateway-web:
     nodejs:
       imagePullPolicy: Always
-      image: hmctspublic.azurecr.io/ccd/api-gateway-web:latest
+      image: hmctsprod.azurecr.io/ccd/api-gateway-web:latest
       devcpuRequests: 500m
       devmemoryRequests: 1Gi
       devcpuLimits: 1
@@ -828,7 +828,7 @@ ccd:
       autoscaling:
         enabled: false
       imagePullPolicy: Always
-      image: hmctspublic.azurecr.io/ccd/user-profile-api:latest
+      image: hmctsprod.azurecr.io/ccd/user-profile-api:latest
       keyVaults: [ ]
       devcpuRequests: 500m
       devmemoryRequests: 1Gi
@@ -883,7 +883,7 @@ ccd:
       autoscaling:
         enabled: false
       imagePullPolicy: Always
-      image: hmctspublic.azurecr.io/am/role-assignment-service:latest
+      image: hmctsprod.azurecr.io/am/role-assignment-service:latest
       ingressHost: am-role-assignment-${SERVICE_FQDN}
       devcpuRequests: 500m
       devmemoryRequests: 1Gi
@@ -920,7 +920,7 @@ ccd:
 
   ccd-admin-web:
     nodejs:
-      image: hmctspublic.azurecr.io/ccd/admin-web:latest
+      image: hmctsprod.azurecr.io/ccd/admin-web:latest
       ingressHost: admin-web-${SERVICE_FQDN}
       environment:
         IDAM_ADMIN_WEB_SERVICE_KEY: ${ADMIN_S2S_KEY}
@@ -932,7 +932,7 @@ ccd:
 
   ccd-definition-store-api:
     java:
-      image: hmctspublic.azurecr.io/ccd/definition-store-api:latest
+      image: hmctsprod.azurecr.io/ccd/definition-store-api:latest
       imagePullPolicy: Always
       devcpuRequests: 500m
       devmemoryRequests: 1Gi
@@ -982,13 +982,13 @@ ccd:
       #     paths:
       #       - path: /
   logstash:
-    image: "hmctspublic.azurecr.io/imported/logstash/logstash"
+    image: "hmctsprod.azurecr.io/imported/logstash/logstash"
     imageTag: "7.16.1"
     imagePullPolicy: "IfNotPresent"
     logstashJavaOpts: "-Xmx1g -Xms512M"
     extraInitContainers: |
       - name: download-postgres-jdbc
-        image: hmctspublic.azurecr.io/curl:7.70.0
+        image: hmctsprod.azurecr.io/curl:7.70.0
         command: ['curl', '-L', 'https://jdbc.postgresql.org/download/postgresql-42.2.18.jar', '-o', '/logstash-lib/postgresql.jar']
         volumeMounts:
         - name: logstash-lib
@@ -1148,7 +1148,7 @@ em-ccdorc:
   java:
     imagePullPolicy: Always
     releaseNameOverride: ${SERVICE_NAME}-em-ccdorc
-    image: hmctspublic.azurecr.io/em/ccdorc:latest
+    image: hmctsprod.azurecr.io/em/ccdorc:latest
     ingressHost: em-ccdorc-${SERVICE_FQDN}
     environment:
       IDAM_API_BASE_URI: https://idam-api.aat.platform.hmcts.net
@@ -1173,7 +1173,7 @@ em-stitching:
   java:
     imagePullPolicy: Always
     releaseNameOverride: ${SERVICE_NAME}-em-stitching
-    image: hmctspublic.azurecr.io/em/stitching:latest
+    image: hmctsprod.azurecr.io/em/stitching:latest
     ingressHost: em-stitching-${SERVICE_FQDN}
     devcpuRequests: 500m
     devmemoryRequests: 1Gi
@@ -1217,7 +1217,7 @@ aac-manage-case-assignment:
     devmemoryLimits: 4Gi
     imagePullPolicy: Always
     releaseNameOverride: ${SERVICE_NAME}-aac-manage-case-assignment
-    image: hmctspublic.azurecr.io/aac/manage-case-assignment:latest
+    image: hmctsprod.azurecr.io/aac/manage-case-assignment:latest
     ingressHost: aac-${SERVICE_FQDN}
     environment:
       IDAM_API_URL: https://idam-api.aat.platform.hmcts.net
@@ -1398,7 +1398,7 @@ ccd-message-publisher:
 am-org-role-mapping-service:
   enabled: true
   java:
-    image: 'hmctspublic.azurecr.io/am/org-role-mapping-service:latest'
+    image: 'hmctsprod.azurecr.io/am/org-role-mapping-service:latest'
     ingressHost: am-org-role-mapping-service-${SERVICE_FQDN}
     releaseNameOverride: ${SERVICE_NAME}-am-org-role-mapping-service
     secrets:
