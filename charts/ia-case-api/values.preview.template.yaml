@@ -631,6 +631,7 @@ ia-aip-frontend:
       SECURE_SESSION: false
       TRACKING_SCRIPTS: false
       TIMELINE_ENABLED: true
+      ASK_FOR_MORE_TIME_ENABLED: true
     keyVaults:
       ia:
         resourceGroup: ia
