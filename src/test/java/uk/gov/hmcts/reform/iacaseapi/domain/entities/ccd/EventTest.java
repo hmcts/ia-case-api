@@ -95,8 +95,8 @@ class EventTest {
             Arguments.of("submitTimeExtension", Event.SUBMIT_TIME_EXTENSION.toString()),
             Arguments.of("reviewTimeExtension", Event.REVIEW_TIME_EXTENSION.toString()),
             Arguments.of("sendDirectionWithQuestions", Event.SEND_DIRECTION_WITH_QUESTIONS.toString()),
-            Arguments.of("flagCase"), // tactical fl, Event.FLAG_CASE.toString()ag
-            Arguments.of("createFlag"), // strategic fl, Event.CREATE_FLAG.toString()ag
+            Arguments.of("flagCase", Event.FLAG_CASE.toString()),
+            Arguments.of("createFlag", Event.CREATE_FLAG.toString()),
             Arguments.of("removeFlag", Event.REMOVE_FLAG.toString()),
             Arguments.of("requestCmaRequirements", Event.REQUEST_CMA_REQUIREMENTS.toString()),
             Arguments.of("editCmaRequirements", Event.EDIT_CMA_REQUIREMENTS.toString()),
