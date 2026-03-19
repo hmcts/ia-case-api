@@ -54,13 +54,12 @@ public class RevokeCitizenAccessHandler implements PreSubmitCallbackHandler<Asyl
                 AsylumCaseFieldDefinition.REVOKE_ACCESS_DL, DynamicList.class)
             .orElseThrow(() -> new IllegalStateException(
                 "Dynamic list of users to revoke access from is not present."));
-        String idamId = revokeAccessDl.getValue().getCode();
+        String idamId = revokeAccessDl.getValue().getCode().split(":")[0];
 
         long caseId = callback.getCaseDetails().getId();
 
         RoleAssignmentResource roleAssignmentResource = roleAssignmentService.getCaseRoleAssignmentsForUser(
             caseId, idamId);
-
 
         if (roleAssignmentResource.getRoleAssignmentResponse().isEmpty()) {
             return new PreSubmitCallbackResponse<>(asylumCase)

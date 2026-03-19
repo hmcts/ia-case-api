@@ -74,7 +74,7 @@ public class RevokeCitizenPreparer implements PreSubmitCallbackHandler<AsylumCas
             .map(idamService::getUserFromIdV1)
             .filter(Objects::nonNull)
             .filter(User::isActive)
-            .map(user -> new Value(user.getId(), user.toRevokeAccessDlString(nlrIdamId)))
+            .map(user -> new Value(user.toValueId(), user.toString()))
             .toList();
 
         if (userValueList.isEmpty()) {

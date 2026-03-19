@@ -97,11 +97,11 @@ class RevokeCitizenPreparerTest {
         when(assignment2.getActorId()).thenReturn(userId2);
         when(idamService.getUserFromIdV1(userId1)).thenReturn(user);
         when(idamService.getUserFromIdV1(userId2)).thenReturn(user2);
-        when(user.getId()).thenReturn(userId1);
+        when(user.toValueId()).thenReturn(userId1);
         when(user.toRevokeAccessDlString(anyString())).thenReturn(userName1);
         when(user.getRoles()).thenReturn(List.of("citizen"));
         when(user.isActive()).thenReturn(true);
-        when(user2.getId()).thenReturn(userId2);
+        when(user2.toValueId()).thenReturn(userId2);
         when(user2.toRevokeAccessDlString(anyString())).thenReturn(userName2);
         when(user2.getRoles()).thenReturn(List.of("citizen"));
         when(user2.isActive()).thenReturn(true);
