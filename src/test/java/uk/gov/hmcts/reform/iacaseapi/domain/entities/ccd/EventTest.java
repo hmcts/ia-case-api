@@ -1,7 +1,10 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -18,7 +21,12 @@ class EventTest {
 
     @Test
     void if_this_test_fails_it_is_because_eventMapping_needs_updating_with_your_changes() {
-        assertEquals(Event.values().length, eventMapping().count());
+        List<String> eventMappingStrings = eventMapping().map(arg -> arg.get()[1])
+            .map(String.class::cast)
+            .toList();
+        List<Event> missingEvents = Arrays.stream(Event.values())
+            .filter(event -> !eventMappingStrings.contains(event.toString())).toList();
+        assertTrue(missingEvents.isEmpty(), "The following events are missing from the eventMapping method: " + missingEvents);
     }
 
     static Stream<Arguments> eventMapping() {
