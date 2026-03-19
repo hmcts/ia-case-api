@@ -86,11 +86,11 @@ class RevokeCitizenPreparerTest {
         when(assignment2.getActorId()).thenReturn(userId2);
         when(idamService.getUserFromIdV1(userId1)).thenReturn(user);
         when(idamService.getUserFromIdV1(userId2)).thenReturn(user2);
-        when(user.getId()).thenReturn(userId1);
+        when(user.toValueId()).thenReturn(userId1);
         when(user.toString()).thenReturn(userName1);
         when(user.getRoles()).thenReturn(List.of("citizen"));
         when(user.isActive()).thenReturn(true);
-        when(user2.getId()).thenReturn(userId2);
+        when(user2.toValueId()).thenReturn(userId2);
         when(user2.toString()).thenReturn(userName2);
         when(user2.getRoles()).thenReturn(List.of("citizen"));
         when(user2.isActive()).thenReturn(true);
@@ -132,11 +132,11 @@ class RevokeCitizenPreparerTest {
         when(idamService.getUserFromIdV1(userId2)).thenReturn(user2);
         when(idamService.getUserFromIdV1(userId3)).thenReturn(user3);
         when(idamService.getUserFromIdV1(userId4)).thenReturn(user4);
-        when(user.getId()).thenReturn(userId1);
+        when(user.toValueId()).thenReturn(userId1);
         when(user.toString()).thenReturn(userName1);
         when(user.getRoles()).thenReturn(List.of("citizen"));
         when(user.isActive()).thenReturn(false);
-        when(user2.getId()).thenReturn(userId2);
+        when(user2.toValueId()).thenReturn(userId2);
         when(user2.toString()).thenReturn(userName2);
         when(user2.getRoles()).thenReturn(List.of("citizen"));
         when(user2.isActive()).thenReturn(true);

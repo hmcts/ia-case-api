@@ -25,4 +25,8 @@ public class User {
     public String toString() {
         return email + " - " + forename + " " + surname;
     }
+
+    public String toValueId() {
+        return id + ":" + email;
+    }
 }
