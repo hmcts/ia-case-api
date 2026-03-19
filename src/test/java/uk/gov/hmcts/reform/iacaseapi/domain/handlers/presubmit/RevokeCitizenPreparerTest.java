@@ -161,9 +161,9 @@ class RevokeCitizenPreparerTest {
         assertEquals(2, actualDl.getListItems().size());
         Value value = actualDl.getListItems().get(0);
         Value value2 = actualDl.getListItems().get(1);
-        assertEquals(userId1, value.getCode());
+        assertEquals(userId1 + ":user1@test.com" , value.getCode());
         assertEquals("user1@test.com - User 1 (Citizen)", value.getLabel());
-        assertEquals(userId3, value2.getCode());
+        assertEquals(userId3 + ":user3@test.com", value2.getCode());
         assertEquals("user3@test.com - User 3 (Non Legal Rep)", value2.getLabel());
     }
 
