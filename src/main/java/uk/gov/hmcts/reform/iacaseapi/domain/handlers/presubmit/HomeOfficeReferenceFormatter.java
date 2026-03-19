@@ -1,6 +1,8 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
+import java.util.function.Predicate;
+import java.util.regex.Pattern;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.AGE_ASSESSMENT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_REFERENCE_NUMBER;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
@@ -19,9 +21,13 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
-
 @Component
 public class HomeOfficeReferenceFormatter implements PreSubmitCallbackHandler<AsylumCase> {
+
+    private static final Pattern INTEGER_PATTERN = Pattern.compile("\\d+");
+
+    public static final Predicate<String> isInteger = s ->
+            s != null && !s.isEmpty() && INTEGER_PATTERN.matcher(s).matches();
 
     public static final int REQUIRED_CID_REF_LENGTH = 9;
 
@@ -59,7 +65,8 @@ public class HomeOfficeReferenceFormatter implements PreSubmitCallbackHandler<As
                 .read(HOME_OFFICE_REFERENCE_NUMBER, String.class)
                 .orElseThrow(() -> new IllegalStateException("homeOfficeReferenceNumber is missing"));
 
-            if (homeOfficeReferenceNumber.length() < REQUIRED_CID_REF_LENGTH) {
+            // TODO: check here that the Home Office reference number conforms to UAN or GWF format (and possibly CEPR if needed)
+            if (isInteger.test(homeOfficeReferenceNumber) && homeOfficeReferenceNumber.length() < REQUIRED_CID_REF_LENGTH) {
                 asylumCase.write(HOME_OFFICE_REFERENCE_NUMBER,
                     String.format("%09d", Integer.parseInt(homeOfficeReferenceNumber)));
             }
