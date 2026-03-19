@@ -2928,9 +2928,9 @@ public enum AsylumCaseFieldDefinition {
 
     CMR_HEARING_CENTRE("cmrHearingCentre", new TypeReference<HearingCentre>(){}),
 
-    CMR_HEARING_CENTRE_ADDRESS("cmrHearingCentreAddress", new TypeReference<String>(){}),
+    CMR_HEARING_CENTRE_ADDRESS("cmrHearingCentreAddress", new TypeReference<DynamicList>(){}),
 
-    CMR_HEARING_LENGTH("cmrHearingLength", new TypeReference<HoursAndMinutes>(){}),
+    CMR_HEARING_LENGTH("cmrHearingLength", new TypeReference<HoursMinutes>(){}),
 
     CMR_HEARING_DATE("cmrHearingDate", new TypeReference<String>(){}),
 
