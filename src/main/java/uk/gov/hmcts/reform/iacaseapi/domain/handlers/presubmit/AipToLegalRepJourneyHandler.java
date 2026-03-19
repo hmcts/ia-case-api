@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static java.util.Objects.requireNonNull;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOURNEY_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NLR_DETAILS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PA_APPEAL_TYPE_AIP_PAYMENT_OPTION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PA_APPEAL_TYPE_PAYMENT_OPTION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PREV_JOURNEY_TYPE;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ContactPreference;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.NonLegalRepDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDecision;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Subscriber;
@@ -29,12 +31,23 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleAssignmentResource;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackStateHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.IdamService;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.RoleAssignmentService;
 
 @Slf4j
 @Service
 public class AipToLegalRepJourneyHandler implements PreSubmitCallbackStateHandler<AsylumCase> {
+    private final RoleAssignmentService roleAssignmentService;
+    private final IdamService idamService;
+
+    public AipToLegalRepJourneyHandler(RoleAssignmentService roleAssignmentService,
+                                       IdamService idamService) {
+        this.roleAssignmentService = roleAssignmentService;
+        this.idamService = idamService;
+    }
 
     @Override
     public boolean canHandle(PreSubmitCallbackStage callbackStage, Callback<AsylumCase> callback) {
@@ -56,7 +69,7 @@ public class AipToLegalRepJourneyHandler implements PreSubmitCallbackStateHandle
         }
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
-        asylumCase.remove(JOURNEY_TYPE.value());
+        asylumCase.clear(JOURNEY_TYPE);
         asylumCase.write(PREV_JOURNEY_TYPE, JourneyType.AIP);
         updateAppellantContactDetails(asylumCase);
 
@@ -77,6 +90,17 @@ public class AipToLegalRepJourneyHandler implements PreSubmitCallbackStateHandle
             .ifPresent(s -> {
                 asylumCase.write(PA_APPEAL_TYPE_PAYMENT_OPTION, s);
                 asylumCase.clear(PA_APPEAL_TYPE_AIP_PAYMENT_OPTION);
+            });
+        asylumCase.read(AsylumCaseFieldDefinition.NLR_DETAILS, NonLegalRepDetails.class)
+            .ifPresent(nlrDetails -> {
+                RoleAssignmentResource roleAssignmentResource = roleAssignmentService.getCaseRoleAssignmentsForUser(
+                    callback.getCaseDetails().getId(), nlrDetails.getIdamId());
+
+                if (!roleAssignmentResource.getRoleAssignmentResponse().isEmpty()) {
+                    String roleAssignmentId = roleAssignmentResource.getRoleAssignmentResponse().get(0).getId();
+                    roleAssignmentService.deleteRoleAssignment(roleAssignmentId, idamService.getServiceUserToken());
+                }
+                asylumCase.clear(NLR_DETAILS);
             });
 
         return new PreSubmitCallbackResponse<>(asylumCase, currentState);
