@@ -39,5 +39,7 @@ public class CaseMessage {
     private OffsetDateTime createdOn;
     private String createdBy;
     private String parentId;
+    private String messageType;
+    private YesOrNo isClosed;
 
 }
