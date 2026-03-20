@@ -101,6 +101,22 @@ public class RoleAssignmentService {
         return queryRoleAssignments(queryRequest);
     }
 
+    public RoleAssignmentResource getUsersAssignedToCase(long caseId) {
+        QueryRequest queryRequest = QueryRequest.builder()
+            .roleType(List.of(RoleType.CASE))
+            .roleCategory(List.of(RoleCategory.PROFESSIONAL, RoleCategory.CITIZEN))
+            .roleName(List.of(RoleName.CREATOR, RoleName.LEGAL_REPRESENTATIVE))
+            .attributes(Map.of(
+                Attributes.JURISDICTION, List.of(Jurisdiction.IA.name()),
+                Attributes.CASE_TYPE, List.of("Asylum"),
+                Attributes.CASE_ID, List.of(String.valueOf(caseId))
+            )).build();
+
+        log.info("Query role assignment with the parameters: {}, for case reference: {}", queryRequest, caseId);
+
+        return queryRoleAssignments(queryRequest);
+    }
+
     public RoleAssignmentResource queryRoleAssignments(QueryRequest queryRequest) {
         return roleAssignmentApi.queryRoleAssignments(
             userDetails.getAccessToken(),
