@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.AddressUk;
 
 @EqualsAndHashCode
 @ToString
@@ -16,5 +17,6 @@ public class NonLegalRepDetails {
     private String emailAddress;
     private String givenNames;
     private String familyName;
+    private AddressUk address;
     private String phoneNumber;
 }
