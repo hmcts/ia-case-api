@@ -167,7 +167,8 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
             Event.RECORD_REMISSION_REMINDER,
             Event.MARK_APPEAL_AS_REMITTED,
             Event.REFUND_CONFIRMATION,
-            Event.HEARING_CANCELLED
+            Event.HEARING_CANCELLED,
+            Event.REMOVE_STATUTORY_TIMEFRAME_24_WEEKS
         );
         if (!isSaveAndContinueEnabled) {
             eventsToHandle.add(Event.BUILD_CASE);
@@ -254,7 +255,8 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
             Event.SEND_PAYMENT_REMINDER_NOTIFICATION,
             Event.PROGRESS_MIGRATED_CASE,
             Event.REFUND_CONFIRMATION,
-            Event.HEARING_CANCELLED
+            Event.HEARING_CANCELLED,
+            Event.REMOVE_STATUTORY_TIMEFRAME_24_WEEKS
         );
 
         if (!isSaveAndContinueEnabled) {
