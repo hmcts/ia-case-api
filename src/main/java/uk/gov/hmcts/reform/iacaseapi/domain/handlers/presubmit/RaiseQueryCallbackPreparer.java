@@ -7,6 +7,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.UserRoleLabel.LEGAL_
 
 import java.util.Optional;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsHelper;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -20,6 +21,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.controllers.model.querymanagement.CaseQueriesCollection;
 
+@Slf4j
 @Component
 public class RaiseQueryCallbackPreparer implements PreSubmitCallbackHandler<AsylumCase> {
 
@@ -51,6 +53,8 @@ public class RaiseQueryCallbackPreparer implements PreSubmitCallbackHandler<Asyl
 
         final AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
         AsylumCaseFieldDefinition targetCollection = getQueryCollectionField();
+        log.info("targetCollection: ");
+        log.info(targetCollection == null ? "NO COLLECTION" : targetCollection.value());
 
         if (targetCollection == null) {
             throw new IllegalStateException("Unable to determine query collection for this asylum case");
@@ -58,12 +62,14 @@ public class RaiseQueryCallbackPreparer implements PreSubmitCallbackHandler<Asyl
 
         Optional<CaseQueriesCollection> maybeQueries =
                 asylumCase.read(targetCollection, CaseQueriesCollection.class);
+        log.info("maybeQueries preparer: " + maybeQueries);
 
         CaseQueriesCollection queries = maybeQueries.orElse(
                 CaseQueriesCollection.builder()
                         .caseMessages(emptyList())
                         .build()
         );
+        log.info("queries preparer: " + queries);
 
         asylumCase.write(targetCollection, queries);
 
@@ -73,9 +79,12 @@ public class RaiseQueryCallbackPreparer implements PreSubmitCallbackHandler<Asyl
     private AsylumCaseFieldDefinition getQueryCollectionField() {
 
         UserRoleLabel currentUser = userDetailsHelper.getLoggedInUserRoleLabel(userDetails);
+        log.info("currentUser: " + currentUser);
         if (currentUser.equals(LEGAL_REPRESENTATIVE)) {
+            log.info("Legal rep queries preparer");
             return AsylumCaseFieldDefinition.QM_LEGAL_REPRESENTATIVE_QUERIES;
         } else if (currentUser.equals(ADMIN_OFFICER)) {
+            log.info("Admin officer queries preparer");
             return AsylumCaseFieldDefinition.QM_ADMIN_QUERIES;
         }
         return null;
