@@ -3,11 +3,13 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static java.util.Objects.requireNonNull;
 
 import java.util.List;
+import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.NonLegalRepDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Value;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -18,6 +20,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleAssignme
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.IdamService;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.RoleAssignmentService;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.idam.User;
 
 @Component
 @Slf4j
@@ -56,20 +59,22 @@ public class RevokeCitizenPreparer implements PreSubmitCallbackHandler<AsylumCas
         RoleAssignmentResource roleAssignmentResource = roleAssignmentService
             .getUsersAssignedToCase(caseId);
         List<Assignment> assignmentList = roleAssignmentResource.getRoleAssignmentResponse();
-        log.info("Found '{}' '[CREATOR]' and '[LEGALREPRESENTATIVE]' case roles in the appeal with case ID {}",
+        log.info("Found '{}' '[CREATOR]' case roles in the appeal with case ID {}",
             assignmentList.size(), caseId);
 
         if (assignmentList.isEmpty()) {
             return new PreSubmitCallbackResponse<>(asylumCase)
                 .withError("No users have case access with caseId: " + caseId);
         }
-
+        String nlrIdamId = asylumCase.read(AsylumCaseFieldDefinition.NLR_DETAILS, NonLegalRepDetails.class)
+            .map(NonLegalRepDetails::getIdamId).orElse("");
         List<Value> userValueList = assignmentList
             .stream()
             .map(Assignment::getActorId)
             .map(idamService::getUserFromIdV1)
-            .filter(user -> user != null && user.isActive() && user.getRoles().contains("citizen"))
-            .map(user -> new Value(user.toValueId(), user.toString()))
+            .filter(Objects::nonNull)
+            .filter(User::isActive)
+            .map(user -> new Value(user.toValueId(), user.toRevokeAccessDlString(nlrIdamId)))
             .toList();
 
         if (userValueList.isEmpty()) {

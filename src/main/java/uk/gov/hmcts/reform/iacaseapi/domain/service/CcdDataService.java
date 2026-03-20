@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
+import uk.gov.hmcts.reform.ccd.client.model.UserId;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDataContent;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.StartEventDetails;
@@ -94,7 +95,14 @@ public class CcdDataService {
             new CaseDataContent(caseId, caseData, eventData, startEventDetails.getToken(), true);
 
         return ccdDataApi.submitEvent(tokens.getUserToken(), tokens.getS2sToken(), caseId, request);
+    }
 
+    public void giveUserAccessToCase(long caseId, String userId) {
+        String userToken = idamService.getServiceUserToken();
+        String s2sToken = serviceAuthorization.generate();
+        String systemUid = idamService.getUserInfo(userToken).getUid();
+        ccdDataApi.grantAccessToCase(userToken, s2sToken, systemUid, JURISDICTION, CASE_TYPE,
+            String.valueOf(caseId), new UserId(userId));
     }
 
     @Data
@@ -103,5 +111,4 @@ public class CcdDataService {
         private String s2sToken;
         private String uid;
     }
-
 }

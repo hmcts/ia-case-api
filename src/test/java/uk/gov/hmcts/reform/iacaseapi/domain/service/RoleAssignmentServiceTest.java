@@ -194,8 +194,8 @@ class RoleAssignmentServiceTest {
 
         QueryRequest queryReq = queryRequestCaptor.getValue();
         assertEquals(List.of(RoleType.CASE), queryReq.getRoleType());
-        assertEquals(List.of(RoleCategory.PROFESSIONAL, RoleCategory.CITIZEN), queryReq.getRoleCategory());
-        assertEquals(List.of(RoleName.CREATOR, RoleName.LEGAL_REPRESENTATIVE), queryReq.getRoleName());
+        assertEquals(List.of(RoleCategory.CITIZEN), queryReq.getRoleCategory());
+        assertEquals(List.of(RoleName.CREATOR), queryReq.getRoleName());
         Map<Attributes, List<String>> attributes = queryReq.getAttributes();
         assertEquals(List.of(Jurisdiction.IA.name()), attributes.get(Attributes.JURISDICTION));
         assertEquals(List.of(String.valueOf(caseId)), attributes.get(Attributes.CASE_ID));

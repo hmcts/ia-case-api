@@ -104,8 +104,8 @@ public class RoleAssignmentService {
     public RoleAssignmentResource getUsersAssignedToCase(long caseId) {
         QueryRequest queryRequest = QueryRequest.builder()
             .roleType(List.of(RoleType.CASE))
-            .roleCategory(List.of(RoleCategory.PROFESSIONAL, RoleCategory.CITIZEN))
-            .roleName(List.of(RoleName.CREATOR, RoleName.LEGAL_REPRESENTATIVE))
+            .roleCategory(List.of(RoleCategory.CITIZEN))
+            .roleName(List.of(RoleName.CREATOR))
             .attributes(Map.of(
                 Attributes.JURISDICTION, List.of(Jurisdiction.IA.name()),
                 Attributes.CASE_TYPE, List.of("Asylum"),
@@ -222,5 +222,4 @@ public class RoleAssignmentService {
             log.error("Problem removing Case roles for case ID {}. No role assignment(s) found.", caseId);
         }
     }
-
 }

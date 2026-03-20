@@ -144,11 +144,36 @@ public class IdamService {
         return response.getBody().get(0);
     }
 
+    public User getUserFromEmailV1(String email) {
+        String idamToken = getClientCredentialsTokenV1();
+        String query = MessageFormat.format("email:{0}", email);
+        ResponseEntity<List<User>> response = idamClientApi.getUserV1(idamToken, query);
+        if (!response.getStatusCode().is2xxSuccessful() || response.getBody() == null) {
+            log.error("Error fetching user details for user: {}. Response status: {}", email, response.getStatusCode());
+            return null;
+        }
+        if (response.getBody().isEmpty()) {
+            log.error("No user found for userEmail: {}", email);
+            return null;
+        }
+        return response.getBody().get(0);
+    }
+
     public User getUserFromId(String userId) {
         String idamToken = getClientCredentialsToken();
         ResponseEntity<User> response = idamClientApi.getUser(idamToken, userId);
         if (!response.getStatusCode().is2xxSuccessful() || response.getBody() == null) {
             log.error("Error fetching user details for userId: {}. Response status: {}", userId, response.getStatusCode());
+            return null;
+        }
+        return response.getBody();
+    }
+
+    public User getUserFromEmail(String email) {
+        String idamToken = getClientCredentialsToken();
+        ResponseEntity<User> response = idamClientApi.getUserFromEmail(idamToken, email);
+        if (!response.getStatusCode().is2xxSuccessful() || response.getBody() == null) {
+            log.error("Error fetching user details for user: {}. Response status: {}", email, response.getStatusCode());
             return null;
         }
         return response.getBody();
