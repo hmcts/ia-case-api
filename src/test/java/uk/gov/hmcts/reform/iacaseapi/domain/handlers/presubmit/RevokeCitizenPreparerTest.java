@@ -79,7 +79,7 @@ class RevokeCitizenPreparerTest {
     private final String userName1 = "User One";
     private final String userId2 = "user-2";
     private final String userName2 = "User Two";
-    
+
     @BeforeEach
     void setUp() {
         preparer = new RevokeCitizenPreparer(roleAssignmentService, idamService);
@@ -146,7 +146,12 @@ class RevokeCitizenPreparerTest {
         when(idamService.getUserFromIdV1(userId2)).thenReturn(user2);
         when(idamService.getUserFromIdV1(userId3)).thenReturn(user3);
         when(idamService.getUserFromIdV1(userId4)).thenReturn(null);
-        NonLegalRepDetails nlrDetails = new NonLegalRepDetails(userId3, "NLR email", "givenName", "familyName", null);
+        NonLegalRepDetails nlrDetails = NonLegalRepDetails.builder()
+            .idamId(userId3)
+            .emailAddress("NLR email")
+            .givenNames("givenName")
+            .familyName("familyName")
+            .build();
         when(asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class)).thenReturn(Optional.of(nlrDetails));
 
         PreSubmitCallbackResponse<AsylumCase> response =
