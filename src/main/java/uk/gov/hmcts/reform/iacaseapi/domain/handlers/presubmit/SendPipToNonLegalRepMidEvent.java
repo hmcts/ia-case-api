@@ -2,11 +2,12 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.isNull;
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NLR_EMAIL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SEND_PIP_TO_NON_LEGAL_REP;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.NonLegalRepDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
@@ -42,7 +43,8 @@ public class SendPipToNonLegalRepMidEvent implements PreSubmitCallbackHandler<As
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
-        String nlrEmail = asylumCase.read(NLR_EMAIL, String.class)
+        String nlrEmail = asylumCase.read(AsylumCaseFieldDefinition.NLR_DETAILS, NonLegalRepDetails.class)
+            .map(NonLegalRepDetails::getEmailAddress)
             .orElseThrow(() -> new IllegalStateException("NLR email is not present"));
 
         if (isNull(idamService.getUserFromEmailV1(nlrEmail))) {

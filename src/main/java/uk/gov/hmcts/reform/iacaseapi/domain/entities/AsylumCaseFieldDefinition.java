@@ -1737,9 +1737,6 @@ public enum AsylumCaseFieldDefinition {
     REVOKE_ACCESS_DL(
         "revokeAccessDl", new TypeReference<DynamicList>(){}),
 
-    NLR_EMAIL(
-        "nlrEmail", new TypeReference<String>(){}),
-
     JOIN_APPEAL_PIN(
         "joinAppealPin", new TypeReference<PinInPostDetails>(){}),
 

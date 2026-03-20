@@ -8,7 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NLR_EMAIL;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NLR_DETAILS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SEND_PIP_TO_NON_LEGAL_REP;
 
 import java.util.Optional;
@@ -22,6 +22,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.NonLegalRepDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -67,7 +68,8 @@ class SendPipToNonLegalRepMidEventTest {
     @Test
     void should_return_error_if_user_not_found() {
         when(callback.getEvent()).thenReturn(SEND_PIP_TO_NON_LEGAL_REP);
-        when(asylumCase.read(NLR_EMAIL, String.class)).thenReturn(Optional.of("nlrEmail@test.com"));
+        when(asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class)).thenReturn(Optional.of(
+            NonLegalRepDetails.builder().emailAddress("nlrEmail@test.com").build()));
         when(idamService.getUserFromEmailV1(anyString())).thenReturn(null);
 
         PreSubmitCallbackResponse<AsylumCase> response =
@@ -82,7 +84,8 @@ class SendPipToNonLegalRepMidEventTest {
     @Test
     void should_return_if_user_exists() {
         when(callback.getEvent()).thenReturn(SEND_PIP_TO_NON_LEGAL_REP);
-        when(asylumCase.read(NLR_EMAIL, String.class)).thenReturn(Optional.of("nlrEmail@test.com"));
+        when(asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class)).thenReturn(Optional.of(
+            NonLegalRepDetails.builder().emailAddress("nlrEmail@test.com").build()));
         when(idamService.getUserFromEmailV1(anyString())).thenReturn(user);
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             sendPipToNonLegalRepMidEvent.handle(PreSubmitCallbackStage.MID_EVENT, callback);
