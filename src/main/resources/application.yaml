@@ -1044,7 +1044,7 @@ security:
       - "sendInviteToNonLegalRep"
       - "sendPipToNonLegalRep"
       - "joinAppealConfirmation"
-      - "nlrPhoneNumberSubmitted"
+      - "nlrDetailsUpdated"
     caseworker-ia-iacjudge:
       - "generateDecisionAndReasons"
       - "endAppeal"
@@ -1392,7 +1392,7 @@ security:
       - "sendInviteToNonLegalRep"
       - "sendPipToNonLegalRep"
       - "joinAppealConfirmation"
-      - "nlrPhoneNumberSubmitted"
+      - "nlrDetailsUpdated"
     caseworker-ia-internal:
       - "revokeCaseAccess"
       - "removeCaseManagerBulk"

@@ -171,7 +171,7 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
             Event.SEND_INVITE_TO_NON_LEGAL_REP,
             Event.SEND_PIP_TO_NON_LEGAL_REP,
             Event.JOIN_APPEAL_CONFIRMATION,
-            Event.NLR_PHONE_NUMBER_SUBMITTED,
+            Event.NLR_DETAILS_UPDATED,
             Event.HEARING_CANCELLED
         );
         if (!isSaveAndContinueEnabled) {
