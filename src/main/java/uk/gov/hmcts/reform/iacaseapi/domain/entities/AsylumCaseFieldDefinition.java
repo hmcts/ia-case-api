@@ -1740,6 +1740,9 @@ public enum AsylumCaseFieldDefinition {
     JOIN_APPEAL_PIN(
         "joinAppealPin", new TypeReference<PinInPostDetails>(){}),
 
+    HAS_NON_LEGAL_REP(
+        "hasNonLegalRep", new TypeReference<YesOrNo>(){}),
+
     NLR_DETAILS(
         "nlrDetails", new TypeReference<NonLegalRepDetails>(){}),
 
