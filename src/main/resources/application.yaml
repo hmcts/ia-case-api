@@ -1005,6 +1005,7 @@ security:
       - "pipActivation"
       - "applyForFTPAAppellant"
       - "requestFeeRemission"
+      - "homeOfficeReferenceData"
     caseworker-ia-iacjudge:
       - "generateDecisionAndReasons"
       - "endAppeal"
