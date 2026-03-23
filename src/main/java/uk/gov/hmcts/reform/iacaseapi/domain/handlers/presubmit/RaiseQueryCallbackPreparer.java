@@ -2,7 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.UserRoleLabel.ADMIN_OFFICER;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.UserRoleLabel.HOME_OFFICE_GENERIC;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.UserRoleLabel.LEGAL_REPRESENTATIVE;
 
 import java.util.Optional;
@@ -83,9 +83,9 @@ public class RaiseQueryCallbackPreparer implements PreSubmitCallbackHandler<Asyl
         if (currentUser.equals(LEGAL_REPRESENTATIVE)) {
             log.info("Legal rep queries preparer");
             return AsylumCaseFieldDefinition.QM_LEGAL_REPRESENTATIVE_QUERIES;
-        } else if (currentUser.equals(ADMIN_OFFICER)) {
-            log.info("Admin officer queries preparer");
-            return AsylumCaseFieldDefinition.QM_ADMIN_QUERIES;
+        } else if (currentUser.equals(HOME_OFFICE_GENERIC)) {
+            log.info("Home officer queries preparer");
+            return AsylumCaseFieldDefinition.QM_HOME_OFFICE_QUERIES;
         }
         return null;
     }

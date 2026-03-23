@@ -118,7 +118,7 @@ class RaiseQueryCallbackHandlerTest {
     @Test
     void should_use_no_when_isHearingRelated_is_null() {
         when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails))
-                .thenReturn(UserRoleLabel.ADMIN_OFFICER);
+                .thenReturn(UserRoleLabel.HOME_OFFICE_GENERIC);
 
         CaseMessage message = new CaseMessage();
         message.setId("msg2");
@@ -133,7 +133,7 @@ class RaiseQueryCallbackHandlerTest {
                         .caseMessages(caseMessages)
                         .build();
 
-        when(asylumCase.read(QM_ADMIN_QUERIES, CaseQueriesCollection.class))
+        when(asylumCase.read(QM_HOME_OFFICE_QUERIES, CaseQueriesCollection.class))
                 .thenReturn(Optional.of(collection));
 
         handler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
