@@ -10,6 +10,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -78,6 +79,13 @@ class NonLegalRepJoinAppealHandlerTest {
         .givenNames("someGivenNames")
         .familyName("someFamilyName")
         .idamId("someIdamId")
+        .build();
+
+
+    private final NonLegalRepDetails oldNlrWithoutIdamIdDetails = NonLegalRepDetails.builder()
+        .emailAddress("someEmail")
+        .givenNames("someGivenNames")
+        .familyName("someFamilyName")
         .build();
 
     private final NonLegalRepDetails newNlrDetails = NonLegalRepDetails.builder()
@@ -197,6 +205,34 @@ class NonLegalRepJoinAppealHandlerTest {
         verify(roleAssignmentService).deleteRoleAssignment("assignmentId1", "token");
         verify(roleAssignmentService).deleteRoleAssignment("assignmentId2", "token");
     }
+
+    @Test
+    void should_not_revoke_if_previous_nlr_details_has_no_idam_id() {
+        when(callback.getEvent()).thenReturn(JOIN_APPEAL_CONFIRMATION);
+        when(asylumCase.read(JOIN_APPEAL_PIN, PinInPostDetails.class)).thenReturn(Optional.of(pinInPostDetails));
+        when(asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class)).thenReturn(Optional.of(newNlrDetails));
+        when(callback.getCaseDetails().getId()).thenReturn(12345L);
+        when(asylumCaseBefore.read(NLR_DETAILS, NonLegalRepDetails.class)).thenReturn(Optional.of(oldNlrWithoutIdamIdDetails));
+        when(roleAssignmentService.getCaseRoleAssignmentsForUser(anyLong(), anyString())).thenReturn(roleAssignmentResource);
+        when(roleAssignmentService.getCaseRoleAssignmentsForUser(12345L, "someIdamId"))
+            .thenReturn(roleAssignmentResource);
+        List<Assignment> assignments = List.of(
+            Assignment.builder().id("assignmentId1").build(),
+            Assignment.builder().id("assignmentId2").build()
+        );
+        when(roleAssignmentResource.getRoleAssignmentResponse()).thenReturn(assignments);
+        when(idamService.getServiceUserToken()).thenReturn("token");
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            nonLegalRepJoinAppealHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+        verify(pinInPostDetails).setPinUsed(YesOrNo.YES);
+        verify(asylumCase).write(JOIN_APPEAL_PIN, pinInPostDetails);
+        verify(roleAssignmentService, never()).getCaseRoleAssignmentsForUser(anyLong(), anyString());
+        verify(roleAssignmentService, never()).deleteRoleAssignment(anyString(), anyString());
+    }
+
 
     @Test
     void handling_should_throw_if_cannot_actually_handle() {

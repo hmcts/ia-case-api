@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
+import static java.util.Objects.isNull;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOIN_APPEAL_PIN;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NLR_DETAILS;
@@ -79,12 +80,14 @@ public class NonLegalRepJoinAppealHandler implements PreSubmitCallbackHandler<As
         Optional<NonLegalRepDetails> previousNlrDetails = asylumCaseBefore.read(NLR_DETAILS, NonLegalRepDetails.class);
         long caseId = callback.getCaseDetails().getId();
         previousNlrDetails.ifPresent(existingNlrDetails -> {
-            RoleAssignmentResource roleAssignmentResource = roleAssignmentService.getCaseRoleAssignmentsForUser(
-                caseId, existingNlrDetails.getIdamId());
-            List<Assignment> assignments = roleAssignmentResource.getRoleAssignmentResponse();
-            assignments.forEach(assignment ->
-                roleAssignmentService.deleteRoleAssignment(assignment.getId(), idamService.getServiceUserToken())
-            );
+            if (!isNull(existingNlrDetails.getIdamId())) {
+                RoleAssignmentResource roleAssignmentResource = roleAssignmentService.getCaseRoleAssignmentsForUser(
+                    caseId, existingNlrDetails.getIdamId());
+                List<Assignment> assignments = roleAssignmentResource.getRoleAssignmentResponse();
+                assignments.forEach(assignment ->
+                    roleAssignmentService.deleteRoleAssignment(assignment.getId(), idamService.getServiceUserToken())
+                );
+            }
         });
         NonLegalRepDetails newNlrDetails = asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class)
             .orElseThrow(() -> new IllegalStateException("Non legal rep details are not present"));
