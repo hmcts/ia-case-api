@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAS_NON_LEGAL_REP;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAS_NON_LEGAL_REP_JOINED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NLR_DETAILS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SUBMIT_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isAipJourney;
@@ -41,6 +42,7 @@ public class HasNonLegalRepHandler implements PreSubmitCallbackHandler<AsylumCas
             .ifPresent(hasNoNlr -> {
                 if (hasNoNlr.equals(YesOrNo.NO)) {
                     asylumCase.clear(NLR_DETAILS);
+                    asylumCase.clear(HAS_NON_LEGAL_REP_JOINED);
                 }
             });
 

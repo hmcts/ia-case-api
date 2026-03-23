@@ -2,6 +2,8 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAS_NON_LEGAL_REP;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAS_NON_LEGAL_REP_JOINED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOURNEY_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NLR_DETAILS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PA_APPEAL_TYPE_AIP_PAYMENT_OPTION;
@@ -101,6 +103,8 @@ public class AipToLegalRepJourneyHandler implements PreSubmitCallbackStateHandle
                     roleAssignmentService.deleteRoleAssignment(roleAssignmentId, idamService.getServiceUserToken());
                 }
                 asylumCase.clear(NLR_DETAILS);
+                asylumCase.clear(HAS_NON_LEGAL_REP);
+                asylumCase.clear(HAS_NON_LEGAL_REP_JOINED);
             });
 
         return new PreSubmitCallbackResponse<>(asylumCase, currentState);

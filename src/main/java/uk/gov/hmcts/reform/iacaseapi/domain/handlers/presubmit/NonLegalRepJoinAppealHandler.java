@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.isNull;
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAS_NON_LEGAL_REP_JOINED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOIN_APPEAL_PIN;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NLR_DETAILS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.JOIN_APPEAL_CONFIRMATION;
@@ -97,6 +98,7 @@ public class NonLegalRepJoinAppealHandler implements PreSubmitCallbackHandler<As
         } catch (Exception e) {
             throw new IllegalStateException("Failed to assign case role to the new non legal rep: " + e.getMessage(), e);
         }
+        asylumCase.write(HAS_NON_LEGAL_REP_JOINED, YesOrNo.YES);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }

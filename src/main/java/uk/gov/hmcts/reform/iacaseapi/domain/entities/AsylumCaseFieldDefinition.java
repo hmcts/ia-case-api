@@ -1743,6 +1743,9 @@ public enum AsylumCaseFieldDefinition {
     HAS_NON_LEGAL_REP(
         "hasNonLegalRep", new TypeReference<YesOrNo>(){}),
 
+    HAS_NON_LEGAL_REP_JOINED(
+        "hasNonLegalRepJoined", new TypeReference<YesOrNo>(){}),
+
     NLR_DETAILS(
         "nlrDetails", new TypeReference<NonLegalRepDetails>(){}),
 
