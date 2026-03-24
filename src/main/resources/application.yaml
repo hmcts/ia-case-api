@@ -971,6 +971,8 @@ security:
       - "applyForCosts"
       - "respondToCosts"
       - "addEvidenceForCosts"
+      - "raiseAQuery"
+      - "respondToQuery"
     caseworker-ia-homeofficepou:
       - "sendDirection"
       - "uploadAdditionalEvidenceHomeOffice"
@@ -980,6 +982,8 @@ security:
       - "applyForCosts"
       - "respondToCosts"
       - "addEvidenceForCosts"
+      - "raiseAQuery"
+      - "respondToQuery"
     caseworker-ia-respondentofficer:
       - "uploadHomeOfficeBundle"
       - "uploadHomeOfficeAppealResponse"
@@ -990,6 +994,8 @@ security:
       - "applyForCosts"
       - "respondToCosts"
       - "addEvidenceForCosts"
+      - "raiseAQuery"
+      - "respondToQuery"
     citizen:
       - "startAppeal"
       - "editAppeal"
