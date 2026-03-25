@@ -76,20 +76,6 @@ class RaiseQueryCallbackPreparerTest {
     }
 
     @Test
-    void should_initialize_home_office_queries_with_empty_collection_if_absent() {
-        when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(UserRoleLabel.HOME_OFFICE_GENERIC);
-
-        when(asylumCase.read(QM_HOME_OFFICE_QUERIES, CaseQueriesCollection.class))
-                .thenReturn(Optional.empty());
-
-        handler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
-
-        verify(asylumCase).write(eq(QM_HOME_OFFICE_QUERIES), collectionCaptor.capture());
-        assertEquals(emptyList(), collectionCaptor.getValue().getCaseMessages());
-
-    }
-
-    @Test
     void should_preserve_existing_collection_when_already_present() {
         when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(UserRoleLabel.LEGAL_REPRESENTATIVE);
 

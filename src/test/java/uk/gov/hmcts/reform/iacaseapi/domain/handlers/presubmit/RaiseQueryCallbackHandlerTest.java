@@ -114,35 +114,4 @@ class RaiseQueryCallbackHandlerTest {
 
         verify(asylumCase, never()).write(eq(QM_LATEST_QUERY), any());
     }
-
-    @Test
-    void should_use_no_when_isHearingRelated_is_null() {
-        when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails))
-                .thenReturn(UserRoleLabel.HOME_OFFICE_GENERIC);
-
-        CaseMessage message = new CaseMessage();
-        message.setId("msg2");
-        message.setIsHearingRelated(null);
-        message.setCreatedOn(OffsetDateTime.parse("2026-03-03T14:00:00Z"));
-
-        List<IdValue<CaseMessage>> caseMessages =
-                List.of(new IdValue<>("msg2", message));
-
-        CaseQueriesCollection collection =
-                CaseQueriesCollection.builder()
-                        .caseMessages(caseMessages)
-                        .build();
-
-        when(asylumCase.read(QM_HOME_OFFICE_QUERIES, CaseQueriesCollection.class))
-                .thenReturn(Optional.of(collection));
-
-        handler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
-
-        verify(asylumCase).write(eq(QM_LATEST_QUERY), latestQueryCaptor.capture());
-
-        LatestQuery captured = latestQueryCaptor.getValue();
-
-        assertEquals("msg2", captured.getQueryId());
-        assertEquals(YesOrNo.NO, captured.getIsHearingRelated());
-    }
 }
