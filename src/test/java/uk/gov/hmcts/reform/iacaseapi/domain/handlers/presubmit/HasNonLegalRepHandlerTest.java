@@ -143,15 +143,16 @@ class HasNonLegalRepHandlerTest {
             .isExactlyInstanceOf(IllegalStateException.class);
     }
 
-    @Test
-    void it_can_handle_callback() {
-        when(callback.getEvent()).thenReturn(SUBMIT_APPEAL);
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {"SUBMIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT"})
+    void it_can_handle_callback(Event event) {
+        when(callback.getEvent()).thenReturn(event);
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
         assertTrue(hasNonLegalRepHandler.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback));
     }
 
     @ParameterizedTest
-    @EnumSource(value = Event.class, mode = EnumSource.Mode.EXCLUDE, names = {"SUBMIT_APPEAL"})
+    @EnumSource(value = Event.class, mode = EnumSource.Mode.EXCLUDE, names = {"SUBMIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT"})
     void it_cannot_handle_incorrect_callback_event(Event event) {
         when(callback.getEvent()).thenReturn(event);
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));

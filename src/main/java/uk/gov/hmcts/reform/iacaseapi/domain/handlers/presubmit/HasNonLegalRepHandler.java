@@ -2,11 +2,13 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAS_NON_LEGAL_REP;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.EDIT_APPEAL_AFTER_SUBMIT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SUBMIT_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.clearNlrFields;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isAipJourney;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.setSponsorDetailsFromNlrIfSame;
 
+import java.util.List;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -26,7 +28,7 @@ public class HasNonLegalRepHandler implements PreSubmitCallbackHandler<AsylumCas
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
             && isAipJourney(callback.getCaseDetails().getCaseData())
-            && callback.getEvent() == SUBMIT_APPEAL;
+            && List.of(SUBMIT_APPEAL, EDIT_APPEAL_AFTER_SUBMIT).contains(callback.getEvent());
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
