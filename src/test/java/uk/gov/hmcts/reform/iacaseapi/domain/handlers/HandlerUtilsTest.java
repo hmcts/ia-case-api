@@ -12,8 +12,6 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.AIP_SPONSOR_EMAIL_FOR_DISPLAY;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.AIP_SPONSOR_MOBILE_NUMBER_FOR_DISPLAY;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.AMOUNT_LEFT_TO_PAY;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.AMOUNT_REMITTED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_NOT_SUBMITTED_REASON_DOCUMENTS;
@@ -1197,9 +1195,7 @@ class HandlerUtilsTest {
         verify(asylumCase).write(SPONSOR_NAME_FOR_DISPLAY, null);
         verify(asylumCase).write(SPONSOR_CONTACT_PREFERENCE, null);
         verify(asylumCase).write(SPONSOR_EMAIL, null);
-        verify(asylumCase).write(AIP_SPONSOR_EMAIL_FOR_DISPLAY, null);
         verify(asylumCase).write(SPONSOR_MOBILE_NUMBER, null);
-        verify(asylumCase).write(AIP_SPONSOR_MOBILE_NUMBER_FOR_DISPLAY, null);
         verify(asylumCase).write(SPONSOR_AUTHORISATION, YES);
         verify(asylumCase, never()).write(eq(SPONSOR_SUBSCRIPTIONS), anyList());
     }
@@ -1235,9 +1231,7 @@ class HandlerUtilsTest {
         verify(asylumCase).write(SPONSOR_NAME_FOR_DISPLAY, givenNames + " " + familyName);
         verify(asylumCase).write(SPONSOR_CONTACT_PREFERENCE, ContactPreference.WANTS_EMAIL);
         verify(asylumCase).write(SPONSOR_EMAIL, email);
-        verify(asylumCase).write(AIP_SPONSOR_EMAIL_FOR_DISPLAY, email);
         verify(asylumCase).write(SPONSOR_MOBILE_NUMBER, phoneNumber);
-        verify(asylumCase).write(AIP_SPONSOR_MOBILE_NUMBER_FOR_DISPLAY, phoneNumber);
         verify(asylumCase).write(SPONSOR_AUTHORISATION, YES);
         verify(asylumCase, never()).write(eq(SPONSOR_SUBSCRIPTIONS), anyList());
     }

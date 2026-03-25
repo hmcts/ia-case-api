@@ -702,9 +702,7 @@ public class HandlerUtils {
             asylumCase.write(SPONSOR_NAME_FOR_DISPLAY, nameForDisplay);
             asylumCase.write(SPONSOR_CONTACT_PREFERENCE, email != null ? ContactPreference.WANTS_EMAIL : null);
             asylumCase.write(SPONSOR_EMAIL, email);
-            asylumCase.write(AIP_SPONSOR_EMAIL_FOR_DISPLAY, email);
             asylumCase.write(SPONSOR_MOBILE_NUMBER, phoneNumber);
-            asylumCase.write(AIP_SPONSOR_MOBILE_NUMBER_FOR_DISPLAY, phoneNumber);
             asylumCase.write(SPONSOR_AUTHORISATION, YesOrNo.YES);
             PartyIdService.setSponsorPartyId(asylumCase);
 
