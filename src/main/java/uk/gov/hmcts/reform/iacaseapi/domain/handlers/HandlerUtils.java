@@ -27,6 +27,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.io.ClassPathResource;
@@ -57,6 +58,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationBasedFeatureToggler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.PartyIdService;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.OrganisationPolicy;
 
 
@@ -692,7 +694,6 @@ public class HandlerUtils {
             AddressUk addressUk = nlrDetails.getAddress();
             String email = nlrDetails.getEmailAddress();
             String phoneNumber = nlrDetails.getPhoneNumber();
-            String idamId = nlrDetails.getIdamId();
             String nameForDisplay = givenNames != null && familyName != null ? (givenNames + " " + familyName).replaceAll("\\s+", " ").trim() : null;
             asylumCase.write(SPONSOR_GIVEN_NAMES, givenNames);
             asylumCase.write(SPONSOR_FAMILY_NAME, familyName);
@@ -705,12 +706,12 @@ public class HandlerUtils {
             asylumCase.write(SPONSOR_MOBILE_NUMBER, phoneNumber);
             asylumCase.write(AIP_SPONSOR_MOBILE_NUMBER_FOR_DISPLAY, phoneNumber);
             asylumCase.write(SPONSOR_AUTHORISATION, YesOrNo.YES);
-            asylumCase.write(SPONSOR_PARTY_ID, idamId);
+            PartyIdService.setSponsorPartyId(asylumCase);
 
             Optional<List<IdValue<Subscriber>>> subscriptionsOptional = asylumCase.read(SPONSOR_SUBSCRIPTIONS);
             if (subscriptionsOptional.isPresent() && !subscriptionsOptional.get().isEmpty()) {
                 Subscriber newSubscriber = new Subscriber(SubscriberType.SUPPORTER, email, YES, phoneNumber, YES);
-                asylumCase.write(SPONSOR_SUBSCRIPTIONS, List.of(new IdValue<>(idamId, newSubscriber)));
+                asylumCase.write(SPONSOR_SUBSCRIPTIONS, List.of(new IdValue<>(UUID.randomUUID().toString(), newSubscriber)));
             }
         } else {
             if (asylumCase.read(HAS_NON_LEGAL_REP, YesOrNo.class).orElse(YesOrNo.NO).equals(YesOrNo.NO)) {

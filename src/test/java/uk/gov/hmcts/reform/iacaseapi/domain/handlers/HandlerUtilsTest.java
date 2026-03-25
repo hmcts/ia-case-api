@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.never;
@@ -1202,7 +1203,6 @@ class HandlerUtilsTest {
         verify(asylumCase).write(SPONSOR_MOBILE_NUMBER, null);
         verify(asylumCase).write(AIP_SPONSOR_MOBILE_NUMBER_FOR_DISPLAY, null);
         verify(asylumCase).write(SPONSOR_AUTHORISATION, YES);
-        verify(asylumCase).write(SPONSOR_PARTY_ID, null);
         verify(asylumCase, never()).write(eq(SPONSOR_SUBSCRIPTIONS), anyList());
     }
 
@@ -1241,7 +1241,6 @@ class HandlerUtilsTest {
         verify(asylumCase).write(SPONSOR_MOBILE_NUMBER, phoneNumber);
         verify(asylumCase).write(AIP_SPONSOR_MOBILE_NUMBER_FOR_DISPLAY, phoneNumber);
         verify(asylumCase).write(SPONSOR_AUTHORISATION, YES);
-        verify(asylumCase).write(SPONSOR_PARTY_ID, idamId);
         verify(asylumCase, never()).write(eq(SPONSOR_SUBSCRIPTIONS), anyList());
     }
 

@@ -211,18 +211,17 @@ class PartyIdServiceTest {
     }
 
     @Test
-    void should_set_sponsor_partyId_when_isSponsorSameAsNlr_yes_nlr_idam_id_null() {
+    void should_clear_sponsor_partyId_when_isSponsorSameAsNlr_yes_nlr() {
         when(asylumCase.read(HAS_SPONSOR, YesOrNo.class)).thenReturn(Optional.of(YES));
         when(asylumCase.read(IS_SPONSOR_SAME_AS_NLR, YesOrNo.class)).thenReturn(Optional.of(YES));
 
         PartyIdService.setSponsorPartyId(asylumCase);
 
-        verify(asylumCase).write(eq(SPONSOR_PARTY_ID), partyId.capture());
-        assertTrue(partyIdRegexPattern.matcher(partyId.getValue()).matches());
+        verify(asylumCase).clear(SPONSOR_PARTY_ID);
     }
 
     @Test
-    void should_set_sponsor_partyId_when_isSponsorSameAsNlr_no_nlr_idam_id_non_null() {
+    void should_set_sponsor_partyId_when_isSponsorSameAsNlr_no_nlr() {
         when(asylumCase.read(HAS_SPONSOR, YesOrNo.class)).thenReturn(Optional.of(YES));
         when(asylumCase.read(IS_SPONSOR_SAME_AS_NLR, YesOrNo.class)).thenReturn(Optional.of(NO));
         when(asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class)).thenReturn(Optional.of(NonLegalRepDetails.builder()
@@ -232,18 +231,6 @@ class PartyIdServiceTest {
 
         verify(asylumCase).write(eq(SPONSOR_PARTY_ID), partyId.capture());
         assertTrue(partyIdRegexPattern.matcher(partyId.getValue()).matches());
-    }
-
-    @Test
-    void should_set_sponsor_partyId_when_isSponsorSameAsNlr_yes_nlr_idam_id_non_null() {
-        when(asylumCase.read(HAS_SPONSOR, YesOrNo.class)).thenReturn(Optional.of(YES));
-        when(asylumCase.read(IS_SPONSOR_SAME_AS_NLR, YesOrNo.class)).thenReturn(Optional.of(YES));
-        when(asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class)).thenReturn(Optional.of(NonLegalRepDetails.builder()
-            .idamId("someId").build()));
-
-        PartyIdService.setSponsorPartyId(asylumCase);
-
-        verify(asylumCase).write(SPONSOR_PARTY_ID, "someId");
     }
 
     @Test
