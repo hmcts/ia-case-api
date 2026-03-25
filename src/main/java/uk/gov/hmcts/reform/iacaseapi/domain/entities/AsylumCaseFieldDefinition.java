@@ -1752,6 +1752,9 @@ public enum AsylumCaseFieldDefinition {
     SHOULD_INVITE_NLR_TO_IDAM(
         "shouldInviteNlrToIdam", new TypeReference<YesOrNo>(){}),
 
+    IS_SPONSOR_SAME_AS_NLR(
+        "isSponsorSameAsNlr", new TypeReference<YesOrNo>(){}),
+
     FEE_UPDATE_RECORDED(
         "feeUpdateRecorded", new TypeReference<CheckValues<String>>(){}),
 

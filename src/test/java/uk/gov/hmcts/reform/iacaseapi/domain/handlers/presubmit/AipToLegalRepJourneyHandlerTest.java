@@ -14,6 +14,10 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CONTACT_PREFERENCE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CONTACT_PREFERENCE_DESCRIPTION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.EMAIL;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAS_NON_LEGAL_REP;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAS_NON_LEGAL_REP_JOINED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_SPONSOR_SAME_AS_NLR;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOIN_APPEAL_PIN;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOURNEY_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MOBILE_NUMBER;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NLR_DETAILS;
@@ -355,6 +359,10 @@ public class AipToLegalRepJourneyHandlerTest {
         verify(idamService, times(1)).getServiceUserToken();
         verify(roleAssignmentService, times(1)).deleteRoleAssignment("roleAssignmentId", "serviceUserToken");
         verify(asylumCase, times(1)).clear(NLR_DETAILS);
+        verify(asylumCase, times(1)).clear(HAS_NON_LEGAL_REP);
+        verify(asylumCase, times(1)).clear(JOIN_APPEAL_PIN);
+        verify(asylumCase, times(1)).clear(IS_SPONSOR_SAME_AS_NLR);
+        verify(asylumCase, times(1)).clear(HAS_NON_LEGAL_REP_JOINED);
     }
 
 

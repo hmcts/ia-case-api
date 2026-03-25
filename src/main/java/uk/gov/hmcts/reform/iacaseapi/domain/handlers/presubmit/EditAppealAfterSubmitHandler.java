@@ -9,6 +9,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isEjpCase;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isInternalCase;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.setSponsorDetailsFromNlrIfSame;
 
 import java.time.LocalDate;
 import java.time.ZoneOffset;
@@ -179,6 +180,7 @@ public class EditAppealAfterSubmitHandler implements PreSubmitCallbackHandler<As
             if (!HandlerUtils.hasRepresentation(asylumCase)) {
                 asylumCase.write(HAS_ADDED_LEGAL_REP_DETAILS, NO);
             }
+            setSponsorDetailsFromNlrIfSame(asylumCase);
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);

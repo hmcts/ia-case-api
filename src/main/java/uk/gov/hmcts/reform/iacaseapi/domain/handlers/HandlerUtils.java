@@ -4,6 +4,7 @@ import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingAdjournmentDay.BEFORE_HEARING_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingAdjournmentDay.ON_HEARING_DATE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HelpWithFeesOption.WILL_PAY_FOR_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfCountryCircumstances.ENTRY_CLEARANCE_DECISION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfCountryDecisionType.REFUSAL_OF_HUMAN_RIGHTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfCountryDecisionType.REFUSE_PERMIT;
@@ -16,8 +17,9 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagTyp
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.service.StrategicCaseFlagService.ACTIVE_STATUS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HelpWithFeesOption.WILL_PAY_FOR_APPEAL;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -26,33 +28,35 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.io.ClassPathResource;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseFlagDetail;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ContactPreference;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.FeeRemissionType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingAdjournmentDay;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.HelpWithFeesOption;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionOption;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlag;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationBasedFeatureToggler;
-
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.NonLegalRepDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfCountryCircumstances;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfCountryDecisionType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionOption;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.SourceOfAppeal;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlag;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.Subscriber;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.SubscriberType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.AddressUk;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationBasedFeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.OrganisationPolicy;
 
 
@@ -677,4 +681,44 @@ public class HandlerUtils {
         asylumCase.clear(LEGAL_REP_HAS_ADDRESS);
     }
 
+    public static void setSponsorDetailsFromNlrIfSame(AsylumCase asylumCase) {
+        boolean isSponsorSameAsNlr = asylumCase.read(IS_SPONSOR_SAME_AS_NLR, YesOrNo.class).orElse(YesOrNo.NO)
+            .equals(YesOrNo.YES);
+        if (isSponsorSameAsNlr) {
+            NonLegalRepDetails nlrDetails = asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class)
+                .orElseThrow(() -> new IllegalStateException("Non-legal representative details are not present"));
+            String givenNames = nlrDetails.getGivenNames();
+            String familyName = nlrDetails.getFamilyName();
+            AddressUk addressUk = nlrDetails.getAddress();
+            String email = nlrDetails.getEmailAddress();
+            String phoneNumber = nlrDetails.getPhoneNumber();
+            String idamId = nlrDetails.getIdamId();
+            String nameForDisplay = givenNames != null && familyName != null ? (givenNames + " " + familyName).replaceAll("\\s+", " ").trim() : null;
+            asylumCase.write(SPONSOR_GIVEN_NAMES, givenNames);
+            asylumCase.write(SPONSOR_FAMILY_NAME, familyName);
+            asylumCase.write(SPONSOR_ADDRESS, addressUk);
+            asylumCase.write(SPONSOR_ADDRESS_FOR_DISPLAY, addressUk != null ? addressUk.toDisplay() : null);
+            asylumCase.write(SPONSOR_NAME_FOR_DISPLAY, nameForDisplay);
+            asylumCase.write(SPONSOR_CONTACT_PREFERENCE, email != null ? ContactPreference.WANTS_EMAIL : null);
+            asylumCase.write(SPONSOR_EMAIL, email);
+            asylumCase.write(AIP_SPONSOR_EMAIL_FOR_DISPLAY, email);
+            asylumCase.write(SPONSOR_MOBILE_NUMBER, phoneNumber);
+            asylumCase.write(AIP_SPONSOR_MOBILE_NUMBER_FOR_DISPLAY, phoneNumber);
+            asylumCase.write(SPONSOR_AUTHORISATION, YesOrNo.YES);
+            asylumCase.write(SPONSOR_PARTY_ID, idamId);
+
+            Optional<List<IdValue<Subscriber>>> subscriptionsOptional = asylumCase.read(SPONSOR_SUBSCRIPTIONS);
+            if (subscriptionsOptional.isPresent() && !subscriptionsOptional.get().isEmpty()) {
+                Subscriber newSubscriber = new Subscriber(SubscriberType.SUPPORTER, email, YES, phoneNumber, YES);
+                asylumCase.write(SPONSOR_SUBSCRIPTIONS, List.of(new IdValue<>(idamId, newSubscriber)));
+            }
+        }
+    }
+
+    public static void clearNlrFields(AsylumCase asylumCase) {
+        asylumCase.clear(NLR_DETAILS);
+        asylumCase.clear(JOIN_APPEAL_PIN);
+        asylumCase.clear(IS_SPONSOR_SAME_AS_NLR);
+        asylumCase.clear(HAS_NON_LEGAL_REP_JOINED);
+    }
 }

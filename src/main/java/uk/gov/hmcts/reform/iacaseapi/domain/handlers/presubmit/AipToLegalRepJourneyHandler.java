@@ -3,9 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static java.util.Objects.requireNonNull;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAS_NON_LEGAL_REP;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAS_NON_LEGAL_REP_JOINED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOURNEY_TYPE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NLR_DETAILS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PA_APPEAL_TYPE_AIP_PAYMENT_OPTION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PA_APPEAL_TYPE_PAYMENT_OPTION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PREV_JOURNEY_TYPE;
@@ -13,6 +11,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMISSION_DECISION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMISSION_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.clearNlrFields;
 
 import java.util.List;
 import java.util.Optional;
@@ -102,11 +101,9 @@ public class AipToLegalRepJourneyHandler implements PreSubmitCallbackStateHandle
                     String roleAssignmentId = roleAssignmentResource.getRoleAssignmentResponse().get(0).getId();
                     roleAssignmentService.deleteRoleAssignment(roleAssignmentId, idamService.getServiceUserToken());
                 }
-                asylumCase.clear(NLR_DETAILS);
-                asylumCase.clear(HAS_NON_LEGAL_REP);
-                asylumCase.clear(HAS_NON_LEGAL_REP_JOINED);
             });
-
+        asylumCase.clear(HAS_NON_LEGAL_REP);
+        clearNlrFields(asylumCase);
         return new PreSubmitCallbackResponse<>(asylumCase, currentState);
     }
 

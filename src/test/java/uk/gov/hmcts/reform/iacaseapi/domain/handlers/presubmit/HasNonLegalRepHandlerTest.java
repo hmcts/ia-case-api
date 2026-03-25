@@ -6,10 +6,15 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAS_NON_LEGAL_REP;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAS_NON_LEGAL_REP_JOINED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_SPONSOR_SAME_AS_NLR;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOIN_APPEAL_PIN;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOURNEY_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NLR_DETAILS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SUBMIT_APPEAL;
@@ -21,6 +26,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
@@ -33,6 +39,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -46,6 +53,8 @@ class HasNonLegalRepHandlerTest {
     private AsylumCase asylumCase;
     @Mock
     private NonLegalRepDetails nlrDetails;
+
+    private MockedStatic<HandlerUtils> handlerUtils;
 
     private HasNonLegalRepHandler hasNonLegalRepHandler;
 
@@ -81,8 +90,10 @@ class HasNonLegalRepHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
         verify(asylumCase, never()).clear(NLR_DETAILS);
+        verify(asylumCase, never()).clear(JOIN_APPEAL_PIN);
+        verify(asylumCase, never()).clear(IS_SPONSOR_SAME_AS_NLR);
+        verify(asylumCase, never()).clear(HAS_NON_LEGAL_REP_JOINED);
     }
-
 
     @Test
     void should_clear_nlr_details_if_has_nlr_is_no() {
@@ -95,7 +106,33 @@ class HasNonLegalRepHandlerTest {
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
-        verify(asylumCase).clear(NLR_DETAILS);
+        verify(asylumCase, times(1)).clear(NLR_DETAILS);
+        verify(asylumCase, times(1)).clear(JOIN_APPEAL_PIN);
+        verify(asylumCase, times(1)).clear(IS_SPONSOR_SAME_AS_NLR);
+        verify(asylumCase, times(1)).clear(HAS_NON_LEGAL_REP_JOINED);
+    }
+
+
+    @ParameterizedTest
+    @EnumSource(YesOrNo.class)
+    void should_setSponsorDetailsFromNlrIfSame_for_any_has_nlr(YesOrNo hasNlr) {
+        when(callback.getEvent()).thenReturn(SUBMIT_APPEAL);
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
+        when(asylumCase.read(HAS_NON_LEGAL_REP, YesOrNo.class)).thenReturn(Optional.of(hasNlr));
+        when(asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class)).thenReturn(Optional.of(nlrDetails));
+        handlerUtils = mockStatic(HandlerUtils.class);
+        handlerUtils.when(() -> HandlerUtils.isAipJourney(asylumCase)).thenReturn(true);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            hasNonLegalRepHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+        handlerUtils.verify(
+            () -> HandlerUtils.setSponsorDetailsFromNlrIfSame(asylumCase),
+            times(1)
+        );
+        handlerUtils.close();
     }
 
     @Test

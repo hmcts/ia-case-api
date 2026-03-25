@@ -2,10 +2,10 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAS_NON_LEGAL_REP;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAS_NON_LEGAL_REP_JOINED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NLR_DETAILS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SUBMIT_APPEAL;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.clearNlrFields;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isAipJourney;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.setSponsorDetailsFromNlrIfSame;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -39,12 +39,13 @@ public class HasNonLegalRepHandler implements PreSubmitCallbackHandler<AsylumCas
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
         asylumCase.read(HAS_NON_LEGAL_REP, YesOrNo.class)
-            .ifPresent(hasNoNlr -> {
-                if (hasNoNlr.equals(YesOrNo.NO)) {
-                    asylumCase.clear(NLR_DETAILS);
-                    asylumCase.clear(HAS_NON_LEGAL_REP_JOINED);
+            .ifPresent(hasNlr -> {
+                if (hasNlr.equals(YesOrNo.NO)) {
+                    clearNlrFields(asylumCase);
                 }
             });
+
+        setSponsorDetailsFromNlrIfSame(asylumCase);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
