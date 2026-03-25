@@ -148,7 +148,7 @@ class HasNonLegalRepHandlerTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = Event.class, names = {"SUBMIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT"})
+    @EnumSource(value = Event.class, names = {"SUBMIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT", "SEND_PIP_TO_NON_LEGAL_REP"})
     void it_can_handle_callback(Event event) {
         when(callback.getEvent()).thenReturn(event);
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
@@ -156,7 +156,7 @@ class HasNonLegalRepHandlerTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = Event.class, mode = EnumSource.Mode.EXCLUDE, names = {"SUBMIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT"})
+    @EnumSource(value = Event.class, mode = EnumSource.Mode.EXCLUDE, names = {"SUBMIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT", "SEND_PIP_TO_NON_LEGAL_REP"})
     void it_cannot_handle_incorrect_callback_event(Event event) {
         when(callback.getEvent()).thenReturn(event);
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
