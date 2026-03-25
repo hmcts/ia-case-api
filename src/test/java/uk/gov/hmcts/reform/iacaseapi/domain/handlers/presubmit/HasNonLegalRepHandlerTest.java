@@ -66,19 +66,6 @@ class HasNonLegalRepHandlerTest {
     }
 
     @Test
-    void should_do_nothing_if_no_has_nlr_set() {
-        when(callback.getEvent()).thenReturn(SUBMIT_APPEAL);
-        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
-        when(asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class)).thenReturn(Optional.of(nlrDetails));
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            hasNonLegalRepHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
-
-        assertNotNull(callbackResponse);
-        assertEquals(asylumCase, callbackResponse.getData());
-        verify(asylumCase, never()).clear(NLR_DETAILS);
-    }
-
-    @Test
     void should_do_nothing_if_has_nlr_is_yes() {
         when(callback.getEvent()).thenReturn(SUBMIT_APPEAL);
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
@@ -93,6 +80,23 @@ class HasNonLegalRepHandlerTest {
         verify(asylumCase, never()).clear(JOIN_APPEAL_PIN);
         verify(asylumCase, never()).clear(IS_SPONSOR_SAME_AS_NLR);
         verify(asylumCase, never()).clear(HAS_NON_LEGAL_REP_JOINED);
+    }
+
+    @Test
+    void should_clear_nlr_details_if_no_has_nlr_set() {
+        when(callback.getEvent()).thenReturn(SUBMIT_APPEAL);
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
+        when(asylumCase.read(HAS_NON_LEGAL_REP, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class)).thenReturn(Optional.of(nlrDetails));
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            hasNonLegalRepHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+        verify(asylumCase, times(1)).clear(NLR_DETAILS);
+        verify(asylumCase, times(1)).clear(JOIN_APPEAL_PIN);
+        verify(asylumCase, times(1)).clear(IS_SPONSOR_SAME_AS_NLR);
+        verify(asylumCase, times(1)).clear(HAS_NON_LEGAL_REP_JOINED);
     }
 
     @Test
