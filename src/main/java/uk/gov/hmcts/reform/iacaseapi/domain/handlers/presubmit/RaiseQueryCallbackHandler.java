@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.QM_LATEST_QUERY;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.UserRoleLabel.HOME_OFFICE_GENERIC;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.UserRoleLabel.LEGAL_REPRESENTATIVE;
 
 import java.time.OffsetDateTime;
@@ -111,9 +110,6 @@ public class RaiseQueryCallbackHandler implements PreSubmitCallbackHandler<Asylu
         if (role.equals(LEGAL_REPRESENTATIVE)) {
             log.info("Legal rep queries handler");
             return AsylumCaseFieldDefinition.QM_LEGAL_REPRESENTATIVE_QUERIES;
-        } else if (role.equals(HOME_OFFICE_GENERIC)) {
-            log.info("Home officer queries handler");
-            return AsylumCaseFieldDefinition.QM_HOME_OFFICE_QUERIES;
         }
 
         throw new IllegalStateException("Unsupported user role: " + role);
