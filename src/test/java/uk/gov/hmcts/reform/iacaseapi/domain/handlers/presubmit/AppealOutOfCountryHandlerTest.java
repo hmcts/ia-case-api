@@ -54,7 +54,7 @@ class AppealOutOfCountryHandlerTest {
     private AsylumCase asylumCase;
     @Mock
     private FeatureToggler featureToggler;
-    private final AddressUk addressUk = new AddressUk( "line1", "",
+    private final AddressUk addressUk = new AddressUk("line1", "",
         null,"town", "county", "TT1 TST", "UK");
     private AppealOutOfCountryHandler appealOutOfCountryHandler;
 

@@ -916,10 +916,10 @@ class EditAppealAfterSubmitHandlerTest {
 
     @Test
     void should_setSponsorDetailsFromNlrIfSame() {
-        MockedStatic<HandlerUtils> handlerUtils = mockStatic(HandlerUtils.class);
         when(dateProvider.now()).thenReturn(LocalDate.parse("2020-04-08"));
         when(asylumCase.read(HOME_OFFICE_DECISION_DATE)).thenReturn(Optional.of("2020-04-08"));
 
+        MockedStatic<HandlerUtils> handlerUtils = mockStatic(HandlerUtils.class);
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             editAppealAfterSubmitHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
