@@ -712,6 +712,10 @@ public class HandlerUtils {
                 Subscriber newSubscriber = new Subscriber(SubscriberType.SUPPORTER, email, YES, phoneNumber, YES);
                 asylumCase.write(SPONSOR_SUBSCRIPTIONS, List.of(new IdValue<>(idamId, newSubscriber)));
             }
+        } else {
+            if (asylumCase.read(HAS_NON_LEGAL_REP, YesOrNo.class).orElse(YesOrNo.NO).equals(YesOrNo.NO)) {
+                clearNlrFields(asylumCase);
+            }
         }
     }
 

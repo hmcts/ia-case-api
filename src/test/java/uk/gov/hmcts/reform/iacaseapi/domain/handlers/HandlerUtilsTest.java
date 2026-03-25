@@ -31,6 +31,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_LEVEL_FLAGS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.EXCEPTIONAL_CIRCUMSTANCES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAS_ADDED_LEGAL_REP_DETAILS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAS_NON_LEGAL_REP;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAS_NON_LEGAL_REP_JOINED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_ADJOURNMENT_WHEN;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_CHANNEL;
@@ -1127,8 +1128,18 @@ class HandlerUtilsTest {
     }
 
     @Test
-    void setSponsorDetailsFromNlrIfSame_does_nothing_if_no() {
+    void setSponsorDetailsFromNlrIfSame_does_nothing_if_no_and_has_nlr() {
         when(asylumCase.read(IS_SPONSOR_SAME_AS_NLR, YesOrNo.class)).thenReturn(Optional.of(NO));
+        when(asylumCase.read(HAS_NON_LEGAL_REP, YesOrNo.class)).thenReturn(Optional.of(YES));
+        HandlerUtils.setSponsorDetailsFromNlrIfSame(asylumCase);
+
+        verify(asylumCase, never()).write(any(), any());
+    }
+
+    @Test
+    void setSponsorDetailsFromNlrIfSame_does_nothing_if_empty_and_has_nlr() {
+        when(asylumCase.read(IS_SPONSOR_SAME_AS_NLR, YesOrNo.class)).thenReturn(Optional.empty());
+        when(asylumCase.read(HAS_NON_LEGAL_REP, YesOrNo.class)).thenReturn(Optional.of(YES));
 
         HandlerUtils.setSponsorDetailsFromNlrIfSame(asylumCase);
 
@@ -1136,14 +1147,32 @@ class HandlerUtilsTest {
     }
 
     @Test
-    void setSponsorDetailsFromNlrIfSame_does_nothing_if_empty() {
+    void setSponsorDetailsFromNlrIfSame_clear_nlr_fields_if_not_same_and_has_nlr_empty() {
         when(asylumCase.read(IS_SPONSOR_SAME_AS_NLR, YesOrNo.class)).thenReturn(Optional.empty());
+        when(asylumCase.read(HAS_NON_LEGAL_REP, YesOrNo.class)).thenReturn(Optional.empty());
 
         HandlerUtils.setSponsorDetailsFromNlrIfSame(asylumCase);
 
         verify(asylumCase, never()).write(any(), any());
+        verify(asylumCase).clear(NLR_DETAILS);
+        verify(asylumCase).clear(JOIN_APPEAL_PIN);
+        verify(asylumCase).clear(IS_SPONSOR_SAME_AS_NLR);
+        verify(asylumCase).clear(HAS_NON_LEGAL_REP_JOINED);
     }
 
+    @Test
+    void setSponsorDetailsFromNlrIfSame_clear_nlr_fields_if_not_same_and_has_nlnoNO() {
+        when(asylumCase.read(IS_SPONSOR_SAME_AS_NLR, YesOrNo.class)).thenReturn(Optional.empty());
+        when(asylumCase.read(HAS_NON_LEGAL_REP, YesOrNo.class)).thenReturn(Optional.of(NO));
+
+        HandlerUtils.setSponsorDetailsFromNlrIfSame(asylumCase);
+
+        verify(asylumCase, never()).write(any(), any());
+        verify(asylumCase).clear(NLR_DETAILS);
+        verify(asylumCase).clear(JOIN_APPEAL_PIN);
+        verify(asylumCase).clear(IS_SPONSOR_SAME_AS_NLR);
+        verify(asylumCase).clear(HAS_NON_LEGAL_REP_JOINED);
+    }
 
     @Test
     void setSponsorDetailsFromNlrIfSame_throws_if_yes_and_no_nlr_details() {
@@ -1215,7 +1244,6 @@ class HandlerUtilsTest {
         verify(asylumCase).write(SPONSOR_PARTY_ID, idamId);
         verify(asylumCase, never()).write(eq(SPONSOR_SUBSCRIPTIONS), anyList());
     }
-
 
     @Test
     void setSponsorDetailsFromNlrIfSame_sets_sponsor_subscription_if_existing_not_empty() {
