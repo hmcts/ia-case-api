@@ -30,7 +30,7 @@ class HomeOfficeReferenceDataHandlerTest {
     @Mock
     private CaseDetails<AsylumCase> caseDetails;
 
-    private final HomeOfficeReferenceDataHandler HomeOfficeReferenceDataHandler = new HomeOfficeReferenceDataHandler();
+    private final HomeOfficeReferenceDataHandler homeOfficeReferenceDataHandler = new HomeOfficeReferenceDataHandler();
 
     @Test
     void should_return_confirmation() {
@@ -40,7 +40,7 @@ class HomeOfficeReferenceDataHandlerTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            HomeOfficeReferenceDataHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+            homeOfficeReferenceDataHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
     }
@@ -48,11 +48,11 @@ class HomeOfficeReferenceDataHandlerTest {
     @Test
     void handling_should_throw_if_cannot_actually_handle() {
 
-        assertThatThrownBy(() -> HomeOfficeReferenceDataHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
+        assertThatThrownBy(() -> homeOfficeReferenceDataHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
 
-        assertThatThrownBy(() -> HomeOfficeReferenceDataHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
+        assertThatThrownBy(() -> homeOfficeReferenceDataHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
     }
@@ -63,7 +63,7 @@ class HomeOfficeReferenceDataHandlerTest {
         for (Event event : Event.values()) {
             for (PreSubmitCallbackStage stage: PreSubmitCallbackStage.values()) {
                 when(callback.getEvent()).thenReturn(event);
-                boolean canHandle = HomeOfficeReferenceDataHandler.canHandle(stage, callback);
+                boolean canHandle = homeOfficeReferenceDataHandler.canHandle(stage, callback);
 
                 if (event == Event.HOME_OFFICE_REFERENCE_DATA && stage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT) {
                     assertTrue(canHandle);
@@ -79,17 +79,17 @@ class HomeOfficeReferenceDataHandlerTest {
     @Test
     void should_not_allow_null_arguments() {
 
-        assertThatThrownBy(() -> HomeOfficeReferenceDataHandler.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
+        assertThatThrownBy(() -> homeOfficeReferenceDataHandler.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
-        assertThatThrownBy(() -> HomeOfficeReferenceDataHandler.canHandle(null, callback))
+        assertThatThrownBy(() -> homeOfficeReferenceDataHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> HomeOfficeReferenceDataHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
+        assertThatThrownBy(() -> homeOfficeReferenceDataHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
-        assertThatThrownBy(() -> HomeOfficeReferenceDataHandler.handle(null, callback))
+        assertThatThrownBy(() -> homeOfficeReferenceDataHandler.handle(null, callback))
             .hasMessage("callbackStage must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
     }
