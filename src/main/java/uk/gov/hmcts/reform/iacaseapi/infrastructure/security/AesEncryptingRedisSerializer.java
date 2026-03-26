@@ -27,7 +27,10 @@ public class AesEncryptingRedisSerializer<T> implements RedisSerializer<T> {
 
     @Override
     public byte[] serialize(T value) throws SerializationException {
-        if (value == null) return null;
+        if (value == null) {
+            return null;
+        }
+
         try {
             byte[] plaintext = delegate.serialize(value);
 
@@ -51,7 +54,10 @@ public class AesEncryptingRedisSerializer<T> implements RedisSerializer<T> {
 
     @Override
     public T deserialize(byte[] bytes) throws SerializationException {
-        if (bytes == null) return null;
+        if (bytes == null) {
+            return null;
+        }
+
         try {
             byte[] iv = Arrays.copyOfRange(bytes, 0, GCM_IV_LENGTH);
             byte[] ciphertext = Arrays.copyOfRange(bytes, GCM_IV_LENGTH, bytes.length);
