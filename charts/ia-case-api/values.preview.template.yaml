@@ -527,7 +527,7 @@ ia-home-office-integration-api:
   enabled: true #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
-    image: hmctsprod.azurecr.io/ia/home-office-integration-api:pr-460
+    image: hmctsprod.azurecr.io/ia/home-office-integration-api:latest
     releaseNameOverride: ${SERVICE_NAME}-home-office-integration-api
     ingressHost: ${SERVICE_NAME}-home-office-integration-api.preview.platform.hmcts.net
     devcpuRequests: 500m
@@ -541,7 +541,6 @@ ia-home-office-integration-api:
       ROLE_ASSIGNMENT_URL: https://am-role-assignment-${SERVICE_FQDN}
       IA_IDAM_REDIRECT_URI: https://${SERVICE_NAME}-home-office-integration-api.preview.platform.hmcts.net/oauth2/callback
       CCD_URL: http://{{ .Release.Name }}-ccd-data-store-api
-      HOME_OFFICE_ENDPOINT: https://ia-home-office-mock-api-pr-163.preview.platform.hmcts.net
     keyVaults:
       ia:
         resourceGroup: ia
