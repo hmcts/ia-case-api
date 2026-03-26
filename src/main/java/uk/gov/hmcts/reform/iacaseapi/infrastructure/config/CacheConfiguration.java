@@ -23,6 +23,7 @@ import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.idam.UserInfo;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.AesEncryptingRedisSerializer;
 
 import java.time.Duration;
 
@@ -31,6 +32,9 @@ import java.time.Duration;
 public class CacheConfiguration {
 
     private static final Logger log = LoggerFactory.getLogger(CacheConfiguration.class);
+
+    @Value("${redis.encryption.key}") // Base64-encoded 32-byte key
+    private String redisEncryptionKey;
 
     @Bean
     public CacheManagerCustomizer<CaffeineCacheManager> cacheManagerCustomizer() {
@@ -45,8 +49,11 @@ public class CacheConfiguration {
             log.info("Redis connection successful - using Redis for systemTokenCache");
 
             // Idam user info config
-            Jackson2JsonRedisSerializer<UserInfo> userInfoSerializer =
-                    new Jackson2JsonRedisSerializer<>(UserInfo.class);
+            AesEncryptingRedisSerializer<UserInfo> userInfoSerializer =
+                    new AesEncryptingRedisSerializer<>(
+                            new Jackson2JsonRedisSerializer<>(UserInfo.class),
+                            redisEncryptionKey
+                    );
 
             RedisCacheConfiguration userInfoCacheConfig = RedisCacheConfiguration.defaultCacheConfig()
                     .entryTtl(Duration.ofSeconds(3300))
@@ -59,8 +66,11 @@ public class CacheConfiguration {
                                     .fromSerializer(userInfoSerializer));
 
             // system user token config
-            Jackson2JsonRedisSerializer<String> tokenSerializer = new Jackson2JsonRedisSerializer<>(String.class);
-
+            AesEncryptingRedisSerializer<String> tokenSerializer =
+                    new AesEncryptingRedisSerializer<>(
+                            new Jackson2JsonRedisSerializer<>(String.class),
+                            redisEncryptionKey
+                    );
             RedisCacheConfiguration tokenCacheConfig = RedisCacheConfiguration.defaultCacheConfig()
                     .entryTtl(Duration.ofSeconds(3300))  // 55mins (token might expire before cache)
                     .disableCachingNullValues()

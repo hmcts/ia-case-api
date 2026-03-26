@@ -94,6 +94,8 @@ spring:
     redis:
       url: ${IA_REDIS_CONNECTION_STRING:}
       secret: ${IA_REDIS_ACCESS_KEY:}
+      encryption:
+        key: ${IA_REDIS_ENCRYPTION_KEY:}
       ssl:
         enabled: true
   datasource:
