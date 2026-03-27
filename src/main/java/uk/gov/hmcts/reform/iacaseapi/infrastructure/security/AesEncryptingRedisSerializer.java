@@ -18,6 +18,8 @@ public class AesEncryptingRedisSerializer<T> implements RedisSerializer<T> {
 
     private final RedisSerializer<T> delegate;
     private final SecretKeySpec secretKey;
+    private final SecureRandom SECURE_RANDOM = new SecureRandom();
+
 
     public AesEncryptingRedisSerializer(RedisSerializer<T> delegate, String base64Key) {
         this.delegate = delegate;
@@ -35,7 +37,7 @@ public class AesEncryptingRedisSerializer<T> implements RedisSerializer<T> {
             byte[] plaintext = delegate.serialize(value);
 
             byte[] iv = new byte[GCM_IV_LENGTH];
-            new SecureRandom().nextBytes(iv);
+            SECURE_RANDOM.nextBytes(iv);
 
             Cipher cipher = Cipher.getInstance(ALGORITHM);
             cipher.init(Cipher.ENCRYPT_MODE, secretKey, new GCMParameterSpec(GCM_TAG_LENGTH, iv));
