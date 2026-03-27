@@ -31,12 +31,17 @@ public class AesEncryptingRedisSerializer<T> implements RedisSerializer<T> {
 
     @Override
     public byte[] serialize(T value) throws SerializationException {
+
+        log.info("VALUE TO SERIALIZE: " + value);
+
         if (value == null) {
             return null;
         }
 
         try {
             byte[] plainText = delegate.serialize(value);
+
+            log.info("plainText: " + Arrays.toString(plainText));
 
             byte[] iv = new byte[GCM_IV_LENGTH];
             SECURE_RANDOM.nextBytes(iv);
@@ -60,6 +65,8 @@ public class AesEncryptingRedisSerializer<T> implements RedisSerializer<T> {
 
     @Override
     public T deserialize(byte[] bytes) throws SerializationException {
+        log.info("VALUE TO DESERIALIZE: " + Arrays.toString(bytes));
+
         if (bytes == null) {
             return null;
         }
@@ -71,7 +78,7 @@ public class AesEncryptingRedisSerializer<T> implements RedisSerializer<T> {
             Cipher cipher = Cipher.getInstance(ALGORITHM);
             cipher.init(Cipher.DECRYPT_MODE, secretKey, new GCMParameterSpec(GCM_TAG_LENGTH, iv));
             byte[] plaintext = cipher.doFinal(ciphertext);
-
+            log.info("plaintext: " + Arrays.toString(plaintext));
             return delegate.deserialize(plaintext);
         } catch (Exception e) {
             throw new SerializationException("Decryption failed", e);
