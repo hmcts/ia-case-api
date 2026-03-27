@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.security;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.data.redis.serializer.SerializationException;
 
@@ -10,6 +11,7 @@ import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.Base64;
 
+@Slf4j
 public class AesEncryptingRedisSerializer<T> implements RedisSerializer<T> {
 
     private static final String ALGORITHM = "AES/GCM/NoPadding";
@@ -34,19 +36,21 @@ public class AesEncryptingRedisSerializer<T> implements RedisSerializer<T> {
         }
 
         try {
-            byte[] plaintext = delegate.serialize(value);
+            byte[] plainText = delegate.serialize(value);
 
             byte[] iv = new byte[GCM_IV_LENGTH];
             SECURE_RANDOM.nextBytes(iv);
 
             Cipher cipher = Cipher.getInstance(ALGORITHM);
             cipher.init(Cipher.ENCRYPT_MODE, secretKey, new GCMParameterSpec(GCM_TAG_LENGTH, iv));
-            byte[] ciphertext = cipher.doFinal(plaintext);
+            byte[] ciphertext = cipher.doFinal(plainText);
 
             // Prepend IV to ciphertext: [IV (12 bytes)][ciphertext]
             byte[] result = new byte[iv.length + ciphertext.length];
             System.arraycopy(iv, 0, result, 0, iv.length);
             System.arraycopy(ciphertext, 0, result, iv.length, ciphertext.length);
+
+            log.info("Token serialized and encrypted, bytes length: {}", result.length);
             return result;
 
         } catch (Exception e) {

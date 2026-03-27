@@ -140,7 +140,7 @@ public class CacheConfiguration {
                     clientConfig
             );
 
-            factory.afterPropertiesSet();
+            // factory.afterPropertiesSet();
             log.info("Successful Redis connection.");
             return factory;
         } catch (Exception e) {
