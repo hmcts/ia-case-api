@@ -111,6 +111,12 @@ public enum AsylumCaseFieldDefinition {
     MOBILE_NUMBER_RETYPE(
             "mobileNumberRetype", new TypeReference<String>(){}),
 
+    APPELLANT_EMAIL_ADDRESS(
+            "appellantEmailAddress", new TypeReference<String>(){}),
+
+    APPELLANT_PHONE_NUMBER(
+            "appellantPhoneNumber", new TypeReference<String>(){}),
+
     APPEAL_TYPE(
         "appealType", new TypeReference<AppealType>(){}),
 
