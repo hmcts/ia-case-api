@@ -15,10 +15,10 @@ public class AesEncryptingRedisSerializer<T> implements RedisSerializer<T> {
     private static final String ALGORITHM = "AES/GCM/NoPadding";
     private static final int GCM_IV_LENGTH = 12;
     private static final int GCM_TAG_LENGTH = 128;
+    private static final SecureRandom SECURE_RANDOM = new SecureRandom();
 
     private final RedisSerializer<T> delegate;
     private final SecretKeySpec secretKey;
-    private final SecureRandom SECURE_RANDOM = new SecureRandom();
 
 
     public AesEncryptingRedisSerializer(RedisSerializer<T> delegate, String base64Key) {
