@@ -48,8 +48,8 @@ class DbUtilsTest {
 
         MapSqlParameterSource capturedParams = paramCaptor.getValue();
         assertThat(capturedParams.getValue("type")).isEqualTo("PA");
-        assertThat(capturedParams.getValue("sequence")).isEqualTo("12345");
-        assertThat(capturedParams.getValue("year")).isEqualTo("2026");
+        assertThat(capturedParams.getValue("sequence")).isEqualTo(12345);
+        assertThat(capturedParams.getValue("year")).isEqualTo(2026);
     }
 
     @Test

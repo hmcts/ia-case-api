@@ -43,8 +43,8 @@ public class DbUtils {
         
         MapSqlParameterSource parameters = new MapSqlParameterSource();
         parameters.addValue("type", type);
-        parameters.addValue("year", year);
-        parameters.addValue("sequence", sequence);
+        parameters.addValue("year", Integer.parseInt(year));
+        parameters.addValue("sequence", Integer.parseInt(sequence));
 
         try {
             String caseId = selectCaseIdForAppealReferenceNumber(parameters);
