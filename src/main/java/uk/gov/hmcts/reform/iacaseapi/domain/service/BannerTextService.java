@@ -18,7 +18,7 @@ public class BannerTextService {
     public void addToBannerText(AsylumCase asylumCase, String bannerText) {
         validateText(bannerText);
         String existingBannerText = getBannerText(asylumCase);
-        if (!existingBannerText.equalsIgnoreCase(bannerText)) {
+        if (!existingBannerText.toLowerCase().contains(bannerText.toLowerCase())) {
             StringBuilder existingTextBuilder = new StringBuilder(existingBannerText);
             StringBuilder newBannerText;
             if (hasText(existingTextBuilder)) {

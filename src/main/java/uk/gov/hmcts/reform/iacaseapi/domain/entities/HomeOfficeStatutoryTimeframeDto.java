@@ -53,7 +53,7 @@ public class HomeOfficeStatutoryTimeframeDto {
     private String givenNames;
 
     @JsonProperty(value = "dateOfBirth", required = true)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     @NotNull
     private LocalDate dateOfBirth;
 
@@ -63,7 +63,7 @@ public class HomeOfficeStatutoryTimeframeDto {
     private Stf24WeekCohort[] stf24weekCohorts;
 
     @JsonProperty(value = "timeStamp", required = true)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'")
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     @NotNull
     private OffsetDateTime timeStamp;
 

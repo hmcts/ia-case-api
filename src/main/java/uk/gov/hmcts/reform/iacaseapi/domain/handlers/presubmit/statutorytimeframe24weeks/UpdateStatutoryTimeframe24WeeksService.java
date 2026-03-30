@@ -50,6 +50,17 @@ public class UpdateStatutoryTimeframe24WeeksService {
     }
 
     public AsylumCase updateAsylumCase(AsylumCase asylumCase, YesOrNo stf24wStatus) {
+        Optional<String> test1 = asylumCase.read(STF_24W_CURRENT_REASON_AUTO_GENERATED, String.class);
+        log.info("STF_24W_CURRENT_REASON_AUTO_GENERATED: {}", test1);
+        Optional<YesOrNo> test2 = asylumCase.read(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class);
+        log.info("STF_24W_CURRENT_STATUS_AUTO_GENERATED: {}", test2);
+        Optional<YesOrNo> test3 = asylumCase.read(STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED, YesOrNo.class);
+        log.info("STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED: {}", test3);
+        Optional<StatutoryTimeframe24Weeks> test4 = asylumCase.read(STATUTORY_TIMEFRAME_24_WEEKS, StatutoryTimeframe24Weeks.class);
+        log.info("STATUTORY_TIMEFRAME_24_WEEKS: {}", test4);
+
+
+
         // Read existing fields
         String stf24wReason = asylumCase
             .read(STF_24W_CURRENT_REASON_AUTO_GENERATED, String.class)
