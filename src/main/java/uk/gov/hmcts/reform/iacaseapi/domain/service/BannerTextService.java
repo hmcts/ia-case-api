@@ -42,8 +42,13 @@ public class BannerTextService {
     }
 
     private boolean existingIncludesNew(String existingBannerText, String bannerText) {
-        String existing = existingBannerText.toLowerCase();
-        String target = bannerText.toLowerCase();
+        // Need to encode ()s and other non-alphanumeric chars in order for \b to work
+        String existing = existingBannerText.toLowerCase()
+                          .replace("(", "LBRACKET")
+                          .replace(")", "RBRACKET");
+        String target = bannerText.toLowerCase()
+                          .replace("(", "LBRACKET")
+                          .replace(")", "RBRACKET");
         String regex = "\\b" + Pattern.quote(target) + "\\b";
 
         return Pattern.compile(regex).matcher(existing).find();
