@@ -45,6 +45,7 @@ public class InternalCaseCreationContactDetailsAppender implements PreSubmitCall
 
 
         if (isAdmin.equals(YesOrNo.YES)) {
+
             Optional<String> internalAppellantMobileNumber = asylumCase.read(INTERNAL_APPELLANT_MOBILE_NUMBER, String.class);
             Optional<String> mobileNumber = asylumCase.read(MOBILE_NUMBER, String.class);
             Optional<String> appellantPhoneNumber = asylumCase.read(APPELLANT_PHONE_NUMBER, String.class);
