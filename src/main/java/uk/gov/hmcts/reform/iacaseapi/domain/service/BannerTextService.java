@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.commons.lang3.StringUtils.SPACE;
@@ -18,7 +19,8 @@ public class BannerTextService {
     public void addToBannerText(AsylumCase asylumCase, String bannerText) {
         validateText(bannerText);
         String existingBannerText = getBannerText(asylumCase);
-        if (!existingBannerText.toLowerCase().contains(bannerText.toLowerCase())) {
+        // Don't add the text if we already have it for some reason - check word boundaries to avoid accidental substring matches
+        if (!existingIncludesNew(existingBannerText, bannerText)) {
             StringBuilder existingTextBuilder = new StringBuilder(existingBannerText);
             StringBuilder newBannerText;
             if (hasText(existingTextBuilder)) {
@@ -33,10 +35,18 @@ public class BannerTextService {
     public void removeFromBannerText(AsylumCase asylumCase, String bannerText) {
         validateText(bannerText);
         String existingBannerText = getBannerText(asylumCase);
-        if (existingBannerText.toLowerCase().contains(bannerText.toLowerCase())) {
+        if (existingIncludesNew(existingBannerText, bannerText)) {
             String bannerTextAfterRemove = existingBannerText.replace(bannerText, EMPTY);
             addBannerText(asylumCase, bannerTextAfterRemove);
         }
+    }
+
+    private boolean existingIncludesNew(String existingBannerText, String bannerText) {
+        String existing = existingBannerText.toLowerCase();
+        String target = bannerText.toLowerCase();
+        String regex = "\\b" + Pattern.quote(target) + "\\b";
+
+        return Pattern.compile(regex).matcher(existing).find();
     }
 
     private String getBannerText(AsylumCase asylumCase) {

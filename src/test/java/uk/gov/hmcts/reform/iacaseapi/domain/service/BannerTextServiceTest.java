@@ -24,6 +24,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 class BannerTextServiceTest {
     public static final String SOME_TEXT = "SOME TEXT";
     public static final String SOME_TEXT_A = "SOME TEXTA";
+    public static final String SOME_TEXT_A2 = "SOME TEXT A";
     public static final String SOME_TEXT_B = "SOME TEXTB";
     private static final int ONE = 1;
     private static final int ZERO = 0;
@@ -59,7 +60,14 @@ class BannerTextServiceTest {
     }
 
     @Test
-    void shouldNotAddGivenBannerTextIfAlreadyExits() {
+    void shouldNotAddGivenBannerTextToExistingBannerTextOfTheCase() {
+        when(asylumCase.read(XUI_BANNER_TEXT)).thenReturn(Optional.of(SOME_TEXT_A2));
+        subject.addToBannerText(asylumCase, SOME_TEXT);
+        verify(asylumCase, times(ZERO)).write(XUI_BANNER_TEXT, SOME_TEXT_A2);
+    }
+
+    @Test
+    void shouldNotAddGivenBannerTextIfAlreadyExists() {
         when(asylumCase.read(XUI_BANNER_TEXT)).thenReturn(Optional.of(SOME_TEXT));
         subject.addToBannerText(asylumCase, SOME_TEXT);
         verify(asylumCase, times(ZERO)).write(XUI_BANNER_TEXT, SOME_TEXT);
@@ -67,13 +75,20 @@ class BannerTextServiceTest {
 
     @Test
     void shouldRemoveGivenTextFromTheBannerText() {
-        when(asylumCase.read(XUI_BANNER_TEXT)).thenReturn(Optional.of(SOME_TEXT_A));
+        when(asylumCase.read(XUI_BANNER_TEXT)).thenReturn(Optional.of(SOME_TEXT_A2));
         subject.removeFromBannerText(asylumCase, SOME_TEXT);
         verify(asylumCase, times(ONE)).write(XUI_BANNER_TEXT, "A");
     }
 
     @Test
     void shouldNotRemoveGivenTextFromTheBannerText() {
+        when(asylumCase.read(XUI_BANNER_TEXT)).thenReturn(Optional.of(SOME_TEXT_A));
+        subject.removeFromBannerText(asylumCase, SOME_TEXT);
+        verify(asylumCase, times(ZERO)).write(XUI_BANNER_TEXT, "A");
+    }
+
+    @Test
+    void shouldDefinitelyNotRemoveGivenTextFromTheBannerText() {
         when(asylumCase.read(XUI_BANNER_TEXT)).thenReturn(Optional.of(SOME_TEXT_A));
         subject.removeFromBannerText(asylumCase, SOME_TEXT_B);
         verify(asylumCase, times(ZERO)).write(XUI_BANNER_TEXT, SOME_TEXT_A);
