@@ -44,7 +44,7 @@ class RequestHearingRequirementsPreparerTest {
             new RequestHearingRequirementsPreparer();
     }
 
-   @Test
+    @Test
     void should_check_condition_for_hearing_requirements_is_no() {
 
 
@@ -64,7 +64,7 @@ class RequestHearingRequirementsPreparerTest {
             "You cannot submit your hearing requirements before the Home Office response has been uploaded."));
     }
 
-   @Test
+    @Test
     void should_check_condition_for_hearing_requirements_is_null() {
 
 
