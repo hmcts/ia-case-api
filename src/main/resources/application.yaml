@@ -82,7 +82,7 @@ spring:
         jwt:
           jwk-set-uri: ${OPEN_ID_IDAM_URL:http://127.0.0.1:5000}/o/jwks
   cache:
-    cache-names: userInfoCache, accessTokenCache, homeOfficeReferenceDataCache
+    cache-names: userInfoCache, accessTokenCache
     caffeine:
       spec: expireAfterWrite=3600s
   datasource:
@@ -217,6 +217,7 @@ homeOfficeApi:
   endpoint: ${IA_HOME_OFFICE_INTEGRATION_API_URL:http://127.0.0.1:8094}
   aboutToStartPath: "/asylum/ccdAboutToStart"
   aboutToSubmitPath: "/asylum/ccdAboutToSubmit"
+  midEventPath: "/asylum/ccdMidEvent"
 
 security:
   anonymousPaths:
@@ -273,6 +274,7 @@ security:
       - "requestCaseEdit"
       - "requestHearingRequirements"
       - "requestRespondentEvidence"
+      - "completeCaseReview"
       - "uploadRespondentEvidence"
       - "requestRespondentReview"
       - "addAppealResponse"
@@ -363,6 +365,7 @@ security:
       - "requestCaseEdit"
       - "requestHearingRequirements"
       - "requestRespondentEvidence"
+      - "completeCaseReview"
       - "uploadRespondentEvidence"
       - "requestRespondentReview"
       - "addAppealResponse"
@@ -451,6 +454,7 @@ security:
       - "requestCaseEdit"
       - "requestHearingRequirements"
       - "requestRespondentEvidence"
+      - "completeCaseReview"
       - "uploadRespondentEvidence"
       - "requestRespondentReview"
       - "addAppealResponse"
@@ -1344,6 +1348,8 @@ security:
       - "rollbackMigration"
       - "addStatutoryTimeframe24Weeks"
       - "removeStatutoryTimeframe24Weeks"
+      - "createCaseLink"
+      - "maintainCaseLinks"
     caseworker-ia-internal:
       - "revokeCaseAccess"
       - "removeCaseManagerBulk"
@@ -1391,7 +1397,7 @@ idam:
     microservice: ${IA_S2S_MICROSERVICE:ia}
     url: ${S2S_URL:http://127.0.0.1:4502}
   s2s-authorised:
-    services: ${IA_S2S_AUTHORIZED_SERVICES:ccd,ccd_data,ccd_gw,ccd_ps,iac,payment_app,refunds_api}
+    services: ${IA_S2S_AUTHORIZED_SERVICES:ccd,ccd_data,ccd_ps,iac,payment_app,refunds_api}
   ia_system_user:
     username: ${IA_SYSTEM_USERNAME:system-user}
     password: ${IA_SYSTEM_PASSWORD:system-password}
