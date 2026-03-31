@@ -770,6 +770,8 @@ xui-webapp:
             alias: system-user-name
           - name: system-user-password
             alias: system-user-password
+          - name: mc-session-secret
+            alias: mc-session-secret
 
 ccd:
   enabled: true
