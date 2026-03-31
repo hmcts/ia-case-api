@@ -110,8 +110,12 @@ public class AppealWasNotSubmittedSupportingDocumentsHandler implements PreSubmi
                     .orElse(emptyList())
                     .stream()
                     .filter(Objects::nonNull)
-                    .filter(doc -> doc.getValue() != null)
-                    .filter(doc -> doc.getValue().getTag() != DocumentTag.APPEAL_WAS_NOT_SUBMITTED_SUPPORTING_DOCUMENT)
+                    filter(doc -> {
+                            DocumentWithMetadata value = doc.getValue();
+                            return value != null &&
+                                    !DocumentTag.APPEAL_WAS_NOT_SUBMITTED_SUPPORTING_DOCUMENT
+                                    .equals(value.getTag());
+                    })
                     .collect(Collectors.toList());
     }
 
