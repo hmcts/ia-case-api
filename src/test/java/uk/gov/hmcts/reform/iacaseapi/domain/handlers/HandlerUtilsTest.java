@@ -146,7 +146,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseFlagDetail;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseFlagValue;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ContactPreference;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.FeeRemissionType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingAdjournmentDay;
@@ -164,7 +163,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.SubscriberType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Value;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.AddressUk;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
@@ -1228,53 +1226,12 @@ class HandlerUtilsTest {
         verify(asylumCase).write(SPONSOR_EMAIL, null);
         verify(asylumCase).write(SPONSOR_MOBILE_NUMBER, null);
         verify(asylumCase).write(SPONSOR_AUTHORISATION, YES);
-        verify(asylumCase, never()).write(eq(SPONSOR_SUBSCRIPTIONS), anyList());
+        verify(asylumCase).write(eq(SPONSOR_SUBSCRIPTIONS), anyList());
         partyIdService.close();
     }
 
     @Test
-    void setSponsorDetailsFromNlrIfSame_sets_correctly_if_yes_with_existing_empty_sponsor_subscription() {
-        partyIdService = mockStatic(PartyIdService.class);
-        String givenNames = "some-givenNames";
-        String familyName = "some-familyName";
-        AddressUk addressUk = new AddressUk("line1", "line2", "line3",
-            "town", "county", "postcode", "country");
-        String email = "some-email";
-        String phoneNumber = "some-phoneNumber";
-        String idamId = "some-idamId";
-        when(asylumCase.read(IS_SPONSOR_SAME_AS_NLR, YesOrNo.class)).thenReturn(Optional.of(YES));
-        when(asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class))
-            .thenReturn(Optional.of(NonLegalRepDetails.builder()
-                .givenNames(givenNames)
-                .familyName(familyName)
-                .address(addressUk)
-                .emailAddress(email)
-                .phoneNumber(phoneNumber)
-                .idamId(idamId)
-                .build()
-            ));
-        when(asylumCase.read(SPONSOR_SUBSCRIPTIONS)).thenReturn(Optional.of(mockSubscribers));
-        when(mockSubscribers.isEmpty()).thenReturn(true);
-        setSponsorDetailsFromNlrIfSame(asylumCase);
-        partyIdService.verify(
-            () -> PartyIdService.setSponsorPartyId(asylumCase),
-            times(1)
-        );
-        verify(asylumCase).write(SPONSOR_GIVEN_NAMES, givenNames);
-        verify(asylumCase).write(SPONSOR_FAMILY_NAME, familyName);
-        verify(asylumCase).write(SPONSOR_ADDRESS, addressUk);
-        verify(asylumCase).write(SPONSOR_ADDRESS_FOR_DISPLAY, addressUk.toDisplay());
-        verify(asylumCase).write(SPONSOR_NAME_FOR_DISPLAY, givenNames + " " + familyName);
-        verify(asylumCase).write(SPONSOR_CONTACT_PREFERENCE, ContactPreference.WANTS_EMAIL);
-        verify(asylumCase).write(SPONSOR_EMAIL, email);
-        verify(asylumCase).write(SPONSOR_MOBILE_NUMBER, phoneNumber);
-        verify(asylumCase).write(SPONSOR_AUTHORISATION, YES);
-        verify(asylumCase, never()).write(eq(SPONSOR_SUBSCRIPTIONS), anyList());
-        partyIdService.close();
-    }
-
-    @Test
-    void setSponsorDetailsFromNlrIfSame_sets_sponsor_subscription_if_existing_not_empty() {
+    void setSponsorDetailsFromNlrIfSame_sets_sponsor_subscription_correctly() {
         partyIdService = mockStatic(PartyIdService.class);
         String email = "some-email";
         String phoneNumber = "some-phoneNumber";
@@ -1302,7 +1259,7 @@ class HandlerUtilsTest {
         assertEquals(email, capturedSubscribers.get(0).getValue().getEmail());
         assertEquals(phoneNumber, capturedSubscribers.get(0).getValue().getMobileNumber());
         assertEquals(YES, capturedSubscribers.get(0).getValue().getWantsEmail());
-        assertEquals(YES, capturedSubscribers.get(0).getValue().getWantsSms());
+        assertEquals(NO, capturedSubscribers.get(0).getValue().getWantsSms());
         partyIdService.close();
     }
 }
