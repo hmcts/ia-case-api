@@ -60,14 +60,11 @@ public class RaiseQueryCallbackHandler implements PreSubmitCallbackHandler<Asylu
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
         AsylumCaseFieldDefinition queryCollection = determineQueryCollection();
-        log.info("Determined query collection: " + queryCollection.value());
 
         CaseQueriesCollection queries =
                 asylumCase.read(queryCollection, CaseQueriesCollection.class).orElse(null);
-        log.info("queries in handler: " + queries);
 
         if (queries == null || queries.getCaseMessages() == null || queries.getCaseMessages().isEmpty()) {
-            log.debug("No case messages found.");
             return new PreSubmitCallbackResponse<>(asylumCase);
         }
 
@@ -80,24 +77,17 @@ public class RaiseQueryCallbackHandler implements PreSubmitCallbackHandler<Asylu
                         ));
 
         if (latestMessage.isEmpty()) {
-            log.info("No valid case messages found to determine the latest query.");
             return new PreSubmitCallbackResponse<>(asylumCase);
         }
 
         CaseMessage message = latestMessage.get();
-        log.info("Latest message found: Id={}, CreatedOn={}, IsHearingRelated={}",
-                message.getId(), message.getCreatedOn(), message.getIsHearingRelated());
 
         LatestQuery latestQuery = LatestQuery.builder()
                 .queryId(message.getId())
                 .isHearingRelated(Optional.ofNullable(message.getIsHearingRelated()).orElse(YesOrNo.NO))
                 .build();
-        log.info("Constructed LatestQuery: " + latestQuery);
 
         asylumCase.write(QM_LATEST_QUERY, latestQuery);
-
-        log.info("Latest query stored. QueryId={}, HearingRelated={}",
-                message.getId(), message.getIsHearingRelated());
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
@@ -105,10 +95,8 @@ public class RaiseQueryCallbackHandler implements PreSubmitCallbackHandler<Asylu
     private AsylumCaseFieldDefinition determineQueryCollection() {
 
         UserRoleLabel role = userDetailsHelper.getLoggedInUserRoleLabel(userDetails);
-        log.info("Role handler: " + role);
 
         if (role.equals(LEGAL_REPRESENTATIVE)) {
-            log.info("Legal rep queries handler");
             return AsylumCaseFieldDefinition.QM_LEGAL_REPRESENTATIVE_QUERIES;
         }
 

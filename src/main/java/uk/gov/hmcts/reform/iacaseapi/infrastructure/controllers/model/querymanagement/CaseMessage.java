@@ -17,11 +17,11 @@ import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.List;
 
-@Data
-@NoArgsConstructor
 @AllArgsConstructor
+@Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonNaming(PropertyNamingStrategies.LowerCamelCaseStrategy.class)
+@NoArgsConstructor
 public class CaseMessage {
 
     private String id;

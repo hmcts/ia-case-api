@@ -8,10 +8,10 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 
 import java.util.List;
 
+@AllArgsConstructor
+@Builder
 @Data
 @NoArgsConstructor
-@Builder
-@AllArgsConstructor
 public class CaseQueriesCollection {
 
     private String partyName;

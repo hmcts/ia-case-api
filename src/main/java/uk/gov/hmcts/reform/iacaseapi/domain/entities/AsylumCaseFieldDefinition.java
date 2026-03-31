@@ -2919,8 +2919,6 @@ public enum AsylumCaseFieldDefinition {
     QM_LEGAL_REPRESENTATIVE_QUERIES("qmLegalRepresentativeQueries", new TypeReference<CaseQueriesCollection>(){}),
     CASE_MESSAGE("caseMessage", new TypeReference<CaseMessage>(){}),
     QM_LATEST_QUERY("qmLatestQuery", new TypeReference<List<IdValue<LatestQuery>>>(){}),
-    ADD_CASE_MESSAGE_SUBJECT("addCaseMessageSubject", new TypeReference<String>(){}),
-    ADD_CASE_MESSAGE_DESCRIPTION("addCaseMessageDescription", new TypeReference<String>(){}),
 
     XUI_BANNER_TEXT(
             "xuiBannerText", new TypeReference<String>(){}),

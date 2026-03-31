@@ -6,10 +6,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
-@Data
-@Builder
-@NoArgsConstructor
 @AllArgsConstructor
+@Builder
+@Data
+@NoArgsConstructor
 public class LatestQuery {
 
     private String queryId;
