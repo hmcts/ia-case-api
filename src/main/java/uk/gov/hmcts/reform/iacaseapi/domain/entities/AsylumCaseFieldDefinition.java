@@ -1755,6 +1755,12 @@ public enum AsylumCaseFieldDefinition {
     IS_SPONSOR_SAME_AS_NLR(
         "isSponsorSameAsNlr", new TypeReference<YesOrNo>(){}),
 
+    NLR_NEEDS_STEP_FREE_ACCESS(
+        "nlrNeedsStepFreeAccess", new TypeReference<YesOrNo>(){}),
+
+    NLR_NEEDS_HEARING_LOOP(
+        "nlrNeedsHearingLoop", new TypeReference<YesOrNo>(){}),
+
     FEE_UPDATE_RECORDED(
         "feeUpdateRecorded", new TypeReference<CheckValues<String>>(){}),
 
