@@ -10,6 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -32,6 +33,8 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
@@ -94,9 +97,9 @@ public class UpdateHearingRequirementsHandlerTest {
     private String applicationDateOfDecision = "31/01/2019";
     private String applicationStatus = "In progress";
     private InterpreterLanguageRefData interpreterLanguage = new InterpreterLanguageRefData(
-            new DynamicList(new Value("abc", "abc"), Collections.emptyList()),
-            Collections.emptyList(),
-            "");
+        new DynamicList(new Value("abc", "abc"), Collections.emptyList()),
+        Collections.emptyList(),
+        "");
     private InterpreterLanguageRefData interpreterLanguage2 = new InterpreterLanguageRefData(
         new DynamicList(new Value("def", "def"), Collections.emptyList()),
         Collections.emptyList(),
@@ -321,7 +324,7 @@ public class UpdateHearingRequirementsHandlerTest {
 
         when(asylumCase.read(IS_INTERPRETER_SERVICES_NEEDED, YesOrNo.class)).thenReturn(Optional.of(YES));
         when(asylumCase.read(APPELLANT_INTERPRETER_LANGUAGE_CATEGORY))
-                .thenReturn(Optional.of(List.of(SPOKEN_LANGUAGE_INTERPRETER.getValue())));
+            .thenReturn(Optional.of(List.of(SPOKEN_LANGUAGE_INTERPRETER.getValue())));
         when(asylumCase.read(APPELLANT_INTERPRETER_SPOKEN_LANGUAGE)).thenReturn(Optional.of(interpreterLanguage));
         when(asylumCase.read(APPELLANT_INTERPRETER_SIGN_LANGUAGE)).thenReturn(Optional.of(interpreterLanguage));
 
@@ -337,7 +340,7 @@ public class UpdateHearingRequirementsHandlerTest {
 
         when(asylumCase.read(IS_INTERPRETER_SERVICES_NEEDED, YesOrNo.class)).thenReturn(Optional.of(YES));
         when(asylumCase.read(APPELLANT_INTERPRETER_LANGUAGE_CATEGORY))
-                .thenReturn(Optional.of(List.of(SPOKEN_LANGUAGE_INTERPRETER.getValue(), SIGN_LANGUAGE_INTERPRETER.getValue())));
+            .thenReturn(Optional.of(List.of(SPOKEN_LANGUAGE_INTERPRETER.getValue(), SIGN_LANGUAGE_INTERPRETER.getValue())));
         when(asylumCase.read(APPELLANT_INTERPRETER_SPOKEN_LANGUAGE)).thenReturn(Optional.of(interpreterLanguage));
         when(asylumCase.read(APPELLANT_INTERPRETER_SIGN_LANGUAGE)).thenReturn(Optional.of(interpreterLanguage));
 
@@ -704,6 +707,156 @@ public class UpdateHearingRequirementsHandlerTest {
         assertEquals(asylumCase, callbackResponse.getData());
 
         verify(previousRequirementsAndRequestsAppender, times(0)).appendAndTrim(asylumCase);
+    }
+
+    @ParameterizedTest
+    @CsvSource(value = {"NO", "null"}, nullValues = {"null"})
+    void should_clearAllNlrFields_if_no_nlr(YesOrNo value) {
+        when(asylumCase.read(HAS_NON_LEGAL_REP, YesOrNo.class)).thenReturn(Optional.ofNullable(value));
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            updateHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase).clear(NLR_ATTENDING);
+        verify(asylumCase).clear(NLR_OUTSIDE_UK);
+        verify(asylumCase).clear(IS_NLR_INTERPRETER_REQUIRED);
+        verify(asylumCase).clear(NLR_NEEDS_STEP_FREE_ACCESS);
+        verify(asylumCase).clear(NLR_NEEDS_HEARING_LOOP);
+        verify(asylumCase).clear(NLR_INTERPRETER_LANGUAGE_CATEGORY);
+        verify(asylumCase).clear(NLR_INTERPRETER_SPOKEN_LANGUAGE);
+        verify(asylumCase).clear(NLR_INTERPRETER_SIGN_LANGUAGE);
+    }
+
+    @ParameterizedTest
+    @CsvSource(value = {"NO", "null"}, nullValues = {"null"})
+    void should_clearNlrNeedsFields_if_has_nlr_but_noAttendanceOrOutside(YesOrNo value) {
+        when(asylumCase.read(HAS_NON_LEGAL_REP, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(asylumCase.read(NLR_ATTENDING, YesOrNo.class)).thenReturn(Optional.ofNullable(value));
+        when(asylumCase.read(NLR_OUTSIDE_UK, YesOrNo.class)).thenReturn(Optional.ofNullable(value));
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            updateHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, never()).clear(NLR_ATTENDING);
+        verify(asylumCase, never()).clear(NLR_OUTSIDE_UK);
+        verify(asylumCase).clear(IS_NLR_INTERPRETER_REQUIRED);
+        verify(asylumCase).clear(NLR_NEEDS_STEP_FREE_ACCESS);
+        verify(asylumCase).clear(NLR_NEEDS_HEARING_LOOP);
+        verify(asylumCase).clear(NLR_INTERPRETER_LANGUAGE_CATEGORY);
+        verify(asylumCase).clear(NLR_INTERPRETER_SPOKEN_LANGUAGE);
+        verify(asylumCase).clear(NLR_INTERPRETER_SIGN_LANGUAGE);
+    }
+
+    @ParameterizedTest
+    @CsvSource(value = {"NO", "null"}, nullValues = {"null"})
+    void should_clearNlrInterpreterFields_if_no_interpreter(YesOrNo value) {
+        when(asylumCase.read(HAS_NON_LEGAL_REP, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(asylumCase.read(NLR_ATTENDING, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(asylumCase.read(IS_NLR_INTERPRETER_REQUIRED, YesOrNo.class)).thenReturn(Optional.ofNullable(value));
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            updateHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, never()).clear(NLR_ATTENDING);
+        verify(asylumCase, never()).clear(NLR_OUTSIDE_UK);
+        verify(asylumCase, never()).clear(IS_NLR_INTERPRETER_REQUIRED);
+        verify(asylumCase, never()).clear(NLR_NEEDS_STEP_FREE_ACCESS);
+        verify(asylumCase, never()).clear(NLR_NEEDS_HEARING_LOOP);
+        verify(asylumCase).clear(NLR_INTERPRETER_LANGUAGE_CATEGORY);
+        verify(asylumCase).clear(NLR_INTERPRETER_SPOKEN_LANGUAGE);
+        verify(asylumCase).clear(NLR_INTERPRETER_SIGN_LANGUAGE);
+    }
+
+    @Test
+    void should_not_clear_spoken_or_sign_if_needed() {
+        when(asylumCase.read(HAS_NON_LEGAL_REP, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(asylumCase.read(NLR_OUTSIDE_UK, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(asylumCase.read(IS_NLR_INTERPRETER_REQUIRED, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(asylumCase.read(NLR_INTERPRETER_LANGUAGE_CATEGORY))
+            .thenReturn(Optional.of(List.of(SPOKEN_LANGUAGE_INTERPRETER.getValue(),
+                SIGN_LANGUAGE_INTERPRETER.getValue())));
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            updateHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, never()).clear(NLR_ATTENDING);
+        verify(asylumCase, never()).clear(NLR_OUTSIDE_UK);
+        verify(asylumCase, never()).clear(IS_NLR_INTERPRETER_REQUIRED);
+        verify(asylumCase, never()).clear(NLR_NEEDS_STEP_FREE_ACCESS);
+        verify(asylumCase, never()).clear(NLR_NEEDS_HEARING_LOOP);
+        verify(asylumCase, never()).clear(NLR_INTERPRETER_LANGUAGE_CATEGORY);
+        verify(asylumCase, never()).clear(NLR_INTERPRETER_SPOKEN_LANGUAGE);
+        verify(asylumCase, never()).clear(NLR_INTERPRETER_SIGN_LANGUAGE);
+    }
+
+    @Test
+    void should_clear_spoken_or_sign_if_empty_category() {
+        when(asylumCase.read(HAS_NON_LEGAL_REP, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(asylumCase.read(NLR_OUTSIDE_UK, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(asylumCase.read(IS_NLR_INTERPRETER_REQUIRED, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(asylumCase.read(NLR_INTERPRETER_LANGUAGE_CATEGORY))
+            .thenReturn(Optional.of(List.of()));
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            updateHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, never()).clear(NLR_ATTENDING);
+        verify(asylumCase, never()).clear(NLR_OUTSIDE_UK);
+        verify(asylumCase, never()).clear(IS_NLR_INTERPRETER_REQUIRED);
+        verify(asylumCase, never()).clear(NLR_NEEDS_STEP_FREE_ACCESS);
+        verify(asylumCase, never()).clear(NLR_NEEDS_HEARING_LOOP);
+        verify(asylumCase, never()).clear(NLR_INTERPRETER_LANGUAGE_CATEGORY);
+        verify(asylumCase).clear(NLR_INTERPRETER_SPOKEN_LANGUAGE);
+        verify(asylumCase).clear(NLR_INTERPRETER_SIGN_LANGUAGE);
+    }
+
+    @Test
+    void should_clear_spoken_or_sign_if_no_category() {
+        when(asylumCase.read(HAS_NON_LEGAL_REP, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(asylumCase.read(NLR_OUTSIDE_UK, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(asylumCase.read(IS_NLR_INTERPRETER_REQUIRED, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            updateHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, never()).clear(NLR_ATTENDING);
+        verify(asylumCase, never()).clear(NLR_OUTSIDE_UK);
+        verify(asylumCase, never()).clear(IS_NLR_INTERPRETER_REQUIRED);
+        verify(asylumCase, never()).clear(NLR_NEEDS_STEP_FREE_ACCESS);
+        verify(asylumCase, never()).clear(NLR_NEEDS_HEARING_LOOP);
+        verify(asylumCase, never()).clear(NLR_INTERPRETER_LANGUAGE_CATEGORY);
+        verify(asylumCase).clear(NLR_INTERPRETER_SPOKEN_LANGUAGE);
+        verify(asylumCase).clear(NLR_INTERPRETER_SIGN_LANGUAGE);
     }
 
     @Test

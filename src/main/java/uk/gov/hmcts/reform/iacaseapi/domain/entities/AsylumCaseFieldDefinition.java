@@ -1755,6 +1755,24 @@ public enum AsylumCaseFieldDefinition {
     IS_SPONSOR_SAME_AS_NLR(
         "isSponsorSameAsNlr", new TypeReference<YesOrNo>(){}),
 
+    NLR_ATTENDING(
+        "nlrAttending", new TypeReference<YesOrNo>(){}),
+
+    NLR_OUTSIDE_UK(
+        "nlrOutsideUK", new TypeReference<YesOrNo>(){}),
+
+    IS_NLR_INTERPRETER_REQUIRED(
+        "isNlrInterpreterRequired", new TypeReference<YesOrNo>(){}),
+
+    NLR_INTERPRETER_LANGUAGE_CATEGORY(
+        "nlrInterpreterLanguageCategory", new TypeReference<List<String>>() {}),
+
+    NLR_INTERPRETER_SPOKEN_LANGUAGE(
+        "nlrInterpreterSpokenLanguage", new TypeReference<InterpreterLanguageRefData>() {}),
+
+    NLR_INTERPRETER_SIGN_LANGUAGE(
+        "nlrInterpreterSignLanguage", new TypeReference<InterpreterLanguageRefData>() {}),
+
     NLR_NEEDS_STEP_FREE_ACCESS(
         "nlrNeedsStepFreeAccess", new TypeReference<YesOrNo>(){}),
 
