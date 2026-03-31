@@ -127,6 +127,30 @@ class HomeOfficeReferenceFormatterTest {
 
     @ParameterizedTest
     @MethodSource("formatterScenarios")
+    void should_retain_existing_valid_ho_ref_number_when_not_an_integer(YesOrNo isAdmin,
+                                                                      YesOrNo isAgeAssessment,
+                                                                      OutOfCountryDecisionType outOfCountryDecisionType,
+                                                                      OutOfCountryCircumstances outOfCountryCircumstances) {
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(isAdmin));
+        when(asylumCase.read(AGE_ASSESSMENT, YesOrNo.class)).thenReturn(Optional.of(isAgeAssessment));
+        when(asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class)).thenReturn(Optional.of(outOfCountryDecisionType));
+        when(asylumCase.read(OOC_APPEAL_ADMIN_J, OutOfCountryCircumstances.class)).thenReturn(Optional.of(outOfCountryCircumstances));
+
+        when(callback.getEvent()).thenReturn(Event.START_APPEAL);
+        final String hoReference = "K1751902";
+        when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of(hoReference));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            homeOfficeReferenceFormatter.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, never()).write(HOME_OFFICE_REFERENCE_NUMBER, hoReference);
+    }
+
+    @ParameterizedTest
+    @MethodSource("formatterScenarios")
     void should_retain_existing_zero_pads_ho_ref_number_without_overwriting(YesOrNo isAdmin,
                                                                             YesOrNo isAgeAssessment,
                                                                             OutOfCountryDecisionType outOfCountryDecisionType,
