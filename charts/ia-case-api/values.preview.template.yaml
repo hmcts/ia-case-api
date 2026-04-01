@@ -764,6 +764,8 @@ xui-webapp:
       rpx:
         resourceGroup: rpx
         secrets:
+          - name: mc-session-secret
+            alias: mc-session-secret
           - name: mc-s2s-client-secret
             alias: mc-s2s-client-secret
           - name: mc-idam-client-secret
