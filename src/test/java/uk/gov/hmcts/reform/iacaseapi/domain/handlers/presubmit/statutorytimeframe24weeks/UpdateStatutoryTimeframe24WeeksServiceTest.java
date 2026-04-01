@@ -120,7 +120,7 @@ class UpdateStatutoryTimeframe24WeeksServiceTest {
         HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort cohort = 
             HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort.builder()
                 .name("HU")
-                .included(true)
+                .included("true")
                 .build();
 
         homeOfficeStatutoryTimeframeDto = HomeOfficeStatutoryTimeframeDto.builder()
@@ -129,7 +129,7 @@ class UpdateStatutoryTimeframe24WeeksServiceTest {
             .familyName(familyName)
             .givenNames(givenNames)
             .dateOfBirth(dateOfBirth)
-            .stf24weekCohorts(new HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort[]{cohort})
+            .stf24weekCohorts(List.of(cohort))
             .timeStamp(timeStamp)
             .build();
         StatutoryTimeframe24Weeks existingStatutoryTimeframe24Weeks = new StatutoryTimeframe24Weeks(
@@ -189,7 +189,7 @@ class UpdateStatutoryTimeframe24WeeksServiceTest {
         HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort cohort = 
             HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort.builder()
                 .name("HU")
-                .included(true)
+                .included("true")
                 .build();
 
         homeOfficeStatutoryTimeframeDto = HomeOfficeStatutoryTimeframeDto.builder()
@@ -198,7 +198,7 @@ class UpdateStatutoryTimeframe24WeeksServiceTest {
             .familyName(familyName)
             .givenNames(givenNames)
             .dateOfBirth(dateOfBirth)
-            .stf24weekCohorts(new HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort[]{cohort})
+            .stf24weekCohorts(List.of(cohort))
             .timeStamp(timeStamp)
             .build();
         StatutoryTimeframe24Weeks existingStatutoryTimeframe24Weeks = new StatutoryTimeframe24Weeks(

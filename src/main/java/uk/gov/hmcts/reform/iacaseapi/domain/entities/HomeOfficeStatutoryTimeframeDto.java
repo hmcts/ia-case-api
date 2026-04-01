@@ -4,6 +4,7 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
+import java.util.List;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -60,7 +61,7 @@ public class HomeOfficeStatutoryTimeframeDto {
     @JsonProperty(value = "stf24weekCohorts", required = true)
     @NotNull
     @Valid
-    private Stf24WeekCohort[] stf24weekCohorts;
+    private List<Stf24WeekCohort> stf24weekCohorts;
 
     @JsonProperty(value = "timeStamp", required = true)
     @JsonFormat(shape = JsonFormat.Shape.STRING)
@@ -82,6 +83,11 @@ public class HomeOfficeStatutoryTimeframeDto {
 
         @JsonProperty(value = "included", required = true)
         @NotNull
-        private boolean included;
+        private String included;
+
+        public Stf24WeekCohort(String name, boolean included) {
+            this.name = name;
+            this.included = included ? "true" : "false";
+        }
     }
 }
