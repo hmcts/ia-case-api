@@ -2,7 +2,7 @@
   "description": "RIA-1789 Request case building direction confirmation when direction sent to legalRepresentative",
   "request": {
     "uri": "/asylum/ccdSubmitted",
-    "credentials": "LegalRepresentative",
+    "credentials": "CaseOfficer",
     "input": {
       "eventId": "requestCaseBuilding",
       "state": "awaitingRespondentEvidence",
