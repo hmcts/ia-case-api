@@ -385,31 +385,30 @@ public class UpdateHearingRequirementsHandler extends WitnessHandler
             .read(NLR_INTERPRETER_LANGUAGE_CATEGORY);
         List<String> categories = categoriesOpt.orElse(Collections.emptyList());
 
-        boolean needsSpoken = categories.contains(SPOKEN_LANGUAGE_INTERPRETER.getValue());
-        boolean needsSign = categories.contains(SIGN_LANGUAGE_INTERPRETER.getValue());
         boolean noNlr = !hasNlr;
-        boolean noAttendanceOrOutside = !isAttending && !isOutsideUK;
-        boolean noInterpreter = !needInterpreter;
-
         if (noNlr) {
             clearAllNlrFields(asylumCase);
             return;
         }
 
+        boolean noAttendanceOrOutside = !isAttending && !isOutsideUK;
         if (noAttendanceOrOutside) {
             clearNlrNeedsFields(asylumCase);
             return;
         }
 
+        boolean noInterpreter = !needInterpreter;
         if (noInterpreter) {
             clearNlrInterpreterFields(asylumCase);
             return;
         }
 
+        boolean needsSpoken = categories.contains(SPOKEN_LANGUAGE_INTERPRETER.getValue());
         if (!needsSpoken) {
             asylumCase.clear(NLR_INTERPRETER_SPOKEN_LANGUAGE);
         }
 
+        boolean needsSign = categories.contains(SIGN_LANGUAGE_INTERPRETER.getValue());
         if (!needsSign) {
             asylumCase.clear(NLR_INTERPRETER_SIGN_LANGUAGE);
         }
