@@ -2237,6 +2237,9 @@ public enum AsylumCaseFieldDefinition {
     SPONSOR_PARTY_ID(
             "sponsorPartyId", new TypeReference<String>() {}),
 
+    NLR_PARTY_ID(
+        "nlrPartyId", new TypeReference<String>() {}),
+
     CHANGE_HEARINGS(
             "changeHearings", new TypeReference<DynamicList>(){}),
 

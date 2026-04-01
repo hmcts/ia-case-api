@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.PartyIdService;
 
 @Component
 public class HasNonLegalRepHandler implements PreSubmitCallbackHandler<AsylumCase> {
@@ -40,7 +41,7 @@ public class HasNonLegalRepHandler implements PreSubmitCallbackHandler<AsylumCas
             throw new IllegalStateException("Cannot handle callback");
         }
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
-
+        PartyIdService.setNlrPartyId(asylumCase);
         setSponsorDetailsFromNlrIfSame(asylumCase);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
