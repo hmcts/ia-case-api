@@ -144,7 +144,8 @@ ia-case-documents-api:
   enabled: true #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
-    image: hmctsprod.azurecr.io/ia/case-documents-api:latest
+    #image: hmctsprod.azurecr.io/ia/case-documents-api:latest
+    image: hmctsprod.azurecr.io/ia/case-documents-api:pr-1166
     releaseNameOverride: ${SERVICE_NAME}-case-documents-api
     ingressHost: ${SERVICE_NAME}-documents-api.preview.platform.hmcts.net
     devcpuRequests: 500m
@@ -217,7 +218,8 @@ ia-case-notifications-api:
   enabled: true #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
-    image: hmctsprod.azurecr.io/ia/case-notifications-api:latest
+    #image: hmctsprod.azurecr.io/ia/case-notifications-api:latest
+    image: hmctsprod.azurecr.io/ia/case-notifications-api:pr-1649
     releaseNameOverride: ${SERVICE_NAME}-case-notifications-api
     ingressHost: ${SERVICE_NAME}-notifications-api.preview.platform.hmcts.net
     devcpuRequests: 500m
@@ -762,6 +764,8 @@ xui-webapp:
       rpx:
         resourceGroup: rpx
         secrets:
+          - name: mc-session-secret
+            alias: mc-session-secret
           - name: mc-s2s-client-secret
             alias: mc-s2s-client-secret
           - name: mc-idam-client-secret
@@ -855,7 +859,7 @@ ccd:
         DATA_STORE_DB_NAME: "pr-${CHANGE_ID}-data-store"
         DATA_STORE_DB_USERNAME: hmcts
         DATA_STORE_DB_PASSWORD: ${GENERIC_VALUES_PREVIEW_YAML_PASS}
-        DATA_STORE_IDAM_KEY: ${DATA_STORE_S2S_KEY}        
+        DATA_STORE_IDAM_KEY: ${DATA_STORE_S2S_KEY}
         DATA_STORE_CROSS_JURISDICTIONAL_ROLES: caseworker-caa,caseworker-approver
         DATA_STORE_S2S_AUTHORISED_SERVICES: ccd_gw,ccd_gateway,ccd_data,ccd_ps,aac_manage_case_assignment,xui_webapp,ccd_case_document_am_api,iac,em_ccd_orchestrator,wa_workflow_api,wa_task_configuration_api,wa_task_management_api,wa_task_monitor,wa_case_event_handler,am_role_assignment_service,ccpay_bubble,ctsc_work_allocation,pcq_consolidation_service,em_npa_app,hmc_cft_hearing_service,ccd_next_hearing_date_updater,em_annotation_app,bulk_scan_orchestrator
         IDAM_API_BASE_URL: https://idam-api.aat.platform.hmcts.net
@@ -1460,7 +1464,7 @@ ia-hearings-api:
   enabled: true
   java:
     imagePullPolicy: Always
-    image: 'hmctsprod.azurecr.io/ia/hearings-api:latest'
+    image: hmctsprod.azurecr.io/ia/hearings-api:pr-538
     releaseNameOverride: ${SERVICE_NAME}-hearings-api
     ingressHost: ${SERVICE_NAME}-hearings-api.preview.platform.hmcts.net
     devcpuRequests: 500m
