@@ -73,16 +73,16 @@ class HearingRequirementsAppellantFlagsHandler implements PreSubmitCallbackHandl
                 new StrategicCaseFlagService(HandlerUtils.getAppellantFullName(asylumCase), ROLE_ON_CASE_APPELLANT));
         String currentDateTime = systemDateProvider.nowWithTime().toString();
         boolean isHearingLoopNeeded = asylumCase.read(IS_HEARING_LOOP_NEEDED, YesOrNo.class)
-            .map(hearingLoopNeeded -> YesOrNo.YES == hearingLoopNeeded).orElse(false);
+            .map(YesOrNo::isYes).orElse(false);
         boolean isHearingRoomNeeded = asylumCase.read(IS_HEARING_ROOM_NEEDED, YesOrNo.class)
-            .map(hearingRoomNeeded -> YesOrNo.YES == hearingRoomNeeded).orElse(false);
+            .map(YesOrNo::isYes).orElse(false);
         boolean inCameraCourtRequested = asylumCase.read(IN_CAMERA_COURT, YesOrNo.class)
-            .map(cameraCourtNeeded -> YES == cameraCourtNeeded).orElse(false);
+            .map(YesOrNo::isYes).orElse(false);
         boolean inCameraCourtGranted = asylumCase.read(IS_IN_CAMERA_COURT_ALLOWED, String.class)
             .map(decision -> CASE_GRANTED.equals(decision))
             .orElse(false);
         boolean isMultimediaEvidenceRequested = asylumCase.read(MULTIMEDIA_EVIDENCE, YesOrNo.class)
-                .map(multimediaEvidenceNeeded -> YES == multimediaEvidenceNeeded).orElse(false);
+                .map(YesOrNo::isYes).orElse(false);
         boolean isMultimediaEvidenceGranted = asylumCase.read(IS_MULTIMEDIA_ALLOWED, String.class)
                 .map(multimediaEvidenceDecision -> CASE_GRANTED.equals(multimediaEvidenceDecision))
                 .orElse(false);

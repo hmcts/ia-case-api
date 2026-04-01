@@ -355,6 +355,42 @@ class IdamServiceTest {
     }
 
     @Test
+    void get_user_by_email_should_return_user_when_response_is_successful() {
+        ResponseEntity<User> response = new ResponseEntity<>(user, HttpStatus.OK);
+
+        when(idamApi.token(anyMap()))
+            .thenReturn(new Token("token", "scope"));
+        when(idamClientApi.getUserFromEmail("Bearer token", "user-123")).thenReturn(response);
+
+        User result = idamService.getUserFromEmail("user-123");
+        assertThat(result).isEqualTo(user);
+    }
+
+    @Test
+    void get_user_by_email_should_return_null_when_response_status_is_not_2xx() {
+        ResponseEntity<User> response = new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+
+        when(idamApi.token(anyMap()))
+            .thenReturn(new Token("token", "scope"));
+        when(idamClientApi.getUserFromEmail("Bearer token", "user-123")).thenReturn(response);
+
+        User result = idamService.getUserFromEmail("user-123");
+        assertNull(result);
+    }
+
+    @Test
+    void get_user_by_email_should_return_null_when_response_body_is_null() {
+        ResponseEntity<User> response = new ResponseEntity<>(null, HttpStatus.OK);
+
+        when(idamApi.token(anyMap()))
+            .thenReturn(new Token("token", "scope"));
+        when(idamClientApi.getUserFromEmail("Bearer token", "user-123")).thenReturn(response);
+
+        User result = idamService.getUserFromEmail("user-123");
+        assertNull(result);
+    }
+
+    @Test
     void getClientCredentialsTokenV1() {
         when(idamApi.token(anyMap()))
             .thenReturn(new Token("some user token", "view-user"));
@@ -422,6 +458,58 @@ class IdamServiceTest {
             MessageFormat.format("id:{0}", "user-123"))).thenReturn(response);
 
         User result = idamService.getUserFromIdV1("user-123");
+        assertNull(result);
+    }
+
+    @Test
+    void get_user_by_email_v1_should_return_user_when_response_is_successful() {
+        ResponseEntity<List<User>> response = new ResponseEntity<>(List.of(user), HttpStatus.OK);
+
+        when(idamApi.token(anyMap()))
+            .thenReturn(new Token("token", "scope"));
+        when(idamClientApi.getUserV1("Bearer token",
+            MessageFormat.format("email:{0}", "user-123"))).thenReturn(response);
+
+        User result = idamService.getUserFromEmailV1("user-123");
+        assertThat(result).isEqualTo(user);
+    }
+
+    @Test
+    void get_user_by_email_v1_should_return_null_when_response_status_is_not_2xx() {
+        ResponseEntity<List<User>> response = new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+
+        when(idamApi.token(anyMap()))
+            .thenReturn(new Token("token", "scope"));
+        when(idamClientApi.getUserV1("Bearer token",
+            MessageFormat.format("email:{0}", "user-123"))).thenReturn(response);
+
+        User result = idamService.getUserFromEmailV1("user-123");
+        assertNull(result);
+    }
+
+    @Test
+    void get_user_by_email_v1_should_return_null_when_response_body_is_null() {
+        ResponseEntity<List<User>> response = new ResponseEntity<>(null, HttpStatus.OK);
+
+        when(idamApi.token(anyMap()))
+            .thenReturn(new Token("token", "scope"));
+        when(idamClientApi.getUserV1("Bearer token",
+            MessageFormat.format("email:{0}", "user-123"))).thenReturn(response);
+
+        User result = idamService.getUserFromEmailV1("user-123");
+        assertNull(result);
+    }
+
+    @Test
+    void get_user_by_email_v1_should_return_null_when_response_body_is_empty() {
+        ResponseEntity<List<User>> response = new ResponseEntity<>(Collections.emptyList(), HttpStatus.OK);
+
+        when(idamApi.token(anyMap()))
+            .thenReturn(new Token("token", "scope"));
+        when(idamClientApi.getUserV1("Bearer token",
+            MessageFormat.format("email:{0}", "user-123"))).thenReturn(response);
+
+        User result = idamService.getUserFromEmailV1("user-123");
         assertNull(result);
     }
 }

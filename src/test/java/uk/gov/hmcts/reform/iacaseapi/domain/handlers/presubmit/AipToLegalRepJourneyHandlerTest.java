@@ -5,33 +5,40 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CONTACT_PREFERENCE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CONTACT_PREFERENCE_DESCRIPTION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.EMAIL;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAS_NON_LEGAL_REP;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAS_NON_LEGAL_REP_JOINED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_SPONSOR_SAME_AS_NLR;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOIN_APPEAL_PIN;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOURNEY_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MOBILE_NUMBER;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NLR_DETAILS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PA_APPEAL_TYPE_AIP_PAYMENT_OPTION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PA_APPEAL_TYPE_PAYMENT_OPTION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PRE_CLARIFYING_STATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SUBSCRIPTIONS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.NOC_REQUEST;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
-
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -40,6 +47,7 @@ import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ContactPreference;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.NonLegalRepDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDecision;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Subscriber;
@@ -54,10 +62,13 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.Assignment;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleAssignmentResource;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.IdamService;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.RoleAssignmentService;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
-@SuppressWarnings("unchecked")
 public class AipToLegalRepJourneyHandlerTest {
 
     private static final String APPELLANT_EMAIL = "appellant@examples.com";
@@ -67,75 +78,102 @@ public class AipToLegalRepJourneyHandlerTest {
     private List<IdValue<Subscriber>> subscriptions;
     @Mock
     private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase asylumCase;
-    @Mock private PreSubmitCallbackResponse<AsylumCase> callbackResponse;
+    @Mock
+    private CaseDetails<AsylumCase> caseDetails;
+    @Mock
+    private AsylumCase asylumCase;
+    @Mock
+    private PreSubmitCallbackResponse<AsylumCase> callbackResponse;
+    @Mock
+    private RoleAssignmentService roleAssignmentService;
+    @Mock
+    private IdamService idamService;
+    @Mock
+    private NonLegalRepDetails nonLegalRepDetails;
+    @Mock
+    private Assignment assignment;
 
     @BeforeEach
     public void setUp() throws Exception {
-        aipToLegalRepJourneyHandler = new AipToLegalRepJourneyHandler();
+        aipToLegalRepJourneyHandler = new AipToLegalRepJourneyHandler(roleAssignmentService, idamService);
         Subscriber subscriber = new Subscriber(
             SubscriberType.APPELLANT, APPELLANT_EMAIL, YesOrNo.YES, APPELLANT_MOBILE_NUMBER, YesOrNo.NO);
-        subscriptions = Arrays.asList(new IdValue<>(USER_ID, subscriber));
+        subscriptions = List.of(new IdValue<>(USER_ID, subscriber));
 
-        when(callback.getEvent()).thenReturn(Event.NOC_REQUEST);
+        when(callback.getEvent()).thenReturn(NOC_REQUEST);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
         when(asylumCase.read(SUBSCRIPTIONS)).thenReturn(Optional.of(subscriptions));
     }
 
-    @Test
-    void it_can_handle_callback() {
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {"NOC_REQUEST"})
+    void it_can_handle_callback_valid_events(Event event) {
+        when(callback.getEvent()).thenReturn(event);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
 
-        for (Event event : Event.values()) {
+        assertTrue(aipToLegalRepJourneyHandler.canHandle(ABOUT_TO_SUBMIT, callback));
+    }
 
-            when(callback.getEvent()).thenReturn(event);
-            when(callback.getCaseDetails()).thenReturn(caseDetails);
-            when(caseDetails.getCaseData()).thenReturn(asylumCase);
-            when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
 
-            for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
+    @ParameterizedTest
+    @EnumSource(value = Event.class, mode = EnumSource.Mode.EXCLUDE, names = {"NOC_REQUEST"})
+    void it_cannot_handle_callback_invalid_events(Event event) {
+        when(callback.getEvent()).thenReturn(event);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
 
-                boolean canHandle = aipToLegalRepJourneyHandler.canHandle(callbackStage, callback);
+        assertFalse(aipToLegalRepJourneyHandler.canHandle(ABOUT_TO_SUBMIT, callback));
+    }
 
-                if (event == Event.NOC_REQUEST
-                        && callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT) {
 
-                    assertTrue(canHandle);
-                } else {
-                    assertFalse(canHandle);
-                }
-            }
-            reset(callback);
-        }
+    @ParameterizedTest
+    @EnumSource(value = PreSubmitCallbackStage.class, names = {"ABOUT_TO_SUBMIT"})
+    void it_can_handle_callback_valid_PreSubmitCallbackStage(PreSubmitCallbackStage callbackStage) {
+        when(callback.getEvent()).thenReturn(NOC_REQUEST);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
+
+        assertTrue(aipToLegalRepJourneyHandler.canHandle(callbackStage, callback));
+    }
+
+
+    @ParameterizedTest
+    @EnumSource(value = PreSubmitCallbackStage.class, mode = EnumSource.Mode.EXCLUDE, names = {"ABOUT_TO_SUBMIT"})
+    void it_cannot_handle_callback_invalid_PreSubmitCallbackStage(PreSubmitCallbackStage callbackStage) {
+        when(callback.getEvent()).thenReturn(NOC_REQUEST);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
+
+        assertFalse(aipToLegalRepJourneyHandler.canHandle(callbackStage, callback));
     }
 
     @Test
     void it_should_not_handle_callback_for_rep_journey() {
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.REP));
 
-        for (Event event : Event.values()) {
+        assertFalse(aipToLegalRepJourneyHandler.canHandle(ABOUT_TO_SUBMIT, callback));
+    }
 
-            when(callback.getEvent()).thenReturn(event);
-            when(callback.getCaseDetails()).thenReturn(caseDetails);
-            when(caseDetails.getCaseData()).thenReturn(asylumCase);
-            when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.empty());
+    @Test
+    void it_should_not_handle_callback_for_empty_journey() {
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.empty());
 
-            for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
-
-                boolean canHandle = aipToLegalRepJourneyHandler.canHandle(callbackStage, callback);
-
-                assertFalse(canHandle);
-            }
-            reset(callback);
-        }
+        assertFalse(aipToLegalRepJourneyHandler.canHandle(ABOUT_TO_SUBMIT, callback));
     }
 
     @Test
     void it_should_convert_case_to_rep_journey() {
-        aipToLegalRepJourneyHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse);
+        aipToLegalRepJourneyHandler.handle(ABOUT_TO_SUBMIT, callback, callbackResponse);
 
-        verify(asylumCase, times(1)).remove(JOURNEY_TYPE.value());
+        verify(asylumCase, times(1)).clear(JOURNEY_TYPE);
+        verify(roleAssignmentService, never()).getCaseRoleAssignmentsForUser(anyLong(), anyString());
     }
 
     @Test
@@ -143,9 +181,9 @@ public class AipToLegalRepJourneyHandlerTest {
         when(caseDetails.getState()).thenReturn(State.REASONS_FOR_APPEAL_SUBMITTED);
 
         PreSubmitCallbackResponse<AsylumCase> response = aipToLegalRepJourneyHandler.handle(
-                PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse);
+            ABOUT_TO_SUBMIT, callback, callbackResponse);
 
-        assertEquals(response.getState(), State.CASE_UNDER_REVIEW);
+        assertEquals(State.CASE_UNDER_REVIEW, response.getState());
     }
 
     @Test
@@ -153,9 +191,9 @@ public class AipToLegalRepJourneyHandlerTest {
         when(caseDetails.getState()).thenReturn(State.AWAITING_REASONS_FOR_APPEAL);
 
         PreSubmitCallbackResponse<AsylumCase> response = aipToLegalRepJourneyHandler.handle(
-                PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse);
+            ABOUT_TO_SUBMIT, callback, callbackResponse);
 
-        assertEquals(response.getState(), State.CASE_BUILDING);
+        assertEquals(State.CASE_BUILDING, response.getState());
     }
 
     @Test
@@ -164,7 +202,7 @@ public class AipToLegalRepJourneyHandlerTest {
         when(asylumCase.read(PRE_CLARIFYING_STATE, State.class)).thenReturn(Optional.of(State.APPEAL_SUBMITTED));
 
         PreSubmitCallbackResponse<AsylumCase> response = aipToLegalRepJourneyHandler.handle(
-                PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse);
+            ABOUT_TO_SUBMIT, callback, callbackResponse);
 
         assertEquals(State.APPEAL_SUBMITTED, response.getState());
     }
@@ -175,7 +213,7 @@ public class AipToLegalRepJourneyHandlerTest {
         when(asylumCase.read(PRE_CLARIFYING_STATE, State.class)).thenReturn(Optional.of(State.REASONS_FOR_APPEAL_SUBMITTED));
 
         PreSubmitCallbackResponse<AsylumCase> response = aipToLegalRepJourneyHandler.handle(
-                PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse);
+            ABOUT_TO_SUBMIT, callback, callbackResponse);
 
         assertEquals(State.CASE_UNDER_REVIEW, response.getState());
     }
@@ -193,7 +231,7 @@ public class AipToLegalRepJourneyHandlerTest {
     void should_update_appellant_contact_details_with_email_preference() {
 
         PreSubmitCallbackResponse<AsylumCase> response = aipToLegalRepJourneyHandler.handle(
-            PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse);
+            ABOUT_TO_SUBMIT, callback, callbackResponse);
 
         assertNotNull(response);
         assertEquals(asylumCase, response.getData());
@@ -210,7 +248,7 @@ public class AipToLegalRepJourneyHandlerTest {
         when(asylumCase.read(PA_APPEAL_TYPE_AIP_PAYMENT_OPTION, String.class))
             .thenReturn(Optional.of("PA_PAYMENT_OPTION"));
         PreSubmitCallbackResponse<AsylumCase> response = aipToLegalRepJourneyHandler.handle(
-            PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse);
+            ABOUT_TO_SUBMIT, callback, callbackResponse);
 
         assertNotNull(response);
         assertEquals(asylumCase, response.getData());
@@ -222,40 +260,40 @@ public class AipToLegalRepJourneyHandlerTest {
     @ParameterizedTest
     @MethodSource("providePaymentUpdateScenarios")
     void should_update_payment_details_when_payment_is_pending_and_remission_rejected(
-            PaymentStatus paymentStatus,
-            String paymentReference,
-            RemissionType remissionType,
-            RemissionDecision remissionDecision,
-            boolean updateServiceRequestData) {
+        PaymentStatus paymentStatus,
+        String paymentReference,
+        RemissionType remissionType,
+        RemissionDecision remissionDecision,
+        boolean updateServiceRequestData) {
 
         when(asylumCase.read(AsylumCaseFieldDefinition.PAYMENT_STATUS, PaymentStatus.class))
-                .thenReturn(Optional.of(paymentStatus));
+            .thenReturn(Optional.of(paymentStatus));
         when(asylumCase.read(AsylumCaseFieldDefinition.PAYMENT_REFERENCE))
-                .thenReturn(Optional.ofNullable(paymentReference));
+            .thenReturn(Optional.ofNullable(paymentReference));
         when(asylumCase.read(AsylumCaseFieldDefinition.REMISSION_TYPE, RemissionType.class))
-                .thenReturn(Optional.ofNullable(remissionType));
+            .thenReturn(Optional.ofNullable(remissionType));
         when(asylumCase.read(AsylumCaseFieldDefinition.REMISSION_DECISION, RemissionDecision.class))
-                .thenReturn(Optional.ofNullable(remissionDecision));
+            .thenReturn(Optional.ofNullable(remissionDecision));
 
         PreSubmitCallbackResponse<AsylumCase> response = aipToLegalRepJourneyHandler.handle(
-            PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse);
+            ABOUT_TO_SUBMIT, callback, callbackResponse);
 
         assertNotNull(response);
         assertEquals(asylumCase, response.getData());
 
         if (updateServiceRequestData) {
             verify(asylumCase, times(1)).write(
-                    AsylumCaseFieldDefinition.IS_SERVICE_REQUEST_TAB_VISIBLE_CONSIDERING_REMISSIONS, YesOrNo.YES);
+                AsylumCaseFieldDefinition.IS_SERVICE_REQUEST_TAB_VISIBLE_CONSIDERING_REMISSIONS, YesOrNo.YES);
 
             if (StringUtils.isNotEmpty(paymentReference)) {
                 verify(asylumCase, times(1))
-                        .write(AsylumCaseFieldDefinition.HAS_SERVICE_REQUEST_ALREADY, YesOrNo.YES);
+                    .write(AsylumCaseFieldDefinition.HAS_SERVICE_REQUEST_ALREADY, YesOrNo.YES);
             }
         } else {
             verify(asylumCase, never())
-                    .write(AsylumCaseFieldDefinition.HAS_SERVICE_REQUEST_ALREADY, YesOrNo.YES);
+                .write(AsylumCaseFieldDefinition.HAS_SERVICE_REQUEST_ALREADY, YesOrNo.YES);
             verify(asylumCase, never()).write(
-                    AsylumCaseFieldDefinition.IS_SERVICE_REQUEST_TAB_VISIBLE_CONSIDERING_REMISSIONS, YesOrNo.YES);
+                AsylumCaseFieldDefinition.IS_SERVICE_REQUEST_TAB_VISIBLE_CONSIDERING_REMISSIONS, YesOrNo.YES);
         }
         verify(asylumCase, never()).write(PA_APPEAL_TYPE_PAYMENT_OPTION, "PA_PAYMENT_OPTION");
         verify(asylumCase, never()).clear(PA_APPEAL_TYPE_AIP_PAYMENT_OPTION);
@@ -264,19 +302,19 @@ public class AipToLegalRepJourneyHandlerTest {
     static Stream<Arguments> providePaymentUpdateScenarios() {
         final String reference = "1111-1111-1111-1111";
         return Stream.of(
-                Arguments.of(PaymentStatus.PAYMENT_PENDING, reference, RemissionType.NO_REMISSION, null, true),
-                Arguments.of(PaymentStatus.PAYMENT_PENDING, reference, null, null, true),
-                Arguments.of(PaymentStatus.PAYMENT_PENDING, reference, RemissionType.HO_WAIVER_REMISSION, RemissionDecision.PARTIALLY_APPROVED, true),
-                Arguments.of(PaymentStatus.PAYMENT_PENDING, reference, null, null, true),
-                Arguments.of(PaymentStatus.PAYMENT_PENDING, reference, RemissionType.HO_WAIVER_REMISSION, RemissionDecision.REJECTED, true),
-                Arguments.of(PaymentStatus.PAYMENT_PENDING, null, RemissionType.NO_REMISSION, null, true),
-                Arguments.of(PaymentStatus.PAYMENT_PENDING, null, null, null, true),
-                Arguments.of(PaymentStatus.PAYMENT_PENDING, "", RemissionType.HO_WAIVER_REMISSION, RemissionDecision.PARTIALLY_APPROVED, true),
-                Arguments.of(PaymentStatus.PAYMENT_PENDING, "", null, null, true),
-                Arguments.of(PaymentStatus.PAYMENT_PENDING, reference, RemissionType.HO_WAIVER_REMISSION, RemissionDecision.REJECTED, true),
-                Arguments.of(PaymentStatus.PAID, reference, RemissionType.EXCEPTIONAL_CIRCUMSTANCES_REMISSION, RemissionDecision.APPROVED, false),
-                Arguments.of(PaymentStatus.PAYMENT_PENDING, reference, RemissionType.HELP_WITH_FEES, null, false),
-                Arguments.of(PaymentStatus.PAID, reference, RemissionType.NO_REMISSION, null, false)
+            Arguments.of(PaymentStatus.PAYMENT_PENDING, reference, RemissionType.NO_REMISSION, null, true),
+            Arguments.of(PaymentStatus.PAYMENT_PENDING, reference, null, null, true),
+            Arguments.of(PaymentStatus.PAYMENT_PENDING, reference, RemissionType.HO_WAIVER_REMISSION, RemissionDecision.PARTIALLY_APPROVED, true),
+            Arguments.of(PaymentStatus.PAYMENT_PENDING, reference, null, null, true),
+            Arguments.of(PaymentStatus.PAYMENT_PENDING, reference, RemissionType.HO_WAIVER_REMISSION, RemissionDecision.REJECTED, true),
+            Arguments.of(PaymentStatus.PAYMENT_PENDING, null, RemissionType.NO_REMISSION, null, true),
+            Arguments.of(PaymentStatus.PAYMENT_PENDING, null, null, null, true),
+            Arguments.of(PaymentStatus.PAYMENT_PENDING, "", RemissionType.HO_WAIVER_REMISSION, RemissionDecision.PARTIALLY_APPROVED, true),
+            Arguments.of(PaymentStatus.PAYMENT_PENDING, "", null, null, true),
+            Arguments.of(PaymentStatus.PAYMENT_PENDING, reference, RemissionType.HO_WAIVER_REMISSION, RemissionDecision.REJECTED, true),
+            Arguments.of(PaymentStatus.PAID, reference, RemissionType.EXCEPTIONAL_CIRCUMSTANCES_REMISSION, RemissionDecision.APPROVED, false),
+            Arguments.of(PaymentStatus.PAYMENT_PENDING, reference, RemissionType.HELP_WITH_FEES, null, false),
+            Arguments.of(PaymentStatus.PAID, reference, RemissionType.NO_REMISSION, null, false)
         );
     }
 
@@ -284,13 +322,13 @@ public class AipToLegalRepJourneyHandlerTest {
     void should_update_appellant_contact_details_with_sms_preference() {
         Subscriber subscriber = new Subscriber(
             SubscriberType.APPELLANT, APPELLANT_EMAIL, YesOrNo.NO, APPELLANT_MOBILE_NUMBER, YesOrNo.YES);
-        subscriptions = Arrays.asList(new IdValue<>(USER_ID, subscriber));
+        subscriptions = List.of(new IdValue<>(USER_ID, subscriber));
 
         when(asylumCase.read(SUBSCRIPTIONS)).thenReturn(Optional.of(subscriptions));
 
 
         PreSubmitCallbackResponse<AsylumCase> response = aipToLegalRepJourneyHandler.handle(
-            PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse);
+            ABOUT_TO_SUBMIT, callback, callbackResponse);
 
         assertNotNull(response);
         assertEquals(asylumCase, response.getData());
@@ -300,5 +338,50 @@ public class AipToLegalRepJourneyHandlerTest {
         verify(asylumCase, times(1)).write(CONTACT_PREFERENCE, ContactPreference.WANTS_SMS);
         verify(asylumCase, times(1)).write(CONTACT_PREFERENCE_DESCRIPTION, ContactPreference.WANTS_SMS.getDescription());
         verify(asylumCase, times(1)).clear(SUBSCRIPTIONS);
+    }
+
+    @Test
+    void should_clear_nlr_details_and_remove_role_assignment_if_nlr_details_present() {
+        long caseId = 123L;
+        when(caseDetails.getId()).thenReturn(caseId);
+        when(asylumCase.read(AsylumCaseFieldDefinition.NLR_DETAILS, NonLegalRepDetails.class))
+            .thenReturn(Optional.of(nonLegalRepDetails));
+        String idamId = "idamId";
+        when(nonLegalRepDetails.getIdamId()).thenReturn(idamId);
+        when(roleAssignmentService.getCaseRoleAssignmentsForUser(anyLong(), anyString()))
+            .thenReturn(new RoleAssignmentResource(List.of(assignment)));
+        when(assignment.getId()).thenReturn("roleAssignmentId");
+        when(idamService.getServiceUserToken()).thenReturn("serviceUserToken");
+
+        aipToLegalRepJourneyHandler.handle(ABOUT_TO_SUBMIT, callback, callbackResponse);
+
+        verify(roleAssignmentService, times(1)).getCaseRoleAssignmentsForUser(caseId, idamId);
+        verify(idamService, times(1)).getServiceUserToken();
+        verify(roleAssignmentService, times(1)).deleteRoleAssignment("roleAssignmentId", "serviceUserToken");
+        verify(asylumCase, times(1)).clear(NLR_DETAILS);
+        verify(asylumCase, times(1)).clear(HAS_NON_LEGAL_REP);
+        verify(asylumCase, times(1)).clear(JOIN_APPEAL_PIN);
+        verify(asylumCase, times(1)).clear(IS_SPONSOR_SAME_AS_NLR);
+        verify(asylumCase, times(1)).clear(HAS_NON_LEGAL_REP_JOINED);
+    }
+
+
+    @Test
+    void should_clear_nlr_details_and_do_nothing_if_nlr_details_present_but_no_role_assignment() {
+        long caseId = 123L;
+        when(caseDetails.getId()).thenReturn(caseId);
+        when(asylumCase.read(AsylumCaseFieldDefinition.NLR_DETAILS, NonLegalRepDetails.class))
+            .thenReturn(Optional.of(nonLegalRepDetails));
+        String idamId = "idamId";
+        when(nonLegalRepDetails.getIdamId()).thenReturn(idamId);
+        when(roleAssignmentService.getCaseRoleAssignmentsForUser(anyLong(), anyString()))
+            .thenReturn(new RoleAssignmentResource(Collections.emptyList()));
+
+        aipToLegalRepJourneyHandler.handle(ABOUT_TO_SUBMIT, callback, callbackResponse);
+
+        verify(roleAssignmentService, times(1)).getCaseRoleAssignmentsForUser(caseId, idamId);
+        verify(idamService, never()).getServiceUserToken();
+        verify(roleAssignmentService, never()).deleteRoleAssignment(anyString(), anyString());
+        verify(asylumCase, times(1)).clear(NLR_DETAILS);
     }
 }

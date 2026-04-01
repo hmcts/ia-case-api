@@ -1,13 +1,24 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NLR_DETAILS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REVOKE_ACCESS_DL;
 
 import java.util.Collections;
 import java.util.List;
-
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,9 +30,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.NonLegalRepDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Value;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -68,7 +79,7 @@ class RevokeCitizenPreparerTest {
     private final String userName1 = "User One";
     private final String userId2 = "user-2";
     private final String userName2 = "User Two";
-    
+
     @BeforeEach
     void setUp() {
         preparer = new RevokeCitizenPreparer(roleAssignmentService, idamService);
@@ -87,11 +98,11 @@ class RevokeCitizenPreparerTest {
         when(idamService.getUserFromIdV1(userId1)).thenReturn(user);
         when(idamService.getUserFromIdV1(userId2)).thenReturn(user2);
         when(user.toValueId()).thenReturn(userId1);
-        when(user.toString()).thenReturn(userName1);
+        when(user.toRevokeAccessDlString(anyString())).thenReturn(userName1);
         when(user.getRoles()).thenReturn(List.of("citizen"));
         when(user.isActive()).thenReturn(true);
         when(user2.toValueId()).thenReturn(userId2);
-        when(user2.toString()).thenReturn(userName2);
+        when(user2.toRevokeAccessDlString(anyString())).thenReturn(userName2);
         when(user2.getRoles()).thenReturn(List.of("citizen"));
         when(user2.isActive()).thenReturn(true);
 
@@ -116,30 +127,32 @@ class RevokeCitizenPreparerTest {
 
     @Test
     void should_populate_dynamic_list_when_assignments_exist_and_filter_correctly() {
+        String userId1 = "user-1";
+        String userId2 = "user-2";
         String userId3 = "user-3";
         String userId4 = "user-4";
         Assignment assignment3 = mock(Assignment.class);
         Assignment assignment4 = mock(Assignment.class);
-        User user3 = new User(userId3, "User", "3", "", true, List.of());
-        User user4 = null;
+        User user1 = new User(userId1, "User", "1", "user1@test.com", true, List.of());
+        User user2 = new User(userId2, "User", "2", "user2@test.com", false, List.of());
+        User user3 = new User(userId3, "User", "3", "user3@test.com", true, List.of());
         when(roleAssignmentService.getUsersAssignedToCase(caseId)).thenReturn(roleAssignmentResource);
         when(roleAssignmentResource.getRoleAssignmentResponse()).thenReturn(List.of(assignment, assignment2, assignment3, assignment4));
         when(assignment.getActorId()).thenReturn(userId1);
         when(assignment2.getActorId()).thenReturn(userId2);
         when(assignment3.getActorId()).thenReturn(userId3);
         when(assignment4.getActorId()).thenReturn(userId4);
-        when(idamService.getUserFromIdV1(userId1)).thenReturn(user);
+        when(idamService.getUserFromIdV1(userId1)).thenReturn(user1);
         when(idamService.getUserFromIdV1(userId2)).thenReturn(user2);
         when(idamService.getUserFromIdV1(userId3)).thenReturn(user3);
-        when(idamService.getUserFromIdV1(userId4)).thenReturn(user4);
-        when(user.toValueId()).thenReturn(userId1);
-        when(user.toString()).thenReturn(userName1);
-        when(user.getRoles()).thenReturn(List.of("citizen"));
-        when(user.isActive()).thenReturn(false);
-        when(user2.toValueId()).thenReturn(userId2);
-        when(user2.toString()).thenReturn(userName2);
-        when(user2.getRoles()).thenReturn(List.of("citizen"));
-        when(user2.isActive()).thenReturn(true);
+        when(idamService.getUserFromIdV1(userId4)).thenReturn(null);
+        NonLegalRepDetails nlrDetails = NonLegalRepDetails.builder()
+            .idamId(userId3)
+            .emailAddress("NLR email")
+            .givenNames("givenName")
+            .familyName("familyName")
+            .build();
+        when(asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class)).thenReturn(Optional.of(nlrDetails));
 
         PreSubmitCallbackResponse<AsylumCase> response =
             preparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
@@ -150,21 +163,24 @@ class RevokeCitizenPreparerTest {
         verify(asylumCase).write(eq(REVOKE_ACCESS_DL), captor.capture());
         DynamicList actualDl = captor.getValue();
         assertNull(actualDl.getValue());
-        assertEquals(1, actualDl.getListItems().size());
+        assertEquals(2, actualDl.getListItems().size());
         Value value = actualDl.getListItems().get(0);
-        assertEquals(userId2, value.getCode());
-        assertEquals(userName2, value.getLabel());
+        Value value2 = actualDl.getListItems().get(1);
+        assertEquals(userId1 + ":user1@test.com", value.getCode());
+        assertEquals("user1@test.com - User 1 (Citizen)", value.getLabel());
+        assertEquals(userId3 + ":user3@test.com", value2.getCode());
+        assertEquals("user3@test.com - User 3 (Non Legal Rep)", value2.getLabel());
     }
 
 
     @Test
-    void should_error_if_assignments_exist_but_no_citizens_found() {
+    void should_error_if_assignments_exist_but_no_non_null_found() {
         when(roleAssignmentService.getUsersAssignedToCase(caseId)).thenReturn(roleAssignmentResource);
         when(roleAssignmentResource.getRoleAssignmentResponse()).thenReturn(List.of(assignment));
         when(assignment.getActorId()).thenReturn("user-1");
-        when(idamService.getUserFromIdV1("user-1")).thenReturn(user);
+        when(idamService.getUserFromIdV1("user-1")).thenReturn(null);
         when(user.getId()).thenReturn("user-1");
-        when(user.toString()).thenReturn("User One");
+        when(user.toRevokeAccessDlString(anyString())).thenReturn("User One");
         when(user.getRoles()).thenReturn(Collections.emptyList());
         when(user.isActive()).thenReturn(true);
 

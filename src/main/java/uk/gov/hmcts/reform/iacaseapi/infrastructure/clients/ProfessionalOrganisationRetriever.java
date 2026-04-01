@@ -68,7 +68,7 @@ public class ProfessionalOrganisationRetriever {
                     ).getBody();
 
         } catch (Throwable ex) {
-            log.warn("Cannot fetch Professional Reference data, exception message: " + ex.getMessage(), ex);
+            log.warn("Cannot fetch Professional Reference data, exception message: " + ex.getMessage());
         }
 
         log.info("Response returned: {} userId[{}]", String.valueOf(response), userDetails.getId());

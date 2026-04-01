@@ -144,7 +144,7 @@ ia-case-documents-api:
   enabled: true #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
-    image: hmctsprod.azurecr.io/ia/case-documents-api:latest
+    image: hmctsprod.azurecr.io/ia/case-documents-api:pr-1167
     releaseNameOverride: ${SERVICE_NAME}-case-documents-api
     ingressHost: ${SERVICE_NAME}-documents-api.preview.platform.hmcts.net
     devcpuRequests: 500m
@@ -217,7 +217,7 @@ ia-case-notifications-api:
   enabled: true #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
-    image: hmctsprod.azurecr.io/ia/case-notifications-api:pr-1638
+    image: hmctsprod.azurecr.io/ia/case-notifications-api:pr-1635
     releaseNameOverride: ${SERVICE_NAME}-case-notifications-api
     ingressHost: ${SERVICE_NAME}-notifications-api.preview.platform.hmcts.net
     devcpuRequests: 500m
@@ -602,7 +602,7 @@ ia-aip-frontend:
   enabled: true
   nodejs:
     imagePullPolicy: Always
-    image: hmctsprod.azurecr.io/ia/aip-frontend:latest
+    image: hmctsprod.azurecr.io/ia/aip-frontend:pr-1431
     ingressHost: ${SERVICE_NAME}-aip-frontend.preview.platform.hmcts.net # override in public facing environments
     applicationPort: 3000
     devcpuRequests: 500m
@@ -770,6 +770,8 @@ xui-webapp:
             alias: system-user-name
           - name: system-user-password
             alias: system-user-password
+          - name: mc-session-secret
+            alias: mc-session-secret
 
 ccd:
   enabled: true
@@ -1460,7 +1462,7 @@ ia-hearings-api:
   enabled: true
   java:
     imagePullPolicy: Always
-    image: 'hmctsprod.azurecr.io/ia/hearings-api:latest'
+    image: 'hmctsprod.azurecr.io/ia/hearings-api:pr-536'
     releaseNameOverride: ${SERVICE_NAME}-hearings-api
     ingressHost: ${SERVICE_NAME}-hearings-api.preview.platform.hmcts.net
     devcpuRequests: 500m
