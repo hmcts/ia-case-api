@@ -17,8 +17,8 @@ jobs:
 
       - name: Check Jenkinsfile_CNP for forbidden string
         run: |
-          if grep -q "@DTSPO-00000" Jenkinsfile_CNP; then
-            echo "❌ Forbidden string '@DTSPO-00000' found in Jenkinsfile_CNP"
+          if grep -q "@Library('Infrastructure@" Jenkinsfile_CNP; then
+            echo "❌ Forbidden string ""@Library('Infrastructure@ found in Jenkinsfile_CNP"
             exit 1
           else
             echo "✅ Jenkinsfile_CNP is valid"
