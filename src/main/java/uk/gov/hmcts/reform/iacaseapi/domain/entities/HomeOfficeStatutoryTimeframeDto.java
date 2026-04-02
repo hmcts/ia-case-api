@@ -58,10 +58,10 @@ public class HomeOfficeStatutoryTimeframeDto {
     @NotNull
     private LocalDate dateOfBirth;
 
-    @JsonProperty(value = "stf24weekCohorts", required = true)
+    @JsonProperty(value = "stf24WeekCohorts", required = true)
     @NotNull
     @Valid
-    private List<Stf24WeekCohort> stf24weekCohorts;
+    private List<Stf24WeekCohort> stf24WeekCohorts;
 
     @JsonProperty(value = "timeStamp", required = true)
     @JsonFormat(shape = JsonFormat.Shape.STRING)
