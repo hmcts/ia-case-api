@@ -47,7 +47,7 @@ class HomeOfficeStatutoryTimeframeDtoTest {
             .familyName(familyName)
             .givenNames(givenNames)
             .dateOfBirth(dateOfBirth)
-            .stf24WeekCohorts(List.of(cohort))
+            .stf24weekCohorts(List.of(cohort))
             .timeStamp(timeStamp)
             .build();
 
@@ -56,9 +56,9 @@ class HomeOfficeStatutoryTimeframeDtoTest {
         assertEquals(familyName, homeOfficeStatutoryTimeframeDto.getFamilyName());
         assertEquals(givenNames, homeOfficeStatutoryTimeframeDto.getGivenNames());
         assertEquals(dateOfBirth, homeOfficeStatutoryTimeframeDto.getDateOfBirth());
-        assertEquals(1, homeOfficeStatutoryTimeframeDto.getStf24WeekCohorts().size());
-        assertEquals("HU", homeOfficeStatutoryTimeframeDto.getStf24WeekCohorts().get(0).getName());
-        assertTrue(Boolean.parseBoolean(homeOfficeStatutoryTimeframeDto.getStf24WeekCohorts().get(0).getIncluded()));
+        assertEquals(1, homeOfficeStatutoryTimeframeDto.getStf24weekCohorts().size());
+        assertEquals("HU", homeOfficeStatutoryTimeframeDto.getStf24weekCohorts().get(0).getName());
+        assertTrue(Boolean.parseBoolean(homeOfficeStatutoryTimeframeDto.getStf24weekCohorts().get(0).getIncluded()));
         assertEquals(timeStamp, homeOfficeStatutoryTimeframeDto.getTimeStamp());
     }
 
@@ -83,17 +83,17 @@ class HomeOfficeStatutoryTimeframeDtoTest {
             .familyName(familyName)
             .givenNames(givenNames)
             .dateOfBirth(dateOfBirth)
-            .stf24WeekCohorts(List.of(cohort1, cohort2))
+            .stf24weekCohorts(List.of(cohort1, cohort2))
             .timeStamp(timeStamp)
             .build();
 
-        assertEquals(2, homeOfficeStatutoryTimeframeDto.getStf24WeekCohorts().size());
+        assertEquals(2, homeOfficeStatutoryTimeframeDto.getStf24weekCohorts().size());
 
-        assertEquals("HU", homeOfficeStatutoryTimeframeDto.getStf24WeekCohorts().get(0).getName());
-        assertTrue(Boolean.parseBoolean(homeOfficeStatutoryTimeframeDto.getStf24WeekCohorts().get(0).getIncluded()));
+        assertEquals("HU", homeOfficeStatutoryTimeframeDto.getStf24weekCohorts().get(0).getName());
+        assertTrue(Boolean.parseBoolean(homeOfficeStatutoryTimeframeDto.getStf24weekCohorts().get(0).getIncluded()));
 
-        assertEquals("PA", homeOfficeStatutoryTimeframeDto.getStf24WeekCohorts().get(1).getName());
-        assertTrue(!Boolean.parseBoolean(homeOfficeStatutoryTimeframeDto.getStf24WeekCohorts().get(1).getIncluded()));
+        assertEquals("PA", homeOfficeStatutoryTimeframeDto.getStf24weekCohorts().get(1).getName());
+        assertTrue(!Boolean.parseBoolean(homeOfficeStatutoryTimeframeDto.getStf24weekCohorts().get(1).getIncluded()));
     }
 
     @Test
@@ -104,11 +104,11 @@ class HomeOfficeStatutoryTimeframeDtoTest {
             .familyName(familyName)
             .givenNames(givenNames)
             .dateOfBirth(dateOfBirth)
-            .stf24WeekCohorts(List.of())
+            .stf24weekCohorts(List.of())
             .timeStamp(timeStamp)
             .build();
 
-        assertEquals(0, homeOfficeStatutoryTimeframeDto.getStf24WeekCohorts().size());
+        assertEquals(0, homeOfficeStatutoryTimeframeDto.getStf24weekCohorts().size());
     }
 
     @Test
@@ -119,7 +119,7 @@ class HomeOfficeStatutoryTimeframeDtoTest {
             .familyName(familyName)
             .givenNames(givenNames)
             .dateOfBirth(dateOfBirth)
-            .stf24WeekCohorts(List.of())
+            .stf24weekCohorts(List.of())
             .timeStamp(timeStamp)
             .build();
 

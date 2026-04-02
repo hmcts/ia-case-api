@@ -129,7 +129,7 @@ class UpdateStatutoryTimeframe24WeeksServiceTest {
             .familyName(familyName)
             .givenNames(givenNames)
             .dateOfBirth(dateOfBirth)
-            .stf24WeekCohorts(List.of(cohort))
+            .stf24weekCohorts(List.of(cohort))
             .timeStamp(timeStamp)
             .build();
         StatutoryTimeframe24Weeks existingStatutoryTimeframe24Weeks = new StatutoryTimeframe24Weeks(
@@ -198,7 +198,7 @@ class UpdateStatutoryTimeframe24WeeksServiceTest {
             .familyName(familyName)
             .givenNames(givenNames)
             .dateOfBirth(dateOfBirth)
-            .stf24WeekCohorts(List.of(cohort))
+            .stf24weekCohorts(List.of(cohort))
             .timeStamp(timeStamp)
             .build();
         StatutoryTimeframe24Weeks existingStatutoryTimeframe24Weeks = new StatutoryTimeframe24Weeks(
