@@ -1,0 +1,25 @@
+name: Validate Jenkinsfile_CNP
+on:
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - edited
+      - synchronize
+
+jobs:
+  check-jenkinsfile:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Check Jenkinsfile_CNP for forbidden string
+        run: |
+          if grep -q "@DTSPO-00000" Jenkinsfile_CNP; then
+            echo "❌ Forbidden string '@DTSPO-00000' found in Jenkinsfile_CNP"
+            exit 1
+          else
+            echo "✅ Jenkinsfile_CNP is valid"
+          fi
