@@ -300,7 +300,7 @@ withPipeline(type, product, component) {
         ]
     }
 
-    enableSlackNotifications('#ia-tech')
+//    enableSlackNotifications('#ia-tech')
 
     onMaster() {
         enablePactAs([AppPipelineDsl.PactRoles.CONSUMER])
