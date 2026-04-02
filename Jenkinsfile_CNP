@@ -117,8 +117,8 @@ def secrets = [
                 secret('ccd-client-secret', 'CCD_CLIENT_SECRET'),
                 secret('system-username', 'IA_SYSTEM_USERNAME'),
                 secret('system-password', 'IA_SYSTEM_PASSWORD'),
-                secret('ia-det-prison-email-mappings', 'IA_DET_PRISON_EMAIL_MAPPINGS')        
-          
+                secret('ia-det-prison-email-mappings', 'IA_DET_PRISON_EMAIL_MAPPINGS')
+
         ],
         's2s-${env}': [
                 secret('microservicekey-ccd-data', 'DATA_STORE_S2S_KEY'),
@@ -148,10 +148,11 @@ static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
 
 withPipeline(type, product, component) {
     def githubApi = new GithubAPI(this)
+    def onlyDeploy = githubApi.getLabelsbyPattern(env.BRANCH_NAME, 'only_deploy').contains('only_deploy');
     env.ENABLE_WA = false
     env.ENABLE_TES = false
     env.TES_URL = "http://ia-timed-event-service-aat.service.core-compute-aat.internal/"
-    for (label in githubApi.getLabelsbyPattern(env.BRANCH_NAME, "enable_") ) {
+    for (label in githubApi.getLabelsbyPattern(env.BRANCH_NAME, "enable_")) {
         if (label == "enable_wa") {
             env.ENABLE_WA = true
             env.SERVICES_WORK_ALLOCATION_TASK_API = "http://ia-case-api-pr-${CHANGE_ID}-wa-task-management-api"
@@ -187,15 +188,8 @@ withPipeline(type, product, component) {
     disableLegacyDeployment()
     loadVaultSecrets(secrets)
 
-    before('smoketest:preview') {
-        sh """
-    eval \$(./bin/variables/load-preview-environment-variables.sh ${CHANGE_ID})
-    ./bin/add-roles.sh
-    """
-    }
-
 //enableFortifyScan()
-enableSecurityScan()
+    enableSecurityScan()
 //enableMutationTest()
 
     afterSuccess('akschartsinstall') {
@@ -211,17 +205,40 @@ enableSecurityScan()
                 ./bin/pull-latest-camunda-wa-files.sh ${bpmnBranch}
             """
             }
+            if (onlyDeploy) {
+                sh """
+                    eval \$(./bin/variables/load-preview-environment-variables.sh ${CHANGE_ID})
+                    ./bin/add-roles.sh
+                    """
+
+                //steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
+                env.IDAM_API_URL = "https://idam-api.aat.platform.hmcts.net"
+                env.ROLE_ASSIGNMENT_URL = "https://am-role-assignment-ia-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
+                env.SERVICE_AUTH_PROVIDER_API_BASE_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
+                sh """
+                      ./bin/add-org-roles-to-users.sh
+                    """
+            }
         }
     }
 
-    before('functionalTest:preview') {
-        //steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
-        env.IDAM_API_URL = "https://idam-api.aat.platform.hmcts.net"
-        env.ROLE_ASSIGNMENT_URL = "https://am-role-assignment-ia-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
-        env.SERVICE_AUTH_PROVIDER_API_BASE_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
-        sh """
-      ./bin/add-org-roles-to-users.sh
-    """
+    if (!onlyDeploy) {
+        before('smoketest:preview') {
+            sh """
+            eval \$(./bin/variables/load-preview-environment-variables.sh ${CHANGE_ID})
+            ./bin/add-roles.sh
+            """
+        }
+
+        before('functionalTest:preview') {
+            //steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
+            env.IDAM_API_URL = "https://idam-api.aat.platform.hmcts.net"
+            env.ROLE_ASSIGNMENT_URL = "https://am-role-assignment-ia-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
+            env.SERVICE_AUTH_PROVIDER_API_BASE_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
+            sh """
+              ./bin/add-org-roles-to-users.sh
+            """
+        }
     }
     afterAlways('functionalTest:preview') {
         publishHTML([
