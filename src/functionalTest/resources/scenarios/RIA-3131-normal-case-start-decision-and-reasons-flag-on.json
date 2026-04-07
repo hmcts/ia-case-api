@@ -1,6 +1,5 @@
 {
   "description": "RIA-3131 Hold onto start decision and reasons fields for normal case (caseFlagSetAsideReheardExists missing) - feature flag on",
-  "launchDarklyKey": "reheard-feature:true",
   "request": {
     "uri": "/asylum/ccdAboutToStart",
     "credentials": "CaseOfficer",

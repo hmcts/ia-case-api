@@ -246,7 +246,6 @@ class ListCasePreparerTest {
     void should_clear_hearing_details_when_reheard_case_listed() {
 
         when(asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
-        when(featureToggler.getValue("reheard-feature", false)).thenReturn(true);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             listCasePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
@@ -262,22 +261,6 @@ class ListCasePreparerTest {
     void should_not_clear_hearing_details_when_not_a_reheard_case_listed() {
 
         when(asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
-
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            listCasePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
-
-        verify(asylumCase, times(0)).clear(LIST_CASE_HEARING_CENTRE);
-        verify(asylumCase, times(0)).clear(LIST_CASE_HEARING_CENTRE_ADDRESS);
-        verify(asylumCase, times(0)).clear(LIST_CASE_HEARING_DATE);
-        verify(asylumCase, times(0)).clear(LIST_CASE_HEARING_LENGTH);
-        verify(asylumCase, times(0)).clear(LISTING_LENGTH);
-    }
-
-    @Test
-    void should_not_clear_hearing_details_when_feature_flag_disabled() {
-
-        when(asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
-        when(featureToggler.getValue("reheard-feature", false)).thenReturn(false);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             listCasePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);

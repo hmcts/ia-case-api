@@ -79,8 +79,7 @@ public class DraftHearingRequirementsHandler implements PreSubmitCallbackHandler
 
         asylumCase.write(REVIEWED_HEARING_REQUIREMENTS, YesOrNo.NO);
 
-        if (asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class).map(flag -> flag.equals(YES)).orElse(false)
-            && featureToggler.getValue("reheard-feature", false)) {
+        if (asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class).map(flag -> flag.equals(YES)).orElse(false)) {
 
             Optional<List<IdValue<DocumentWithMetadata>>> maybeHearingRequirements =
                 asylumCase.read(HEARING_REQUIREMENTS);

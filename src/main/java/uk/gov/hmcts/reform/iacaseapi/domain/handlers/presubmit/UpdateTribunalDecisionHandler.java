@@ -7,7 +7,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ALL_SET_ASIDE_DOCS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.UpdateTribunalRules.UNDER_RULE_31;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.UpdateTribunalRules.UNDER_RULE_32;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -162,7 +161,6 @@ public class UpdateTribunalDecisionHandler implements PreSubmitCallbackHandler<A
 
             asylumCase.write(UPDATE_TRIBUNAL_DECISION_DATE_RULE_32, dateProvider.now().toString());
             asylumCase.write(REASON_REHEARING_RULE_32, "Set aside and to be reheard under rule 32");
-            setFtpaReheardCaseFlag(asylumCase);
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
@@ -176,17 +174,6 @@ public class UpdateTribunalDecisionHandler implements PreSubmitCallbackHandler<A
     private boolean isDecisionRule32(AsylumCase asylumCase) {
         return asylumCase.read(UPDATE_TRIBUNAL_DECISION_LIST, UpdateTribunalRules.class)
             .map(type -> type.equals(UNDER_RULE_32)).orElse(false);
-    }
-
-    private void setFtpaReheardCaseFlag(AsylumCase asylumCase) {
-        boolean isReheardAppealEnabled = featureToggler.getValue("reheard-feature", false);
-        asylumCase.write(AsylumCaseFieldDefinition.IS_REHEARD_APPEAL_ENABLED,
-            isReheardAppealEnabled ? YesOrNo.YES : YesOrNo.NO);
-
-        if (isReheardAppealEnabled) {
-            asylumCase.write(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YES);
-            asylumCase.write(STITCHING_STATUS,"");
-        }
     }
 }
 

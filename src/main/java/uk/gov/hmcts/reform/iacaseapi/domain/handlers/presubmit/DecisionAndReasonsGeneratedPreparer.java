@@ -28,8 +28,7 @@ public class DecisionAndReasonsGeneratedPreparer implements PreSubmitCallbackHan
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_START
-               && callback.getEvent() == Event.GENERATE_DECISION_AND_REASONS
-               && featureToggler.getValue("reheard-feature", false);
+               && callback.getEvent() == Event.GENERATE_DECISION_AND_REASONS;
     }
 
     @Override

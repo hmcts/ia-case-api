@@ -217,12 +217,6 @@ public class ResidentJudgeFtpaDecisionHandler implements PreSubmitCallbackHandle
             ftpaFirstDecision
         );
 
-        ftpaDisplayService.setFtpaCaseFlag(
-            asylumCase,
-            featureToggler.getValue("reheard-feature", false),
-            currentDecision
-        );
-
         ftpaDisplayService.setFtpaCaseDlrmFlag(
             asylumCase,
             featureToggler.getValue("dlrm-setaside-feature-flag", false)

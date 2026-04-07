@@ -218,7 +218,6 @@ public class UpdateHearingRequirementsHandlerTest {
     void should_append_and_trim_hearing_requirements_and_requests_when_ftpa_reheard() {
 
         when(asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class)).thenReturn(Optional.of(YES));
-        when(featureToggler.getValue("reheard-feature", false)).thenReturn(true);
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -655,24 +654,6 @@ public class UpdateHearingRequirementsHandlerTest {
             .write(field, Collections.emptyList()));
         WITNESS_N_INTERPRETER_SPOKEN_LANGUAGE.forEach(field -> verify(asylumCase, times(1)).clear(field));
         WITNESS_N_INTERPRETER_SIGN_LANGUAGE.forEach(field -> verify(asylumCase, times(1)).clear(field));
-    }
-
-    @Test
-    void should_not_append_and_trim_hearing_requirements_and_requests_when_ftpa_reheard_and_feature_flag_disabled() {
-
-        when(asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class)).thenReturn(Optional.of(YES));
-        when(featureToggler.getValue("reheard-feature", false)).thenReturn(false);
-
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
-
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            updateHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
-
-        assertNotNull(callbackResponse);
-        assertEquals(asylumCase, callbackResponse.getData());
-
-        verify(previousRequirementsAndRequestsAppender, times(0)).appendAndTrim(asylumCase);
     }
 
     @Test

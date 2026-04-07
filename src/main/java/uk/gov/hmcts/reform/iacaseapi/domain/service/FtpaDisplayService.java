@@ -1,14 +1,11 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.service;
 
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_FLAG_SET_ASIDE_REHEARD_EXISTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_FINAL_DECISION_FOR_DISPLAY;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_FIRST_DECISION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_SECOND_DECISION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LEGACY_CASE_FLAGS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SECOND_FTPA_DECISION_EXISTS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STITCHING_STATUS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.valueOf;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import com.google.common.collect.ImmutableMap;
 import java.util.Collections;
@@ -163,18 +160,6 @@ public class FtpaDisplayService {
         } else {
             asylumCase.write(
                 FTPA_FINAL_DECISION_FOR_DISPLAY, "undecided");
-        }
-    }
-
-    public void setFtpaCaseFlag(AsylumCase asylumCase, boolean isReheardAppealEnabled, String currentDecision) {
-
-        asylumCase.write(AsylumCaseFieldDefinition.IS_REHEARD_APPEAL_ENABLED,
-            isReheardAppealEnabled ? YesOrNo.YES : YesOrNo.NO);
-
-        if (isReheardAppealEnabled && currentDecision.toLowerCase().contains("reheard")) {
-            asylumCase.write(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YES);
-            asylumCase.write(STITCHING_STATUS,"");
-            updateCaseFlags(asylumCase);
         }
     }
 

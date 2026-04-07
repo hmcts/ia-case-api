@@ -84,7 +84,6 @@ class RequestNewHearingRequirementsDirectionHandlerTest {
     void can_handle_request_new_hearing_requirements() {
 
         when(callback.getEvent()).thenReturn(Event.REQUEST_NEW_HEARING_REQUIREMENTS);
-        when(featureToggler.getValue("reheard-feature", false)).thenReturn(true);
 
         requestNewHearingRequirementsDirectionHandler =
                 new RequestNewHearingRequirementsDirectionHandler(
@@ -122,7 +121,6 @@ class RequestNewHearingRequirementsDirectionHandlerTest {
         final String listCaseHearingLength = "6 hours";
         final String appealDecision = "Dismissed";
 
-        when(featureToggler.getValue("reheard-feature", false)).thenReturn(true);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(event);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -241,7 +239,6 @@ class RequestNewHearingRequirementsDirectionHandlerTest {
         for (Event event : Event.values()) {
 
             when(callback.getEvent()).thenReturn(event);
-            when(featureToggler.getValue("reheard-feature", false)).thenReturn(true);
 
             for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
 
@@ -260,7 +257,6 @@ class RequestNewHearingRequirementsDirectionHandlerTest {
         for (Event event : Event.values()) {
 
             when(callback.getEvent()).thenReturn(event);
-            when(featureToggler.getValue("reheard-feature", false)).thenReturn(false);
 
             for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
 

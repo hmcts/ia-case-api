@@ -61,8 +61,7 @@ public class RequestNewHearingRequirementsDirectionHandler implements PreSubmitC
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-               && callback.getEvent() == Event.REQUEST_NEW_HEARING_REQUIREMENTS
-               && featureToggler.getValue("reheard-feature", false);
+               && callback.getEvent() == Event.REQUEST_NEW_HEARING_REQUIREMENTS;
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(PreSubmitCallbackStage callbackStage, Callback<AsylumCase> callback) {
