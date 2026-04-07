@@ -193,7 +193,9 @@ withPipeline(type, product, component) {
 //enableFortifyScan()
     enableSecurityScan()
 //enableMutationTest()
-
+    if (onlyDeploy) {
+        enableHighLevelDataSetup()
+    }
     afterSuccess('akschartsinstall') {
         onPR {
             if (waEnabled) {
@@ -207,6 +209,10 @@ withPipeline(type, product, component) {
                 ./bin/pull-latest-camunda-wa-files.sh ${bpmnBranch}
             """
             }
+        }
+    }
+    afterAlways('highleveldatasetup') {
+        onPR {
             if (onlyDeploy) {
                 sh """
                     eval \$(./bin/variables/load-preview-environment-variables.sh ${CHANGE_ID})
