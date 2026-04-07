@@ -28,6 +28,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.SpringBootIntegrationTest;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.WithDocumentApiStub;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.WithNotificationsApiStub;
+import uk.gov.hmcts.reform.iacaseapi.component.testutils.WithHomeOfficeIntegrationStub;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.WithReferenceDataStub;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.WithRoleAssignmentStub;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.WithServiceAuthStub;
@@ -38,7 +39,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
 class DocumentApiDelgationTest extends SpringBootIntegrationTest implements WithUserDetailsStub,
     WithRoleAssignmentStub, WithServiceAuthStub, WithDocumentApiStub, WithReferenceDataStub,
-    WithTimedEventServiceStub, WithNotificationsApiStub {
+    WithTimedEventServiceStub, WithNotificationsApiStub, WithHomeOfficeIntegrationStub {
 
     @Value("classpath:prd-org-users-response.json")
     private Resource resourceFile;
@@ -47,7 +48,7 @@ class DocumentApiDelgationTest extends SpringBootIntegrationTest implements With
     private String refDataPath;
 
     @Test
-    @WithMockUser(authorities = {"caseworker-ia-legalrep-solicitor"})
+    @WithMockUser(authorities = {"caseworker-ia", "caseworker-ia-legalrep-solicitor"})
     void doesnt_delegate_to_document_api() throws IOException {
         String prdResponseJson =
             new String(Files.readAllBytes(Paths.get(resourceFile.getURI())));
@@ -77,7 +78,7 @@ class DocumentApiDelgationTest extends SpringBootIntegrationTest implements With
     }
 
     @Test
-    @WithMockUser(authorities = {"caseworker-ia-legalrep-solicitor"})
+    @WithMockUser(authorities = {"caseworker-ia", "caseworker-ia-legalrep-solicitor"})
     void does_delegate_to_document_api_when_notification_not_turned_off() throws IOException {
         String prdResponseJson =
             new String(Files.readAllBytes(Paths.get(resourceFile.getURI())));
@@ -90,6 +91,7 @@ class DocumentApiDelgationTest extends SpringBootIntegrationTest implements With
         addRoleAssignmentActorStub(server);
         addRoleAssignmentQueryStub(server);
         addDocumentApiTransformerStub(server);
+        addHomeOfficeIntegrationApiTransformerStub(server);
         addTimedEventServiceStub(server);
         addNotificationsApiTransformerStub(server);
 
