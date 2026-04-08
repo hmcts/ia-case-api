@@ -46,12 +46,12 @@ class UploadHomeOfficeAppealResponseConfirmationTest {
 
         assertThat(
             callbackResponse.getConfirmationBody().get())
-            .contains(
-                "The Tribunal will: \n* check that the Home Office response complies with the Procedure Rules and Practice Directions\n* inform you of any issues\n\nProviding there are no issues, the response will be shared with the appellant");
+            .contains("Do this next");
 
         assertThat(
             callbackResponse.getConfirmationBody().get())
-            .contains("All parties will be notified when the Hearing Notice is ready.");
+            .contains(
+                "The Tribunal will: \n* check that the Home Office response complies with the Procedure Rules and Practice Directions\n* inform you of any issues\n\nProviding there are no issues, the response will be shared with the appellant.");
     }
 
     @Test

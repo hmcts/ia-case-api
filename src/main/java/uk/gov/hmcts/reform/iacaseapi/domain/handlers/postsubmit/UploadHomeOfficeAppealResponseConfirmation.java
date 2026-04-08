@@ -32,10 +32,9 @@ public class UploadHomeOfficeAppealResponseConfirmation implements PostSubmitCal
 
         postSubmitResponse.setConfirmationHeader("# You've uploaded the appeal response");
         postSubmitResponse.setConfirmationBody(
-            "#### What happens next\n\n"
+            "#### Do this next\n\n"
                 + "The Tribunal will: \n* check that the Home Office response complies with the Procedure Rules and Practice Directions\n* inform you of any issues\n\n"
-                + "Providing there are no issues, the response will be shared with the appellant.\n\n"
-                + "All parties will be notified when the Hearing Notice is ready."
+                + "Providing there are no issues, the response will be shared with the appellant."
         );
 
         return postSubmitResponse;
