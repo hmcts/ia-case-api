@@ -46,8 +46,6 @@ public class CacheConfiguration {
     public CacheManager cacheManager(RedisConnectionFactory redisConnectionFactory) {
         try {
             redisConnectionFactory.getConnection().ping();
-            log.info("Redis connection successful - using Redis for systemTokenCache, encryption key: {}",
-                    redisEncryptionKey);
 
             // Idam user info config
             AesEncryptingRedisSerializer<UserInfo> userInfoSerializer =
@@ -101,7 +99,7 @@ public class CacheConfiguration {
             @Value("${spring.data.redis.secret}") String accessKey) {
 
         if (redisUrl == null || redisUrl.isBlank()) {
-            log.warn("No Redis URL configured - falling back to Caffeine");
+            log.warn("No Redis URL configured.");
             // return a dummy factory - cacheManager will catch the ping failure and fall back
             return new LettuceConnectionFactory();
         }
@@ -109,7 +107,7 @@ public class CacheConfiguration {
         try {
             RedisURI redisURI = RedisURI.create(redisUrl);
 
-            boolean useSsl = redisUrl.contains("tls=true") || redisUrl.startsWith("rediss://");
+            boolean useSsl = redisUrl.contains("tls=true") || redisUrl.startsWith("redis://");
 
             // checked azure portal,
             if (useSsl) {
@@ -137,7 +135,6 @@ public class CacheConfiguration {
                     clientConfig
             );
 
-            // factory.afterPropertiesSet();
             log.info("Successful Redis connection.");
             return factory;
         } catch (Exception e) {
