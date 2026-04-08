@@ -107,7 +107,7 @@ public class CacheConfiguration {
         try {
             RedisURI redisURI = RedisURI.create(redisUrl);
 
-            boolean useSsl = redisUrl.contains("tls=true") || redisUrl.startsWith("redis://");
+            boolean useSsl = redisUrl.contains("tls=true") || redisUrl.startsWith("rediss://");
 
             // checked azure portal,
             if (useSsl) {
