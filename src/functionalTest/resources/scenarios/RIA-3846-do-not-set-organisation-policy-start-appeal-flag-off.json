@@ -1,6 +1,5 @@
 {
   "description": "RIA-3846 Do not set OrganisationPolicy at start appeal - feature flag off",
-  "launchDarklyKey": "share-case-feature:false",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "LegalRepresentativeOrgSuccess",

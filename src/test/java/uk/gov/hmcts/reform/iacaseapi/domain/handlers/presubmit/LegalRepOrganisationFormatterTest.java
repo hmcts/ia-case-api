@@ -107,7 +107,6 @@ class LegalRepOrganisationFormatterTest {
         when(organisationEntityResponse.getContactInformation()).thenReturn(addresses);
         when(organisationEntityResponse.getName()).thenReturn(companyName);
         when(organisationEntityResponse.getOrganisationIdentifier()).thenReturn(organisationIdentifier);
-        when(featureToggler.getValue("share-case-feature", false)).thenReturn(true);
 
         PreSubmitCallbackResponse<AsylumCase> response =
             legalRepOrganisationFormatter.handle(
@@ -163,7 +162,6 @@ class LegalRepOrganisationFormatterTest {
         when(organisationEntityResponse.getContactInformation()).thenReturn(addresses);
         when(organisationEntityResponse.getName()).thenReturn(companyName);
         when(organisationEntityResponse.getOrganisationIdentifier()).thenReturn(organisationIdentifier);
-        when(featureToggler.getValue("share-case-feature", false)).thenReturn(true);
 
         PreSubmitCallbackResponse<AsylumCase> response =
             legalRepOrganisationFormatter.handle(
@@ -206,7 +204,6 @@ class LegalRepOrganisationFormatterTest {
         when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         when(organisationEntityResponse.getOrganisationIdentifier()).thenReturn("SomeId");
         when(professionalOrganisationRetriever.retrieve()).thenReturn(organisationEntityResponse);
-        when(featureToggler.getValue("share-case-feature", false)).thenReturn(false);
 
         PreSubmitCallbackResponse<AsylumCase> response =
             legalRepOrganisationFormatter.handle(
@@ -351,7 +348,6 @@ class LegalRepOrganisationFormatterTest {
         when(organisationEntityResponse.getContactInformation()).thenReturn(addresses);
         when(organisationEntityResponse.getName()).thenReturn(companyName);
         when(organisationEntityResponse.getOrganisationIdentifier()).thenReturn(organisationIdentifier);
-        when(featureToggler.getValue("share-case-feature", false)).thenReturn(true);
 
         AddressUk emptyAddressUk = new AddressUk(
                 "","","","","","",""
