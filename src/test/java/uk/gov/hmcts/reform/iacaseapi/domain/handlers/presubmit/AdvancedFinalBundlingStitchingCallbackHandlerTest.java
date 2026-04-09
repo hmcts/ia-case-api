@@ -169,7 +169,6 @@ class AdvancedFinalBundlingStitchingCallbackHandlerTest {
     void should_successfully_handle_the_callback_in_reheard_case(AppealType appealType) {
 
         when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
-        when(featureToggler.getValue("home-office-notification-feature", false)).thenReturn(true);
 
         when(featureToggler.getValue("home-office-uan-pa-rp-feature", false)).thenReturn(true);
         when(featureToggler.getValue("home-office-uan-dc-ea-hu-feature", false)).thenReturn(true);
@@ -216,7 +215,6 @@ class AdvancedFinalBundlingStitchingCallbackHandlerTest {
     void should_not_remove_existing_reheard_bundle_when_updated(AppealType appealType) {
 
         when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
-        when(featureToggler.getValue("home-office-notification-feature", false)).thenReturn(true);
 
         when(featureToggler.getValue("home-office-uan-pa-rp-feature", false)).thenReturn(true);
         when(featureToggler.getValue("home-office-uan-dc-ea-hu-feature", false)).thenReturn(true);
@@ -267,7 +265,6 @@ class AdvancedFinalBundlingStitchingCallbackHandlerTest {
     void should_write_instruct_status_when_ho_notification_feature_on(AppealType appealType) {
 
         when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
-        when(featureToggler.getValue("home-office-notification-feature", false)).thenReturn(true);
 
         when(featureToggler.getValue("home-office-uan-pa-rp-feature", false)).thenReturn(true);
         when(featureToggler.getValue("home-office-uan-dc-ea-hu-feature", false)).thenReturn(true);
@@ -298,7 +295,6 @@ class AdvancedFinalBundlingStitchingCallbackHandlerTest {
     @EnumSource(value = AppealType.class, names = { "PA", "RP", "DC", "EA", "HU", "EU" })
     void should_not_call_home_office_notification_when_ho_validation_has_failed(AppealType appealType) {
 
-        when(featureToggler.getValue("home-office-notification-feature", false)).thenReturn(true);
         when(featureToggler.getValue("home-office-uan-pa-rp-feature", false)).thenReturn(true);
         when(featureToggler.getValue("home-office-uan-dc-ea-hu-feature", false)).thenReturn(true);
 
@@ -328,7 +324,6 @@ class AdvancedFinalBundlingStitchingCallbackHandlerTest {
     @EnumSource(value = AppealType.class, names = { "PA", "RP", "DC", "EA", "HU", "EU" })
     void should_not_call_home_office_notification_when_ho_validation_success_but_for_in_progress_case(AppealType appealType) {
 
-        when(featureToggler.getValue("home-office-notification-feature", false)).thenReturn(true);
         when(featureToggler.getValue("home-office-uan-pa-rp-feature", false)).thenReturn(true);
         when(featureToggler.getValue("home-office-uan-dc-ea-hu-feature", false)).thenReturn(true);
         when(documentReceiver
@@ -357,7 +352,6 @@ class AdvancedFinalBundlingStitchingCallbackHandlerTest {
     @EnumSource(value = AppealType.class, names = { "PA", "RP", "DC", "EA", "HU", "EU" })
     void should_not_write_instruct_status_when_ho_notification_feature_off(AppealType appealType) {
 
-        when(featureToggler.getValue("home-office-notification-feature", false)).thenReturn(false);
         when(featureToggler.getValue("home-office-uan-pa-rp-feature", false)).thenReturn(true);
         when(featureToggler.getValue("home-office-uan-dc-ea-hu-feature", false)).thenReturn(true);
 
@@ -404,7 +398,6 @@ class AdvancedFinalBundlingStitchingCallbackHandlerTest {
     @EnumSource(value = AppealType.class, names = { "PA", "RP", "DC", "EA", "HU", "EU" })
     void should_not_call_ho_api_when_ooc_appeal(AppealType appealType) {
 
-        when(featureToggler.getValue("home-office-notification-feature", false)).thenReturn(true);
         when(featureToggler.getValue("home-office-uan-pa-rp-feature", false)).thenReturn(true);
         when(featureToggler.getValue("home-office-uan-dc-ea-hu-feature", false)).thenReturn(true);
 
