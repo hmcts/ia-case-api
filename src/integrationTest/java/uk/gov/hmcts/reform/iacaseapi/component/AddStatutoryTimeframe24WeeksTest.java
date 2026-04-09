@@ -167,18 +167,18 @@ class AddStatutoryTimeframe24WeeksTest extends SpringBootIntegrationTest impleme
     @Test
     @WithMockUser(authorities = {"caseworker-ia", "tribunal-caseworker"})
     void can_add_statutory_timeframe_24_weeks_after_live_date() {
-         String APPEAL_SUBMISSION_DATE_AFTER_LIVE_DATE = "2026-06-01";
-
         addCaseWorkerUserDetailsStub(server);
         addServiceAuthStub(server);
         addRoleAssignmentQueryStub(server);
+
+        String appealSubmissionDate = "2026-06-01";
 
         PreSubmitCallbackResponseForTest response = iaCaseApiClient.aboutToStart(callback()
             .event(ADD_STATUTORY_TIMEFRAME_24_WEEKS)
             .caseDetails(someCaseDetailsWith()
                 .state(APPEAL_SUBMITTED)
                 .caseData(anAsylumCase()
-                    .with(APPEAL_SUBMISSION_DATE, APPEAL_SUBMISSION_DATE_AFTER_LIVE_DATE))));
+                    .with(APPEAL_SUBMISSION_DATE, appealSubmissionDate))));
 
         assertThat(response).isNotNull();
         assertThat(response.getErrors()).isEmpty();
