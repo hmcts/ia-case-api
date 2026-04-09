@@ -16,7 +16,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.APPEAL_SUB
 
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -31,7 +30,6 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.IdamApi;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.idam.UserInfo;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.RequestUserAccessTokenProvider;
 
-@Disabled
 class UserDetailsRequestScopeTest extends SpringBootIntegrationTest implements WithNotificationsApiStub,
     WithServiceAuthStub, WithRoleAssignmentStub {
 
@@ -88,6 +86,6 @@ class UserDetailsRequestScopeTest extends SpringBootIntegrationTest implements W
 
         // assert that only two requests in total are sent to Idam API for user info data (one for the event,
         // one to determine if supplementary data need handling based on user role + journey type
-        Mockito.verify(idamApi, times(1)).userInfo(token);
+        Mockito.verify(idamApi, times(2)).userInfo(token);
     }
 }
