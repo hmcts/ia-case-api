@@ -297,7 +297,6 @@ class RecordRemissionDecisionPreparerTest {
     @EnumSource(value = AppealType.class, names = { "DC", "RP" })
     void should_return_invalid_event_for_dc_and_rp_appeal_types(AppealType type) {
 
-        when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -323,7 +322,6 @@ class RecordRemissionDecisionPreparerTest {
 
     @Test
     void it_can_handle_callback() {
-        when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
 
         for (Event event : Event.values()) {
 
