@@ -15,23 +15,19 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
 @Component
 public class RequestNewHearingRequirementsDirectionPreparer implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final int hearingRequirementsDueInDays;
     private final DateProvider dateProvider;
-    private final FeatureToggler featureToggler;
 
     public RequestNewHearingRequirementsDirectionPreparer(
         @Value("${legalRepresentativeHearingRequirements.dueInDays}") int hearingRequirementsDueInDays,
-        DateProvider dateProvider,
-        FeatureToggler featureToggler
+        DateProvider dateProvider
     ) {
         this.hearingRequirementsDueInDays = hearingRequirementsDueInDays;
         this.dateProvider = dateProvider;
-        this.featureToggler = featureToggler;
     }
 
     public boolean canHandle(PreSubmitCallbackStage callbackStage, Callback<AsylumCase> callback) {

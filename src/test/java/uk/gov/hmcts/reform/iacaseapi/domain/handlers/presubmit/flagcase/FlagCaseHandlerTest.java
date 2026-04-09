@@ -64,7 +64,7 @@ class FlagCaseHandlerTest {
         when(asylumCase.read(FLAG_CASE_ADDITIONAL_INFORMATION, String.class))
             .thenReturn(Optional.of(additionalInformation));
 
-        flagCaseHandler = new FlagCaseHandler(caseFlagAppender, featureToggler);
+        flagCaseHandler = new FlagCaseHandler(caseFlagAppender);
     }
 
 

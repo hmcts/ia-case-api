@@ -17,17 +17,14 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationRefDataService;
 
 @Component
 public class ListCasePreparer implements PreSubmitCallbackHandler<AsylumCase> {
 
-    private final FeatureToggler featureToggler;
     private final LocationRefDataService locationRefDataService;
 
-    public ListCasePreparer(FeatureToggler featureToggler, LocationRefDataService locationRefDataService) {
-        this.featureToggler = featureToggler;
+    public ListCasePreparer(LocationRefDataService locationRefDataService) {
         this.locationRefDataService = locationRefDataService;
     }
 

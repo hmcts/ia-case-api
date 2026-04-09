@@ -99,7 +99,7 @@ class UpdateTribunalDecisionHandlerTest {
     @BeforeEach
     public void setUp() {
         updateTribunalDecisionHandler = new UpdateTribunalDecisionHandler(dateProvider,
-                decisionAndReasonsAppender,documentReceiver,documentsAppender, featureToggler);
+                decisionAndReasonsAppender,documentReceiver,documentsAppender);
 
         when(callback.getEvent()).thenReturn(Event.UPDATE_TRIBUNAL_DECISION);
         when(callback.getCaseDetails()).thenReturn(caseDetails);

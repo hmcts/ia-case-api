@@ -18,7 +18,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
 @Component
 public class FtpaRespondentPreparer implements PreSubmitCallbackHandler<AsylumCase> {
@@ -27,14 +26,11 @@ public class FtpaRespondentPreparer implements PreSubmitCallbackHandler<AsylumCa
     private static final int FTPA_DAYS_ALLOWED_OOC = 28;
 
     private final DateProvider dateProvider;
-    private final FeatureToggler featureToggler;
 
     public FtpaRespondentPreparer(
-        DateProvider dateProvider,
-        FeatureToggler featureToggler
+        DateProvider dateProvider
     ) {
         this.dateProvider = dateProvider;
-        this.featureToggler = featureToggler;
     }
 
     public boolean canHandle(

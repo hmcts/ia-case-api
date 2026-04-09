@@ -27,7 +27,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.Appender;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentReceiver;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
 @Component
 public class UpdateTribunalDecisionHandler implements PreSubmitCallbackHandler<AsylumCase> {
@@ -36,20 +35,17 @@ public class UpdateTribunalDecisionHandler implements PreSubmitCallbackHandler<A
     private final Appender<DecisionAndReasons> decisionAndReasonsAppender;
     private final DocumentReceiver documentReceiver;
     private final DocumentsAppender documentsAppender;
-    private final FeatureToggler featureToggler;
 
     public UpdateTribunalDecisionHandler(
         DateProvider dateProvider,
         Appender<DecisionAndReasons> decisionAndReasonsAppender,
         DocumentReceiver documentReceiver,
-        DocumentsAppender documentsAppender,
-        FeatureToggler featureToggler
+        DocumentsAppender documentsAppender
     ) {
         this.dateProvider = dateProvider;
         this.decisionAndReasonsAppender = decisionAndReasonsAppender;
         this.documentReceiver = documentReceiver;
         this.documentsAppender = documentsAppender;
-        this.featureToggler = featureToggler;
     }
 
     public boolean canHandle(PreSubmitCallbackStage callbackStage, Callback<AsylumCase> callback) {

@@ -86,8 +86,7 @@ class UploadAdditionalEvidenceHomeOfficeHandlerTest {
         uploadAdditionalEvidenceHomeOfficeHandler =
             new UploadAdditionalEvidenceHomeOfficeHandler(
                 documentReceiver,
-                documentsAppender,
-                featureToggler
+                documentsAppender
             );
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);

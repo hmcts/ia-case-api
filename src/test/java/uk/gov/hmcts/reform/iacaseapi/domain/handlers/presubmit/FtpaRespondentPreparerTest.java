@@ -26,7 +26,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -51,8 +50,6 @@ class FtpaRespondentPreparerTest {
     private AsylumCase asylumCase;
     @Mock
     private DateProvider dateProvider;
-    @Mock
-    private FeatureToggler featureToggler;
 
     private FtpaRespondentPreparer ftpaRespondentPreparer;
 
@@ -60,7 +57,7 @@ class FtpaRespondentPreparerTest {
     @BeforeEach
     public void setUp() {
         ftpaRespondentPreparer =
-            new FtpaRespondentPreparer(dateProvider, featureToggler);
+            new FtpaRespondentPreparer(dateProvider);
 
         when(asylumCase.read(FTPA_RESPONDENT_SUBMITTED)).thenReturn(Optional.of("No"));
     }

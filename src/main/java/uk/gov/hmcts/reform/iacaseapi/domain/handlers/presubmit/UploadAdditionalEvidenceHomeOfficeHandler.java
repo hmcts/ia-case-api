@@ -21,7 +21,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentReceiver;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
 
 @Component
@@ -29,16 +28,13 @@ public class UploadAdditionalEvidenceHomeOfficeHandler implements PreSubmitCallb
 
     private final DocumentReceiver documentReceiver;
     private final DocumentsAppender documentsAppender;
-    private final FeatureToggler featureToggler;
 
     public UploadAdditionalEvidenceHomeOfficeHandler(
         DocumentReceiver documentReceiver,
-        DocumentsAppender documentsAppender,
-        FeatureToggler featureToggler
+        DocumentsAppender documentsAppender
     ) {
         this.documentReceiver = documentReceiver;
         this.documentsAppender = documentsAppender;
-        this.featureToggler = featureToggler;
     }
 
     public boolean canHandle(

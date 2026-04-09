@@ -34,7 +34,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -47,15 +46,12 @@ class DecisionAndReasonsPreparerTest {
     private CaseDetails<AsylumCase> caseDetails;
     @Mock
     private AsylumCase asylumCase;
-    @Mock
-    private FeatureToggler featureToggler;
 
     private DecisionAndReasonsPreparer decisionAndReasonsPreparer;
 
     @BeforeEach
     public void setUp() {
-
-        decisionAndReasonsPreparer = new DecisionAndReasonsPreparer(featureToggler);
+        decisionAndReasonsPreparer = new DecisionAndReasonsPreparer();
     }
 
     @Test

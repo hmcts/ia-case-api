@@ -22,7 +22,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DirectionAppender;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.PreviousHearingAppender;
 
 import java.time.LocalDate;
@@ -63,8 +62,6 @@ class RequestNewHearingRequirementsDirectionHandlerTest {
     @Mock
     private AsylumCase asylumCase;
     @Mock
-    private FeatureToggler featureToggler;
-    @Mock
     private DocumentWithMetadata hearingRequirements1;
     private RequestNewHearingRequirementsDirectionHandler requestNewHearingRequirementsDirectionHandler;
 
@@ -75,8 +72,7 @@ class RequestNewHearingRequirementsDirectionHandlerTest {
                         HEARING_REQUIREMENTS_DUE_IN_DAYS,
                         dateProvider,
                         directionAppender,
-                        previousHearingAppender,
-                        featureToggler
+                        previousHearingAppender
                 );
     }
 
@@ -90,8 +86,7 @@ class RequestNewHearingRequirementsDirectionHandlerTest {
                         HEARING_REQUIREMENTS_DUE_IN_DAYS,
                         dateProvider,
                         directionAppender,
-                        previousHearingAppender,
-                        featureToggler
+                        previousHearingAppender
                 );
 
         boolean canHandle =
