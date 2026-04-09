@@ -82,9 +82,7 @@ public class AppealTypeHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
         Optional<YesOrNo> isOocEnabled = asylumCase.read(IS_OUT_OF_COUNTRY_ENABLED, YesOrNo.class);
         if (callback.getEvent() == START_APPEAL && isOocEnabled.isEmpty()) {
-            YesOrNo isOutOfCountryEnabled
-                = featureToggler.getValue("out-of-country-feature", false) ? YES : NO;
-            asylumCase.write(IS_OUT_OF_COUNTRY_ENABLED, isOutOfCountryEnabled);
+            asylumCase.write(IS_OUT_OF_COUNTRY_ENABLED, YES);
         }
 
         // This duplicate feature flag field is used because isNabaEnabled is on the detention screen which is not
