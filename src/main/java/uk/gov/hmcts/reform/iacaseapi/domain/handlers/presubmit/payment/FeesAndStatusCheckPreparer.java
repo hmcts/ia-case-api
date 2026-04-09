@@ -90,7 +90,7 @@ public class FeesAndStatusCheckPreparer implements PreSubmitCallbackHandler<Asyl
             .orElse(PaymentStatus.PAYMENT_PENDING);
 
         YesOrNo isRemissionsEnabled
-            = featureToggler.getValue("remissions-feature", false) ? YesOrNo.YES : YesOrNo.NO;
+            = YesOrNo.YES;
         asylumCase.write(IS_REMISSIONS_ENABLED, isRemissionsEnabled);
 
         Optional<RemissionDecision> remissionDecision = asylumCase.read(REMISSION_DECISION, RemissionDecision.class);

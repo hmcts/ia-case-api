@@ -79,7 +79,7 @@ public class FeesHandler implements PreSubmitCallbackHandler<AsylumCase> {
                 .orElseThrow(() -> new IllegalStateException("Appeal type is not present"));
 
         YesOrNo isRemissionsEnabled
-            = featureToggler.getValue("remissions-feature", false) ? YesOrNo.YES : YesOrNo.NO;
+            = YesOrNo.YES;
         asylumCase.write(IS_REMISSIONS_ENABLED, isRemissionsEnabled);
 
         switch (appealType) {

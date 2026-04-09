@@ -168,7 +168,6 @@ class FeesAndStatusCheckPreparerTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
         when(feePayment.aboutToStart(callback)).thenReturn(asylumCase);
-        when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             feesAndStatusCheckPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
@@ -193,7 +192,6 @@ class FeesAndStatusCheckPreparerTest {
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.PA));
         when(asylumCase.read(PA_APPEAL_TYPE_PAYMENT_OPTION, AppealType.class)).thenReturn(Optional.empty());
 
-        when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             feesAndStatusCheckPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);

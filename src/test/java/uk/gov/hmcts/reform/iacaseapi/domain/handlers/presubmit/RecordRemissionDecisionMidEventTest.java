@@ -61,8 +61,6 @@ class RecordRemissionDecisionMidEventTest {
     @Test
     void handle_should_throw_for_no_remission_decision() {
 
-        when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
-
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(Event.RECORD_REMISSION_DECISION);
@@ -75,8 +73,6 @@ class RecordRemissionDecisionMidEventTest {
     @ParameterizedTest
     @EnumSource(value = RemissionDecision.class, names = {"APPROVED", "PARTIALLY_APPROVED"})
     void handle_should_throw_for_remitted_amount_not_present(RemissionDecision decision) {
-
-        when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -96,8 +92,6 @@ class RecordRemissionDecisionMidEventTest {
     @EnumSource(value = RemissionDecision.class, names = {"APPROVED", "PARTIALLY_APPROVED"})
     void handle_should_throw_for_missing_fee_without_hearing(RemissionDecision decision) {
 
-        when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
-
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(Event.RECORD_REMISSION_DECISION);
@@ -115,8 +109,6 @@ class RecordRemissionDecisionMidEventTest {
     @EnumSource(value = RemissionDecision.class, names = {"APPROVED", "PARTIALLY_APPROVED"})
     void handle_should_throw_for_missing_fee_with_hearing(RemissionDecision decision) {
 
-        when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
-
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(Event.RECORD_REMISSION_DECISION);
@@ -132,8 +124,6 @@ class RecordRemissionDecisionMidEventTest {
     @ParameterizedTest
     @EnumSource(value = RemissionDecision.class, names = {"APPROVED", "PARTIALLY_APPROVED"})
     void handle_should_throw_for_amount_left_to_pay_not_present(RemissionDecision decision) {
-
-        when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -152,8 +142,6 @@ class RecordRemissionDecisionMidEventTest {
     @ParameterizedTest
     @ValueSource(strings = {"decisionWithHearing", "decisionWithoutHearing"})
     void should_handle_remission_approved_decision(String hearingType) {
-
-        when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -190,8 +178,6 @@ class RecordRemissionDecisionMidEventTest {
     @ValueSource(strings = {"decisionWithHearing", "decisionWithoutHearing"})
     void handle_should_error_for_amount_left_to_pay_greater_than_zero_on_remission_approved(String hearingType) {
 
-        when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
-
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(Event.RECORD_REMISSION_DECISION);
@@ -221,8 +207,6 @@ class RecordRemissionDecisionMidEventTest {
     @ParameterizedTest
     @ValueSource(strings = {"decisionWithHearing", "decisionWithoutHearing"})
     void handle_should_error_for_incorrect_remitted_amount_on_remission_approved(String hearingType) {
-
-        when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -261,8 +245,6 @@ class RecordRemissionDecisionMidEventTest {
     @ValueSource(strings = {"decisionWithHearing", "decisionWithoutHearing"})
     void should_handle_remission_partially_approved_decision(String hearingType) {
 
-        when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
-
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(Event.RECORD_REMISSION_DECISION);
@@ -297,8 +279,6 @@ class RecordRemissionDecisionMidEventTest {
     @ParameterizedTest
     @ValueSource(strings = {"decisionWithHearing", "decisionWithoutHearing"})
     void handle_should_error_for_incorrect_remitted_amount_on_remission_partially_approved(String hearingType) {
-
-        when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -336,8 +316,6 @@ class RecordRemissionDecisionMidEventTest {
     @ParameterizedTest
     @ValueSource(strings = {"decisionWithHearing", "decisionWithoutHearing"})
     void handle_should_error_for_incorrect_amount_left_to_pay_on_remission_partially_approved(String hearingType) {
-
-        when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -377,8 +355,6 @@ class RecordRemissionDecisionMidEventTest {
 
     @Test
     void it_can_handle_callback() {
-
-        when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
 
         for (Event event : Event.values()) {
 

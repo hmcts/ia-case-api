@@ -64,8 +64,7 @@ public class RequestFeeRemissionHandler implements PreSubmitCallbackHandler<Asyl
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
                && callback.getEvent() == Event.REQUEST_FEE_REMISSION
-               && !isAipJourney(callback.getCaseDetails().getCaseData())
-               && featureToggler.getValue("remissions-feature", false);
+               && !isAipJourney(callback.getCaseDetails().getCaseData());
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(

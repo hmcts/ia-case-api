@@ -37,8 +37,7 @@ public class RecordRemissionDecisionMidEvent implements PreSubmitCallbackHandler
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.MID_EVENT
-               && callback.getEvent() == Event.RECORD_REMISSION_DECISION
-               && featureToggler.getValue("remissions-feature", false);
+               && callback.getEvent() == Event.RECORD_REMISSION_DECISION;
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(

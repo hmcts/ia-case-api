@@ -1,6 +1,5 @@
 {
   "description": "RIA-6455 Legal representative submits accelerated detained appeal",
-  "launchDarklyKey": "remissions-feature:true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "LegalRepresentative",
