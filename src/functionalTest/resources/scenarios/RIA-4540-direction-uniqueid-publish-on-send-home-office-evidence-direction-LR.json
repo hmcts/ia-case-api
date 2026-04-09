@@ -1,6 +1,5 @@
 {
   "description": "RIA-4540 Direction Unique ID publish - Send requestRespondentEvidence direction - (LR)",
-  "launchDarklyKey": "publish-wa-fields-feature:true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",
