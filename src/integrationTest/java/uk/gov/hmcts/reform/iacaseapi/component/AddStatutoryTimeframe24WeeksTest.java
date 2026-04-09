@@ -146,4 +146,43 @@ class AddStatutoryTimeframe24WeeksTest extends SpringBootIntegrationTest impleme
         assertThat(response.getAsylumCase().read(STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED, YesOrNo.class).get()).isEqualTo(YesOrNo.YES);
     }
 
+    @Test
+    @WithMockUser(authorities = {"caseworker-ia", "tribunal-caseworker"})
+    void cannot_add_statutory_timeframe_24_weeks_before_live_date() {
+        addCaseWorkerUserDetailsStub(server);
+        addServiceAuthStub(server);
+        addRoleAssignmentQueryStub(server);
+        String reason = "some reason";
+
+        PreSubmitCallbackResponseForTest response = iaCaseApiClient.aboutToStart(callback()
+            .event(ADD_STATUTORY_TIMEFRAME_24_WEEKS)
+            .caseDetails(someCaseDetailsWith()
+                .state(APPEAL_SUBMITTED)
+                .caseData(anAsylumCase()
+                    .with(APPEAL_SUBMISSION_DATE, APPEAL_SUBMISSION_DATE_STR))));
+
+        assertThat(response).isNotNull();
+        assertThat(response.getErrors()).contains("This event cannot be run on a case created before 01/05/2026");
+    }
+
+    @Test
+    @WithMockUser(authorities = {"caseworker-ia", "tribunal-caseworker"})
+    void can_add_statutory_timeframe_24_weeks_after_live_date() {
+         String APPEAL_SUBMISSION_DATE_AFTER_LIVE_DATE = "2026-06-01";
+
+        addCaseWorkerUserDetailsStub(server);
+        addServiceAuthStub(server);
+        addRoleAssignmentQueryStub(server);
+        String reason = "some reason";
+
+        PreSubmitCallbackResponseForTest response = iaCaseApiClient.aboutToStart(callback()
+            .event(ADD_STATUTORY_TIMEFRAME_24_WEEKS)
+            .caseDetails(someCaseDetailsWith()
+                .state(APPEAL_SUBMITTED)
+                .caseData(anAsylumCase()
+                    .with(APPEAL_SUBMISSION_DATE, APPEAL_SUBMISSION_DATE_AFTER_LIVE_DATE))));
+
+        assertThat(response).isNotNull();
+        assertThat(response.getErrors()).isEmpty();
+    }
 }
