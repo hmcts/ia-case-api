@@ -152,7 +152,6 @@ class AddStatutoryTimeframe24WeeksTest extends SpringBootIntegrationTest impleme
         addCaseWorkerUserDetailsStub(server);
         addServiceAuthStub(server);
         addRoleAssignmentQueryStub(server);
-        String reason = "some reason";
 
         PreSubmitCallbackResponseForTest response = iaCaseApiClient.aboutToStart(callback()
             .event(ADD_STATUTORY_TIMEFRAME_24_WEEKS)
@@ -173,7 +172,6 @@ class AddStatutoryTimeframe24WeeksTest extends SpringBootIntegrationTest impleme
         addCaseWorkerUserDetailsStub(server);
         addServiceAuthStub(server);
         addRoleAssignmentQueryStub(server);
-        String reason = "some reason";
 
         PreSubmitCallbackResponseForTest response = iaCaseApiClient.aboutToStart(callback()
             .event(ADD_STATUTORY_TIMEFRAME_24_WEEKS)
