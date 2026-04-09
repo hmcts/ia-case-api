@@ -142,6 +142,12 @@ public class LeadershipJudgeFtpaDecisionHandler implements PreSubmitCallbackHand
             ftpaFirstDecision
         );
 
+        ftpaDisplayService.setFtpaCaseFlag(
+            asylumCase,
+            true,
+            currentDecision
+        );
+
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 }
