@@ -47,7 +47,7 @@ public class IdamService {
         this.roleAssignmentService = roleAssignmentService;
     }
 
-    @Cacheable(value = "accessTokenCache")
+    @Cacheable(value = "systemUserTokenCache", key = "'systemUserTokenCache'")
     public String getServiceUserToken() {
         Map<String, String> idamAuthDetails = new ConcurrentHashMap<>();
 
@@ -59,10 +59,11 @@ public class IdamService {
         idamAuthDetails.put("password", systemUserPass);
         idamAuthDetails.put("scope", systemUserScope);
 
+        log.info("System user token expired. Getting a new token in ia-case-api");
         return "Bearer " + idamApi.token(idamAuthDetails).getAccessToken();
     }
 
-    @Cacheable(value = "userInfoCache")
+    @Cacheable(value = "userInfoCache", key = "#accessToken")
     public UserInfo getUserInfo(String accessToken) {
         UserInfo userInfo = idamApi.userInfo(accessToken);
         List<String> amRoles = Collections.emptyList();
