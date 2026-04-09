@@ -15,3 +15,4 @@ spring:
         ia-config-validator-secret: IA_CONFIG_VALIDATOR_SECRET
         ia-redis-connection-string: IA_REDIS_CONNECTION_STRING
         ia-redis-access-key: IA_REDIS_ACCESS_KEY
+        ia-redis-encryption-key: IA_REDIS_ENCRYPTION_KEY
