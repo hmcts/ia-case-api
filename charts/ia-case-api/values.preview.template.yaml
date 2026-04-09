@@ -85,6 +85,8 @@ java:
           alias: IA_REDIS_CONNECTION_STRING
         - name: ia-redis-access-key
           alias: IA_REDIS_ACCESS_KEY
+        - name: ia-redis-encryption-key
+          alias: IA_REDIS_ENCRYPTION_KEY
   secrets:
     POSTGRES_PASSWORD:
       secretRef: postgres
@@ -153,6 +155,8 @@ ia-case-payments-api:
             alias: IA_REDIS_CONNECTION_STRING
           - name: ia-redis-access-key
             alias: IA_REDIS_ACCESS_KEY
+          - name: ia-redis-encryption-key
+            alias: IA_REDIS_ENCRYPTION_KEY
 
 ia-case-documents-api:
   enabled: true #set to true if testing against a local branch
@@ -230,6 +234,8 @@ ia-case-documents-api:
             alias: IA_REDIS_CONNECTION_STRING
           - name: ia-redis-access-key
             alias: IA_REDIS_ACCESS_KEY
+          - name: ia-redis-encryption-key
+            alias: IA_REDIS_ENCRYPTION_KEY
 
 ia-case-notifications-api:
   enabled: true #set to true if testing against a local branch
@@ -437,6 +443,8 @@ ia-case-notifications-api:
             alias: IA_REDIS_CONNECTION_STRING
           - name: ia-redis-access-key
             alias: IA_REDIS_ACCESS_KEY
+          - name: ia-redis-encryption-key
+            alias: IA_REDIS_ENCRYPTION_KEY
 
 ia-bail-case-api:
   enabled: true
@@ -497,6 +505,8 @@ ia-bail-case-api:
             alias: IA_REDIS_CONNECTION_STRING
           - name: ia-redis-access-key
             alias: IA_REDIS_ACCESS_KEY
+          - name: ia-redis-encryption-key
+            alias: IA_REDIS_ENCRYPTION_KEY
 
 ia-timed-event-service:
   enabled: ${ENABLE_TES}
@@ -552,6 +562,8 @@ ia-timed-event-service:
             alias: IA_REDIS_CONNECTION_STRING
           - name: ia-redis-access-key
             alias: IA_REDIS_ACCESS_KEY
+          - name: ia-redis-encryption-key
+            alias: IA_REDIS_ENCRYPTION_KEY
 
 ia-home-office-integration-api:
   enabled: true #set to true if testing against a local branch
@@ -601,6 +613,8 @@ ia-home-office-integration-api:
             alias: IA_REDIS_CONNECTION_STRING
           - name: ia-redis-access-key
             alias: IA_REDIS_ACCESS_KEY
+          - name: ia-redis-encryption-key
+            alias: IA_REDIS_ENCRYPTION_KEY
 
 ia-case-access-api:
   enabled: false
@@ -635,6 +649,8 @@ ia-case-access-api:
             alias: IA_REDIS_CONNECTION_STRING
           - name: ia-redis-access-key
             alias: IA_REDIS_ACCESS_KEY
+          - name: ia-redis-encryption-key
+            alias: IA_REDIS_ENCRYPTION_KEY
 
 ia-aip-frontend:
   enabled: true
@@ -719,6 +735,8 @@ ia-aip-frontend:
             alias: IA_REDIS_CONNECTION_STRING
           - name: ia-redis-access-key
             alias: IA_REDIS_ACCESS_KEY
+          - name: ia-redis-encryption-key
+            alias: IA_REDIS_ENCRYPTION_KEY
   redis:
     enabled: false
     architecture: standalone
