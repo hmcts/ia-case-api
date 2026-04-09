@@ -1,6 +1,5 @@
 {
   "description": "RIA-8677 AIP Remissions - Error validation when no remission present",
-  "launchDarklyKey": "remissions-feature:true",
   "launchDarklyKey": "dlrm-fee-remission-feature-flag:true",
   "request": {
     "uri": "/asylum/ccdAboutToStart",

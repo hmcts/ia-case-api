@@ -36,8 +36,6 @@ public class HomeOfficeCaseNotificationsHandler implements PreSubmitCallbackHand
     private final FeatureToggler featureToggler;
     private final HomeOfficeApi<AsylumCase> homeOfficeApi;
 
-    private static final String HO_NOTIFICATION_FEATURE = "home-office-notification-feature";
-
     public HomeOfficeCaseNotificationsHandler(
         FeatureToggler featureToggler,
         HomeOfficeApi<AsylumCase> homeOfficeApi) {
@@ -90,7 +88,6 @@ public class HomeOfficeCaseNotificationsHandler implements PreSubmitCallbackHand
                    && isDirectionForRespondentParties(callback.getCaseDetails().getCaseData())
                   )
                )
-               && featureToggler.getValue(HO_NOTIFICATION_FEATURE, false)
                && !HandlerUtils.isNotificationTurnedOff(callback.getCaseDetails().getCaseData());
     }
 

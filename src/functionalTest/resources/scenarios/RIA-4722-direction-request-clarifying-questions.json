@@ -1,6 +1,5 @@
 {
   "description": "RIA-4722: SendDirectionWithQuestions - When clarifying questsions were asked, should store preClarifyingState",
-  "launchDarklyKey": "publish-wa-fields-feature:true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",

@@ -1,6 +1,5 @@
 {
   "description": "RIA-3600 sends home office notification for request respondent review",
-  "launchDarklyKey": "home-office-notification-feature:true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",

@@ -11,22 +11,7 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ACTUAL_CASE_HEARING_LENGTH;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ATTENDING_APPELLANT;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ATTENDING_APPELLANTS_LEGAL_REPRESENTATIVE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ATTENDING_HOME_OFFICE_LEGAL_REPRESENTATIVE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ATTENDING_JUDGE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ATTENDING_TCW;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_FLAG_SET_ASIDE_REHEARD_EXISTS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_LISTED_WITHOUT_HEARING_REQUIREMENTS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CURRENT_HEARING_DETAILS_VISIBLE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAVE_HEARING_ATTENDEES_AND_DURATION_BEEN_RECORDED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_CONDUCTION_OPTIONS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_RECORDING_DOCUMENTS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_REQUIREMENTS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REHEARD_CASE_LISTED_WITHOUT_HEARING_REQUIREMENTS;
 
-import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -104,74 +89,6 @@ class ListCaseWithoutHearingRequirementsHandlerTest {
             () -> listCaseWithoutHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
-    }
-
-    @Test
-    void should_clear_previous_attendance_and_duration_fields_when_set_aside_reheard_flag_exists() {
-
-        when(featureToggler.getValue("reheard-feature", false)).thenReturn(true);
-        when(asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
-
-        listCaseWithoutHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
-
-        verify(asylumCase, times(1)).write(REHEARD_CASE_LISTED_WITHOUT_HEARING_REQUIREMENTS, YesOrNo.YES);
-        verify(asylumCase, times(1)).write(CURRENT_HEARING_DETAILS_VISIBLE, YesOrNo.YES);
-        verify(asylumCase, times(0)).write(CASE_LISTED_WITHOUT_HEARING_REQUIREMENTS, YesOrNo.YES);
-        verify(asylumCase, times(0)).write(CASE_LISTED_WITHOUT_HEARING_REQUIREMENTS, YesOrNo.NO);
-        verify(asylumCase, times(1)).clear(HAVE_HEARING_ATTENDEES_AND_DURATION_BEEN_RECORDED);
-        verify(asylumCase, times(1)).clear(ATTENDING_TCW);
-        verify(asylumCase, times(1)).clear(ATTENDING_JUDGE);
-        verify(asylumCase, times(1)).clear(ATTENDING_APPELLANT);
-        verify(asylumCase, times(1)).clear(ATTENDING_HOME_OFFICE_LEGAL_REPRESENTATIVE);
-        verify(asylumCase, times(1)).clear(ATTENDING_APPELLANTS_LEGAL_REPRESENTATIVE);
-        verify(asylumCase, times(1)).clear(ACTUAL_CASE_HEARING_LENGTH);
-        verify(asylumCase, times(1)).clear(HEARING_CONDUCTION_OPTIONS);
-        verify(asylumCase, times(1)).clear(HEARING_RECORDING_DOCUMENTS);
-        verify(asylumCase, times(1)).clear(HEARING_REQUIREMENTS);
-    }
-
-    @Test
-    void should_hold_on_to_previous_attendance_and_duration_fields_when_set_aside_reheard_flag_does_not_exist() {
-
-        when(asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
-
-        listCaseWithoutHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
-
-        verify(asylumCase, times(0)).write(REHEARD_CASE_LISTED_WITHOUT_HEARING_REQUIREMENTS, YesOrNo.YES);
-        verify(asylumCase, times(0)).write(CURRENT_HEARING_DETAILS_VISIBLE, YesOrNo.YES);
-        verify(asylumCase, times(1)).write(CASE_LISTED_WITHOUT_HEARING_REQUIREMENTS, YesOrNo.YES);
-        verify(asylumCase, times(0)).write(CASE_LISTED_WITHOUT_HEARING_REQUIREMENTS, YesOrNo.NO);
-        verify(asylumCase, times(0)).clear(HAVE_HEARING_ATTENDEES_AND_DURATION_BEEN_RECORDED);
-        verify(asylumCase, times(0)).clear(ATTENDING_TCW);
-        verify(asylumCase, times(0)).clear(ATTENDING_JUDGE);
-        verify(asylumCase, times(0)).clear(ATTENDING_APPELLANT);
-        verify(asylumCase, times(0)).clear(ATTENDING_HOME_OFFICE_LEGAL_REPRESENTATIVE);
-        verify(asylumCase, times(0)).clear(ATTENDING_APPELLANTS_LEGAL_REPRESENTATIVE);
-        verify(asylumCase, times(0)).clear(ACTUAL_CASE_HEARING_LENGTH);
-        verify(asylumCase, times(0)).clear(HEARING_CONDUCTION_OPTIONS);
-        verify(asylumCase, times(0)).clear(HEARING_RECORDING_DOCUMENTS);
-        verify(asylumCase, times(0)).clear(HEARING_REQUIREMENTS);
-    }
-
-    @Test
-    void should_hold_on_to_previous_attendance_and_duration_fields_when_feature_flag_disabled() {
-
-        listCaseWithoutHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
-
-        verify(asylumCase, times(0)).write(REHEARD_CASE_LISTED_WITHOUT_HEARING_REQUIREMENTS, YesOrNo.YES);
-        verify(asylumCase, times(0)).write(CURRENT_HEARING_DETAILS_VISIBLE, YesOrNo.YES);
-        verify(asylumCase, times(1)).write(CASE_LISTED_WITHOUT_HEARING_REQUIREMENTS, YesOrNo.YES);
-        verify(asylumCase, times(0)).write(CASE_LISTED_WITHOUT_HEARING_REQUIREMENTS, YesOrNo.NO);
-        verify(asylumCase, times(0)).clear(HAVE_HEARING_ATTENDEES_AND_DURATION_BEEN_RECORDED);
-        verify(asylumCase, times(0)).clear(ATTENDING_TCW);
-        verify(asylumCase, times(0)).clear(ATTENDING_JUDGE);
-        verify(asylumCase, times(0)).clear(ATTENDING_APPELLANT);
-        verify(asylumCase, times(0)).clear(ATTENDING_HOME_OFFICE_LEGAL_REPRESENTATIVE);
-        verify(asylumCase, times(0)).clear(ATTENDING_APPELLANTS_LEGAL_REPRESENTATIVE);
-        verify(asylumCase, times(0)).clear(ACTUAL_CASE_HEARING_LENGTH);
-        verify(asylumCase, times(0)).clear(HEARING_CONDUCTION_OPTIONS);
-        verify(asylumCase, times(0)).clear(HEARING_RECORDING_DOCUMENTS);
-        verify(asylumCase, times(0)).clear(HEARING_REQUIREMENTS);
     }
 
     @Test

@@ -11,15 +11,11 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
 @Component
 public class DecisionAndReasonsPreparer implements PreSubmitCallbackHandler<AsylumCase> {
 
-    private final FeatureToggler featureToggler;
-
-    public DecisionAndReasonsPreparer(FeatureToggler featureToggler) {
-        this.featureToggler = featureToggler;
+    public DecisionAndReasonsPreparer() {
     }
 
     @Override
@@ -28,8 +24,7 @@ public class DecisionAndReasonsPreparer implements PreSubmitCallbackHandler<Asyl
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_START
-               && callback.getEvent() == Event.DECISION_AND_REASONS_STARTED
-               && featureToggler.getValue("reheard-feature", false);
+               && callback.getEvent() == Event.DECISION_AND_REASONS_STARTED;
     }
 
     @Override

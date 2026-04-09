@@ -64,8 +64,6 @@ class RecordRemissionDecisionStateHandlerTest {
     @Test
     void handling_should_throw_if_appeal_type_is_not_present() {
 
-        when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
-
         when(callback.getEvent()).thenReturn(Event.RECORD_REMISSION_DECISION);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -79,8 +77,6 @@ class RecordRemissionDecisionStateHandlerTest {
     @ParameterizedTest
     @EnumSource(value = AppealType.class, names = { "EA", "HU", "PA", "EU", "AG" })
     void handling_should_throw_if_remission_decision_is_not_present(AppealType type) {
-
-        when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
 
         when(callback.getEvent()).thenReturn(Event.RECORD_REMISSION_DECISION);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -99,8 +95,6 @@ class RecordRemissionDecisionStateHandlerTest {
     void should_return_appeal_submitted_state_on_remission_approved_for_ea_hu_eu_ag(AppealType type) {
         // and service-request tab should be hidden (no payment to take care of)
         // and markAppealAsPaid should be hidden (no payment to take care of, case state already sorted)
-
-        when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
 
         when(callback.getEvent()).thenReturn(Event.RECORD_REMISSION_DECISION);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -130,8 +124,6 @@ class RecordRemissionDecisionStateHandlerTest {
         // and service-request tab should be hidden (payment is handled offline, waysToPay not yet supporting partial remissions)
         // and markAppealAsPaid should be visible, to allow admins to process offline payments
 
-        when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
-
         when(callback.getEvent()).thenReturn(Event.RECORD_REMISSION_DECISION);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getState()).thenReturn(State.PENDING_PAYMENT);
@@ -158,7 +150,6 @@ class RecordRemissionDecisionStateHandlerTest {
 
     @Test
     void should_return_appeal_submitted_state_on_remission_approved_for_pa() {
-        when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
 
         when(callback.getEvent()).thenReturn(Event.RECORD_REMISSION_DECISION);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -182,8 +173,6 @@ class RecordRemissionDecisionStateHandlerTest {
     void handle_should_return_payment_due_for_remission_rejected(AppealType type, String isAdmin) {
         // and service-request tab should be visible (payment is handled via waysToPay service-request)
         // and markAppealAsPaid should not be visible, (payment handled via waysToPay service-request)
-
-        when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
 
         when(callback.getEvent()).thenReturn(Event.RECORD_REMISSION_DECISION);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -216,8 +205,6 @@ class RecordRemissionDecisionStateHandlerTest {
     @CsvSource({ "EA, YES", "HU, YES", "PA, YES", "EU, YES", "AG, YES", "EA, NO", "HU, NO", "PA, NO", "EU, NO", "AG, NO" })
     void handle_should_leave_payment_status_as_is_if_present_for_remission_rejected(AppealType type, String isAdmin) {
         // payment status gets left alone (e.g. when appeal gets paid for, THEN remissions are requested and decided)
-
-        when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
 
         when(callback.getEvent()).thenReturn(Event.RECORD_REMISSION_DECISION);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -258,8 +245,6 @@ class RecordRemissionDecisionStateHandlerTest {
 
     @Test
     void it_can_handle_callback() {
-
-        when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
 
         for (Event event : Event.values()) {
 

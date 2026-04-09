@@ -1,6 +1,5 @@
 {
   "description": "RIA-3651 Flag case with Set aside - Reheard flag",
-  "launchDarklyKey": "reheard-feature:true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",

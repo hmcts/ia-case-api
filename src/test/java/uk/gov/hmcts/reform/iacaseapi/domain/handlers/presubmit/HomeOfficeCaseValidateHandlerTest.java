@@ -118,7 +118,6 @@ class HomeOfficeCaseValidateHandlerTest {
         nlist.add(new IdValue<>("2", new NationalityFieldValue("VA")));
 
         when(asylumCase.read(APPELLANT_NATIONALITIES)).thenReturn(Optional.of(nlist));
-        when(featureToggler.getValue("home-office-notification-feature", false)).thenReturn(true);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             homeOfficeCaseValidateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -165,7 +164,6 @@ class HomeOfficeCaseValidateHandlerTest {
         nlist.add(new IdValue<>("2", new NationalityFieldValue("VA")));
 
         when(asylumCase.read(APPELLANT_NATIONALITIES)).thenReturn(Optional.of(nlist));
-        when(featureToggler.getValue("home-office-notification-feature", false)).thenReturn(true);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             homeOfficeCaseValidateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -287,7 +285,6 @@ class HomeOfficeCaseValidateHandlerTest {
         nlist.add(new IdValue<>("2", new NationalityFieldValue("VA")));
 
         when(asylumCase.read(APPELLANT_NATIONALITIES)).thenReturn(Optional.of(nlist));
-        when(featureToggler.getValue("home-office-notification-feature", false)).thenReturn(true);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
                 homeOfficeCaseValidateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -352,7 +349,6 @@ class HomeOfficeCaseValidateHandlerTest {
         nlist.add(new IdValue<>("2", new NationalityFieldValue("VA")));
 
         when(asylumCase.read(APPELLANT_NATIONALITIES)).thenReturn(Optional.of(nlist));
-        when(featureToggler.getValue("home-office-notification-feature", false)).thenReturn(true);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
                 homeOfficeCaseValidateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);

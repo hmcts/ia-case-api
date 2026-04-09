@@ -41,8 +41,7 @@ public class RecordRemissionDecisionPreparer implements PreSubmitCallbackHandler
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_START
-            && callback.getEvent() == Event.RECORD_REMISSION_DECISION
-            && featureToggler.getValue("remissions-feature", false);
+            && callback.getEvent() == Event.RECORD_REMISSION_DECISION;
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(

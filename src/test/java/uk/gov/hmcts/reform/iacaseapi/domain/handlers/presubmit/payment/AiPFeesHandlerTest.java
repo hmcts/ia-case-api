@@ -23,7 +23,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeePayment;
@@ -51,7 +50,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HELP_WITH_FEES_OPTION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HELP_WITH_FEES_REF_NUMBER;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ACCELERATED_DETAINED_APPEAL;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_REMISSIONS_ENABLED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOURNEY_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LOCAL_AUTHORITY_LETTERS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PAYMENT_STATUS;
@@ -86,49 +84,6 @@ class AiPFeesHandlerTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = Event.class, names = {"START_APPEAL", "EDIT_APPEAL"})
-    void should_clear_remission_details_and_set_payment_data_when_pa_offline_payment(Event event) {
-
-        when(callback.getEvent()).thenReturn(event);
-        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
-        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.PA));
-        when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
-        when(featureToggler.getValue("remissions-feature", false)).thenReturn(false);
-
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                aiPFeesHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
-
-        assertNotNull(callbackResponse);
-        assertEquals(asylumCase, callbackResponse.getData());
-
-        verify(feePayment, times(1)).aboutToSubmit(callback);
-        verify(asylumCase, times(1)).write(IS_REMISSIONS_ENABLED, YesOrNo.NO);
-        verify(asylumCase, times(1)).write(PAYMENT_STATUS, PaymentStatus.PAYMENT_PENDING);
-
-        verify(asylumCase, times(1)).clear(EA_HU_APPEAL_TYPE_PAYMENT_OPTION);
-        verifyRemissionsDetailsCleared();
-    }
-
-    @Test
-    void should_not_write_payment_status_when_payment_status_is_not_empty() {
-        when(callback.getEvent()).thenReturn(Event.EDIT_APPEAL);
-        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
-        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.PA));
-        when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class))
-                .thenReturn(Optional.of(PaymentStatus.PAYMENT_PENDING));
-
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                aiPFeesHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
-
-        assertNotNull(callbackResponse);
-        assertEquals(asylumCase, callbackResponse.getData());
-
-        verify(feePayment, times(1)).aboutToSubmit(callback);
-        verify(asylumCase, times(1)).write(IS_REMISSIONS_ENABLED, YesOrNo.NO);
-        verify(asylumCase, never()).write(PAYMENT_STATUS, PaymentStatus.PAYMENT_PENDING);
-    }
-
-    @ParameterizedTest
     @EnumSource(value = AppealType.class, names = {"EA", "HU", "EU"})
     void should_clear_remission_data_for_ea_hu_eu_payments(AppealType appealType) {
 
@@ -138,7 +93,6 @@ class AiPFeesHandlerTest {
         when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         when(asylumCase.read(RP_DC_APPEAL_HEARING_OPTION, String.class))
                 .thenReturn(Optional.of("decisionWithoutHearing"));
-        when(featureToggler.getValue("remissions-feature", false)).thenReturn(false);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
                 aiPFeesHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -162,7 +116,6 @@ class AiPFeesHandlerTest {
         when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(asylumCase.read(RP_DC_APPEAL_HEARING_OPTION, String.class))
                 .thenReturn(Optional.of("decisionWithoutHearing"));
-        when(featureToggler.getValue("remissions-feature", false)).thenReturn(false);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
                 aiPFeesHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -188,7 +141,6 @@ class AiPFeesHandlerTest {
         when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         when(asylumCase.read(RP_DC_APPEAL_HEARING_OPTION, String.class))
                 .thenReturn(Optional.of("decisionWithoutHearing"));
-        when(featureToggler.getValue("remissions-feature", false)).thenReturn(false);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
                 aiPFeesHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -214,7 +166,6 @@ class AiPFeesHandlerTest {
         when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         when(asylumCase.read(REMISSION_OPTION, RemissionOption.class))
                 .thenReturn(Optional.of(RemissionOption.FEE_WAIVER_FROM_HOME_OFFICE));
-        when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
                 aiPFeesHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -243,7 +194,6 @@ class AiPFeesHandlerTest {
         when(asylumCase.read(REMISSION_OPTION, RemissionOption.class))
                 .thenReturn(Optional.of(RemissionOption.ASYLUM_SUPPORT_FROM_HOME_OFFICE));
         when(asylumCase.read(ASYLUM_SUPPORT_REF_NUMBER, String.class)).thenReturn(Optional.of("123"));
-        when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
                 aiPFeesHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -271,7 +221,6 @@ class AiPFeesHandlerTest {
         when(asylumCase.read(REMISSION_OPTION, RemissionOption.class))
                 .thenReturn(Optional.of(RemissionOption.ASYLUM_SUPPORT_FROM_HOME_OFFICE));
         when(asylumCase.read(ASYLUM_SUPPORT_REF_NUMBER, String.class)).thenReturn(Optional.empty());
-        when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
                 aiPFeesHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -298,7 +247,6 @@ class AiPFeesHandlerTest {
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.EA));
         when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         when(asylumCase.read(REMISSION_OPTION, RemissionOption.class)).thenReturn(Optional.of(remissionOption));
-        when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
                 aiPFeesHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -332,7 +280,6 @@ class AiPFeesHandlerTest {
                 .thenReturn(Optional.of(helpWithFeesOption));
         when(asylumCase.read(HELP_WITH_FEES_OPTION, HelpWithFeesOption.class))
                 .thenReturn(Optional.of(HelpWithFeesOption.ALREADY_APPLIED));
-        when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
                 aiPFeesHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -369,7 +316,6 @@ class AiPFeesHandlerTest {
         when(asylumCase.read(REMISSION_OPTION, RemissionOption.class))
                 .thenReturn(Optional.of(RemissionOption.NO_REMISSION));
         when(asylumCase.read(HELP_WITH_FEES_OPTION, HelpWithFeesOption.class)).thenReturn(Optional.empty());
-        when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
                 aiPFeesHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);

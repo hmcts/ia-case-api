@@ -1,6 +1,5 @@
 {
   "description": "DIAC-1422 Start Appeal Populates Detention Address - Prison",
-  "launchDarklyKey": "remissions-feature:true",
   "request": {
     "uri": "/asylum/ccdMidEvent?pageId=prisonName",
     "credentials": "LegalRepresentative",

@@ -93,7 +93,7 @@ public class AiPFeesHandler implements PreSubmitCallbackHandler<AsylumCase> {
         }
 
         YesOrNo isRemissionsEnabled
-                = featureToggler.getValue("remissions-feature", false) ? YesOrNo.YES : YesOrNo.NO;
+                = YesOrNo.YES;
         asylumCase.write(IS_REMISSIONS_ENABLED, isRemissionsEnabled);
 
         switch (optionalAppealType.get()) {

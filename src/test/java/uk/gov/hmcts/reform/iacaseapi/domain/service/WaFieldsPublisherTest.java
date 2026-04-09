@@ -42,7 +42,6 @@ class WaFieldsPublisherTest {
     @Test
     void should_write_field_to_asylum_case() {
 
-        when(featureToggler.getValue("publish-wa-fields-feature", false)).thenReturn(true);
         when(featureToggler.getValue("wa-R2-feature", false)).thenReturn(true);
         when(dateProvider.now()).thenReturn(LocalDate.now());
         waFieldsPublisher.addLastModifiedDirection(asylumCase, "explanation", Parties.APPELLANT, "22-05-2022", DirectionTag.REQUEST_RESPONSE_REVIEW, uniqueId, directionType);
@@ -50,16 +49,5 @@ class WaFieldsPublisherTest {
         waFieldsPublisher.addLastModifiedApplication(asylumCase, "Legal representative", "Adjourn",
                 "Some application text", Collections.emptyList(), "Pending", "LISTING", "caseworker-ia-legalrep-solicitor");
         verify(asylumCase).write(eq(AsylumCaseFieldDefinition.LAST_MODIFIED_DIRECTION), any());
-    }
-
-    @Test
-    void should_not_write_field_to_asylum_case_when_flag_is_off() {
-
-        when(featureToggler.getValue("publish-wa-fields-feature", false)).thenReturn(false);
-        when(featureToggler.getValue("wa-R2-feature", false)).thenReturn(false);
-        waFieldsPublisher.addLastModifiedDirection(asylumCase, "explanation", Parties.APPELLANT, "22-05-2022", DirectionTag.REQUEST_RESPONSE_REVIEW, uniqueId, directionType);
-        waFieldsPublisher.addLastModifiedApplication(asylumCase, "Legal representative", "Adjourn",
-                "Some application text", Collections.emptyList(), "Pending", "LISTING", "caseworker-ia-legalrep-solicitor");
-        verifyNoInteractions(asylumCase);
     }
 }

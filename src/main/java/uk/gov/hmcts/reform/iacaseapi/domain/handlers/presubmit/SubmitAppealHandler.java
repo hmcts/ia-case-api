@@ -62,8 +62,7 @@ public class SubmitAppealHandler implements PreSubmitCallbackHandler<AsylumCase>
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-               && callback.getEvent() == Event.SUBMIT_APPEAL
-               && featureToggler.getValue("remissions-feature", false);
+               && callback.getEvent() == Event.SUBMIT_APPEAL;
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(

@@ -1,6 +1,5 @@
 {
   "description": "RIA-3309 sends ho notification for edit case listing event for state finalBundling",
-  "launchDarklyKey": "home-office-notification-feature:true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "AdminOfficer",

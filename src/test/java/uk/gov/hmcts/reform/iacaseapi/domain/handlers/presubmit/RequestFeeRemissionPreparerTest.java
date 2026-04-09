@@ -49,8 +49,6 @@ class RequestFeeRemissionPreparerTest {
     @EnumSource(value = AppealType.class, names = { "EA", "HU", "PA", "EU" })
     void should_handle_if_no_previous_remission_exists(AppealType appealType) {
 
-        when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
-
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(Event.REQUEST_FEE_REMISSION);
@@ -68,8 +66,6 @@ class RequestFeeRemissionPreparerTest {
     @ParameterizedTest
     @EnumSource(value = AppealType.class, names = { "EA", "HU", "PA", "EU" })
     void should_handle_if_previous_remission_exists(AppealType appealType) {
-
-        when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -102,8 +98,6 @@ class RequestFeeRemissionPreparerTest {
     @EnumSource(value = AppealType.class, names = { "EA", "HU", "PA", "EU" })
     void should_handle_if_previous_late_remission_exists(AppealType appealType) {
 
-        when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
-
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(Event.REQUEST_FEE_REMISSION);
@@ -135,8 +129,6 @@ class RequestFeeRemissionPreparerTest {
     @Test
     void handle_should_return_error_if_appeal_type_is_not_present() {
 
-        when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
-
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(Event.REQUEST_FEE_REMISSION);
@@ -150,8 +142,6 @@ class RequestFeeRemissionPreparerTest {
     @ParameterizedTest
     @EnumSource(value = AppealType.class, names = { "DC", "RP" })
     void handle_should_return_error_for_invalid_appeal_types(AppealType appealType) {
-
-        when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -170,8 +160,6 @@ class RequestFeeRemissionPreparerTest {
     @ParameterizedTest
     @EnumSource(value = AppealType.class, names = { "EA", "HU", "PA" })
     void handle_should_return_error_on_previous_remission_exists_and_not_decided(AppealType appealType) {
-
-        when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -193,8 +181,6 @@ class RequestFeeRemissionPreparerTest {
     @ParameterizedTest
     @EnumSource(value = AppealType.class, names = { "EA", "HU", "PA" })
     void handle_should_return_error_if_fee_remission_type_is_not_present(AppealType appealType) {
-
-        when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -219,7 +205,6 @@ class RequestFeeRemissionPreparerTest {
 
     @Test
     void it_can_handle_callback() {
-        when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
 
         for (Event event : Event.values()) {
             when(callback.getCaseDetails()).thenReturn(caseDetails);

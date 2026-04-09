@@ -1,6 +1,5 @@
 {
   "description": "RIA-6661 default detention centre for detained appeals",
-  "launchDarklyKey": "remissions-feature:true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "LegalRepresentative",
