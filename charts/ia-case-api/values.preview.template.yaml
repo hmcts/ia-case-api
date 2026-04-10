@@ -656,7 +656,7 @@ ia-aip-frontend:
   enabled: true
   nodejs:
     imagePullPolicy: Always
-    image: hmctsprod.azurecr.io/ia/aip-frontend:latest
+    image: hmctsprod.azurecr.io/ia/aip-frontend:pr-1436
     ingressHost: ${SERVICE_NAME}-aip-frontend.preview.platform.hmcts.net # override in public facing environments
     applicationPort: 3000
     devcpuRequests: 500m
@@ -685,6 +685,7 @@ ia-aip-frontend:
       SECURE_SESSION: false
       TRACKING_SCRIPTS: false
       TIMELINE_ENABLED: true
+      ASK_FOR_MORE_TIME_ENABLED: true
     keyVaults:
       ia:
         resourceGroup: ia
@@ -826,6 +827,8 @@ xui-webapp:
             alias: mc-s2s-client-secret
           - name: mc-idam-client-secret
             alias: mc-idam-client-secret
+          - name: mc-session-secret
+            alias: mc-session-secret
           - name: system-user-name
             alias: system-user-name
           - name: system-user-password
