@@ -81,11 +81,23 @@ java:
           alias: azure.application-insights.instrumentation-key
         - name: ia-config-validator-secret
           alias: IA_CONFIG_VALIDATOR_SECRET
+        - name: ia-redis-connection-string
+          alias: IA_REDIS_CONNECTION_STRING
+        - name: ia-redis-access-key
+          alias: IA_REDIS_ACCESS_KEY
+        - name: ia-redis-encryption-key
+          alias: IA_REDIS_ENCRYPTION_KEY
   secrets:
     POSTGRES_PASSWORD:
       secretRef: postgres
       key: PASSWORD
       disabled: false
+  redis:
+    enabled: true
+    serviceAccount:
+      create: false
+      name: "iac"
+      automountServiceAccountToken: true
 
 global:
   postgresHostname: "ia-preview.postgres.database.azure.com"
@@ -139,6 +151,12 @@ ia-case-payments-api:
             alias: IA_SYSTEM_PASSWORD
           - name: ia-config-validator-secret
             alias: IA_CONFIG_VALIDATOR_SECRET
+          - name: ia-redis-connection-string
+            alias: IA_REDIS_CONNECTION_STRING
+          - name: ia-redis-access-key
+            alias: IA_REDIS_ACCESS_KEY
+          - name: ia-redis-encryption-key
+            alias: IA_REDIS_ENCRYPTION_KEY
 
 ia-case-documents-api:
   enabled: true #set to true if testing against a local branch
@@ -212,6 +230,12 @@ ia-case-documents-api:
             alias: IA_HEARING_CENTRE_GLASGOW_EMAIL
           - name: app-insights-connection-string
             alias: app-insights-connection-string
+          - name: ia-redis-connection-string
+            alias: IA_REDIS_CONNECTION_STRING
+          - name: ia-redis-access-key
+            alias: IA_REDIS_ACCESS_KEY
+          - name: ia-redis-encryption-key
+            alias: IA_REDIS_ENCRYPTION_KEY
 
 ia-case-notifications-api:
   enabled: true #set to true if testing against a local branch
@@ -415,6 +439,12 @@ ia-case-notifications-api:
             alias: IA_CONFIG_VALIDATOR_SECRET
           - name: ia-det-prison-email-mappings
             alias: IA_DET_PRISON_EMAIL_MAPPINGS
+          - name: ia-redis-connection-string
+            alias: IA_REDIS_CONNECTION_STRING
+          - name: ia-redis-access-key
+            alias: IA_REDIS_ACCESS_KEY
+          - name: ia-redis-encryption-key
+            alias: IA_REDIS_ENCRYPTION_KEY
 
 ia-bail-case-api:
   enabled: true
@@ -471,6 +501,12 @@ ia-bail-case-api:
             alias: azure.application-insights.instrumentation-key
           - name: ia-config-validator-secret
             alias: IA_CONFIG_VALIDATOR_SECRET
+          - name: ia-redis-connection-string
+            alias: IA_REDIS_CONNECTION_STRING
+          - name: ia-redis-access-key
+            alias: IA_REDIS_ACCESS_KEY
+          - name: ia-redis-encryption-key
+            alias: IA_REDIS_ENCRYPTION_KEY
 
 ia-timed-event-service:
   enabled: ${ENABLE_TES}
@@ -522,6 +558,12 @@ ia-timed-event-service:
             alias: app-insights-connection-string
           - name: ia-config-validator-secret
             alias: IA_CONFIG_VALIDATOR_SECRET
+          - name: ia-redis-connection-string
+            alias: IA_REDIS_CONNECTION_STRING
+          - name: ia-redis-access-key
+            alias: IA_REDIS_ACCESS_KEY
+          - name: ia-redis-encryption-key
+            alias: IA_REDIS_ENCRYPTION_KEY
 
 ia-home-office-integration-api:
   enabled: true #set to true if testing against a local branch
@@ -567,6 +609,12 @@ ia-home-office-integration-api:
             alias: IA_SYSTEM_USERNAME
           - name: system-password
             alias: IA_SYSTEM_PASSWORD
+          - name: ia-redis-connection-string
+            alias: IA_REDIS_CONNECTION_STRING
+          - name: ia-redis-access-key
+            alias: IA_REDIS_ACCESS_KEY
+          - name: ia-redis-encryption-key
+            alias: IA_REDIS_ENCRYPTION_KEY
 
 ia-case-access-api:
   enabled: false
@@ -597,6 +645,12 @@ ia-case-access-api:
             alias: IA_CONFIG_VALIDATOR_SECRET
           - name: app-insights-connection-string
             alias: app-insights-connection-string
+          - name: ia-redis-connection-string
+            alias: IA_REDIS_CONNECTION_STRING
+          - name: ia-redis-access-key
+            alias: IA_REDIS_ACCESS_KEY
+          - name: ia-redis-encryption-key
+            alias: IA_REDIS_ENCRYPTION_KEY
 
 ia-aip-frontend:
   enabled: true
@@ -677,6 +731,12 @@ ia-aip-frontend:
             alias: customer-services-telephone
           - name: customer-services-email
             alias: customer-services-email
+          - name: ia-redis-connection-string
+            alias: IA_REDIS_CONNECTION_STRING
+          - name: ia-redis-access-key
+            alias: IA_REDIS_ACCESS_KEY
+          - name: ia-redis-encryption-key
+            alias: IA_REDIS_ENCRYPTION_KEY
   redis:
     enabled: false
     architecture: standalone
