@@ -169,6 +169,7 @@ public enum Event {
     FORCE_FTPA_DECIDED_STATE("forceFtpaDecidedState"),
     ROLLBACK_MIGRATION("rollbackMigration"),
     COMPLETE_CASE_REVIEW("completeCaseReview"),
+    HOME_OFFICE_REFERENCE_DATA("homeOfficeReferenceData"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");
