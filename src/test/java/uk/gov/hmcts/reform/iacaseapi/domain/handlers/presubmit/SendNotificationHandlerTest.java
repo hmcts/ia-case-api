@@ -325,7 +325,9 @@ class SendNotificationHandlerTest {
                         Event.RECORD_REMISSION_REMINDER,
                         Event.MARK_APPEAL_AS_REMITTED,
                         Event.REFUND_CONFIRMATION,
-                        Event.HEARING_CANCELLED
+                        Event.HEARING_CANCELLED,
+                        Event.QUERY_MANAGEMENT_RAISE_QUERY,
+                        Event.QUERY_MANAGEMENT_RESPOND_QUERY
                     ).contains(event)) {
                     assertTrue(canHandle);
                 } else {
