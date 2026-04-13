@@ -25,7 +25,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
@@ -36,13 +35,11 @@ class RequestFeeRemissionPreparerTest {
     @Mock private CaseDetails<AsylumCase> caseDetails;
     @Mock private AsylumCase asylumCase;
 
-    @Mock private FeatureToggler featureToggler;
-
     private RequestFeeRemissionPreparer requestFeeRemissionPreparer;
 
     @BeforeEach
     void setUp() {
-        requestFeeRemissionPreparer = new RequestFeeRemissionPreparer(featureToggler);
+        requestFeeRemissionPreparer = new RequestFeeRemissionPreparer();
     }
 
     @ParameterizedTest

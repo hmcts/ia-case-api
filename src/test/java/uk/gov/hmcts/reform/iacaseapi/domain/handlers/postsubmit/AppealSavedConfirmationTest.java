@@ -27,7 +27,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCall
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ref.OrganisationEntityResponse;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CcdCaseAssignment;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.ProfessionalOrganisationRetriever;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.Organisation;
@@ -42,7 +41,6 @@ class AppealSavedConfirmationTest {
     @Mock ProfessionalOrganisationRetriever professionalOrganisationRetriever;
     @Mock OrganisationEntityResponse organisationEntityResponse;
     @Mock CcdCaseAssignment ccdCaseAssignment;
-    @Mock private FeatureToggler featureToggler;
 
     @Mock private Callback<AsylumCase> callback;
     @Mock private CaseDetails<AsylumCase> caseDetails;
@@ -58,8 +56,7 @@ class AppealSavedConfirmationTest {
 
         appealSavedConfirmation = new AppealSavedConfirmation(
             professionalOrganisationRetriever,
-            ccdCaseAssignment,
-            featureToggler
+            ccdCaseAssignment
         );
 
         organisationPolicy =

@@ -22,7 +22,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.payment.FeesHandler;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeePayment;
 
 import java.util.Arrays;
@@ -71,8 +70,6 @@ class FeesHandlerTest {
     @Mock private Callback<AsylumCase> callback;
     @Mock private CaseDetails<AsylumCase> caseDetails;
     @Mock private AsylumCase asylumCase;
-    @Mock private FeatureToggler featureToggler;
-
 
     private FeesHandler feesHandler;
 
@@ -80,7 +77,7 @@ class FeesHandlerTest {
     public void setUp() {
 
         feesHandler =
-            new FeesHandler(true, feePayment, featureToggler);
+            new FeesHandler(true, feePayment);
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -291,7 +288,7 @@ class FeesHandlerTest {
     void it_cannot_handle_callback_if_feepayment_not_enabled() {
 
         FeesHandler fees =
-            new FeesHandler(true, feePayment, featureToggler);
+            new FeesHandler(true, feePayment);
 
         assertThatThrownBy(
             () -> fees.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
@@ -340,7 +337,7 @@ class FeesHandlerTest {
 
     @Test
     void it_can_handle_callback() {
-        feesHandler = new FeesHandler(true, feePayment, featureToggler);
+        feesHandler = new FeesHandler(true, feePayment);
 
         for (Event event : Event.values()) {
 
@@ -368,7 +365,7 @@ class FeesHandlerTest {
 
     @Test
     void it_cannot_handle_callback_if_feePayment_not_enabled() {
-        feesHandler = new FeesHandler(false, feePayment, featureToggler);
+        feesHandler = new FeesHandler(false, feePayment);
 
         for (Event event : Event.values()) {
             when(callback.getCaseDetails()).thenReturn(caseDetails);

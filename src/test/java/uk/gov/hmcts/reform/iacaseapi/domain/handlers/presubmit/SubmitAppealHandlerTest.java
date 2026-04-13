@@ -17,7 +17,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.RemissionDetailsAppender;
 
 import java.util.Optional;
@@ -51,8 +50,6 @@ class SubmitAppealHandlerTest {
     @Mock private CaseDetails<AsylumCase> caseDetails;
     @Mock private AsylumCase asylumCase;
 
-    @Mock private FeatureToggler featureToggler;
-
     @Mock private Document document;
     @Mock private IdValue<Document> previousDocuments;
 
@@ -62,7 +59,7 @@ class SubmitAppealHandlerTest {
     void setUp() {
         RemissionDetailsAppender remissionDetailsAppender = new RemissionDetailsAppender();
 
-        submitAppealHandler = new SubmitAppealHandler(featureToggler, remissionDetailsAppender);
+        submitAppealHandler = new SubmitAppealHandler(remissionDetailsAppender);
     }
 
     @Test

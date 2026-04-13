@@ -39,7 +39,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeePayment;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -57,15 +56,13 @@ class FeesAndStatusCheckPreparerTest {
     private AsylumCase asylumCase;
     @Mock
     private FeePayment<AsylumCase> feePayment;
-    @Mock
-    private FeatureToggler featureToggler;
     private FeesAndStatusCheckPreparer feesAndStatusCheckPreparer;
 
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
         feesAndStatusCheckPreparer =
-            new FeesAndStatusCheckPreparer(true, featureToggler, feePayment);
+            new FeesAndStatusCheckPreparer(true, feePayment);
     }
 
     private static Stream<Arguments> paymentOptionNotAvailableError() {
@@ -123,7 +120,6 @@ class FeesAndStatusCheckPreparerTest {
         FeesAndStatusCheckPreparer fees =
             new FeesAndStatusCheckPreparer(
                 false,
-                featureToggler,
                 feePayment
             );
 

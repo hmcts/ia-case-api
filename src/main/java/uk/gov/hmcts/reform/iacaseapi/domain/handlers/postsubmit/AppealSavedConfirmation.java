@@ -15,7 +15,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PostSubmitCallbackHandler;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CcdCaseAssignment;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.ProfessionalOrganisationRetriever;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.OrganisationPolicy;
@@ -26,16 +25,13 @@ public class AppealSavedConfirmation implements PostSubmitCallbackHandler<Asylum
 
     private final ProfessionalOrganisationRetriever professionalOrganisationRetriever;
     private final CcdCaseAssignment ccdCaseAssignment;
-    private final FeatureToggler featureToggler;
 
     public AppealSavedConfirmation(
         ProfessionalOrganisationRetriever professionalOrganisationRetriever,
-        CcdCaseAssignment ccdCaseAssignment,
-        FeatureToggler featureToggler
+        CcdCaseAssignment ccdCaseAssignment
     ) {
         this.professionalOrganisationRetriever = professionalOrganisationRetriever;
         this.ccdCaseAssignment = ccdCaseAssignment;
-        this.featureToggler = featureToggler;
     }
 
     public boolean canHandle(

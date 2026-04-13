@@ -24,7 +24,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.fee.Fee;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.payment.FeesHelper;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeeService;
 
 import java.util.ArrayList;
@@ -76,8 +75,6 @@ class ManageFeeUpdateHandlerTest {
     @Mock
     private AsylumCase asylumCase;
     @Mock
-    private FeatureToggler featureToggler;
-    @Mock
     private FeeService feeService;
 
     private ManageFeeUpdateHandler manageFeeUpdateHandler;
@@ -85,7 +82,7 @@ class ManageFeeUpdateHandlerTest {
     @BeforeEach
     void setUp() {
 
-        manageFeeUpdateHandler = new ManageFeeUpdateHandler(featureToggler, feeService);
+        manageFeeUpdateHandler = new ManageFeeUpdateHandler(feeService);
     }
 
     @Test

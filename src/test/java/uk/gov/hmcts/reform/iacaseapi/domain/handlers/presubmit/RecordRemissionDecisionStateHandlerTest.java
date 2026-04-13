@@ -35,7 +35,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeePayment;
 
 @ExtendWith(MockitoExtension.class)
@@ -48,7 +47,6 @@ class RecordRemissionDecisionStateHandlerTest {
     @Mock private Callback<AsylumCase> callback;
     @Mock private PreSubmitCallbackResponse<AsylumCase> callbackResponse;
 
-    @Mock private FeatureToggler featureToggler;
     @Mock private DateProvider dateProvider;
     @Mock private FeePayment feePayment;
 
@@ -58,7 +56,7 @@ class RecordRemissionDecisionStateHandlerTest {
     public void setUp() {
         MockitoAnnotations.openMocks(this);
 
-        recordRemissionDecisionStateHandler = new RecordRemissionDecisionStateHandler(featureToggler, dateProvider, feePayment);
+        recordRemissionDecisionStateHandler = new RecordRemissionDecisionStateHandler(dateProvider, feePayment);
     }
 
     @Test

@@ -45,7 +45,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.RemissionDetailsAppender;
 
 import static java.util.Collections.singletonList;
@@ -61,8 +60,6 @@ class RequestFeeRemissionHandlerTest {
     @Mock private Document document;
     @Mock private IdValue<Document> previousDocuments;
 
-    @Mock private FeatureToggler featureToggler;
-
     @Mock private UserDetails userDetails;
 
     @Mock private UserDetailsHelper userDetailsHelper;
@@ -73,7 +70,7 @@ class RequestFeeRemissionHandlerTest {
     void setUp() {
         RemissionDetailsAppender remissionDetailsAppender = new RemissionDetailsAppender();
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.REP));
-        requestFeeRemissionHandler = new RequestFeeRemissionHandler(featureToggler, remissionDetailsAppender,
+        requestFeeRemissionHandler = new RequestFeeRemissionHandler(remissionDetailsAppender,
             userDetails, userDetailsHelper);
         when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(UserRoleLabel.ADMIN_OFFICER);
     }

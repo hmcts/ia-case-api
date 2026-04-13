@@ -30,7 +30,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.AddressUk;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ref.OrganisationEntityResponse;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.ProfessionalOrganisationRetriever;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.Organisation;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.OrganisationPolicy;
@@ -58,7 +57,6 @@ class LegalRepOrganisationFormatterTest {
     @Mock private Callback<AsylumCase> callback;
     @Mock private CaseDetails<AsylumCase> caseDetails;
     @Mock private AsylumCase asylumCase;
-    @Mock private FeatureToggler featureToggler;
     @Mock
     private org.slf4j.Logger log
             = org.slf4j.LoggerFactory.getLogger(LegalRepOrganisationFormatter.class);
@@ -68,8 +66,7 @@ class LegalRepOrganisationFormatterTest {
     public void setUp() throws Exception {
 
         legalRepOrganisationFormatter = new LegalRepOrganisationFormatter(
-            professionalOrganisationRetriever,
-            featureToggler
+            professionalOrganisationRetriever
         );
 
         organisationPolicy =

@@ -24,7 +24,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeePayment;
 
 import java.util.Optional;
@@ -68,7 +67,6 @@ class AiPFeesHandlerTest {
     @Mock private Callback<AsylumCase> callback;
     @Mock private CaseDetails<AsylumCase> caseDetails;
     @Mock private AsylumCase asylumCase;
-    @Mock private FeatureToggler featureToggler;
 
     private AiPFeesHandler aiPFeesHandler;
 
@@ -76,7 +74,7 @@ class AiPFeesHandlerTest {
     public void setUp() {
 
         aiPFeesHandler =
-                new AiPFeesHandler(true, feePayment, featureToggler);
+                new AiPFeesHandler(true, feePayment);
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -370,7 +368,7 @@ class AiPFeesHandlerTest {
     @ParameterizedTest
     @EnumSource(value = Event.class, names = {"START_APPEAL", "EDIT_APPEAL"})
     void cannot_handle_callback_when_journey_type_is_not_aip(Event event) {
-        aiPFeesHandler = new AiPFeesHandler(true, feePayment, featureToggler);
+        aiPFeesHandler = new AiPFeesHandler(true, feePayment);
         when(callback.getEvent()).thenReturn(event);
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.empty());
 
@@ -380,7 +378,7 @@ class AiPFeesHandlerTest {
     @ParameterizedTest
     @EnumSource(value = Event.class, names = {"START_APPEAL", "EDIT_APPEAL"})
     void cannot_handle_callback_when_fee_payment_feature_flag_is_disabled(Event event) {
-        aiPFeesHandler = new AiPFeesHandler(false, feePayment, featureToggler);
+        aiPFeesHandler = new AiPFeesHandler(false, feePayment);
         when(callback.getEvent()).thenReturn(event);
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
 

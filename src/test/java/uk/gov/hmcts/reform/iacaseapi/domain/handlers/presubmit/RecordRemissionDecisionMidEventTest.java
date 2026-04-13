@@ -32,7 +32,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
@@ -45,16 +44,13 @@ class RecordRemissionDecisionMidEventTest {
     @Mock
     private Callback<AsylumCase> callback;
 
-    @Mock
-    private FeatureToggler featureToggler;
-
     private RecordRemissionDecisionMidEvent recordRemissionDecisionMidEvent;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
 
-        recordRemissionDecisionMidEvent = new RecordRemissionDecisionMidEvent(featureToggler);
+        recordRemissionDecisionMidEvent = new RecordRemissionDecisionMidEvent();
 
     }
 

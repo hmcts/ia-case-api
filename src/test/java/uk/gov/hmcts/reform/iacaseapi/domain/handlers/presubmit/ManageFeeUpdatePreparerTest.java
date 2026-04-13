@@ -36,7 +36,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -50,15 +49,12 @@ class ManageFeeUpdatePreparerTest {
     @Mock
     private AsylumCase asylumCase;
 
-    @Mock
-    private FeatureToggler featureToggler;
-
     private ManageFeeUpdatePreparer manageFeeUpdatePreparer;
 
     @BeforeEach
     void setUp() {
 
-        manageFeeUpdatePreparer = new ManageFeeUpdatePreparer(featureToggler);
+        manageFeeUpdatePreparer = new ManageFeeUpdatePreparer();
     }
 
     @Test

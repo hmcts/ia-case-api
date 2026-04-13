@@ -15,18 +15,13 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
 @Component
 public class RecordRemissionDecisionMidEvent implements PreSubmitCallbackHandler<AsylumCase> {
 
     private static final String GBP = "GBP";
-    private final FeatureToggler featureToggler;
 
-    public RecordRemissionDecisionMidEvent(
-        FeatureToggler featureToggler
-    ) {
-        this.featureToggler = featureToggler;
+    public RecordRemissionDecisionMidEvent() {
     }
 
     public boolean canHandle(
