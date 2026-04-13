@@ -1,5 +1,5 @@
 java:
-  image: 'https://hmctspublic.azurecr.io/ia/case-api:latest'
+  image: 'https://hmctsprod.azurecr.io/ia/case-api:latest'
   ingressHost: ia-case-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
   applicationPort: 8090
   aadIdentityName: ia
@@ -105,7 +105,12 @@ java:
           alias: IA_SYSTEM_ACCESS_USERNAME
         - name: ia-system-access-password
           alias: IA_SYSTEM_ACCESS_PASSWORD
-
+        - name: ia-redis-connection-string
+          alias: IA_REDIS_CONNECTION_STRING
+        - name: ia-redis-access-key
+          alias: IA_REDIS_ACCESS_KEY
+        - name: ia-redis-encryption-key
+          alias: IA_REDIS_ENCRYPTION_KEY
 
 ia-case-payments-api:
   enabled: false

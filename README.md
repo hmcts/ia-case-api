@@ -168,6 +168,9 @@ As the project grows, these tests will take longer and longer to execute but are
 More information about mutation testing can be found here:
 http://pitest.org/ 
 
+#### Deploying to preview skipping static checks for code verification purposes
+To deploy to the Preview environment and skip static checks, sonarScan etc for checking code is working as expected before getting full coverage on new code, you can simply replace `@Library('Infrastructure')` with `@Library('Infrastructure@DTSPO-00000')` in the `Jenkinsfile_CNP` file and then push the changes to your branch. This will trigger a build that will deploy to preview without running static checks. Remember to change it back after verification. 
+
 #### Validate CCD definitions and ia-case-api compatibility
 
 There is a need to check the compatibility of `ia-case-api` Pull Request code changes and existing CCD definitions imported to Production before every release. We can't release changes to `ia-case-api` where, for example, we might be writing to a non-existing case data field. Depending on the event scope, it could block case data progress for a particular event or even for all events.
@@ -282,4 +285,3 @@ If you want to clean up the environment just run:
 ```shell
 npx @hmcts/dev-env@latest --delete
 ```
-
