@@ -13,3 +13,6 @@ spring:
         s2s-microservice: IA_S2S_MICROSERVICE
         AppInsightsInstrumentationKey: azure.application-insights.instrumentation-key
         ia-config-validator-secret: IA_CONFIG_VALIDATOR_SECRET
+        ia-redis-connection-string: IA_REDIS_CONNECTION_STRING
+        ia-redis-access-key: IA_REDIS_ACCESS_KEY
+        ia-redis-encryption-key: IA_REDIS_ENCRYPTION_KEY
