@@ -21,8 +21,10 @@ import static uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.AsylumC
 import static uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.CallbackForTest.CallbackForTestBuilder.callback;
 import static uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.CaseDetailsForTest.CaseDetailsForTestBuilder.someCaseDetailsWith;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_SUBMISSION_DATE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_OUT_OF_COUNTRY;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_FAMILY_NAME;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_GIVEN_NAMES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_IN_DETENTION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_NOTES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STATUTORY_TIMEFRAME_24_WEEKS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STF_24W_CURRENT_REASON_AUTO_GENERATED;
@@ -32,6 +34,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.XUI_BANNER_TEXT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.ADD_STATUTORY_TIMEFRAME_24_WEEKS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.APPEAL_SUBMITTED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.CASE_BUILDING;
 
 class AddStatutoryTimeframe24WeeksTest extends SpringBootIntegrationTest implements WithUserDetailsStub,
         WithRoleAssignmentStub, WithServiceAuthStub {
@@ -156,12 +159,17 @@ class AddStatutoryTimeframe24WeeksTest extends SpringBootIntegrationTest impleme
         PreSubmitCallbackResponseForTest response = iaCaseApiClient.aboutToStart(callback()
             .event(ADD_STATUTORY_TIMEFRAME_24_WEEKS)
             .caseDetails(someCaseDetailsWith()
-                .state(APPEAL_SUBMITTED)
+                .state(CASE_BUILDING)
                 .caseData(anAsylumCase()
-                    .with(APPEAL_SUBMISSION_DATE, APPEAL_SUBMISSION_DATE_STR))));
+                    .with(APPEAL_SUBMISSION_DATE, APPEAL_SUBMISSION_DATE_STR)
+                    .with(APPELLANT_IN_DETENTION, YesOrNo.YES)
+                    .with(APPEAL_OUT_OF_COUNTRY, YesOrNo.YES))));
 
         assertThat(response).isNotNull();
         assertThat(response.getErrors()).contains("This event cannot be run on a case created before 01/05/2026");
+        assertThat(response.getErrors()).contains("This event cannot be run on a detained case");
+        assertThat(response.getErrors()).contains("This event cannot be run on an out of country case");
+        assertThat(response.getErrors()).contains("This event cannot be run on this case");
     }
 
     @Test
@@ -178,7 +186,9 @@ class AddStatutoryTimeframe24WeeksTest extends SpringBootIntegrationTest impleme
             .caseDetails(someCaseDetailsWith()
                 .state(APPEAL_SUBMITTED)
                 .caseData(anAsylumCase()
-                    .with(APPEAL_SUBMISSION_DATE, appealSubmissionDate))));
+                    .with(APPEAL_SUBMISSION_DATE, appealSubmissionDate)
+                    .with(APPELLANT_IN_DETENTION, YesOrNo.NO)
+                    .with(APPEAL_OUT_OF_COUNTRY, YesOrNo.NO))));
 
         assertThat(response).isNotNull();
         assertThat(response.getErrors()).isEmpty();
