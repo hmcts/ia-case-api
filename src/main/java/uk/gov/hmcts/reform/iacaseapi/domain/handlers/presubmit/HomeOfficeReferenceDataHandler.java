@@ -24,7 +24,7 @@ public class HomeOfficeReferenceDataHandler implements PreSubmitCallbackHandler<
 
         return
             callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-            && (callback.getEvent() == HOME_OFFICE_REFERENCE_DATA);
+            && callback.getEvent() == HOME_OFFICE_REFERENCE_DATA;
     }
 
 

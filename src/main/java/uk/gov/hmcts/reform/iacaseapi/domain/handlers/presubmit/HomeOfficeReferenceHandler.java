@@ -50,7 +50,7 @@ public class HomeOfficeReferenceHandler implements PreSubmitCallbackHandler<Asyl
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.MID_EVENT
-                && (callback.getEvent() == Event.START_APPEAL || callback.getEvent() == Event.EDIT_APPEAL)
+                && (callback.getEvent() == Event.START_APPEAL || callback.getEvent() == Event.EDIT_APPEAL || callback.getEvent() == Event.HOME_OFFICE_REFERENCE_DATA)
                 &&
                 (callback.getPageId().equals("homeOfficeReferenceNumber_TEMPORARILY_DISABLED")
                 ||
