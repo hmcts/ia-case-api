@@ -47,7 +47,7 @@ class AddStatutoryTimeframe24WeeksPreStartHandlerTest {
         when(callback.getEvent()).thenReturn(Event.ADD_STATUTORY_TIMEFRAME_24_WEEKS);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(AsylumCaseFieldDefinition.APPEAL_SUBMISSION_DATE))
-            .thenReturn(Optional.of(LocalDate.of(2026, 6, 1).toString()));
+            .thenReturn(Optional.of(LocalDate.of(2026, 5, 1).toString()));
     }
 
     @Test
