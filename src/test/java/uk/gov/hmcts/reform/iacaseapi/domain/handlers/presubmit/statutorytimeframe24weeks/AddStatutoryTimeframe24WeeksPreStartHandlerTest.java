@@ -12,9 +12,11 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
 import java.time.LocalDate;
 import java.util.Optional;
@@ -41,8 +43,11 @@ class AddStatutoryTimeframe24WeeksPreStartHandlerTest {
     @BeforeEach
     public void setUp() {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getCaseDetails().getState()).thenReturn(State.APPEAL_SUBMITTED);
         when(callback.getEvent()).thenReturn(Event.ADD_STATUTORY_TIMEFRAME_24_WEEKS);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(AsylumCaseFieldDefinition.APPEAL_SUBMISSION_DATE))
+            .thenReturn(Optional.of(LocalDate.of(2026, 6, 1).toString()));
     }
 
     @Test
@@ -61,9 +66,6 @@ class AddStatutoryTimeframe24WeeksPreStartHandlerTest {
 
     @Test
     void should_not_return_error_when_submission_is_after_live_date() {
-        when(asylumCase.read(AsylumCaseFieldDefinition.APPEAL_SUBMISSION_DATE))
-            .thenReturn(Optional.of(LocalDate.of(2026, 6, 1).toString()));
-
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             addStatutoryTimeframe24WeeksPreStartHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
@@ -73,6 +75,8 @@ class AddStatutoryTimeframe24WeeksPreStartHandlerTest {
 
     @Test
     void should_return_error_when_tribunal_received_date_is_before_live_date() {
+        when(asylumCase.read(AsylumCaseFieldDefinition.APPEAL_SUBMISSION_DATE))
+            .thenReturn(Optional.empty());
         when(asylumCase.read(AsylumCaseFieldDefinition.TRIBUNAL_RECEIVED_DATE))
             .thenReturn(Optional.of(LocalDate.of(2026, 4, 1).toString()));
 
@@ -95,6 +99,73 @@ class AddStatutoryTimeframe24WeeksPreStartHandlerTest {
 
         final Set<String> errors = callbackResponse.getErrors();
         assertThat(errors).isEmpty();
+    }
+
+    @Test
+    void should_return_error_when_appellant_in_detention() {
+        when(asylumCase.read(AsylumCaseFieldDefinition.APPELLANT_IN_DETENTION, YesOrNo.class))
+            .thenReturn(Optional.of(YesOrNo.YES));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            addStatutoryTimeframe24WeeksPreStartHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        final Set<String> errors = callbackResponse.getErrors();
+        assertThat(errors).isNotEmpty();
+        assertEquals(1, errors.size());
+        assertTrue(errors.contains("This event cannot be run on a detained case"));
+    }
+
+    @Test
+    void should_not_return_error_when_appellant_in_not_detention() {
+        when(asylumCase.read(AsylumCaseFieldDefinition.APPEAL_SUBMISSION_DATE))
+            .thenReturn(Optional.of(LocalDate.of(2026, 6, 1).toString()));
+        when(asylumCase.read(AsylumCaseFieldDefinition.APPELLANT_IN_DETENTION, YesOrNo.class))
+            .thenReturn(Optional.of(YesOrNo.NO));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            addStatutoryTimeframe24WeeksPreStartHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        final Set<String> errors = callbackResponse.getErrors();
+        assertThat(errors).isEmpty();
+    }
+
+    @Test
+    void should_return_error_when_appeal_out_of_country() {
+        when(asylumCase.read(AsylumCaseFieldDefinition.APPEAL_OUT_OF_COUNTRY, YesOrNo.class))
+            .thenReturn(Optional.of(YesOrNo.YES));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            addStatutoryTimeframe24WeeksPreStartHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        final Set<String> errors = callbackResponse.getErrors();
+        assertThat(errors).isNotEmpty();
+        assertEquals(1, errors.size());
+        assertTrue(errors.contains("This event cannot be run on an out of country case"));
+    }
+
+    @Test
+    void should_not_return_error_when_appeal_in_country() {
+        when(asylumCase.read(AsylumCaseFieldDefinition.APPEAL_OUT_OF_COUNTRY, YesOrNo.class))
+            .thenReturn(Optional.of(YesOrNo.NO));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            addStatutoryTimeframe24WeeksPreStartHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        final Set<String> errors = callbackResponse.getErrors();
+        assertThat(errors).isEmpty();
+    }
+
+    @Test
+    void should_return_error_when_state_is_unsupported() {
+        when(callback.getCaseDetails().getState()).thenReturn(State.CASE_BUILDING);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            addStatutoryTimeframe24WeeksPreStartHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        final Set<String> errors = callbackResponse.getErrors();
+        assertThat(errors).isNotEmpty();
+        assertEquals(1, errors.size());
+        assertTrue(errors.contains("This event cannot be run on this case"));
     }
 
     @Test

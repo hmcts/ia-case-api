@@ -224,6 +224,10 @@ public class HandlerUtils {
         return (asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).orElse(NO) == YesOrNo.YES;
     }
 
+    public static boolean isAppealOutOfCountry(AsylumCase asylumCase) {
+        return (asylumCase.read(APPEAL_OUT_OF_COUNTRY, YesOrNo.class)).orElse(NO) == YesOrNo.YES;
+    }
+
     public static boolean isAppellantsRepresentation(AsylumCase asylumCase) {
         return (asylumCase.read(APPELLANTS_REPRESENTATION, YesOrNo.class)).orElse(NO) == YesOrNo.YES;
     }
