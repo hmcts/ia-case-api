@@ -346,7 +346,6 @@ dependencies {
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-cache'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-redis'
     implementation group: 'org.springframework', name: 'spring-context-support'
-    implementation group: 'com.github.ben-manes.caffeine', name: 'caffeine'
     implementation group: 'com.fasterxml.jackson.core', name: 'jackson-core'
     implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind'
     implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310'
