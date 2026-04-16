@@ -496,13 +496,14 @@ class SendNotificationHandlerTest {
         Event.SEND_PIP_TO_NON_LEGAL_REP,
         Event.JOIN_APPEAL_CONFIRMATION,
         Event.NLR_DETAILS_UPDATED,
-        Event.HEARING_CANCELLED
+        Event.HEARING_CANCELLED,
+        Event.REMOVE_STATUTORY_TIMEFRAME_24_WEEKS
     );
 
     private static final List<Event> allowedInternalEventTypes = List.of(
         Event.PROGRESS_MIGRATED_CASE,
         Event.HEARING_CANCELLED,
-        Event.REMOVE_STATUTORY_TIMEFRAME_24_WEEKS
+        Event.REMOVE_STATUTORY_TIMEFRAME_24_WEEKS,
         Event.REINSTATE_APPEAL,
         Event.UPLOAD_ADDITIONAL_EVIDENCE,
         Event.SEND_DIRECTION,
