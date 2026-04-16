@@ -325,7 +325,8 @@ class SendNotificationHandlerTest {
                         Event.RECORD_REMISSION_REMINDER,
                         Event.MARK_APPEAL_AS_REMITTED,
                         Event.REFUND_CONFIRMATION,
-                        Event.HEARING_CANCELLED
+                        Event.HEARING_CANCELLED,
+                        Event.REMOVE_STATUTORY_TIMEFRAME_24_WEEKS
                     ).contains(event)) {
                     assertTrue(canHandle);
                 } else {
@@ -412,7 +413,8 @@ class SendNotificationHandlerTest {
                     Event.SEND_PAYMENT_REMINDER_NOTIFICATION,
                     Event.PROGRESS_MIGRATED_CASE,
                     Event.REFUND_CONFIRMATION,
-                    Event.HEARING_CANCELLED
+                    Event.HEARING_CANCELLED,
+                    Event.REMOVE_STATUTORY_TIMEFRAME_24_WEEKS
                 ).contains(event)) {
                 assertTrue(canHandle);
             } else {
@@ -500,7 +502,8 @@ class SendNotificationHandlerTest {
                         Event.UPDATE_TRIBUNAL_DECISION,
                         Event.SEND_PAYMENT_REMINDER_NOTIFICATION,
                         Event.REFUND_CONFIRMATION,
-                        Event.HEARING_CANCELLED
+                        Event.HEARING_CANCELLED,
+                        Event.REMOVE_STATUTORY_TIMEFRAME_24_WEEKS
                     ).contains(event)) {
                     assertTrue(canHandle);
                 } else {
