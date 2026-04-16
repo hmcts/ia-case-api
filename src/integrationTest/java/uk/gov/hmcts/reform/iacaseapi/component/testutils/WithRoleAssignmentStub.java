@@ -21,4 +21,17 @@ public interface WithRoleAssignmentStub {
                     .build()));
 
     }
+
+    default void addRoleAssignmentQueryStub(WireMockServer server) {
+        server.addStubMapping(
+            new StubMapping(
+                newRequestPattern(RequestMethod.POST, urlMatching("/amRoleAssignment/am/role-assignments/query"))
+                    .build(),
+                aResponse()
+                    .withStatus(200)
+                    .withHeader("Content-Type", "application/json")
+                    .withBody("{\"roleAssignmentResponse\": []}")
+                    .build()));
+
+    }
 }

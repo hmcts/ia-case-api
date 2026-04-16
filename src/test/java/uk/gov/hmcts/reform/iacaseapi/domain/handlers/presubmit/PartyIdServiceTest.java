@@ -211,7 +211,6 @@ class PartyIdServiceTest {
     @Test
     void should_not_set_sponsor_partyId_when_appellant_has_no_sponsor() {
 
-        when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.of(NO));
         when(asylumCase.read(HAS_SPONSOR, YesOrNo.class)).thenReturn(Optional.of(NO));
 
         PartyIdService.setSponsorPartyId(asylumCase);
@@ -223,7 +222,6 @@ class PartyIdServiceTest {
     @Test
     void should_not_set_sponsor_partyId_when_in_country_and_appellant_has_no_sponsor() {
 
-        when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.of(YES));
         when(asylumCase.read(HAS_SPONSOR, YesOrNo.class)).thenReturn(Optional.of(NO));
 
         PartyIdService.setSponsorPartyId(asylumCase);

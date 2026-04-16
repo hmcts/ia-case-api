@@ -171,12 +171,23 @@ public class PreSubmitCallbackController {
         Callback<AsylumCase> callback
     ) {
 
-        log.info(
-            "Asylum Case CCD `{}` event `{}` received for Case ID `{}`",
-            callbackStage,
-            callback.getEvent(),
-            callback.getCaseDetails().getId()
-        );
+        // Log pageId if mid-event
+        if (callbackStage.equals(PreSubmitCallbackStage.MID_EVENT)) {
+            log.info(
+                "Asylum Case CCD `{}` event `{}` received for Case ID `{}` from page ID `{}`",
+                callbackStage,
+                callback.getEvent(),
+                callback.getCaseDetails().getId(),
+                callback.getPageId()
+            );
+        } else {
+            log.info(
+                "Asylum Case CCD `{}` event `{}` received for Case ID `{}`",
+                callbackStage,
+                callback.getEvent(),
+                callback.getCaseDetails().getId()
+            );
+        }
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             callbackDispatcher.handle(callbackStage, callback);
@@ -190,7 +201,6 @@ public class PreSubmitCallbackController {
                 callbackResponse.getErrors()
             );
         } else {
-
             log.info(
                 "Asylum Case CCD `{}` event `{}` handled for Case ID `{}`",
                 callbackStage,

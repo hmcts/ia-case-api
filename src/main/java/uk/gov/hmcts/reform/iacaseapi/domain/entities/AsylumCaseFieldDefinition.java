@@ -33,9 +33,25 @@ public enum AsylumCaseFieldDefinition {
 
     HOME_OFFICE_REFERENCE_NUMBER(
         "homeOfficeReferenceNumber", new TypeReference<String>(){}),
-
+    APPELLANT_CONTACT_PREFERENCE(
+            "appellantContactPreference", new TypeReference<String>(){}),
     HOME_OFFICE_DECISION_DATE(
         "homeOfficeDecisionDate", new TypeReference<String>(){}),
+
+    HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS(
+        "homeOfficeAppellantApiResponseStatus", new TypeReference<HomeOfficeApiResponseStatusType>(){}),
+
+    HOME_OFFICE_APPELLANT_CLAIM_DATE(
+        "homeOfficeAppellantClaimDate", new TypeReference<String>(){}),
+
+    HOME_OFFICE_APPELLANT_DECISION_DATE(
+        "homeOfficeAppellantDecisionDate", new TypeReference<String>() {}),
+
+    HOME_OFFICE_APPELLANT_DECISION_LETTER_DATE(
+        "homeOfficeAppellantDecisionLetterDate", new TypeReference<String>(){}),
+
+    HOME_OFFICE_APPELLANTS(
+        "homeOfficeAppellants", new TypeReference<List<IdValue<HomeOfficeAppellant>>>(){}),
 
     APPELLANT_GIVEN_NAMES(
         "appellantGivenNames", new TypeReference<String>(){}),
@@ -87,9 +103,13 @@ public enum AsylumCaseFieldDefinition {
 
     EMAIL(
         "email", new TypeReference<String>(){}),
+    EMAIL_RETYPE(
+            "emailRetype", new TypeReference<String>(){}),
 
     MOBILE_NUMBER(
         "mobileNumber", new TypeReference<String>(){}),
+    MOBILE_NUMBER_RETYPE(
+            "mobileNumberRetype", new TypeReference<String>(){}),
 
     APPEAL_TYPE(
         "appealType", new TypeReference<AppealType>(){}),
@@ -151,6 +171,11 @@ public enum AsylumCaseFieldDefinition {
 
     SEND_DIRECTION_EXPLANATION(
         "sendDirectionExplanation", new TypeReference<String>(){}),
+
+    END_APPEAL_OUTCOME(
+            "endAppealOutcome", new TypeReference<String>(){}),
+    END_APPEAL_OUTCOME_REASON(
+            "endAppealOutcomeReason", new TypeReference<String>(){}),
 
     SEND_DIRECTION_PARTIES(
         "sendDirectionParties", new TypeReference<Parties>(){}),
@@ -432,6 +457,9 @@ public enum AsylumCaseFieldDefinition {
     UPLOAD_THE_NOTICE_OF_DECISION_DOCS(
         "uploadTheNoticeOfDecisionDocs", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
 
+    UPLOAD_THE_NOTICE_OF_DECISION_DOCS_REHYDRATED(
+            "uploadRehydratedNod", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
+
     UPLOAD_THE_APPEAL_FORM_DOCS(
         "uploadTheAppealFormDocs", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
 
@@ -512,6 +540,10 @@ public enum AsylumCaseFieldDefinition {
 
     LEGAL_REP_MOBILE_PHONE_NUMBER(
             "legalRepMobilePhoneNumber", new TypeReference<String>(){}),
+    LEGAL_REPRESENTATIVE_DETAILS(
+            "legalRepresentativeDetails", new TypeReference<String>(){}),
+    DETENTION_REMOVAL_APPELLANT_CONTACT_PREFERENCE(
+            "detentionRemoval_appellantContactPreference", new TypeReference<String>(){}),
 
     CHANGE_DIRECTION_DUE_DATE_ACTION_AVAILABLE(
         "changeDirectionDueDateActionAvailable", new TypeReference<YesOrNo>(){}),
@@ -1348,6 +1380,9 @@ public enum AsylumCaseFieldDefinition {
     FEE_WITHOUT_HEARING(
         "feeWithoutHearing", new TypeReference<String>(){}),
 
+    DATES_TO_AVOID_YES_NO(
+        "datesToAvoidYesNo", new TypeReference<YesOrNo>(){}),
+
     DATES_TO_AVOID(
         "datesToAvoid", new TypeReference<List<IdValue<DatesToAvoid>>>(){}),
 
@@ -1600,7 +1635,7 @@ public enum AsylumCaseFieldDefinition {
     SCHEDULE_OF_ISSUES_AGREEMENT(
         "scheduleOfIssuesAgreement", new TypeReference<YesOrNo>() {}),
 
-   SCHEDULE_OF_ISSUES_DISAGREEMENT_DESCRIPTION(
+    SCHEDULE_OF_ISSUES_DISAGREEMENT_DESCRIPTION(
         "scheduleOfIssuesDisagreementDescription", new TypeReference<String>(){}),
 
     ANONYMITY_ORDER(
@@ -1632,6 +1667,9 @@ public enum AsylumCaseFieldDefinition {
 
     LATE_REMISSION_TYPE(
         "lateRemissionType", new TypeReference<RemissionType>(){}),
+
+    HAS_PREVIOUS_REMISSION(
+        "hasPreviousRemission", new TypeReference<YesOrNo>(){}),
 
     REMISSION_CLAIM(
         "remissionClaim", new TypeReference<String>(){}),
@@ -1952,10 +1990,10 @@ public enum AsylumCaseFieldDefinition {
         "otherDetentionFacilityName", new TypeReference<OtherDetentionFacilityName>(){}),
 
     CUSTODIAL_SENTENCE(
-        "custodialSentence", new TypeReference<YesOrNo>(){}),
+        "releaseDateProvided", new TypeReference<YesOrNo>(){}),
 
     DATE_CUSTODIAL_SENTENCE(
-        "dateCustodialSentence", new TypeReference<CustodialSentenceDate>(){}),
+        "releaseDate", new TypeReference<CustodialSentenceDate>(){}),
 
     DATE_CUSTODIAL_SENTENCE_AO(
         "dateCustodialSentenceAo", new TypeReference<CustodialSentenceDate>(){}),
@@ -2409,6 +2447,9 @@ public enum AsylumCaseFieldDefinition {
     UPPER_TRIBUNAL_REFERENCE_NUMBER(
         "upperTribunalReferenceNumber", new TypeReference<String>() {}),
 
+    IS_REHYDRATED_APPEAL(
+        "isRehydratedAppeal", new TypeReference<YesOrNo>() {}),
+
     IS_EJP(
         "isEjp", new TypeReference<YesOrNo>() {}),
 
@@ -2760,7 +2801,7 @@ public enum AsylumCaseFieldDefinition {
     OOC_ADDRESS_LINE_3(
         "oocAddressLine3", new TypeReference<String>(){}),
 
-   FEE_UPDATE_TRIBUNAL_ACTION(
+    FEE_UPDATE_TRIBUNAL_ACTION(
            "feeUpdateTribunalAction", new TypeReference<FeeTribunalAction>(){}),
 
     AUTOMATIC_REMISSION_REMINDER_LEGAL_REP(
@@ -2830,12 +2871,65 @@ public enum AsylumCaseFieldDefinition {
     HEARING_ID_LIST(
             "hearingIdList", new TypeReference<List<IdValue<String>>>(){}),
 
-    REMOVE_CASE_MANAGER_CASE_ID_LIST(
-        "removeCaseManagerCaseIdList", new TypeReference<String>() {}),
+    CASE_ID_LIST(
+        "caseIdList", new TypeReference<String>() {}),
 
     HEARING_DECISION_LIST(
             "hearingDecisionList", new TypeReference<List<IdValue<HearingDecision>>>(){}),
 
+    REMISSION_REQUESTED_BY(
+        "remissionRequestedBy", new TypeReference<UserRoleLabel>(){}),
+  
+    GENERATE_LIST_CMR_TASK_REQUESTED(
+            "generateListCmrTaskRequested", new TypeReference<YesOrNo>(){}),
+
+    DETENTION_BUILDING(
+          "detentionBuilding", new TypeReference<String>(){}),
+
+    DETENTION_ADDRESS_LINES(
+          "detentionAddressLines", new TypeReference<String>(){}),
+
+    DETENTION_POSTCODE(
+          "detentionPostcode", new TypeReference<String>(){}),
+
+    DETENTION_REMOVAL_DATE("detentionRemovalDate",
+            new TypeReference<String>(){}),
+
+    DETENTION_REMOVAL_REASON("detentionRemovalReason",
+            new TypeReference<String>(){}),
+
+    REASON_APPELLANT_WAS_DETAINED("addReasonAppellantWasDetained",
+            new TypeReference<String>(){}),
+
+    APPELLANT_DETAINED_DATE("appellantDetainedDate",
+            new TypeReference<String>(){}),
+
+    STATUTORY_TIMEFRAME_24_WEEKS(
+      "statutoryTimeframe24Weeks", new TypeReference<StatutoryTimeframe24Weeks>(){}),
+
+    STF_24W_CURRENT_REASON_AUTO_GENERATED(
+        "stf24wCurrentReasonAutoGenerated", new TypeReference<String>(){}),
+
+    STF_24W_CURRENT_STATUS_AUTO_GENERATED(
+            "stf24wCurrentStatusAutoGenerated", new TypeReference<YesOrNo>(){}),
+
+    STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED(
+            "stf24wPreviousStatusWasYesAutoGenerated", new TypeReference<YesOrNo>(){}),
+
+    SAVE_NOTIFICATIONS_TO_DATA_DATE(
+        "saveNotificationsToDataDate", new TypeReference<String>(){}),
+
+    XUI_BANNER_TEXT(
+            "xuiBannerText", new TypeReference<String>(){}),
+  
+    HAS_BEEN_DECIDED("hasBeenDecided",
+        new TypeReference<YesOrNo>(){}),
+
+    HAS_BEEN_FTPA_DECIDED("hasBeenFtpaDecided",
+        new TypeReference<YesOrNo>(){}),
+
+    COMPLETE_CASE_REVIEW_DATE("completeCaseReviewDate",
+        new TypeReference<String>(){})
     ;
 
     private final String value;

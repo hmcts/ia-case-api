@@ -20,6 +20,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.Scheduler;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.TimedEvent;
 
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isNotificationTurnedOff;
+
 @Component
 public class AutomaticPaymentReminderRemissionLegalRepTrigger implements PreSubmitCallbackHandler<AsylumCase> {
     private final DateProvider dateProvider;
@@ -61,7 +63,7 @@ public class AutomaticPaymentReminderRemissionLegalRepTrigger implements PreSubm
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
-        if (isRejectedOrPartiallyApproved(asylumCase)) {
+        if (isRejectedOrPartiallyApproved(asylumCase) && !isNotificationTurnedOff(asylumCase)) {
             ZonedDateTime scheduledDate = ZonedDateTime.of(dateProvider.nowWithTime(), ZoneId.systemDefault()).plusMinutes(schedule7DaysInMinutes);
 
             TimedEvent timedEvent = scheduler.schedule(

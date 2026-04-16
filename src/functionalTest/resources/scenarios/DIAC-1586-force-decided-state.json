@@ -1,0 +1,34 @@
+{
+  "description": "DIAC-1586 Force decided state",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "AdminOfficer",
+    "input": {
+      "eventId": "forceDecidedState",
+      "state": "paymentPending",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "isAdmin": "Yes",
+          "sourceOfAppeal": "rehydratedAppeal",
+          "isRehydratedAppeal": "Yes",
+          "appellantInUk": "Yes",
+          "isAcceleratedDetainedAppeal": "No",
+          "isDecisionAllowed": "allowed"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "state": "decided",
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "appealDecision": "Allowed",
+        "sendDirectionActionAvailable": "No"
+      }
+    }
+  }
+}

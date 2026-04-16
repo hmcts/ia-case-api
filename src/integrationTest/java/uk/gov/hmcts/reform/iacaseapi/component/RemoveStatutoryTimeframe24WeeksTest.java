@@ -1,0 +1,85 @@
+package uk.gov.hmcts.reform.iacaseapi.component;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.security.test.context.support.WithMockUser;
+import uk.gov.hmcts.reform.iacaseapi.component.testutils.SpringBootIntegrationTest;
+import uk.gov.hmcts.reform.iacaseapi.component.testutils.WithNotificationsApiStub;
+import uk.gov.hmcts.reform.iacaseapi.component.testutils.WithRoleAssignmentStub;
+import uk.gov.hmcts.reform.iacaseapi.component.testutils.WithServiceAuthStub;
+import uk.gov.hmcts.reform.iacaseapi.component.testutils.WithUserDetailsStub;
+import uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.PreSubmitCallbackResponseForTest;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseNote;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.StatutoryTimeframe24Weeks;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.StatutoryTimeframe24WeeksHistory;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+
+import java.util.List;
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.AsylumCaseForTest.anAsylumCase;
+import static uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.CallbackForTest.CallbackForTestBuilder.callback;
+import static uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.CaseDetailsForTest.CaseDetailsForTestBuilder.someCaseDetailsWith;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_SUBMISSION_DATE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_FAMILY_NAME;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_GIVEN_NAMES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_NOTES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STATUTORY_TIMEFRAME_24_WEEKS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STF_24W_CURRENT_REASON_AUTO_GENERATED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STF_24W_CURRENT_STATUS_AUTO_GENERATED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.XUI_BANNER_TEXT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.REMOVE_STATUTORY_TIMEFRAME_24_WEEKS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.APPEAL_SUBMITTED;
+
+class RemoveStatutoryTimeframe24WeeksTest extends SpringBootIntegrationTest implements WithUserDetailsStub,
+        WithRoleAssignmentStub, WithServiceAuthStub, WithNotificationsApiStub {
+
+    private static final String APPEAL_SUBMISSION_DATE_STR = "2025-12-10";
+    private static final String BANNER_TEXT = "some text 24 Week STF (27 May 2026)";
+
+    @Test
+    @WithMockUser(authorities = {"caseworker-ia-iacjudge"})
+    void removes_a_statutory_timeframe_24_weeks() {
+        addCaseWorkerUserDetailsStub(server);
+        addServiceAuthStub(server);
+        addRoleAssignmentQueryStub(server);
+        addNotificationsApiTransformerStub(server);
+        String reason = "some reason";
+        PreSubmitCallbackResponseForTest response = iaCaseApiClient.aboutToSubmit(callback()
+                .event(REMOVE_STATUTORY_TIMEFRAME_24_WEEKS)
+                .caseDetails(someCaseDetailsWith()
+                        .state(APPEAL_SUBMITTED)
+                        .caseData(anAsylumCase()
+                                .with(STF_24W_CURRENT_REASON_AUTO_GENERATED, reason)
+                                .with(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.YES)
+                                .with(STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED, YesOrNo.YES)
+                                .with(APPEAL_SUBMISSION_DATE, APPEAL_SUBMISSION_DATE_STR)
+                                .with(XUI_BANNER_TEXT, BANNER_TEXT)
+                                .with(APPELLANT_GIVEN_NAMES, "some-given-name")
+                                .with(APPELLANT_FAMILY_NAME, "some-family-name"))));
+
+        Optional<List<IdValue<CaseNote>>> caseNotes = response.getAsylumCase().read(CASE_NOTES);
+
+        CaseNote caseNote = caseNotes.get().get(0).getValue();
+
+        assertThat(caseNotes.get()).hasSize(1);
+        assertThat(caseNote.getUser()).isEqualTo("Case Officer");
+        assertThat(caseNote.getCaseNoteSubject()).isEqualTo("Setting statutory timeframe 24 weeks to - No");
+        assertThat(caseNote.getCaseNoteDescription()).isEqualTo(reason);
+
+        Optional<StatutoryTimeframe24Weeks> statutoryTimeframe24Weeks = response.getAsylumCase().read(STATUTORY_TIMEFRAME_24_WEEKS);
+        List<IdValue<StatutoryTimeframe24WeeksHistory>> statutoryTimeframe24WeekHistory = statutoryTimeframe24Weeks.get().getHistory();
+
+        assertThat(statutoryTimeframe24WeekHistory).hasSize(1);
+        assertThat(statutoryTimeframe24WeekHistory.get(0).getValue().getUser()).isEqualTo("Case Officer");
+        assertThat(statutoryTimeframe24WeekHistory.get(0).getValue().getStatus()).isEqualTo(YesOrNo.NO);
+        assertThat(statutoryTimeframe24WeekHistory.get(0).getValue().getReason()).isEqualTo(reason);
+
+        assertThat(response.getAsylumCase().read(XUI_BANNER_TEXT).get()).isEqualTo("some text");
+        assertThat(response.getAsylumCase().read(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class).get()).isEqualTo(YesOrNo.NO);
+        assertThat(response.getAsylumCase().read(STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED, YesOrNo.class).get()).isEqualTo(YesOrNo.YES);
+
+    }
+}

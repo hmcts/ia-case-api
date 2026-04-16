@@ -1,0 +1,46 @@
+{
+  "description": "DIAC-1539 Start appeal case for rehydrated appeal flow",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "AdminOfficer",
+    "input": {
+      "eventId": "startAppeal",
+      "state": "appealStartedByAdmin",
+      "caseData": {
+        "template": "minimal-appeal-started.json",
+        "replacements": {
+          "isAdmin": "Yes",
+          "isEjp": "No",
+          "isNabaEnabled": "Yes",
+          "sourceOfAppeal": "rehydratedAppeal",
+          "appellantInDetention": "Yes",
+          "detentionFacility": "immigrationRemovalCentre",
+          "ircName": "Brookhouse",
+          "appellantInUk": "Yes",
+          "appealReferenceNumber": "DRAFT",
+          "isAcceleratedDetainedAppeal": "No"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-started.json",
+      "replacements": {
+        "isAdmin": "Yes",
+        "isNabaEnabled": "Yes",
+        "sourceOfAppeal": "rehydratedAppeal",
+        "appellantInDetention": "Yes",
+        "detentionFacility": "immigrationRemovalCentre",
+        "ircName": "Brookhouse",
+        "appellantInUk": "Yes",
+        "appealReferenceNumber": "DRAFT",
+        "isAcceleratedDetainedAppeal": "No",
+        "isRehydratedAppeal": "Yes",
+        "isNotificationTurnedOff": "Yes"
+      }
+    }
+  }
+}

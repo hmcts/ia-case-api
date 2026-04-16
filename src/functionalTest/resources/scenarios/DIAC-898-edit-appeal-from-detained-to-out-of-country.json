@@ -1,0 +1,36 @@
+{
+  "description": "DIAC-898 When detained appeal feature active, clears detained fields",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "LegalRepresentative",
+    "input": {
+      "eventId": "editAppeal",
+      "state": "appealStarted",
+      "caseData": {
+        "template": "minimal-appeal-started.json",
+        "replacements": {
+          "appellantInUk": "No",
+          "removalOrderOptions": "Yes",
+          "removalOrderDate": "some date",
+          "dateCustodialSentence": {
+            "custodialDate": "2023-03-28"
+          }
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-started.json",
+      "replacements": {
+        "appellantInUk": "No",
+        "removalOrderOptions": null,
+        "removalOrderDate": null,
+        "dateCustodialSentence": null,
+        "appellantHasFixedAddress": null
+      }
+    }
+  }
+}

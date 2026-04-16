@@ -63,7 +63,7 @@ class UserDetailsRequestScopeTest extends SpringBootIntegrationTest implements W
 
         addServiceAuthStub(server);
         addNotificationsApiTransformerStub(server);
-        addRoleAssignmentActorStub(server);
+        addRoleAssignmentQueryStub(server);
 
         iaCaseApiClient.aboutToSubmit(
             callback()

@@ -10,7 +10,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MAKE_AN_APPLICATION_FIELDS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MANUAL_CANCEL_HEARINGS_REQUIRED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationDecision.GRANTED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.CHANGE_HEARING_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.CHANGE_DECISION_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.DECISION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.FINAL_BUNDLING;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.LISTING;
@@ -170,7 +170,7 @@ public class DecideAnApplicationHandler implements PreSubmitCallbackHandler<Asyl
 
     private boolean isHearingDeletionNecessary(MakeAnApplication makeAnApplication, State state) {
 
-        return makeAnApplication.getType().equals(CHANGE_HEARING_TYPE.toString())
+        return makeAnApplication.getType().equals(CHANGE_DECISION_TYPE.toString())
                && makeAnApplication.getDecision().equals(GRANTED.toString())
                && STATES_FOR_HEARING_CANCELLATION.contains(state);
     }

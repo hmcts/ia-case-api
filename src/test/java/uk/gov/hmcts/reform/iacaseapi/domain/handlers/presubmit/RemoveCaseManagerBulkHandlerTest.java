@@ -9,7 +9,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMOVE_CASE_MANAGER_CASE_ID_LIST;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_ID_LIST;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.REMOVE_CASE_MANAGER_BULK;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
@@ -101,9 +101,9 @@ public class RemoveCaseManagerBulkHandlerTest {
 
     @Test
     void should_remove_case_manager_role() {
-        String removeCaseManageCaseIdList = "123,456,789";
-        when(asylumCase.read(REMOVE_CASE_MANAGER_CASE_ID_LIST, String.class))
-            .thenReturn(Optional.of(removeCaseManageCaseIdList));
+        String caseIdList = "123,456,789";
+        when(asylumCase.read(CASE_ID_LIST, String.class))
+            .thenReturn(Optional.of(caseIdList));
         PreSubmitCallbackResponse<AsylumCase> response =
             removeCaseManagerBulkHandler.handle(ABOUT_TO_SUBMIT, callback);
         assertNotNull(response);
@@ -114,7 +114,7 @@ public class RemoveCaseManagerBulkHandlerTest {
         assertEquals("123", capturedCaseIds.get(0));
         assertEquals("456", capturedCaseIds.get(1));
         assertEquals("789", capturedCaseIds.get(2));
-        verify(asylumCase).clear(REMOVE_CASE_MANAGER_CASE_ID_LIST);
+        verify(asylumCase).clear(CASE_ID_LIST);
     }
 
 }

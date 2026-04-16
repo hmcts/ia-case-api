@@ -6,14 +6,17 @@ import com.google.common.collect.ImmutableSet;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import lombok.Getter;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseData;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 
 public class PreSubmitCallbackResponse<T extends CaseData> {
 
+    @Getter
     private T data;
-    private Set<String> errors = new LinkedHashSet<>();
+    private final Set<String> errors = new LinkedHashSet<>();
 
+    @Getter
     private State state;
 
     private PreSubmitCallbackResponse() {
@@ -36,12 +39,13 @@ public class PreSubmitCallbackResponse<T extends CaseData> {
         this.state = state;
     }
 
-    public T getData() {
-        return data;
-    }
-
     public void addError(String error) {
         this.errors.add(error);
+    }
+
+    public PreSubmitCallbackResponse<T> withError(String error) {
+        this.errors.add(error);
+        return this;
     }
 
     public void addErrors(Collection<String> errors) {
@@ -56,9 +60,4 @@ public class PreSubmitCallbackResponse<T extends CaseData> {
         requireNonNull(data);
         this.data = data;
     }
-
-    public State getState() {
-        return state;
-    }
-
 }

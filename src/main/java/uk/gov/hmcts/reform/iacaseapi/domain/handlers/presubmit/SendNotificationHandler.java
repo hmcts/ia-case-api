@@ -166,7 +166,9 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
             Event.UPDATE_TRIBUNAL_DECISION,
             Event.RECORD_REMISSION_REMINDER,
             Event.MARK_APPEAL_AS_REMITTED,
-            Event.REFUND_CONFIRMATION
+            Event.REFUND_CONFIRMATION,
+            Event.HEARING_CANCELLED,
+            Event.REMOVE_STATUTORY_TIMEFRAME_24_WEEKS
         );
         if (!isSaveAndContinueEnabled) {
             eventsToHandle.add(Event.BUILD_CASE);
@@ -206,6 +208,7 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
             Event.APPLY_FOR_FTPA_APPELLANT,
             Event.APPLY_FOR_FTPA_RESPONDENT,
             Event.REMOVE_DETAINED_STATUS,
+            Event.MARK_APPEAL_AS_DETAINED,
             Event.REINSTATE_APPEAL,
             Event.RECORD_OUT_OF_TIME_DECISION,
             Event.END_APPEAL,
@@ -251,7 +254,9 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
             Event.UPDATE_TRIBUNAL_DECISION,
             Event.SEND_PAYMENT_REMINDER_NOTIFICATION,
             Event.PROGRESS_MIGRATED_CASE,
-            Event.REFUND_CONFIRMATION
+            Event.REFUND_CONFIRMATION,
+            Event.HEARING_CANCELLED,
+            Event.REMOVE_STATUTORY_TIMEFRAME_24_WEEKS
         );
 
         if (!isSaveAndContinueEnabled) {
@@ -270,8 +275,6 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
         if (notifyHomeOfficeOnEditCaseListingEvent(callback)) {
             eventsToHandle.add(Event.EDIT_CASE_LISTING);
         }
-
-        log.info("-----------getInternalEventsToHandle {}", eventsToHandle);
 
         return eventsToHandle;
     }

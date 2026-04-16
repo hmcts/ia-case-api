@@ -1,0 +1,33 @@
+{
+  "description": "DIAC-1119: CMR for a detained appeal RP and PA - successful submission for PA appeal",
+  "enabled": true,
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "CaseOfficer",
+    "input": {
+      "eventId": "generateListCmrTask",
+      "state": "appealSubmitted",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "appealType": "protection",
+          "appellantInDetention": "Yes",
+          "homeOfficeSearchStatus": "SUCCESS"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "appealType": "protection",
+        "appellantInDetention": "Yes",
+        "homeOfficeSearchStatus": "SUCCESS",
+        "generateListCmrTaskRequested": "Yes"
+      }
+    }
+  }
+} 

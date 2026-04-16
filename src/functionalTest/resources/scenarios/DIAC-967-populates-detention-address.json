@@ -1,0 +1,31 @@
+{
+  "description": "DIAC-967-updates-detention-address",
+  "request": {
+    "uri": "/asylum/ccdMidEvent?pageId=ircName",
+    "credentials": "AdminOfficer",
+    "input": {
+      "eventId": "updateDetentionLocation",
+      "state": "appealSubmitted",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "appellantInDetention": "Yes",
+          "detentionFacility": "immigrationRemovalCentre",
+          "ircName": "Harmondsworth"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "detentionBuilding": "Harmondsworth IRC",
+        "detentionAddressLines": "Colnbrook-by-pass, Harmondsworth, West Drayton, Middlesex",
+        "detentionPostcode": "UB7 0HB"
+      }
+    }
+  }
+}

@@ -111,6 +111,12 @@ public class UpdateHearingRequirementsHandler extends WitnessHandler
             InterpreterLanguagesUtils.sanitizeWitnessLanguageComplexType(asylumCase);
         }
 
+        final YesOrNo datesToAvoidYesNo = asylumCase.read(DATES_TO_AVOID_YES_NO, YesOrNo.class)
+                .orElse(YesOrNo.NO);
+        if (datesToAvoidYesNo == YesOrNo.NO) {
+            asylumCase.clear(DATES_TO_AVOID);
+        }
+
         asylumCase.write(DISABLE_OVERVIEW_PAGE, YES);
         asylumCase.write(CURRENT_CASE_STATE_VISIBLE_TO_CASE_OFFICER, State.UNKNOWN);
         asylumCase.write(UPDATE_HEARING_REQUIREMENTS_EXISTS, YES);

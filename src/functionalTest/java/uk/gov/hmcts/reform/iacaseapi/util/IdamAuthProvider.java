@@ -8,6 +8,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.IdamService;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.IdamApi;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.idam.Token;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.idam.UserInfo;
@@ -32,6 +33,9 @@ public class IdamAuthProvider {
     @Autowired
     private IdamApi idamApi;
 
+    @Autowired
+    private IdamService idamService;
+
     public String getUserToken(String username, String password) {
 
         MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
@@ -50,7 +54,7 @@ public class IdamAuthProvider {
         }
     }
 
-    @Cacheable(value = "legalRepATokenCache")
+    @Cacheable(value = "legalRepATokenCache", key = "'legalRepATokenCache'")
     public String getLegalRepToken() {
         return getUserToken(
             System.getenv("TEST_LAW_FIRM_A_USERNAME"),
@@ -58,7 +62,7 @@ public class IdamAuthProvider {
         );
     }
 
-    @Cacheable(value = "caseOfficerTokenCache")
+    @Cacheable(value = "caseOfficerTokenCache", key = "'caseOfficerTokenCache'")
     public String getCaseOfficerToken() {
         return getUserToken(
             System.getenv("TEST_CASEOFFICER_USERNAME"),
@@ -66,7 +70,7 @@ public class IdamAuthProvider {
         );
     }
 
-    @Cacheable(value = "adminOfficerTokenCache")
+    @Cacheable(value = "adminOfficerTokenCache", key = "'adminOfficerTokenCache'")
     public String getAdminOfficerToken() {
         return getUserToken(
             System.getenv("TEST_ADMINOFFICER_USERNAME"),
@@ -74,7 +78,7 @@ public class IdamAuthProvider {
         );
     }
 
-    @Cacheable(value = "homeOfficeApcTokenCache")
+    @Cacheable(value = "homeOfficeApcTokenCache", key = "'homeOfficeApcTokenCache'")
     public String getHomeOfficeApcToken() {
         return getUserToken(
             System.getenv("TEST_HOMEOFFICE_APC_USERNAME"),
@@ -82,7 +86,7 @@ public class IdamAuthProvider {
         );
     }
 
-    @Cacheable(value = "homeOfficeLartTokenCache")
+    @Cacheable(value = "homeOfficeLartTokenCache", key = "'homeOfficeLartTokenCache'")
     public String getHomeOfficeLartToken() {
         return getUserToken(
             System.getenv("TEST_HOMEOFFICE_LART_USERNAME"),
@@ -90,7 +94,7 @@ public class IdamAuthProvider {
         );
     }
 
-    @Cacheable(value = "homeOfficePouTokenCache")
+    @Cacheable(value = "homeOfficePouTokenCache", key = "'homeOfficePouTokenCache'")
     public String getHomeOfficePouToken() {
         return getUserToken(
             System.getenv("TEST_HOMEOFFICE_POU_USERNAME"),
@@ -98,7 +102,7 @@ public class IdamAuthProvider {
         );
     }
 
-    @Cacheable(value = "homeOfficeGenericTokenCache")
+    @Cacheable(value = "homeOfficeGenericTokenCache", key = "'homeOfficeGenericTokenCache'")
     public String getHomeOfficeGenericToken() {
         return getUserToken(
             System.getenv("TEST_HOMEOFFICE_GENERIC_USERNAME"),
@@ -106,7 +110,7 @@ public class IdamAuthProvider {
         );
     }
 
-    @Cacheable(value = "legalRepShareCaseATokenCache")
+    @Cacheable(value = "legalRepShareCaseATokenCache", key = "'legalRepShareCaseATokenCache'")
     public String getLegalRepShareCaseAToken() {
         return getUserToken(
             System.getenv("TEST_LAW_FIRM_SHARE_CASE_A_USERNAME"),
@@ -114,7 +118,7 @@ public class IdamAuthProvider {
         );
     }
 
-    @Cacheable(value = "legalRepOrgSuccessTokenCache")
+    @Cacheable(value = "legalRepOrgSuccessTokenCache", key = "'legalRepOrgSuccessTokenCache'")
     public String getLegalRepOrgSuccessToken() {
         return getUserToken(
             System.getenv("TEST_LAW_FIRM_ORG_SUCCESS_USERNAME"),
@@ -122,7 +126,7 @@ public class IdamAuthProvider {
         );
     }
 
-    @Cacheable(value = "legalRepOrgDeletedTokenCache")
+    @Cacheable(value = "legalRepOrgDeletedTokenCache", key = "'legalRepOrgDeletedTokenCache'")
     public String getLegalRepOrgDeletedToken() {
         return getUserToken(
             System.getenv("TEST_LAW_FIRM_ORG_DELETED_USERNAME"),
@@ -130,7 +134,7 @@ public class IdamAuthProvider {
         );
     }
 
-    @Cacheable(value = "judgeTokenCache")
+    @Cacheable(value = "judgeTokenCache", key = "'judgeTokenCache'")
     public String getJudgeToken() {
         return getUserToken(
             System.getenv("TEST_JUDGE_X_USERNAME"),
@@ -138,7 +142,7 @@ public class IdamAuthProvider {
         );
     }
 
-    @Cacheable(value = "citizenTokenCache")
+    @Cacheable(value = "citizenTokenCache", key = "'citizenTokenCache'")
     public String getCitizenToken() {
         return getUserToken(
             System.getenv("TEST_CITIZEN_USERNAME"),
@@ -146,7 +150,7 @@ public class IdamAuthProvider {
         );
     }
 
-    @Cacheable(value = "systemTokenCache")
+    @Cacheable(value = "systemUserTokenCache", key = "'systemUserTokenCache'")
     public String getSystemToken() {
         return getUserToken(
             System.getenv("IA_SYSTEM_USERNAME"),
@@ -156,7 +160,7 @@ public class IdamAuthProvider {
 
     public String getUserId(String token) {
         try {
-            UserInfo userInfo = idamApi.userInfo(token);
+            UserInfo userInfo = idamService.getUserInfo(token);
             return userInfo.getUid();
         } catch (FeignException ex) {
             throw new IdentityManagerResponseException("Could not get system user token from IDAM", ex);

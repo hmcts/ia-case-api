@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.BAIL_APPLICATION_NUMBER;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.DetentionFacility.IRC;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.DetentionFacility.OTHER;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.DetentionFacility.PRISON;
@@ -85,15 +84,15 @@ public class DetentionFacilityEditAppealHandler implements PreSubmitCallbackHand
                 asylumCase.clear(IRC_NAME);
                 asylumCase.clear(PRISON_NAME);
                 asylumCase.clear(PRISON_NOMS);
-                asylumCase.clear(CUSTODIAL_SENTENCE);
-                asylumCase.clear(HAS_PENDING_BAIL_APPLICATIONS);
-                asylumCase.clear(BAIL_APPLICATION_NUMBER);
             }
 
-            //Clear custodial sentence date
+            //Clear custodial sentence date else clear bail
             if (asylumCase.read(CUSTODIAL_SENTENCE, YesOrNo.class).orElse(NO).equals(NO)) {
                 log.info("Clearing Custodial Sentence date");
                 asylumCase.clear(DATE_CUSTODIAL_SENTENCE);
+            } else {
+                asylumCase.clear(HAS_PENDING_BAIL_APPLICATIONS);
+                asylumCase.clear(BAIL_APPLICATION_NUMBER);
             }
         }
 

@@ -2,16 +2,16 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DETENTION_STATUS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.REMOVE_DETAINED_STATUS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 
 import lombok.extern.slf4j.Slf4j;
+import java.util.Optional;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
@@ -19,6 +19,9 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 @Component
 public class RemoveDetainedStatusHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
+    private static final String REMOVE_DETAINED_STATUS_PAGE_ID = "detentionRemoval_appellantContactPreference";
+
+    @Override
     public boolean canHandle(
         PreSubmitCallbackStage callbackStage,
         Callback<AsylumCase> callback
@@ -26,32 +29,60 @@ public class RemoveDetainedStatusHandler implements PreSubmitCallbackHandler<Asy
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
-        return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-               && callback.getEvent() == REMOVE_DETAINED_STATUS;
+        return callback.getEvent() == REMOVE_DETAINED_STATUS && (callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT || (callbackStage == PreSubmitCallbackStage.MID_EVENT
+                && REMOVE_DETAINED_STATUS_PAGE_ID.equals(callback.getPageId())));
     }
+
 
     @Override
     public PreSubmitCallbackResponse<AsylumCase> handle(
         PreSubmitCallbackStage callbackStage,
         Callback<AsylumCase> callback) {
-
         if (!canHandle(callbackStage, callback)) {
             throw new IllegalStateException("Cannot handle callback");
         }
 
         AsylumCase asylumCase =
-            callback
-                .getCaseDetails()
-                .getCaseData();
+                callback
+                        .getCaseDetails()
+                        .getCaseData();
+
+        PreSubmitCallbackResponse<AsylumCase> response =
+                new PreSubmitCallbackResponse<>(asylumCase);
 
         if (HandlerUtils.isAppellantInDetention(asylumCase)) {
 
             clearDetentionRelatedFields(asylumCase);
 
-            asylumCase.write(APPELLANT_IN_DETENTION, NO);
-
+            asylumCase.write(APPELLANT_IN_DETENTION, YesOrNo.NO);
         }
-        return new PreSubmitCallbackResponse<>(asylumCase);
+        if (callbackStage == PreSubmitCallbackStage.MID_EVENT
+                && REMOVE_DETAINED_STATUS_PAGE_ID.equals(callback.getPageId())) {
+            Optional<String> email = asylumCase.read(EMAIL, String.class);
+            Optional<String> emailRetype = asylumCase.read(EMAIL_RETYPE, String.class);
+
+            Optional<String> mobileNumber = asylumCase.read(MOBILE_NUMBER, String.class);
+            Optional<String> mobileNumberRetype = asylumCase.read(MOBILE_NUMBER_RETYPE, String.class);
+
+            boolean emailMismatch =
+                    email.isPresent()
+                            && emailRetype.isPresent()
+                            && !email.get().equals(emailRetype.get());
+
+            boolean mobileMismatch =
+                    mobileNumber.isPresent()
+                            && mobileNumberRetype.isPresent()
+                            && !mobileNumber.get().equals(mobileNumberRetype.get());
+
+            if (emailMismatch || mobileMismatch) {
+                response.addError("The details given do not match");
+            } else {
+                asylumCase.clear(EMAIL_RETYPE);
+                asylumCase.clear(MOBILE_NUMBER_RETYPE);
+            }
+        }
+
+        return response;
     }
 
     private void clearDetentionRelatedFields(AsylumCase asylumCase) {
@@ -69,6 +100,7 @@ public class RemoveDetainedStatusHandler implements PreSubmitCallbackHandler<Asy
         asylumCase.clear(REMOVAL_ORDER_OPTIONS);
         asylumCase.clear(REMOVAL_ORDER_DATE);
         asylumCase.clear(DETENTION_STATUS);
+        asylumCase.clear(APPELLANT_DETAINED_DATE);
+        asylumCase.clear(REASON_APPELLANT_WAS_DETAINED);
     }
-
 }

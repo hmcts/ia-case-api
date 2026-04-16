@@ -29,6 +29,7 @@ public class CcdEventAuthorizor {
             || userRoles.isEmpty()
             || Collections.disjoint(requiredRoles, userRoles)) {
 
+            log.info("Event '" + event.toString() + "' not allowed for ia-case-api micro service");
             throw new AccessDeniedException("Event '" + event.toString() + "' not allowed");
         }
     }

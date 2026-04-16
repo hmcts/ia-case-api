@@ -5,8 +5,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 public interface AppealReferenceNumberGenerator {
 
     String generate(
-        long caseId,
-        AppealType appealType,
-        boolean isDetainedAppeal
+            long caseId,
+            AppealType appealType
     );
 }

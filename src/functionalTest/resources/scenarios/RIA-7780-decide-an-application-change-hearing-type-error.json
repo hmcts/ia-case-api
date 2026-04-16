@@ -1,5 +1,5 @@
 {
-  "description": "RIA-7780 Decide an application (change hearing type) failure message",
+  "description": "RIA-7780 Decide an application (change decision type) failure message",
   "launchDarklyKey": "wa-R2-feature:true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
@@ -39,9 +39,9 @@
               "id": "1",
               "value": {
                 "date": "2023-12-12",
-                "type": "Change hearing type",
+                "type": "Change decision type (ie with or without a hearing)",
                 "state": "listing",
-                "details": "A reason to change hearing type",
+                "details": "A reason to change decision type",
                 "decision": "Pending",
                 "evidence": [
                   {
@@ -81,9 +81,9 @@
             "id": "1",
             "value": {
               "date": "2023-12-12",
-              "type": "Change hearing type",
+              "type": "Change decision type (ie with or without a hearing)",
               "state": "listing",
-              "details": "A reason to change hearing type",
+              "details": "A reason to change decision type",
               "decision": "Granted",
               "evidence": [
                 {
@@ -104,8 +104,8 @@
           }
         ],
         "lastModifiedApplication": {
-          "type": "Change hearing type",
-          "details": "A reason to change hearing type",
+          "type": "Change decision type (ie with or without a hearing)",
+          "details": "A reason to change decision type",
           "evidence": [
             {
               "id": "1",
