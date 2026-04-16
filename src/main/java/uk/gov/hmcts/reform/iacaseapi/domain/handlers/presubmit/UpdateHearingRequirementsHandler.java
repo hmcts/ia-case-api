@@ -373,43 +373,38 @@ public class UpdateHearingRequirementsHandler extends WitnessHandler
     }
 
     private void handleNlrRequirementClearing(AsylumCase asylumCase) {
-        boolean hasNlr = asylumCase.read(HAS_NON_LEGAL_REP, YesOrNo.class)
-            .map(YesOrNo::isYes).orElse(false);
-        boolean isAttending = asylumCase.read(NLR_ATTENDING, YesOrNo.class)
-            .map(YesOrNo::isYes).orElse(false);
-        boolean isOutsideUK = asylumCase.read(NLR_OUTSIDE_UK, YesOrNo.class)
-            .map(YesOrNo::isYes).orElse(false);
-        boolean needInterpreter = asylumCase.read(IS_NLR_INTERPRETER_REQUIRED, YesOrNo.class)
-            .map(YesOrNo::isYes).orElse(false);
-        Optional<List<String>> categoriesOpt = asylumCase
-            .read(NLR_INTERPRETER_LANGUAGE_CATEGORY);
-        List<String> categories = categoriesOpt.orElse(Collections.emptyList());
-
-        boolean noNlr = !hasNlr;
+        boolean noNlr = asylumCase.read(HAS_NON_LEGAL_REP, YesOrNo.class)
+            .map(YesOrNo::isNo).orElse(true);
         if (noNlr) {
             clearAllNlrFields(asylumCase);
             return;
         }
 
-        boolean noAttendanceOrOutside = !isAttending && !isOutsideUK;
-        if (noAttendanceOrOutside) {
+        boolean notAttending = asylumCase.read(NLR_ATTENDING, YesOrNo.class)
+            .map(YesOrNo::isNo).orElse(true);
+        boolean notOutsideUK = asylumCase.read(NLR_OUTSIDE_UK, YesOrNo.class)
+            .map(YesOrNo::isNo).orElse(true);
+
+        if (notAttending && notOutsideUK) {
             clearNlrNeedsFields(asylumCase);
             return;
         }
 
-        boolean noInterpreter = !needInterpreter;
+        boolean noInterpreter = asylumCase.read(IS_NLR_INTERPRETER_REQUIRED, YesOrNo.class)
+            .map(YesOrNo::isNo).orElse(true);
         if (noInterpreter) {
             clearNlrInterpreterFields(asylumCase);
             return;
         }
 
-        boolean needsSpoken = categories.contains(SPOKEN_LANGUAGE_INTERPRETER.getValue());
-        if (!needsSpoken) {
+        Optional<List<String>> categoriesOpt = asylumCase
+            .read(NLR_INTERPRETER_LANGUAGE_CATEGORY);
+        List<String> categories = categoriesOpt.orElse(Collections.emptyList());
+        if (!categories.contains(SPOKEN_LANGUAGE_INTERPRETER.getValue())) {
             asylumCase.clear(NLR_INTERPRETER_SPOKEN_LANGUAGE);
         }
 
-        boolean needsSign = categories.contains(SIGN_LANGUAGE_INTERPRETER.getValue());
-        if (!needsSign) {
+        if (!categories.contains(SIGN_LANGUAGE_INTERPRETER.getValue())) {
             asylumCase.clear(NLR_INTERPRETER_SIGN_LANGUAGE);
         }
     }
