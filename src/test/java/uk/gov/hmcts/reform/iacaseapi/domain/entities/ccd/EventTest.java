@@ -193,8 +193,12 @@ class EventTest {
             Arguments.of("forceDecidedState", Event.FORCE_DECIDED_STATE.toString()),
             Arguments.of("forceFtpaDecidedState", Event.FORCE_FTPA_DECIDED_STATE.toString()),
             Arguments.of("rollbackMigration", Event.ROLLBACK_MIGRATION.toString()),
-            Arguments.of("revokeCitizenAccess", Event.REVOKE_CITIZEN_ACCESS.toString()),
             Arguments.of("completeCaseReview", Event.COMPLETE_CASE_REVIEW.toString()),
+            Arguments.of("revokeCitizenAccess", Event.REVOKE_CITIZEN_ACCESS.toString()),
+            Arguments.of("sendInviteToNonLegalRep", Event.SEND_INVITE_TO_NON_LEGAL_REP.toString()),
+            Arguments.of("sendPipToNonLegalRep", Event.SEND_PIP_TO_NON_LEGAL_REP.toString()),
+            Arguments.of("joinAppealConfirmation", Event.JOIN_APPEAL_CONFIRMATION.toString()),
+            Arguments.of("nlrDetailsUpdated", Event.NLR_DETAILS_UPDATED.toString()),
             Arguments.of("unknown", Event.UNKNOWN.toString())
         );
     }

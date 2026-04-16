@@ -11,6 +11,12 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAS_NON_LEGAL_REP;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAS_NON_LEGAL_REP_JOINED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_SPONSOR_SAME_AS_NLR;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOIN_APPEAL_PIN;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NLR_DETAILS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 
 import java.util.Collections;
 import java.util.List;
@@ -25,6 +31,7 @@ import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.NonLegalRepDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Value;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -98,6 +105,14 @@ class RevokeCitizenAccessHandlerTest {
         DynamicList dynamicList = new DynamicList(value, List.of(value));
         when(asylumCase.read(AsylumCaseFieldDefinition.REVOKE_ACCESS_DL, DynamicList.class))
             .thenReturn(Optional.of(dynamicList));
+        NonLegalRepDetails nlrDetails = NonLegalRepDetails.builder()
+            .idamId(idamId)
+            .emailAddress("someEmail")
+            .givenNames("someGivenNames")
+            .familyName("someFamilyName")
+            .build();
+        when(asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class))
+            .thenReturn(Optional.of(nlrDetails));
         Assignment assignment = Assignment.builder().id(roleAssignmentId).build();
         when(roleAssignmentService.getCaseRoleAssignmentsForUser(caseId, idamId))
             .thenReturn(roleAssignmentResource);
@@ -113,6 +128,11 @@ class RevokeCitizenAccessHandlerTest {
 
         verify(roleAssignmentService).getCaseRoleAssignmentsForUser(caseId, idamId);
         verify(roleAssignmentService).deleteRoleAssignment(roleAssignmentId, "token");
+        verify(asylumCase).clear(NLR_DETAILS);
+        verify(asylumCase).clear(JOIN_APPEAL_PIN);
+        verify(asylumCase).clear(IS_SPONSOR_SAME_AS_NLR);
+        verify(asylumCase).clear(HAS_NON_LEGAL_REP_JOINED);
+        verify(asylumCase).write(HAS_NON_LEGAL_REP, NO);
     }
 
 
@@ -122,6 +142,14 @@ class RevokeCitizenAccessHandlerTest {
         DynamicList dynamicList = new DynamicList(value, List.of(value));
         when(asylumCase.read(AsylumCaseFieldDefinition.REVOKE_ACCESS_DL, DynamicList.class))
             .thenReturn(Optional.of(dynamicList));
+        NonLegalRepDetails nlrDetails = NonLegalRepDetails.builder()
+            .idamId("someOtherIdamId")
+            .emailAddress("someEmail")
+            .givenNames("someGivenNames")
+            .familyName("someFamilyName")
+            .build();
+        when(asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class))
+            .thenReturn(Optional.of(nlrDetails));
         Assignment assignment = Assignment.builder().id(roleAssignmentId).build();
         when(roleAssignmentService.getCaseRoleAssignmentsForUser(caseId, idamId))
             .thenReturn(roleAssignmentResource);
@@ -137,6 +165,11 @@ class RevokeCitizenAccessHandlerTest {
 
         verify(roleAssignmentService).getCaseRoleAssignmentsForUser(caseId, idamId);
         verify(roleAssignmentService).deleteRoleAssignment(roleAssignmentId, "token");
+        verify(asylumCase, never()).clear(NLR_DETAILS);
+        verify(asylumCase, never()).clear(JOIN_APPEAL_PIN);
+        verify(asylumCase, never()).clear(IS_SPONSOR_SAME_AS_NLR);
+        verify(asylumCase, never()).clear(HAS_NON_LEGAL_REP_JOINED);
+        verify(asylumCase, never()).write(HAS_NON_LEGAL_REP, NO);
     }
 
     @Test

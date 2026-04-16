@@ -4,6 +4,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -20,6 +22,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseData;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PostSubmitCallbackHandler;
@@ -29,6 +33,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit.GenerateHearingB
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit.RequestCaseEditConfirmation;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit.SendDirectionConfirmation;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit.UploadRespondentEvidenceConfirmation;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.CcdEventAuthorizor;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
@@ -43,7 +48,11 @@ class PostSubmitCallbackDispatcherTest {
     @Mock
     private Callback<CaseData> callback;
     @Mock
+    private CaseDetails<CaseData> caseDetails;
+    @Mock
     private PostSubmitCallbackResponse response;
+    @Mock
+    private CcdEventAuthorizor ccdEventAuthorizor;
 
     private PostSubmitCallbackDispatcher<CaseData> postSubmitCallbackDispatcher;
 
@@ -54,13 +63,16 @@ class PostSubmitCallbackDispatcherTest {
                 handler1,
                 handler2,
                 handler3
-            )
+            ), ccdEventAuthorizor
         );
     }
 
     @Test
     void should_dispatch_callback_to_all_eligible_handlers_collecting_confirmation() {
-
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getId()).thenReturn(123L);
+        when(callback.getEvent()).thenReturn(Event.CREATE_FLAG);
+        doNothing().when(ccdEventAuthorizor).throwIfNotAuthorized(any(Event.class));
         Optional<String> expectedConfirmationHeader = Optional.of("header");
         Optional<String> expectedConfirmationBody = Optional.of("body");
 
@@ -91,9 +103,13 @@ class PostSubmitCallbackDispatcherTest {
 
     @Test
     void should_not_error_if_no_handlers_are_provided() {
+        doNothing().when(ccdEventAuthorizor).throwIfNotAuthorized(any(Event.class));
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.CREATE_FLAG);
+        when(caseDetails.getId()).thenReturn(123L);
 
         PostSubmitCallbackDispatcher<CaseData> postSubmitCallbackDispatcher =
-            new PostSubmitCallbackDispatcher<>(Collections.emptyList());
+            new PostSubmitCallbackDispatcher<>(Collections.emptyList(), ccdEventAuthorizor);
 
         try {
 
@@ -112,7 +128,7 @@ class PostSubmitCallbackDispatcherTest {
     @Test
     void should_not_allow_null_handlers() {
 
-        assertThatThrownBy(() -> new PostSubmitCallbackDispatcher<>(null))
+        assertThatThrownBy(() -> new PostSubmitCallbackDispatcher<>(null, ccdEventAuthorizor))
             .hasMessage("callbackHandlers must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
     }
@@ -142,7 +158,7 @@ class PostSubmitCallbackDispatcherTest {
                 h1,
                 h6,
                 h5
-            )
+            ), ccdEventAuthorizor
         );
 
         List<PostSubmitCallbackHandler<AsylumCase>> sortedDispatcher =

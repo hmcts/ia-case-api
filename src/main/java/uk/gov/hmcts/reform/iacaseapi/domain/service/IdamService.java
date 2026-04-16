@@ -57,7 +57,7 @@ public class IdamService {
         this.roleAssignmentService = roleAssignmentService;
     }
 
-    @Cacheable(value = "accessTokenCache")
+    @Cacheable(value = "systemUserTokenCache", key = "'systemUserTokenCache'")
     public String getServiceUserToken() {
         Map<String, String> idamAuthDetails = new ConcurrentHashMap<>();
 
@@ -69,10 +69,11 @@ public class IdamService {
         idamAuthDetails.put("password", systemUserPass);
         idamAuthDetails.put("scope", systemUserScope);
 
+        log.info("System user token expired. Getting a new token in ia-case-api");
         return "Bearer " + idamApi.token(idamAuthDetails).getAccessToken();
     }
 
-    @Cacheable(value = "userInfoCache")
+    @Cacheable(value = "userInfoCache", key = "#accessToken")
     public UserInfo getUserInfo(String accessToken) {
         UserInfo userInfo = idamApi.userInfo(accessToken);
         List<String> amRoles = Collections.emptyList();
@@ -91,7 +92,7 @@ public class IdamService {
         return userInfo;
     }
 
-    @Cacheable(value = "clientCredsCacheV1")
+    @Cacheable(value = "clientCredsCacheV1", key = "'clientCredsCacheV1'")
     public String getClientCredentialsTokenV1() {
         try {
             Map<String, String> idamAuthDetails = new ConcurrentHashMap<>();
@@ -110,7 +111,7 @@ public class IdamService {
         return "Bearer " + idamClientToken;
     }
 
-    @Cacheable(value = "clientCredsCache")
+    @Cacheable(value = "clientCredsCache", key = "'clientCredsCache'")
     public String getClientCredentialsToken() {
         try {
             Map<String, String> idamAuthDetails = new ConcurrentHashMap<>();
@@ -144,11 +145,36 @@ public class IdamService {
         return response.getBody().get(0);
     }
 
+    public User getUserFromEmailV1(String email) {
+        String idamToken = getClientCredentialsTokenV1();
+        String query = MessageFormat.format("email:{0}", email);
+        ResponseEntity<List<User>> response = idamClientApi.getUserV1(idamToken, query);
+        if (!response.getStatusCode().is2xxSuccessful() || response.getBody() == null) {
+            log.error("Error fetching user details for user: {}. Response status: {}", email, response.getStatusCode());
+            return null;
+        }
+        if (response.getBody().isEmpty()) {
+            log.error("No user found for userEmail: {}", email);
+            return null;
+        }
+        return response.getBody().get(0);
+    }
+
     public User getUserFromId(String userId) {
         String idamToken = getClientCredentialsToken();
         ResponseEntity<User> response = idamClientApi.getUser(idamToken, userId);
         if (!response.getStatusCode().is2xxSuccessful() || response.getBody() == null) {
             log.error("Error fetching user details for userId: {}. Response status: {}", userId, response.getStatusCode());
+            return null;
+        }
+        return response.getBody();
+    }
+
+    public User getUserFromEmail(String email) {
+        String idamToken = getClientCredentialsToken();
+        ResponseEntity<User> response = idamClientApi.getUserFromEmail(idamToken, email);
+        if (!response.getStatusCode().is2xxSuccessful() || response.getBody() == null) {
+            log.error("Error fetching user details for user: {}. Response status: {}", email, response.getStatusCode());
             return null;
         }
         return response.getBody();

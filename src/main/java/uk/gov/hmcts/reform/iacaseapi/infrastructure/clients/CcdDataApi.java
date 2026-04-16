@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 
+import uk.gov.hmcts.reform.ccd.client.model.UserId;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDataContent;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.StartEventDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.SubmitEventDetails;
@@ -61,6 +62,19 @@ public interface CcdDataApi {
         @PathVariable("jid") String jurisdiction,
         @PathVariable("ctid") String caseType,
         @PathVariable("cid") String id
+    );
+
+    @PostMapping(value = "/caseworkers/{uid}/jurisdictions/{jid}/case-types/{ctid}/cases/{cid}/users",
+        produces = APPLICATION_JSON_VALUE,
+        consumes = APPLICATION_JSON_VALUE)
+    void grantAccessToCase(
+        @RequestHeader(AUTHORIZATION) String userToken,
+        @RequestHeader(SERVICE_AUTHORIZATION) String s2sToken,
+        @PathVariable("uid") String uid,
+        @PathVariable("jid") String jurisdiction,
+        @PathVariable("ctid") String caseType,
+        @PathVariable("cid") String id,
+        @RequestBody UserId userId
     );
 }
 

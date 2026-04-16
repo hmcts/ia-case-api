@@ -53,10 +53,9 @@ class AppealOutOfCountryHandlerTest {
     @Mock
     private AsylumCase asylumCase;
     @Mock
-    private AddressUk addressUk;
-    @Mock
     private FeatureToggler featureToggler;
-
+    private final AddressUk addressUk = new AddressUk("line1", "",
+        null,"town", "county", "TT1 TST", "UK");
     private AppealOutOfCountryHandler appealOutOfCountryHandler;
 
     @BeforeEach
@@ -195,12 +194,6 @@ class AppealOutOfCountryHandlerTest {
         when(asylumCase.read(SPONSOR_GIVEN_NAMES, String.class)).thenReturn(Optional.of("  test"));
         when(asylumCase.read(SPONSOR_FAMILY_NAME, String.class)).thenReturn(Optional.of("some-name "));
         when(asylumCase.read(SPONSOR_ADDRESS, AddressUk.class)).thenReturn(Optional.of(addressUk));
-        when(addressUk.getAddressLine1()).thenReturn(Optional.of("line1"));
-        when(addressUk.getAddressLine2()).thenReturn(Optional.of(""));
-        when(addressUk.getPostTown()).thenReturn(Optional.of("town"));
-        when(addressUk.getCounty()).thenReturn(Optional.of("county"));
-        when(addressUk.getPostCode()).thenReturn(Optional.of("TT1 TST"));
-        when(addressUk.getCountry()).thenReturn(Optional.of("UK"));
         when(asylumCase.read(SPONSOR_CONTACT_PREFERENCE, ContactPreference.class))
             .thenReturn(Optional.of(ContactPreference.WANTS_EMAIL));
         when(asylumCase.read(SPONSOR_EMAIL, String.class)).thenReturn(Optional.of("test@test"));
@@ -235,12 +228,6 @@ class AppealOutOfCountryHandlerTest {
         when(asylumCase.read(SPONSOR_GIVEN_NAMES, String.class)).thenReturn(Optional.of("  test"));
         when(asylumCase.read(SPONSOR_FAMILY_NAME, String.class)).thenReturn(Optional.of("some-name "));
         when(asylumCase.read(SPONSOR_ADDRESS, AddressUk.class)).thenReturn(Optional.of(addressUk));
-        when(addressUk.getAddressLine1()).thenReturn(Optional.of("line1"));
-        when(addressUk.getAddressLine2()).thenReturn(Optional.of(""));
-        when(addressUk.getPostTown()).thenReturn(Optional.of("town"));
-        when(addressUk.getCounty()).thenReturn(Optional.of("county"));
-        when(addressUk.getPostCode()).thenReturn(Optional.of("TT1 TST"));
-        when(addressUk.getCountry()).thenReturn(Optional.of("UK"));
         when(asylumCase.read(SPONSOR_CONTACT_PREFERENCE, ContactPreference.class))
             .thenReturn(Optional.of(ContactPreference.WANTS_EMAIL));
         when(asylumCase.read(SPONSOR_EMAIL, String.class)).thenReturn(Optional.of("test@test"));

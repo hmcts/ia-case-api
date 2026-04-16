@@ -25,4 +25,7 @@ public interface IdamClientApi {
 
     @GetMapping(value = "/api/v2/users/{userId}", produces = "application/json", consumes = "application/json")
     ResponseEntity<User> getUser(@RequestHeader(AUTHORIZATION) String userToken, @PathVariable String userId);
+
+    @GetMapping(value = "/api/v2/users-by-email/{email}", produces = "application/json", consumes = "application/json")
+    ResponseEntity<User> getUserFromEmail(@RequestHeader(AUTHORIZATION) String userToken, @PathVariable String email);
 }
