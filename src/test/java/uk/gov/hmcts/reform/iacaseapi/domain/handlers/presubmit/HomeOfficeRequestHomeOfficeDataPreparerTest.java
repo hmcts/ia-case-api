@@ -6,13 +6,11 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 import static org.powermock.api.mockito.PowerMockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.REQUEST_HOME_OFFICE_DATA;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SUBMIT_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 
-import java.util.Arrays;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -61,9 +59,6 @@ class HomeOfficeRequestHomeOfficeDataPreparerTest {
     @Test
     void handle_should_return_error_if_appeal_type_not_present() {
 
-        when(featureToggler.getValue("home-office-uan-pa-rp-feature", false)).thenReturn(true);
-        when(featureToggler.getValue("home-office-uan-dc-ea-hu-feature", false)).thenReturn(true);
-
         when(callback.getEvent()).thenReturn(Event.REQUEST_HOME_OFFICE_DATA);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -92,10 +87,9 @@ class HomeOfficeRequestHomeOfficeDataPreparerTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = AppealType.class, names = { "PA", "RP", "DC", "EA", "HU" })
+    @EnumSource(value = AppealType.class, names = { "DC", "EA", "HU" })
     void handler_should_not_error_for_no_match(AppealType appealType) {
 
-        when(featureToggler.getValue("home-office-uan-pa-rp-feature", false)).thenReturn(true);
         when(featureToggler.getValue("home-office-uan-dc-ea-hu-feature", false)).thenReturn(true);
 
         when(callback.getEvent()).thenReturn(Event.REQUEST_HOME_OFFICE_DATA);
@@ -119,10 +113,9 @@ class HomeOfficeRequestHomeOfficeDataPreparerTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = AppealType.class, names = { "PA", "RP", "DC", "EA", "HU" })
+    @EnumSource(value = AppealType.class, names = { "DC", "EA", "HU" })
     void handler_checks_existing_home_office_case_data_returns_no_error_for_empty_case(AppealType appealType) {
 
-        when(featureToggler.getValue("home-office-uan-pa-rp-feature", false)).thenReturn(true);
         when(featureToggler.getValue("home-office-uan-dc-ea-hu-feature", false)).thenReturn(true);
 
         when(callback.getEvent()).thenReturn(Event.REQUEST_HOME_OFFICE_DATA);
@@ -145,10 +138,9 @@ class HomeOfficeRequestHomeOfficeDataPreparerTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = AppealType.class, names = { "PA", "RP", "DC", "EA", "HU" })
+    @EnumSource(value = AppealType.class, names = { "DC", "EA", "HU" })
     void handler_checks_existing_home_office_data_returns_no_error_for_fail_status(AppealType appealType) {
 
-        when(featureToggler.getValue("home-office-uan-pa-rp-feature", false)).thenReturn(true);
         when(featureToggler.getValue("home-office-uan-dc-ea-hu-feature", false)).thenReturn(true);
 
         when(callback.getEvent()).thenReturn(Event.REQUEST_HOME_OFFICE_DATA);
@@ -171,10 +163,9 @@ class HomeOfficeRequestHomeOfficeDataPreparerTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = AppealType.class, names = { "PA", "RP", "DC", "EA", "HU" })
+    @EnumSource(value = AppealType.class, names = { "DC", "EA", "HU" })
     void handle_should_return_error_for_out_of_country_appeals(AppealType appealType) {
 
-        when(featureToggler.getValue("home-office-uan-pa-rp-feature", false)).thenReturn(true);
         when(featureToggler.getValue("home-office-uan-dc-ea-hu-feature", false)).thenReturn(true);
 
         when(callback.getEvent()).thenReturn(Event.REQUEST_HOME_OFFICE_DATA);
@@ -197,10 +188,8 @@ class HomeOfficeRequestHomeOfficeDataPreparerTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = AppealType.class, names = { "PA", "RP", "DC", "EA", "HU" })
+    @EnumSource(value = AppealType.class, names = { "DC", "EA", "HU" })
     void handle_should_return_error_for_appeal_types_not_enabled(AppealType appealType) {
-
-        when(featureToggler.getValue("home-office-uan-pa-rp-feature", false)).thenReturn(true);
 
         when(callback.getEvent()).thenReturn(Event.REQUEST_HOME_OFFICE_DATA);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -217,13 +206,9 @@ class HomeOfficeRequestHomeOfficeDataPreparerTest {
         assertThat(response).isNotNull();
         assertThat(response.getData()).isNotEmpty();
         assertThat(response.getData()).isEqualTo(asylumCase);
-
-        if (Arrays.asList(DC, EA, HU).contains(appealType)) {
-
-            assertThat(response.getErrors()).isNotEmpty();
-            assertThat(response.getErrors()).contains("You can only request Home Office data for an appeal against a "
-                    + "Protection or Revocation of Protection decision");
-        }
+        assertThat(response.getErrors()).isNotEmpty();
+        assertThat(response.getErrors()).contains("You can only request Home Office data for an appeal against a "
+                + "Protection or Revocation of Protection decision");
     }
 
     @Test

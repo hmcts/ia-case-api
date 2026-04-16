@@ -119,9 +119,6 @@ class HomeOfficeCaseNotificationsHandlerTest {
     @Test
     void handle_should_error_if_appeal_type_is_not_present() {
 
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
-        when(featureToggler.getValue("home-office-uan-pa-rp-feature", false)).thenReturn(true);
-
         when(callback.getEvent()).thenReturn(LIST_CASE);
         when(homeOfficeApi.aboutToSubmit(callback)).thenReturn(asylumCase);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -137,40 +134,8 @@ class HomeOfficeCaseNotificationsHandlerTest {
 
     @ParameterizedTest
     @MethodSource("eventAndAppealTypesData")
-    void should_call_home_office_api_and_update_the_case_for_pa_rp_appeal_types(Event event, AppealType appealType) {
-
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
-        when(featureToggler.getValue("home-office-uan-pa-rp-feature", false)).thenReturn(true);
-
-        when(callback.getEvent()).thenReturn(event);
-        when(homeOfficeApi.aboutToSubmit(callback)).thenReturn(asylumCase);
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
-        when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.empty());
-        when(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class)).thenReturn(Optional.of("SUCCESS"));
-        when(asylumCase.read(HOME_OFFICE_NOTIFICATIONS_ELIGIBLE, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
-
-
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            homeOfficeCaseNotificationsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
-
-        assertNotNull(callbackResponse);
-        assertEquals(asylumCase, callbackResponse.getData());
-
-        if (Arrays.asList(PA, RP).contains(appealType)) {
-            verify(homeOfficeApi, times(1)).aboutToSubmit(callback);
-        } else {
-            verify(homeOfficeApi, times(0)).aboutToSubmit(callback);
-        }
-    }
-
-    @ParameterizedTest
-    @MethodSource("eventAndAppealTypesData")
     void should_call_home_office_api_and_update_the_case_for_dc_ea_hu_appeal_types(Event event, AppealType appealType) {
 
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
-        when(featureToggler.getValue("home-office-uan-pa-rp-feature", false)).thenReturn(true);
         when(featureToggler.getValue("home-office-uan-dc-ea-hu-feature", false)).thenReturn(true);
 
         when(callback.getEvent()).thenReturn(event);
@@ -189,14 +154,17 @@ class HomeOfficeCaseNotificationsHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(homeOfficeApi, times(1)).aboutToSubmit(callback);
+        if (Arrays.asList(DC, EA, HU).contains(appealType)) {
+            verify(homeOfficeApi, times(1)).aboutToSubmit(callback);
+        } else {
+            verify(homeOfficeApi, times(0)).aboutToSubmit(callback);
+        }
     }
 
     @ParameterizedTest
     @MethodSource("eventAndAppealTypesData")
     void should_call_home_office_api_and_update_the_case_for_all_appeal_types(Event event, AppealType appealType) {
 
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
         when(featureToggler.getValue("home-office-uan-dc-ea-hu-feature", false)).thenReturn(true);
 
         when(callback.getEvent()).thenReturn(event);
@@ -382,74 +350,8 @@ class HomeOfficeCaseNotificationsHandlerTest {
 
     @ParameterizedTest
     @MethodSource("stateAndAppealTypesData")
-    void should_call_home_office_api_and_update_the_case_for_direction_due_date_pa_rp_appeal_types(State state, AppealType appealType) {
-
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
-        when(featureToggler.getValue("home-office-uan-pa-rp-feature", false)).thenReturn(true);
-        when(callback.getEvent()).thenReturn(CHANGE_DIRECTION_DUE_DATE);
-        when(homeOfficeApi.aboutToSubmit(callback)).thenReturn(asylumCase);
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(callback.getCaseDetails().getState()).thenReturn(state);
-        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
-        when(asylumCase.read(DIRECTION_EDIT_PARTIES, Parties.class)).thenReturn(Optional.of(Parties.RESPONDENT));
-        when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
-        when(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class)).thenReturn(Optional.of("SUCCESS"));
-        when(asylumCase.read(HOME_OFFICE_NOTIFICATIONS_ELIGIBLE, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
-
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            homeOfficeCaseNotificationsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
-
-        assertNotNull(callbackResponse);
-        assertEquals(asylumCase, callbackResponse.getData());
-
-        if (Arrays.asList(PA, RP).contains(appealType)) {
-
-            verify(homeOfficeApi, times(1)).aboutToSubmit(callback);
-        } else {
-
-            verify(homeOfficeApi, times(0)).aboutToSubmit(callback);
-        }
-    }
-
-    @ParameterizedTest
-    @MethodSource("stateAndAppealTypesData")
     void should_call_home_office_api_and_update_the_case_for_direction_due_date_dc_ea_hu_appeal_types(State state, AppealType appealType) {
 
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
-        when(featureToggler.getValue("home-office-uan-dc-ea-hu-feature", false)).thenReturn(true);
-        when(callback.getEvent()).thenReturn(CHANGE_DIRECTION_DUE_DATE);
-        when(homeOfficeApi.aboutToSubmit(callback)).thenReturn(asylumCase);
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(callback.getCaseDetails().getState()).thenReturn(state);
-        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
-        when(asylumCase.read(DIRECTION_EDIT_PARTIES, Parties.class)).thenReturn(Optional.of(Parties.RESPONDENT));
-        when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
-        when(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class)).thenReturn(Optional.of("SUCCESS"));
-        when(asylumCase.read(HOME_OFFICE_NOTIFICATIONS_ELIGIBLE, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
-
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            homeOfficeCaseNotificationsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
-
-        assertNotNull(callbackResponse);
-        assertEquals(asylumCase, callbackResponse.getData());
-
-        if (Arrays.asList(DC, EA, HU).contains(appealType)) {
-
-            verify(homeOfficeApi, times(1)).aboutToSubmit(callback);
-        } else {
-
-            verify(homeOfficeApi, times(0)).aboutToSubmit(callback);
-        }
-    }
-
-    @ParameterizedTest
-    @MethodSource("stateAndAppealTypesData")
-    void should_call_home_office_api_and_update_the_case_for_direction_due_date(State state, AppealType appealType) {
-
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
-        when(featureToggler.getValue("home-office-uan-pa-rp-feature", false)).thenReturn(true);
         when(featureToggler.getValue("home-office-uan-dc-ea-hu-feature", false)).thenReturn(true);
         when(callback.getEvent()).thenReturn(CHANGE_DIRECTION_DUE_DATE);
         when(homeOfficeApi.aboutToSubmit(callback)).thenReturn(asylumCase);
@@ -471,16 +373,36 @@ class HomeOfficeCaseNotificationsHandlerTest {
         verify(homeOfficeApi, times(1)).aboutToSubmit(callback);
     }
 
+    @ParameterizedTest
+    @MethodSource("stateAndAppealTypesData")
+    void should_not_call_home_office_api_when_feature_not_enabled(State state, AppealType appealType) {
+
+        when(callback.getEvent()).thenReturn(CHANGE_DIRECTION_DUE_DATE);
+        when(homeOfficeApi.aboutToSubmit(callback)).thenReturn(asylumCase);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getCaseDetails().getState()).thenReturn(state);
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
+        when(asylumCase.read(DIRECTION_EDIT_PARTIES, Parties.class)).thenReturn(Optional.of(Parties.RESPONDENT));
+        when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class)).thenReturn(Optional.of("SUCCESS"));
+        when(asylumCase.read(HOME_OFFICE_NOTIFICATIONS_ELIGIBLE, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            homeOfficeCaseNotificationsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(homeOfficeApi, times(0)).aboutToSubmit(callback);
+    }
+
     private static Stream<Arguments> stateAndAppealTypesData() {
 
         return Stream.of(
-            Arguments.of(RESPONDENT_REVIEW, PA),
-            Arguments.of(RESPONDENT_REVIEW, RP),
             Arguments.of(RESPONDENT_REVIEW, DC),
             Arguments.of(RESPONDENT_REVIEW, EA),
             Arguments.of(RESPONDENT_REVIEW, HU),
-            Arguments.of(AWAITING_RESPONDENT_EVIDENCE, PA),
-            Arguments.of(AWAITING_RESPONDENT_EVIDENCE, RP),
             Arguments.of(AWAITING_RESPONDENT_EVIDENCE, DC),
             Arguments.of(AWAITING_RESPONDENT_EVIDENCE, EA),
             Arguments.of(AWAITING_RESPONDENT_EVIDENCE, HU)

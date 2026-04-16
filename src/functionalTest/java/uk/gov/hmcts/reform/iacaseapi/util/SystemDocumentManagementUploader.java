@@ -14,15 +14,7 @@ public class SystemDocumentManagementUploader {
 
     private final CDAMSystemDocumentManagementUploader cdamSystemDocumentManagementUploader;
 
-    private final DMSystemDocumentManagementUploader dmSystemDocumentManagementUploader;
-
-
     public Document upload(Resource resource, String contentType) {
-        if (featureToggler.getValue("use-ccd-document-am", false)) {
-            return cdamSystemDocumentManagementUploader.upload(resource, contentType);
-        } else {
-            return dmSystemDocumentManagementUploader.upload(resource, contentType);
-        }
-
+        return cdamSystemDocumentManagementUploader.upload(resource, contentType);
     }
 }

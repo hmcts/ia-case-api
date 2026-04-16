@@ -89,9 +89,7 @@ public class HomeOfficeCaseValidateHandler implements PreSubmitCallbackHandler<A
                 return new PreSubmitCallbackResponse<>(asylumCase);
             }
 
-            asylumCase =
-                featureToggler.getValue("home-office-uan-feature", false)
-                    ? homeOfficeApi.aboutToSubmit(callback) : homeOfficeApi.call(callback);
+            asylumCase = homeOfficeApi.aboutToSubmit(callback);
 
             Optional<ContactPreference> contactPreference = asylumCase.read(CONTACT_PREFERENCE);
             if (contactPreference.isPresent()) {

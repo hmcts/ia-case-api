@@ -9,7 +9,6 @@
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
-          "isReheardAppealEnabled": "Yes",
           "caseFlagSetAsideReheardExists": "Yes",
           "anonymityOrder": "No",
           "appellantRepresentative": "appellant representative",
@@ -24,7 +23,6 @@
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {
-        "isReheardAppealEnabled": "Yes",
         "caseFlagSetAsideReheardExists": "Yes",
         "anonymityOrder": null,
         "appellantRepresentative": null,

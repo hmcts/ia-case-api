@@ -9,7 +9,6 @@
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
-          "isReheardAppealEnabled": "Yes",
           "caseFlagSetAsideReheardExists": "Yes",
           "isAppellantAttendTheHearing": "Yes",
           "isAppellantGivingOralEvidence": "Yes",
@@ -111,7 +110,6 @@
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {
-        "isReheardAppealEnabled": "Yes",
         "caseFlagSetAsideReheardExists": "Yes",
         "currentHearingDetailsVisible": "No",
         "isAppellantAttendTheHearing": "Yes",
