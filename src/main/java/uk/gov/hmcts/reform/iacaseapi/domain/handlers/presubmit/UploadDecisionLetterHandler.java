@@ -77,9 +77,11 @@ public class UploadDecisionLetterHandler implements PreSubmitCallbackHandler<Asy
             maybeExistingLegalRepDocuments.orElse(emptyList());
 
         for (IdValue<DocumentWithMetadata> existingLegalRepDocument : existingLegalRepDocuments) {
-            if (existingLegalRepDocument.getValue().getTag() != null) {
-                if (existingLegalRepDocument.getValue().getTag().equals(DocumentTag.HO_DECISION_LETTER)) {
-                    legalRepDocumentsContainHoDecisionLetter = true;
+            if (existingLegalRepDocument.getValue() != null) {
+                if (existingLegalRepDocument.getValue().getTag() != null) {
+                    if (existingLegalRepDocument.getValue().getTag().equals(DocumentTag.HO_DECISION_LETTER)) {
+                        legalRepDocumentsContainHoDecisionLetter = true;
+                    }
                 }
             }
         }
