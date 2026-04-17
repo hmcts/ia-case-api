@@ -660,9 +660,9 @@ ia-aip-frontend:
     ingressHost: ${SERVICE_NAME}-aip-frontend.preview.platform.hmcts.net # override in public facing environments
     applicationPort: 3000
     devcpuRequests: 25m
-    devmemoryRequests: 384Mi
+    devmemoryRequests: 512Mi
     devcpuLimits: 50m
-    devmemoryLimits: 768Mi
+    devmemoryLimits: 1Gi
     environment:
       HTTP_PROTOCOL: http
       NODE_ENV: development
@@ -771,9 +771,9 @@ xui-webapp:
     cpuRequests: 2000m
     memoryLimits: 4Gi
     cpuLimits: 3500m
-    devmemoryRequests: 384Mi
+    devmemoryRequests: 512Mi
     devcpuRequests: 25m
-    devmemoryLimits: 768Mi
+    devmemoryLimits: 1Gi
     devcpuLimits: 50m
     environment:
       HEALTH_CCD_COMPONENT_API: http://gateway-${SERVICE_FQDN}/health
@@ -871,9 +871,9 @@ ccd:
       imagePullPolicy: Always
       image: hmctsprod.azurecr.io/ccd/api-gateway-web:latest
       devcpuRequests: 25m
-      devmemoryRequests: 384Mi
+      devmemoryRequests: 512Mi
       devcpuLimits: 50m
-      devmemoryLimits: 768Mi
+      devmemoryLimits: 1Gi
       environment:
         ADDRESS_LOOKUP_TOKEN: ${ADDRESS_LOOKUP_TOKEN}
         IDAM_SERVICE_KEY: ${API_GATEWAY_S2S_KEY}
