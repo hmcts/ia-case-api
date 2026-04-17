@@ -1,7 +1,7 @@
 apiVersion: v2
 name: ia-case-api
 home: https://github.com/hmcts/ia-case-api
-version: 0.0.73
+version: 0.0.74
 description: Immigration & Asylum Case API
 maintainers:
   - name: HMCTS Immigration & Asylum Team
@@ -19,39 +19,39 @@ dependencies:
     repository: 'oci://hmctsprod.azurecr.io/helm'
     condition: xui-webapp.enabled
   - name: ia-case-payments-api
-    version: 0.0.25
+    version: 0.0.28
     repository: 'oci://hmctsprod.azurecr.io/helm'
     condition: ia-case-payments-api.enabled
   - name: ia-case-documents-api
-    version: 0.0.42
+    version: 0.0.46
     repository: 'oci://hmctsprod.azurecr.io/helm'
     condition: ia-case-documents-api.enabled
   - name: ia-case-notifications-api
-    version: 0.0.53
+    version: 0.0.61
     repository: 'oci://hmctsprod.azurecr.io/helm'
     condition: ia-case-notifications-api.enabled
   - name: ia-home-office-integration-api
-    version: 0.0.28
+    version: 0.0.33
     repository: 'oci://hmctsprod.azurecr.io/helm'
     condition: ia-home-office-integration-api.enabled
   - name: ia-aip-frontend
-    version: 0.0.55
+    version: 0.0.63
     repository: 'oci://hmctsprod.azurecr.io/helm'
     condition: ia-aip-frontend.enabled
   - name: ia-bail-case-api
-    version: 0.0.24
+    version: 0.0.27
     repository: 'oci://hmctsprod.azurecr.io/helm'
     condition: ia-bail-case-api.enabled
   - name: ia-timed-event-service
-    version: 0.0.30
+    version: 0.0.33
     repository: 'oci://hmctsprod.azurecr.io/helm'
     condition: ia-timed-event-service.enabled
   - name: ccd-case-document-am-api
-    version: 1.7.17
+    version: 1.7.18
     repository: 'oci://hmctsprod.azurecr.io/helm'
     condition: ccd-case-document-am-api.enabled
   - name: ia-hearings-api
-    version: 0.0.22
+    version: 0.0.24
     repository: 'oci://hmctsprod.azurecr.io/helm'
     condition: ia-hearings-api.enabled
   - name: ia-cron-config
@@ -60,11 +60,11 @@ dependencies:
     alias: ia-cron-hearings-processor
     condition: ia-cron-hearings-processor.enabled
   - name: em-ccdorc
-    version: 2.1.0
+    version: 2.1.2
     repository: 'oci://hmctsprod.azurecr.io/helm'
     condition: em-ccdorc.enabled
   - name: em-stitching
-    version: 1.1.0
+    version: 1.1.4
     repository: 'oci://hmctsprod.azurecr.io/helm'
     condition: em-stitching.enabled
   - name: aac-manage-case-assignment
@@ -76,11 +76,11 @@ dependencies:
     repository: 'oci://hmctsprod.azurecr.io/helm'
     condition: wa.enabled
   - name: servicebus
-    version: 1.2.1
+    version: 1.2.2
     repository: 'oci://hmctsprod.azurecr.io/helm'
     condition: servicebus.enabled
   - name: servicebus
-    version: 1.2.1
+    version: 1.2.2
     repository: 'oci://hmctsprod.azurecr.io/helm'
     condition: servicebus.enabled
     alias: hmcsb
@@ -97,7 +97,7 @@ dependencies:
     repository: 'oci://hmctsprod.azurecr.io/helm'
     condition: am-org-role-mapping-service.enabled
   - name: postgresql
-    version: 1.1.0
+    version: 1.1.1
     repository: 'oci://hmctsprod.azurecr.io/helm'
     condition: postgresql.enabled
   
