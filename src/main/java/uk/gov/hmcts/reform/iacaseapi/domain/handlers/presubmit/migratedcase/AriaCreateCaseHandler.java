@@ -81,7 +81,11 @@ public class AriaCreateCaseHandler implements PreSubmitCallbackHandler<AsylumCas
             throw new IllegalStateException("appealReferenceNumber is not valid");
         }
 
+        String caseId = String.valueOf(caseDetails.getId());
+        caseId = caseId.replaceAll("(.{" + 4 + "})", "$1 ").trim();
+        
         asylumCase.write(APPEAL_REFERENCE_NUMBER, appealReferenceNumber);
+        asylumCase.write(CCD_REFERENCE_NUMBER_FOR_DISPLAY, caseId);
         asylumCase.write(APPEAL_SUBMISSION_DATE, appealSubmissionDate);
         asylumCase.write(IS_ARIA_MIGRATED, YesOrNo.YES);
         //isAriaMigratedFilter is used separately for case list filtering on ExUI
