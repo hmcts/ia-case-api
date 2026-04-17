@@ -1,14 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.migratedcase;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_REFERENCE_NUMBER;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_SUBMISSION_DATE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ARIA_DESIRED_STATE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ARIA_DESIRED_STATE_SELECTED_VALUE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ARIA_MIGRATION_TASK_DUE_DAYS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ARIA_MIGRATED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ARIA_MIGRATED_FILTER;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
@@ -73,6 +66,8 @@ public class AriaCreateCaseHandler implements PreSubmitCallbackHandler<AsylumCas
             return asylumCasePreSubmitCallbackResponse;
         }
 
+        String appealSubmissionDate = asylumCase.read(APPEAL_SUBMISSION_DATE, String.class).orElse(dateProvider.now().toString());
+
         AppealType appealType =
             asylumCase
                 .read(APPEAL_TYPE, AppealType.class)
@@ -87,7 +82,7 @@ public class AriaCreateCaseHandler implements PreSubmitCallbackHandler<AsylumCas
         }
 
         asylumCase.write(APPEAL_REFERENCE_NUMBER, appealReferenceNumber);
-        asylumCase.write(APPEAL_SUBMISSION_DATE, dateProvider.now().toString());
+        asylumCase.write(APPEAL_SUBMISSION_DATE, appealSubmissionDate);
         asylumCase.write(IS_ARIA_MIGRATED, YesOrNo.YES);
         //isAriaMigratedFilter is used separately for case list filtering on ExUI
         asylumCase.write(IS_ARIA_MIGRATED_FILTER, YesOrNo.YES);

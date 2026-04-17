@@ -109,7 +109,8 @@ public class AsylumCaseNotificationApiSender implements NotificationSender<Asylu
                         )
                 );
             } catch (AsylumCaseServiceResponseException e) {
-                log.error("Scheduling SAVE_NOTIFICATIONS_TO_DATA event failed: ", e);
+                log.error("Scheduling SAVE_NOTIFICATIONS_TO_DATA event failed for case reference {}, event name: {}",
+                        callback.getCaseDetails().getId(), callback.getEvent().toString(), e);
             }
         }
     }

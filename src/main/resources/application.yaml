@@ -12,9 +12,18 @@ management:
   endpoints:
     web:
       base-path: "/"
+      exposure:
+        include: health, info, ping
   health:
+    redis:
+      enabled: false  # don't let Redis affect pod health
     probes:
       enabled: true
+    group:
+      readiness:
+        include: ping
+      liveness:
+        include: ping
   services:
     documentsApi:
       uri: ${IA_CASE_DOCUMENTS_API_URL:http://127.0.0.1:8092}/health
@@ -81,10 +90,14 @@ spring:
       resourceserver:
         jwt:
           jwk-set-uri: ${OPEN_ID_IDAM_URL:http://127.0.0.1:5000}/o/jwks
-  cache:
-    cache-names: userInfoCache, accessTokenCache, homeOfficeReferenceDataCache
-    caffeine:
-      spec: expireAfterWrite=3600s
+  data:
+    redis:
+      url: ${IA_REDIS_CONNECTION_STRING:}
+      secret: ${IA_REDIS_ACCESS_KEY:}
+      encryption:
+        key: ${IA_REDIS_ENCRYPTION_KEY:}
+      ssl:
+        enabled: true
   datasource:
     driverClassName: org.postgresql.Driver
     url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5050}/${POSTGRES_NAME:ia_case_api}${POSTGRES_CONNECTION_OPTIONS:}
@@ -217,6 +230,7 @@ homeOfficeApi:
   endpoint: ${IA_HOME_OFFICE_INTEGRATION_API_URL:http://127.0.0.1:8094}
   aboutToStartPath: "/asylum/ccdAboutToStart"
   aboutToSubmitPath: "/asylum/ccdAboutToSubmit"
+  midEventPath: "/asylum/ccdMidEvent"
 
 security:
   anonymousPaths:
@@ -273,6 +287,7 @@ security:
       - "requestCaseEdit"
       - "requestHearingRequirements"
       - "requestRespondentEvidence"
+      - "completeCaseReview"
       - "uploadRespondentEvidence"
       - "requestRespondentReview"
       - "addAppealResponse"
@@ -355,6 +370,7 @@ security:
       - "removeDetainedStatus"
       - "turnOnNotificationsWATasks"
       - "addStatutoryTimeframe24Weeks"
+      - "removeStatutoryTimeframe24Weeks"
     challenged-access-legal-operations:
       - "appellantInPersonManual"
       - "moveToPaymentPending"
@@ -363,6 +379,7 @@ security:
       - "requestCaseEdit"
       - "requestHearingRequirements"
       - "requestRespondentEvidence"
+      - "completeCaseReview"
       - "uploadRespondentEvidence"
       - "requestRespondentReview"
       - "addAppealResponse"
@@ -451,6 +468,7 @@ security:
       - "requestCaseEdit"
       - "requestHearingRequirements"
       - "requestRespondentEvidence"
+      - "completeCaseReview"
       - "uploadRespondentEvidence"
       - "requestRespondentReview"
       - "addAppealResponse"
@@ -532,6 +550,7 @@ security:
       - "markAppealAsDetained"
       - "removeDetainedStatus"
       - "turnOnNotificationsWATasks"
+      - "removeStatutoryTimeframe24Weeks"
     hearing-centre-admin:
       - "appellantInPersonManual"
       - "startAppeal"
@@ -1344,6 +1363,8 @@ security:
       - "rollbackMigration"
       - "addStatutoryTimeframe24Weeks"
       - "removeStatutoryTimeframe24Weeks"
+      - "createCaseLink"
+      - "maintainCaseLinks"
     caseworker-ia-internal:
       - "revokeCaseAccess"
       - "removeCaseManagerBulk"
@@ -1391,7 +1412,7 @@ idam:
     microservice: ${IA_S2S_MICROSERVICE:ia}
     url: ${S2S_URL:http://127.0.0.1:4502}
   s2s-authorised:
-    services: ${IA_S2S_AUTHORIZED_SERVICES:ccd,ccd_data,ccd_gw,ccd_ps,iac,payment_app,refunds_api}
+    services: ${IA_S2S_AUTHORIZED_SERVICES:ccd,ccd_data,ccd_ps,iac,payment_app,refunds_api}
   ia_system_user:
     username: ${IA_SYSTEM_USERNAME:system-user}
     password: ${IA_SYSTEM_PASSWORD:system-password}

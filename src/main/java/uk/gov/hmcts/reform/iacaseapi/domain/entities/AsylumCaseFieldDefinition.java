@@ -33,9 +33,25 @@ public enum AsylumCaseFieldDefinition {
 
     HOME_OFFICE_REFERENCE_NUMBER(
         "homeOfficeReferenceNumber", new TypeReference<String>(){}),
-
+    APPELLANT_CONTACT_PREFERENCE(
+            "appellantContactPreference", new TypeReference<String>(){}),
     HOME_OFFICE_DECISION_DATE(
         "homeOfficeDecisionDate", new TypeReference<String>(){}),
+
+    HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS(
+        "homeOfficeAppellantApiResponseStatus", new TypeReference<HomeOfficeApiResponseStatusType>(){}),
+
+    HOME_OFFICE_APPELLANT_CLAIM_DATE(
+        "homeOfficeAppellantClaimDate", new TypeReference<String>(){}),
+
+    HOME_OFFICE_APPELLANT_DECISION_DATE(
+        "homeOfficeAppellantDecisionDate", new TypeReference<String>() {}),
+
+    HOME_OFFICE_APPELLANT_DECISION_LETTER_DATE(
+        "homeOfficeAppellantDecisionLetterDate", new TypeReference<String>(){}),
+
+    HOME_OFFICE_APPELLANTS(
+        "homeOfficeAppellants", new TypeReference<List<IdValue<HomeOfficeAppellant>>>(){}),
 
     APPELLANT_GIVEN_NAMES(
         "appellantGivenNames", new TypeReference<String>(){}),
@@ -87,9 +103,13 @@ public enum AsylumCaseFieldDefinition {
 
     EMAIL(
         "email", new TypeReference<String>(){}),
+    EMAIL_RETYPE(
+            "emailRetype", new TypeReference<String>(){}),
 
     MOBILE_NUMBER(
         "mobileNumber", new TypeReference<String>(){}),
+    MOBILE_NUMBER_RETYPE(
+            "mobileNumberRetype", new TypeReference<String>(){}),
 
     APPEAL_TYPE(
         "appealType", new TypeReference<AppealType>(){}),
@@ -520,6 +540,10 @@ public enum AsylumCaseFieldDefinition {
 
     LEGAL_REP_MOBILE_PHONE_NUMBER(
             "legalRepMobilePhoneNumber", new TypeReference<String>(){}),
+    LEGAL_REPRESENTATIVE_DETAILS(
+            "legalRepresentativeDetails", new TypeReference<String>(){}),
+    DETENTION_REMOVAL_APPELLANT_CONTACT_PREFERENCE(
+            "detentionRemoval_appellantContactPreference", new TypeReference<String>(){}),
 
     CHANGE_DIRECTION_DUE_DATE_ACTION_AVAILABLE(
         "changeDirectionDueDateActionAvailable", new TypeReference<YesOrNo>(){}),
@@ -2897,7 +2921,10 @@ public enum AsylumCaseFieldDefinition {
         new TypeReference<YesOrNo>(){}),
 
     HAS_BEEN_FTPA_DECIDED("hasBeenFtpaDecided",
-        new TypeReference<YesOrNo>(){})
+        new TypeReference<YesOrNo>(){}),
+
+    COMPLETE_CASE_REVIEW_DATE("completeCaseReviewDate",
+        new TypeReference<String>(){})
     ;
 
     private final String value;

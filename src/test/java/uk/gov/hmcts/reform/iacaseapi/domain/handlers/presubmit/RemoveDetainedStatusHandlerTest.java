@@ -144,5 +144,71 @@ class RemoveDetainedStatusHandlerTest {
             .isExactlyInstanceOf(NullPointerException.class);
     }
 
+    @Test
+    void mid_event_should_add_error_when_email_does_not_match() {
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getEvent()).thenReturn(Event.REMOVE_DETAINED_STATUS);
+        when(callback.getPageId()).thenReturn("detentionRemoval_appellantContactPreference");
+
+        when(asylumCase.read(EMAIL, String.class))
+                .thenReturn(Optional.of("test@email.com"));
+        when(asylumCase.read(EMAIL_RETYPE, String.class))
+                .thenReturn(Optional.of("different@email.com"));
+
+        PreSubmitCallbackResponse<AsylumCase> response =
+                removeDetainedStatusHandler.handle(
+                        PreSubmitCallbackStage.MID_EVENT, callback);
+
+        assertNotNull(response);
+        assertFalse(response.getErrors().isEmpty());
+        assertTrue(response.getErrors().contains("The details given do not match"));
+    }
+
+    @Test
+    void mid_event_should_add_error_when_mobile_number_does_not_match() {
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getEvent()).thenReturn(Event.REMOVE_DETAINED_STATUS);
+        when(callback.getPageId()).thenReturn("detentionRemoval_appellantContactPreference");
+
+        when(asylumCase.read(MOBILE_NUMBER, String.class))
+                .thenReturn(Optional.of("07123456789"));
+        when(asylumCase.read(MOBILE_NUMBER_RETYPE, String.class))
+                .thenReturn(Optional.of("07999999999"));
+
+        PreSubmitCallbackResponse<AsylumCase> response =
+                removeDetainedStatusHandler.handle(
+                        PreSubmitCallbackStage.MID_EVENT, callback);
+
+        assertNotNull(response);
+        assertFalse(response.getErrors().isEmpty());
+        assertTrue(response.getErrors().contains("The details given do not match"));
+    }
+
+    @Test
+    void mid_event_should_not_add_error_when_contact_details_match() {
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getEvent()).thenReturn(Event.REMOVE_DETAINED_STATUS);
+        when(callback.getPageId()).thenReturn("detentionRemoval_appellantContactPreference");
+
+        when(asylumCase.read(EMAIL, String.class))
+                .thenReturn(Optional.of("test@email.com"));
+        when(asylumCase.read(EMAIL_RETYPE, String.class))
+                .thenReturn(Optional.of("test@email.com"));
+
+        when(asylumCase.read(MOBILE_NUMBER, String.class))
+                .thenReturn(Optional.of("07123456789"));
+        when(asylumCase.read(MOBILE_NUMBER_RETYPE, String.class))
+                .thenReturn(Optional.of("07123456789"));
+
+        PreSubmitCallbackResponse<AsylumCase> response =
+                removeDetainedStatusHandler.handle(
+                        PreSubmitCallbackStage.MID_EVENT, callback);
+
+        assertNotNull(response);
+        assertTrue(response.getErrors().isEmpty());
+    }
 
 }
