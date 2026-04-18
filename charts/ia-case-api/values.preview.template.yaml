@@ -822,6 +822,8 @@ xui-webapp:
       rpx:
         resourceGroup: rpx
         secrets:
+          - name: mc-session-secret
+            alias: mc-session-secret
           - name: mc-s2s-client-secret
             alias: mc-s2s-client-secret
           - name: mc-idam-client-secret
@@ -1521,7 +1523,7 @@ ia-hearings-api:
   enabled: true
   java:
     imagePullPolicy: Always
-    image: 'hmctsprod.azurecr.io/ia/hearings-api:latest'
+    image: hmctsprod.azurecr.io/ia/hearings-api:pr-538
     releaseNameOverride: ${SERVICE_NAME}-hearings-api
     ingressHost: ${SERVICE_NAME}-hearings-api.preview.platform.hmcts.net
     devcpuRequests: 25m

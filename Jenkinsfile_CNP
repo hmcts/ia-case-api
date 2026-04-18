@@ -12,11 +12,12 @@ import uk.gov.hmcts.contino.GithubAPI
 def type = "java"
 def product = "ia"
 def component = "case-api"
-def dmnBranch = "master"
+def dmnBranch = "DIAC-1081-review-interpreter-booking-issue"
 def bpmnBranch = "master"
 
 def secrets = [
         'rpx-${env}': [
+                secret('mc-session-secret', 'SESSION_SECRET'),
                 secret('mc-s2s-client-secret', 'S2S_SECRET'),
                 secret('mc-idam-client-secret', 'IDAM_CLIENT_SECRET'),
                 secret('system-user-name', 'SYSTEM_USER_NAME'),
