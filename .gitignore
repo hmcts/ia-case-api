@@ -10,6 +10,8 @@ bin/integrationTest/
 bin/main/
 bin/smokeTest/
 bin/test/
+Fortify Scan/
+lib/FodUpload.jar
 
 ### STS ###
 .apt_generated

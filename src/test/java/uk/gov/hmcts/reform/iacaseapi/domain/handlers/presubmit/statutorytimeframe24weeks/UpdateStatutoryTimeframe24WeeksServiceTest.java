@@ -1,5 +1,28 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.statutorytimeframe24weeks;
 
+import static java.util.Collections.emptyList;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_NOTES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STATUTORY_TIMEFRAME_24_WEEKS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STF_24W_CURRENT_REASON_AUTO_GENERATED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STF_24W_CURRENT_STATUS_AUTO_GENERATED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -9,9 +32,11 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseNote;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.HomeOfficeStatutoryTimeframeDto;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.StatutoryTimeframe24Weeks;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.StatutoryTimeframe24WeeksHistory;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
@@ -19,29 +44,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.Appender;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-
-import static java.util.Collections.emptyList;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.anyList;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_NOTES;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STATUTORY_TIMEFRAME_24_WEEKS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STF_24W_CURRENT_REASON_AUTO_GENERATED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STF_24W_CURRENT_STATUS_AUTO_GENERATED;
-
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
-@SuppressWarnings("unchecked")
 class UpdateStatutoryTimeframe24WeeksServiceTest {
 
     @Mock
@@ -50,8 +54,8 @@ class UpdateStatutoryTimeframe24WeeksServiceTest {
     private Appender<CaseNote> caseNoteAppender;
     @Mock private AsylumCase asylumCase;
     @Mock private DateProvider dateProvider;
-    @Mock private List allAppendedStatutoryTimeframe24Weeks;
-    @Mock private List allAppendedCaseNotes;
+    @Mock private List<IdValue<StatutoryTimeframe24WeeksHistory>> allAppendedStatutoryTimeframe24Weeks;
+    @Mock private List<IdValue<CaseNote>> allAppendedCaseNotes;
     @Mock private UserDetails userDetails;
     @Mock private STF24WeeksBannerTextService bannerTextService;
 
@@ -68,6 +72,14 @@ class UpdateStatutoryTimeframe24WeeksServiceTest {
     private final String surname = "Butcher";
     private UpdateStatutoryTimeframe24WeeksService updateStatutoryTimeframe24WeeksService;
 
+    private String hmctsReferenceNumber;
+    private String uan;
+    private String familyName;
+    private String givenNames;
+    private LocalDate dateOfBirth;
+    private OffsetDateTime timeStamp;
+
+    private HomeOfficeStatutoryTimeframeDto homeOfficeStatutoryTimeframeDto;
 
     @BeforeEach
     public void setUp() {
@@ -89,6 +101,13 @@ class UpdateStatutoryTimeframe24WeeksServiceTest {
                 dateProvider,
                 userDetails,
                 bannerTextService);
+
+        hmctsReferenceNumber = "PA/12345/2026";
+        uan = "1234-5678-9012-3456";
+        familyName = "Smith";
+        givenNames = "John";
+        dateOfBirth = LocalDate.of(1990, 1, 1);
+        timeStamp = OffsetDateTime.of(2023, 12, 1, 14, 30, 0, 0, ZoneOffset.UTC);
     }
 
     @Test
@@ -98,7 +117,24 @@ class UpdateStatutoryTimeframe24WeeksServiceTest {
                 .thenReturn(Optional.of(currentStatus));
         StatutoryTimeframe24WeeksHistory statutoryTimeframe24WeeksHistory = new StatutoryTimeframe24WeeksHistory(currentStatus, newStatutoryTimeframe24WeeksReason, forename + " " + surname, nowWithTime.toString());
         List<IdValue<StatutoryTimeframe24WeeksHistory>> existingStatutoryTimeframe24WeeksHistory = Arrays.asList(new IdValue<>("1", statutoryTimeframe24WeeksHistory));
-        StatutoryTimeframe24Weeks existingStatutoryTimeframe24Weeks = new StatutoryTimeframe24Weeks(existingStatutoryTimeframe24WeeksHistory);
+        HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort cohort = 
+            HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort.builder()
+                .name("HU")
+                .included("true")
+                .build();
+
+        homeOfficeStatutoryTimeframeDto = HomeOfficeStatutoryTimeframeDto.builder()
+            .hmctsReferenceNumber(hmctsReferenceNumber)
+            .uan(uan)
+            .familyName(familyName)
+            .givenNames(givenNames)
+            .dateOfBirth(dateOfBirth)
+            .stf24weekCohorts(List.of(cohort))
+            .timeStamp(timeStamp)
+            .build();
+        StatutoryTimeframe24Weeks existingStatutoryTimeframe24Weeks = new StatutoryTimeframe24Weeks(
+                                    existingStatutoryTimeframe24WeeksHistory, 
+                                    homeOfficeStatutoryTimeframeDto);
 
         when(asylumCase.read(STATUTORY_TIMEFRAME_24_WEEKS)).thenReturn(Optional.of(existingStatutoryTimeframe24Weeks));
         when(asylumCase.read(STF_24W_CURRENT_REASON_AUTO_GENERATED, String.class)).thenReturn(Optional.of(newStatutoryTimeframe24WeeksReason));
@@ -129,9 +165,18 @@ class UpdateStatutoryTimeframe24WeeksServiceTest {
         assertThat(capturedCaseNotes.getUser()).isEqualTo(forename + " " + surname);
         assertThat(capturedCaseNotes.getDateAdded()).isEqualTo(now.toString());
 
-        verify(asylumCase, times(1)).write(STATUTORY_TIMEFRAME_24_WEEKS, new StatutoryTimeframe24Weeks(allAppendedStatutoryTimeframe24Weeks));
-        verify(bannerTextService, times(1)).updateBannerText(asylumCaseCaptor.capture());
+        // Capture the object written to asylumCase
+        ArgumentCaptor<StatutoryTimeframe24Weeks> statutoryCaptor =
+            ArgumentCaptor.forClass(StatutoryTimeframe24Weeks.class);
 
+        verify(asylumCase).write(eq(STATUTORY_TIMEFRAME_24_WEEKS), statutoryCaptor.capture());
+
+        StatutoryTimeframe24Weeks writtenStatutoryTimeframe = statutoryCaptor.getValue();
+
+        assertThat(writtenStatutoryTimeframe.getHistory())
+            .isEqualTo(allAppendedStatutoryTimeframe24Weeks);
+
+        verify(bannerTextService, times(1)).updateBannerText(asylumCaseCaptor.capture());
     }
 
     @Test
@@ -141,7 +186,24 @@ class UpdateStatutoryTimeframe24WeeksServiceTest {
                 .thenReturn(Optional.of(currentStatus));
         StatutoryTimeframe24WeeksHistory statutoryTimeframe24WeeksHistory = new StatutoryTimeframe24WeeksHistory(currentStatus, newStatutoryTimeframe24WeeksReason, forename + " " + surname, nowWithTime.toString());
         List<IdValue<StatutoryTimeframe24WeeksHistory>> existingStatutoryTimeframe24WeeksHistory = Arrays.asList(new IdValue<>("1", statutoryTimeframe24WeeksHistory));
-        StatutoryTimeframe24Weeks existingStatutoryTimeframe24Weeks = new StatutoryTimeframe24Weeks(existingStatutoryTimeframe24WeeksHistory);
+        HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort cohort = 
+            HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort.builder()
+                .name("HU")
+                .included("true")
+                .build();
+
+        homeOfficeStatutoryTimeframeDto = HomeOfficeStatutoryTimeframeDto.builder()
+            .hmctsReferenceNumber(hmctsReferenceNumber)
+            .uan(uan)
+            .familyName(familyName)
+            .givenNames(givenNames)
+            .dateOfBirth(dateOfBirth)
+            .stf24weekCohorts(List.of(cohort))
+            .timeStamp(timeStamp)
+            .build();
+        StatutoryTimeframe24Weeks existingStatutoryTimeframe24Weeks = new StatutoryTimeframe24Weeks(
+                                existingStatutoryTimeframe24WeeksHistory,
+                                homeOfficeStatutoryTimeframeDto);
 
         when(asylumCase.read(STATUTORY_TIMEFRAME_24_WEEKS)).thenReturn(Optional.of(existingStatutoryTimeframe24Weeks));
         when(asylumCase.read(STF_24W_CURRENT_REASON_AUTO_GENERATED, String.class)).thenReturn(Optional.of(newStatutoryTimeframe24WeeksReason));
@@ -172,8 +234,16 @@ class UpdateStatutoryTimeframe24WeeksServiceTest {
         assertThat(capturedCaseNotes.getUser()).isEqualTo(forename + " " + surname);
         assertThat(capturedCaseNotes.getDateAdded()).isEqualTo(now.toString());
 
-        verify(asylumCase, times(1)).write(STATUTORY_TIMEFRAME_24_WEEKS, new StatutoryTimeframe24Weeks(allAppendedStatutoryTimeframe24Weeks));
+        // Capture the object written to asylumCase
+        ArgumentCaptor<StatutoryTimeframe24Weeks> statutoryCaptor =
+            ArgumentCaptor.forClass(StatutoryTimeframe24Weeks.class);
 
+        verify(asylumCase).write(eq(STATUTORY_TIMEFRAME_24_WEEKS), statutoryCaptor.capture());
+
+        StatutoryTimeframe24Weeks writtenStatutoryTimeframe = statutoryCaptor.getValue();
+
+        assertThat(writtenStatutoryTimeframe.getHistory())
+            .isEqualTo(allAppendedStatutoryTimeframe24Weeks);
     }
 
     @Test
@@ -204,11 +274,13 @@ class UpdateStatutoryTimeframe24WeeksServiceTest {
         // If the status is different, it should write; if same, it should throw exception
         
         when(asylumCase.read(STATUTORY_TIMEFRAME_24_WEEKS, StatutoryTimeframe24Weeks.class))
-            .thenReturn(Optional.of(new StatutoryTimeframe24Weeks(emptyList())));
+            .thenReturn(Optional.of(new StatutoryTimeframe24Weeks(emptyList(), new HomeOfficeStatutoryTimeframeDto())));
         when(asylumCase.read(STF_24W_CURRENT_REASON_AUTO_GENERATED, String.class))
             .thenReturn(Optional.of("Home Office Initial Determination"));
         when(asylumCase.read(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class))
                 .thenReturn(Optional.of(YesOrNo.NO));
+        when(asylumCase.read(STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED, YesOrNo.class))
+                .thenReturn(Optional.of(YesOrNo.YES));
         updateStatutoryTimeframe24WeeksService.updateAsylumCase(asylumCase, YesOrNo.YES);
 
         verify(asylumCase, times(1)).write(eq(STATUTORY_TIMEFRAME_24_WEEKS), any(StatutoryTimeframe24Weeks.class));
