@@ -25,6 +25,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAS_SPONSOR;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_DECISION_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_REFERENCE_NUMBER;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ADMIN;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.OUTSIDE_UK_WHEN_APPLICATION_MADE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.OUTSIDE_UK_WHEN_APPLICATION_MADE_PREVIOUS_SELECTION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.RP_DC_APPEAL_HEARING_OPTION;
@@ -34,6 +35,8 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SPONSOR_AUTHORISATION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SPONSOR_CONTACT_PREFERENCE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SPONSOR_EMAIL;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SPONSOR_EMAIL_ADMIN_J;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SPONSOR_MOBILE_NUMBER_ADMIN_J;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SPONSOR_FAMILY_NAME;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SPONSOR_GIVEN_NAMES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SPONSOR_MOBILE_NUMBER;
@@ -73,30 +76,30 @@ public class AppealOutOfCountryEditAppealAipHandler implements PreSubmitCallback
     }
 
     public boolean canHandle(
-        PreSubmitCallbackStage callbackStage,
-        Callback<AsylumCase> callback
+            PreSubmitCallbackStage callbackStage,
+            Callback<AsylumCase> callback
     ) {
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-            && (callback.getEvent() == Event.EDIT_APPEAL || callback.getEvent() == Event.EDIT_APPEAL_AFTER_SUBMIT)
-            && featureToggler.getValue("aip-ooc-feature", false)
-            && HandlerUtils.isAipJourney(callback.getCaseDetails().getCaseData());
+                && (callback.getEvent() == Event.EDIT_APPEAL || callback.getEvent() == Event.EDIT_APPEAL_AFTER_SUBMIT)
+                && featureToggler.getValue("aip-ooc-feature", false)
+                && HandlerUtils.isAipJourney(callback.getCaseDetails().getCaseData());
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
-        PreSubmitCallbackStage callbackStage,
-        Callback<AsylumCase> callback
+            PreSubmitCallbackStage callbackStage,
+            Callback<AsylumCase> callback
     ) {
         if (!canHandle(callbackStage, callback)) {
             throw new IllegalStateException("Cannot handle callback");
         }
 
         AsylumCase asylumCase =
-            callback
-                .getCaseDetails()
-                .getCaseData();
+                callback
+                        .getCaseDetails()
+                        .getCaseData();
 
         final long caseId = callback.getCaseDetails().getId();
         boolean holdFieldsForInUkChange = true;
@@ -104,18 +107,18 @@ public class AppealOutOfCountryEditAppealAipHandler implements PreSubmitCallback
         boolean holdFieldsForOutsideUkWhenApplicationMadeChange = true;
 
         Optional<YesOrNo> optionalAppellantInUk =
-            asylumCase.read(APPELLANT_IN_UK, YesOrNo.class);
+                asylumCase.read(APPELLANT_IN_UK, YesOrNo.class);
 
         Optional<AppealType> optionalAppealType =
-            asylumCase.read(APPEAL_TYPE, AppealType.class);
+                asylumCase.read(APPEAL_TYPE, AppealType.class);
 
         Optional<YesOrNo> optionalOutsideUkWhenApplicationMade =
-            asylumCase.read(OUTSIDE_UK_WHEN_APPLICATION_MADE, YesOrNo.class);
+                asylumCase.read(OUTSIDE_UK_WHEN_APPLICATION_MADE, YesOrNo.class);
 
         if (optionalAppellantInUk.isPresent()) {
             Optional<YesOrNo> optionalAppellantInUkPreviousSelection = Optional.of(
-                asylumCase.read(APPELLANT_IN_UK_PREVIOUS_SELECTION, YesOrNo.class)
-                    .orElse(optionalAppellantInUk.get()));
+                    asylumCase.read(APPELLANT_IN_UK_PREVIOUS_SELECTION, YesOrNo.class)
+                            .orElse(optionalAppellantInUk.get()));
 
             asylumCase.write(APPELLANT_IN_UK_PREVIOUS_SELECTION, optionalAppellantInUkPreviousSelection);
             holdFieldsForInUkChange = optionalAppellantInUk.get().equals(optionalAppellantInUkPreviousSelection.get());
@@ -123,8 +126,8 @@ public class AppealOutOfCountryEditAppealAipHandler implements PreSubmitCallback
 
         if (optionalAppealType.isPresent()) {
             Optional<AppealType> optionalAppealTypePreviousSelection = Optional.of(
-                asylumCase.read(APPEAL_TYPE_PREVIOUS_SELECTION, AppealType.class)
-                    .orElse(optionalAppealType.get()));
+                    asylumCase.read(APPEAL_TYPE_PREVIOUS_SELECTION, AppealType.class)
+                            .orElse(optionalAppealType.get()));
 
             asylumCase.write(APPEAL_TYPE_PREVIOUS_SELECTION, optionalAppealTypePreviousSelection);
             holdFieldsForAppealTypeChange = optionalAppealType.get().equals(optionalAppealTypePreviousSelection.get());
@@ -132,28 +135,28 @@ public class AppealOutOfCountryEditAppealAipHandler implements PreSubmitCallback
 
         if (optionalOutsideUkWhenApplicationMade.isPresent()) {
             Optional<YesOrNo> optionalOutsideUkWhenApplicationMadePreviousSelection = Optional.of(
-                asylumCase.read(OUTSIDE_UK_WHEN_APPLICATION_MADE_PREVIOUS_SELECTION, YesOrNo.class)
-                    .orElse(optionalOutsideUkWhenApplicationMade.get()));
+                    asylumCase.read(OUTSIDE_UK_WHEN_APPLICATION_MADE_PREVIOUS_SELECTION, YesOrNo.class)
+                            .orElse(optionalOutsideUkWhenApplicationMade.get()));
 
             asylumCase.write(OUTSIDE_UK_WHEN_APPLICATION_MADE_PREVIOUS_SELECTION, optionalOutsideUkWhenApplicationMadePreviousSelection);
             holdFieldsForOutsideUkWhenApplicationMadeChange = optionalOutsideUkWhenApplicationMade.get().equals(optionalOutsideUkWhenApplicationMadePreviousSelection.get());
         }
 
         updatePreviousSelections(
-            asylumCase,
-            holdFieldsForInUkChange,
-            holdFieldsForAppealTypeChange,
-            holdFieldsForOutsideUkWhenApplicationMadeChange,
-            optionalAppellantInUk,
-            optionalAppealType,
-            optionalOutsideUkWhenApplicationMade
+                asylumCase,
+                holdFieldsForInUkChange,
+                holdFieldsForAppealTypeChange,
+                holdFieldsForOutsideUkWhenApplicationMadeChange,
+                optionalAppellantInUk,
+                optionalAppealType,
+                optionalOutsideUkWhenApplicationMade
         );
 
         verifyInUkChange(
-            optionalAppellantInUk,
-            asylumCase,
-            holdFieldsForInUkChange,
-            caseId
+                optionalAppellantInUk,
+                asylumCase,
+                holdFieldsForInUkChange,
+                caseId
         );
 
         Optional<YesOrNo> optionalHasSponsor = asylumCase.read(HAS_SPONSOR, YesOrNo.class);
@@ -178,13 +181,13 @@ public class AppealOutOfCountryEditAppealAipHandler implements PreSubmitCallback
     }
 
     private void updatePreviousSelections(
-        AsylumCase asylumCase,
-        boolean holdFieldsForInUkChange,
-        boolean holdFieldsForAppealTypeChange,
-        boolean holdFieldsForOutsideUkWhenApplicationMadeChange,
-        Optional<YesOrNo> optionalAppellantInUk,
-        Optional<AppealType> optionalAppealType,
-        Optional<YesOrNo> optionalOutsideUkWhenApplicationMade
+            AsylumCase asylumCase,
+            boolean holdFieldsForInUkChange,
+            boolean holdFieldsForAppealTypeChange,
+            boolean holdFieldsForOutsideUkWhenApplicationMadeChange,
+            Optional<YesOrNo> optionalAppellantInUk,
+            Optional<AppealType> optionalAppealType,
+            Optional<YesOrNo> optionalOutsideUkWhenApplicationMade
     ) {
         if (!holdFieldsForInUkChange) {
             asylumCase.write(APPELLANT_IN_UK_PREVIOUS_SELECTION, optionalAppellantInUk);
@@ -198,10 +201,10 @@ public class AppealOutOfCountryEditAppealAipHandler implements PreSubmitCallback
     }
 
     private void verifyInUkChange(
-        Optional<YesOrNo> optionalAppellantInUk,
-        AsylumCase asylumCase,
-        boolean holdFieldsForInUkChange,
-        long caseId
+            Optional<YesOrNo> optionalAppellantInUk,
+            AsylumCase asylumCase,
+            boolean holdFieldsForInUkChange,
+            long caseId
     ) {
         if (optionalAppellantInUk.isPresent()) {
             YesOrNo appellantInUk = optionalAppellantInUk.get();
@@ -230,21 +233,29 @@ public class AppealOutOfCountryEditAppealAipHandler implements PreSubmitCallback
 
     private void writeSponsorContactDetails(AsylumCase asylumCase) {
         Optional<List<IdValue<Subscriber>>> maybeSponsorSubscriptions =
-            asylumCase.read(SPONSOR_SUBSCRIPTIONS);
+                asylumCase.read(SPONSOR_SUBSCRIPTIONS);
 
         final List<IdValue<Subscriber>> existingSponsorSubscriptions =
-            maybeSponsorSubscriptions.orElse(Collections.emptyList());
+                maybeSponsorSubscriptions.orElse(Collections.emptyList());
 
         if (!existingSponsorSubscriptions.isEmpty()) {
-            final IdValue<Subscriber> sponsorMobileNumber = existingSponsorSubscriptions.get(0);
-            final IdValue<Subscriber> sponsorEmail = existingSponsorSubscriptions.get(0);
+            final IdValue<Subscriber> sponsorDetails = existingSponsorSubscriptions.get(0);
 
-            if (existingSponsorSubscriptions.get(0).getValue().getEmail() != null
-                && existingSponsorSubscriptions.get(0).getValue().getMobileNumber() != null) {
-                asylumCase.write(SPONSOR_EMAIL, sponsorEmail.getValue().getEmail());
-                asylumCase.write(AIP_SPONSOR_EMAIL_FOR_DISPLAY, sponsorEmail.getValue().getEmail());
-                asylumCase.write(SPONSOR_MOBILE_NUMBER, sponsorMobileNumber.getValue().getMobileNumber());
-                asylumCase.write(AIP_SPONSOR_MOBILE_NUMBER_FOR_DISPLAY, sponsorMobileNumber.getValue().getMobileNumber());
+            String sponsorEmail = sponsorDetails.getValue().getEmail();
+            String sponsorMobile = sponsorDetails.getValue().getMobileNumber();
+
+            if (sponsorEmail != null && sponsorMobile != null) {
+                YesOrNo isAdmin = asylumCase.read(IS_ADMIN, YesOrNo.class).orElse(YesOrNo.NO);
+
+                if (isAdmin.equals(YesOrNo.YES)) {
+                    asylumCase.write(SPONSOR_EMAIL_ADMIN_J, sponsorEmail);
+                    asylumCase.write(SPONSOR_MOBILE_NUMBER_ADMIN_J, sponsorMobile);
+                } else {
+                    asylumCase.write(SPONSOR_EMAIL, sponsorEmail);
+                    asylumCase.write(AIP_SPONSOR_EMAIL_FOR_DISPLAY, sponsorEmail);
+                    asylumCase.write(SPONSOR_MOBILE_NUMBER, sponsorMobile);
+                    asylumCase.write(AIP_SPONSOR_MOBILE_NUMBER_FOR_DISPLAY, sponsorMobile);
+                }
             }
         }
     }

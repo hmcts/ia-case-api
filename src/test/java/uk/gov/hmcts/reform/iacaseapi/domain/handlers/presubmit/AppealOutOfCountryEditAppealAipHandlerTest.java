@@ -67,7 +67,7 @@ class AppealOutOfCountryEditAppealAipHandlerTest {
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            appealOutOfCountryEditAppealAipHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+                appealOutOfCountryEditAppealAipHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
@@ -93,7 +93,7 @@ class AppealOutOfCountryEditAppealAipHandlerTest {
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            appealOutOfCountryEditAppealAipHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+                appealOutOfCountryEditAppealAipHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
@@ -119,7 +119,7 @@ class AppealOutOfCountryEditAppealAipHandlerTest {
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            appealOutOfCountryEditAppealAipHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+                appealOutOfCountryEditAppealAipHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
@@ -146,7 +146,7 @@ class AppealOutOfCountryEditAppealAipHandlerTest {
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            appealOutOfCountryEditAppealAipHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+                appealOutOfCountryEditAppealAipHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
@@ -175,7 +175,7 @@ class AppealOutOfCountryEditAppealAipHandlerTest {
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            appealOutOfCountryEditAppealAipHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+                appealOutOfCountryEditAppealAipHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
@@ -206,7 +206,7 @@ class AppealOutOfCountryEditAppealAipHandlerTest {
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            appealOutOfCountryEditAppealAipHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+                appealOutOfCountryEditAppealAipHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
@@ -237,7 +237,7 @@ class AppealOutOfCountryEditAppealAipHandlerTest {
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            appealOutOfCountryEditAppealAipHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+                appealOutOfCountryEditAppealAipHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
@@ -262,7 +262,7 @@ class AppealOutOfCountryEditAppealAipHandlerTest {
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            appealOutOfCountryEditAppealAipHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+                appealOutOfCountryEditAppealAipHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
@@ -302,11 +302,11 @@ class AppealOutOfCountryEditAppealAipHandlerTest {
     void should_write_to_sponsor_email_and_sponsor_mobile_phone_fields_when_sponsor_subscriptions_available(Event event) {
 
         Subscriber subscriber = new Subscriber(
-            SubscriberType.SUPPORTER,
-            sponsorEmail,
-            YesOrNo.YES,
-            sponsorMobilePhone,
-            YesOrNo.YES
+                SubscriberType.SUPPORTER,
+                sponsorEmail,
+                YesOrNo.YES,
+                sponsorMobilePhone,
+                YesOrNo.YES
         );
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -319,7 +319,7 @@ class AppealOutOfCountryEditAppealAipHandlerTest {
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            appealOutOfCountryEditAppealAipHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+                appealOutOfCountryEditAppealAipHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
@@ -339,11 +339,11 @@ class AppealOutOfCountryEditAppealAipHandlerTest {
     void should_write_to_sponsor_email_field_when_sponsor_email_subscription_available(Event event) {
 
         Subscriber subscriber = new Subscriber(
-            SubscriberType.SUPPORTER,
-            sponsorEmail,
-            YesOrNo.YES,
-            "",
-            YesOrNo.NO
+                SubscriberType.SUPPORTER,
+                sponsorEmail,
+                YesOrNo.YES,
+                "",
+                YesOrNo.NO
         );
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -356,7 +356,7 @@ class AppealOutOfCountryEditAppealAipHandlerTest {
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            appealOutOfCountryEditAppealAipHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+                appealOutOfCountryEditAppealAipHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
@@ -376,11 +376,11 @@ class AppealOutOfCountryEditAppealAipHandlerTest {
     void should_write_to_sponsor_mobile_phone_field_when_sponsor_phone_subscription_available(Event event) {
 
         Subscriber subscriber = new Subscriber(
-            SubscriberType.SUPPORTER,
-            "",
-            YesOrNo.NO,
-            sponsorMobilePhone,
-            YesOrNo.YES
+                SubscriberType.SUPPORTER,
+                "",
+                YesOrNo.NO,
+                sponsorMobilePhone,
+                YesOrNo.YES
         );
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -393,7 +393,7 @@ class AppealOutOfCountryEditAppealAipHandlerTest {
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            appealOutOfCountryEditAppealAipHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+                appealOutOfCountryEditAppealAipHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
@@ -406,6 +406,87 @@ class AppealOutOfCountryEditAppealAipHandlerTest {
         verifyUnclearedFields(asylumCase);
     }
 
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {
+        "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT"
+    })
+    void should_write_to_admin_sponsor_email_and_mobile_when_is_admin(Event event) {
+        Subscriber subscriber = new Subscriber(
+                SubscriberType.SUPPORTER,
+                sponsorEmail,
+                YesOrNo.YES,
+                sponsorMobilePhone,
+                YesOrNo.YES
+        );
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getEvent()).thenReturn(event);
+        when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.DC));
+        when(asylumCase.read(SPONSOR_SUBSCRIPTIONS))
+                .thenReturn(Optional.of(Collections.singletonList(new IdValue<>("1", subscriber))));
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(featureToggler.getValue("aip-ooc-feature", false)).thenReturn(true);
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class))
+                .thenReturn(Optional.of(JourneyType.AIP));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                appealOutOfCountryEditAppealAipHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, times(1)).write(SPONSOR_EMAIL_ADMIN_J, sponsorEmail);
+        verify(asylumCase, times(1)).write(SPONSOR_MOBILE_NUMBER_ADMIN_J, sponsorMobilePhone);
+
+        verify(asylumCase, never()).write(SPONSOR_EMAIL, sponsorEmail);
+        verify(asylumCase, never()).write(AIP_SPONSOR_EMAIL_FOR_DISPLAY, sponsorEmail);
+        verify(asylumCase, never()).write(SPONSOR_MOBILE_NUMBER, sponsorMobilePhone);
+        verify(asylumCase, never()).write(AIP_SPONSOR_MOBILE_NUMBER_FOR_DISPLAY, sponsorMobilePhone);
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {
+        "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT"
+    })
+    void should_write_to_normal_sponsor_fields_when_not_admin(Event event) {
+        Subscriber subscriber = new Subscriber(
+                SubscriberType.SUPPORTER,
+                sponsorEmail,
+                YesOrNo.YES,
+                sponsorMobilePhone,
+                YesOrNo.YES
+        );
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getEvent()).thenReturn(event);
+        when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.DC));
+        when(asylumCase.read(SPONSOR_SUBSCRIPTIONS))
+                .thenReturn(Optional.of(Collections.singletonList(new IdValue<>("1", subscriber))));
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(featureToggler.getValue("aip-ooc-feature", false)).thenReturn(true);
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class))
+                .thenReturn(Optional.of(JourneyType.AIP));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                appealOutOfCountryEditAppealAipHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, times(1)).write(SPONSOR_EMAIL, sponsorEmail);
+        verify(asylumCase, times(1)).write(AIP_SPONSOR_EMAIL_FOR_DISPLAY, sponsorEmail);
+        verify(asylumCase, times(1)).write(SPONSOR_MOBILE_NUMBER, sponsorMobilePhone);
+        verify(asylumCase, times(1)).write(AIP_SPONSOR_MOBILE_NUMBER_FOR_DISPLAY, sponsorMobilePhone);
+
+        verify(asylumCase, never()).write(SPONSOR_EMAIL_ADMIN_J, sponsorEmail);
+        verify(asylumCase, never()).write(SPONSOR_MOBILE_NUMBER_ADMIN_J, sponsorMobilePhone);
+    }
+
+
     @Test
     void handling_should_throw_if_cannot_actually_handle() {
 
@@ -414,9 +495,9 @@ class AppealOutOfCountryEditAppealAipHandlerTest {
         when(featureToggler.getValue("aip-ooc-feature", false)).thenReturn(true);
 
         assertThatThrownBy(
-            () -> appealOutOfCountryEditAppealAipHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
-            .hasMessage("Cannot handle callback")
-            .isExactlyInstanceOf(IllegalStateException.class);
+                () -> appealOutOfCountryEditAppealAipHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
+                .hasMessage("Cannot handle callback")
+                .isExactlyInstanceOf(IllegalStateException.class);
     }
 
     @Test
@@ -434,7 +515,7 @@ class AppealOutOfCountryEditAppealAipHandlerTest {
                 boolean canHandle = appealOutOfCountryEditAppealAipHandler.canHandle(callbackStage, callback);
 
                 if (callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-                    && (event.equals(Event.EDIT_APPEAL) || event.equals(Event.EDIT_APPEAL_AFTER_SUBMIT))) {
+                        && (event.equals(Event.EDIT_APPEAL) || event.equals(Event.EDIT_APPEAL_AFTER_SUBMIT))) {
                     assertTrue(canHandle, "Can handle event " + event);
                 } else {
                     assertFalse(canHandle, "Cannot handle event " + event);
@@ -447,22 +528,22 @@ class AppealOutOfCountryEditAppealAipHandlerTest {
     void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> appealOutOfCountryEditAppealAipHandler.canHandle(null, callback))
-            .hasMessage("callbackStage must not be null")
-            .isExactlyInstanceOf(NullPointerException.class);
+                .hasMessage("callbackStage must not be null")
+                .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(
-            () -> appealOutOfCountryEditAppealAipHandler.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
-            .hasMessage("callback must not be null")
-            .isExactlyInstanceOf(NullPointerException.class);
+                () -> appealOutOfCountryEditAppealAipHandler.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
+                .hasMessage("callback must not be null")
+                .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(() -> appealOutOfCountryEditAppealAipHandler.handle(null, callback))
-            .hasMessage("callbackStage must not be null")
-            .isExactlyInstanceOf(NullPointerException.class);
+                .hasMessage("callbackStage must not be null")
+                .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(
-            () -> appealOutOfCountryEditAppealAipHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
-            .hasMessage("callback must not be null")
-            .isExactlyInstanceOf(NullPointerException.class);
+                () -> appealOutOfCountryEditAppealAipHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
+                .hasMessage("callback must not be null")
+                .isExactlyInstanceOf(NullPointerException.class);
     }
 
     private void verifyClearedFields(AsylumCase asylumCase) {

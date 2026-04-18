@@ -1819,7 +1819,12 @@ public enum AsylumCaseFieldDefinition {
         "sponsorEmail", new TypeReference<String>(){}),
 
     SPONSOR_MOBILE_NUMBER(
-        "sponsorMobileNumber", new TypeReference<String>(){}),
+            "sponsorMobileNumber", new TypeReference<String>(){}),
+    SPONSOR_EMAIL_ADMIN_J(
+            "sponsorEmailAdminJ", new TypeReference<String>(){}),
+
+    SPONSOR_MOBILE_NUMBER_ADMIN_J(
+            "sponsorMobileNumberAdminJ", new TypeReference<String>(){}),
 
     SPONSOR_AUTHORISATION(
         "sponsorAuthorisation", new TypeReference<YesOrNo>(){}),
