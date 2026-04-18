@@ -1,6 +1,5 @@
 {
   "description": "RIA-3763 FTPA Reheard - multiple hearing requirements copied to previous hearing requirements - feature flag on",
-  "launchDarklyKey": "reheard-feature:true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "LegalRepresentative",
@@ -10,7 +9,6 @@
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
-          "isReheardAppealEnabled": "Yes",
           "caseFlagSetAsideReheardExists": "Yes",
           "isAppellantAttendTheHearing": "Yes",
           "isAppellantGivingOralEvidence": "Yes",
@@ -112,7 +110,6 @@
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {
-        "isReheardAppealEnabled": "Yes",
         "caseFlagSetAsideReheardExists": "Yes",
         "currentHearingDetailsVisible": "No",
         "isAppellantAttendTheHearing": "Yes",

@@ -26,7 +26,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeePayment;
 
 @Component
@@ -34,16 +33,13 @@ public class FeesHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final FeePayment<AsylumCase> feePayment;
     private final boolean isfeePaymentEnabled;
-    private final FeatureToggler featureToggler;
 
     public FeesHandler(
         @Value("${featureFlag.isfeePaymentEnabled}") boolean isfeePaymentEnabled,
-        FeePayment<AsylumCase> feePayment,
-        FeatureToggler featureToggler
+        FeePayment<AsylumCase> feePayment
     ) {
         this.feePayment = feePayment;
         this.isfeePaymentEnabled = isfeePaymentEnabled;
-        this.featureToggler = featureToggler;
     }
 
     public boolean canHandle(
@@ -79,7 +75,7 @@ public class FeesHandler implements PreSubmitCallbackHandler<AsylumCase> {
                 .orElseThrow(() -> new IllegalStateException("Appeal type is not present"));
 
         YesOrNo isRemissionsEnabled
-            = featureToggler.getValue("remissions-feature", false) ? YesOrNo.YES : YesOrNo.NO;
+            = YesOrNo.YES;
         asylumCase.write(IS_REMISSIONS_ENABLED, isRemissionsEnabled);
 
         switch (appealType) {

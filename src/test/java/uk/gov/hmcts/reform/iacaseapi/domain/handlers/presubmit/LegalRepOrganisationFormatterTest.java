@@ -30,7 +30,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.AddressUk;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ref.OrganisationEntityResponse;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.ProfessionalOrganisationRetriever;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.Organisation;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.OrganisationPolicy;
@@ -58,7 +57,6 @@ class LegalRepOrganisationFormatterTest {
     @Mock private Callback<AsylumCase> callback;
     @Mock private CaseDetails<AsylumCase> caseDetails;
     @Mock private AsylumCase asylumCase;
-    @Mock private FeatureToggler featureToggler;
     @Mock
     private org.slf4j.Logger log
             = org.slf4j.LoggerFactory.getLogger(LegalRepOrganisationFormatter.class);
@@ -68,8 +66,7 @@ class LegalRepOrganisationFormatterTest {
     public void setUp() throws Exception {
 
         legalRepOrganisationFormatter = new LegalRepOrganisationFormatter(
-            professionalOrganisationRetriever,
-            featureToggler
+            professionalOrganisationRetriever
         );
 
         organisationPolicy =
@@ -107,7 +104,6 @@ class LegalRepOrganisationFormatterTest {
         when(organisationEntityResponse.getContactInformation()).thenReturn(addresses);
         when(organisationEntityResponse.getName()).thenReturn(companyName);
         when(organisationEntityResponse.getOrganisationIdentifier()).thenReturn(organisationIdentifier);
-        when(featureToggler.getValue("share-case-feature", false)).thenReturn(true);
 
         PreSubmitCallbackResponse<AsylumCase> response =
             legalRepOrganisationFormatter.handle(
@@ -163,7 +159,6 @@ class LegalRepOrganisationFormatterTest {
         when(organisationEntityResponse.getContactInformation()).thenReturn(addresses);
         when(organisationEntityResponse.getName()).thenReturn(companyName);
         when(organisationEntityResponse.getOrganisationIdentifier()).thenReturn(organisationIdentifier);
-        when(featureToggler.getValue("share-case-feature", false)).thenReturn(true);
 
         PreSubmitCallbackResponse<AsylumCase> response =
             legalRepOrganisationFormatter.handle(
@@ -206,7 +201,6 @@ class LegalRepOrganisationFormatterTest {
         when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         when(organisationEntityResponse.getOrganisationIdentifier()).thenReturn("SomeId");
         when(professionalOrganisationRetriever.retrieve()).thenReturn(organisationEntityResponse);
-        when(featureToggler.getValue("share-case-feature", false)).thenReturn(false);
 
         PreSubmitCallbackResponse<AsylumCase> response =
             legalRepOrganisationFormatter.handle(
@@ -351,7 +345,6 @@ class LegalRepOrganisationFormatterTest {
         when(organisationEntityResponse.getContactInformation()).thenReturn(addresses);
         when(organisationEntityResponse.getName()).thenReturn(companyName);
         when(organisationEntityResponse.getOrganisationIdentifier()).thenReturn(organisationIdentifier);
-        when(featureToggler.getValue("share-case-feature", false)).thenReturn(true);
 
         AddressUk emptyAddressUk = new AddressUk(
                 "","","","","","",""

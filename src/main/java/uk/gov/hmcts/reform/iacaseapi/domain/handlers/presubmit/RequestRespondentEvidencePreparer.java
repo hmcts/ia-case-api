@@ -81,8 +81,7 @@ public class RequestRespondentEvidencePreparer implements PreSubmitCallbackHandl
         final AppealType appealType = asylumCase.read(APPEAL_TYPE, AppealType.class)
                 .orElseThrow(() -> new IllegalStateException("AppealType is not present."));
 
-        if (featureToggler.getValue("home-office-uan-feature", false)
-                && HomeOfficeAppealTypeChecker.isAppealTypeEnabled(featureToggler, appealType)) {
+        if (HomeOfficeAppealTypeChecker.isAppealTypeEnabled(featureToggler, appealType)) {
 
             boolean isInCountryAppeal = asylumCase.read(APPEAL_OUT_OF_COUNTRY, YesOrNo.class).map(ooc -> NO == ooc).orElse(true);
             boolean isNotificationTurnedOff = HandlerUtils.isNotificationTurnedOff(asylumCase);

@@ -88,9 +88,8 @@ public class HomeOfficeCaseValidatePreparer implements PreSubmitCallbackHandler<
 
         if (isHomeOfficeIntegrationEnabled) {
             asylumCase.write(IS_HOME_OFFICE_INTEGRATION_ENABLED, YesOrNo.YES);
-            boolean homeOfficeUanFeatureEnabled = featureToggler.getValue("home-office-uan-feature", false);
 
-            if (homeOfficeUanFeatureEnabled && appealTypeEnabled && !isAgeAssessmentAppeal && !isEjpCase
+            if (appealTypeEnabled && !isAgeAssessmentAppeal && !isEjpCase
                     && !isNotificationTurnedOff) {
                 asylumCase = homeOfficeApi.aboutToStart(callback);
             }

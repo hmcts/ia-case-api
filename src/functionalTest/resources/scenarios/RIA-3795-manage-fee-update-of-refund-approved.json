@@ -1,6 +1,5 @@
 {
   "description": "RIA-3795 Case officer manage fee update of refund approved",
-  "launchDarklyKey": "manage-fee-update-feature:true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",

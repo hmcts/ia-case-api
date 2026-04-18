@@ -71,8 +71,6 @@ class ManageFeeUpdateMidEventTest {
     @Test
     void handling_should_error_for_amount_greater_than_zero_for_appeal_not_valid() {
 
-        when(featureToggler.getValue("manage-fee-update-feature", false)).thenReturn(true);
-
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(Event.MANAGE_FEE_UPDATE);
@@ -90,8 +88,6 @@ class ManageFeeUpdateMidEventTest {
 
     @Test
     void handling_should_error_for_no_remission_decision() {
-
-        when(featureToggler.getValue("manage-fee-update-feature", false)).thenReturn(true);
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -113,8 +109,6 @@ class ManageFeeUpdateMidEventTest {
 
     @Test
     void handle_should_return_error_if_remission_does_not_exists() {
-
-        when(featureToggler.getValue("manage-fee-update-feature", false)).thenReturn(true);
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -139,7 +133,6 @@ class ManageFeeUpdateMidEventTest {
     @Test
     void handle_should_return_error_if_aip_journey_and_remission_does_not_exists() {
 
-        when(featureToggler.getValue("manage-fee-update-feature", false)).thenReturn(true);
         when(featureToggler.getValue("dlrm-fee-remission-feature-flag", false)).thenReturn(true);
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -160,8 +153,6 @@ class ManageFeeUpdateMidEventTest {
 
     @Test
     void handle_should_return_error_on_one_or_no_completed_stages() {
-
-        when(featureToggler.getValue("manage-fee-update-feature", false)).thenReturn(true);
 
         final CheckValues<String> feeUpdateStatus =
             new CheckValues<>(Arrays.asList(
@@ -195,8 +186,6 @@ class ManageFeeUpdateMidEventTest {
     @Test
     void handle_should_return_error_if_no_remission_exists_for_fee_remission_changed() {
 
-        when(featureToggler.getValue("manage-fee-update-feature", false)).thenReturn(true);
-
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(Event.MANAGE_FEE_UPDATE);
@@ -217,8 +206,6 @@ class ManageFeeUpdateMidEventTest {
     @Test
     void handling_should_error_if_fee_update_reason_is_not_present() {
 
-        when(featureToggler.getValue("manage-fee-update-feature", false)).thenReturn(true);
-
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(Event.MANAGE_FEE_UPDATE);
@@ -233,8 +220,6 @@ class ManageFeeUpdateMidEventTest {
     @Test
     void handling_should_error_if_new_fee_amount_is_not_present() {
 
-        when(featureToggler.getValue("manage-fee-update-feature", false)).thenReturn(true);
-
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(Event.MANAGE_FEE_UPDATE);
@@ -247,8 +232,6 @@ class ManageFeeUpdateMidEventTest {
     @ParameterizedTest
     @EnumSource(value = RemissionDecision.class, names = {"APPROVED", "PARTIALLY_APPROVED"})
     void should_handle_if_the_remission_is_not_rejected(RemissionDecision remissionDecision) {
-
-        when(featureToggler.getValue("manage-fee-update-feature", false)).thenReturn(true);
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -271,8 +254,6 @@ class ManageFeeUpdateMidEventTest {
 
     @Test
     void handling_should_error_for_multiple_fee_update_status_selection_flow2() {
-
-        when(featureToggler.getValue("manage-fee-update-feature", false)).thenReturn(true);
 
         final List<String> completedStages =
             Arrays.asList(
@@ -315,7 +296,6 @@ class ManageFeeUpdateMidEventTest {
             Arrays.asList(
                 "feeUpdateRecorded"
             );
-        when(featureToggler.getValue("manage-fee-update-feature", false)).thenReturn(true);
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -338,8 +318,6 @@ class ManageFeeUpdateMidEventTest {
 
     @Test
     void handling_throw_error_refund_instructed_no_valid_fee_update_status_selection() {
-
-        when(featureToggler.getValue("manage-fee-update-feature", false)).thenReturn(true);
 
         final List<String> completedStages =
             Arrays.asList(
@@ -376,8 +354,6 @@ class ManageFeeUpdateMidEventTest {
     @Test
     void handling_throw_error_refund_instructed_invalid_fee_update_status_selection() {
 
-        when(featureToggler.getValue("manage-fee-update-feature", false)).thenReturn(true);
-
         final List<String> completedStages =
             Arrays.asList(
                 "feeUpdateRecorded",
@@ -413,8 +389,6 @@ class ManageFeeUpdateMidEventTest {
 
     @Test
     void handling_throw_error_refund_instructed_two_valid_fee_update_status_selection() {
-
-        when(featureToggler.getValue("manage-fee-update-feature", false)).thenReturn(true);
 
         final List<String> completedStages =
             Arrays.asList(
@@ -453,8 +427,6 @@ class ManageFeeUpdateMidEventTest {
     @Test
     void handling_throw_error_refund_instructed_for_refund_approved_not_selected() {
 
-        when(featureToggler.getValue("manage-fee-update-feature", false)).thenReturn(true);
-
         final List<String> completedStages =
             Arrays.asList(
                 "feeUpdateRecorded",
@@ -489,8 +461,6 @@ class ManageFeeUpdateMidEventTest {
 
     @Test
     void handling_throw_error_post_refund_instructed_for_value_not_selected() {
-
-        when(featureToggler.getValue("manage-fee-update-feature", false)).thenReturn(true);
 
         final List<String> completedStages =
             Arrays.asList(
@@ -529,8 +499,6 @@ class ManageFeeUpdateMidEventTest {
 
     @Test
     void handling_throw_error_post_refund_instructed_for_many_value_selected() {
-
-        when(featureToggler.getValue("manage-fee-update-feature", false)).thenReturn(true);
 
         final List<String> completedStages =
             Arrays.asList(
@@ -571,8 +539,6 @@ class ManageFeeUpdateMidEventTest {
 
     @Test
     void handling_throw_error_post_refund_instructed_for_existing_value_not_selected() {
-
-        when(featureToggler.getValue("manage-fee-update-feature", false)).thenReturn(true);
 
         final List<String> completedStages =
             Arrays.asList(
@@ -627,7 +593,6 @@ class ManageFeeUpdateMidEventTest {
             Arrays.asList(
                 "feeUpdateRecorded"
             );
-        when(featureToggler.getValue("manage-fee-update-feature", false)).thenReturn(true);
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -666,8 +631,6 @@ class ManageFeeUpdateMidEventTest {
 
     @Test
     void it_can_handle_callback() {
-
-        when(featureToggler.getValue("manage-fee-update-feature", false)).thenReturn(true);
 
         for (Event event : Event.values()) {
 

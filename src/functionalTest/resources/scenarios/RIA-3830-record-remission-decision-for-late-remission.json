@@ -1,6 +1,5 @@
 {
   "description": "RIA-3830 Admin officer record approved remission decision",
-  "launchDarklyKey": "remissions-feature:true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "AdminOfficer",

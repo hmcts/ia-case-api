@@ -36,7 +36,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -50,21 +49,16 @@ class ManageFeeUpdatePreparerTest {
     @Mock
     private AsylumCase asylumCase;
 
-    @Mock
-    private FeatureToggler featureToggler;
-
     private ManageFeeUpdatePreparer manageFeeUpdatePreparer;
 
     @BeforeEach
     void setUp() {
 
-        manageFeeUpdatePreparer = new ManageFeeUpdatePreparer(featureToggler);
+        manageFeeUpdatePreparer = new ManageFeeUpdatePreparer();
     }
 
     @Test
     void handling_should_error_if_fee_update_not_required_last_completed() {
-
-        when(featureToggler.getValue("manage-fee-update-feature", false)).thenReturn(true);
 
         final List<String> completedStages =
             Arrays.asList(
@@ -93,8 +87,6 @@ class ManageFeeUpdatePreparerTest {
     @EnumSource(value = AppealType.class, names = {"EA", "HU", "PA", "EU"})
     void handling_should_error_for_payment_pending(AppealType type) {
 
-        when(featureToggler.getValue("manage-fee-update-feature", false)).thenReturn(true);
-
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(Event.MANAGE_FEE_UPDATE);
@@ -114,8 +106,6 @@ class ManageFeeUpdatePreparerTest {
     @EnumSource(value = AppealType.class, names = {"EA", "HU", "PA", "EU"})
     void handling_should_error_for_no_payment_status(AppealType type) {
 
-        when(featureToggler.getValue("manage-fee-update-feature", false)).thenReturn(true);
-
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(Event.MANAGE_FEE_UPDATE);
@@ -128,8 +118,6 @@ class ManageFeeUpdatePreparerTest {
     @ParameterizedTest
     @EnumSource(value = AppealType.class, names = {"DC", "RP"})
     void handling_should_error_for_invalid_appeal_type(AppealType type) {
-
-        when(featureToggler.getValue("manage-fee-update-feature", false)).thenReturn(true);
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -155,8 +143,6 @@ class ManageFeeUpdatePreparerTest {
 
     @Test
     void it_can_handle_callback() {
-
-        when(featureToggler.getValue("manage-fee-update-feature", false)).thenReturn(true);
 
         for (Event event : Event.values()) {
 

@@ -1,6 +1,5 @@
 {
   "description": "RIA-4540 Last modified direction with unique ID publish - Send respondent review direction - AIP",
-  "launchDarklyKey": "publish-wa-fields-feature:true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",

@@ -17,19 +17,9 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 @MockitoSettings(strictness = Strictness.LENIENT)
 class HomeOfficeAppealTypeCheckerTest {
 
-    private static final String HO_UAN_PA_RP_FEATURE = "home-office-uan-pa-rp-feature";
     private static final String HO_UAN_DC_EA_HU_FEATURE = "home-office-uan-dc-ea-hu-feature";
 
     @Mock private FeatureToggler featureToggler;
-
-    @ParameterizedTest
-    @EnumSource(value = AppealType.class, names = { "PA", "RP" })
-    void should_check_the_flag_for_asylum_appeal_types(AppealType appealType) {
-
-        when(featureToggler.getValue(HO_UAN_PA_RP_FEATURE, false)).thenReturn(true);
-
-        assertTrue(HomeOfficeAppealTypeChecker.isAppealTypeEnabled(featureToggler, appealType));
-    }
 
     @ParameterizedTest
     @EnumSource(value = AppealType.class, names = { "DC", "EA", "HU" })
@@ -39,11 +29,10 @@ class HomeOfficeAppealTypeCheckerTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = AppealType.class, names = { "DC", "EA", "HU", "PA", "RP" })
-    void should_check_flag_for_all_appeal_types(AppealType appealType) {
+    @EnumSource(value = AppealType.class, names = { "DC", "EA", "HU" })
+    void should_check_flag_for_supported_appeal_types(AppealType appealType) {
 
         when(featureToggler.getValue(HO_UAN_DC_EA_HU_FEATURE, false)).thenReturn(true);
-        when(featureToggler.getValue(HO_UAN_PA_RP_FEATURE, false)).thenReturn(true);
 
         assertTrue(HomeOfficeAppealTypeChecker.isAppealTypeEnabled(featureToggler, appealType));
     }

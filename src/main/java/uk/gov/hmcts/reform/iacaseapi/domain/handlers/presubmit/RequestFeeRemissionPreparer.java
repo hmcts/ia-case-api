@@ -17,18 +17,12 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
 @Component
 @Slf4j
 public class RequestFeeRemissionPreparer implements PreSubmitCallbackHandler<AsylumCase> {
 
-    private final FeatureToggler featureToggler;
-
-    public RequestFeeRemissionPreparer(
-        FeatureToggler featureToggler
-    ) {
-        this.featureToggler = featureToggler;
+    public RequestFeeRemissionPreparer() {
     }
 
     public boolean canHandle(
@@ -40,8 +34,7 @@ public class RequestFeeRemissionPreparer implements PreSubmitCallbackHandler<Asy
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_START
                && callback.getEvent() == Event.REQUEST_FEE_REMISSION
-               && !isAipJourney(callback.getCaseDetails().getCaseData())
-               && featureToggler.getValue("remissions-feature", false);
+               && !isAipJourney(callback.getCaseDetails().getCaseData());
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(

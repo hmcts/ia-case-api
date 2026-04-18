@@ -22,7 +22,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.payment.FeesHandler;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeePayment;
 
 import java.util.Arrays;
@@ -71,8 +70,6 @@ class FeesHandlerTest {
     @Mock private Callback<AsylumCase> callback;
     @Mock private CaseDetails<AsylumCase> caseDetails;
     @Mock private AsylumCase asylumCase;
-    @Mock private FeatureToggler featureToggler;
-
 
     private FeesHandler feesHandler;
 
@@ -80,7 +77,7 @@ class FeesHandlerTest {
     public void setUp() {
 
         feesHandler =
-            new FeesHandler(true, feePayment, featureToggler);
+            new FeesHandler(true, feePayment);
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -224,7 +221,6 @@ class FeesHandlerTest {
     void should_return_remission_for_asylum_support() {
 
         when(callback.getEvent()).thenReturn(Event.EDIT_APPEAL);
-        when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
         when(asylumCase.read(APPEAL_TYPE, AppealType.class))
             .thenReturn(Optional.of(AppealType.EA));
         when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
@@ -247,7 +243,6 @@ class FeesHandlerTest {
     void should_return_remission_for_legal_aid() {
 
         when(callback.getEvent()).thenReturn(Event.EDIT_APPEAL);
-        when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
         when(asylumCase.read(APPEAL_TYPE, AppealType.class))
             .thenReturn(Optional.of(AppealType.PA));
         when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
@@ -270,7 +265,6 @@ class FeesHandlerTest {
     @Test
     void should_not_return_remission_for_remissions_not_enabled() {
         when(callback.getEvent()).thenReturn(Event.EDIT_APPEAL);
-        when(featureToggler.getValue("remissions-feature", false)).thenReturn(false);
         when(asylumCase.read(APPEAL_TYPE, AppealType.class))
             .thenReturn(Optional.of(AppealType.PA));
         when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
@@ -294,7 +288,7 @@ class FeesHandlerTest {
     void it_cannot_handle_callback_if_feepayment_not_enabled() {
 
         FeesHandler fees =
-            new FeesHandler(true, feePayment, featureToggler);
+            new FeesHandler(true, feePayment);
 
         assertThatThrownBy(
             () -> fees.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
@@ -306,7 +300,6 @@ class FeesHandlerTest {
     void it_cannot_handle_callback_for_aip_journey() {
 
         when(callback.getEvent()).thenReturn(Event.START_APPEAL);
-        when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.empty());
 
@@ -317,7 +310,6 @@ class FeesHandlerTest {
     void it_runs_further_checks_when_appealType_is_present() {
 
         when(callback.getEvent()).thenReturn(Event.EDIT_APPEAL);
-        when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.empty());
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.EA));
 
@@ -345,8 +337,7 @@ class FeesHandlerTest {
 
     @Test
     void it_can_handle_callback() {
-        when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
-        feesHandler = new FeesHandler(true, feePayment, featureToggler);
+        feesHandler = new FeesHandler(true, feePayment);
 
         for (Event event : Event.values()) {
 
@@ -374,8 +365,7 @@ class FeesHandlerTest {
 
     @Test
     void it_cannot_handle_callback_if_feePayment_not_enabled() {
-        when(featureToggler.getValue("remissions-feature", false)).thenReturn(false);
-        feesHandler = new FeesHandler(false, feePayment, featureToggler);
+        feesHandler = new FeesHandler(false, feePayment);
 
         for (Event event : Event.values()) {
             when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -444,7 +434,6 @@ class FeesHandlerTest {
     public void should_return_data_for_valid_asylumSupport_remission_type() {
 
         when(callback.getEvent()).thenReturn(Event.EDIT_APPEAL);
-        when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
         when(asylumCase.read(APPEAL_TYPE, AppealType.class))
             .thenReturn(Optional.of(AppealType.PA));
         when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
@@ -476,7 +465,6 @@ class FeesHandlerTest {
     public void should_return_data_for_valid_legalAid_remission_type() {
 
         when(callback.getEvent()).thenReturn(Event.EDIT_APPEAL);
-        when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
         when(asylumCase.read(APPEAL_TYPE, AppealType.class))
             .thenReturn(Optional.of(AppealType.PA));
         when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
@@ -510,7 +498,6 @@ class FeesHandlerTest {
     public void should_return_data_for_valid_section17_remission_type() {
 
         when(callback.getEvent()).thenReturn(Event.EDIT_APPEAL);
-        when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
         when(asylumCase.read(APPEAL_TYPE, AppealType.class))
             .thenReturn(Optional.of(AppealType.PA));
         when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
@@ -543,7 +530,6 @@ class FeesHandlerTest {
     public void should_return_data_for_valid_section20_remission_type() {
 
         when(callback.getEvent()).thenReturn(Event.EDIT_APPEAL);
-        when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
         when(asylumCase.read(APPEAL_TYPE, AppealType.class))
             .thenReturn(Optional.of(AppealType.PA));
         when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
@@ -576,7 +562,6 @@ class FeesHandlerTest {
     public void should_return_data_for_valid_homeOfficeWaiver_remission_type() {
 
         when(callback.getEvent()).thenReturn(Event.EDIT_APPEAL);
-        when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
         when(asylumCase.read(APPEAL_TYPE, AppealType.class))
             .thenReturn(Optional.of(AppealType.PA));
         when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
@@ -610,7 +595,6 @@ class FeesHandlerTest {
     public void should_return_data_for_valid_help_with_fees_remission_type(String type) {
 
         when(callback.getEvent()).thenReturn(Event.START_APPEAL);
-        when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
         when(asylumCase.read(APPEAL_TYPE, AppealType.class))
             .thenReturn(Optional.of(AppealType.valueOf(type)));
         when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
@@ -644,7 +628,6 @@ class FeesHandlerTest {
     public void should_return_data_for_valid_exceptional_circumstances_remission_type(String type) {
 
         when(callback.getEvent()).thenReturn(Event.START_APPEAL);
-        when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
         when(asylumCase.read(APPEAL_TYPE, AppealType.class))
             .thenReturn(Optional.of(AppealType.valueOf(type)));
         when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));

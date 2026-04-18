@@ -27,21 +27,19 @@ public class WaFieldsPublisher {
             String dateDue,
             DirectionTag tag, String uniqueId, String directionType) {
 
-        if (featureToggler.getValue("publish-wa-fields-feature", false)) {
 
-            final Direction lastModifiedDirection = new Direction(
-                    explanation,
-                    parties,
-                    dateDue,
-                    dateProvider.now().toString(),
-                    tag,
-                    Collections.emptyList(),
-                    null,
-                    uniqueId,
-                    directionType);
+        final Direction lastModifiedDirection = new Direction(
+                explanation,
+                parties,
+                dateDue,
+                dateProvider.now().toString(),
+                tag,
+                Collections.emptyList(),
+                null,
+                uniqueId,
+                directionType);
 
-            asylumCase.write(AsylumCaseFieldDefinition.LAST_MODIFIED_DIRECTION, lastModifiedDirection);
-        }
+        asylumCase.write(AsylumCaseFieldDefinition.LAST_MODIFIED_DIRECTION, lastModifiedDirection);
     }
 
     public void addLastModifiedApplication(

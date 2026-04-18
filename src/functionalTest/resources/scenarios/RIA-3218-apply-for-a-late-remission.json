@@ -1,6 +1,5 @@
 {
   "description": "RIA-3218 Legal rep apply for a late remission",
-  "launchDarklyKey": "remissions-feature:true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "LegalRepresentative",

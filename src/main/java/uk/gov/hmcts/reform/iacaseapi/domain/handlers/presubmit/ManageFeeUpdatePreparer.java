@@ -18,16 +18,11 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
-
 
 @Component
 public class ManageFeeUpdatePreparer implements PreSubmitCallbackHandler<AsylumCase> {
 
-    private final FeatureToggler featureToggler;
-
-    public ManageFeeUpdatePreparer(FeatureToggler featureToggler) {
-        this.featureToggler = featureToggler;
+    public ManageFeeUpdatePreparer() {
     }
 
     public boolean canHandle(
@@ -38,8 +33,7 @@ public class ManageFeeUpdatePreparer implements PreSubmitCallbackHandler<AsylumC
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_START
-            && callback.getEvent() == Event.MANAGE_FEE_UPDATE
-            && featureToggler.getValue("manage-fee-update-feature", false);
+            && callback.getEvent() == Event.MANAGE_FEE_UPDATE;
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(

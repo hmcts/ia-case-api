@@ -14,7 +14,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.RemissionDetailsAppender;
 
 import java.util.List;
@@ -43,14 +42,11 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 @Slf4j
 public class SubmitAppealHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
-    private final FeatureToggler featureToggler;
     private final RemissionDetailsAppender remissionDetailsAppender;
 
     public SubmitAppealHandler(
-        FeatureToggler featureToggler,
         RemissionDetailsAppender remissionDetailsAppender
     ) {
-        this.featureToggler = featureToggler;
         this.remissionDetailsAppender = remissionDetailsAppender;
     }
 
@@ -62,8 +58,7 @@ public class SubmitAppealHandler implements PreSubmitCallbackHandler<AsylumCase>
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-               && callback.getEvent() == Event.SUBMIT_APPEAL
-               && featureToggler.getValue("remissions-feature", false);
+               && callback.getEvent() == Event.SUBMIT_APPEAL;
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(

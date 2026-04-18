@@ -17,7 +17,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.AddressUk;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ref.OrganisationEntityResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.ProfessionalOrganisationRetriever;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.Organisation;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.OrganisationPolicy;
@@ -28,14 +27,11 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.Organisati
 public class LegalRepOrganisationFormatter implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final ProfessionalOrganisationRetriever professionalOrganisationRetriever;
-    private final FeatureToggler featureToggler;
 
     public LegalRepOrganisationFormatter(
-        ProfessionalOrganisationRetriever professionalOrganisationRetriever,
-        FeatureToggler featureToggler
+        ProfessionalOrganisationRetriever professionalOrganisationRetriever
     ) {
         this.professionalOrganisationRetriever = professionalOrganisationRetriever;
-        this.featureToggler = featureToggler;
     }
 
     @Override
@@ -68,8 +64,7 @@ public class LegalRepOrganisationFormatter implements PreSubmitCallbackHandler<A
             }
 
             if (organisationEntityResponse != null
-                    && StringUtils.isNotBlank(organisationEntityResponse.getOrganisationIdentifier())
-                    && featureToggler.getValue("share-case-feature", false)) {
+                    && StringUtils.isNotBlank(organisationEntityResponse.getOrganisationIdentifier())) {
 
                 log.info("PRD endpoint called for caseId [{}] orgId[{}]",
                         callback.getCaseDetails().getId(), organisationEntityResponse.getOrganisationIdentifier());

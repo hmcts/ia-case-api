@@ -31,25 +31,21 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.RemissionDetailsAppender;
 
 @Component
 @Slf4j
 public class RequestFeeRemissionHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
-    private final FeatureToggler featureToggler;
     private final RemissionDetailsAppender remissionDetailsAppender;
     private final UserDetails userDetails;
     private final UserDetailsHelper userDetailsHelper;
 
     public RequestFeeRemissionHandler(
-        FeatureToggler featureToggler,
         RemissionDetailsAppender remissionDetailsAppender,
         UserDetails userDetails,
         UserDetailsHelper userDetailsHelper
     ) {
-        this.featureToggler = featureToggler;
         this.remissionDetailsAppender = remissionDetailsAppender;
         this.userDetails = userDetails;
         this.userDetailsHelper = userDetailsHelper;
@@ -64,8 +60,7 @@ public class RequestFeeRemissionHandler implements PreSubmitCallbackHandler<Asyl
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
                && callback.getEvent() == Event.REQUEST_FEE_REMISSION
-               && !isAipJourney(callback.getCaseDetails().getCaseData())
-               && featureToggler.getValue("remissions-feature", false);
+               && !isAipJourney(callback.getCaseDetails().getCaseData());
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(

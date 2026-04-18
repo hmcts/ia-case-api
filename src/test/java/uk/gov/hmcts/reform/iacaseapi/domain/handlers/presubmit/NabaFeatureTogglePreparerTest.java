@@ -60,7 +60,6 @@ class NabaFeatureTogglePreparerTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(featureToggler.getValue("naba-feature-flag", false)).thenReturn(true);
         when(featureToggler.getValue("naba-ada-feature-flag", false)).thenReturn(true);
-        when(featureToggler.getValue("out-of-country-feature", false)).thenReturn(true);
         PreSubmitCallbackResponse<AsylumCase> response =
                 nabaFeatureTogglePreparer.handle(ABOUT_TO_START, callback);
 

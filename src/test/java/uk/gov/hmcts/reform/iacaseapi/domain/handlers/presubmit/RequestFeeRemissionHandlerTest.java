@@ -45,7 +45,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.RemissionDetailsAppender;
 
 import static java.util.Collections.singletonList;
@@ -61,8 +60,6 @@ class RequestFeeRemissionHandlerTest {
     @Mock private Document document;
     @Mock private IdValue<Document> previousDocuments;
 
-    @Mock private FeatureToggler featureToggler;
-
     @Mock private UserDetails userDetails;
 
     @Mock private UserDetailsHelper userDetailsHelper;
@@ -73,7 +70,7 @@ class RequestFeeRemissionHandlerTest {
     void setUp() {
         RemissionDetailsAppender remissionDetailsAppender = new RemissionDetailsAppender();
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.REP));
-        requestFeeRemissionHandler = new RequestFeeRemissionHandler(featureToggler, remissionDetailsAppender,
+        requestFeeRemissionHandler = new RequestFeeRemissionHandler(remissionDetailsAppender,
             userDetails, userDetailsHelper);
         when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(UserRoleLabel.ADMIN_OFFICER);
     }
@@ -93,8 +90,6 @@ class RequestFeeRemissionHandlerTest {
         AppealType appealType,
         RemissionDecision remissionDecision
     ) {
-        when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
-
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
 
         when(asylumCase.read(FEE_REMISSION_TYPE, String.class)).thenReturn(Optional.of(FeeRemissionType.ASYLUM_SUPPORT));
@@ -126,8 +121,6 @@ class RequestFeeRemissionHandlerTest {
         AppealType appealType,
         RemissionDecision remissionDecision
     ) {
-        when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
-
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
 
         when(asylumCase.read(FEE_REMISSION_TYPE, String.class)).thenReturn(Optional.of(FeeRemissionType.LEGAL_AID));
@@ -158,8 +151,6 @@ class RequestFeeRemissionHandlerTest {
         AppealType appealType,
         RemissionDecision remissionDecision
     ) {
-        when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
-
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
 
         when(asylumCase.read(FEE_REMISSION_TYPE, String.class)).thenReturn(Optional.of(FeeRemissionType.SECTION_17));
@@ -190,8 +181,6 @@ class RequestFeeRemissionHandlerTest {
         AppealType appealType,
         RemissionDecision remissionDecision
     ) {
-        when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
-
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
 
         when(asylumCase.read(FEE_REMISSION_TYPE, String.class)).thenReturn(Optional.of(FeeRemissionType.SECTION_20));
@@ -222,8 +211,6 @@ class RequestFeeRemissionHandlerTest {
         AppealType appealType,
         RemissionDecision remissionDecision
     ) {
-        when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
-
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
 
         when(asylumCase.read(FEE_REMISSION_TYPE, String.class)).thenReturn(Optional.of(FeeRemissionType.HO_WAIVER));
@@ -254,8 +241,6 @@ class RequestFeeRemissionHandlerTest {
         AppealType appealType,
         RemissionDecision remissionDecision
     ) {
-        when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
-
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
 
         when(asylumCase.read(FEE_REMISSION_TYPE, String.class)).thenReturn(Optional.of(FeeRemissionType.HELP_WITH_FEES));
@@ -286,8 +271,6 @@ class RequestFeeRemissionHandlerTest {
         AppealType appealType,
         RemissionDecision remissionDecision
     ) {
-        when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
-
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
 
         when(asylumCase.read(FEE_REMISSION_TYPE, String.class)).thenReturn(Optional.of(FeeRemissionType.EXCEPTIONAL_CIRCUMSTANCES));
@@ -565,7 +548,6 @@ class RequestFeeRemissionHandlerTest {
     @Test
     void it_can_handle_callback() {
         for (Event event : Event.values()) {
-            when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
             when(callback.getCaseDetails()).thenReturn(caseDetails);
             when(caseDetails.getCaseData()).thenReturn(asylumCase);
             when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.REP));

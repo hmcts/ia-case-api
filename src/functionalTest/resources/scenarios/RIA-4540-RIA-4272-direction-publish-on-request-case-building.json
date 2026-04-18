@@ -1,6 +1,5 @@
 {
   "description": "RIA-4540-RIA-4272 Last modified direction publish - Request case building direction to legal representative",
-  "launchDarklyKey": "publish-wa-fields-feature:true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",

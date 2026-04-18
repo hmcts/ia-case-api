@@ -11,7 +11,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import java.time.LocalDate;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -254,36 +253,6 @@ class FtpaDisplayServiceTest {
     }
 
     @Test
-    void should_write_ftpa_case_flag_to_asylum_case_for_reheard_rule_32() {
-
-        ftpaDisplayService.setFtpaCaseFlag(asylumCase, true, "reheardRule32");
-        verify(asylumCase, times(1)).write(IS_REHEARD_APPEAL_ENABLED, YesOrNo.YES);
-        verify(asylumCase, times(1)).write(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.YES);
-        verify(asylumCase, times(1)).write(STITCHING_STATUS, "");
-        verify(asylumCase, times(1)).write(LEGACY_CASE_FLAGS, Collections.emptyList());
-    }
-
-    @Test
-    void should_write_ftpa_case_flag_to_asylum_case_for_reheard_rule_35() {
-
-        ftpaDisplayService.setFtpaCaseFlag(asylumCase, true, "reheardRule35");
-        verify(asylumCase, times(1)).write(IS_REHEARD_APPEAL_ENABLED, YesOrNo.YES);
-        verify(asylumCase, times(1)).write(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.YES);
-        verify(asylumCase, times(1)).write(STITCHING_STATUS, "");
-        verify(asylumCase, times(1)).write(LEGACY_CASE_FLAGS, Collections.emptyList());
-    }
-
-    @Test
-    void should_write_correct_flag_value_to_asylum_case_when_feature_flag_is_disabled() {
-
-        ftpaDisplayService.setFtpaCaseFlag(asylumCase, false, "reheardRule35");
-        verify(asylumCase, times(1)).write(IS_REHEARD_APPEAL_ENABLED, YesOrNo.NO);
-        verify(asylumCase, times(0)).write(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.YES);
-        verify(asylumCase, times(0)).write(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.NO);
-        verify(asylumCase, times(0)).write(LEGACY_CASE_FLAGS, Collections.emptyList());
-    }
-
-    @Test
     void should_write_dlrm_flag_to_asylum_case_when_feature_flag_is_enabled() {
 
         ftpaDisplayService.setFtpaCaseDlrmFlag(asylumCase, true);
@@ -297,35 +266,6 @@ class FtpaDisplayServiceTest {
         ftpaDisplayService.setFtpaCaseDlrmFlag(asylumCase, false);
         verify(asylumCase, times(1)).write(IS_DLRM_SET_ASIDE_ENABLED, YesOrNo.NO);
 
-    }
-
-    @Test
-    void should_not_write_ftpa_case_flag_to_asylum_case_for_a_decision_that_is_not_reheard() {
-
-        ftpaDisplayService.setFtpaCaseFlag(asylumCase, true, "granted");
-        verify(asylumCase, times(0)).write(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.YES);
-        verify(asylumCase, times(0)).write(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.NO);
-        verify(asylumCase, times(0)).write(LEGACY_CASE_FLAGS, Collections.emptyList());
-
-        ftpaDisplayService.setFtpaCaseFlag(asylumCase, true, "partiallyGranted");
-        verify(asylumCase, times(0)).write(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.YES);
-        verify(asylumCase, times(0)).write(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.NO);
-        verify(asylumCase, times(0)).write(LEGACY_CASE_FLAGS, Collections.emptyList());
-
-        ftpaDisplayService.setFtpaCaseFlag(asylumCase, true, "refused");
-        verify(asylumCase, times(0)).write(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.YES);
-        verify(asylumCase, times(0)).write(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.NO);
-        verify(asylumCase, times(0)).write(LEGACY_CASE_FLAGS, Collections.emptyList());
-
-        ftpaDisplayService.setFtpaCaseFlag(asylumCase, true, "notAdmitted");
-        verify(asylumCase, times(0)).write(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.YES);
-        verify(asylumCase, times(0)).write(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.NO);
-        verify(asylumCase, times(0)).write(LEGACY_CASE_FLAGS, Collections.emptyList());
-
-        ftpaDisplayService.setFtpaCaseFlag(asylumCase, true, "remadeRule32");
-        verify(asylumCase, times(0)).write(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.YES);
-        verify(asylumCase, times(0)).write(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.NO);
-        verify(asylumCase, times(0)).write(LEGACY_CASE_FLAGS, Collections.emptyList());
     }
 
     @ParameterizedTest

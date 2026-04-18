@@ -19,22 +19,18 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackStateHandler;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeePayment;
 
 @Component
 public class RecordRemissionDecisionStateHandler implements PreSubmitCallbackStateHandler<AsylumCase> {
 
-    private final FeatureToggler featureToggler;
     private final DateProvider dateProvider;
     private final FeePayment<AsylumCase> feePayment;
 
     public RecordRemissionDecisionStateHandler(
-        FeatureToggler featureToggler,
         DateProvider dateProvider,
         FeePayment<AsylumCase> feePayment
     ) {
-        this.featureToggler = featureToggler;
         this.dateProvider = dateProvider;
         this.feePayment = feePayment;
     }
@@ -47,8 +43,7 @@ public class RecordRemissionDecisionStateHandler implements PreSubmitCallbackSta
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-               && callback.getEvent() == Event.RECORD_REMISSION_DECISION
-               && featureToggler.getValue("remissions-feature", false);
+               && callback.getEvent() == Event.RECORD_REMISSION_DECISION;
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(

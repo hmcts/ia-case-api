@@ -11,7 +11,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.payment.FeesHelper;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeeService;
 
 import java.util.*;
@@ -25,11 +24,9 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YE
 @Component
 public class ManageFeeUpdateHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
-    private final FeatureToggler featureToggler;
     private final FeeService feeService;
 
-    public ManageFeeUpdateHandler(FeatureToggler featureToggler, FeeService feeService) {
-        this.featureToggler = featureToggler;
+    public ManageFeeUpdateHandler(FeeService feeService) {
         this.feeService = feeService;
     }
 
@@ -41,8 +38,7 @@ public class ManageFeeUpdateHandler implements PreSubmitCallbackHandler<AsylumCa
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-            && callback.getEvent() == Event.MANAGE_FEE_UPDATE
-            && featureToggler.getValue("manage-fee-update-feature", false);
+            && callback.getEvent() == Event.MANAGE_FEE_UPDATE;
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(

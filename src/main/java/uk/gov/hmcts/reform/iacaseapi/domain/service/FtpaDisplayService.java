@@ -169,7 +169,7 @@ public class FtpaDisplayService {
     public void setFtpaCaseFlag(AsylumCase asylumCase, boolean isReheardAppealEnabled, String currentDecision) {
 
         asylumCase.write(AsylumCaseFieldDefinition.IS_REHEARD_APPEAL_ENABLED,
-            isReheardAppealEnabled ? YesOrNo.YES : YesOrNo.NO);
+            YesOrNo.YES);
 
         if (isReheardAppealEnabled && currentDecision.toLowerCase().contains("reheard")) {
             asylumCase.write(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YES);
