@@ -3,7 +3,7 @@ java:
   ingressHost: ${SERVICE_FQDN}
   devcpuRequests: 25m
   devmemoryRequests: 1Gi
-  devcpuLimits: 50m
+  devcpuLimits: 1024m
   devmemoryLimits: 2Gi
   environment:
     POSTGRES_HOST: ia-preview.postgres.database.azure.com
@@ -774,7 +774,7 @@ xui-webapp:
     devmemoryRequests: 384Mi
     devcpuRequests: 25m
     devmemoryLimits: 768Mi
-    devcpuLimits: 50m
+    devcpuLimits: 2000m
     environment:
       HEALTH_CCD_COMPONENT_API: http://gateway-${SERVICE_FQDN}/health
       HEALTH_CCD_DATA_API: https://ccd-data-store-api-${SERVICE_FQDN}/health
@@ -891,7 +891,7 @@ ccd:
       keyVaults: [ ]
       devcpuRequests: 25m
       devmemoryRequests: 1Gi
-      devcpuLimits: 50m
+      devcpuLimits: 1000m
       devmemoryLimits: 2Gi
       environment:
         USER_PROFILE_S2S_AUTHORISED_SERVICES: ccd_data,ccd_definition,ccd_admin
@@ -906,8 +906,8 @@ ccd:
       imagePullPolicy: Always
       devcpuRequests: 25m
       devmemoryRequests: 1Gi
-      devcpuLimits: 50m
-      devmemoryLimits: 2Gi
+      devcpuLimits: 3000m
+      devmemoryLimits: 3072Mi
       autoscaling:
         enabled: false
       disableKeyVaults: true
@@ -946,7 +946,7 @@ ccd:
       ingressHost: am-role-assignment-${SERVICE_FQDN}
       devcpuRequests: 50m
       devmemoryRequests: 1Gi
-      devcpuLimits: 200m
+      devcpuLimits: 1500m
       devmemoryLimits: 2Gi
       environment:
         CCD_DATA_STORE_URL: http://{{ .Release.Name }}-ccd-data-store-api
@@ -995,7 +995,7 @@ ccd:
       imagePullPolicy: Always
       devcpuRequests: 25m
       devmemoryRequests: 1Gi
-      devcpuLimits: 50m
+      devcpuLimits: 1000m
       devmemoryLimits: 2Gi
       autoscaling:
         enabled: false
@@ -1272,7 +1272,7 @@ aac-manage-case-assignment:
   java:
     devcpuRequests: 25m
     devmemoryRequests: 1Gi
-    devcpuLimits: 50m
+    devcpuLimits: 1000m
     devmemoryLimits: 2Gi
     imagePullPolicy: Always
     releaseNameOverride: ${SERVICE_NAME}-aac-manage-case-assignment
@@ -1341,7 +1341,7 @@ wa:
     java:
       devcpuRequests: 50m
       devmemoryRequests: 1Gi
-      devcpuLimits: 200m
+      devcpuLimits: 1000m
       devmemoryLimits: 2Gi
       environment:
         CAMUNDA_DB_CONN_OPTIONS: "?stringtype=unspecified&reWriteBatchedInserts=true&sslmode=require"
@@ -1351,7 +1351,7 @@ wa:
       ingressHost: wa-task-management-api-${SERVICE_FQDN}
       devcpuRequests: 50m
       devmemoryRequests: 1Gi
-      devcpuLimits: 200m
+      devcpuLimits: 1000m
       devmemoryLimits: 2Gi
       environment:
         CAMUNDA_URL: "http://{{ .Release.Name }}-camunda/engine-rest"
@@ -1372,7 +1372,7 @@ wa:
           key: connectionString
       devcpuRequests: 25m
       devmemoryRequests: 1Gi
-      devcpuLimits: 50m
+      devcpuLimits: 1000m
       devmemoryLimits: 2Gi
       environment:
         CAMUNDA_URL: "http://{{ .Release.Name }}-camunda/engine-rest"
@@ -1489,7 +1489,7 @@ am-org-role-mapping-service:
             alias: ORG_ROLE_MAPPING_IDAM_ADMIN_PASSWORD
     devcpuRequests: 50m
     devmemoryRequests: 1Gi
-    devcpuLimits: 200m
+    devcpuLimits: 1000m
     devmemoryLimits: 2Gi
     environment:
       IDAM_S2S_URL: http://rpe-service-auth-provider-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
@@ -1526,7 +1526,7 @@ ia-hearings-api:
     ingressHost: ${SERVICE_NAME}-hearings-api.preview.platform.hmcts.net
     devcpuRequests: 50m
     devmemoryRequests: 1Gi
-    devcpuLimits: 200m
+    devcpuLimits: 1000m
     devmemoryLimits: 2Gi
     environment:
       HEARINGS_API_URL: https://${SERVICE_NAME}-hearings-api.preview.platform.hmcts.net
