@@ -3,7 +3,7 @@ java:
   ingressHost: ${SERVICE_FQDN}
   devcpuRequests: 25m
   devmemoryRequests: 1Gi
-  devcpuLimits: 1024m
+  devcpuLimits: 2048m
   devmemoryLimits: 2Gi
   environment:
     POSTGRES_HOST: ia-preview.postgres.database.azure.com
@@ -114,7 +114,7 @@ ia-case-payments-api:
     disableTraefikTls: true
     devcpuRequests: 25m
     devmemoryRequests: 1Gi
-    devcpuLimits: 50m
+    devcpuLimits: 1000m
     devmemoryLimits: 2Gi
     environment:
       IDAM_URL: https://idam-web-public.aat.platform.hmcts.net
@@ -167,7 +167,7 @@ ia-case-documents-api:
     ingressHost: ${SERVICE_NAME}-documents-api.preview.platform.hmcts.net
     devcpuRequests: 25m
     devmemoryRequests: 1Gi
-    devcpuLimits: 50m
+    devcpuLimits: 1000m
     devmemoryLimits: 2Gi
     environment:
       DOCMOSIS_ENDPOINT: https://docmosis.aat.platform.hmcts.net
@@ -246,7 +246,7 @@ ia-case-notifications-api:
     ingressHost: ${SERVICE_NAME}-notifications-api.preview.platform.hmcts.net
     devcpuRequests: 25m
     devmemoryRequests: 1Gi
-    devcpuLimits: 50m
+    devcpuLimits: 1000m
     devmemoryLimits: 2Gi
     environment:
       IA_HOME_OFFICE_GOV_NOTIFY_ENABLED: true
@@ -456,7 +456,7 @@ ia-bail-case-api:
     ingressHost: ${SERVICE_NAME}-bail-case-api.preview.platform.hmcts.net
     devcpuRequests: 25m
     devmemoryRequests: 1Gi
-    devcpuLimits: 50m
+    devcpuLimits: 1000m
     devmemoryLimits: 2Gi
     environment:
       CCD_URL: "http://{{ .Release.Name }}-ccd-data-store-api"
@@ -574,7 +574,7 @@ ia-home-office-integration-api:
     ingressHost: ${SERVICE_NAME}-home-office-integration-api.preview.platform.hmcts.net
     devcpuRequests: 25m
     devmemoryRequests: 1Gi
-    devcpuLimits: 50m
+    devcpuLimits: 1000m
     devmemoryLimits: 2Gi
     environment:
       IDAM_URL: https://idam-web-public.aat.platform.hmcts.net
@@ -661,7 +661,7 @@ ia-aip-frontend:
     applicationPort: 3000
     devcpuRequests: 25m
     devmemoryRequests: 384Mi
-    devcpuLimits: 50m
+    devcpuLimits: 1000m
     devmemoryLimits: 768Mi
     environment:
       HTTP_PROTOCOL: http
@@ -872,7 +872,7 @@ ccd:
       image: hmctsprod.azurecr.io/ccd/api-gateway-web:latest
       devcpuRequests: 25m
       devmemoryRequests: 384Mi
-      devcpuLimits: 50m
+      devcpuLimits: 1000m
       devmemoryLimits: 768Mi
       environment:
         ADDRESS_LOOKUP_TOKEN: ${ADDRESS_LOOKUP_TOKEN}
