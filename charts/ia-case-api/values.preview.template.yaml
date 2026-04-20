@@ -1,10 +1,10 @@
 java:
   image: ${IMAGE_NAME}
   ingressHost: ${SERVICE_FQDN}
-  devcpuRequests: 25m
+  devcpuRequests: 500m
   devmemoryRequests: 1Gi
-  devcpuLimits: 50m
-  devmemoryLimits: 2Gi
+  devcpuLimits: 2
+  devmemoryLimits: 4Gi
   environment:
     POSTGRES_HOST: ia-preview.postgres.database.azure.com
     POSTGRES_NAME: "{{ .Values.global.databaseNamePrefix }}ia-case-api"
@@ -112,10 +112,10 @@ ia-case-payments-api:
     releaseNameOverride: ${SERVICE_NAME}-case-payments-api
     ingressHost: ${SERVICE_NAME}-payments-api.preview.platform.hmcts.net
     disableTraefikTls: true
-    devcpuRequests: 25m
+    devcpuRequests: 500m
     devmemoryRequests: 1Gi
-    devcpuLimits: 50m
-    devmemoryLimits: 2Gi
+    devcpuLimits: 1
+    devmemoryLimits: 4Gi
     environment:
       IDAM_URL: https://idam-web-public.aat.platform.hmcts.net
       S2S_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
@@ -165,10 +165,10 @@ ia-case-documents-api:
     image: hmctsprod.azurecr.io/ia/case-documents-api:latest
     releaseNameOverride: ${SERVICE_NAME}-case-documents-api
     ingressHost: ${SERVICE_NAME}-documents-api.preview.platform.hmcts.net
-    devcpuRequests: 25m
+    devcpuRequests: 500m
     devmemoryRequests: 1Gi
-    devcpuLimits: 50m
-    devmemoryLimits: 2Gi
+    devcpuLimits: 1
+    devmemoryLimits: 4Gi
     environment:
       DOCMOSIS_ENDPOINT: https://docmosis.aat.platform.hmcts.net
       DM_URL: http://dm-store-aat.service.core-compute-aat.internal
@@ -244,10 +244,10 @@ ia-case-notifications-api:
     image: hmctsprod.azurecr.io/ia/case-notifications-api:latest
     releaseNameOverride: ${SERVICE_NAME}-case-notifications-api
     ingressHost: ${SERVICE_NAME}-notifications-api.preview.platform.hmcts.net
-    devcpuRequests: 25m
+    devcpuRequests: 500m
     devmemoryRequests: 1Gi
-    devcpuLimits: 50m
-    devmemoryLimits: 2Gi
+    devcpuLimits: 1
+    devmemoryLimits: 4Gi
     environment:
       IA_HOME_OFFICE_GOV_NOTIFY_ENABLED: true
       IA_EXUI_FRONTEND_URL: https://manage-case.{{ .Values.global.environment }}.platform.hmcts.net/
@@ -454,10 +454,10 @@ ia-bail-case-api:
     applicationPort: 8686
     releaseNameOverride: ${SERVICE_NAME}-bail-case-api
     ingressHost: ${SERVICE_NAME}-bail-case-api.preview.platform.hmcts.net
-    devcpuRequests: 25m
+    devcpuRequests: 500m
     devmemoryRequests: 1Gi
-    devcpuLimits: 50m
-    devmemoryLimits: 2Gi
+    devcpuLimits: 1
+    devmemoryLimits: 4Gi
     environment:
       CCD_URL: "http://{{ .Release.Name }}-ccd-data-store-api"
       AAC_URL: https://aac-${SERVICE_FQDN}
@@ -515,10 +515,10 @@ ia-timed-event-service:
     image: hmctsprod.azurecr.io/ia/timed-event-service:latest
     releaseNameOverride: ${SERVICE_NAME}-timed-event-service
     ingressHost: ${SERVICE_NAME}-timed-event-service.preview.platform.hmcts.net
-    devcpuRequests: 25m
+    devcpuRequests: 500m
     devmemoryRequests: 1Gi
-    devcpuLimits: 50m
-    devmemoryLimits: 2Gi
+    devcpuLimits: 1
+    devmemoryLimits: 4Gi
     environment:
       IDAM_URL: "https://idam-web-public.aat.platform.hmcts.net"
       S2S_URL: "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
@@ -572,10 +572,10 @@ ia-home-office-integration-api:
     image: hmctsprod.azurecr.io/ia/home-office-integration-api:latest
     releaseNameOverride: ${SERVICE_NAME}-home-office-integration-api
     ingressHost: ${SERVICE_NAME}-home-office-integration-api.preview.platform.hmcts.net
-    devcpuRequests: 25m
+    devcpuRequests: 500m
     devmemoryRequests: 1Gi
-    devcpuLimits: 50m
-    devmemoryLimits: 2Gi
+    devcpuLimits: 1
+    devmemoryLimits: 4Gi
     environment:
       IDAM_URL: https://idam-web-public.aat.platform.hmcts.net
       OPEN_ID_IDAM_URL: https://idam-web-public.aat.platform.hmcts.net
@@ -659,10 +659,10 @@ ia-aip-frontend:
     image: hmctsprod.azurecr.io/ia/aip-frontend:latest
     ingressHost: ${SERVICE_NAME}-aip-frontend.preview.platform.hmcts.net # override in public facing environments
     applicationPort: 3000
-    devcpuRequests: 25m
-    devmemoryRequests: 384Mi
-    devcpuLimits: 50m
-    devmemoryLimits: 768Mi
+    devcpuRequests: 500m
+    devmemoryRequests: 1Gi
+    devcpuLimits: 1
+    devmemoryLimits: 4Gi
     environment:
       HTTP_PROTOCOL: http
       NODE_ENV: development
@@ -771,10 +771,10 @@ xui-webapp:
     cpuRequests: 2000m
     memoryLimits: 4Gi
     cpuLimits: 3500m
-    devmemoryRequests: 384Mi
-    devcpuRequests: 25m
-    devmemoryLimits: 768Mi
-    devcpuLimits: 50m
+    devmemoryRequests: 6Gi
+    devcpuRequests: 2000m
+    devmemoryLimits: 8Gi
+    devcpuLimits: 4500m
     environment:
       HEALTH_CCD_COMPONENT_API: http://gateway-${SERVICE_FQDN}/health
       HEALTH_CCD_DATA_API: https://ccd-data-store-api-${SERVICE_FQDN}/health
@@ -870,10 +870,10 @@ ccd:
     nodejs:
       imagePullPolicy: Always
       image: hmctsprod.azurecr.io/ccd/api-gateway-web:latest
-      devcpuRequests: 25m
-      devmemoryRequests: 384Mi
-      devcpuLimits: 50m
-      devmemoryLimits: 768Mi
+      devcpuRequests: 500m
+      devmemoryRequests: 1Gi
+      devcpuLimits: 1
+      devmemoryLimits: 4Gi
       environment:
         ADDRESS_LOOKUP_TOKEN: ${ADDRESS_LOOKUP_TOKEN}
         IDAM_SERVICE_KEY: ${API_GATEWAY_S2S_KEY}
@@ -889,10 +889,10 @@ ccd:
       imagePullPolicy: Always
       image: hmctsprod.azurecr.io/ccd/user-profile-api:latest
       keyVaults: [ ]
-      devcpuRequests: 25m
+      devcpuRequests: 500m
       devmemoryRequests: 1Gi
-      devcpuLimits: 50m
-      devmemoryLimits: 2Gi
+      devcpuLimits: 2
+      devmemoryLimits: 4Gi
       environment:
         USER_PROFILE_S2S_AUTHORISED_SERVICES: ccd_data,ccd_definition,ccd_admin
         USER_PROFILE_DB_HOST: ia-preview.postgres.database.azure.com
@@ -904,10 +904,10 @@ ccd:
   ccd-data-store-api:
     java:
       imagePullPolicy: Always
-      devcpuRequests: 25m
+      devcpuRequests: 1000m
       devmemoryRequests: 1Gi
-      devcpuLimits: 50m
-      devmemoryLimits: 2Gi
+      devcpuLimits: 1
+      devmemoryLimits: 4Gi
       autoscaling:
         enabled: false
       disableKeyVaults: true
@@ -944,10 +944,10 @@ ccd:
       imagePullPolicy: Always
       image: hmctsprod.azurecr.io/am/role-assignment-service:latest
       ingressHost: am-role-assignment-${SERVICE_FQDN}
-      devcpuRequests: 25m
+      devcpuRequests: 500m
       devmemoryRequests: 1Gi
-      devcpuLimits: 50m
-      devmemoryLimits: 2Gi
+      devcpuLimits: 1
+      devmemoryLimits: 4Gi
       environment:
         CCD_DATA_STORE_URL: http://{{ .Release.Name }}-ccd-data-store-api
         ROLE_ASSIGNMENT_S2S_AUTHORISED_SERVICES: ccd_gw,am_role_assignment_service,am_org_role_mapping_service,wa_task_management_api,wa_task_configuration_api,xui_webapp,aac_manage_case_assignment,ccd_data,wa_workflow_api,wa_task_monitor,wa_case_event_handler,iac,hmc_cft_hearing_service,ccd_case_disposer,sscs,fis_hmc_api,et_cos
@@ -993,10 +993,10 @@ ccd:
     java:
       image: hmctsprod.azurecr.io/ccd/definition-store-api:latest
       imagePullPolicy: Always
-      devcpuRequests: 25m
+      devcpuRequests: 500m
       devmemoryRequests: 1Gi
-      devcpuLimits: 50m
-      devmemoryLimits: 2Gi
+      devcpuLimits: 2
+      devmemoryLimits: 4Gi
       autoscaling:
         enabled: false
       environment:
@@ -1234,10 +1234,10 @@ em-stitching:
     releaseNameOverride: ${SERVICE_NAME}-em-stitching
     image: hmctsprod.azurecr.io/em/stitching:latest
     ingressHost: em-stitching-${SERVICE_FQDN}
-    devcpuRequests: 25m
+    devcpuRequests: 500m
     devmemoryRequests: 1Gi
-    devcpuLimits: 50m
-    devmemoryLimits: 2Gi
+    devcpuLimits: 2
+    devmemoryLimits: 4Gi
     environment:
       SPRING_DATASOURCE_HOST: ia-preview.postgres.database.azure.com
       SPRING_DATASOURCE_USERNAME: hmcts
@@ -1270,10 +1270,10 @@ em-stitching:
 aac-manage-case-assignment:
   enabled: true
   java:
-    devcpuRequests: 25m
+    devcpuRequests: 500m
     devmemoryRequests: 1Gi
-    devcpuLimits: 50m
-    devmemoryLimits: 2Gi
+    devcpuLimits: 2
+    devmemoryLimits: 4Gi
     imagePullPolicy: Always
     releaseNameOverride: ${SERVICE_NAME}-aac-manage-case-assignment
     image: hmctsprod.azurecr.io/aac/manage-case-assignment:latest
@@ -1339,20 +1339,20 @@ wa:
 
   camunda-bpm:
     java:
-      devcpuRequests: 25m
+      devcpuRequests: 500m
       devmemoryRequests: 1Gi
-      devcpuLimits: 50m
-      devmemoryLimits: 2Gi
+      devcpuLimits: 2
+      devmemoryLimits: 4Gi
       environment:
         CAMUNDA_DB_CONN_OPTIONS: "?stringtype=unspecified&reWriteBatchedInserts=true&sslmode=require"
 
   wa-task-management-api:
     java:
       ingressHost: wa-task-management-api-${SERVICE_FQDN}
-      devcpuRequests: 25m
+      devcpuRequests: 500m
       devmemoryRequests: 1Gi
-      devcpuLimits: 50m
-      devmemoryLimits: 2Gi
+      devcpuLimits: 2
+      devmemoryLimits: 4Gi
       environment:
         CAMUNDA_URL: "http://{{ .Release.Name }}-camunda/engine-rest"
         IDAM_URL: "https://idam-api.{{ .Values.global.environment }}.platform.hmcts.net"
@@ -1370,10 +1370,10 @@ wa:
         AZURE_SERVICE_BUS_CONNECTION_STRING:
           secretRef: ia-sb-preview
           key: connectionString
-      devcpuRequests: 25m
+      devcpuRequests: 500m
       devmemoryRequests: 1Gi
-      devcpuLimits: 50m
-      devmemoryLimits: 2Gi
+      devcpuLimits: 2
+      devmemoryLimits: 4Gi
       environment:
         CAMUNDA_URL: "http://{{ .Release.Name }}-camunda/engine-rest"
         CCD_URL: "http://{{ .Release.Name }}-ccd-data-store-api"
@@ -1391,10 +1391,10 @@ wa:
         WA_TASK_MANAGEMENT_API_URL: http://{{ .Release.Name }}-wa-task-management-api
   wa-workflow-api:
     java:
-      devcpuRequests: 25m
+      devcpuRequests: 500m
       devmemoryRequests: 1Gi
-      devcpuLimits: 50m
-      devmemoryLimits: 2Gi
+      devcpuLimits: 2
+      devmemoryLimits: 4Gi
       environment:
         DB_READER_USERNAME: "hmcts"
   wa:
@@ -1435,10 +1435,10 @@ ccd-message-publisher:
         secrets:
           - name: AppInsightsInstrumentationKey
             alias: azure.application-insights.instrumentation-key
-    devcpuRequests: 25m
+    devcpuRequests: 500m
     devmemoryRequests: 1Gi
-    devcpuLimits: 50m
-    devmemoryLimits: 2Gi
+    devcpuLimits: 1
+    devmemoryLimits: 4Gi
     environment:
       DATA_STORE_DB_HOST: ia-preview.postgres.database.azure.com
       DATA_STORE_DB_NAME: "pr-${CHANGE_ID}-data-store"
@@ -1487,10 +1487,10 @@ am-org-role-mapping-service:
             alias: ORG_ROLE_MAPPING_IDAM_CLIENT_SECRET
           - name: orm-IDAM-ADMIN-SECRET
             alias: ORG_ROLE_MAPPING_IDAM_ADMIN_PASSWORD
-    devcpuRequests: 25m
+    devcpuRequests: 500m
     devmemoryRequests: 1Gi
-    devcpuLimits: 50m
-    devmemoryLimits: 2Gi
+    devcpuLimits: 1
+    devmemoryLimits: 4Gi
     environment:
       IDAM_S2S_URL: http://rpe-service-auth-provider-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
       S2S_URL: http://rpe-service-auth-provider-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
@@ -1524,10 +1524,10 @@ ia-hearings-api:
     image: 'hmctsprod.azurecr.io/ia/hearings-api:latest'
     releaseNameOverride: ${SERVICE_NAME}-hearings-api
     ingressHost: ${SERVICE_NAME}-hearings-api.preview.platform.hmcts.net
-    devcpuRequests: 25m
+    devcpuRequests: 500m
     devmemoryRequests: 1Gi
-    devcpuLimits: 50m
-    devmemoryLimits: 2Gi
+    devcpuLimits: 1
+    devmemoryLimits: 4Gi
     environment:
       HEARINGS_API_URL: https://${SERVICE_NAME}-hearings-api.preview.platform.hmcts.net
       DOCMOSIS_ENDPOINT: https://docmosis.aat.platform.hmcts.net
