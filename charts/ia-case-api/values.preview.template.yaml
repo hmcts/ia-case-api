@@ -245,7 +245,7 @@ ia-case-notifications-api:
     releaseNameOverride: ${SERVICE_NAME}-case-notifications-api
     ingressHost: ${SERVICE_NAME}-notifications-api.preview.platform.hmcts.net
     devcpuRequests: 20m
-    devcpuLimits: 10024m
+    devcpuLimits: 1024m
     devmemoryRequests: 1024Mi
     devmemoryLimits: 2536Mi
     environment:
