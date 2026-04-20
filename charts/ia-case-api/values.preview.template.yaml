@@ -944,9 +944,9 @@ ccd:
       imagePullPolicy: Always
       image: hmctsprod.azurecr.io/am/role-assignment-service:latest
       ingressHost: am-role-assignment-${SERVICE_FQDN}
-      devcpuRequests: 25m
+      devcpuRequests: 50m
       devmemoryRequests: 1Gi
-      devcpuLimits: 50m
+      devcpuLimits: 200m
       devmemoryLimits: 2Gi
       environment:
         CCD_DATA_STORE_URL: http://{{ .Release.Name }}-ccd-data-store-api
@@ -1339,9 +1339,9 @@ wa:
 
   camunda-bpm:
     java:
-      devcpuRequests: 25m
+      devcpuRequests: 50m
       devmemoryRequests: 1Gi
-      devcpuLimits: 50m
+      devcpuLimits: 200m
       devmemoryLimits: 2Gi
       environment:
         CAMUNDA_DB_CONN_OPTIONS: "?stringtype=unspecified&reWriteBatchedInserts=true&sslmode=require"
@@ -1349,9 +1349,9 @@ wa:
   wa-task-management-api:
     java:
       ingressHost: wa-task-management-api-${SERVICE_FQDN}
-      devcpuRequests: 25m
+      devcpuRequests: 50m
       devmemoryRequests: 1Gi
-      devcpuLimits: 50m
+      devcpuLimits: 200m
       devmemoryLimits: 2Gi
       environment:
         CAMUNDA_URL: "http://{{ .Release.Name }}-camunda/engine-rest"
@@ -1487,9 +1487,9 @@ am-org-role-mapping-service:
             alias: ORG_ROLE_MAPPING_IDAM_CLIENT_SECRET
           - name: orm-IDAM-ADMIN-SECRET
             alias: ORG_ROLE_MAPPING_IDAM_ADMIN_PASSWORD
-    devcpuRequests: 25m
+    devcpuRequests: 50m
     devmemoryRequests: 1Gi
-    devcpuLimits: 50m
+    devcpuLimits: 200m
     devmemoryLimits: 2Gi
     environment:
       IDAM_S2S_URL: http://rpe-service-auth-provider-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
@@ -1524,9 +1524,9 @@ ia-hearings-api:
     image: 'hmctsprod.azurecr.io/ia/hearings-api:latest'
     releaseNameOverride: ${SERVICE_NAME}-hearings-api
     ingressHost: ${SERVICE_NAME}-hearings-api.preview.platform.hmcts.net
-    devcpuRequests: 25m
+    devcpuRequests: 50m
     devmemoryRequests: 1Gi
-    devcpuLimits: 50m
+    devcpuLimits: 200m
     devmemoryLimits: 2Gi
     environment:
       HEARINGS_API_URL: https://${SERVICE_NAME}-hearings-api.preview.platform.hmcts.net
