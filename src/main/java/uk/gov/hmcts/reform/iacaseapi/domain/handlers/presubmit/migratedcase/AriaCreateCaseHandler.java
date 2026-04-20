@@ -66,6 +66,9 @@ public class AriaCreateCaseHandler implements PreSubmitCallbackHandler<AsylumCas
             return asylumCasePreSubmitCallbackResponse;
         }
 
+        String caseId = String.valueOf(callback.getCaseDetails().getId());
+        caseId = caseId.replaceAll("(.{" + 4 + "})", "$1 ").trim();
+        
         String appealSubmissionDate = asylumCase.read(APPEAL_SUBMISSION_DATE, String.class).orElse(dateProvider.now().toString());
 
         AppealType appealType =
@@ -80,9 +83,6 @@ public class AriaCreateCaseHandler implements PreSubmitCallbackHandler<AsylumCas
         if (!isValidAppealReferenceNumber(appealReferenceNumber)) {
             throw new IllegalStateException("appealReferenceNumber is not valid");
         }
-
-        String caseId = String.valueOf(callback.getCaseDetails().getId());
-        caseId = caseId.replaceAll("(.{" + 4 + "})", "$1 ").trim();
         
         asylumCase.write(APPEAL_REFERENCE_NUMBER, appealReferenceNumber);
         asylumCase.write(CCD_REFERENCE_NUMBER_FOR_DISPLAY, caseId);
