@@ -81,7 +81,7 @@ public class AriaCreateCaseHandler implements PreSubmitCallbackHandler<AsylumCas
             throw new IllegalStateException("appealReferenceNumber is not valid");
         }
 
-        String caseId = String.valueOf(caseDetails.getId());
+        String caseId = String.valueOf(callback.getCaseDetails().getId());
         caseId = caseId.replaceAll("(.{" + 4 + "})", "$1 ").trim();
         
         asylumCase.write(APPEAL_REFERENCE_NUMBER, appealReferenceNumber);
