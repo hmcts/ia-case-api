@@ -659,7 +659,7 @@ ia-aip-frontend:
     image: hmctsprod.azurecr.io/ia/aip-frontend:latest
     ingressHost: ${SERVICE_NAME}-aip-frontend.preview.platform.hmcts.net # override in public facing environments
     applicationPort: 3000
-    devcpuRequests: 30mm
+    devcpuRequests: 30m
     devcpuLimits: 1
     devmemoryRequests: 512Mi
     devmemoryLimits: 2Gi
