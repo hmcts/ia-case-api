@@ -166,7 +166,7 @@ class AddStatutoryTimeframe24WeeksTest extends SpringBootIntegrationTest impleme
                     .with(APPEAL_OUT_OF_COUNTRY, YesOrNo.YES))));
 
         assertThat(response).isNotNull();
-        assertThat(response.getErrors()).contains("This event cannot be run on a case created before 01/05/2026");
+        assertThat(response.getErrors()).contains("This event cannot be run on a case created before 01/07/2026");
         assertThat(response.getErrors()).contains("This event cannot be run on a detained case");
         assertThat(response.getErrors()).contains("This event cannot be run on an out of country case");
         assertThat(response.getErrors()).contains("This event cannot be run on this case");
@@ -179,7 +179,7 @@ class AddStatutoryTimeframe24WeeksTest extends SpringBootIntegrationTest impleme
         addServiceAuthStub(server);
         addRoleAssignmentQueryStub(server);
 
-        String appealSubmissionDate = "2026-06-01";
+        String appealSubmissionDate = "2026-07-01";
 
         PreSubmitCallbackResponseForTest response = iaCaseApiClient.aboutToStart(callback()
             .event(ADD_STATUTORY_TIMEFRAME_24_WEEKS)

@@ -47,7 +47,7 @@ class AddStatutoryTimeframe24WeeksPreStartHandlerTest {
         when(callback.getEvent()).thenReturn(Event.ADD_STATUTORY_TIMEFRAME_24_WEEKS);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(AsylumCaseFieldDefinition.APPEAL_SUBMISSION_DATE))
-            .thenReturn(Optional.of(LocalDate.of(2026, 5, 1).toString()));
+            .thenReturn(Optional.of(LocalDate.of(2026, 7, 1).toString()));
     }
 
     @Test
@@ -61,7 +61,7 @@ class AddStatutoryTimeframe24WeeksPreStartHandlerTest {
         final Set<String> errors = callbackResponse.getErrors();
         assertThat(errors).isNotEmpty();
         assertEquals(1, errors.size());
-        assertTrue(errors.contains("This event cannot be run on a case created before 01/05/2026"));
+        assertTrue(errors.contains("This event cannot be run on a case created before 01/07/2026"));
     }
 
     @Test
@@ -86,13 +86,13 @@ class AddStatutoryTimeframe24WeeksPreStartHandlerTest {
         final Set<String> errors = callbackResponse.getErrors();
         assertThat(errors).isNotEmpty();
         assertEquals(1, errors.size());
-        assertTrue(errors.contains("This event cannot be run on a case created before 01/05/2026"));
+        assertTrue(errors.contains("This event cannot be run on a case created before 01/07/2026"));
     }
 
     @Test
     void should_not_return_error_when_tribunal_received_date_is_after_live_date() {
         when(asylumCase.read(AsylumCaseFieldDefinition.TRIBUNAL_RECEIVED_DATE))
-            .thenReturn(Optional.of(LocalDate.of(2026, 6, 1).toString()));
+            .thenReturn(Optional.of(LocalDate.of(2026, 7, 1).toString()));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             addStatutoryTimeframe24WeeksPreStartHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
@@ -118,7 +118,7 @@ class AddStatutoryTimeframe24WeeksPreStartHandlerTest {
     @Test
     void should_not_return_error_when_appellant_in_not_detention() {
         when(asylumCase.read(AsylumCaseFieldDefinition.APPEAL_SUBMISSION_DATE))
-            .thenReturn(Optional.of(LocalDate.of(2026, 6, 1).toString()));
+            .thenReturn(Optional.of(LocalDate.of(2026, 7, 1).toString()));
         when(asylumCase.read(AsylumCaseFieldDefinition.APPELLANT_IN_DETENTION, YesOrNo.class))
             .thenReturn(Optional.of(YesOrNo.NO));
 

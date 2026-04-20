@@ -24,7 +24,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isAppel
 @Component
 public class AddStatutoryTimeframe24WeeksPreStartHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
-    private static final LocalDate STF24W_LIVE_DATE = LocalDate.of(2026, 5, 1);
+    private static final LocalDate STF24W_LIVE_DATE = LocalDate.of(2026, 7, 1);
     private static final Set<State> unsupportedStates = Set.of(
         State.CASE_BUILDING,
         State.CASE_UNDER_REVIEW,
