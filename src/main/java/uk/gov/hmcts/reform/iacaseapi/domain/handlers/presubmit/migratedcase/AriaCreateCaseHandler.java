@@ -69,7 +69,7 @@ public class AriaCreateCaseHandler implements PreSubmitCallbackHandler<AsylumCas
         String caseId = String.valueOf(callback.getCaseDetails().getId());
         caseId = caseId.replaceAll("(.{" + 4 + "})", "$1 ").trim();
         
-        String appealSubmissionDate = asylumCase.read(APPEAL_SUBMISSION_DATE, String.class).orElse(dateProvider.now().toString());
+        final String appealSubmissionDate = asylumCase.read(APPEAL_SUBMISSION_DATE, String.class).orElse(dateProvider.now().toString());
 
         AppealType appealType =
             asylumCase
