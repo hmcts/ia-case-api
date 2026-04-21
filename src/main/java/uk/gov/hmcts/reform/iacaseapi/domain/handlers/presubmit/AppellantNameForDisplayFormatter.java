@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -23,8 +24,14 @@ public class AppellantNameForDisplayFormatter implements PreSubmitCallbackHandle
         requireNonNull(callback, "callback must not be null");
 
         Event event = callback.getEvent();
-        boolean isStartOrEditAipEvent = HandlerUtils.isAipJourney(callback.getCaseDetails().getCaseData()) && (event == Event.START_APPEAL || event == Event.EDIT_APPEAL);
-        return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT && !isStartOrEditAipEvent;
+        boolean isSaveNotificationToDataAipEvent = HandlerUtils.isAipJourney(callback.getCaseDetails().getCaseData())
+                && event != Event.SAVE_NOTIFICATIONS_TO_DATA;
+        boolean isStartOrEditAipEvent = HandlerUtils.isAipJourney(callback.getCaseDetails().getCaseData())
+                && (event == Event.START_APPEAL || event == Event.EDIT_APPEAL);
+
+        return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
+                && !isStartOrEditAipEvent
+                && !isSaveNotificationToDataAipEvent;
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
