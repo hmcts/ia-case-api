@@ -244,9 +244,9 @@ ia-case-notifications-api:
     image: hmctsprod.azurecr.io/ia/case-notifications-api:pr-1623
     releaseNameOverride: ${SERVICE_NAME}-case-notifications-api
     ingressHost: ${SERVICE_NAME}-notifications-api.preview.platform.hmcts.net
-    devcpuRequests: 20m
-    devcpuLimits: 1
-    devmemoryRequests: 1024Mi
+    devcpuRequests: 30m
+    devcpuLimits: 2
+    devmemoryRequests: 1536Mi
     devmemoryLimits: 3072Mi
     environment:
       IA_HOME_OFFICE_GOV_NOTIFY_ENABLED: true
@@ -572,10 +572,10 @@ ia-home-office-integration-api:
     image: hmctsprod.azurecr.io/ia/home-office-integration-api:pr-450
     releaseNameOverride: ${SERVICE_NAME}-home-office-integration-api
     ingressHost: ${SERVICE_NAME}-home-office-integration-api.preview.platform.hmcts.net
-    devcpuRequests: 20m
-    devcpuLimits: 1
-    devmemoryRequests: 1024Mi
-    devmemoryLimits: 2560Mi
+    devcpuRequests: 30m
+    devcpuLimits: 2
+    devmemoryRequests: 1536Mi
+    devmemoryLimits: 3072Mi
     environment:
       IDAM_URL: https://idam-web-public.aat.platform.hmcts.net
       OPEN_ID_IDAM_URL: https://idam-web-public.aat.platform.hmcts.net
