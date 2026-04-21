@@ -115,7 +115,7 @@ ia-case-payments-api:
     devcpuRequests: 20m
     devcpuLimits: 1000m
     devmemoryRequests: 1024Mi
-    devmemoryLimits: 2536Mi
+    devmemoryLimits: 2560Mi
     environment:
       IDAM_URL: https://idam-web-public.aat.platform.hmcts.net
       S2S_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
@@ -168,7 +168,7 @@ ia-case-documents-api:
     devcpuRequests: 20m
     devcpuLimits: 1024m
     devmemoryRequests: 1024Mi
-    devmemoryLimits: 2536Mi
+    devmemoryLimits: 2560Mi
     environment:
       DOCMOSIS_ENDPOINT: https://docmosis.aat.platform.hmcts.net
       DM_URL: http://dm-store-aat.service.core-compute-aat.internal
@@ -245,9 +245,9 @@ ia-case-notifications-api:
     releaseNameOverride: ${SERVICE_NAME}-case-notifications-api
     ingressHost: ${SERVICE_NAME}-notifications-api.preview.platform.hmcts.net
     devcpuRequests: 20m
-    devcpuLimits: 1024m
+    devcpuLimits: 1
     devmemoryRequests: 1024Mi
-    devmemoryLimits: 2536Mi
+    devmemoryLimits: 3072Mi
     environment:
       IA_HOME_OFFICE_GOV_NOTIFY_ENABLED: true
       IA_EXUI_FRONTEND_URL: https://manage-case.{{ .Values.global.environment }}.platform.hmcts.net/
@@ -573,7 +573,7 @@ ia-home-office-integration-api:
     releaseNameOverride: ${SERVICE_NAME}-home-office-integration-api
     ingressHost: ${SERVICE_NAME}-home-office-integration-api.preview.platform.hmcts.net
     devcpuRequests: 20m
-    devcpuLimits: 1000m
+    devcpuLimits: 1
     devmemoryRequests: 1024Mi
     devmemoryLimits: 2560Mi
     environment:
