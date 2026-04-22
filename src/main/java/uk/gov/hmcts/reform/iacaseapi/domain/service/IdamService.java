@@ -92,7 +92,7 @@ public class IdamService {
         return userInfo;
     }
 
-    @Cacheable(value = "clientCredsCacheV1")
+    @Cacheable(value = "clientCredsCacheV1", key = "'clientCredsCacheV1'")
     public String getClientCredentialsTokenV1() {
         try {
             Map<String, String> idamAuthDetails = new ConcurrentHashMap<>();
@@ -111,7 +111,7 @@ public class IdamService {
         return "Bearer " + idamClientToken;
     }
 
-    @Cacheable(value = "clientCredsCache")
+    @Cacheable(value = "clientCredsCache", key = "'clientCredsCache'")
     public String getClientCredentialsToken() {
         try {
             Map<String, String> idamAuthDetails = new ConcurrentHashMap<>();
