@@ -583,11 +583,11 @@ ia-home-office-integration-api:
       ROLE_ASSIGNMENT_URL: https://am-role-assignment-${SERVICE_FQDN}
       IA_IDAM_REDIRECT_URI: https://${SERVICE_NAME}-home-office-integration-api.preview.platform.hmcts.net/oauth2/callback
       CCD_URL: http://{{ .Release.Name }}-ccd-data-store-api
-      POSTGRES_HOST: "ia-preview.postgres.database.azure.com"
+      POSTGRES_HOST: ia-preview.postgres.database.azure.com
       POSTGRES_PORT: 5432
-      POSTGRES_NAME: "pr-3076-ia-case-api"
+      POSTGRES_NAME: "pr-${CHANGE_ID}-ia-case-api"
       POSTGRES_USERNAME: hmcts
-      POSTGRES_PASSWORD: hmcts
+      POSTGRES_PASSWORD: ${GENERIC_VALUES_PREVIEW_YAML_PASS}
     keyVaults:
       ia:
         resourceGroup: ia
