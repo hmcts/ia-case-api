@@ -241,7 +241,7 @@ ia-case-notifications-api:
   enabled: true #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
-    image: hmctsprod.azurecr.io/ia/case-notifications-api:pr-1623
+    image: hmctsprod.azurecr.io/ia/case-notifications-api:latest
     releaseNameOverride: ${SERVICE_NAME}-case-notifications-api
     ingressHost: ${SERVICE_NAME}-notifications-api.preview.platform.hmcts.net
     devcpuRequests: 500m
@@ -569,7 +569,7 @@ ia-home-office-integration-api:
   enabled: true #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
-    image: hmctsprod.azurecr.io/ia/home-office-integration-api:pr-450
+    image: hmctsprod.azurecr.io/ia/home-office-integration-api:latest
     releaseNameOverride: ${SERVICE_NAME}-home-office-integration-api
     ingressHost: ${SERVICE_NAME}-home-office-integration-api.preview.platform.hmcts.net
     devcpuRequests: 500m
@@ -1521,7 +1521,7 @@ ia-hearings-api:
   enabled: true
   java:
     imagePullPolicy: Always
-    image: 'hmctsprod.azurecr.io/ia/hearings-api:latest'
+    image: hmctsprod.azurecr.io/ia/hearings-api:latest
     releaseNameOverride: ${SERVICE_NAME}-hearings-api
     ingressHost: ${SERVICE_NAME}-hearings-api.preview.platform.hmcts.net
     devcpuRequests: 500m
