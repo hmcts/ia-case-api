@@ -583,6 +583,11 @@ ia-home-office-integration-api:
       ROLE_ASSIGNMENT_URL: https://am-role-assignment-${SERVICE_FQDN}
       IA_IDAM_REDIRECT_URI: https://${SERVICE_NAME}-home-office-integration-api.preview.platform.hmcts.net/oauth2/callback
       CCD_URL: http://{{ .Release.Name }}-ccd-data-store-api
+      POSTGRES_HOST: "ia-preview.postgres.database.azure.com"
+      POSTGRES_PORT: 5432
+      POSTGRES_NAME: "pr-3076-ia-case-api"
+      POSTGRES_USERNAME: hmcts
+      POSTGRES_PASSWORD: hmcts
     keyVaults:
       ia:
         resourceGroup: ia
@@ -1521,7 +1526,7 @@ ia-hearings-api:
   enabled: true
   java:
     imagePullPolicy: Always
-    image: hmctsprod.azurecr.io/ia/hearings-api:latest
+    image: 'hmctsprod.azurecr.io/ia/hearings-api:latest'
     releaseNameOverride: ${SERVICE_NAME}-hearings-api
     ingressHost: ${SERVICE_NAME}-hearings-api.preview.platform.hmcts.net
     devcpuRequests: 500m
