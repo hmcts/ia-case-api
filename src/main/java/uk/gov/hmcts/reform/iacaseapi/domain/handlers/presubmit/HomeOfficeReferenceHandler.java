@@ -52,12 +52,12 @@ public class HomeOfficeReferenceHandler implements PreSubmitCallbackHandler<Asyl
         return callbackStage == PreSubmitCallbackStage.MID_EVENT
                 && (callback.getEvent() == Event.START_APPEAL || callback.getEvent() == Event.EDIT_APPEAL)
                 &&
-                (callback.getPageId().equals("homeOfficeReferenceNumber_TEMPORARILY_DISABLED")
+                (callback.getPageId().equals("homeOfficeReferenceNumber")
                 ||
                 // TODO - add logic for this case below (the other two have been implemented, whereas this one hasn't)
-                callback.getPageId().equals("oocHomeOfficeReferenceNumber_TEMPORARILY_DISABLED")
+                callback.getPageId().equals("oocHomeOfficeReferenceNumber")
                 ||
-                callback.getPageId().equals("appellantBasicDetails_TEMPORARILY_DISABLED"));
+                callback.getPageId().equals("appellantBasicDetails"));
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
