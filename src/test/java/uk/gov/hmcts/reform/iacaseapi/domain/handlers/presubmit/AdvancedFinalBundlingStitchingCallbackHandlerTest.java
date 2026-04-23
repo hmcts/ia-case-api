@@ -180,8 +180,6 @@ class AdvancedFinalBundlingStitchingCallbackHandlerTest {
     @EnumSource(value = AppealType.class, names = { "PA", "RP", "DC", "EA", "HU", "EU", "AG" })
     void should_successfully_handle_the_callback_in_reheard_case(AppealType appealType) {
 
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
-
         when(featureToggler.getValue("home-office-uan-pa-feature", false)).thenReturn(true);
         when(featureToggler.getValue("home-office-uan-rp-feature", false)).thenReturn(true);
         when(featureToggler.getValue("home-office-uan-ea-feature", false)).thenReturn(true);
@@ -230,8 +228,6 @@ class AdvancedFinalBundlingStitchingCallbackHandlerTest {
     @ParameterizedTest
     @EnumSource(value = AppealType.class, names = { "PA", "RP", "DC", "EA", "HU", "EU", "AG" })
     void should_not_remove_existing_reheard_bundle_when_updated(AppealType appealType) {
-
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
 
         when(featureToggler.getValue("home-office-uan-pa-feature", false)).thenReturn(true);
         when(featureToggler.getValue("home-office-uan-rp-feature", false)).thenReturn(true);
@@ -285,8 +281,6 @@ class AdvancedFinalBundlingStitchingCallbackHandlerTest {
     @ParameterizedTest
     @EnumSource(value = AppealType.class, names = { "PA", "RP", "DC", "EA", "HU", "EU", "AG" })
     void should_write_instruct_status_when_ho_notification_feature_on(AppealType appealType) {
-
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
 
         when(featureToggler.getValue("home-office-uan-pa-feature", false)).thenReturn(true);
         when(featureToggler.getValue("home-office-uan-rp-feature", false)).thenReturn(true);

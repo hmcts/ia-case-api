@@ -43,7 +43,6 @@ class RecordAttendeesAndDurationTest extends SpringBootIntegrationTest implement
 
         addServiceAuthStub(server);
         when(userDetailsProvider.getUserDetails()).thenReturn(userDetails);
-        when(featureToggler.getValue("wa-R2-feature", false)).thenReturn(true);
 
         PreSubmitCallbackResponseForTest response = iaCaseApiClient.aboutToSubmit(callback()
             .event(Event.RECORD_ATTENDEES_AND_DURATION)

@@ -1,6 +1,5 @@
 {
   "description": "RIA-4938: lastModifiedApplication created for Legal rep make an application of update appeal details",
-  "launchDarklyKey": "wa-R2-feature:true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "LegalRepresentative",

@@ -11,16 +11,14 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
 
 @Component
 public class AipEditAppealPreparer implements PreSubmitCallbackHandler<AsylumCase> {
 
-    private final FeatureToggler featureToggler;
 
-    public AipEditAppealPreparer(FeatureToggler featureToggler) {
-        this.featureToggler = featureToggler;
+    public AipEditAppealPreparer() {
+
     }
 
     public boolean canHandle(
@@ -49,12 +47,9 @@ public class AipEditAppealPreparer implements PreSubmitCallbackHandler<AsylumCas
 
         PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
 
-        if (featureToggler.getValue("home-office-uan-feature", false)) {
-
-            String homeOfficeReferenceNumber =
-                    asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class).orElse("");
-            asylumCase.write(HOME_OFFICE_REFERENCE_NUMBER_BEFORE_EDIT, homeOfficeReferenceNumber);
-        }
+        String homeOfficeReferenceNumber =
+                asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class).orElse("");
+        asylumCase.write(HOME_OFFICE_REFERENCE_NUMBER_BEFORE_EDIT, homeOfficeReferenceNumber);
 
         return response;
     }
