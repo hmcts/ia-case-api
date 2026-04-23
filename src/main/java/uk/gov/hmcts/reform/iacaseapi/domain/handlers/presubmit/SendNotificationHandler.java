@@ -180,12 +180,6 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
             eventsToHandle.add(Event.PAYMENT_APPEAL);
         }
 
-        if (isAipJourney(callback.getCaseDetails().getCaseData())
-            && !featureToggler.getValue("aip-ftpa-feature", false)) {
-
-            eventsToHandle.remove(Event.APPLY_FOR_FTPA_RESPONDENT);
-            eventsToHandle.remove(Event.APPLY_FOR_FTPA_APPELLANT);
-        }
         if (!isExAdaCaseWithHearingRequirementsSubmitted(callback)) {
             eventsToHandle.add(Event.REQUEST_RESPONSE_REVIEW);
         }

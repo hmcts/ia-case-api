@@ -30,7 +30,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 @SuppressWarnings("unchecked")
 public class LocationBasedFeatureTogglerTest {
 
-    private static final String LIST_ASSIST_INTEGRATED_LOCATIONS = "list-assist-integrated-locations";
     private static final String AUTO_HEARING_REQUEST_LOCATIONS_LIST = "auto-hearing-request-locations-list";
     private static final LDValue DEFAULT_VALUE = LDValue.parse("{\"epimsIds\":[]}");
     private static final LDValue EXAMPLE_VALUE = LDValue.parse("{\"epimsIds\":[111111,22222]}");
@@ -56,7 +55,6 @@ public class LocationBasedFeatureTogglerTest {
     void setup() {
         locationBasedFeatureToggler = new LocationBasedFeatureToggler(featureToggler);
 
-        when(featureToggler.getJsonValue(LIST_ASSIST_INTEGRATED_LOCATIONS, DEFAULT_VALUE)).thenReturn(EXAMPLE_VALUE);
         when(featureToggler.getJsonValue(AUTO_HEARING_REQUEST_LOCATIONS_LIST, DEFAULT_VALUE)).thenReturn(EXAMPLE_VALUE);
         when(asylumCase.read(CASE_MANAGEMENT_LOCATION, CaseManagementLocation.class))
             .thenReturn(Optional.of(caseManagementLocation));
@@ -65,22 +63,6 @@ public class LocationBasedFeatureTogglerTest {
             .thenReturn(Optional.of(caseManagementLocationRefData));
         when(caseManagementLocationRefData.getBaseLocation()).thenReturn(refDataBaseLocationList);
         when(refDataBaseLocationList.getValue()).thenReturn(refDataBaseLocation);
-
-    }
-
-    @Test
-    void isListAssistIntegratedLocated_should_return_yes() {
-        when(baseLocation.getId()).thenReturn(ENABLED_LOCATION);
-
-        assertEquals(YES, locationBasedFeatureToggler.isListAssistEnabled(asylumCase));
-
-    }
-
-    @Test
-    void isListAssistIntegratedLocated_should_return_no() {
-        when(baseLocation.getId()).thenReturn(DISABLED_LOCATION);
-
-        assertEquals(NO, locationBasedFeatureToggler.isListAssistEnabled(asylumCase));
 
     }
 

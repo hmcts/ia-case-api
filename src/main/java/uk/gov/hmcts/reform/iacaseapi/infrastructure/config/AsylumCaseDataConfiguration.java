@@ -42,7 +42,7 @@ public class AsylumCaseDataConfiguration {
         return new AsylumFieldCaseNameFixer(
             AsylumCaseFieldDefinition.HMCTS_CASE_NAME_INTERNAL,
             AsylumCaseFieldDefinition.APPELLANT_GIVEN_NAMES,
-            AsylumCaseFieldDefinition.APPELLANT_FAMILY_NAME, featureToggler);
+            AsylumCaseFieldDefinition.APPELLANT_FAMILY_NAME);
     }
 
     @Bean

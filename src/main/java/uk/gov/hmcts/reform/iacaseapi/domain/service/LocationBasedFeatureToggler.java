@@ -23,7 +23,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 @Service
 public class LocationBasedFeatureToggler {
 
-    private static final String LIST_ASSIST_INTEGRATED_LOCATIONS = "list-assist-integrated-locations";
     private static final String AUTO_HEARING_REQUEST_LOCATIONS_LIST = "auto-hearing-request-locations-list";
     private static final LDValue DEFAULT_VALUE = LDValue.parse("{\"epimsIds\":[]}");
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
@@ -34,11 +33,6 @@ public class LocationBasedFeatureToggler {
         this.featureToggler = featureToggler;
     }
 
-
-    public YesOrNo isListAssistEnabled(AsylumCase asylumCase) {
-
-        return isTargetLocation(asylumCase, LIST_ASSIST_INTEGRATED_LOCATIONS);
-    }
 
     public YesOrNo isAutoHearingRequestEnabled(AsylumCase asylumCase) {
 
