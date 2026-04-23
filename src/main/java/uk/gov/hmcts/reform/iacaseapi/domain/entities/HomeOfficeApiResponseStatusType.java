@@ -12,7 +12,7 @@ public enum HomeOfficeApiResponseStatusType {
     BAD_REQUEST(400, "badRequest", UserFacingErrorText.CLIENT, "The request to the Home Office validation API was not correctly formed."),
     NOT_AUTHENTICATED(401, "notAuthenticated", UserFacingErrorText.CLIENT, "The request to the Home Office validation API could not be authenticated."),
     NOT_AUTHORISED(403, "notAuthorised", UserFacingErrorText.CLIENT, "The request to the Home Office validation API was authenticated but not authorised."),
-    NOT_FOUND(404, "notFound", UserFacingErrorText.USER, "No application matching Home Office reference number XYZYX was found."),
+    NOT_FOUND(404, "notFound", UserFacingErrorText.USER, "The reference XYZYX cannot be matched to a Home Office record.  You should enter the UAN or GWF reference exactly as it appears on the decision letter.  This can often be found in the ‘How to appeal’ section."),
     INTERNAL_SERVER_ERROR(500, "internalServerError", UserFacingErrorText.SERVER, "The Home Office validation API was not available."),
     NOT_IMPLEMENTED(501, "notImplemented", UserFacingErrorText.SERVER, "The Home Office validation API has not been implemented yet."),
     BAD_GATEWAY(502, "badGateway", UserFacingErrorText.SERVER, "The Home Office validation API was not available due to a gateway error."),

@@ -38,6 +38,9 @@ public class HomeOfficeReferenceHandler implements PreSubmitCallbackHandler<Asyl
     public static final Pattern HOME_OFFICE_REF_PATTERN = Pattern
             .compile("^(([0-9]{4}\\-[0-9]{4}\\-[0-9]{4}\\-[0-9]{4})|(GWF[0-9]{9}))$");
     private final HomeOfficeReferenceService homeOfficeReferenceService;
+    private final String HOME_OFFICE_HELP_FORM_LINK = "https://submit.forms.service.gov.uk/form/264619/provide-information-for-your-appeal-with-hm-courts-tribunals-service";
+    private final String HOME_OFFICE_HELP_SUFFIX = "  If you need help, please contact the Home Office by completing this form: " + HOME_OFFICE_HELP_FORM_LINK;
+    private final String INVALID_HOME_OFFICE_REFERENCE = "You should enter the UAN or GWF reference exactly as it appears on the decision letter.  This can often be found in the ‘How to appeal’ section.  The UAN is 16 digits with dashes.  The GWF starts with the letters \"GWF\" and then has 9 digits." + HOME_OFFICE_HELP_SUFFIX;
 
     public HomeOfficeReferenceHandler(HomeOfficeReferenceService homeOfficeReferenceService) {
         this.homeOfficeReferenceService = homeOfficeReferenceService;
@@ -84,8 +87,7 @@ public class HomeOfficeReferenceHandler implements PreSubmitCallbackHandler<Asyl
             if (callback.getPageId().equals("homeOfficeReferenceNumber")) {
                 if (!isWellFormedHomeOfficeReference(homeOfficeReferenceNumber)) {
                     PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
-                    response.addError(
-                            "The Home Office reference number must be either a UAN, which is 16 digits with dashes, or the letters GWF followed by 9 digits.  Please check your decision letter and try again.");
+                    response.addError(INVALID_HOME_OFFICE_REFERENCE);
                     return response;
                 }
 
@@ -95,7 +97,7 @@ public class HomeOfficeReferenceHandler implements PreSubmitCallbackHandler<Asyl
                     response.addError(
                         asylumCase.read(HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS, HomeOfficeApiResponseStatusType.class)
                                   .orElse(HomeOfficeApiResponseStatusType.UNKNOWN)
-                                  .getUserFacingErrorText(homeOfficeReferenceNumber)
+                                  .getUserFacingErrorText(homeOfficeReferenceNumber) + HOME_OFFICE_HELP_SUFFIX
                     );
                     return response;
                 }
