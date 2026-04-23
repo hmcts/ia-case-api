@@ -42,7 +42,6 @@ public class AdvancedFinalBundlingStitchingCallbackHandler implements PreSubmitC
     private final DocumentsAppender documentsAppender;
     private final FeatureToggler featureToggler;
     private final HomeOfficeApi<AsylumCase> homeOfficeApi;
-    private static final String HO_NOTIFICATION_FEATURE = "home-office-notification-feature";
 
     public AdvancedFinalBundlingStitchingCallbackHandler(
         DocumentReceiver documentReceiver,
@@ -134,34 +133,21 @@ public class AdvancedFinalBundlingStitchingCallbackHandler implements PreSubmitC
 
     private void handleHomeOfficeNotification(Callback<AsylumCase> callback, AsylumCase asylumCase) {
 
-        if (featureToggler.getValue(HO_NOTIFICATION_FEATURE, false)) {
+        final String homeOfficeSearchStatus = asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class)
+            .orElse("");
 
-            final String homeOfficeSearchStatus = asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class)
-                .orElse("");
+        final YesOrNo homeOfficeNotificationsEligible = asylumCase.read(HOME_OFFICE_NOTIFICATIONS_ELIGIBLE, YesOrNo.class)
+            .orElse(YesOrNo.NO);
 
-            final YesOrNo homeOfficeNotificationsEligible = asylumCase.read(HOME_OFFICE_NOTIFICATIONS_ELIGIBLE, YesOrNo.class)
-                .orElse(YesOrNo.NO);
+        if ("SUCCESS".equalsIgnoreCase(homeOfficeSearchStatus)
+            && homeOfficeNotificationsEligible == YesOrNo.YES) {
 
-            if ("SUCCESS".equalsIgnoreCase(homeOfficeSearchStatus)
-                && homeOfficeNotificationsEligible == YesOrNo.YES) {
+            AsylumCase asylumCaseWithHomeOfficeData =
+                featureToggler.getValue("home-office-uan-feature", false)
+                    ? homeOfficeApi.aboutToSubmit(callback) : homeOfficeApi.call(callback);
 
-                AsylumCase asylumCaseWithHomeOfficeData =
-                    featureToggler.getValue("home-office-uan-feature", false)
-                        ? homeOfficeApi.aboutToSubmit(callback) : homeOfficeApi.call(callback);
-
-                asylumCase.write(HOME_OFFICE_HEARING_BUNDLE_READY_INSTRUCT_STATUS,
-                    asylumCaseWithHomeOfficeData.read(HOME_OFFICE_HEARING_BUNDLE_READY_INSTRUCT_STATUS, String.class).orElse(""));
-            } else {
-                final long caseId = callback.getCaseDetails().getId();
-                final String homeOfficeReferenceNumber = asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class).orElse("");
-
-                log.warn("Home Office notification was not invoked due to unsuccessful validation search - "
-                        + "caseId: {}, "
-                        + "homeOfficeReferenceNumber: {}, "
-                        + "homeOfficeSearchStatus: {}, "
-                        + "homeOfficeNotificationsEligible: {} ",
-                    caseId, homeOfficeReferenceNumber, homeOfficeSearchStatus, homeOfficeNotificationsEligible);
-            }
+            asylumCase.write(HOME_OFFICE_HEARING_BUNDLE_READY_INSTRUCT_STATUS,
+                asylumCaseWithHomeOfficeData.read(HOME_OFFICE_HEARING_BUNDLE_READY_INSTRUCT_STATUS, String.class).orElse(""));
         }
     }
 

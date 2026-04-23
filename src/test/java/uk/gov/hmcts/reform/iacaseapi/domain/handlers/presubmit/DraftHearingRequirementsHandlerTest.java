@@ -88,7 +88,6 @@ class DraftHearingRequirementsHandlerTest {
     @Test
     void should_clear_previous_agreed_adjustment_fields_for_reheard_appeal() {
 
-        when(featureToggler.getValue("reheard-feature", false)).thenReturn(true);
         when(asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -109,7 +108,6 @@ class DraftHearingRequirementsHandlerTest {
     @Test
     void should_write_appeal_out_of_country_case_field_if_not_present() {
 
-        when(featureToggler.getValue("reheard-feature", false)).thenReturn(true);
         when(asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -189,7 +187,6 @@ class DraftHearingRequirementsHandlerTest {
     @Test
     void should_set_current_hearing_details_visibility_to_no_for_case_flag() {
 
-        when(featureToggler.getValue("reheard-feature", false)).thenReturn(true);
         when(asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -197,19 +194,6 @@ class DraftHearingRequirementsHandlerTest {
 
         verify(asylumCase, times(1))
             .write(eq(AsylumCaseFieldDefinition.CURRENT_HEARING_DETAILS_VISIBLE), eq(YesOrNo.NO));
-    }
-
-    @Test
-    void should_set_current_hearing_details_visibility_when_feature_flag_disabled() {
-
-        when(asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
-        when(featureToggler.getValue("reheard-feature", false)).thenReturn(false);
-
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            draftHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
-
-        verify(asylumCase, times(1))
-            .write(eq(AsylumCaseFieldDefinition.CURRENT_HEARING_DETAILS_VISIBLE), eq(YesOrNo.YES));
     }
 
     @Test

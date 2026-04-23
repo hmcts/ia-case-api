@@ -148,7 +148,6 @@ public class LeadershipJudgeFtpaDecisionHandler implements PreSubmitCallbackHand
 
         ftpaDisplayService.setFtpaCaseFlag(
             asylumCase,
-            featureToggler.getValue("reheard-feature", false),
             currentDecision
         );
 

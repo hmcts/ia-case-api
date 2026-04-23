@@ -84,8 +84,7 @@ public class UploadAdditionalEvidenceHomeOfficeHandler implements PreSubmitCallb
         final List<IdValue<DocumentWithMetadata>> existingRespondentDocuments =
             maybeExistingRespondentDocuments.orElse(Collections.emptyList());
 
-        if (asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class).map(flag -> flag.equals(YesOrNo.YES)).orElse(false)
-             && featureToggler.getValue("reheard-feature", false)) {
+        if (asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class).map(flag -> flag.equals(YesOrNo.YES)).orElse(false)) {
 
             Optional<List<IdValue<DocumentWithMetadata>>> maybeExistingAdditionalEvidenceRespondentDocuments =
                 asylumCase.read(RESP_ADDITIONAL_EVIDENCE_DOCS);

@@ -143,8 +143,7 @@ public class UpdateHearingRequirementsHandler extends WitnessHandler
         asylumCase.clear(IN_CAMERA_COURT_DECISION_FOR_DISPLAY);
         asylumCase.clear(OTHER_DECISION_FOR_DISPLAY);
 
-        if (asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class).map(flag -> flag.equals(YES)).orElse(false)
-            && featureToggler.getValue("reheard-feature", false)) {
+        if (asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class).map(flag -> flag.equals(YES)).orElse(false)) {
             previousRequirementsAndRequestsAppender.appendAndTrim(asylumCase);
         }
 

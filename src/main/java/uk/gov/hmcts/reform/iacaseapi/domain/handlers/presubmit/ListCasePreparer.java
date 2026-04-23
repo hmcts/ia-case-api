@@ -63,8 +63,7 @@ public class ListCasePreparer implements PreSubmitCallbackHandler<AsylumCase> {
             return asylumCasePreSubmitCallbackResponse;
         }
 
-        if (asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class).map(flag -> flag.equals(YesOrNo.YES)).orElse(false)
-            && featureToggler.getValue("reheard-feature", false)) {
+        if (asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class).map(flag -> flag.equals(YesOrNo.YES)).orElse(false)) {
             asylumCase.clear(LIST_CASE_HEARING_CENTRE);
             asylumCase.clear(LIST_CASE_HEARING_CENTRE_ADDRESS);
             asylumCase.clear(LIST_CASE_HEARING_DATE);

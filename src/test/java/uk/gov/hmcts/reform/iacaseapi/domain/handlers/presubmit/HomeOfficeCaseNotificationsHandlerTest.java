@@ -113,7 +113,6 @@ class HomeOfficeCaseNotificationsHandlerTest {
     void setUp() {
         homeOfficeCaseNotificationsHandler =
             new HomeOfficeCaseNotificationsHandler(featureToggler, homeOfficeApi);
-        when(featureToggler.getValue("home-office-notification-feature", false)).thenReturn(true);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
     }

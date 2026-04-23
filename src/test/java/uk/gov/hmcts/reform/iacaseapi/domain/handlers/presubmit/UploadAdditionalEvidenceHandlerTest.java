@@ -107,7 +107,6 @@ class UploadAdditionalEvidenceHandlerTest {
                 additionalEvidence2WithMetadata
             );
 
-        when(featureToggler.getValue("reheard-feature", false)).thenReturn(true);
         when(asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
 
         when(asylumCase.read(ADDITIONAL_EVIDENCE_DOCUMENTS))
@@ -190,7 +189,6 @@ class UploadAdditionalEvidenceHandlerTest {
 
     @Test
     void should_add_new_evidence_to_a_reheard_case_when_no_additional_evidence_documents_exist() {
-        when(featureToggler.getValue("reheard-feature", false)).thenReturn(true);
         when(asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
 
         List<IdValue<DocumentWithDescription>> additionalEvidence =

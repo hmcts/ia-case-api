@@ -86,8 +86,7 @@ public class UploadAdditionalEvidenceHandler implements PreSubmitCallbackHandler
         List<IdValue<DocumentWithMetadata>> allAdditionalEvidenceDocuments =
             documentsAppender.append(existingAdditionalEvidenceDocuments, additionalEvidenceDocuments);
 
-        if (asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class).map(flag -> flag.equals(YesOrNo.YES)).orElse(false)
-            && featureToggler.getValue("reheard-feature", false)) {
+        if (asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class).map(flag -> flag.equals(YesOrNo.YES)).orElse(false)) {
 
             Optional<List<IdValue<DocumentWithMetadata>>> maybeExistingAdditionalEvidenceRespondentDocuments =
                 asylumCase.read(APP_ADDITIONAL_EVIDENCE_DOCS);

@@ -28,8 +28,7 @@ public class DecisionAndReasonsPreparer implements PreSubmitCallbackHandler<Asyl
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_START
-               && callback.getEvent() == Event.DECISION_AND_REASONS_STARTED
-               && featureToggler.getValue("reheard-feature", false);
+               && callback.getEvent() == Event.DECISION_AND_REASONS_STARTED;
     }
 
     @Override

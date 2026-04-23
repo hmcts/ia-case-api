@@ -52,7 +52,6 @@ class SendDecisionAndReasonsPreparerTest {
     public void setUp() {
 
         sendDecisionAndReasonsPreparer = new SendDecisionAndReasonsPreparer(featureToggler);
-        when(featureToggler.getValue("reheard-feature", false)).thenReturn(true);
     }
 
     @Test
@@ -93,18 +92,6 @@ class SendDecisionAndReasonsPreparerTest {
         verify(asylumCase, times(0)).clear(FINAL_DECISION_AND_REASONS_DOCUMENT);
         verify(asylumCase, times(0)).clear(IS_DOCUMENT_SIGNED_TODAY);
         verify(asylumCase, times(0)).clear(IS_FEE_CONSISTENT_WITH_DECISION);
-    }
-
-    @Test
-    void cannot_handle_if_feature_flag_disabled() {
-
-        when(callback.getEvent()).thenReturn(Event.SEND_DECISION_AND_REASONS);
-        when(featureToggler.getValue("reheard-feature", false)).thenReturn(false);
-
-        sendDecisionAndReasonsPreparer = new SendDecisionAndReasonsPreparer(featureToggler);
-        boolean canHandle = sendDecisionAndReasonsPreparer.canHandle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
-
-        assertFalse(canHandle);
     }
 
     @Test

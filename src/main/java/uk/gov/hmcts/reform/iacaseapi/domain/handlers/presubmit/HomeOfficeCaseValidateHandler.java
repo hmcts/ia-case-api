@@ -35,7 +35,6 @@ public class HomeOfficeCaseValidateHandler implements PreSubmitCallbackHandler<A
     private final HomeOfficeApi<AsylumCase> homeOfficeApi;
     private final boolean isHomeOfficeIntegrationEnabled;
     private final FeatureToggler featureToggler;
-    private static final String HO_NOTIFICATION_FEATURE = "home-office-notification-feature";
 
     public HomeOfficeCaseValidateHandler(
         FeatureToggler featureToggler,
@@ -146,8 +145,7 @@ public class HomeOfficeCaseValidateHandler implements PreSubmitCallbackHandler<A
                     nationalitiesForDisplay.lastIndexOf("<br />"), nationalitiesForDisplay.length());
             }
             asylumCase.write(APPELLANT_NATIONALITIES_DESCRIPTION, nationalitiesForDisplay.toString());
-            asylumCase.write(HOME_OFFICE_NOTIFICATIONS_ELIGIBLE,
-                featureToggler.getValue(HO_NOTIFICATION_FEATURE, false) ? YesOrNo.YES : YesOrNo.NO);
+            asylumCase.write(HOME_OFFICE_NOTIFICATIONS_ELIGIBLE, YesOrNo.YES);
         }
         return new PreSubmitCallbackResponse<>(asylumCase);
     }

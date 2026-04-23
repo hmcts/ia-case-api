@@ -28,8 +28,7 @@ public class SendDecisionAndReasonsPreparer implements PreSubmitCallbackHandler<
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_START
-               && callback.getEvent() == Event.SEND_DECISION_AND_REASONS
-               && featureToggler.getValue("reheard-feature", false);
+               && callback.getEvent() == Event.SEND_DECISION_AND_REASONS;
     }
 
     @Override

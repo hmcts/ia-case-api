@@ -56,7 +56,6 @@ class DecisionAndReasonsPreparerTest {
     public void setUp() {
 
         decisionAndReasonsPreparer = new DecisionAndReasonsPreparer(featureToggler);
-        when(featureToggler.getValue("reheard-feature", false)).thenReturn(true);
     }
 
     @Test
@@ -105,18 +104,6 @@ class DecisionAndReasonsPreparerTest {
         verify(asylumCase, times(0)).clear(APPELLANTS_AGREED_SCHEDULE_OF_ISSUES_DESCRIPTION);
         verify(asylumCase, times(0)).clear(SCHEDULE_OF_ISSUES_AGREEMENT);
         verify(asylumCase, times(0)).clear(SCHEDULE_OF_ISSUES_DISAGREEMENT_DESCRIPTION);
-    }
-
-    @Test
-    void cannot_handle_if_feature_flag_disabled() {
-
-        when(callback.getEvent()).thenReturn(Event.DECISION_AND_REASONS_STARTED);
-        when(featureToggler.getValue("reheard-feature", false)).thenReturn(false);
-
-        decisionAndReasonsPreparer = new DecisionAndReasonsPreparer(featureToggler);
-        boolean canHandle = decisionAndReasonsPreparer.canHandle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
-
-        assertFalse(canHandle);
     }
 
     @Test

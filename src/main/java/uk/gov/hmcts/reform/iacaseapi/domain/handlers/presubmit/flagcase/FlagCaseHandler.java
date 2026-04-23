@@ -114,7 +114,7 @@ public class FlagCaseHandler implements PreSubmitCallbackHandler<AsylumCase> {
                 asylumCase.write(CASE_FLAG_UNACCOMPANIED_MINOR_ADDITIONAL_INFORMATION, additionalInformation);
                 break;
             case SET_ASIDE_REHEARD:
-                asylumCase.write(AsylumCaseFieldDefinition.IS_REHEARD_APPEAL_ENABLED, featureToggler.getValue("reheard-feature", false) ? YesOrNo.YES : YesOrNo.NO);
+                asylumCase.write(AsylumCaseFieldDefinition.IS_REHEARD_APPEAL_ENABLED, YesOrNo.YES);
                 asylumCase.write(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.YES);
                 asylumCase.write(CASE_FLAG_SET_ASIDE_REHEARD_ADDITIONAL_INFORMATION, additionalInformation);
                 break;

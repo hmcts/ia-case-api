@@ -179,14 +179,10 @@ public class UpdateTribunalDecisionHandler implements PreSubmitCallbackHandler<A
     }
 
     private void setFtpaReheardCaseFlag(AsylumCase asylumCase) {
-        boolean isReheardAppealEnabled = featureToggler.getValue("reheard-feature", false);
-        asylumCase.write(AsylumCaseFieldDefinition.IS_REHEARD_APPEAL_ENABLED,
-            isReheardAppealEnabled ? YesOrNo.YES : YesOrNo.NO);
+        asylumCase.write(AsylumCaseFieldDefinition.IS_REHEARD_APPEAL_ENABLED, YesOrNo.YES);
 
-        if (isReheardAppealEnabled) {
-            asylumCase.write(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YES);
-            asylumCase.write(STITCHING_STATUS,"");
-        }
+        asylumCase.write(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YES);
+        asylumCase.write(STITCHING_STATUS,"");
     }
 }
 

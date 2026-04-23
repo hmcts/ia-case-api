@@ -142,7 +142,6 @@ class FlagCaseHandlerTest {
         final CaseFlagType caseFlagType = CaseFlagType.SET_ASIDE_REHEARD;
 
         when(asylumCase.read(FLAG_CASE_TYPE_OF_FLAG, CaseFlagType.class)).thenReturn(Optional.of(caseFlagType));
-        when(featureToggler.getValue("reheard-feature", false)).thenReturn(true);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             flagCaseHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -160,34 +159,6 @@ class FlagCaseHandlerTest {
 
         verify(asylumCase, times(1)).write(LEGACY_CASE_FLAGS, allCaseFlags);
         verify(asylumCase, times(1)).write(IS_REHEARD_APPEAL_ENABLED, YesOrNo.YES);
-    }
-
-    @Test
-    void should_set_feature_flag_to_no_when_set_aside_reheard_flag_given() {
-
-        final List<IdValue<LegacyCaseFlag>> existingCaseFlags = new ArrayList<>();
-        final List<IdValue<LegacyCaseFlag>> allCaseFlags = new ArrayList<>();
-        final CaseFlagType caseFlagType = CaseFlagType.SET_ASIDE_REHEARD;
-
-        when(asylumCase.read(FLAG_CASE_TYPE_OF_FLAG, CaseFlagType.class)).thenReturn(Optional.of(caseFlagType));
-        when(featureToggler.getValue("reheard-feature", false)).thenReturn(false);
-
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            flagCaseHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
-
-        assertNotNull(callbackResponse);
-        assertEquals(asylumCase, callbackResponse.getData());
-
-        readAndClearInitialCaseFlagsTest();
-
-        verify(caseFlagAppender, times(1)).append(
-            existingCaseFlags,
-            caseFlagType,
-            additionalInformation
-        );
-
-        verify(asylumCase, times(1)).write(LEGACY_CASE_FLAGS, allCaseFlags);
-        verify(asylumCase, times(1)).write(IS_REHEARD_APPEAL_ENABLED, YesOrNo.NO);
     }
 
     @Test

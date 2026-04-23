@@ -64,8 +64,7 @@ public class FtpaRespondentPreparer implements PreSubmitCallbackHandler<AsylumCa
         final Optional<String> mayBeRespondentAppealSubmitted = asylumCase.read(FTPA_RESPONDENT_SUBMITTED);
 
         final boolean isFtpaSetAsideAndReheard =
-            asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class).map(flag -> flag.equals(YesOrNo.YES)).orElse(false)
-            && featureToggler.getValue("reheard-feature", false);
+            asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class).map(flag -> flag.equals(YesOrNo.YES)).orElse(false);
 
         if (mayBeRespondentAppealSubmitted.isPresent() && mayBeRespondentAppealSubmitted.get().equals("Yes") && !isFtpaSetAsideAndReheard) {
             final PreSubmitCallbackResponse<AsylumCase> asylumCasePreSubmitCallbackResponse = new PreSubmitCallbackResponse<>(asylumCase);

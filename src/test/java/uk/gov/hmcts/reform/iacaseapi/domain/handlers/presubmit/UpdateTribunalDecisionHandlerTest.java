@@ -260,7 +260,6 @@ class UpdateTribunalDecisionHandlerTest {
                 .thenReturn(Optional.of(UNDER_RULE_32));
         when(asylumCase.read(RULE_32_NOTICE_DOCUMENT, Document.class))
                 .thenReturn(Optional.of(rule32Document));
-        when(featureToggler.getValue("reheard-feature", false)).thenReturn(true);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
                 updateTribunalDecisionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -270,27 +269,6 @@ class UpdateTribunalDecisionHandlerTest {
         verify(asylumCase, times(1)).write(IS_REHEARD_APPEAL_ENABLED, YesOrNo.YES);
         verify(asylumCase, times(1)).write(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.YES);
         verify(asylumCase, times(1)).write(STITCHING_STATUS, "");
-    }
-
-    @Test
-    void should_not_write_set_reheard_case_flag_if_is_r32_and_feature_flag_is_false() {
-
-        LocalDate currentDate = LocalDate.now();
-        when(dateProvider.now()).thenReturn(currentDate);
-        when(asylumCase.read(UPDATE_TRIBUNAL_DECISION_LIST, UpdateTribunalRules.class))
-                .thenReturn(Optional.of(UNDER_RULE_32));
-        when(asylumCase.read(RULE_32_NOTICE_DOCUMENT, Document.class))
-                .thenReturn(Optional.of(rule32Document));
-        when(featureToggler.getValue("reheard-feature", false)).thenReturn(false);
-
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                updateTribunalDecisionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
-
-        assertNotNull(callbackResponse);
-        assertEquals(asylumCase, callbackResponse.getData());
-        verify(asylumCase, times(1)).write(IS_REHEARD_APPEAL_ENABLED, NO);
-        verify(asylumCase, times(0)).write(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.YES);
-        verify(asylumCase, times(0)).write(STITCHING_STATUS, "");
     }
 
     @Test
