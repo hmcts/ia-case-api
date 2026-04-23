@@ -68,10 +68,8 @@ class HomeOfficeRequestHomeOfficeDataPreparerTest {
                 .hasMessage("AppealType is not present.");
     }
 
-
-
     @Test
-    void handle_should_return_error_for_aaa_appeals() {
+    void handle_should_return_error_for_aa_appeals() {
 
         when(callback.getEvent()).thenReturn(Event.REQUEST_HOME_OFFICE_DATA);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -83,7 +81,7 @@ class HomeOfficeRequestHomeOfficeDataPreparerTest {
             homeOfficeDataPreparer.handle(ABOUT_TO_START, callback);
 
         assertThat(response).isNotNull();
-        assertThat(response.getErrors()).contains("You cannot request Home Office data for this appeal");
+        assertThat(response.getErrors()).contains("You cannot request Home Office data for age assessment appeals");
     }
 
     @ParameterizedTest
@@ -185,6 +183,31 @@ class HomeOfficeRequestHomeOfficeDataPreparerTest {
         assertThat(response.getData()).isEqualTo(asylumCase);
         assertThat(response.getErrors()).isNotEmpty();
         assertThat(response.getErrors()).contains("You cannot request Home Office data for an out of country appeal");
+    }
+
+    @Test
+    void handle_should_return_different_error_for_out_of_country_age_assessment_appeals() {
+
+        AppealType appealType = AppealType.AG;
+        when(featureToggler.getValue("home-office-uan-ag-feature", false)).thenReturn(true);
+
+        when(callback.getEvent()).thenReturn(Event.REQUEST_HOME_OFFICE_DATA);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
+        when(asylumCase.read(APPEAL_OUT_OF_COUNTRY, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(HOME_OFFICE_CASE_STATUS_DATA, HomeOfficeCaseStatus.class))
+                .thenReturn(Optional.of(homeOfficeCaseStatus));
+
+        PreSubmitCallbackResponse<AsylumCase> response =
+                homeOfficeDataPreparer.handle(ABOUT_TO_START, callback);
+
+        assertThat(response).isNotNull();
+        assertThat(response.getData()).isNotEmpty();
+        assertThat(response.getData()).isEqualTo(asylumCase);
+        assertThat(response.getErrors()).isNotEmpty();
+        assertThat(response.getErrors()).contains("You cannot request Home Office data for age assessment appeals");
     }
 
     @ParameterizedTest

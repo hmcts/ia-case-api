@@ -160,6 +160,13 @@ class HomeOfficeCaseValidateHandlerTest {
 
         when(featureToggler.getValue("home-office-uan-dc-ea-hu-feature", false)).thenReturn(true);
 
+        when(featureToggler.getValue("home-office-uan-pa-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-rp-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-ea-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-hu-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-dc-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-eu-feature", false)).thenReturn(true);
+                
         when(callback.getEvent()).thenReturn(event);
         when(homeOfficeApi.aboutToSubmit(callback)).thenReturn(asylumCase);
 
@@ -221,6 +228,13 @@ class HomeOfficeCaseValidateHandlerTest {
 
         when(featureToggler.getValue("home-office-uan-dc-ea-hu-feature", false)).thenReturn(true);
 
+        when(featureToggler.getValue("home-office-uan-pa-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-rp-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-ea-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-hu-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-dc-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-eu-feature", false)).thenReturn(true);
+                
         when(callback.getEvent()).thenReturn(event);
 
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
@@ -377,7 +391,7 @@ class HomeOfficeCaseValidateHandlerTest {
 
     @ParameterizedTest
     @MethodSource("eventAndAppealTypesData")
-    void should_not_call_home_office_api_when_ooc_and_human_rights_decision_is_chosen(Event event, AppealType appealType) {
+    void should_not_call_home_office_api_when_ooc_is_chosen(Event event, AppealType appealType) {
 
         when(callback.getEvent()).thenReturn(event);
 
@@ -404,7 +418,8 @@ class HomeOfficeCaseValidateHandlerTest {
                 Arguments.of(MARK_APPEAL_PAID, HU),
                 Arguments.of(REQUEST_HOME_OFFICE_DATA, DC),
                 Arguments.of(REQUEST_HOME_OFFICE_DATA, EA),
-                Arguments.of(REQUEST_HOME_OFFICE_DATA, HU)
+                Arguments.of(REQUEST_HOME_OFFICE_DATA, HU),
+                Arguments.of(REQUEST_HOME_OFFICE_DATA, EU)
         );
     }
 

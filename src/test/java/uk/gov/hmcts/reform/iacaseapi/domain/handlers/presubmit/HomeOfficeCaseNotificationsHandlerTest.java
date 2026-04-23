@@ -14,6 +14,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.EA;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.HU;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.PA;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.RP;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.EU;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre.GLASGOW;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.*;
@@ -236,67 +237,79 @@ class HomeOfficeCaseNotificationsHandlerTest {
 
     private static Stream<Arguments> eventAndAppealTypesData() {
 
-        return Stream.of(
+        return Stream.of(// Not AG
             Arguments.of(REQUEST_RESPONDENT_EVIDENCE, PA),
             Arguments.of(REQUEST_RESPONDENT_EVIDENCE, RP),
             Arguments.of(REQUEST_RESPONDENT_EVIDENCE, DC),
             Arguments.of(REQUEST_RESPONDENT_EVIDENCE, EA),
             Arguments.of(REQUEST_RESPONDENT_EVIDENCE, HU),
+            Arguments.of(REQUEST_RESPONDENT_EVIDENCE, EU),
             Arguments.of(REQUEST_RESPONDENT_REVIEW, PA),
             Arguments.of(REQUEST_RESPONDENT_REVIEW, RP),
             Arguments.of(REQUEST_RESPONDENT_REVIEW, DC),
             Arguments.of(REQUEST_RESPONDENT_REVIEW, EA),
             Arguments.of(REQUEST_RESPONDENT_REVIEW, HU),
+            Arguments.of(REQUEST_RESPONDENT_REVIEW, EU),
             Arguments.of(LIST_CASE, PA),
             Arguments.of(LIST_CASE, RP),
             Arguments.of(LIST_CASE, DC),
             Arguments.of(LIST_CASE, EA),
             Arguments.of(LIST_CASE, HU),
+            Arguments.of(LIST_CASE, EU),
             Arguments.of(EDIT_CASE_LISTING, PA),
             Arguments.of(EDIT_CASE_LISTING, RP),
             Arguments.of(EDIT_CASE_LISTING, DC),
             Arguments.of(EDIT_CASE_LISTING, EA),
             Arguments.of(EDIT_CASE_LISTING, HU),
+            Arguments.of(EDIT_CASE_LISTING, EU),
             Arguments.of(ADJOURN_HEARING_WITHOUT_DATE, PA),
             Arguments.of(ADJOURN_HEARING_WITHOUT_DATE, RP),
             Arguments.of(ADJOURN_HEARING_WITHOUT_DATE, DC),
             Arguments.of(ADJOURN_HEARING_WITHOUT_DATE, EA),
             Arguments.of(ADJOURN_HEARING_WITHOUT_DATE, HU),
+            Arguments.of(ADJOURN_HEARING_WITHOUT_DATE, EU),
             Arguments.of(SEND_DECISION_AND_REASONS, PA),
             Arguments.of(SEND_DECISION_AND_REASONS, RP),
             Arguments.of(SEND_DECISION_AND_REASONS, DC),
             Arguments.of(SEND_DECISION_AND_REASONS, EA),
             Arguments.of(SEND_DECISION_AND_REASONS, HU),
+            Arguments.of(SEND_DECISION_AND_REASONS, EU),
             Arguments.of(APPLY_FOR_FTPA_APPELLANT, PA),
             Arguments.of(APPLY_FOR_FTPA_APPELLANT, RP),
             Arguments.of(APPLY_FOR_FTPA_APPELLANT, DC),
             Arguments.of(APPLY_FOR_FTPA_APPELLANT, EA),
             Arguments.of(APPLY_FOR_FTPA_APPELLANT, HU),
+            Arguments.of(APPLY_FOR_FTPA_APPELLANT, EU),
             Arguments.of(APPLY_FOR_FTPA_RESPONDENT, PA),
             Arguments.of(APPLY_FOR_FTPA_RESPONDENT, RP),
             Arguments.of(APPLY_FOR_FTPA_RESPONDENT, DC),
             Arguments.of(APPLY_FOR_FTPA_RESPONDENT, EA),
             Arguments.of(APPLY_FOR_FTPA_RESPONDENT, HU),
+            Arguments.of(APPLY_FOR_FTPA_RESPONDENT, EU),
             Arguments.of(LEADERSHIP_JUDGE_FTPA_DECISION, PA),
             Arguments.of(LEADERSHIP_JUDGE_FTPA_DECISION, RP),
             Arguments.of(LEADERSHIP_JUDGE_FTPA_DECISION, DC),
             Arguments.of(LEADERSHIP_JUDGE_FTPA_DECISION, EA),
             Arguments.of(LEADERSHIP_JUDGE_FTPA_DECISION, HU),
+            Arguments.of(LEADERSHIP_JUDGE_FTPA_DECISION, EU),
             Arguments.of(RESIDENT_JUDGE_FTPA_DECISION, PA),
             Arguments.of(RESIDENT_JUDGE_FTPA_DECISION, RP),
             Arguments.of(RESIDENT_JUDGE_FTPA_DECISION, DC),
             Arguments.of(RESIDENT_JUDGE_FTPA_DECISION, EA),
             Arguments.of(RESIDENT_JUDGE_FTPA_DECISION, HU),
+            Arguments.of(RESIDENT_JUDGE_FTPA_DECISION, EU),
             Arguments.of(DECIDE_FTPA_APPLICATION, PA),
             Arguments.of(DECIDE_FTPA_APPLICATION, RP),
             Arguments.of(DECIDE_FTPA_APPLICATION, DC),
             Arguments.of(DECIDE_FTPA_APPLICATION, EA),
             Arguments.of(DECIDE_FTPA_APPLICATION, HU),
+            Arguments.of(DECIDE_FTPA_APPLICATION, EU),
             Arguments.of(END_APPEAL, PA),
             Arguments.of(END_APPEAL, RP),
             Arguments.of(END_APPEAL, DC),
             Arguments.of(END_APPEAL, EA),
-            Arguments.of(END_APPEAL, HU)
+            Arguments.of(END_APPEAL, HU),
+            Arguments.of(END_APPEAL, EU)
         );
     }
 
@@ -334,17 +347,19 @@ class HomeOfficeCaseNotificationsHandlerTest {
     }
 
     private static Stream<Arguments> hoFlagAndAppealTypesData() {
-        return Stream.of(
+        return Stream.of(// Not AG
             Arguments.of(true, PA),
             Arguments.of(true, RP),
             Arguments.of(true, DC),
             Arguments.of(true, EA),
             Arguments.of(true, HU),
+            Arguments.of(true, EU),
             Arguments.of(false, PA),
             Arguments.of(false, RP),
             Arguments.of(false, DC),
             Arguments.of(false, EA),
-            Arguments.of(false, HU)
+            Arguments.of(false, HU),
+            Arguments.of(false, EU)
         );
     }
 
@@ -405,7 +420,8 @@ class HomeOfficeCaseNotificationsHandlerTest {
             Arguments.of(RESPONDENT_REVIEW, HU),
             Arguments.of(AWAITING_RESPONDENT_EVIDENCE, DC),
             Arguments.of(AWAITING_RESPONDENT_EVIDENCE, EA),
-            Arguments.of(AWAITING_RESPONDENT_EVIDENCE, HU)
+            Arguments.of(AWAITING_RESPONDENT_EVIDENCE, HU),
+            Arguments.of(AWAITING_RESPONDENT_EVIDENCE, EU)
         );
     }
 

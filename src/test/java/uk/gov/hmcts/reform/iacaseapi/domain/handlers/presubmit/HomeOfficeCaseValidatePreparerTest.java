@@ -80,10 +80,8 @@ class HomeOfficeCaseValidatePreparerTest {
                 .hasMessage("AppealType is not present.");
     }
 
-
-
     @ParameterizedTest
-    @EnumSource(value = AppealType.class, names = { "PA", "RP", "DC", "EA", "HU", "AG" })
+    @EnumSource(value = AppealType.class, names = { "PA", "RP", "DC", "EA", "HU", "EU", "AG" })
     void handle_should_return_error_for_ejp_appeals(AppealType appealType) {
 
         when(callback.getEvent()).thenReturn(Event.REQUEST_HOME_OFFICE_DATA);
@@ -101,7 +99,7 @@ class HomeOfficeCaseValidatePreparerTest {
     }
 
     @Test
-    void handle_should_return_error_for_aaa_appeals() {
+    void handle_should_return_error_for_aa_appeals() {
 
         when(callback.getEvent()).thenReturn(Event.REQUEST_HOME_OFFICE_DATA);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -141,7 +139,7 @@ class HomeOfficeCaseValidatePreparerTest {
 
     @ParameterizedTest
     @MethodSource("eventAndAppealTypesData")
-    void handler_should_invoke_homeoffice_api_for_detained_appeals(Event event, AppealType appealType) {
+    void handler_should_invoke_homeoffice_api_for_detained_appeals_with_enabled_appeal_types(Event event, AppealType appealType) {
 
         when(featureToggler.getValue("home-office-uan-dc-ea-hu-feature", false)).thenReturn(true);
         when(callback.getEvent()).thenReturn(event);
@@ -251,7 +249,8 @@ class HomeOfficeCaseValidatePreparerTest {
                 Arguments.of(MARK_APPEAL_PAID, HU),
                 Arguments.of(REQUEST_HOME_OFFICE_DATA, DC),
                 Arguments.of(REQUEST_HOME_OFFICE_DATA, EA),
-                Arguments.of(REQUEST_HOME_OFFICE_DATA, HU)
+                Arguments.of(REQUEST_HOME_OFFICE_DATA, HU),
+                Arguments.of(REQUEST_HOME_OFFICE_DATA, EU)
         );
     }
 

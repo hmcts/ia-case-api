@@ -1,5 +1,5 @@
 {
-  "description": "RIA 3302 end appeal HO notification failure confirmationby Admin officer",
+  "description": "RIA-3302 end appeal HO notification failure confirmation by Admin officer",
   "request": {
     "uri": "/asylum/ccdSubmitted",
     "credentials": "AdminOfficer",
