@@ -91,8 +91,6 @@ class ManageFeeUpdateHandlerTest {
     @Test
     void handling_should_return_selected_fee_update_statuses() {
 
-        when(featureToggler.getValue("manage-fee-update-feature", false)).thenReturn(true);
-
         final CheckValues<String> feeUpdateStatus =
                 new CheckValues<>(Collections.singletonList(
                         "Fee update recorded"
@@ -125,7 +123,6 @@ class ManageFeeUpdateHandlerTest {
     void handling_should_return_selected_fee_update_statuses_after_fee_update_recorded() {
         when(asylumCase.read(FEE_UPDATE_REASON, FeeUpdateReason.class)).thenReturn(Optional.of(DECISION_TYPE_CHANGED));
         when(asylumCase.read(FEE_UPDATE_TRIBUNAL_ACTION, FeeTribunalAction.class)).thenReturn(Optional.of(REFUND));
-        when(featureToggler.getValue("manage-fee-update-feature", false)).thenReturn(true);
 
         final CheckValues<String> feeUpdateStatus =
                 new CheckValues<>(Arrays.asList(
@@ -173,8 +170,6 @@ class ManageFeeUpdateHandlerTest {
     @Test
     void it_can_handle_callback() {
 
-        when(featureToggler.getValue("manage-fee-update-feature", false)).thenReturn(true);
-
         for (Event event : Event.values()) {
 
             when(callback.getEvent()).thenReturn(event);
@@ -197,7 +192,6 @@ class ManageFeeUpdateHandlerTest {
     @MethodSource("provideParameterValues")
     void should_write_flag_value_if_decision_type_changed_with_refund(FeeUpdateReason feeUpdateReason,
                                                                       FeeTribunalAction feeTribunalAction) {
-        when(featureToggler.getValue("manage-fee-update-feature", false)).thenReturn(true);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(Event.MANAGE_FEE_UPDATE);
@@ -219,7 +213,6 @@ class ManageFeeUpdateHandlerTest {
     void should_write_previous_and_updated_hearing_fee_options() {
         try (MockedStatic<FeesHelper> mockedStaticFeesHelper = Mockito.mockStatic(FeesHelper.class)) {
             Mockito.when(FeesHelper.findFeeByHearingType(feeService, asylumCase)).thenReturn(mock(Fee.class));
-            when(featureToggler.getValue("manage-fee-update-feature", false)).thenReturn(true);
             when(callback.getCaseDetails()).thenReturn(caseDetails);
             when(caseDetails.getCaseData()).thenReturn(asylumCase);
             when(callback.getEvent()).thenReturn(Event.MANAGE_FEE_UPDATE);
@@ -253,7 +246,6 @@ class ManageFeeUpdateHandlerTest {
     void should_write_previous_and_updated_hearing_fee_options_when_update_decision_hearing_fee_option_is_not_present() {
         try (MockedStatic<FeesHelper> mockedStaticFeesHelper = Mockito.mockStatic(FeesHelper.class)) {
             Mockito.when(FeesHelper.findFeeByHearingType(feeService, asylumCase)).thenReturn(mock(Fee.class));
-            when(featureToggler.getValue("manage-fee-update-feature", false)).thenReturn(true);
             when(callback.getCaseDetails()).thenReturn(caseDetails);
             when(caseDetails.getCaseData()).thenReturn(asylumCase);
             when(callback.getEvent()).thenReturn(Event.MANAGE_FEE_UPDATE);

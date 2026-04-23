@@ -16,20 +16,16 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.CaseFlagAppender;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
 @Component
 public class FlagCaseHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final CaseFlagAppender caseFlagAppender;
-    private final FeatureToggler featureToggler;
 
     public FlagCaseHandler(
-        CaseFlagAppender caseFlagAppender,
-        FeatureToggler featureToggler
+        CaseFlagAppender caseFlagAppender
     ) {
         this.caseFlagAppender = caseFlagAppender;
-        this.featureToggler = featureToggler;
     }
 
     public boolean canHandle(

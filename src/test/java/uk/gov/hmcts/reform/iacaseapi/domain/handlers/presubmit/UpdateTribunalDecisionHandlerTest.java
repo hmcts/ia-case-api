@@ -46,7 +46,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.Appender;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentReceiver;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -82,8 +81,6 @@ class UpdateTribunalDecisionHandlerTest {
     DocumentWithMetadata ftpaSetAsideR32Document;
     @Mock
     List<IdValue<DocumentWithMetadata>> allFtpaSetAsideDocuments;
-    @Mock
-    private FeatureToggler featureToggler;
     @Captor
     private ArgumentCaptor<List<IdValue<DecisionAndReasons>>> existingDecisionsCaptor;
     @Captor private ArgumentCaptor<DecisionAndReasons> newDecisionCaptor;
@@ -99,7 +96,7 @@ class UpdateTribunalDecisionHandlerTest {
     @BeforeEach
     public void setUp() {
         updateTribunalDecisionHandler = new UpdateTribunalDecisionHandler(dateProvider,
-                decisionAndReasonsAppender,documentReceiver,documentsAppender, featureToggler);
+                decisionAndReasonsAppender,documentReceiver,documentsAppender);
 
         when(callback.getEvent()).thenReturn(Event.UPDATE_TRIBUNAL_DECISION);
         when(callback.getCaseDetails()).thenReturn(caseDetails);

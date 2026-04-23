@@ -42,7 +42,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationRefDataService;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -57,8 +56,6 @@ class ListCasePreparerTest {
     @Mock
     private AsylumCase asylumCase;
     @Mock
-    private FeatureToggler featureToggler;
-    @Mock
     private LocationRefDataService locationRefDataService;
 
     private ListCasePreparer listCasePreparer;
@@ -67,7 +64,7 @@ class ListCasePreparerTest {
     public void setUp() {
 
         listCasePreparer =
-            new ListCasePreparer(featureToggler, locationRefDataService);
+            new ListCasePreparer(locationRefDataService);
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.LIST_CASE);

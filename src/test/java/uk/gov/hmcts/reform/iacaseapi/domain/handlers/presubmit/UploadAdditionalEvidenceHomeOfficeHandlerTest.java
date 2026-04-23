@@ -41,7 +41,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentReceiver;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -52,8 +51,6 @@ class UploadAdditionalEvidenceHomeOfficeHandlerTest {
     private DocumentReceiver documentReceiver;
     @Mock
     private DocumentsAppender documentsAppender;
-    @Mock
-    private FeatureToggler featureToggler;
     @Mock
     private Callback<AsylumCase> callback;
     @Mock
@@ -86,8 +83,7 @@ class UploadAdditionalEvidenceHomeOfficeHandlerTest {
         uploadAdditionalEvidenceHomeOfficeHandler =
             new UploadAdditionalEvidenceHomeOfficeHandler(
                 documentReceiver,
-                documentsAppender,
-                featureToggler
+                documentsAppender
             );
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);

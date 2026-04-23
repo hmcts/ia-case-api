@@ -21,7 +21,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentReceiver;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FtpaDisplayService;
 
 @Component
@@ -31,20 +30,17 @@ public class LeadershipJudgeFtpaDecisionHandler implements PreSubmitCallbackHand
     private final DocumentReceiver documentReceiver;
     private final DocumentsAppender documentsAppender;
     private final FtpaDisplayService ftpaDisplayService;
-    private final FeatureToggler featureToggler;
 
     public LeadershipJudgeFtpaDecisionHandler(
         DateProvider dateProvider,
         DocumentReceiver documentReceiver,
         DocumentsAppender documentsAppender,
-        FtpaDisplayService ftpaDisplayService,
-        FeatureToggler featureToggler
+        FtpaDisplayService ftpaDisplayService
     ) {
         this.dateProvider = dateProvider;
         this.documentReceiver = documentReceiver;
         this.documentsAppender = documentsAppender;
         this.ftpaDisplayService = ftpaDisplayService;
-        this.featureToggler = featureToggler;
     }
 
     @Override

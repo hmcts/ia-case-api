@@ -57,8 +57,7 @@ class RequestNewHearingRequirementsDirectionPreparerTest {
         requestNewHearingRequirementsDirectionPreparer =
             new RequestNewHearingRequirementsDirectionPreparer(
                 HEARING_REQUIREMENTS_DUE_IN_DAYS,
-                dateProvider,
-                featureToggler
+                dateProvider
             );
     }
 
@@ -70,8 +69,7 @@ class RequestNewHearingRequirementsDirectionPreparerTest {
         requestNewHearingRequirementsDirectionPreparer =
             new RequestNewHearingRequirementsDirectionPreparer(
                 HEARING_REQUIREMENTS_DUE_IN_DAYS,
-                dateProvider,
-                featureToggler
+                dateProvider
             );
 
         boolean canHandle =

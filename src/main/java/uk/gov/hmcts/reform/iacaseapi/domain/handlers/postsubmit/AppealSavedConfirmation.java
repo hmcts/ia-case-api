@@ -83,7 +83,6 @@ public class AppealSavedConfirmation implements PostSubmitCallbackHandler<Asylum
 
         if (asylumCase.read(AsylumCaseFieldDefinition.LOCAL_AUTHORITY_POLICY, OrganisationPolicy.class).isPresent()
             && callback.getEvent() == Event.START_APPEAL
-            && featureToggler.getValue("share-case-feature", false)
             && !isInternalCase(asylumCase)) {
 
             final String organisationIdentifier =

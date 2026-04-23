@@ -40,7 +40,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -53,14 +52,12 @@ class DraftHearingRequirementsHandlerTest {
     private CaseDetails<AsylumCase> caseDetails;
     @Mock
     private AsylumCase asylumCase;
-    @Mock
-    private FeatureToggler featureToggler;
 
     private DraftHearingRequirementsHandler draftHearingRequirementsHandler;
 
     @BeforeEach
     public void setUp() {
-        draftHearingRequirementsHandler = new DraftHearingRequirementsHandler(featureToggler);
+        draftHearingRequirementsHandler = new DraftHearingRequirementsHandler();
 
         when(callback.getEvent()).thenReturn(Event.DRAFT_HEARING_REQUIREMENTS);
         when(callback.getCaseDetails()).thenReturn(caseDetails);

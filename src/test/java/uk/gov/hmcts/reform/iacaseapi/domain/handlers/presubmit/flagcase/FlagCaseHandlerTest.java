@@ -38,7 +38,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.CaseFlagAppender;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -53,8 +52,6 @@ class FlagCaseHandlerTest {
     private AsylumCase asylumCase;
     @Mock
     private CaseFlagAppender caseFlagAppender;
-    @Mock
-    private FeatureToggler featureToggler;
     private FlagCaseHandler flagCaseHandler;
 
     @BeforeEach
@@ -65,7 +62,7 @@ class FlagCaseHandlerTest {
         when(asylumCase.read(FLAG_CASE_ADDITIONAL_INFORMATION, String.class))
             .thenReturn(Optional.of(additionalInformation));
 
-        flagCaseHandler = new FlagCaseHandler(caseFlagAppender, featureToggler);
+        flagCaseHandler = new FlagCaseHandler(caseFlagAppender);
     }
 
 

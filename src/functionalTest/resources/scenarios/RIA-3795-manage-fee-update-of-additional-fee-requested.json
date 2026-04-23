@@ -1,6 +1,5 @@
 {
   "description": "RIA-3795 Admin officer manage fee update of additional fee requested",
-  "launchDarklyKey": "manage-fee-update-feature:true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "AdminOfficer",

@@ -54,7 +54,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.PreviousRequirementsAndRequestsAppender;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -81,8 +80,6 @@ public class UpdateHearingRequirementsHandlerTest {
     private WitnessDetails witnessDetails3;
     @Mock
     private PreviousRequirementsAndRequestsAppender previousRequirementsAndRequestsAppender;
-    @Mock
-    private FeatureToggler featureToggler;
     @Captor
     private ArgumentCaptor<List<IdValue<Application>>> applicationsCaptor;
 
@@ -119,8 +116,7 @@ public class UpdateHearingRequirementsHandlerTest {
     @BeforeEach
     public void setUp() {
         updateHearingRequirementsHandler = new UpdateHearingRequirementsHandler(
-            previousRequirementsAndRequestsAppender,
-            featureToggler
+            previousRequirementsAndRequestsAppender
         );
 
         when(callback.getEvent()).thenReturn(Event.UPDATE_HEARING_REQUIREMENTS);

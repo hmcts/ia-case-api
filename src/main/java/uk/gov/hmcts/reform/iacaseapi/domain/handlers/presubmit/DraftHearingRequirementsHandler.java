@@ -30,15 +30,12 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
 @Component
 public class DraftHearingRequirementsHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
-    private final FeatureToggler featureToggler;
+    public DraftHearingRequirementsHandler() {
 
-    public DraftHearingRequirementsHandler(FeatureToggler featureToggler) {
-        this.featureToggler = featureToggler;
     }
 
     public boolean canHandle(
