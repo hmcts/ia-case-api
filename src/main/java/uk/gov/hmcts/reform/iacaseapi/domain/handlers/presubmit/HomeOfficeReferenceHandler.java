@@ -81,7 +81,7 @@ public class HomeOfficeReferenceHandler implements PreSubmitCallbackHandler<Asyl
                     .read(HOME_OFFICE_REFERENCE_NUMBER, String.class)
                     .orElseThrow(() -> new IllegalStateException("homeOfficeReferenceNumber is missing"));
 
-            if (callback.getPageId().equals("homeOfficeReferenceNumber_TEMPORARILY_DISABLED")) {
+            if (callback.getPageId().equals("homeOfficeReferenceNumber")) {
                 if (!isWellFormedHomeOfficeReference(homeOfficeReferenceNumber)) {
                     PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
                     response.addError(
@@ -101,7 +101,7 @@ public class HomeOfficeReferenceHandler implements PreSubmitCallbackHandler<Asyl
                 }
             }
 
-            if (callback.getPageId().equals("appellantBasicDetails_TEMPORARILY_DISABLED")) {
+            if (callback.getPageId().equals("appellantBasicDetails")) {
                 if (!isMatchingHomeOfficeCaseDetails(homeOfficeReferenceNumber, asylumCase, callback)) {
                     // Check whether an error occurred or if there just wasn't a match
                     HomeOfficeApiResponseStatusType responseStatus = 
