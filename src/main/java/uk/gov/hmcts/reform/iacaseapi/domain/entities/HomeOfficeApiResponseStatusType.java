@@ -12,7 +12,7 @@ public enum HomeOfficeApiResponseStatusType {
     BAD_REQUEST(400, "badRequest", UserFacingErrorText.CLIENT, "The request to the Home Office validation API was not correctly formed."),
     NOT_AUTHENTICATED(401, "notAuthenticated", UserFacingErrorText.CLIENT, "The request to the Home Office validation API could not be authenticated."),
     NOT_AUTHORISED(403, "notAuthorised", UserFacingErrorText.CLIENT, "The request to the Home Office validation API was authenticated but not authorised."),
-    NOT_FOUND(404, "notFound", UserFacingErrorText.USER, "The reference XYZYX cannot be matched to a Home Office record.  You should enter the UAN or GWF reference exactly as it appears on the decision letter.  This can often be found in the ‘How to appeal’ section."),
+    NOT_FOUND(404, "notFound", UserFacingErrorText.USER, "No application matching Home Office reference number XYZYX was found."),
     INTERNAL_SERVER_ERROR(500, "internalServerError", UserFacingErrorText.SERVER, "The Home Office validation API was not available."),
     NOT_IMPLEMENTED(501, "notImplemented", UserFacingErrorText.SERVER, "The Home Office validation API has not been implemented yet."),
     BAD_GATEWAY(502, "badGateway", UserFacingErrorText.SERVER, "The Home Office validation API was not available due to a gateway error."),
@@ -57,7 +57,7 @@ public enum HomeOfficeApiResponseStatusType {
     private final class UserFacingErrorText {
         private static final String CLIENT = "An error occurred.  Please report this to HMCTS.";
         private static final String SERVER = "An error occurred.  Please try again in 15-20 minutes.  If it occurs again, please report this to HMCTS.";
-        private static final String USER = "The Home Office reference number XYZYX does not match any existing case records in Home Office systems.  Please check your decision letter and try again.";
+        private static final String USER = "The reference XYZYX cannot be matched to a Home Office record.  You should enter the UAN or GWF reference exactly as it appears on the decision letter.  This can often be found in the ‘How to appeal’ section.";
     }    
 }
 
