@@ -1553,6 +1553,7 @@ ia-hearings-api:
       ROLE_ASSIGNMENT_API_URL: https://am-role-assignment-ia-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net
       HMC_API_URL: "http://hmc-cft-hearing-service-aat.service.core-compute-aat.internal"
       ROLE_ASSIGNMENT_URL: https://am-role-assignment-${SERVICE_FQDN}
+      DEPLOYMENT_FILTER_ENABLED: true
     keyVaults:
       ia:
         secrets:
@@ -1619,6 +1620,7 @@ ia-cron-hearings-processor:
       ROLE_ASSIGNMENT_API_URL: https://am-role-assignment-ia-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net
       LOCATION_REF_DATA_URL: "http://rd-location-ref-api-aat.service.core-compute-aat.internal"
       TASK_NAME: UnNotifiedHearingsProcessor
+      DEPLOYMENT_FILTER_ENABLED: true
     keyVaults:
       ia:
         secrets:
