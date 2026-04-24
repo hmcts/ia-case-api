@@ -85,8 +85,6 @@ class HomeOfficeCaseValidateHandlerTest {
     void handle_should_return_if_appeal_type_is_not_present() {
 
         when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
-        when(featureToggler.getValue("home-office-uan-pa-rp-feature", false)).thenReturn(true);
-        when(featureToggler.getValue("home-office-uan-dc-ea-hu-feature", false)).thenReturn(true);
 
         when(callback.getEvent()).thenReturn(SUBMIT_APPEAL);
         when(homeOfficeApi.aboutToSubmit(callback)).thenReturn(asylumCase);
@@ -101,8 +99,13 @@ class HomeOfficeCaseValidateHandlerTest {
     void should_call_home_office_api_and_update_the_case(Event event, AppealType appealType) {
 
         when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
-        when(featureToggler.getValue("home-office-uan-pa-rp-feature", false)).thenReturn(true);
-        when(featureToggler.getValue("home-office-uan-dc-ea-hu-feature", false)).thenReturn(true);
+
+        when(featureToggler.getValue("home-office-uan-pa-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-rp-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-ea-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-hu-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-dc-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-eu-feature", false)).thenReturn(true);
 
         when(callback.getEvent()).thenReturn(event);
         when(homeOfficeApi.aboutToSubmit(callback)).thenReturn(asylumCase);
@@ -147,9 +150,14 @@ class HomeOfficeCaseValidateHandlerTest {
     void should_call_home_office_api_for_detained_appeals(Event event, AppealType appealType) {
 
         when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
-        when(featureToggler.getValue("home-office-uan-pa-rp-feature", false)).thenReturn(true);
-        when(featureToggler.getValue("home-office-uan-dc-ea-hu-feature", false)).thenReturn(true);
 
+        when(featureToggler.getValue("home-office-uan-pa-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-rp-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-ea-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-hu-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-dc-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-eu-feature", false)).thenReturn(true);
+                
         when(callback.getEvent()).thenReturn(event);
         when(homeOfficeApi.aboutToSubmit(callback)).thenReturn(asylumCase);
 
@@ -194,9 +202,14 @@ class HomeOfficeCaseValidateHandlerTest {
     void should_not_call_home_office_api_for_ejp_appeals(Event event, AppealType appealType) {
 
         when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
-        when(featureToggler.getValue("home-office-uan-pa-rp-feature", false)).thenReturn(true);
-        when(featureToggler.getValue("home-office-uan-dc-ea-hu-feature", false)).thenReturn(true);
 
+        when(featureToggler.getValue("home-office-uan-pa-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-rp-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-ea-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-hu-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-dc-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-eu-feature", false)).thenReturn(true);
+                
         when(callback.getEvent()).thenReturn(event);
 
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
@@ -218,8 +231,6 @@ class HomeOfficeCaseValidateHandlerTest {
     void should_not_call_home_office_api_when_isNotificationTurnedOff_yes(Event event, AppealType appealType) {
 
         when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
-        when(featureToggler.getValue("home-office-uan-pa-rp-feature", false)).thenReturn(true);
-        when(featureToggler.getValue("home-office-uan-dc-ea-hu-feature", false)).thenReturn(true);
 
         when(callback.getEvent()).thenReturn(event);
 
@@ -268,11 +279,17 @@ class HomeOfficeCaseValidateHandlerTest {
 
     @ParameterizedTest
     @MethodSource("eventAndAppealTypesData")
-    void should_call_home_office_api_and_update_the_case_for_pa_rp_appeal_types(Event event, AppealType appealType) {
+    void should_call_home_office_api_and_update_the_case_for_enabled_appeal_types(Event event, AppealType appealType) {
 
         when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
-        when(featureToggler.getValue("home-office-uan-pa-rp-feature", false)).thenReturn(true);
 
+        when(featureToggler.getValue("home-office-uan-pa-feature", false)).thenReturn(false);
+        when(featureToggler.getValue("home-office-uan-rp-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-ea-feature", false)).thenReturn(false);
+        when(featureToggler.getValue("home-office-uan-hu-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-dc-feature", false)).thenReturn(false);
+        when(featureToggler.getValue("home-office-uan-eu-feature", false)).thenReturn(true);
+                
         when(callback.getEvent()).thenReturn(event);
         when(homeOfficeApi.aboutToSubmit(callback)).thenReturn(asylumCase);
 
@@ -295,7 +312,7 @@ class HomeOfficeCaseValidateHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        if (Arrays.asList(PA, RP).contains(appealType)) {
+        if (Arrays.asList(RP, HU, EU).contains(appealType)) {
             verify(homeOfficeApi, times(1)).aboutToSubmit(callback);
             verify(asylumCase, times(1)).write(
                     IS_HOME_OFFICE_INTEGRATION_ENABLED, YesOrNo.YES);
@@ -333,72 +350,7 @@ class HomeOfficeCaseValidateHandlerTest {
 
     @ParameterizedTest
     @MethodSource("eventAndAppealTypesData")
-    void should_call_home_office_api_and_update_the_case_for_dc_ea_hu_appeal_types(Event event, AppealType appealType) {
-
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
-        when(featureToggler.getValue("home-office-uan-dc-ea-hu-feature", false)).thenReturn(true);
-
-        when(callback.getEvent()).thenReturn(event);
-        when(homeOfficeApi.aboutToSubmit(callback)).thenReturn(asylumCase);
-
-        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
-        when(asylumCase.read(APPELLANT_IN_UK,YesOrNo.class)).thenReturn(Optional.empty());
-        when(asylumCase.read(HOME_OFFICE_CASE_STATUS_DATA)).thenReturn(Optional.of(homeOfficeCaseStatus));
-        when(homeOfficeCaseStatus.getApplicationStatus()).thenReturn(applicationStatus);
-        when(asylumCase.read(CONTACT_PREFERENCE)).thenReturn(Optional.of(ContactPreference.WANTS_EMAIL));
-        List<IdValue<NationalityFieldValue>> nlist = new ArrayList<>();
-        nlist.add(new IdValue<>("0", new NationalityFieldValue("IS")));
-        nlist.add(new IdValue<>("1", new NationalityFieldValue("CA")));
-        nlist.add(new IdValue<>("2", new NationalityFieldValue("VA")));
-
-        when(asylumCase.read(APPELLANT_NATIONALITIES)).thenReturn(Optional.of(nlist));
-        when(featureToggler.getValue("home-office-notification-feature", false)).thenReturn(true);
-
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                homeOfficeCaseValidateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
-
-        assertNotNull(callbackResponse);
-        assertEquals(asylumCase, callbackResponse.getData());
-
-        if (Arrays.asList(DC, EA, HU).contains(appealType)) {
-            verify(homeOfficeApi, times(1)).aboutToSubmit(callback);
-            verify(asylumCase, times(1)).write(
-                    IS_HOME_OFFICE_INTEGRATION_ENABLED, YesOrNo.YES);
-
-            verify(asylumCase, times(1)).read(CONTACT_PREFERENCE);
-            verify(asylumCase, times(1)).write(
-                    CONTACT_PREFERENCE_DESCRIPTION, ContactPreference.WANTS_EMAIL.getDescription());
-            verify(asylumCase, times(1)).write(
-                    APPEAL_TYPE_DESCRIPTION, appealType.getDescription());
-            verify(asylumCase, times(1)).write(
-                    APPELLANT_NATIONALITIES_DESCRIPTION, "Iceland<br />Canada<br />Holy See (Vatican City State)");
-            verify(asylumCase, times(1)).read(HOME_OFFICE_CASE_STATUS_DATA);
-            verify(asylumCase, times(1)).write(
-                    HOME_OFFICE_NOTIFICATIONS_ELIGIBLE, YesOrNo.YES);
-            verify(applicationStatus, times(1)).modifyListDataForCcd();
-        } else {
-
-            verify(homeOfficeApi, times(0)).aboutToSubmit(callback);
-            verify(asylumCase, times(0)).write(
-                    IS_HOME_OFFICE_INTEGRATION_ENABLED, YesOrNo.YES);
-
-            verify(asylumCase, times(0)).read(CONTACT_PREFERENCE);
-            verify(asylumCase, times(0)).write(
-                    CONTACT_PREFERENCE_DESCRIPTION, ContactPreference.WANTS_EMAIL.getDescription());
-            verify(asylumCase, times(0)).write(
-                    APPEAL_TYPE_DESCRIPTION, appealType.getDescription());
-            verify(asylumCase, times(0)).write(
-                    APPELLANT_NATIONALITIES_DESCRIPTION, "Iceland<br />Canada<br />Holy See (Vatican City State)");
-            verify(asylumCase, times(0)).read(HOME_OFFICE_CASE_STATUS_DATA);
-            verify(asylumCase, times(0)).write(
-                    HOME_OFFICE_NOTIFICATIONS_ELIGIBLE, YesOrNo.YES);
-            verify(applicationStatus, times(0)).modifyListDataForCcd();
-        }
-    }
-
-    @ParameterizedTest
-    @MethodSource("eventAndAppealTypesData")
-    void should_not_call_home_office_api_when_ooc_and_human_rights_decision_is_chosen(Event event, AppealType appealType) {
+    void should_not_call_home_office_api_when_ooc_is_chosen(Event event, AppealType appealType) {
 
         when(callback.getEvent()).thenReturn(event);
 
@@ -416,22 +368,25 @@ class HomeOfficeCaseValidateHandlerTest {
 
     private static Stream<Arguments> eventAndAppealTypesData() {
 
-        return Stream.of(
+        return Stream.of(// Not AG
                 Arguments.of(SUBMIT_APPEAL, PA),
                 Arguments.of(SUBMIT_APPEAL, RP),
                 Arguments.of(SUBMIT_APPEAL, DC),
                 Arguments.of(SUBMIT_APPEAL, EA),
                 Arguments.of(SUBMIT_APPEAL, HU),
+                Arguments.of(SUBMIT_APPEAL, EU),
                 Arguments.of(MARK_APPEAL_PAID, PA),
                 Arguments.of(MARK_APPEAL_PAID, RP),
                 Arguments.of(MARK_APPEAL_PAID, DC),
                 Arguments.of(MARK_APPEAL_PAID, EA),
                 Arguments.of(MARK_APPEAL_PAID, HU),
+                Arguments.of(MARK_APPEAL_PAID, EU),
                 Arguments.of(REQUEST_HOME_OFFICE_DATA, PA),
                 Arguments.of(REQUEST_HOME_OFFICE_DATA, RP),
                 Arguments.of(REQUEST_HOME_OFFICE_DATA, DC),
                 Arguments.of(REQUEST_HOME_OFFICE_DATA, EA),
-                Arguments.of(REQUEST_HOME_OFFICE_DATA, HU)
+                Arguments.of(REQUEST_HOME_OFFICE_DATA, HU),
+                Arguments.of(REQUEST_HOME_OFFICE_DATA, EU)
         );
     }
 
