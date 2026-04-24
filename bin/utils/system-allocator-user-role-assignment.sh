@@ -7,13 +7,20 @@ PASSWORD=${2:-system-password}
 
 BASEDIR=$(dirname "$0")
 
+echo "Fetching IDAM user token..."
 USER_TOKEN=$($BASEDIR/idam-user-token.sh $USERNAME $PASSWORD)
+echo "IDAM user token OK"
+
+echo "Fetching IDAM user ID..."
 USER_ID=$($BASEDIR/idam-user-id.sh $USER_TOKEN)
+echo "User ID: ${USER_ID}"
+
+echo "Generating TOTP and leasing S2S token..."
 SERVICE_TOKEN=$($BASEDIR/idam-lease-service-token.sh iac \
   $(docker run --rm hmctsprod.azurecr.io/imported/toolbelt/oathtool --totp -b ${IAC_S2S_KEY:-AABBCCDDEEFFGGHH}))
+echo "S2S token OK"
 
-echo "\n\nCreating role assignment: \n User: ${USER_ID}\n"
-echo "\n\nROLE ASSIGNMENT URL: \n Url: ${ROLE_ASSIGNMENT_URL}\n"
+echo "Creating role assignments for user ${USER_ID} at ${ROLE_ASSIGNMENT_URL}..."
 
 curl --silent --show-error -X POST "${ROLE_ASSIGNMENT_URL}/am/role-assignments" \
   -H "accept: application/vnd.uk.gov.hmcts.role-assignment-service.create-assignments+json;charset=UTF-8;version=1.0" \
@@ -44,3 +51,6 @@ curl --silent --show-error -X POST "${ROLE_ASSIGNMENT_URL}/am/role-assignments" 
          }
        ]
      }'
+
+echo ""
+echo "Done — case-allocator role assignment created."
