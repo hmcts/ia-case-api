@@ -29,7 +29,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -41,14 +40,12 @@ class AppealOutOfCountryEditAppealHandlerTest {
     private CaseDetails<AsylumCase> caseDetails;
     @Mock
     private AsylumCase asylumCase;
-    @Mock
-    private FeatureToggler featureToggler;
 
     private AppealOutOfCountryEditAppealHandler appealOutOfCountryEditAppealHandler;
 
     @BeforeEach
     public void setUp() {
-        appealOutOfCountryEditAppealHandler = new AppealOutOfCountryEditAppealHandler(featureToggler);
+        appealOutOfCountryEditAppealHandler = new AppealOutOfCountryEditAppealHandler();
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
     }
@@ -147,7 +144,6 @@ class AppealOutOfCountryEditAppealHandlerTest {
             Optional.of(OutOfCountryDecisionType.REFUSAL_OF_HUMAN_RIGHTS));
         when(asylumCase.read(OOC_APPEAL_ADMIN_J, OutOfCountryCircumstances.class)).thenReturn(
             Optional.of(OutOfCountryCircumstances.ENTRY_CLEARANCE_DECISION));
-        when(featureToggler.getValue("ft-detained-appeal", false)).thenReturn(true);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             appealOutOfCountryEditAppealHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -178,22 +174,6 @@ class AppealOutOfCountryEditAppealHandlerTest {
         verify(asylumCase, times(1)).clear(DATE_CUSTODIAL_SENTENCE);
 
         clearAdaSuitabilityFields(asylumCase);
-    }
-
-    @ParameterizedTest
-    @EnumSource(value = Event.class, names = {"START_APPEAL", "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT"})
-    void doesnt_called_detained_appeal_when_ft_is_disabled(Event event) {
-        when(callback.getEvent()).thenReturn(event);
-        when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
-
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                appealOutOfCountryEditAppealHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
-
-        assertNotNull(callbackResponse);
-        assertEquals(asylumCase, callbackResponse.getData());
-        verify(asylumCase, never()).clear(REMOVAL_ORDER_OPTIONS);
-        verify(asylumCase, never()).clear(REMOVAL_ORDER_DATE);
-        verify(asylumCase, never()).clear(DATE_CUSTODIAL_SENTENCE);
     }
 
     @ParameterizedTest
