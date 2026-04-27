@@ -26,6 +26,8 @@ public class AddStatutoryTimeframe24WeeksPreStartHandler implements PreSubmitCal
 
     private static final LocalDate STF24W_LIVE_DATE = LocalDate.of(2026, 7, 1);
     private static final Set<State> unsupportedStates = Set.of(
+        State.APPEAL_STARTED,
+        State.PENDING_PAYMENT,
         State.CASE_BUILDING,
         State.CASE_UNDER_REVIEW,
         State.SUBMIT_HEARING_REQUIREMENTS,
@@ -62,6 +64,12 @@ public class AddStatutoryTimeframe24WeeksPreStartHandler implements PreSubmitCal
 
         PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
 
+        State currentState = callback.getCaseDetails().getState();
+        if (unsupportedStates.contains(currentState)) {
+            String errorMessage = "This event cannot be run on this case";
+            response.addError(errorMessage);
+        }
+
         if (!caseReceivedAfterLive(asylumCase)) {
             String errorMessage = "This event cannot be run on a case created before " + STF24W_LIVE_DATE.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
             response.addError(errorMessage);
@@ -72,12 +80,6 @@ public class AddStatutoryTimeframe24WeeksPreStartHandler implements PreSubmitCal
         }
         if (isAppealOutOfCountry(asylumCase)) {
             String errorMessage = "This event cannot be run on an out of country case";
-            response.addError(errorMessage);
-        }
-
-        State currentState = callback.getCaseDetails().getState();
-        if (unsupportedStates.contains(currentState)) {
-            String errorMessage = "This event cannot be run on this case";
             response.addError(errorMessage);
         }
 
