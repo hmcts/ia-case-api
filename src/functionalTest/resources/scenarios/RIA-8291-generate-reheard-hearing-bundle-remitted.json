@@ -1,6 +1,5 @@
 {
   "description": "RIA-8291-generate-hearing-ready-bundle (stitching enabled) RIA-942-notification-to-ho-and-legal-rep",
-  "launchDarklyKey": "dlrm-remitted-feature-flag:true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",

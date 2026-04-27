@@ -156,9 +156,8 @@ public class AdvancedFinalBundlingStitchingCallbackHandler implements PreSubmitC
 
         boolean isReheardCase = maybeCaseFlagSetAsideReheardExists.isPresent()
             && maybeCaseFlagSetAsideReheardExists.get() == YesOrNo.YES;
-        boolean isRemittedFeature = featureToggler.getValue("dlrm-remitted-feature-flag", false);
 
-        final List<IdValue<DocumentWithMetadata>> hearingDocuments = fetchHearingDocuments(asylumCase, isReheardCase, isRemittedFeature);
+        final List<IdValue<DocumentWithMetadata>> hearingDocuments = fetchHearingDocuments(asylumCase, isReheardCase);
 
         List<DocumentWithMetadata> hearingBundleDocuments = new ArrayList<>();
         DocumentWithMetadata hearingBundle = documentReceiver
@@ -186,36 +185,32 @@ public class AdvancedFinalBundlingStitchingCallbackHandler implements PreSubmitC
                     DocumentTag.HEARING_BUNDLE
                 );
         }
-        handleReheardDocumentsWrite(asylumCase, isReheardCase, isRemittedFeature, allHearingDocuments);
+        handleReheardDocumentsWrite(asylumCase, isReheardCase, allHearingDocuments);
     }
 
-    public static void handleReheardDocumentsWrite(AsylumCase asylumCase, boolean isReheardCase, boolean isRemittedFeature, List<IdValue<DocumentWithMetadata>> allHearingDocuments) {
+    public static void handleReheardDocumentsWrite(AsylumCase asylumCase, boolean isReheardCase, List<IdValue<DocumentWithMetadata>> allHearingDocuments) {
         if (isReheardCase) {
-            if (isRemittedFeature) {
-                Optional<List<IdValue<ReheardHearingDocuments>>> maybeExistingReheardDocuments =
-                    asylumCase.read(REHEARD_HEARING_DOCUMENTS_COLLECTION);
-                List<IdValue<ReheardHearingDocuments>> existingReheardDocuments = maybeExistingReheardDocuments.orElse(emptyList());
-                if (!existingReheardDocuments.isEmpty()) {
-                    existingReheardDocuments.get(0).getValue().setReheardHearingDocs(allHearingDocuments);
-                } else {
-                    Appender<ReheardHearingDocuments> documentsCollectionAppender =
-                        new Appender<>();
-                    ReheardHearingDocuments reheardHearingDocuments = new ReheardHearingDocuments(allHearingDocuments);
-                    existingReheardDocuments = documentsCollectionAppender.append(reheardHearingDocuments, existingReheardDocuments);
-                }
-                asylumCase.write(REHEARD_HEARING_DOCUMENTS_COLLECTION, existingReheardDocuments);
+            Optional<List<IdValue<ReheardHearingDocuments>>> maybeExistingReheardDocuments =
+                asylumCase.read(REHEARD_HEARING_DOCUMENTS_COLLECTION);
+            List<IdValue<ReheardHearingDocuments>> existingReheardDocuments = maybeExistingReheardDocuments.orElse(emptyList());
+            if (!existingReheardDocuments.isEmpty()) {
+                existingReheardDocuments.get(0).getValue().setReheardHearingDocs(allHearingDocuments);
             } else {
-                asylumCase.write(REHEARD_HEARING_DOCUMENTS, allHearingDocuments);
+                Appender<ReheardHearingDocuments> documentsCollectionAppender =
+                    new Appender<>();
+                ReheardHearingDocuments reheardHearingDocuments = new ReheardHearingDocuments(allHearingDocuments);
+                existingReheardDocuments = documentsCollectionAppender.append(reheardHearingDocuments, existingReheardDocuments);
             }
+            asylumCase.write(REHEARD_HEARING_DOCUMENTS_COLLECTION, existingReheardDocuments);
+
         } else {
             asylumCase.write(HEARING_DOCUMENTS, allHearingDocuments);
         }
     }
 
     private List<IdValue<DocumentWithMetadata>> fetchHearingDocuments(AsylumCase asylumCase,
-                                                                      boolean isReheardCase,
-                                                                      boolean isRemittedFeature) {
-        if (isReheardCase && isRemittedFeature) {
+                                                                      boolean isReheardCase) {
+        if (isReheardCase) {
             Optional<List<IdValue<ReheardHearingDocuments>>> maybeExistingReheardDocuments =
                 asylumCase.read(REHEARD_HEARING_DOCUMENTS_COLLECTION);
             List<IdValue<ReheardHearingDocuments>> existingReheardDocuments = maybeExistingReheardDocuments.orElse(emptyList());
@@ -225,7 +220,7 @@ public class AdvancedFinalBundlingStitchingCallbackHandler implements PreSubmitC
                 : emptyList();
         }
         Optional<List<IdValue<DocumentWithMetadata>>> maybeHearingDocuments =
-            asylumCase.read(isReheardCase ? REHEARD_HEARING_DOCUMENTS : HEARING_DOCUMENTS);
+            asylumCase.read(HEARING_DOCUMENTS);
         return maybeHearingDocuments.orElse(emptyList());
     }
 }
