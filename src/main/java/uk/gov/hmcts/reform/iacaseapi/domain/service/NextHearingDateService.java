@@ -18,11 +18,6 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.AsylumCaseServiceRes
 public class NextHearingDateService {
 
     private final IaHearingsApiService iaHearingsApiService;
-    private final FeatureToggler featureToggler;
-
-    public boolean enabled() {
-        return featureToggler.getValue("nextHearingDateEnabled", false);
-    }
 
     public NextHearingDetails calculateNextHearingDateFromHearings(
             Callback<AsylumCase> callback,

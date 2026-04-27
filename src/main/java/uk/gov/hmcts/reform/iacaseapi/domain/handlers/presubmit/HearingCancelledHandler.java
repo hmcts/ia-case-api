@@ -36,15 +36,13 @@ public class HearingCancelledHandler implements PreSubmitCallbackHandler<AsylumC
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
-        if (nextHearingDateService.enabled()) {
 
-            // Clear hearing date information
-            nextHearingDateService.clearHearingDateInformation(asylumCase);
+        // Clear hearing date information
+        nextHearingDateService.clearHearingDateInformation(asylumCase);
 
-            // Update next hearing date
-            asylumCase.write(NEXT_HEARING_DETAILS,
-                nextHearingDateService.calculateNextHearingDateFromHearings(callback, callbackStage));
-        }
+        // Update next hearing date
+        asylumCase.write(NEXT_HEARING_DETAILS,
+            nextHearingDateService.calculateNextHearingDateFromHearings(callback, callbackStage));
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
