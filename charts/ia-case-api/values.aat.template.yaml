@@ -1,4 +1,6 @@
 java:
-  # Don't modify below here
+  # Don't modify below here unless you know what you are doing
   image: ${IMAGE_NAME}
   ingressHost: ${SERVICE_FQDN}
+  environment:
+    HOME_OFFICE_VALIDATION_ENABLED: "false"
