@@ -16,6 +16,7 @@ import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 import lombok.extern.slf4j.Slf4j;
@@ -32,6 +33,11 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.HomeOfficeReferenceService;
 
 @Slf4j
 @Component
+@ConditionalOnProperty(
+    name = "app.home-office-validation.enabled",
+    havingValue = "true",
+    matchIfMissing = true
+)
 public class HomeOfficeReferenceHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     public static final int REQUIRED_CID_REF_LENGTH = 9;
@@ -39,7 +45,7 @@ public class HomeOfficeReferenceHandler implements PreSubmitCallbackHandler<Asyl
             .compile("^(([0-9]{4}\\-[0-9]{4}\\-[0-9]{4}\\-[0-9]{4})|(GWF[0-9]{9}))$");
     private final HomeOfficeReferenceService homeOfficeReferenceService;
     private final String HOME_OFFICE_HELP_SUFFIX = "  If you need help, please use the Home Office help form in the bullet points below.";
-    private final String INVALID_HOME_OFFICE_REFERENCE = "You should enter the UAN or GWF reference exactly as it appears on the decision letter.  This can often be found in the ‘How to appeal’ section.  The UAN is 16 digits with dashes.  The GWF starts with the letters \"GWF\" and then has 9 digits." + HOME_OFFICE_HELP_SUFFIX;
+    private final String INVALID_HOME_OFFICE_REFERENCE = "You should enter the UAN or GWF reference exactly as it appears on the decision letter.  This can often be found in the 'How to appeal' section.  The UAN is 16 digits with dashes.  The GWF starts with the letters \"GWF\" and then has 9 digits." + HOME_OFFICE_HELP_SUFFIX;
 
     public HomeOfficeReferenceHandler(HomeOfficeReferenceService homeOfficeReferenceService) {
         this.homeOfficeReferenceService = homeOfficeReferenceService;
