@@ -583,6 +583,7 @@ ia-home-office-integration-api:
       ROLE_ASSIGNMENT_URL: https://am-role-assignment-${SERVICE_FQDN}
       IA_IDAM_REDIRECT_URI: https://${SERVICE_NAME}-home-office-integration-api.preview.platform.hmcts.net/oauth2/callback
       CCD_URL: http://{{ .Release.Name }}-ccd-data-store-api
+      HOME_OFFICE_ENDPOINT: https://ia-home-office-mock-api-pr-165.preview.platform.hmcts.net
     keyVaults:
       ia:
         resourceGroup: ia
