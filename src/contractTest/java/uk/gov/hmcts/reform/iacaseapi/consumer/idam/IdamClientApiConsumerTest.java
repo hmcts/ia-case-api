@@ -7,7 +7,6 @@ import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 
 import au.com.dius.pact.consumer.dsl.DslPart;
 import au.com.dius.pact.consumer.dsl.PactDslJsonArray;
-import au.com.dius.pact.consumer.dsl.PactDslJsonBody;
 import au.com.dius.pact.consumer.dsl.PactDslJsonRootValue;
 import au.com.dius.pact.consumer.dsl.PactDslWithProvider;
 import au.com.dius.pact.consumer.junit5.PactConsumerTestExt;
@@ -58,41 +57,7 @@ public class IdamClientApiConsumerTest {
         Executor.closeIdleConnections();
     }
 
-    @Pact(provider = "idamClientApi_oidc", consumer = "ia_caseApi")
-    public RequestResponsePact generatePactFragmentGetUser(PactDslWithProvider builder) throws JSONException {
-        return builder
-            .given("getUser is requested")
-            .uponReceiving("A request for a GetUser")
-            .path("/api/v2/users/" + USER_ID)
-            .method("GET")
-            .matchHeader("Authorization", AUTH_TOKEN)
-            .matchHeader(CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-            .willRespondWith()
-            .status(200)
-            .body(createUserResponseEntityResponse())
-            .toPact();
-    }
-
-    @Test
-    @PactTestFor(pactMethod = "generatePactFragmentGetUser")
-    public void verifyIdamUserPactGetUser() {
-        User userInfo = idamClientApi.getUser(AUTH_TOKEN, USER_ID).getBody();
-        assertNotNull(userInfo);
-        assertEquals(EMAIL, userInfo.getEmail());
-        assertEquals(USER_ID, userInfo.getId());
-        assertEquals("Case", userInfo.getForename());
-        assertEquals("Officer", userInfo.getSurname());
-    }
-
-    private PactDslJsonBody createUserResponseEntityResponse() {
-        return new PactDslJsonBody()
-            .stringType("id", USER_ID)
-            .stringValue("email", EMAIL)
-            .stringValue("forename", "Case")
-            .stringValue("surname", "Officer");
-    }
-
-    private DslPart createUserResponseEntityResponseV1() {
+    private DslPart createUserResponseEntityResponse() {
         return PactDslJsonArray.arrayEachLike()
             .stringType("id", USER_ID)
             .stringValue("email", EMAIL)
@@ -104,10 +69,10 @@ public class IdamClientApiConsumerTest {
     }
 
     @Pact(provider = "idamClientApi_oidc", consumer = "ia_caseApi")
-    public RequestResponsePact generatePactFragmentGetUserV1(PactDslWithProvider builder) throws JSONException {
+    public RequestResponsePact generatePactFragmentGetUser(PactDslWithProvider builder) throws JSONException {
         return builder
-            .given("getUserV1 is requested")
-            .uponReceiving("A request for a GetUserV1")
+            .given("getUser is requested")
+            .uponReceiving("A request for a GetUser")
             .path("/api/v1/users")
             .method("GET")
             .matchQuery("query", QUERY)
@@ -115,14 +80,14 @@ public class IdamClientApiConsumerTest {
             .matchHeader(CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
             .willRespondWith()
             .status(200)
-            .body(createUserResponseEntityResponseV1())
+            .body(createUserResponseEntityResponse())
             .toPact();
     }
 
     @Test
-    @PactTestFor(pactMethod = "generatePactFragmentGetUserV1")
-    public void verifyIdamUserPactGetUserV1() {
-        List<User> userList = idamClientApi.getUserV1(AUTH_TOKEN, QUERY).getBody();
+    @PactTestFor(pactMethod = "generatePactFragmentGetUser")
+    public void verifyIdamUserPactGetUser() {
+        List<User> userList = idamClientApi.getUser(AUTH_TOKEN, QUERY).getBody();
         assertNotNull(userList);
         assertFalse(userList.isEmpty());
         User userInfo = userList.get(0);

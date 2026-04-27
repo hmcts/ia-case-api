@@ -84,8 +84,8 @@ class RevokeCitizenPreparerTest {
         when(roleAssignmentResource.getRoleAssignmentResponse()).thenReturn(List.of(assignment, assignment2));
         when(assignment.getActorId()).thenReturn(userId1);
         when(assignment2.getActorId()).thenReturn(userId2);
-        when(idamService.getUserFromIdV1(userId1)).thenReturn(user);
-        when(idamService.getUserFromIdV1(userId2)).thenReturn(user2);
+        when(idamService.getUserFromId(userId1)).thenReturn(user);
+        when(idamService.getUserFromId(userId2)).thenReturn(user2);
         when(user.toValueId()).thenReturn(userId1);
         when(user.toString()).thenReturn(userName1);
         when(user.getRoles()).thenReturn(List.of("citizen"));
@@ -128,10 +128,10 @@ class RevokeCitizenPreparerTest {
         when(assignment2.getActorId()).thenReturn(userId2);
         when(assignment3.getActorId()).thenReturn(userId3);
         when(assignment4.getActorId()).thenReturn(userId4);
-        when(idamService.getUserFromIdV1(userId1)).thenReturn(user);
-        when(idamService.getUserFromIdV1(userId2)).thenReturn(user2);
-        when(idamService.getUserFromIdV1(userId3)).thenReturn(user3);
-        when(idamService.getUserFromIdV1(userId4)).thenReturn(user4);
+        when(idamService.getUserFromId(userId1)).thenReturn(user);
+        when(idamService.getUserFromId(userId2)).thenReturn(user2);
+        when(idamService.getUserFromId(userId3)).thenReturn(user3);
+        when(idamService.getUserFromId(userId4)).thenReturn(user4);
         when(user.toValueId()).thenReturn(userId1);
         when(user.toString()).thenReturn(userName1);
         when(user.getRoles()).thenReturn(List.of("citizen"));
@@ -162,7 +162,7 @@ class RevokeCitizenPreparerTest {
         when(roleAssignmentService.getUsersAssignedToCase(caseId)).thenReturn(roleAssignmentResource);
         when(roleAssignmentResource.getRoleAssignmentResponse()).thenReturn(List.of(assignment));
         when(assignment.getActorId()).thenReturn("user-1");
-        when(idamService.getUserFromIdV1("user-1")).thenReturn(user);
+        when(idamService.getUserFromId("user-1")).thenReturn(user);
         when(user.getId()).thenReturn("user-1");
         when(user.toString()).thenReturn("User One");
         when(user.getRoles()).thenReturn(Collections.emptyList());
@@ -184,7 +184,7 @@ class RevokeCitizenPreparerTest {
         when(roleAssignmentService.getUsersAssignedToCase(caseId)).thenReturn(roleAssignmentResource);
         when(roleAssignmentResource.getRoleAssignmentResponse()).thenReturn(List.of(assignment));
         when(assignment.getActorId()).thenReturn("user-1");
-        when(idamService.getUserFromIdV1("user-1")).thenReturn(user);
+        when(idamService.getUserFromId("user-1")).thenReturn(user);
         when(user.getId()).thenReturn("user-1");
         when(user.toString()).thenReturn("User One");
         when(user.getRoles()).thenReturn(List.of("citizen"));

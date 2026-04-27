@@ -92,8 +92,8 @@ public class IdamService {
         return userInfo;
     }
 
-    @Cacheable(value = "clientCredsCacheV1", key = "'clientCredsCacheV1'")
-    public String getClientCredentialsTokenV1() {
+    @Cacheable(value = "clientCredsCache", key = "'clientCredsCache'")
+    public String getClientCredentialsToken() {
         try {
             Map<String, String> idamAuthDetails = new ConcurrentHashMap<>();
             idamAuthDetails.put("grant_type", "client_credentials");
@@ -111,29 +111,10 @@ public class IdamService {
         return "Bearer " + idamClientToken;
     }
 
-    @Cacheable(value = "clientCredsCache", key = "'clientCredsCache'")
-    public String getClientCredentialsToken() {
-        try {
-            Map<String, String> idamAuthDetails = new ConcurrentHashMap<>();
-            idamAuthDetails.put("grant_type", "client_credentials");
-            idamAuthDetails.put("redirect_uri", idamRedirectUrl);
-            idamAuthDetails.put("client_id", idamClientId);
-            idamAuthDetails.put("client_secret", idamClientSecret);
-            idamAuthDetails.put("scope", "view-user");
-            idamClientToken = idamApi.token(idamAuthDetails).getAccessToken();
-        } catch (final Exception exception) {
-            String msg = String.format("Unable to generate IDAM token due to error - %s", exception.getMessage());
-            log.error(msg, exception);
-            throw new IdentityManagerResponseException(msg, exception);
-        }
-
-        return "Bearer " + idamClientToken;
-    }
-
-    public User getUserFromIdV1(String userId) {
-        String idamToken = getClientCredentialsTokenV1();
+    public User getUserFromId(String userId) {
+        String idamToken = getClientCredentialsToken();
         String query = MessageFormat.format("id:{0}", userId);
-        ResponseEntity<List<User>> response = idamClientApi.getUserV1(idamToken, query);
+        ResponseEntity<List<User>> response = idamClientApi.getUser(idamToken, query);
         if (!response.getStatusCode().is2xxSuccessful() || response.getBody() == null) {
             log.error("Error fetching user details for userId: {}. Response status: {}", userId, response.getStatusCode());
             return null;
@@ -143,15 +124,5 @@ public class IdamService {
             return null;
         }
         return response.getBody().get(0);
-    }
-
-    public User getUserFromId(String userId) {
-        String idamToken = getClientCredentialsToken();
-        ResponseEntity<User> response = idamClientApi.getUser(idamToken, userId);
-        if (!response.getStatusCode().is2xxSuccessful() || response.getBody() == null) {
-            log.error("Error fetching user details for userId: {}. Response status: {}", userId, response.getStatusCode());
-            return null;
-        }
-        return response.getBody();
     }
 }
