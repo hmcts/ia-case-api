@@ -543,6 +543,7 @@ class SendNotificationHandlerTest {
         Event.LIST_CASE,
         Event.DECISION_WITHOUT_HEARING,
         Event.REQUEST_RESPONDENT_EVIDENCE,
+        Event.REMOVE_STATUTORY_TIMEFRAME_24_WEEKS,
         Event.CHANGE_DIRECTION_DUE_DATE
     );
 
