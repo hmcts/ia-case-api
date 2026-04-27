@@ -67,7 +67,7 @@ public class RevokeCitizenPreparer implements PreSubmitCallbackHandler<AsylumCas
         List<Value> userValueList = assignmentList
             .stream()
             .map(Assignment::getActorId)
-            .map(idamService::getUserFromIdV1)
+            .map(idamService::getUserFromId)
             .filter(user -> user != null && user.isActive() && user.getRoles().contains("citizen"))
             .map(user -> new Value(user.toValueId(), user.toString()))
             .toList();
