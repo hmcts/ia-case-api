@@ -37,7 +37,9 @@ public class AddStatutoryTimeframe24WeeksPreStartHandler implements PreSubmitCal
         State.PRE_HEARING,
         State.DECISION,
         State.ADJOURNED,
-        State.REMITTED);
+        State.REMITTED,
+        State.AWAITING_REASONS_FOR_APPEAL,
+        State.REASONS_FOR_APPEAL_SUBMITTED);
 
     public boolean canHandle(
         PreSubmitCallbackStage callbackStage,
