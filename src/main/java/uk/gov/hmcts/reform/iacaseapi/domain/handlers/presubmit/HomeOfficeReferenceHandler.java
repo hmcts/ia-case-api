@@ -6,10 +6,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_GIVEN_NAMES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_REFERENCE_NUMBER;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isEntryClearanceDecision;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isInternalCase;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.outOfCountryDecisionTypeIsRefusalOfHumanRightsOrPermit;
-
 import java.text.Normalizer;
 import java.util.List;
 import java.util.Optional;
@@ -44,8 +40,10 @@ public class HomeOfficeReferenceHandler implements PreSubmitCallbackHandler<Asyl
     public static final Pattern HOME_OFFICE_REF_PATTERN = Pattern
             .compile("^(([0-9]{4}\\-[0-9]{4}\\-[0-9]{4}\\-[0-9]{4})|(GWF[0-9]{9}))$");
     private final HomeOfficeReferenceService homeOfficeReferenceService;
-    private final String HOME_OFFICE_HELP_SUFFIX = "  If you need help, please use the Home Office help form in the bullet points below.";
-    private final String INVALID_HOME_OFFICE_REFERENCE = "You should enter the UAN or GWF reference exactly as it appears on the decision letter.  This can often be found in the 'How to appeal' section.  The UAN is 16 digits with dashes.  The GWF starts with the letters \"GWF\" and then has 9 digits." + HOME_OFFICE_HELP_SUFFIX;
+    private static final String HOME_OFFICE_HELP_SUFFIX = "  If you need help, please use the Home Office help form in the bullet points below.";
+    private static final String INVALID_HOME_OFFICE_REFERENCE = "You should enter the UAN or GWF reference exactly as it appears on the decision letter.  " + 
+                                                        "This can often be found in the 'How to appeal' section.  The UAN is 16 digits with dashes.  " + 
+                                                        "The GWF starts with the letters \"GWF\" and then has 9 digits." + HOME_OFFICE_HELP_SUFFIX;
 
     public HomeOfficeReferenceHandler(HomeOfficeReferenceService homeOfficeReferenceService) {
         this.homeOfficeReferenceService = homeOfficeReferenceService;
@@ -77,60 +75,50 @@ public class HomeOfficeReferenceHandler implements PreSubmitCallbackHandler<Asyl
 
         final AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
-        // >>>ASK DAVID: why these restrictions on when the validation is run?<<< I
-        // THINK THEY MAY NEED TO BE REMOVED (at least some of them) because we always
-        // want to go through validation, don't we?
-        if (!isInternalCase(asylumCase)
-                && !outOfCountryDecisionTypeIsRefusalOfHumanRightsOrPermit(asylumCase)
-                || isInternalCase(asylumCase)
-                        && !isEntryClearanceDecision(asylumCase)) {
+        String homeOfficeReferenceNumber = asylumCase
+                .read(HOME_OFFICE_REFERENCE_NUMBER, String.class)
+                .orElseThrow(() -> new IllegalStateException("homeOfficeReferenceNumber is missing"));
 
-            String homeOfficeReferenceNumber = asylumCase
-                    .read(HOME_OFFICE_REFERENCE_NUMBER, String.class)
-                    .orElseThrow(() -> new IllegalStateException("homeOfficeReferenceNumber is missing"));
-
-            if (callback.getPageId().equals("homeOfficeReferenceNumber")) {
-                if (!isWellFormedHomeOfficeReference(homeOfficeReferenceNumber)) {
-                    PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
-                    response.addError(INVALID_HOME_OFFICE_REFERENCE);
-                    return response;
-                }
-
-                if (!isRealHomeOfficeCaseNumber(homeOfficeReferenceNumber, callback)) {
-                    // An error occurred - display a suitable message to the user
-                    PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
-                    response.addError(
-                        asylumCase.read(HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS, HomeOfficeApiResponseStatusType.class)
-                                  .orElse(HomeOfficeApiResponseStatusType.UNKNOWN)
-                                  .getUserFacingErrorText(homeOfficeReferenceNumber) + HOME_OFFICE_HELP_SUFFIX
-                    );
-                    return response;
-                }
+        if (callback.getPageId().equals("homeOfficeReferenceNumber")) {
+            if (!isWellFormedHomeOfficeReference(homeOfficeReferenceNumber)) {
+                PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
+                response.addError(INVALID_HOME_OFFICE_REFERENCE);
+                return response;
             }
 
-            if (callback.getPageId().equals("appellantBasicDetails")) {
-                if (!isMatchingHomeOfficeCaseDetails(homeOfficeReferenceNumber, asylumCase, callback)) {
-                    // Check whether an error occurred or if there just wasn't a match
-                    HomeOfficeApiResponseStatusType responseStatus = 
-                                  asylumCase.read(HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS, HomeOfficeApiResponseStatusType.class)
-                                  .orElse(HomeOfficeApiResponseStatusType.UNKNOWN);
-                    String errorMessage = "";
-                    if (responseStatus.equals(HomeOfficeApiResponseStatusType.OK)) {
-                        errorMessage = "The details provided do not match those held by the Home Office for reference number "
-                                     + homeOfficeReferenceNumber + ".  Please check your decision letter and try again.";
-                        // Log this - if it happens repeatedly, that's suspicious
-                        log.info("The details provided did not match the Home Office biographic data retrieved for case with reference ID {}.", homeOfficeReferenceNumber);
-                    } else {
-                        // This shouldn't happen as the Home Office API ought not to have been called, since the data has already
-                        // been retrieved from the Home Office.  But we'll check for it anyway just in case something unexpected has happened.
-                        errorMessage = responseStatus.getUserFacingErrorText(homeOfficeReferenceNumber);
-                    }
-                    PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
-                    response.addError(errorMessage);
-                    return response;
-                }
+            if (!isRealHomeOfficeCaseNumber(homeOfficeReferenceNumber, callback)) {
+                // An error occurred - display a suitable message to the user
+                PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
+                response.addError(
+                    asylumCase.read(HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS, HomeOfficeApiResponseStatusType.class)
+                                .orElse(HomeOfficeApiResponseStatusType.UNKNOWN)
+                                .getUserFacingErrorText(homeOfficeReferenceNumber) + HOME_OFFICE_HELP_SUFFIX
+                );
+                return response;
             }
+        }
 
+        if (callback.getPageId().equals("appellantBasicDetails")) {
+            if (!isMatchingHomeOfficeCaseDetails(homeOfficeReferenceNumber, asylumCase, callback)) {
+                // Check whether an error occurred or if there just wasn't a match
+                HomeOfficeApiResponseStatusType responseStatus = 
+                            asylumCase.read(HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS, HomeOfficeApiResponseStatusType.class)
+                            .orElse(HomeOfficeApiResponseStatusType.UNKNOWN);
+                String errorMessage = "";
+                if (responseStatus.equals(HomeOfficeApiResponseStatusType.OK)) {
+                    errorMessage = "The details provided do not match those held by the Home Office for reference number "
+                                    + homeOfficeReferenceNumber + ".  Please check your decision letter and try again.";
+                    // Log this - if it happens repeatedly, that's suspicious
+                    log.info("The details provided did not match the Home Office biographic data retrieved for case with reference ID {}.", homeOfficeReferenceNumber);
+                } else {
+                    // This shouldn't happen as the Home Office API ought not to have been called, since the data has already
+                    // been retrieved from the Home Office.  But we'll check for it anyway just in case something unexpected has happened.
+                    errorMessage = responseStatus.getUserFacingErrorText(homeOfficeReferenceNumber);
+                }
+                PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
+                response.addError(errorMessage);
+                return response;
+            }
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
@@ -180,8 +168,8 @@ public class HomeOfficeReferenceHandler implements PreSubmitCallbackHandler<Asyl
             for (int i = 0; i < homeOfficeAppellantDataObjects.size(); i++) {
                 HomeOfficeAppellant homeOfficeAppellant = homeOfficeAppellantDataObjects.get(i);
                 // Check for matching first name(s), surname and date of birth.
-                if (matchesName(homeOfficeAppellant.getFamilyName(), appellantFamilyName) &&
-                        matchesName(homeOfficeAppellant.getGivenNames(), appellantGivenNames) &&
+                if (matchesFamilyName(homeOfficeAppellant.getFamilyName(), appellantFamilyName) &&
+                        matchesGivenNames(homeOfficeAppellant.getGivenNames(), appellantGivenNames) &&
                         matchesDateOfBirth(homeOfficeAppellant.getDateOfBirth().toString(), appellantDateOfBirth)) {
                     return true;
                 }
@@ -192,20 +180,33 @@ public class HomeOfficeReferenceHandler implements PreSubmitCallbackHandler<Asyl
 
     }
 
-    private boolean matchesName(String homeOfficeName, String appellantName) {
+    private boolean matchesFamilyName(String homeOfficeFamilyName, String appellantFamilyName) {
+        return matchesName(homeOfficeFamilyName, appellantFamilyName, false);
+    }
+
+    private boolean matchesGivenNames(String homeOfficeFamilyName, String appellantFamilyName) {
+        return matchesName(homeOfficeFamilyName, appellantFamilyName, true);
+    }
+
+    private boolean matchesName(String homeOfficeName, String appellantName, boolean firstWordOnly) {
         if (homeOfficeName == null || appellantName == null) {
             return false;
         }
-        return normaliseName(homeOfficeName).equals(normaliseName(appellantName));
+        return normaliseName(homeOfficeName, firstWordOnly).equals(normaliseName(appellantName, firstWordOnly));
     }
 
-    public static String normaliseName(String name) {
+    public static String normaliseName(String name, boolean firstWordOnly) {
         if (name == null) {
             return "";
         }
 
         // Step 1: Normalise spaces and convert to lowercase
         String normalised = name.trim().toLowerCase().replaceAll("\\s+", " ");
+
+        // Step 1.5 (if specified): Take only the first word (to avoid checking middle names)
+        if (firstWordOnly && normalised.contains(" ")) {
+            normalised = normalised.substring(0, normalised.indexOf(" "));
+        }
 
         // Step 2: Normalise to NFD (decomposed form) to separate base characters from
         // diacritical marks

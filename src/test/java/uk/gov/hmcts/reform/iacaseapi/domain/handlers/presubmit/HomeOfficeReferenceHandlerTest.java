@@ -77,7 +77,7 @@ class HomeOfficeReferenceHandlerTest {
     void canHandle_should_return_true_for_valid_inputs() {
 
         Mockito.when(callback.getEvent()).thenReturn(Event.START_APPEAL);
-        Mockito.when(callback.getPageId()).thenReturn("homeOfficeReferenceNumber_TEMPORARILY_DISABLED");
+        Mockito.when(callback.getPageId()).thenReturn("homeOfficeReferenceNumber");
 
         boolean result = handler.canHandle(PreSubmitCallbackStage.MID_EVENT, callback);
 
@@ -88,7 +88,7 @@ class HomeOfficeReferenceHandlerTest {
     void canHandle_should_return_false_for_wrong_stage() {
 
         Mockito.when(callback.getEvent()).thenReturn(Event.START_APPEAL);
-        Mockito.when(callback.getPageId()).thenReturn("homeOfficeReferenceNumber_TEMPORARILY_DISABLED");
+        Mockito.when(callback.getPageId()).thenReturn("homeOfficeReferenceNumber");
 
         boolean result = handler.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
@@ -118,7 +118,7 @@ class HomeOfficeReferenceHandlerTest {
     void handle_should_return_error_when_reference_not_well_formed() {
 
         Mockito.when(callback.getEvent()).thenReturn(Event.START_APPEAL);
-        Mockito.when(callback.getPageId()).thenReturn("homeOfficeReferenceNumber_TEMPORARILY_DISABLED");
+        Mockito.when(callback.getPageId()).thenReturn("homeOfficeReferenceNumber");
 
         Mockito.when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class))
             .thenReturn(Optional.of(INVALID_REF));
@@ -133,7 +133,7 @@ class HomeOfficeReferenceHandlerTest {
     void handle_should_return_error_when_reference_not_real() {
 
         Mockito.when(callback.getEvent()).thenReturn(Event.START_APPEAL);
-        Mockito.when(callback.getPageId()).thenReturn("homeOfficeReferenceNumber_TEMPORARILY_DISABLED");
+        Mockito.when(callback.getPageId()).thenReturn("homeOfficeReferenceNumber");
 
         Mockito.when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class))
             .thenReturn(Optional.of(VALID_GWF));
@@ -154,7 +154,7 @@ class HomeOfficeReferenceHandlerTest {
     void handle_should_succeed_when_reference_is_real() {
 
         Mockito.when(callback.getEvent()).thenReturn(Event.START_APPEAL);
-        Mockito.when(callback.getPageId()).thenReturn("homeOfficeReferenceNumber_TEMPORARILY_DISABLED");
+        Mockito.when(callback.getPageId()).thenReturn("homeOfficeReferenceNumber");
 
         Mockito.when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class))
             .thenReturn(Optional.of(VALID_GWF));
@@ -205,7 +205,7 @@ class HomeOfficeReferenceHandlerTest {
     @Test
     void normaliseName_should_remove_accents_and_spaces() {
 
-        String result = HomeOfficeReferenceHandler.normaliseName(" José   García ");
+        String result = HomeOfficeReferenceHandler.normaliseName(" José   García ", false);
 
         assertEquals("jose garcia", result);
     }
@@ -250,6 +250,58 @@ class HomeOfficeReferenceHandlerTest {
 
         Mockito.when(asylumCase.read(APPELLANT_FAMILY_NAME, String.class))
             .thenReturn(Optional.of("Smith"));
+
+        Mockito.when(asylumCase.read(APPELLANT_GIVEN_NAMES, String.class))
+            .thenReturn(Optional.of("John"));
+
+        Mockito.when(asylumCase.read(APPELLANT_DATE_OF_BIRTH, String.class))
+            .thenReturn(Optional.of("1990-01-01"));
+
+        boolean result = handler.isMatchingHomeOfficeCaseDetails(VALID_GWF, asylumCase, callback);
+
+        assertFalse(result);
+    }
+
+    @Test
+    void isMatchingHomeOfficeCaseDetails_should_match_when_given_names_have_different_second_words() {
+
+        Mockito.when(referenceService.getHomeOfficeReferenceData(VALID_GWF, callback))
+            .thenReturn(Optional.of(Collections.singletonList(idValue)));
+
+        Mockito.when(idValue.getValue()).thenReturn(appellant);
+
+        Mockito.when(appellant.getFamilyName()).thenReturn("Smith");
+        Mockito.when(appellant.getGivenNames()).thenReturn("John Boy");
+        Mockito.when(appellant.getDateOfBirth()).thenReturn("1990-01-01");
+
+        Mockito.when(asylumCase.read(APPELLANT_FAMILY_NAME, String.class))
+            .thenReturn(Optional.of("Smith"));
+
+        Mockito.when(asylumCase.read(APPELLANT_GIVEN_NAMES, String.class))
+            .thenReturn(Optional.of("John James"));
+
+        Mockito.when(asylumCase.read(APPELLANT_DATE_OF_BIRTH, String.class))
+            .thenReturn(Optional.of("1990-01-01"));
+
+        boolean result = handler.isMatchingHomeOfficeCaseDetails(VALID_GWF, asylumCase, callback);
+
+        assertTrue(result);
+    }
+
+    @Test
+    void isMatchingHomeOfficeCaseDetails_should_return_false_when_family_name_has_different_second_word() {
+
+        Mockito.when(referenceService.getHomeOfficeReferenceData(VALID_GWF, callback))
+            .thenReturn(Optional.of(Collections.singletonList(idValue)));
+
+        Mockito.when(idValue.getValue()).thenReturn(appellant);
+
+        Mockito.when(appellant.getFamilyName()).thenReturn("Smithsonian Institute");
+        Mockito.when(appellant.getGivenNames()).thenReturn("John");
+        Mockito.when(appellant.getDateOfBirth()).thenReturn("1990-01-01");
+
+        Mockito.when(asylumCase.read(APPELLANT_FAMILY_NAME, String.class))
+            .thenReturn(Optional.of("Smithsonian"));
 
         Mockito.when(asylumCase.read(APPELLANT_GIVEN_NAMES, String.class))
             .thenReturn(Optional.of("John"));
