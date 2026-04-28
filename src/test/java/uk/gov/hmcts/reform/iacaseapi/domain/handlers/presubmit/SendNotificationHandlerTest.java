@@ -483,7 +483,9 @@ class SendNotificationHandlerTest {
         Event.REFUND_CONFIRMATION,
         Event.REVOKE_CITIZEN_ACCESS,
         Event.HEARING_CANCELLED,
-        Event.REMOVE_STATUTORY_TIMEFRAME_24_WEEKS
+        Event.REMOVE_STATUTORY_TIMEFRAME_24_WEEKS,
+        Event.QUERY_MANAGEMENT_RAISE_QUERY,
+        Event.QUERY_MANAGEMENT_RESPOND_QUERY
     );
 
     private static final List<Event> allowedInternalEventTypes = List.of(
