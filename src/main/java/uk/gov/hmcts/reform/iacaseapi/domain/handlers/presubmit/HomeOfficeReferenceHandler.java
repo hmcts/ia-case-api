@@ -242,13 +242,12 @@ public class HomeOfficeReferenceHandler implements PreSubmitCallbackHandler<Asyl
                     hoReference);
             return List.of();
         }
-        // Extract appellants
-        final List<HomeOfficeAppellant> homeOfficeAppellantDataObjects = homeOfficeAppellants
+        // Extract and return appellants
+        return homeOfficeAppellants
                 .orElseThrow(() -> new IllegalStateException("No appellants were returned by the Home Office."))
                 .stream()
                 .map(IdValue::getValue)
                 .collect(Collectors.toList());
-        return homeOfficeAppellantDataObjects;
     }
 
     private boolean matchesFamilyName(String homeOfficeFamilyName, String appellantFamilyName) {
