@@ -376,6 +376,7 @@ security:
       - "turnOnNotificationsWATasks"
       - "addStatutoryTimeframe24Weeks"
       - "removeStatutoryTimeframe24Weeks"
+      - "revokeCitizenAccess"
     challenged-access-legal-operations:
       - "appellantInPersonManual"
       - "moveToPaymentPending"
@@ -465,6 +466,7 @@ security:
       - "generateListCmrTask"
       - "markAppealAsDetained"
       - "removeDetainedStatus"
+      - "revokeCitizenAccess"
     senior-tribunal-caseworker:
       - "appellantInPersonManual"
       - "moveToPaymentPending"
@@ -556,6 +558,7 @@ security:
       - "removeDetainedStatus"
       - "turnOnNotificationsWATasks"
       - "removeStatutoryTimeframe24Weeks"
+      - "revokeCitizenAccess"
     hearing-centre-admin:
       - "appellantInPersonManual"
       - "startAppeal"
@@ -626,6 +629,7 @@ security:
       - "forceFtpaDecidedState"
       - "turnOnNotificationsWATasks"
       - "addStatutoryTimeframe24Weeks"
+      - "revokeCitizenAccess"
     ctsc:
       - "appellantInPersonManual"
       - "startAppeal"
@@ -693,6 +697,7 @@ security:
       - "turnOnNotificationsWATasks"
       - "editDocuments"
       - "addStatutoryTimeframe24Weeks"
+      - "revokeCitizenAccess"
       - "forceDecidedState"
       - "forceFtpaDecidedState"
     ctsc-team-leader:
@@ -764,6 +769,7 @@ security:
       - "forceDecidedState"
       - "forceFtpaDecidedState"
       - "addStatutoryTimeframe24Weeks"
+      - "revokeCitizenAccess"
     national-business-centre:
       - "appellantInPersonManual"
       - "startAppeal"
@@ -832,6 +838,7 @@ security:
       - "forceDecidedState"
       - "forceFtpaDecidedState"
       - "addStatutoryTimeframe24Weeks"
+      - "revokeCitizenAccess"
     challenged-access-ctsc:
       - "appellantInPersonManual"
       - "startAppeal"
@@ -900,6 +907,7 @@ security:
       - "forceDecidedState"
       - "forceFtpaDecidedState"
       - "addStatutoryTimeframe24Weeks"
+      - "revokeCitizenAccess"
     challenged-access-admin:
       - "appellantInPersonManual"
       - "startAppeal"
@@ -969,6 +977,7 @@ security:
       - "forceDecidedState"
       - "forceFtpaDecidedState"
       - "addStatutoryTimeframe24Weeks"
+      - "revokeCitizenAccess"
     caseworker-ia-homeofficeapc:
       - "uploadHomeOfficeBundle"
       - "uploadAdditionalEvidenceHomeOffice"
@@ -1370,11 +1379,13 @@ security:
       - "removeStatutoryTimeframe24Weeks"
       - "createCaseLink"
       - "maintainCaseLinks"
+      - "revokeCitizenAccess"
     caseworker-ia-internal:
       - "revokeCaseAccess"
       - "removeCaseManagerBulk"
       - "reTriggerWaTasks"
       - "reTriggerWaBulkTasks"
+      - "revokeCitizenAccess"
     caseworker-ia-rparobot:
       - "addCaseNote"
     next-hearing-date-admin:
@@ -1411,6 +1422,7 @@ hystrix:
 #OpenID
 idam:
   baseUrl: ${OPEN_ID_IDAM_URL:http://127.0.0.1:5000}
+  apiUrl: ${IDAM_URL:http://127.0.0.1:4501}
   redirectUrl: ${IA_IDAM_REDIRECT_URI:http://localhost:3002/oauth2/callback}
   s2s-auth:
     totp_secret: ${IA_S2S_SECRET:AAAAAAAAAAAAAAAC}
