@@ -1462,7 +1462,7 @@ ccd-message-publisher:
 am-org-role-mapping-service:
   enabled: true
   java:
-    image: 'hmctsprod.azurecr.io/am/org-role-mapping-service:latest'
+    image: hmctsprod.azurecr.io/am/org-role-mapping-service:latest
     ingressHost: am-org-role-mapping-service-${SERVICE_FQDN}
     releaseNameOverride: ${SERVICE_NAME}-am-org-role-mapping-service
     secrets:
@@ -1526,7 +1526,7 @@ ia-hearings-api:
   enabled: true
   java:
     imagePullPolicy: Always
-    image: 'hmctsprod.azurecr.io/ia/hearings-api:latest'
+    image: hmctsprod.azurecr.io/ia/hearings-api:latest
     releaseNameOverride: ${SERVICE_NAME}-hearings-api
     ingressHost: ${SERVICE_NAME}-hearings-api.preview.platform.hmcts.net
     devcpuRequests: 500m
@@ -1601,7 +1601,7 @@ ia-cron-hearings-processor:
   enabled: true
   job:
     kind: CronJob
-    image: 'hmctsprod.azurecr.io/ia/hearings-api:latest'
+    image: hmctsprod.azurecr.io/ia/hearings-api:latest
     releaseNameOverride: ${SERVICE_NAME}-ia-cron-hearings-processor
     name: ${SERVICE_NAME}-ia-cron-hearings-processor
     schedule: "*/5 * * * *"
