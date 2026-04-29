@@ -6,10 +6,12 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.IdamApi;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.IdamClientApi;
 
 @SpringBootApplication
 @EnableFeignClients(clients = {
-    IdamApi.class
+    IdamApi.class,
+    IdamClientApi.class
 })
 public class IdamConsumerApplication {
 
