@@ -75,8 +75,6 @@ class AddStatutoryTimeframe24WeeksPreStartHandlerTest {
 
     @Test
     void should_return_error_when_tribunal_received_date_is_before_live_date() {
-        when(asylumCase.read(AsylumCaseFieldDefinition.APPEAL_SUBMISSION_DATE))
-            .thenReturn(Optional.empty());
         when(asylumCase.read(AsylumCaseFieldDefinition.TRIBUNAL_RECEIVED_DATE))
             .thenReturn(Optional.of(LocalDate.of(2026, 4, 1).toString()));
 

@@ -90,15 +90,9 @@ public class AddStatutoryTimeframe24WeeksPreStartHandler implements PreSubmitCal
 
     private boolean caseReceivedAfterLive(AsylumCase asylumCase) {
         Optional<String> tribunalReceivedDate = asylumCase.read(TRIBUNAL_RECEIVED_DATE);
-        if (tribunalReceivedDate.isPresent() && !LocalDate.parse(tribunalReceivedDate.get()).isBefore(STF24W_LIVE_DATE)) {
-            return true;
-        }
-
         Optional<String> appealSubmissionDate = asylumCase.read(APPEAL_SUBMISSION_DATE);
-        if (appealSubmissionDate.isPresent() && !LocalDate.parse(appealSubmissionDate.get()).isBefore(STF24W_LIVE_DATE)) {
-            return true;
-        }
 
-        return false;
+        return (tribunalReceivedDate.isPresent() && !LocalDate.parse(tribunalReceivedDate.get()).isBefore(STF24W_LIVE_DATE))
+            || (tribunalReceivedDate.isEmpty() && appealSubmissionDate.isPresent() && !LocalDate.parse(appealSubmissionDate.get()).isBefore(STF24W_LIVE_DATE));
     }
 }
