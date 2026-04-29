@@ -55,9 +55,11 @@ public enum HomeOfficeApiResponseStatusType {
     }
 
     private final class UserFacingErrorText {
-        private static final String CLIENT = "An error occurred.  Please report this to HMCTS.";
-        private static final String SERVER = "An error occurred.  Please try again in 15-20 minutes.  If it occurs again, please report this to HMCTS.";
-        private static final String USER = "The reference XYZYX cannot be matched to a Home Office record.  You should enter the UAN or GWF reference exactly as it appears on the decision letter.  This can often be found in the 'How to appeal' section.";
+        private static final String CLIENT = "An error occurred.  Please report this to HMCTS using the following contact details: Email contactia@justice.gov.uk or Telephone: 0300 123 1711.";
+        private static final String SERVER = "An error occurred.  Please try again in 15-20 minutes.  If it occurs again, please report this to HMCTS using the following contact details: Email contactia@justice.gov.uk or Telephone: 0300 123 1711.";
+        private static final String USER = "The reference XYZYX cannot be matched to a Home Office record.  " + 
+            "You should enter the UAN or GWF reference exactly as it appears on the decision letter.  This can often be found in the 'How to appeal' section.  " + 
+            "If you need help, please use the Home Office help form in the bullet points on this page.";
     }    
 }
 
