@@ -90,6 +90,7 @@ class EventTest {
             Arguments.of("submitClarifyingQuestionAnswers", Event.SUBMIT_CLARIFYING_QUESTION_ANSWERS.toString()),
             Arguments.of("completeClarifyQuestions", Event.COMPLETE_CLARIFY_QUESTIONS.toString()),
             Arguments.of("editDocuments", Event.EDIT_DOCUMENTS.toString()),
+            Arguments.of("removeDocuments", Event.REMOVE_DOCUMENTS.toString()),
             Arguments.of("sendToPreHearing", Event.SEND_TO_PREHEARING.toString()),
             Arguments.of("changeHearingCentre", Event.CHANGE_HEARING_CENTRE.toString()),
             Arguments.of("applyForFTPAAppellant", Event.APPLY_FOR_FTPA_APPELLANT.toString()),

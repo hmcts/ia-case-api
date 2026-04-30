@@ -64,6 +64,7 @@ public enum Event {
     SUBMIT_CLARIFYING_QUESTION_ANSWERS("submitClarifyingQuestionAnswers"),
     COMPLETE_CLARIFY_QUESTIONS("completeClarifyQuestions"),
     EDIT_DOCUMENTS("editDocuments"),
+    REMOVE_DOCUMENTS("removeDocuments"),
     SEND_TO_PREHEARING("sendToPreHearing"),
     CHANGE_HEARING_CENTRE("changeHearingCentre"),
     APPLY_FOR_FTPA_APPELLANT("applyForFTPAAppellant"),
