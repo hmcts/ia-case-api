@@ -1,5 +1,5 @@
 {
-  "description": "RIA 3302 end appeal HO notification success confirmation by Judge",
+  "description": "RIA-3302 end appeal HO notification success confirmation by Judge",
   "launchDarklyKey": "home-office-notification-feature:true",
   "request": {
     "uri": "/asylum/ccdSubmitted",
