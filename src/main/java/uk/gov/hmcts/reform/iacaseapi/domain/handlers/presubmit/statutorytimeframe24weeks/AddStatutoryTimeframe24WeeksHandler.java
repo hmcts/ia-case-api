@@ -37,11 +37,7 @@ public class AddStatutoryTimeframe24WeeksHandler implements PreSubmitCallbackHan
             throw new IllegalStateException("Cannot handle callback");
         }
 
-        AsylumCase asylumCase =
-            callback
-                .getCaseDetails()
-                .getCaseData();
-
+        AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
         YesOrNo status = YesOrNo.YES;
         AsylumCase updatedAsylum = updateStatutoryTimeframe24WeeksService.updateAsylumCase(asylumCase, status);
 

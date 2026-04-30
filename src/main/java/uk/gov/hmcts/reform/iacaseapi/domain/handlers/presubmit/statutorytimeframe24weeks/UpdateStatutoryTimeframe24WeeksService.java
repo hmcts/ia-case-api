@@ -112,7 +112,11 @@ public class UpdateStatutoryTimeframe24WeeksService {
                              .map(cohortText -> new Stf24WeekCohort(cohortText.substring(0, cohortText.indexOf("=")), cohortText.endsWith("=true"))).toList();
                     // Update case record
                     homeOfficeResponse.setStf24weekCohorts(cohorts);
+                    log.info("cohorts just before writing to the case: {}", cohorts);
+                    log.info("homeOfficeResponse just before writing to the case: {}", homeOfficeResponse);
                     asylumCase.write(STATUTORY_TIMEFRAME_24_WEEKS, stf24w);
+                    log.info("cohorts just after writing to the case: {}");
+                    log.info("homeOfficeResponse just after writing to the case: {}", homeOfficeResponse);
                 }
             }
             // Finally, restore the cohort text to a comma-separated list of present cohorts so that it can be used by XUI
