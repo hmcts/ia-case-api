@@ -58,9 +58,12 @@ public class UploadHomeOfficeAppealResponseConfirmation implements PostSubmitCal
                 postSubmitResponse.setConfirmationBody(
                     "#### Do this next\n\n"
                         + "Check the response uploaded by the respondent.\n\n"
-                        + "If it complies with the Procedure Rules and Practice Directions "
-                        + "Select [Force case - Prepare for hearing](/case/IA/Asylum/"
+                        + "If it complies with the Procedure Rules and Practice Directions and this case has a decision with a hearing, "
+                        + "select [Force case - Prepare for hearing](/case/IA/Asylum/"
                         + callback.getCaseDetails().getId() + "/trigger/forceCaseToPrepareForHearing).\n\n"
+                        + "If this case has a decision without a hearing then "
+                        + "select [Decision without a hearing](/case/IA/Asylum/"
+                        + callback.getCaseDetails().getId() + "/trigger/decisionWithoutHearing).\n\n"
                         + "If it does not comply direct the respondent to make the appropriate changes."
                 );
             } else if (role == UserRoleLabel.LEGAL_REPRESENTATIVE) {
