@@ -39,6 +39,7 @@ public class HomeOfficeReferenceService {
         // Home Office API has not been called yet (or was unavailable the last time we tried) - call it now
         log.info("Getting Home Office biographic data for case with reference ID {} ...", hoReference);
         // Raise an event in home-office-integration-api
+        
         AsylumCase asylumCaseWithHomeOfficeData = homeOfficeApi.midEvent(callback);
         // Check return status and store it in the case record
         HomeOfficeApiResponseStatusType responseStatus = 
@@ -49,6 +50,7 @@ public class HomeOfficeReferenceService {
             log.info("Home Office biographic data retrieved for case with reference ID {}.", hoReference);
             // Update the case record object with the Home Office reference data
             homeOfficeAppellants = asylumCaseWithHomeOfficeData.read(HOME_OFFICE_APPELLANTS);
+        
             asylumCase.write(HOME_OFFICE_APPELLANTS, homeOfficeAppellants);
         } else {
             // The API did not return any data; log the diagnostic message appropriately

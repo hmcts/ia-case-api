@@ -171,6 +171,7 @@ public class HomeOfficeReferenceHandler implements PreSubmitCallbackHandler<Asyl
         if (hoReference == null) {
             return false;
         } else {
+            
             Optional<List<IdValue<HomeOfficeAppellant>>> homeOfficeAppellants = homeOfficeReferenceService.getHomeOfficeReferenceData(hoReference, callback);
             if (homeOfficeAppellants.isEmpty()) {
                 return false;
