@@ -39,7 +39,7 @@ java:
     SAVE_NOTIFICATIONS_TO_DATA_EVENT_ENABLED: true
     SAVE_NOTIFICATIONS_DATA_SCHEDULE_HOUR: 18
     SAVE_NOTIFICATIONS_DATA_SCHEDULE_MAX_MINUTES: 5
-    HOME_OFFICE_VALIDATION_ENABLED: "false"
+    HOME_OFFICE_VALIDATION_ENABLED: "true"
   keyVaults:
     ia:
       resourceGroup: ia
@@ -657,7 +657,7 @@ ia-aip-frontend:
   enabled: true
   nodejs:
     imagePullPolicy: Always
-    image: hmctsprod.azurecr.io/ia/aip-frontend:latest
+    image: hmctsprod.azurecr.io/ia/aip-frontend:pr-1471
     ingressHost: ${SERVICE_NAME}-aip-frontend.preview.platform.hmcts.net # override in public facing environments
     applicationPort: 3000
     devcpuRequests: 500m
