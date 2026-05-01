@@ -1472,3 +1472,7 @@ ia:
   config:
     validator:
       secret: ${IA_CONFIG_VALIDATOR_SECRET:}
+
+app:
+  home-office-validation:
+    enabled: ${HOME_OFFICE_VALIDATION_ENABLED:true}
