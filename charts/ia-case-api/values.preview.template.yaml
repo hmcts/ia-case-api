@@ -243,6 +243,7 @@ ia-case-notifications-api:
   java:
     imagePullPolicy: Always
     image: hmctsprod.azurecr.io/ia/case-notifications-api:latest
+    # image: hmctsprod.azurecr.io/ia/case-notifications-api:latest
     releaseNameOverride: ${SERVICE_NAME}-case-notifications-api
     ingressHost: ${SERVICE_NAME}-notifications-api.preview.platform.hmcts.net
     devcpuRequests: 500m
