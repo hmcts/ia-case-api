@@ -92,6 +92,7 @@ public class UpdateStatutoryTimeframe24WeeksService {
         //  STF_24W_HOME_OFFICE_COHORT  definition can also be removed from AsylumCaseFieldDefinition.java,
         // then make the corresponding change in ia-home-office-integration-api
         fixHomeOfficeResponseAndCohortTextOnFirstPass(asylumCase);
+        log.info("Leaving updateAsylumCase ...");
         return asylumCase;
     }
 
@@ -115,7 +116,7 @@ public class UpdateStatutoryTimeframe24WeeksService {
                     log.info("cohorts just before writing to the case: {}", cohorts);
                     log.info("homeOfficeResponse just before writing to the case: {}", homeOfficeResponse);
                     asylumCase.write(STATUTORY_TIMEFRAME_24_WEEKS, stf24w);
-                    log.info("cohorts just after writing to the case: {}");
+                    log.info("cohorts just after writing to the case: {}", cohorts);
                     log.info("homeOfficeResponse just after writing to the case: {}", homeOfficeResponse);
                 }
             }
