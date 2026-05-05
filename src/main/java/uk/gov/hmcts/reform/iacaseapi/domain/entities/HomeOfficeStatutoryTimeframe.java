@@ -32,7 +32,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 @NoArgsConstructor
 @EqualsAndHashCode
 @Data
-public class HomeOfficeStatutoryTimeframeDto {
+public class HomeOfficeStatutoryTimeframe {
 
     @JsonProperty(value = "hmctsReferenceNumber", required = true)
     @NotNull

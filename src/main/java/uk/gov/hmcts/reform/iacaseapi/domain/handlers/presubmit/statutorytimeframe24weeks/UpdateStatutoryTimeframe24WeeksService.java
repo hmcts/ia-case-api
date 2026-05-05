@@ -5,8 +5,8 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseNote;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.HomeOfficeStatutoryTimeframeDto;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.HomeOfficeStatutoryTimeframe;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.HomeOfficeStatutoryTimeframe.Stf24WeekCohort;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.StatutoryTimeframe24Weeks;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.StatutoryTimeframe24WeeksHistory;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
@@ -91,8 +91,8 @@ public class UpdateStatutoryTimeframe24WeeksService {
         // If the CCD bug is ever fixed (yeah, I know), delete the following line (and corresponding function) and also see if the
         //  STF_24W_HOME_OFFICE_COHORT  definition can also be removed from AsylumCaseFieldDefinition.java,
         // then make the corresponding change in ia-home-office-integration-api
-        fixHomeOfficeResponseAndCohortTextOnFirstPass(asylumCase);
-        log.info("Leaving updateAsylumCase ...");
+        //fixHomeOfficeResponseAndCohortTextOnFirstPass(asylumCase);
+        //log.info("Leaving updateAsylumCase ...");
         return asylumCase;
     }
 
@@ -105,7 +105,7 @@ public class UpdateStatutoryTimeframe24WeeksService {
             // Get Home Office response object
             Optional<StatutoryTimeframe24Weeks> stf24w = asylumCase.read(STATUTORY_TIMEFRAME_24_WEEKS, StatutoryTimeframe24Weeks.class);
             if (stf24w.isPresent()) {
-                HomeOfficeStatutoryTimeframeDto homeOfficeResponse = stf24w.get().getHomeOfficeResponse();
+                HomeOfficeStatutoryTimeframe homeOfficeResponse = stf24w.get().getHomeOfficeResponse();
                 List<IdValue<Stf24WeekCohort>> cohorts = homeOfficeResponse.getStf24weekCohorts();
                 if (cohorts.size() == 0) {
                     // Recreate the original Home Office response from the (modified) cohort text passed in
@@ -139,7 +139,7 @@ public class UpdateStatutoryTimeframe24WeeksService {
 
     private StatutoryTimeframe24Weeks buildNewStatutoryTimeframe24Weeks(YesOrNo status, String reason, String user, Optional<StatutoryTimeframe24Weeks> existingStf24wObj) {
         List<IdValue<StatutoryTimeframe24WeeksHistory>> existingHistory = emptyList();
-        HomeOfficeStatutoryTimeframeDto homeOfficeResponse = null;
+        HomeOfficeStatutoryTimeframe homeOfficeResponse = null;
 
         if (existingStf24wObj.isPresent()) {
             StatutoryTimeframe24Weeks stf24wObj = existingStf24wObj.get();

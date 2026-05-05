@@ -22,7 +22,7 @@ class HomeOfficeStatutoryTimeframeDtoTest {
     private LocalDate dateOfBirth;
     private OffsetDateTime timeStamp;
 
-    private HomeOfficeStatutoryTimeframeDto homeOfficeStatutoryTimeframeDto;
+    private HomeOfficeStatutoryTimeframe homeOfficeStatutoryTimeframeDto;
 
     @BeforeEach
     void setUp() {
@@ -37,13 +37,13 @@ class HomeOfficeStatutoryTimeframeDtoTest {
     @Test
     void should_hold_onto_values_single_cohort() {
 
-        HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort cohort = 
-            HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort.builder()
+        HomeOfficeStatutoryTimeframe.Stf24WeekCohort cohort = 
+            HomeOfficeStatutoryTimeframe.Stf24WeekCohort.builder()
                 .name("HU")
                 .included("true")
                 .build();
-        IdValue<HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort> idValCohort = new IdValue<>("1", cohort);
-        homeOfficeStatutoryTimeframeDto = HomeOfficeStatutoryTimeframeDto.builder()
+        IdValue<HomeOfficeStatutoryTimeframe.Stf24WeekCohort> idValCohort = new IdValue<>("1", cohort);
+        homeOfficeStatutoryTimeframeDto = HomeOfficeStatutoryTimeframe.builder()
             .hmctsReferenceNumber(hmctsReferenceNumber)
             .uan(uan)
             .familyName(familyName)
@@ -67,20 +67,20 @@ class HomeOfficeStatutoryTimeframeDtoTest {
     @Test
     void should_hold_onto_values_multiple_cohorts() {
 
-        HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort cohort1 = 
-            HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort.builder()
+        HomeOfficeStatutoryTimeframe.Stf24WeekCohort cohort1 = 
+            HomeOfficeStatutoryTimeframe.Stf24WeekCohort.builder()
                 .name("HU")
                 .included("true")
                 .build();
 
-        HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort cohort2 = 
-            HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort.builder()
+        HomeOfficeStatutoryTimeframe.Stf24WeekCohort cohort2 = 
+            HomeOfficeStatutoryTimeframe.Stf24WeekCohort.builder()
                 .name("PA")
                 .included("false")
                 .build();
-        IdValue<HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort> idValCohort1 = new IdValue<>("1", cohort1);
-        IdValue<HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort> idValCohort2 = new IdValue<>("2", cohort2);
-        homeOfficeStatutoryTimeframeDto = HomeOfficeStatutoryTimeframeDto.builder()
+        IdValue<HomeOfficeStatutoryTimeframe.Stf24WeekCohort> idValCohort1 = new IdValue<>("1", cohort1);
+        IdValue<HomeOfficeStatutoryTimeframe.Stf24WeekCohort> idValCohort2 = new IdValue<>("2", cohort2);
+        homeOfficeStatutoryTimeframeDto = HomeOfficeStatutoryTimeframe.builder()
             .hmctsReferenceNumber(hmctsReferenceNumber)
             .uan(uan)
             .familyName(familyName)
@@ -101,7 +101,7 @@ class HomeOfficeStatutoryTimeframeDtoTest {
 
     @Test
     void should_handle_empty_cohorts_array() {
-        homeOfficeStatutoryTimeframeDto = HomeOfficeStatutoryTimeframeDto.builder()
+        homeOfficeStatutoryTimeframeDto = HomeOfficeStatutoryTimeframe.builder()
             .hmctsReferenceNumber(hmctsReferenceNumber)
             .uan(uan)
             .familyName(familyName)
@@ -116,7 +116,7 @@ class HomeOfficeStatutoryTimeframeDtoTest {
 
     @Test
     void should_toString_not_throw() {
-        homeOfficeStatutoryTimeframeDto = HomeOfficeStatutoryTimeframeDto.builder()
+        homeOfficeStatutoryTimeframeDto = HomeOfficeStatutoryTimeframe.builder()
             .hmctsReferenceNumber(hmctsReferenceNumber)
             .uan(uan)
             .familyName(familyName)

@@ -36,7 +36,7 @@ import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseNote;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.HomeOfficeStatutoryTimeframeDto;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.HomeOfficeStatutoryTimeframe;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.StatutoryTimeframe24Weeks;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.StatutoryTimeframe24WeeksHistory;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
@@ -79,7 +79,7 @@ class UpdateStatutoryTimeframe24WeeksServiceTest {
     private LocalDate dateOfBirth;
     private OffsetDateTime timeStamp;
 
-    private HomeOfficeStatutoryTimeframeDto homeOfficeStatutoryTimeframeDto;
+    private HomeOfficeStatutoryTimeframe homeOfficeStatutoryTimeframeDto;
 
     @BeforeEach
     public void setUp() {
@@ -117,13 +117,13 @@ class UpdateStatutoryTimeframe24WeeksServiceTest {
                 .thenReturn(Optional.of(currentStatus));
         StatutoryTimeframe24WeeksHistory statutoryTimeframe24WeeksHistory = new StatutoryTimeframe24WeeksHistory(currentStatus, newStatutoryTimeframe24WeeksReason, forename + " " + surname, nowWithTime.toString());
         List<IdValue<StatutoryTimeframe24WeeksHistory>> existingStatutoryTimeframe24WeeksHistory = Arrays.asList(new IdValue<>("1", statutoryTimeframe24WeeksHistory));
-        HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort cohort = 
-            HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort.builder()
+        HomeOfficeStatutoryTimeframe.Stf24WeekCohort cohort = 
+            HomeOfficeStatutoryTimeframe.Stf24WeekCohort.builder()
                 .name("HU")
                 .included("true")
                 .build();
-        IdValue<HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort> idValCohort = new IdValue<>("1", cohort);
-        homeOfficeStatutoryTimeframeDto = HomeOfficeStatutoryTimeframeDto.builder()
+        IdValue<HomeOfficeStatutoryTimeframe.Stf24WeekCohort> idValCohort = new IdValue<>("1", cohort);
+        homeOfficeStatutoryTimeframeDto = HomeOfficeStatutoryTimeframe.builder()
             .hmctsReferenceNumber(hmctsReferenceNumber)
             .uan(uan)
             .familyName(familyName)
@@ -186,13 +186,13 @@ class UpdateStatutoryTimeframe24WeeksServiceTest {
                 .thenReturn(Optional.of(currentStatus));
         StatutoryTimeframe24WeeksHistory statutoryTimeframe24WeeksHistory = new StatutoryTimeframe24WeeksHistory(currentStatus, newStatutoryTimeframe24WeeksReason, forename + " " + surname, nowWithTime.toString());
         List<IdValue<StatutoryTimeframe24WeeksHistory>> existingStatutoryTimeframe24WeeksHistory = Arrays.asList(new IdValue<>("1", statutoryTimeframe24WeeksHistory));
-        HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort cohort = 
-            HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort.builder()
+        HomeOfficeStatutoryTimeframe.Stf24WeekCohort cohort = 
+            HomeOfficeStatutoryTimeframe.Stf24WeekCohort.builder()
                 .name("HU")
                 .included("true")
                 .build();
-        IdValue<HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort> idValCohort = new IdValue<>("1", cohort);
-        homeOfficeStatutoryTimeframeDto = HomeOfficeStatutoryTimeframeDto.builder()
+        IdValue<HomeOfficeStatutoryTimeframe.Stf24WeekCohort> idValCohort = new IdValue<>("1", cohort);
+        homeOfficeStatutoryTimeframeDto = HomeOfficeStatutoryTimeframe.builder()
             .hmctsReferenceNumber(hmctsReferenceNumber)
             .uan(uan)
             .familyName(familyName)
@@ -274,7 +274,7 @@ class UpdateStatutoryTimeframe24WeeksServiceTest {
         // If the status is different, it should write; if same, it should throw exception
         
         when(asylumCase.read(STATUTORY_TIMEFRAME_24_WEEKS, StatutoryTimeframe24Weeks.class))
-            .thenReturn(Optional.of(new StatutoryTimeframe24Weeks(emptyList(), new HomeOfficeStatutoryTimeframeDto())));
+            .thenReturn(Optional.of(new StatutoryTimeframe24Weeks(emptyList(), new HomeOfficeStatutoryTimeframe())));
         when(asylumCase.read(STF_24W_CURRENT_REASON_AUTO_GENERATED, String.class))
             .thenReturn(Optional.of("Home Office Initial Determination"));
         when(asylumCase.read(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class))
