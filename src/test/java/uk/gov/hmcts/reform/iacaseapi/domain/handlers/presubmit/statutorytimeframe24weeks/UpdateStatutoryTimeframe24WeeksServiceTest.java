@@ -122,14 +122,14 @@ class UpdateStatutoryTimeframe24WeeksServiceTest {
                 .name("HU")
                 .included("true")
                 .build();
-
+        IdValue<HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort> idValCohort = new IdValue<>("1", cohort);
         homeOfficeStatutoryTimeframeDto = HomeOfficeStatutoryTimeframeDto.builder()
             .hmctsReferenceNumber(hmctsReferenceNumber)
             .uan(uan)
             .familyName(familyName)
             .givenNames(givenNames)
             .dateOfBirth(dateOfBirth)
-            .stf24weekCohorts(List.of(cohort))
+            .stf24weekCohorts(List.of(idValCohort))
             .timeStamp(timeStamp)
             .build();
         StatutoryTimeframe24Weeks existingStatutoryTimeframe24Weeks = new StatutoryTimeframe24Weeks(
@@ -191,14 +191,14 @@ class UpdateStatutoryTimeframe24WeeksServiceTest {
                 .name("HU")
                 .included("true")
                 .build();
-
+        IdValue<HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort> idValCohort = new IdValue<>("1", cohort);
         homeOfficeStatutoryTimeframeDto = HomeOfficeStatutoryTimeframeDto.builder()
             .hmctsReferenceNumber(hmctsReferenceNumber)
             .uan(uan)
             .familyName(familyName)
             .givenNames(givenNames)
             .dateOfBirth(dateOfBirth)
-            .stf24weekCohorts(List.of(cohort))
+            .stf24weekCohorts(List.of(idValCohort))
             .timeStamp(timeStamp)
             .build();
         StatutoryTimeframe24Weeks existingStatutoryTimeframe24Weeks = new StatutoryTimeframe24Weeks(

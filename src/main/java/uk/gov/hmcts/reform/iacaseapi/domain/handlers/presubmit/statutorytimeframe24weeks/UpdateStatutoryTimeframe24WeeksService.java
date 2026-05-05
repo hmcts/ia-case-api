@@ -106,11 +106,11 @@ public class UpdateStatutoryTimeframe24WeeksService {
             Optional<StatutoryTimeframe24Weeks> stf24w = asylumCase.read(STATUTORY_TIMEFRAME_24_WEEKS, StatutoryTimeframe24Weeks.class);
             if (stf24w.isPresent()) {
                 HomeOfficeStatutoryTimeframeDto homeOfficeResponse = stf24w.get().getHomeOfficeResponse();
-                List<Stf24WeekCohort> cohorts = homeOfficeResponse.getStf24weekCohorts();
+                List<IdValue<Stf24WeekCohort>> cohorts = homeOfficeResponse.getStf24weekCohorts();
                 if (cohorts.size() == 0) {
                     // Recreate the original Home Office response from the (modified) cohort text passed in
                     cohorts = Arrays.stream(stf24wHomeOfficeCohortText.split(","))
-                             .map(cohortText -> new Stf24WeekCohort(cohortText.substring(0, cohortText.indexOf("=")), cohortText.endsWith("=true"))).toList();
+                             .map(cohortText -> new IdValue<Stf24WeekCohort>(java.util.UUID.randomUUID().toString(), new Stf24WeekCohort(cohortText.substring(0, cohortText.indexOf("=")), cohortText.endsWith("=true")))).toList();
                     // Update case record
                     homeOfficeResponse.setStf24weekCohorts(cohorts);
                     log.info("cohorts just before writing to the case: {}", cohorts);

@@ -11,6 +11,8 @@ import org.elasticsearch.core.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
+
 class HomeOfficeStatutoryTimeframeDtoTest {
 
     private String hmctsReferenceNumber;
@@ -40,14 +42,14 @@ class HomeOfficeStatutoryTimeframeDtoTest {
                 .name("HU")
                 .included("true")
                 .build();
-
+        IdValue<HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort> idValCohort = new IdValue<>("1", cohort);
         homeOfficeStatutoryTimeframeDto = HomeOfficeStatutoryTimeframeDto.builder()
             .hmctsReferenceNumber(hmctsReferenceNumber)
             .uan(uan)
             .familyName(familyName)
             .givenNames(givenNames)
             .dateOfBirth(dateOfBirth)
-            .stf24weekCohorts(List.of(cohort))
+            .stf24weekCohorts(List.of(idValCohort))
             .timeStamp(timeStamp)
             .build();
 
@@ -57,8 +59,8 @@ class HomeOfficeStatutoryTimeframeDtoTest {
         assertEquals(givenNames, homeOfficeStatutoryTimeframeDto.getGivenNames());
         assertEquals(dateOfBirth, homeOfficeStatutoryTimeframeDto.getDateOfBirth());
         assertEquals(1, homeOfficeStatutoryTimeframeDto.getStf24weekCohorts().size());
-        assertEquals("HU", homeOfficeStatutoryTimeframeDto.getStf24weekCohorts().get(0).getName());
-        assertTrue(Boolean.parseBoolean(homeOfficeStatutoryTimeframeDto.getStf24weekCohorts().get(0).getIncluded()));
+        assertEquals("HU", homeOfficeStatutoryTimeframeDto.getStf24weekCohorts().get(0).getValue().getName());
+        assertTrue(Boolean.parseBoolean(homeOfficeStatutoryTimeframeDto.getStf24weekCohorts().get(0).getValue().getIncluded()));
         assertEquals(timeStamp, homeOfficeStatutoryTimeframeDto.getTimeStamp());
     }
 
@@ -76,24 +78,25 @@ class HomeOfficeStatutoryTimeframeDtoTest {
                 .name("PA")
                 .included("false")
                 .build();
-
+        IdValue<HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort> idValCohort1 = new IdValue<>("1", cohort1);
+        IdValue<HomeOfficeStatutoryTimeframeDto.Stf24WeekCohort> idValCohort2 = new IdValue<>("2", cohort2);
         homeOfficeStatutoryTimeframeDto = HomeOfficeStatutoryTimeframeDto.builder()
             .hmctsReferenceNumber(hmctsReferenceNumber)
             .uan(uan)
             .familyName(familyName)
             .givenNames(givenNames)
             .dateOfBirth(dateOfBirth)
-            .stf24weekCohorts(List.of(cohort1, cohort2))
+            .stf24weekCohorts(List.of(idValCohort1, idValCohort2))
             .timeStamp(timeStamp)
             .build();
 
         assertEquals(2, homeOfficeStatutoryTimeframeDto.getStf24weekCohorts().size());
 
-        assertEquals("HU", homeOfficeStatutoryTimeframeDto.getStf24weekCohorts().get(0).getName());
-        assertTrue(Boolean.parseBoolean(homeOfficeStatutoryTimeframeDto.getStf24weekCohorts().get(0).getIncluded()));
+        assertEquals("HU", homeOfficeStatutoryTimeframeDto.getStf24weekCohorts().get(0).getValue().getName());
+        assertTrue(Boolean.parseBoolean(homeOfficeStatutoryTimeframeDto.getStf24weekCohorts().get(0).getValue().getIncluded()));
 
-        assertEquals("PA", homeOfficeStatutoryTimeframeDto.getStf24weekCohorts().get(1).getName());
-        assertTrue(!Boolean.parseBoolean(homeOfficeStatutoryTimeframeDto.getStf24weekCohorts().get(1).getIncluded()));
+        assertEquals("PA", homeOfficeStatutoryTimeframeDto.getStf24weekCohorts().get(1).getValue().getName());
+        assertTrue(!Boolean.parseBoolean(homeOfficeStatutoryTimeframeDto.getStf24weekCohorts().get(1).getValue().getIncluded()));
     }
 
     @Test

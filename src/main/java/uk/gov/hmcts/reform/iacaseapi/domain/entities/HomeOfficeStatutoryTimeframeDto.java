@@ -22,6 +22,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -61,7 +62,7 @@ public class HomeOfficeStatutoryTimeframeDto {
     @JsonProperty(value = "stf24weekCohorts", required = true)
     @NotNull
     @Valid
-    private List<Stf24WeekCohort> stf24weekCohorts;
+    private List<IdValue<Stf24WeekCohort>> stf24weekCohorts;
 
     @JsonProperty(value = "timeStamp", required = true)
     @JsonFormat(shape = JsonFormat.Shape.STRING)
