@@ -40,7 +40,7 @@ public class IdamAuthProvider {
         }
     }
 
-    @Cacheable(value = "legalRepATokenCache", key = "'legalRepATokenCache'")
+    @Cacheable(value = "legalRepATokenBailCache", key = "'legalRepATokenBailCache'")
     public String getLegalRepToken() {
         return getUserToken(
             System.getenv("TEST_LAW_FIRM_A_USERNAME"),
@@ -48,7 +48,7 @@ public class IdamAuthProvider {
         );
     }
 
-    @Cacheable(value = "caseOfficerTokenCache", key = "'caseOfficerTokenCache'")
+    @Cacheable(value = "caseOfficerTokenBailCache", key = "'caseOfficerTokenBailCache'")
     public String getCaseOfficerToken() {
         return getUserToken(
             System.getenv("TEST_CASEOFFICER_USERNAME"),
@@ -56,7 +56,7 @@ public class IdamAuthProvider {
         );
     }
 
-    @Cacheable(value = "adminOfficerTokenCache", key = "'adminOfficerTokenCache'")
+    @Cacheable(value = "adminOfficerTokenBailCache", key = "'adminOfficerTokenBailCache'")
     public String getAdminOfficerToken() {
         return getUserToken(
             System.getenv("TEST_ADMINOFFICER_USERNAME"),
@@ -64,15 +64,7 @@ public class IdamAuthProvider {
         );
     }
 
-    @Cacheable(value = "homeOfficeApcTokenCache", key = "'homeOfficeApcTokenCache'")
-    public String getHomeOfficeApcToken() {
-        return getUserToken(
-            System.getenv("TEST_HOMEOFFICE_APC_USERNAME"),
-            System.getenv("TEST_HOMEOFFICE_APC_PASSWORD")
-        );
-    }
-
-    @Cacheable(value = "homeOfficeBailTokenCache", key = "'homeOfficeBailTokenCache'")
+    @Cacheable(value = "homeOfficeBailTokenBailCache", key = "'homeOfficeBailTokenBailCache'")
     public String getHomeOfficeBailToken() {
         return getUserToken(
             System.getenv("TEST_HOMEOFFICE_BAIL_USERNAME"),
@@ -80,23 +72,7 @@ public class IdamAuthProvider {
         );
     }
 
-    @Cacheable(value = "homeOfficeLartTokenCache", key = "'homeOfficeLartTokenCache'")
-    public String getHomeOfficeLartToken() {
-        return getUserToken(
-            System.getenv("TEST_HOMEOFFICE_LART_USERNAME"),
-            System.getenv("TEST_HOMEOFFICE_LART_PASSWORD")
-        );
-    }
-
-    @Cacheable(value = "homeOfficePouTokenCache", key = "'homeOfficePouTokenCache'")
-    public String getHomeOfficePouToken() {
-        return getUserToken(
-            System.getenv("TEST_HOMEOFFICE_POU_USERNAME"),
-            System.getenv("TEST_HOMEOFFICE_POU_PASSWORD")
-        );
-    }
-
-    @Cacheable(value = "homeOfficeGenericTokenCache", key = "'homeOfficeGenericTokenCache'")
+    @Cacheable(value = "homeOfficeGenericTokenBailCache", key = "'homeOfficeGenericTokenBailCache'")
     public String getHomeOfficeGenericToken() {
         return getUserToken(
             System.getenv("TEST_HOMEOFFICE_GENERIC_USERNAME"),
@@ -104,7 +80,7 @@ public class IdamAuthProvider {
         );
     }
 
-    @Cacheable(value = "legalRepShareCaseATokenCache", key = "'legalRepShareCaseATokenCache'")
+    @Cacheable(value = "legalRepShareCaseATokenBailCache", key = "'legalRepShareCaseATokenBailCache'")
     public String getLegalRepShareCaseAToken() {
         return getUserToken(
             System.getenv("TEST_LAW_FIRM_SHARE_CASE_A_USERNAME"),
@@ -112,7 +88,7 @@ public class IdamAuthProvider {
         );
     }
 
-    @Cacheable(value = "legalRepOrgSuccessTokenCache", key = "'legalRepOrgSuccessTokenCache'")
+    @Cacheable(value = "legalRepOrgSuccessTokenBailCache", key = "'legalRepOrgSuccessTokenBailCache'")
     public String getLegalRepOrgSuccessToken() {
         return getUserToken(
             System.getenv("TEST_LAW_FIRM_ORG_SUCCESS_USERNAME"),
@@ -120,36 +96,11 @@ public class IdamAuthProvider {
         );
     }
 
-    @Cacheable(value = "legalRepOrgDeletedTokenCache", key = "'legalRepOrgDeletedTokenCache'")
-    public String getLegalRepOrgDeletedToken() {
-        return getUserToken(
-            System.getenv("TEST_LAW_FIRM_ORG_DELETED_USERNAME"),
-            System.getenv("TEST_LAW_FIRM_ORG_DELETED_PASSWORD")
-        );
-    }
-
-    @Cacheable(value = "judgeTokenCache", key = "'judgeTokenCache'")
+    @Cacheable(value = "judgeTokenBailCache", key = "'judgeTokenBailCache'")
     public String getJudgeToken() {
         return getUserToken(
             System.getenv("TEST_JUDGE_X_USERNAME"),
             System.getenv("TEST_JUDGE_X_PASSWORD")
         );
-    }
-
-    @Cacheable(value = "citizenTokenCache", key = "'citizenTokenCache'")
-    public String getCitizenToken() {
-        return getUserToken(
-            System.getenv("TEST_CITIZEN_USERNAME"),
-            System.getenv("TEST_CITIZEN_PASSWORD")
-        );
-    }
-
-    public String getUserId(String token) {
-        try {
-            UserInfo userInfo = idamApi.userInfo(token);
-            return userInfo.getUid();
-        } catch (FeignException ex) {
-            throw new IdentityManagerResponseException("Could not get system user token from IDAM", ex);
-        }
     }
 }

@@ -384,34 +384,10 @@ public class CcdScenarioRunnerTest {
                 .getLegalRepresentativeAuthorization();
         }
 
-        if ("CaseOfficer".equalsIgnoreCase(credentials)) {
-
-            return authorizationHeadersProvider
-                .getCaseOfficerAuthorization();
-        }
-
         if ("AdminOfficer".equalsIgnoreCase(credentials)) {
 
             return authorizationHeadersProvider
                 .getAdminOfficerAuthorization();
-        }
-
-        if ("HomeOfficeApc".equalsIgnoreCase(credentials)) {
-
-            return authorizationHeadersProvider
-                .getHomeOfficeApcAuthorization();
-        }
-
-        if ("HomeOfficeLart".equalsIgnoreCase(credentials)) {
-
-            return authorizationHeadersProvider
-                .getHomeOfficeLartAuthorization();
-        }
-
-        if ("HomeOfficePou".equalsIgnoreCase(credentials)) {
-
-            return authorizationHeadersProvider
-                .getHomeOfficePouAuthorization();
         }
 
         if ("HomeOfficeGeneric".equalsIgnoreCase(credentials)) {
@@ -432,21 +408,10 @@ public class CcdScenarioRunnerTest {
                 .getLegalRepresentativeOrgSuccessAuthorization();
         }
 
-        if ("LegalRepresentativeOrgDeleted".equalsIgnoreCase(credentials)) {
-
-            return authorizationHeadersProvider
-                .getLegalRepresentativeOrgDeletedAuthorization();
-        }
-
         if ("Judge".equalsIgnoreCase(credentials)) {
 
             return authorizationHeadersProvider
                 .getJudgeAuthorization();
-        }
-
-        if ("Citizen".equalsIgnoreCase(credentials)) {
-            return authorizationHeadersProvider
-                .getCitizenAuthorization();
         }
 
         if ("HomeOfficeBail".equalsIgnoreCase(credentials)) {

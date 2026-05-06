@@ -79,20 +79,13 @@ public class CacheConfiguration {
                 .withCacheConfiguration("systemUserTokenCache", tokenCacheConfig)
                 .withCacheConfiguration("userInfoCache", userInfoCacheConfig)
                 // caches for functional tests
-                .withCacheConfiguration("accessTokenCache", tokenCacheConfig)
-                .withCacheConfiguration("legalRepATokenCache", tokenCacheConfig)
-                .withCacheConfiguration("caseOfficerTokenCache", tokenCacheConfig)
-                .withCacheConfiguration("adminOfficerTokenCache", tokenCacheConfig)
-                .withCacheConfiguration("homeOfficeApcTokenCache", tokenCacheConfig)
-                .withCacheConfiguration("homeOfficeBailTokenCache", tokenCacheConfig)
-                .withCacheConfiguration("homeOfficeLartTokenCache", tokenCacheConfig)
-                .withCacheConfiguration("homeOfficePouTokenCache", tokenCacheConfig)
-                .withCacheConfiguration("homeOfficeGenericTokenCache", tokenCacheConfig)
-                .withCacheConfiguration("legalRepShareCaseATokenCache", tokenCacheConfig)
-                .withCacheConfiguration("legalRepOrgSuccessTokenCache", tokenCacheConfig)
-                .withCacheConfiguration("legalRepOrgDeletedTokenCache", tokenCacheConfig)
-                .withCacheConfiguration("judgeTokenCache", tokenCacheConfig)
-                .withCacheConfiguration("citizenTokenCache", tokenCacheConfig)
+                .withCacheConfiguration("legalRepATokenBailCache", tokenCacheConfig)
+                .withCacheConfiguration("adminOfficerTokenBailCache", tokenCacheConfig)
+                .withCacheConfiguration("homeOfficeBailTokenBailCache", tokenCacheConfig)
+                .withCacheConfiguration("homeOfficeGenericTokenBailCache", tokenCacheConfig)
+                .withCacheConfiguration("legalRepShareCaseATokenBailCache", tokenCacheConfig)
+                .withCacheConfiguration("legalRepOrgSuccessTokenBailCache", tokenCacheConfig)
+                .withCacheConfiguration("judgeTokenBailCache", tokenCacheConfig)
                 .build();
 
         } catch (Exception e) {

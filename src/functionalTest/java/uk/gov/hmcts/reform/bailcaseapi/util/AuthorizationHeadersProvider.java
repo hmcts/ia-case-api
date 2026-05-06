@@ -49,36 +49,6 @@ public class AuthorizationHeadersProvider {
         );
     }
 
-    public Headers getHomeOfficeApcAuthorization() {
-        String serviceToken = tokens.computeIfAbsent("ServiceAuth", user -> serviceAuthTokenGenerator.generate());
-        String accessToken = idamAuthProvider.getHomeOfficeApcToken();
-
-        return new Headers(
-            new Header("ServiceAuthorization", serviceToken),
-            new Header("Authorization", accessToken)
-        );
-    }
-
-    public Headers getHomeOfficeLartAuthorization() {
-        String serviceToken = tokens.computeIfAbsent("ServiceAuth", user -> serviceAuthTokenGenerator.generate());
-        String accessToken = idamAuthProvider.getHomeOfficeLartToken();
-
-        return new Headers(
-            new Header("ServiceAuthorization", serviceToken),
-            new Header("Authorization", accessToken)
-        );
-    }
-
-    public Headers getHomeOfficePouAuthorization() {
-        String serviceToken = tokens.computeIfAbsent("ServiceAuth", user -> serviceAuthTokenGenerator.generate());
-        String accessToken = idamAuthProvider.getHomeOfficePouToken();
-
-        return new Headers(
-            new Header("ServiceAuthorization", serviceToken),
-            new Header("Authorization", accessToken)
-        );
-    }
-
     public Headers getHomeOfficeGenericAuthorization() {
         String serviceToken = tokens.computeIfAbsent("ServiceAuth", user -> serviceAuthTokenGenerator.generate());
         String accessToken = idamAuthProvider.getHomeOfficeGenericToken();
@@ -109,29 +79,9 @@ public class AuthorizationHeadersProvider {
         );
     }
 
-    public Headers getLegalRepresentativeOrgDeletedAuthorization() {
-        String serviceToken = tokens.computeIfAbsent("ServiceAuth", user -> serviceAuthTokenGenerator.generate());
-        String accessToken = idamAuthProvider.getLegalRepOrgDeletedToken();
-
-        return new Headers(
-            new Header("ServiceAuthorization", serviceToken),
-            new Header("Authorization", accessToken)
-        );
-    }
-
     public Headers getJudgeAuthorization() {
         String serviceToken = tokens.computeIfAbsent("ServiceAuth", user -> serviceAuthTokenGenerator.generate());
         String accessToken = idamAuthProvider.getJudgeToken();
-
-        return new Headers(
-            new Header("ServiceAuthorization", serviceToken),
-            new Header("Authorization", accessToken)
-        );
-    }
-
-    public Headers getCitizenAuthorization() {
-        String serviceToken = tokens.computeIfAbsent("ServiceAuth", user -> serviceAuthTokenGenerator.generate());
-        String accessToken = idamAuthProvider.getCitizenToken();
 
         return new Headers(
             new Header("ServiceAuthorization", serviceToken),
