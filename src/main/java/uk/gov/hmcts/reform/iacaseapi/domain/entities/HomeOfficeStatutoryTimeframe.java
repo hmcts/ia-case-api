@@ -84,6 +84,6 @@ public class HomeOfficeStatutoryTimeframe {
 
         @JsonProperty(value = "included", required = true)
         @NotNull
-        private boolean included;
+        private String included;
     }
 }

@@ -120,7 +120,7 @@ class UpdateStatutoryTimeframe24WeeksServiceTest {
         HomeOfficeStatutoryTimeframe.Stf24WeekCohort cohort = 
             HomeOfficeStatutoryTimeframe.Stf24WeekCohort.builder()
                 .name("HU")
-                .included(true)
+                .included("true")
                 .build();
         IdValue<HomeOfficeStatutoryTimeframe.Stf24WeekCohort> idValCohort = new IdValue<>("1", cohort);
         homeOfficeStatutoryTimeframeDto = HomeOfficeStatutoryTimeframe.builder()
@@ -189,7 +189,7 @@ class UpdateStatutoryTimeframe24WeeksServiceTest {
         HomeOfficeStatutoryTimeframe.Stf24WeekCohort cohort = 
             HomeOfficeStatutoryTimeframe.Stf24WeekCohort.builder()
                 .name("HU")
-                .included(true)
+                .included("true")
                 .build();
         IdValue<HomeOfficeStatutoryTimeframe.Stf24WeekCohort> idValCohort = new IdValue<>("1", cohort);
         homeOfficeStatutoryTimeframeDto = HomeOfficeStatutoryTimeframe.builder()

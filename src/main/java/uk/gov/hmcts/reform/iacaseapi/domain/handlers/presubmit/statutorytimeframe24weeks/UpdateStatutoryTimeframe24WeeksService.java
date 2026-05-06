@@ -6,7 +6,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseNote;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.HomeOfficeStatutoryTimeframe;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.HomeOfficeStatutoryTimeframe.Stf24WeekCohort;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.StatutoryTimeframe24Weeks;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.StatutoryTimeframe24WeeksHistory;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
@@ -15,18 +14,14 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.Appender;
 
 import java.time.LocalDate;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
-
 import static java.util.Collections.emptyList;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_NOTES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STATUTORY_TIMEFRAME_24_WEEKS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STF_24W_CURRENT_REASON_AUTO_GENERATED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STF_24W_CURRENT_STATUS_AUTO_GENERATED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STF_24W_HOME_OFFICE_COHORT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED;
 
 @Slf4j
@@ -87,48 +82,8 @@ public class UpdateStatutoryTimeframe24WeeksService {
         }
         // Always ensure that the banner text is up to date
         stf24WeeksBannerTextService.updateBannerText(asylumCase);
-        // Ugly hack to work around a CCD bug where event data properties with collection values are not being written to the case record
-        // If the CCD bug is ever fixed (yeah, I know), delete the following line (and corresponding function) and also see if the
-        //  STF_24W_HOME_OFFICE_COHORT  definition can also be removed from AsylumCaseFieldDefinition.java,
-        // then make the corresponding change in ia-home-office-integration-api
-        //fixHomeOfficeResponseAndCohortTextOnFirstPass(asylumCase);
-        //log.info("Leaving updateAsylumCase ...");
-        return asylumCase;
-    }
 
-    private void fixHomeOfficeResponseAndCohortTextOnFirstPass(AsylumCase asylumCase) {
-        // The first time we come through here, we need to adjust a couple of case values to work around a CCD bug
-        String stf24wHomeOfficeCohortText = asylumCase.read(STF_24W_HOME_OFFICE_COHORT, String.class).orElse("");
-        if (stf24wHomeOfficeCohortText.contains("=")) {
-            log.info("Updating Home Office response and resetting cohort text on first pass through the code.");
-            log.info("  - before: {}", stf24wHomeOfficeCohortText);
-            // Get Home Office response object
-            Optional<StatutoryTimeframe24Weeks> stf24w = asylumCase.read(STATUTORY_TIMEFRAME_24_WEEKS, StatutoryTimeframe24Weeks.class);
-            if (stf24w.isPresent()) {
-                HomeOfficeStatutoryTimeframe homeOfficeResponse = stf24w.get().getHomeOfficeResponse();
-                List<IdValue<Stf24WeekCohort>> cohorts = homeOfficeResponse.getStf24weekCohorts();
-                if (cohorts.size() == 0) {
-                    // Recreate the original Home Office response from the (modified) cohort text passed in
-                    cohorts = Arrays.stream(stf24wHomeOfficeCohortText.split(","))
-                             .map(cohortText -> new IdValue<Stf24WeekCohort>(java.util.UUID.randomUUID().toString(), new Stf24WeekCohort(cohortText.substring(0, cohortText.indexOf("=")), cohortText.endsWith("=true")))).toList();
-                    // Update case record
-                    homeOfficeResponse.setStf24weekCohorts(cohorts);
-                    log.info("cohorts just before writing to the case: {}", cohorts);
-                    log.info("homeOfficeResponse just before writing to the case: {}", homeOfficeResponse);
-                    asylumCase.write(STATUTORY_TIMEFRAME_24_WEEKS, stf24w);
-                    log.info("cohorts just after writing to the case: {}", cohorts);
-                    log.info("homeOfficeResponse just after writing to the case: {}", homeOfficeResponse);
-                }
-            }
-            // Finally, restore the cohort text to a comma-separated list of present cohorts so that it can be used by XUI
-            stf24wHomeOfficeCohortText = Arrays.stream(stf24wHomeOfficeCohortText.split(","))
-                                        .filter(cohortText -> cohortText.endsWith("=true"))
-                                        .map(cohortText -> cohortText.replace("=true", ""))
-                                        .collect(Collectors.joining(","));
-            log.info("  - after: {}", stf24wHomeOfficeCohortText);
-            // Update case record
-            asylumCase.write(STF_24W_HOME_OFFICE_COHORT, stf24wHomeOfficeCohortText);
-        }
+        return asylumCase;
     }
 
     private String buildFullName() {
