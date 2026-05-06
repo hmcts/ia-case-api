@@ -13,7 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 public class DbUtils {
 
-    private static final String EXCEPTION_MESSAGE = "Case ID could not be found from the appeal reference number";
+    private static final String EXCEPTION_MESSAGE = "Case ID could not be found from appeal reference number";
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
 
@@ -52,7 +52,7 @@ public class DbUtils {
             return caseId;
 
         } catch (EmptyResultDataAccessException e) {
-            throw new IllegalStateException(EXCEPTION_MESSAGE);
+            throw new IllegalStateException(EXCEPTION_MESSAGE + " " + appealReferenceNumber + ".");
         }
     }
 
