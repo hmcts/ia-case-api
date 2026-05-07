@@ -169,6 +169,19 @@ class AppellantNameForDisplayFormatterTest {
     }
 
     @Test
+    void cannot_handle_Aip_save_notification_event() {
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
+        when(callback.getEvent()).thenReturn(Event.SAVE_NOTIFICATIONS_TO_DATA);
+
+        boolean canHandle =
+                appellantNameForDisplayFormatter.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertFalse(canHandle);
+    }
+
+    @Test
     void can_handle_Aip_other_event() {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);

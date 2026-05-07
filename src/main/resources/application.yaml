@@ -70,6 +70,10 @@ fees-register:
 files:
   detention-facilities-addresses: "/detention-facilities.csv"
 
+logging:
+  level:
+    io.lettuce.core: WARN
+
 spring:
   config:
     import: "optional:configtree:/mnt/secrets/ia/"
@@ -1481,3 +1485,7 @@ ia:
   config:
     validator:
       secret: ${IA_CONFIG_VALIDATOR_SECRET:}
+
+app:
+  home-office-validation:
+    enabled: ${HOME_OFFICE_VALIDATION_ENABLED:true}
