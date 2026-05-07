@@ -28,9 +28,9 @@ class RemoveDocsAboutToSubmitHandlerTest {
 
     @ParameterizedTest
     @CsvSource({
-            "REMOVE_DOCUMENTS, ABOUT_TO_SUBMIT, true",
-            "START_APPEAL, ABOUT_TO_SUBMIT, false",
-            "REMOVE_DOCUMENTS, ABOUT_TO_START, false"
+        "REMOVE_DOCUMENTS, ABOUT_TO_SUBMIT, true",
+        "START_APPEAL, ABOUT_TO_SUBMIT, false",
+        "REMOVE_DOCUMENTS, ABOUT_TO_START, false"
     })
     void canHandleHappyPathScenarios(Event event, PreSubmitCallbackStage callbackStage, boolean expectedResult) {
         given(callback.getEvent()).willReturn(event);
@@ -42,8 +42,8 @@ class RemoveDocsAboutToSubmitHandlerTest {
 
     @ParameterizedTest
     @CsvSource({
-            ", , callbackStage must not be null",
-            "ABOUT_TO_SUBMIT, , callback must not be null"
+        ", , callbackStage must not be null",
+        "ABOUT_TO_SUBMIT, , callback must not be null"
     })
     void canHandleCornerCaseScenarios(PreSubmitCallbackStage callbackStage,
                                       Callback<AsylumCase> callback,
