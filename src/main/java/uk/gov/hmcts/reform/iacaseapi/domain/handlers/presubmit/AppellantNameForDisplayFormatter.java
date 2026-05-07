@@ -23,8 +23,11 @@ public class AppellantNameForDisplayFormatter implements PreSubmitCallbackHandle
         requireNonNull(callback, "callback must not be null");
 
         Event event = callback.getEvent();
-        boolean isStartOrEditAipEvent = HandlerUtils.isAipJourney(callback.getCaseDetails().getCaseData()) && (event == Event.START_APPEAL || event == Event.EDIT_APPEAL);
-        return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT && !isStartOrEditAipEvent;
+        boolean isStartOrEditAipEvent = HandlerUtils.isAipJourney(callback.getCaseDetails().getCaseData())
+                && (event == Event.START_APPEAL || event == Event.EDIT_APPEAL || event == Event.SAVE_NOTIFICATIONS_TO_DATA);
+
+        return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
+                && !isStartOrEditAipEvent;
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
