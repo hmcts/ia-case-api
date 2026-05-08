@@ -5,6 +5,7 @@ import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
@@ -55,7 +56,6 @@ public class UploadDecisionLetterHandler implements PreSubmitCallbackHandler<Asy
         }
 
         final AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
-        boolean legalRepDocumentsContainHoDecisionLetter = false;
 
         Optional<List<IdValue<DocumentWithDescription>>> maybeNoticeOfDecision =
             asylumCase.read(UPLOAD_THE_NOTICE_OF_DECISION_DOCS);
@@ -76,15 +76,11 @@ public class UploadDecisionLetterHandler implements PreSubmitCallbackHandler<Asy
         List<IdValue<DocumentWithMetadata>> existingLegalRepDocuments =
             maybeExistingLegalRepDocuments.orElse(emptyList());
 
-        for (IdValue<DocumentWithMetadata> existingLegalRepDocument : existingLegalRepDocuments) {
-            if (existingLegalRepDocument.getValue() != null) {
-                if (existingLegalRepDocument.getValue().getTag() != null) {
-                    if (existingLegalRepDocument.getValue().getTag().equals(DocumentTag.HO_DECISION_LETTER)) {
-                        legalRepDocumentsContainHoDecisionLetter = true;
-                    }
-                }
-            }
-        }
+        boolean legalRepDocumentsContainHoDecisionLetter = existingLegalRepDocuments.stream()
+                .map(IdValue::getValue)
+                .filter(Objects::nonNull)
+                .map(DocumentWithMetadata::getTag)
+                .anyMatch(tag -> DocumentTag.HO_DECISION_LETTER.equals(tag));
 
         if (legalRepDocumentsContainHoDecisionLetter) {
             return new PreSubmitCallbackResponse<>(asylumCase);
