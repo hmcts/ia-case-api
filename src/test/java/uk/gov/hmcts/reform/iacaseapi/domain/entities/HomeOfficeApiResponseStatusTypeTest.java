@@ -48,7 +48,7 @@ class HomeOfficeApiResponseStatusTypeTest {
         String text = HomeOfficeApiResponseStatusType.BAD_REQUEST.getUserFacingErrorText(HO_REFERENCE);
 
         Assertions.assertEquals(
-            "An error occurred.  Please report this to HMCTS.",
+            "An error occurred.  Please report this to HMCTS using the following contact details: Email contactia@justice.gov.uk or Telephone: 0300 123 1711.",
             text
         );
     }
@@ -76,7 +76,7 @@ class HomeOfficeApiResponseStatusTypeTest {
     void should_return_expected_user_facing_text_for_server_errors() {
 
         String expected =
-            "An error occurred.  Please try again in 15-20 minutes.  If it occurs again, please report this to HMCTS.";
+            "An error occurred.  Please try again in 15-20 minutes.  If it occurs again, please report this to HMCTS using the following contact details: Email contactia@justice.gov.uk or Telephone: 0300 123 1711.";
 
         Assertions.assertEquals(expected,
             HomeOfficeApiResponseStatusType.INTERNAL_SERVER_ERROR.getUserFacingErrorText(HO_REFERENCE));
@@ -92,7 +92,7 @@ class HomeOfficeApiResponseStatusTypeTest {
     void should_return_expected_user_facing_text_for_client_errors() {
 
         String expected =
-            "An error occurred.  Please report this to HMCTS.";
+            "An error occurred.  Please report this to HMCTS using the following contact details: Email contactia@justice.gov.uk or Telephone: 0300 123 1711.";
 
         Assertions.assertEquals(expected,
             HomeOfficeApiResponseStatusType.BAD_REQUEST.getUserFacingErrorText(HO_REFERENCE));
