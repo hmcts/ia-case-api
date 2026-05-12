@@ -21,7 +21,6 @@ import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
-
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
@@ -34,7 +33,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ansi.AnsiColor;
 import org.springframework.boot.ansi.AnsiOutput;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.core.env.AbstractEnvironment;
 import org.springframework.core.env.EnumerablePropertySource;
 import org.springframework.core.env.Environment;
@@ -42,6 +40,7 @@ import org.springframework.core.env.MutablePropertySources;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.fixtures.Fixture;
@@ -82,7 +81,7 @@ public class CcdScenarioRunnerTest {
     private LaunchDarklyFunctionalTestClient launchDarklyFunctionalTestClient;
     private boolean haveAllPassed = true;
     private final ArrayList<String> failedScenarios = new ArrayList<>();
-    @MockBean
+    @MockitoBean
     RequestUserAccessTokenProvider requestUserAccessTokenProvider;
 
     private final String separator = "-------------------------------------------------------------------";
@@ -261,6 +260,7 @@ public class CcdScenarioRunnerTest {
             .filter(propertySource -> propertySource instanceof EnumerablePropertySource)
             .map(propertySource -> ((EnumerablePropertySource) propertySource).getPropertyNames())
             .flatMap(Arrays::stream)
+            .filter(name -> environment.getProperty(name) != null)
             .forEach(name -> MapValueExpander.ENVIRONMENT_PROPERTIES.setProperty(name, environment.getProperty(name)));
     }
 

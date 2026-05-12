@@ -1,5 +1,14 @@
 package uk.gov.hmcts.reform.iacaseapi.consumer.roleassignment;
 
+import static au.com.dius.pact.consumer.dsl.LambdaDsl.newJsonBody;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.when;
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.Classification.PRIVATE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.Classification.PUBLIC;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.Classification.RESTRICTED;
+
 import au.com.dius.pact.consumer.dsl.DslPart;
 import au.com.dius.pact.consumer.dsl.PactDslWithProvider;
 import au.com.dius.pact.consumer.junit5.PactConsumerTestExt;
@@ -8,6 +17,9 @@ import au.com.dius.pact.core.model.V4Pact;
 import au.com.dius.pact.core.model.annotations.Pact;
 import au.com.dius.pact.core.model.annotations.PactFolder;
 import com.google.common.collect.Maps;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
 import org.apache.http.client.fluent.Executor;
 import org.json.JSONException;
 import org.junit.jupiter.api.AfterEach;
@@ -18,28 +30,23 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.*;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.Assignment;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.Attributes;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.GrantType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.Jurisdiction;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.QueryRequest;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleName;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleType;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.IdamService;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.RoleAssignmentService;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.roleassignment.RoleAssignmentApi;
-
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
-
-import static au.com.dius.pact.consumer.dsl.LambdaDsl.newJsonBody;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.when;
-import static org.springframework.http.HttpHeaders.AUTHORIZATION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.Classification.*;
 
 @ExtendWith(PactConsumerTestExt.class)
 @ExtendWith(MockitoExtension.class)
@@ -53,7 +60,7 @@ public class RoleAssignmentQueryConsumerTest {
     @Autowired
     RoleAssignmentApi roleAssignmentApi;
 
-    @MockBean
+    @MockitoBean
     AuthTokenGenerator authTokenGenerator;
 
     @Mock

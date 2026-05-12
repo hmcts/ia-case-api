@@ -13,9 +13,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.allocatecase.CaseWorkerName;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.CaseWorkerService;
@@ -33,9 +33,9 @@ class CaseWorkerServiceTest {
 
     private static WireMockServer server;
 
-    @MockBean
+    @MockitoBean
     private IdamService idamService;
-    @MockBean
+    @MockitoBean
     private AuthTokenGenerator authTokenGenerator;
     @Autowired
     private CaseWorkerService caseWorkerService;

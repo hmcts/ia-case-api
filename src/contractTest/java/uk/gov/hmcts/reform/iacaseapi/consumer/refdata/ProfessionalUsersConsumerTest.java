@@ -21,8 +21,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
@@ -46,9 +46,9 @@ public class ProfessionalUsersConsumerTest {
     static final String SERVICE_AUTH_TOKEN = "someServiceAuthToken";
     static final String IDAM_ID_OF_USER_CREATING_CASE = "0a5874a4-3f38-4bbd-ba4c";
 
-    @MockBean
+    @MockitoBean
     AuthTokenGenerator serviceAuthTokenGenerator;
-    @MockBean
+    @MockitoBean
     UserDetailsProvider userDetailsProvider;
     @Mock
     UserDetails userDetails;
