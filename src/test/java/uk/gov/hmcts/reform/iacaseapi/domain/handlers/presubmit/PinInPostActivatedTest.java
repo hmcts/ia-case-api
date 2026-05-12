@@ -46,6 +46,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleAssignme
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleCategory;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleName;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleType;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.IdamService;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.RoleAssignmentService;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -65,6 +66,7 @@ public class PinInPostActivatedTest {
     @Mock private CaseDetails<AsylumCase> caseDetails;
     @Mock private UserDetailsProvider userDetailsProvider;
     @Mock private RoleAssignmentService roleAssignmentService;
+    @Mock private IdamService idamService;
     @Mock private UserDetails userDetails;
 
     @Mock private PreSubmitCallbackResponse<AsylumCase> callbackResponse;
@@ -78,7 +80,7 @@ public class PinInPostActivatedTest {
         when(userDetailsProvider.getUserDetails()).thenReturn(userDetails);
         when(userDetails.getEmailAddress()).thenReturn(AUTH_USER_EMAIL);
         when(userDetails.getId()).thenReturn(USER_ID);
-        pinInPostActivated = new PinInPostActivated(userDetailsProvider, roleAssignmentService);
+        pinInPostActivated = new PinInPostActivated(userDetailsProvider, idamService, roleAssignmentService);
     }
 
     @Test
@@ -95,7 +97,7 @@ public class PinInPostActivatedTest {
         assertTrue(details.isPresent());
         assertEquals(JourneyType.AIP, details.get());
         verify(roleAssignmentService, never()).queryRoleAssignments(any(QueryRequest.class));
-        verify(roleAssignmentService, never()).deleteRoleAssignment(anyString());
+        verify(roleAssignmentService, never()).deleteRoleAssignment(anyString(), anyString());
     }
 
     @Test
@@ -126,7 +128,7 @@ public class PinInPostActivatedTest {
             YesOrNo.NO);
         assertThat(expectedSubscriptions.get().get(0).getValue()).usingRecursiveComparison().isEqualTo(expectedSubscriber);
         verify(roleAssignmentService, never()).queryRoleAssignments(any(QueryRequest.class));
-        verify(roleAssignmentService, never()).deleteRoleAssignment(anyString());
+        verify(roleAssignmentService, never()).deleteRoleAssignment(anyString(), anyString());
     }
 
     @Test
@@ -157,7 +159,7 @@ public class PinInPostActivatedTest {
             YesOrNo.YES);
         assertThat(expectedSubscriptions.get().get(0).getValue()).usingRecursiveComparison().isEqualTo(expectedSubscriber);
         verify(roleAssignmentService, never()).queryRoleAssignments(any(QueryRequest.class));
-        verify(roleAssignmentService, never()).deleteRoleAssignment(anyString());
+        verify(roleAssignmentService, never()).deleteRoleAssignment(anyString(), anyString());
     }
 
     @Test
@@ -196,7 +198,7 @@ public class PinInPostActivatedTest {
             YesOrNo.NO);
         assertThat(expectedSubscriptions.get().get(0).getValue()).usingRecursiveComparison().isEqualTo(expectedSubscriber);
         verify(roleAssignmentService, never()).queryRoleAssignments(any(QueryRequest.class));
-        verify(roleAssignmentService, never()).deleteRoleAssignment(anyString());
+        verify(roleAssignmentService, never()).deleteRoleAssignment(anyString(), anyString());
     }
 
     @Test
@@ -218,7 +220,7 @@ public class PinInPostActivatedTest {
         assertTrue(aipPaymentOption.isPresent());
         assertEquals("payNow", aipPaymentOption.get());
         verify(roleAssignmentService, never()).queryRoleAssignments(any(QueryRequest.class));
-        verify(roleAssignmentService, never()).deleteRoleAssignment(anyString());
+        verify(roleAssignmentService, never()).deleteRoleAssignment(anyString(), anyString());
     }
 
     @Test
@@ -262,7 +264,7 @@ public class PinInPostActivatedTest {
         verify(asylumCase, times(1)).write(AsylumCaseFieldDefinition.REASONS_FOR_APPEAL_DATE_UPLOADED, documentWithMetadata.getDateUploaded());
         verify(asylumCase, times(1)).write(AsylumCaseFieldDefinition.REASONS_FOR_APPEAL_DOCUMENTS, Arrays.asList(documentWithMetadataIdValue));
         verify(roleAssignmentService, never()).queryRoleAssignments(any(QueryRequest.class));
-        verify(roleAssignmentService, never()).deleteRoleAssignment(anyString());
+        verify(roleAssignmentService, never()).deleteRoleAssignment(anyString(), anyString());
     }
 
     @Test
@@ -278,7 +280,7 @@ public class PinInPostActivatedTest {
 
         assertEquals(State.AWAITING_REASONS_FOR_APPEAL, response.getState());
         verify(roleAssignmentService, never()).queryRoleAssignments(any(QueryRequest.class));
-        verify(roleAssignmentService, never()).deleteRoleAssignment(anyString());
+        verify(roleAssignmentService, never()).deleteRoleAssignment(anyString(), anyString());
     }
 
     @Test
@@ -294,7 +296,7 @@ public class PinInPostActivatedTest {
 
         assertEquals(State.REASONS_FOR_APPEAL_SUBMITTED, response.getState());
         verify(roleAssignmentService, never()).queryRoleAssignments(any(QueryRequest.class));
-        verify(roleAssignmentService, never()).deleteRoleAssignment(anyString());
+        verify(roleAssignmentService, never()).deleteRoleAssignment(anyString(), anyString());
     }
 
     @Test
@@ -323,13 +325,14 @@ public class PinInPostActivatedTest {
         verify(asylumCase, times(0)).write(AsylumCaseFieldDefinition.REASONS_FOR_APPEAL_DATE_UPLOADED, documentWithMetadata.getDateUploaded());
         verify(asylumCase, times(0)).write(AsylumCaseFieldDefinition.REASONS_FOR_APPEAL_DOCUMENTS, Arrays.asList(documentWithMetadataIdValue));
         verify(roleAssignmentService, never()).queryRoleAssignments(any(QueryRequest.class));
-        verify(roleAssignmentService, never()).deleteRoleAssignment(anyString());
+        verify(roleAssignmentService, never()).deleteRoleAssignment(anyString(), anyString());
     }
 
     @Test
     public void should_revoke_appellant_access_to_case_if_aip_transfer() {
         when(asylumCase.read(AsylumCaseFieldDefinition.IS_AIP_TRANSFER, YesOrNo.class))
             .thenReturn(Optional.of(YesOrNo.YES));
+        when(idamService.getServiceUserToken()).thenReturn("token");
 
         String assignmentId = "assignmentId";
         QueryRequest queryRequest = QueryRequest.builder()
@@ -353,7 +356,7 @@ public class PinInPostActivatedTest {
         );
 
         verify(roleAssignmentService, times(1)).queryRoleAssignments(queryRequest);
-        verify(roleAssignmentService, times(1)).deleteRoleAssignment(assignmentId);
+        verify(roleAssignmentService, times(1)).deleteRoleAssignment(assignmentId, "token");
         verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.IS_AIP_TRANSFER);
     }
 

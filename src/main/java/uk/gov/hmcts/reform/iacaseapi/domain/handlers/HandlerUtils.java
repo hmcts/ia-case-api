@@ -22,11 +22,14 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HelpWithFeesOption.W
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.io.ClassPathResource;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
@@ -49,6 +52,14 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.Assignment;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.Attributes;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.Jurisdiction;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.QueryRequest;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleAssignmentResource;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleCategory;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleName;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleType;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DirectionAppender;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationBasedFeatureToggler;
 
@@ -59,9 +70,10 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfCountryCircumstances;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfCountryDecisionType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.SourceOfAppeal;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.RoleAssignmentService;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.OrganisationPolicy;
 
-
+@Slf4j
 public class HandlerUtils {
 
     public static final String ON_THE_PAPERS = "ONPPRS";
@@ -730,4 +742,37 @@ public class HandlerUtils {
             .orElseThrow(() -> new IllegalStateException("Fee without hearing is not present"));
 
     }
+
+    public static void revokeAppellantAccessToCase(RoleAssignmentService roleAssignmentService, String caseId, String serviceToken) {
+        QueryRequest queryRequest = QueryRequest.builder()
+            .roleType(List.of(RoleType.CASE))
+            .roleName(List.of(RoleName.CREATOR))
+            .roleCategory(List.of(RoleCategory.CITIZEN))
+            .attributes(Map.of(
+                Attributes.JURISDICTION, List.of(Jurisdiction.IA.name()),
+                Attributes.CASE_TYPE, List.of("Asylum"),
+                Attributes.CASE_ID, List.of(caseId)
+            ))
+            .build();
+
+        log.debug("Query role assignment with the parameters: {}", queryRequest);
+
+        RoleAssignmentResource roleAssignmentResource = roleAssignmentService
+            .queryRoleAssignments(queryRequest);
+        log.debug("Found {} Citizen roles in the appeal with case ID {}", roleAssignmentResource.getRoleAssignmentResponse().size(), caseId);
+
+        Optional<Assignment> roleAssignment = roleAssignmentResource.getRoleAssignmentResponse()
+            .stream().min(Comparator.comparing(Assignment::getCreated));
+
+        if (roleAssignment.isPresent()) {
+            log.info("Revoking Appellant's access to appeal with case ID {}", caseId);
+
+            roleAssignmentService.deleteRoleAssignment(roleAssignment.get().getId(), serviceToken);
+
+            log.info("Successfully revoked Appellant's access to appeal with case ID {}", caseId);
+        } else {
+            log.error("Problem revoking Appellant's access to appeal with case ID {}. Role assignment for appellant not found", caseId);
+        }
+    }
+
 }

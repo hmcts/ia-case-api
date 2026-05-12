@@ -2,7 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Collections.emptyList;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LEGAL_REPRESENTATIVE_DOCUMENTS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit.ChangeRepresentationConfirmation.revokeAppellantAccessToCase;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.revokeAppellantAccessToCase;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -27,17 +27,21 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackStateHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.IdamService;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.RoleAssignmentService;
 
 @Component
 public class PinInPostActivated implements PreSubmitCallbackStateHandler<AsylumCase> {
 
     private final UserDetailsProvider userDetailsProvider;
+    private final IdamService idamService;
     private final RoleAssignmentService roleAssignmentService;
 
     public PinInPostActivated(UserDetailsProvider userDetailsProvider,
+                              IdamService idamService,
                               RoleAssignmentService roleAssignmentService) {
         this.userDetailsProvider = userDetailsProvider;
+        this.idamService = idamService;
         this.roleAssignmentService = roleAssignmentService;
     }
 
@@ -61,7 +65,8 @@ public class PinInPostActivated implements PreSubmitCallbackStateHandler<AsylumC
             .orElse(YesOrNo.NO);
 
         if (isAipTransfer.equals(YesOrNo.YES)) {
-            revokeAppellantAccessToCase(roleAssignmentService, String.valueOf(callback.getCaseDetails().getId()));
+            revokeAppellantAccessToCase(roleAssignmentService, String.valueOf(callback.getCaseDetails().getId()),
+                idamService.getServiceUserToken());
             asylumCase.clear(AsylumCaseFieldDefinition.IS_AIP_TRANSFER);
         } else {
             updateJourneyType(asylumCase);
@@ -93,7 +98,7 @@ public class PinInPostActivated implements PreSubmitCallbackStateHandler<AsylumC
         Optional<String> paymentOption = asylumCase.read(AsylumCaseFieldDefinition.PA_APPEAL_TYPE_PAYMENT_OPTION);
         if (paymentOption.isPresent()) {
             asylumCase.write(AsylumCaseFieldDefinition.PA_APPEAL_TYPE_AIP_PAYMENT_OPTION,
-                    "payNow".equals(paymentOption.get()) ? "payNow" : "payLater");
+                "payNow".equals(paymentOption.get()) ? "payNow" : "payLater");
             asylumCase.clear(AsylumCaseFieldDefinition.PA_APPEAL_TYPE_PAYMENT_OPTION);
         }
     }

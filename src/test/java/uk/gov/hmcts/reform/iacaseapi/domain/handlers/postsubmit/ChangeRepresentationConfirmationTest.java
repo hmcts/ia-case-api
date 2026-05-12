@@ -1,10 +1,10 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
-import static junit.framework.TestCase.assertTrue;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.times;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PREV_JOURNEY_TYPE;
@@ -191,13 +191,14 @@ class ChangeRepresentationConfirmationTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(PREV_JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
         when(roleAssignmentService.queryRoleAssignments(queryRequest)).thenReturn(roleAssignmentResource);
+        when(idamService.getServiceUserToken()).thenReturn("token");
 
         changeRepresentationConfirmation.handle(callback);
 
         verify(roleAssignmentService, times(1)).queryRoleAssignments(queryRequest);
-        verify(roleAssignmentService, times(1)).deleteRoleAssignment(assignmentIdOld);
-        verify(roleAssignmentService, never()).deleteRoleAssignment(assignmentIdNew);
-        verify(roleAssignmentService, never()).deleteRoleAssignment(assignmentIdMiddle);
+        verify(roleAssignmentService, times(1)).deleteRoleAssignment(assignmentIdOld, "token");
+        verify(roleAssignmentService, never()).deleteRoleAssignment(eq(assignmentIdNew), anyString());
+        verify(roleAssignmentService, never()).deleteRoleAssignment(eq(assignmentIdMiddle), anyString());
     }
 
     @Test
@@ -283,7 +284,7 @@ class ChangeRepresentationConfirmationTest {
                         Attributes.CASE_ID, List.of(String.valueOf(CASE_ID))
                 )).build();
 
-        RoleAssignmentResource roleAssignmentResource = new RoleAssignmentResource(Arrays.asList(Assignment.builder().id(assignmentId).build()));
+        RoleAssignmentResource roleAssignmentResource = new RoleAssignmentResource(List.of(Assignment.builder().id(assignmentId).build()));
 
         when(callback.getEvent()).thenReturn(Event.APPELLANT_IN_PERSON_MANUAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);

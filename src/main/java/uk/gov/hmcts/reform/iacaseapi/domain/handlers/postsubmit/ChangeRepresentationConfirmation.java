@@ -1,18 +1,14 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.revokeAppellantAccessToCase;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PostSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.IdamService;
@@ -73,7 +69,8 @@ public class ChangeRepresentationConfirmation implements PostSubmitCallbackHandl
 
             if (shouldRevokeAppellantAccess(callback.getEvent(), callback.getCaseDetails().getCaseData())
                     || isAipManualEvent(callback.getEvent()) || isMarkAppealAsDetainedEvent(callback.getEvent())) {
-                revokeAppellantAccessToCase(roleAssignmentService, String.valueOf(callback.getCaseDetails().getId()));
+                revokeAppellantAccessToCase(roleAssignmentService, String.valueOf(callback.getCaseDetails().getId()),
+                    idamService.getServiceUserToken());
             }
 
             if (!isAipManualEvent(callback.getEvent()) && !isMarkAppealAsDetainedEvent(callback.getEvent())) {
@@ -151,38 +148,6 @@ public class ChangeRepresentationConfirmation implements PostSubmitCallbackHandl
         }
 
         return postSubmitResponse;
-    }
-
-    public static void revokeAppellantAccessToCase(RoleAssignmentService roleAssignmentService, String caseId) {
-        QueryRequest queryRequest = QueryRequest.builder()
-            .roleType(List.of(RoleType.CASE))
-            .roleName(List.of(RoleName.CREATOR))
-            .roleCategory(List.of(RoleCategory.CITIZEN))
-            .attributes(Map.of(
-                Attributes.JURISDICTION, List.of(Jurisdiction.IA.name()),
-                Attributes.CASE_TYPE, List.of("Asylum"),
-                Attributes.CASE_ID, List.of(caseId)
-            ))
-            .build();
-
-        log.debug("Query role assignment with the parameters: {}", queryRequest);
-
-        RoleAssignmentResource roleAssignmentResource = roleAssignmentService
-            .queryRoleAssignments(queryRequest);
-        log.debug("Found {} Citizen roles in the appeal with case ID {}", roleAssignmentResource.getRoleAssignmentResponse().size(), caseId);
-
-        Optional<Assignment> roleAssignment = roleAssignmentResource.getRoleAssignmentResponse()
-            .stream().min(Comparator.comparing(Assignment::getCreated));
-
-        if (roleAssignment.isPresent()) {
-            log.info("Revoking Appellant's access to appeal with case ID {}", caseId);
-
-            roleAssignmentService.deleteRoleAssignment(roleAssignment.get().getId(), idamService.getServiceUserToken());
-
-            log.info("Successfully revoked Appellant's access to appeal with case ID {}", caseId);
-        } else {
-            log.error("Problem revoking Appellant's access to appeal with case ID {}. Role assignment for appellant not found", caseId);
-        }
     }
 
     private boolean shouldRevokeAppellantAccess(Event event, AsylumCase asylumCase) {
