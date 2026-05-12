@@ -85,7 +85,7 @@ class CcdSupplementaryDetailsSearchServiceTest {
 
     @Test
     void should_return_supplementary_details() {
-        when(searchResult.getCases()).thenReturn(Arrays.asList(caseDetails));
+        when(searchResult.getCases()).thenReturn(List.of(caseDetails));
         when(caseDetails.getId()).thenReturn(caseId);
         when(caseDetails.getCaseData()).thenReturn(data);
 

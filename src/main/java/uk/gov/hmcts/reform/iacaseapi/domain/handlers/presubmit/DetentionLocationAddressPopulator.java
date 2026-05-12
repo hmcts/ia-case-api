@@ -24,10 +24,10 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YE
 
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
-import org.apache.logging.log4j.util.Strings;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.RequiredFieldMissingException;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -138,7 +138,8 @@ public class DetentionLocationAddressPopulator implements PreSubmitCallbackHandl
                         appellantAddress.getCountry()
                 )
                 .flatMap(Optional::stream)
-                .filter(str -> !Strings.isBlank(str))
+                .filter(Objects::nonNull)
+                .filter(str -> !str.isBlank())
                 .collect(toList());
 
         return String.join(", ", addressParts);
