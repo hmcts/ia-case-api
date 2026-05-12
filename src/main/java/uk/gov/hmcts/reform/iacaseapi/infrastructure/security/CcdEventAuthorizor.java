@@ -24,7 +24,9 @@ public class CcdEventAuthorizor {
 
         List<String> requiredRoles = getRequiredRolesForEvent(event);
         Set<String> userRoles = authorizedRolesProvider.getRoles();
-
+        log.info("requiredRoles={}", requiredRoles);
+        log.info("userRoles={}", userRoles);
+        log.info("disjoint={}", Collections.disjoint(requiredRoles, userRoles));
         if (requiredRoles.isEmpty()
             || userRoles.isEmpty()
             || Collections.disjoint(requiredRoles, userRoles)) {

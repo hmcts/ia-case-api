@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi;
 
-import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.when;
 
@@ -114,8 +114,8 @@ public class CcdScenarioRunnerTest {
 
 
         assertFalse(
-            "Verifiers are configured",
-            verifiers.isEmpty()
+            verifiers.isEmpty(),
+            "Verifiers are configured"
         );
 
         String scenarioPattern = System.getProperty("scenario");
@@ -150,17 +150,17 @@ public class CcdScenarioRunnerTest {
 
                     if (scenarioEnabled == null) {
                         scenarioEnabled = true;
-                    } else if (scenarioEnabled instanceof String) {
+                    } else if (scenarioEnabled instanceof String string) {
 
                         if (String.valueOf(scenarioEnabled).contains("feature")) {
 
-                            String[] keys = ((String) scenarioEnabled).split(":");
+                            String[] keys = string.split(":");
 
                             scenarioEnabled = launchDarklyFunctionalTestClient
                                 .getKey(keys[0], authorizationHeaders.getValue("Authorization"))
                                 && Boolean.valueOf(keys[1]);
                         } else {
-                            scenarioEnabled = Boolean.valueOf((String) scenarioEnabled);
+                            scenarioEnabled = Boolean.valueOf(string);
                         }
                     }
 
@@ -168,8 +168,8 @@ public class CcdScenarioRunnerTest {
 
                     if (scenarioDisabled == null) {
                         scenarioDisabled = false;
-                    } else if (scenarioDisabled instanceof String) {
-                        scenarioDisabled = Boolean.valueOf((String) scenarioDisabled);
+                    } else if (scenarioDisabled instanceof String string) {
+                        scenarioDisabled = Boolean.valueOf(string);
                     }
 
                     if (!((Boolean) scenarioEnabled) || ((Boolean) scenarioDisabled)) {
@@ -204,7 +204,7 @@ public class CcdScenarioRunnerTest {
                         SerenityRest
                             .given()
                             .headers(authorizationHeaders)
-                            .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+                            .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .body(requestBody)
                             .when()
                             .post(requestUri)

@@ -9,20 +9,65 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ALL_FTPA_APPELLANT_DECISION_DOCS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ALL_FTPA_RESPONDENT_DECISION_DOCS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ALL_SET_ASIDE_DOCS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_APPELLANT_DECISION_DATE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_APPELLANT_DECISION_DOCUMENT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_APPELLANT_DECISION_REMADE_RULE_32;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_APPELLANT_NOTICE_DOCUMENT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_APPELLANT_RJ_DECISION_OUTCOME_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_APPELLANT_RJ_NEW_DECISION_OF_APPEAL;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_APPLICANT_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_APPLICATION_APPELLANT_DOCUMENT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_APPLICATION_RESPONDENT_DOCUMENT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_LIST;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_RESPONDENT_DECISION_DATE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_RESPONDENT_DECISION_DOCUMENT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_RESPONDENT_DECISION_REMADE_RULE_32;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_RESPONDENT_NOTICE_DOCUMENT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_RESPONDENT_RJ_DECISION_OUTCOME_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_RESPONDENT_RJ_NEW_DECISION_OF_APPEAL;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_FTPA_APPELLANT_DECIDED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_FTPA_APPELLANT_DOCS_VISIBLE_IN_DECIDED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_FTPA_APPELLANT_DOCS_VISIBLE_IN_SUBMITTED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_FTPA_APPELLANT_EVIDENCE_DOCS_VISIBLE_IN_DECIDED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_FTPA_APPELLANT_EVIDENCE_DOCS_VISIBLE_IN_SUBMITTED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_FTPA_APPELLANT_GROUNDS_DOCS_VISIBLE_IN_DECIDED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_FTPA_APPELLANT_GROUNDS_DOCS_VISIBLE_IN_SUBMITTED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_FTPA_APPELLANT_OOT_DOCS_VISIBLE_IN_DECIDED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_FTPA_APPELLANT_OOT_DOCS_VISIBLE_IN_SUBMITTED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_FTPA_APPELLANT_OOT_EXPLANATION_VISIBLE_IN_DECIDED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_FTPA_APPELLANT_OOT_EXPLANATION_VISIBLE_IN_SUBMITTED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_FTPA_LIST_VISIBLE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_FTPA_RESPONDENT_DECIDED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_FTPA_RESPONDENT_DOCS_VISIBLE_IN_DECIDED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_FTPA_RESPONDENT_DOCS_VISIBLE_IN_SUBMITTED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_FTPA_RESPONDENT_EVIDENCE_DOCS_VISIBLE_IN_DECIDED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_FTPA_RESPONDENT_EVIDENCE_DOCS_VISIBLE_IN_SUBMITTED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_FTPA_RESPONDENT_GROUNDS_DOCS_VISIBLE_IN_DECIDED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_FTPA_RESPONDENT_GROUNDS_DOCS_VISIBLE_IN_SUBMITTED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_FTPA_RESPONDENT_OOT_DOCS_VISIBLE_IN_DECIDED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_FTPA_RESPONDENT_OOT_DOCS_VISIBLE_IN_SUBMITTED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_FTPA_RESPONDENT_OOT_EXPLANATION_VISIBLE_IN_DECIDED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_FTPA_RESPONDENT_OOT_EXPLANATION_VISIBLE_IN_SUBMITTED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPLOAD_HOME_OFFICE_BUNDLE_ACTION_AVAILABLE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.valueOf;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.ResidentJudgeFtpaDecisionHandler.DLRM_SETASIDE_FEATURE_FLAG;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.ResidentJudgeFtpaDecisionHandler.FTPA_DECISIONS_AND_REASONS_DOCUMENT_DESCRIPTION;
 
+import com.google.common.collect.Lists;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-
-import com.google.common.collect.Lists;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -316,13 +361,13 @@ class ResidentJudgeFtpaDecisionHandlerTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of(applicantType));
         when(featureToggler.getValue(DLRM_SETASIDE_FEATURE_FLAG, false)).thenReturn(true);
-        when(asylumCase.read(valueOf(String.format("FTPA_%s_RJ_DECISION_OUTCOME_TYPE", applicantType.toUpperCase())), String.class)).thenReturn(Optional.of("reheardRule35"));
+        when(asylumCase.read(valueOf("FTPA_%s_RJ_DECISION_OUTCOME_TYPE".formatted(applicantType.toUpperCase())), String.class)).thenReturn(Optional.of("reheardRule35"));
 
-        when(asylumCase.read(valueOf(String.format("FTPA_R35_%s_DOCUMENT", applicantType.toUpperCase())), Document.class))
+        when(asylumCase.read(valueOf("FTPA_R35_%s_DOCUMENT".formatted(applicantType.toUpperCase())), Document.class))
                 .thenReturn(Optional.of(maybeFtpaSetAsideR35Document));
 
         when(documentReceiver.receive(maybeFtpaSetAsideR35Document, "",DocumentTag.FTPA_SET_ASIDE)).thenReturn(ftpaSetAsideR35Document);
-        when(asylumCase.read(valueOf(String.format("FTPA_%s_R35_NOTICE_DOCUMENT", applicantType.toUpperCase())))).thenReturn(Optional.of(maybeFtpaR35CommunicationNoticeDocument));
+        when(asylumCase.read(valueOf("FTPA_%s_R35_NOTICE_DOCUMENT".formatted(applicantType.toUpperCase())))).thenReturn(Optional.of(maybeFtpaR35CommunicationNoticeDocument));
         when(documentReceiver.tryReceiveAll(maybeFtpaR35CommunicationNoticeDocument, DocumentTag.FTPA_SET_ASIDE))
                 .thenReturn(singletonList(ftpaSetAsideR35NoticeDocument));
 
@@ -344,10 +389,10 @@ class ResidentJudgeFtpaDecisionHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(asylumCase, times(1)).read(valueOf(String.format("FTPA_R35_%s_DOCUMENT", applicantType.toUpperCase())), Document.class);
+        verify(asylumCase, times(1)).read(valueOf("FTPA_R35_%s_DOCUMENT".formatted(applicantType.toUpperCase())), Document.class);
         verify(documentReceiver, times(1)).receive(maybeFtpaSetAsideR35Document, "", DocumentTag.FTPA_SET_ASIDE);
 
-        verify(asylumCase, times(1)).read(valueOf(String.format("FTPA_%s_R35_NOTICE_DOCUMENT", applicantType.toUpperCase())));
+        verify(asylumCase, times(1)).read(valueOf("FTPA_%s_R35_NOTICE_DOCUMENT".formatted(applicantType.toUpperCase())));
         verify(asylumCase, times(1)).read(ALL_SET_ASIDE_DOCS);
 
 
@@ -515,13 +560,13 @@ class ResidentJudgeFtpaDecisionHandlerTest {
         when(featureToggler.getValue("dlrm-setaside-feature-flag", false)).thenReturn(true);
 
         when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of(applicantType));
-        when(asylumCase.read(valueOf(String.format("FTPA_%s_RJ_DECISION_OUTCOME_TYPE", applicantType.toUpperCase())), String.class)).thenReturn(Optional.of("reheardRule35"));
+        when(asylumCase.read(valueOf("FTPA_%s_RJ_DECISION_OUTCOME_TYPE".formatted(applicantType.toUpperCase())), String.class)).thenReturn(Optional.of("reheardRule35"));
 
-        when(asylumCase.read(valueOf(String.format("FTPA_R35_%s_DOCUMENT", applicantType.toUpperCase())), Document.class))
+        when(asylumCase.read(valueOf("FTPA_R35_%s_DOCUMENT".formatted(applicantType.toUpperCase())), Document.class))
                 .thenReturn(Optional.of(maybeFtpaSetAsideR35Document));
 
         when(documentReceiver.receive(maybeFtpaSetAsideR35Document, "",DocumentTag.FTPA_SET_ASIDE)).thenReturn(ftpaSetAsideR35Document);
-        when(asylumCase.read(valueOf(String.format("FTPA_%s_R35_NOTICE_DOCUMENT", applicantType.toUpperCase())))).thenReturn(Optional.of(maybeFtpaR35CommunicationNoticeDocument));
+        when(asylumCase.read(valueOf("FTPA_%s_R35_NOTICE_DOCUMENT".formatted(applicantType.toUpperCase())))).thenReturn(Optional.of(maybeFtpaR35CommunicationNoticeDocument));
         when(documentReceiver.tryReceiveAll(maybeFtpaR35CommunicationNoticeDocument, DocumentTag.FTPA_SET_ASIDE))
                 .thenReturn(singletonList(ftpaSetAsideR35NoticeDocument));
 
@@ -541,7 +586,7 @@ class ResidentJudgeFtpaDecisionHandlerTest {
                 residentJudgeFtpaDecisionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
-        verify(asylumCase, times(1)).write(valueOf(String.format("FTPA_%s_REASON_REHEARING", applicantType.toUpperCase())),"Set aside and to be reheard under rule 35");
+        verify(asylumCase, times(1)).write(valueOf("FTPA_%s_REASON_REHEARING".formatted(applicantType.toUpperCase())),"Set aside and to be reheard under rule 35");
     }
 
     @Test

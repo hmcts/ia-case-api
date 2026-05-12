@@ -51,9 +51,7 @@ class SubmitHearingRequirementsConfirmationTest {
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
-        assertThat(
-            callbackResponse.getConfirmationHeader().get())
-            .contains("You've submitted your hearing requirements");
+        assertTrue(callbackResponse.getConfirmationHeader().get().contains("You've submitted your hearing requirements"));
 
         assertThat(
             callbackResponse.getConfirmationBody().get())
@@ -82,9 +80,7 @@ class SubmitHearingRequirementsConfirmationTest {
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
-        assertThat(
-            callbackResponse.getConfirmationHeader().get())
-            .contains("You've submitted your hearing requirements");
+        assertTrue(callbackResponse.getConfirmationHeader().get().contains("You've submitted your hearing requirements"));
 
         assertThat(
             callbackResponse.getConfirmationBody().get())

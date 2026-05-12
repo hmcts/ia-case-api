@@ -3,13 +3,20 @@ package uk.gov.hmcts.reform.iacaseapi.infrastructure.clients;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -20,7 +27,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ref.OrganisationEntityResponse;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.WARN)
 @SuppressWarnings({"unchecked", "rawtypes"})
 public class ProfessionalOrganisationRetrieverTest {
 
@@ -29,12 +37,16 @@ public class ProfessionalOrganisationRetrieverTest {
     private String refdataUrl = "http:/some-url";
     private String refdataPath = "/some-path";
 
-    @Mock private AuthTokenGenerator serviceAuthTokenGenerator;
-    @Mock private UserDetailsProvider userDetailsProvider;
-    @Mock private RestTemplate restTemplate;
-    @Mock private ResponseEntity responseEntity;
+    @Mock
+    private AuthTokenGenerator serviceAuthTokenGenerator;
+    @Mock
+    private UserDetailsProvider userDetailsProvider;
+    @Mock
+    private RestTemplate restTemplate;
+    @Mock
+    private ResponseEntity responseEntity;
 
-    @Before
+    @BeforeEach
     public void setup() {
 
         professionalOrganisationRetriever = new ProfessionalOrganisationRetriever(restTemplate,

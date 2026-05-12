@@ -46,9 +46,7 @@ class UpdateHearingRequirementsConfirmationTest {
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
-        assertThat(
-            callbackResponse.getConfirmationHeader().get())
-            .contains("You've updated the hearing requirements");
+        assertTrue(callbackResponse.getConfirmationHeader().get().contains("You've updated the hearing requirements"));
 
         assertThat(
             callbackResponse.getConfirmationBody().get())

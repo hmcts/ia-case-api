@@ -137,8 +137,7 @@ public class DetentionLocationAddressPopulator implements PreSubmitCallbackHandl
                         appellantAddress.getCounty(),
                         appellantAddress.getCountry()
                 )
-                .filter(Optional::isPresent)
-                .map(Optional::get)
+                .flatMap(Optional::stream)
                 .filter(str -> !Strings.isBlank(str))
                 .collect(toList());
 

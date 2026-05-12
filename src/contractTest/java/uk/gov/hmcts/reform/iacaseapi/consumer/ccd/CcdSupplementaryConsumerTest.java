@@ -8,19 +8,22 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import au.com.dius.pact.consumer.dsl.DslPart;
 import au.com.dius.pact.consumer.dsl.PactDslWithProvider;
 import au.com.dius.pact.consumer.junit5.PactTestFor;
-import au.com.dius.pact.core.model.RequestResponsePact;
+import au.com.dius.pact.core.model.V4Pact;
 import au.com.dius.pact.core.model.annotations.Pact;
 import com.google.common.collect.Maps;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
-import org.apache.http.HttpStatus;
+import org.apache.hc.core5.http.HttpStatus;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.TestPropertySource;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 
+@ExtendWith(MockitoExtension.class)
 @PactTestFor(providerName = "ccdDataStoreAPI_supplementaryUpdate", port = "8873")
 @TestPropertySource(
     properties = "core_case_data_supplementary_api_url=http://localhost:8873")
@@ -30,7 +33,7 @@ public class CcdSupplementaryConsumerTest extends CcdSupplementaryProviderBaseTe
     AsylumCase asylumCase;
 
     @Pact(provider = "ccdDataStoreAPI_supplementaryUpdate", consumer = "ia_caseApi")
-    public RequestResponsePact generatePactFragmentForSupplementaryUpdate(PactDslWithProvider builder) throws IOException {
+    public V4Pact generatePactFragmentForSupplementaryUpdate(PactDslWithProvider builder) throws IOException {
         when(featureToggler.getValue("wa-R3-feature", false)).thenReturn(true);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.REP));
@@ -52,7 +55,7 @@ public class CcdSupplementaryConsumerTest extends CcdSupplementaryProviderBaseTe
             .willRespondWith()
             .body(buildSupplementaryDataResponseDsl())
             .status(HttpStatus.SC_OK)
-            .toPact();
+            .toPact(V4Pact.class);
     }
 
     @Test

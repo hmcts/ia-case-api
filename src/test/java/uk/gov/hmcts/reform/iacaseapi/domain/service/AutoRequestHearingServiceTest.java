@@ -65,9 +65,11 @@ class AutoRequestHearingServiceTest {
 
     @Test
     void should_return_correct_confirmation_header_and_body_when_request_is_successful() {
-        String body = "#### What happens next\n\n"
-                      + "The hearing request has been created and is visible on the [Hearings tab]"
-                      + "(/cases/case-details/1/hearings)";
+        String body = """
+                      #### What happens next
+                      
+                      The hearing request has been created and is visible on the [Hearings tab]\
+                      (/cases/case-details/1/hearings)""";
         String header = "# Hearing listed";
         when(asylumCase.read(MANUAL_CREATE_HEARING_REQUIRED, YesOrNo.class))
             .thenReturn(Optional.of(NO));
@@ -81,12 +83,14 @@ class AutoRequestHearingServiceTest {
 
     @Test
     void should_return_correct_confirmation_header_and_body_when_request_is_unsuccessful() {
-        String body = "![Hearing could not be listed](https://raw.githubusercontent.com/hmcts/"
-                      + "ia-appeal-frontend/master/app/assets/images/hearingCouldNotBeListed.png)"
-                      + "\n\n"
-                      + "#### What happens next\n\n"
-                      + "The hearing could not be auto-requested. Please manually request the "
-                      + "hearing via the [Hearings tab](/cases/case-details/1/hearings)";
+        String body = """
+                      ![Hearing could not be listed](https://raw.githubusercontent.com/hmcts/\
+                      ia-appeal-frontend/master/app/assets/images/hearingCouldNotBeListed.png)
+                      
+                      #### What happens next
+                      
+                      The hearing could not be auto-requested. Please manually request the \
+                      hearing via the [Hearings tab](/cases/case-details/1/hearings)""";
         String header = "";
         when(asylumCase.read(MANUAL_CREATE_HEARING_REQUIRED, YesOrNo.class))
             .thenReturn(Optional.of(YES));

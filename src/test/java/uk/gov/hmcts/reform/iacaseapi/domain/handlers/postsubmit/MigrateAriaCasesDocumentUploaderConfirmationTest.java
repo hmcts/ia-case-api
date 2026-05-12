@@ -1,5 +1,14 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.when;
+
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,16 +22,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
-
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.when;
 
 @MockitoSettings(strictness = org.mockito.quality.Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -56,19 +55,21 @@ class MigrateAriaCasesDocumentUploaderConfirmationTest {
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
-        assertThat(
-            callbackResponse.getConfirmationHeader().get())
-            .contains(String.format("# You have progressed this case \n## New state: \n## '%s'", "Appeal submitted"));
+        assertTrue(callbackResponse.getConfirmationHeader().get().contains("# You have progressed this case \n## New state: \n## '%s'".formatted("Appeal submitted")));
 
         assertThat(
             callbackResponse.getConfirmationBody().get())
-            .contains("#### What happens next\n\n"
-                + "You can add or edit documents at any time through the 'Next step' \n"
-                + "dropdown list in your case details, using 'Edit documents'.\n\n"
-                + "#### If this case was listed for a hearing\n\n"
-                + "Listings have not been migrated. If this case was listed for a hearing,     \n"
-                + "you must transfer the listing over to the hearing management     \n"
-                + "component (HMC) as part of the migration process.");
+            .contains("""
+                #### What happens next
+                
+                You can add or edit documents at any time through the 'Next step'\s
+                dropdown list in your case details, using 'Edit documents'.
+                
+                #### If this case was listed for a hearing
+                
+                Listings have not been migrated. If this case was listed for a hearing,    \s
+                you must transfer the listing over to the hearing management    \s
+                component (HMC) as part of the migration process.""");
     }
 
     @Test

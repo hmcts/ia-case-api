@@ -1,13 +1,15 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
-import static org.mockito.MockitoAnnotations.openMocks;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 
+@ExtendWith(MockitoExtension.class)
 class StartEventDetailsTest {
 
     @Mock
@@ -16,7 +18,6 @@ class StartEventDetailsTest {
 
     @Test
     void should_hold_onto_values() {
-        openMocks(this);
         Event eventId = Event.RE_TRIGGER_WA_TASKS;
 
         long caseId = 1234;

@@ -2,7 +2,9 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.Test;
@@ -35,9 +37,7 @@ public class EjpTurnOnNotificationConfirmationTest {
         assertNotNull(callbackResponse);
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
 
-        assertThat(
-                callbackResponse.getConfirmationHeader().get())
-                .contains("# You have turned on notifications");
+        assertTrue(callbackResponse.getConfirmationHeader().get().contains("# You have turned on notifications"));
     }
 
     @Test
@@ -89,9 +89,7 @@ public class EjpTurnOnNotificationConfirmationTest {
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
-        assertThat(
-                callbackResponse.getConfirmationBody().get())
-                .contains("All parties will be notified that the case has been transferred to the First-tier Tribunal.");
+        assertTrue(callbackResponse.getConfirmationBody().get().contains("All parties will be notified that the case has been transferred to the First-tier Tribunal."));
 
         assertThat(callbackResponse.getConfirmationHeader().get())
                 .contains("ou have turned on notifications");

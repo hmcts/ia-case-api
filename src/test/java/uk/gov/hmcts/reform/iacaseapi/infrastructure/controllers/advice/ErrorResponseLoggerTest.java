@@ -1,8 +1,16 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.controllers.advice;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
+
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.read.ListAppender;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,23 +20,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.client.RestClientResponseException;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
-
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-@SuppressWarnings("unchecked")
 public class ErrorResponseLoggerTest {
-
-    @Mock
-    private PreSubmitCallbackResponse preSubmitCallbackResponse;
 
     @Mock
     private RestClientResponseException restClientResponseException;
@@ -53,20 +47,20 @@ public class ErrorResponseLoggerTest {
 
         String jsonResponseBody = "{\"succeeded\":false}";
 
-        when(restClientResponseException.getRawStatusCode()).thenReturn(HttpStatus.BAD_GATEWAY.value());
+        when(restClientResponseException.getStatusCode()).thenReturn(HttpStatus.BAD_GATEWAY);
         when(restClientResponseException.getResponseBodyAsString()).thenReturn(jsonResponseBody);
 
         errorResponseLogger.maybeLogException(restClientResponseException);
 
         List<ILoggingEvent> logEvents = this.listAppender.list;
-        assertEquals(logEvents.size(), 1);
+        assertEquals(1, logEvents.size());
         assertThat(logEvents.get(0).getFormattedMessage())
                 .startsWith("Error returned with status: "
                         + HttpStatus.BAD_GATEWAY.value()
                         + ". \nWith response body: "
                         + jsonResponseBody);
 
-        verify(restClientResponseException).getRawStatusCode();
+        verify(restClientResponseException).getStatusCode();
         verify(restClientResponseException).getResponseBodyAsString();
     }
 
@@ -75,20 +69,20 @@ public class ErrorResponseLoggerTest {
 
         String jsonResponseBody = "{\"data\": {\"appellantGivenNames\":\"Test\",\"appellantFamilyName\":\"User\"}}";
 
-        when(restClientResponseException.getRawStatusCode()).thenReturn(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        when(restClientResponseException.getStatusCode()).thenReturn(HttpStatus.INTERNAL_SERVER_ERROR);
         when(restClientResponseException.getResponseBodyAsString()).thenReturn(jsonResponseBody);
 
         errorResponseLogger.maybeLogException(restClientResponseException);
 
         List<ILoggingEvent> logEvents = this.listAppender.list;
-        assertEquals(logEvents.size(), 1);
+        assertEquals(1, logEvents.size());
 
         assertThat(logEvents.get(0).getFormattedMessage())
                 .startsWith("Error returned with status: "
                         + HttpStatus.INTERNAL_SERVER_ERROR.value()
                         + ". \nWith response body: ");
 
-        verify(restClientResponseException).getRawStatusCode();
+        verify(restClientResponseException).getStatusCode();
         verify(restClientResponseException).getResponseBodyAsString();
     }
 
@@ -100,7 +94,7 @@ public class ErrorResponseLoggerTest {
         errorResponseLogger.maybeLogException(exception);
 
         List<ILoggingEvent> logEvents = this.listAppender.list;
-        assertEquals(logEvents.size(), 0);
+        assertEquals(0, logEvents.size());
 
         verifyNoInteractions(restClientResponseException);
 

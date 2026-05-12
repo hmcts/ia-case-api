@@ -54,13 +54,9 @@ class ChangeDirectionDueDateConfirmationTest {
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
-        assertThat(
-            callbackResponse.getConfirmationHeader().get())
-            .contains("changed the due date");
+        assertTrue(callbackResponse.getConfirmationHeader().get().contains("changed the due date"));
 
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("What happens next");
+        assertTrue(callbackResponse.getConfirmationBody().get().contains("What happens next"));
 
         assertThat(
             callbackResponse.getConfirmationBody().get())
@@ -96,13 +92,9 @@ class ChangeDirectionDueDateConfirmationTest {
             .contains("![Respondent notification failed confirmation]"
                            + "(https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/respondent_notification_failed.svg)");
 
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("#### Do this next");
+        assertTrue(callbackResponse.getConfirmationBody().get().contains("#### Do this next"));
 
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("Contact the respondent to tell them what has changed, including any action they need to take.");
+        assertTrue(callbackResponse.getConfirmationBody().get().contains("Contact the respondent to tell them what has changed, including any action they need to take."));
     }
 
     @Test

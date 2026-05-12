@@ -4,8 +4,18 @@ import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static org.mockito.Mockito.anyList;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ADD_CASE_NOTE_DESCRIPTION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ADD_CASE_NOTE_SUBJECT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_NOTES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DETENTION_FACILITY;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IRC_NAME;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.OTHER_DETENTION_FACILITY_NAME;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PRISON_NAME;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -116,8 +126,14 @@ class UpdateDetentionLocationCaseNoteHandlerTest {
         assertThat(capturedCaseNote.getCaseNoteSubject()).isEqualTo(newCaseNoteSubject);
         assertThat(capturedCaseNote.getUser()).isEqualTo(forename + " " + surname);
         assertThat(capturedCaseNote.getDateAdded()).isEqualTo(now.toString());
-        assertThat(capturedCaseNote.getCaseNoteDescription()).isEqualTo("The detention location for this appellant has changed from: \n\n"
-                        + "Dungavel IRC\n\n to: \n\nAylesbury Prison");
+        assertThat(capturedCaseNote.getCaseNoteDescription()).isEqualTo("""
+                        The detention location for this appellant has changed from:\s
+                        
+                        Dungavel IRC
+                        
+                         to:\s
+                        
+                        Aylesbury Prison""");
 
         assertThat(existingCaseNotesCaptor.getValue()).isEqualTo(existingCaseNotes);
 

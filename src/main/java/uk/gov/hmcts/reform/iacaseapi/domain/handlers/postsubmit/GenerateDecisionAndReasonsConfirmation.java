@@ -32,8 +32,10 @@ public class GenerateDecisionAndReasonsConfirmation implements PostSubmitCallbac
 
         postSubmitResponse.setConfirmationHeader("# The Decision and Reasons document is ready to download");
         postSubmitResponse.setConfirmationBody(
-            "#### What happens next\n\n"
-            + "Go to the documents tab to download the Decision and Reasons document."
+            """
+            #### What happens next
+            
+            Go to the documents tab to download the Decision and Reasons document."""
         );
 
         return postSubmitResponse;

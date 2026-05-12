@@ -35,10 +35,10 @@ public final class MapValueExpander {
 
             Object untypedValue = entry.getValue();
 
-            if (untypedValue instanceof List) {
+            if (untypedValue instanceof List list) {
 
                 untypedValue =
-                    ((List) untypedValue)
+                    list
                         .stream()
                         .map(this::expandValue)
                         .collect(Collectors.toList());
@@ -57,9 +57,7 @@ public final class MapValueExpander {
 
             expandValues((Map<String, Object>) untypedValue);
 
-        } else if (untypedValue instanceof String) {
-
-            String value = (String) untypedValue;
+        } else if (untypedValue instanceof String value) {
 
             if (TODAY_PATTERN.matcher(value).find()) {
                 value = expandToday(value);

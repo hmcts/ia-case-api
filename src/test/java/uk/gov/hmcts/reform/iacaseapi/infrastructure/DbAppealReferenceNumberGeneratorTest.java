@@ -29,7 +29,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
-@SuppressWarnings("unchecked")
 class DbAppealReferenceNumberGeneratorTest {
 
     private static final int SEQUENCE_SEED = 50000;

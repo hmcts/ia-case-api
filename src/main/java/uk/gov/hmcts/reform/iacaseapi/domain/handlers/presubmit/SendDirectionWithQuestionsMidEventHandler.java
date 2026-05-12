@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -23,7 +22,6 @@ public class SendDirectionWithQuestionsMidEventHandler implements PreSubmitCallb
 
     private final DateProvider dateProvider;
 
-    @Autowired
     public SendDirectionWithQuestionsMidEventHandler(DateProvider dateProvider) {
         this.dateProvider = dateProvider;
     }

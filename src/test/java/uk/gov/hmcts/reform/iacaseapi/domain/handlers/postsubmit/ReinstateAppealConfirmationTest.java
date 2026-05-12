@@ -39,9 +39,7 @@ class ReinstateAppealConfirmationTest {
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
-        assertThat(
-            callbackResponse.getConfirmationHeader().get())
-            .contains("# This appeal has been reinstated");
+        assertTrue(callbackResponse.getConfirmationHeader().get().contains("# This appeal has been reinstated"));
 
         assertThat(
             callbackResponse.getConfirmationBody().get())

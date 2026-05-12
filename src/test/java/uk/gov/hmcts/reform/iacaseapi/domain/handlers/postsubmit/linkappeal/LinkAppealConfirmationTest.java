@@ -54,13 +54,9 @@ class LinkAppealConfirmationTest {
         assertTrue(actualResponse.getConfirmationHeader().isPresent());
         assertTrue(actualResponse.getConfirmationBody().isPresent());
 
-        assertThat(
-            actualResponse.getConfirmationHeader().get())
-            .contains("# You have linked this appeal");
+        assertTrue(actualResponse.getConfirmationHeader().get().contains("# You have linked this appeal"));
 
-        assertThat(
-            actualResponse.getConfirmationBody().get())
-            .contains("#### What happens next\r\n\r\n");
+        assertTrue(actualResponse.getConfirmationBody().get().contains("#### What happens next\r\n\r\n"));
 
         assertThat(
             actualResponse.getConfirmationBody().get())

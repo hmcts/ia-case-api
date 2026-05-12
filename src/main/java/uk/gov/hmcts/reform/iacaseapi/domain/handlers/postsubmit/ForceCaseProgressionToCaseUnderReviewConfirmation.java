@@ -37,13 +37,17 @@ public class ForceCaseProgressionToCaseUnderReviewConfirmation implements PostSu
             .ifPresent(journeyType -> {
                 if (journeyType == JourneyType.AIP) {
                     postSubmitResponse.setConfirmationBody(
-                            "#### What happens next\n\n"
-                                    + "Appellant will be notified by email."
+                            """
+                            #### What happens next
+                            
+                            Appellant will be notified by email."""
                     );
                 } else {
                     postSubmitResponse.setConfirmationBody(
-                            "#### What happens next\n\n"
-                                    + "Legal representative will be notified by email."
+                            """
+                            #### What happens next
+                            
+                            Legal representative will be notified by email."""
                     );
                 }
             });

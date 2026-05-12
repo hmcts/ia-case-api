@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -40,13 +39,9 @@ class HearingAttendeesAndDurationRecordedConfirmationTest {
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
-        assertThat(
-            callbackResponse.getConfirmationHeader().get())
-            .contains("You have recorded the attendees and duration of the hearing");
+        assertTrue(callbackResponse.getConfirmationHeader().get().contains("You have recorded the attendees and duration of the hearing"));
 
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("You don't need to do anything more with this case.");
+        assertTrue(callbackResponse.getConfirmationBody().get().contains("You don't need to do anything more with this case."));
 
     }
 

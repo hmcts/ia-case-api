@@ -1,39 +1,5 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
-import org.mockito.Mock;
-import org.mockito.MockedStatic;
-import org.mockito.Mockito;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.FeeTribunalAction;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.FeeUpdateReason;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CheckValues;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.fee.Fee;
-import uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.payment.FeesHelper;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.FeeService;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Stream;
-
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -63,6 +29,39 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.FeeUpdateReason.APPE
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.FeeUpdateReason.DECISION_TYPE_CHANGED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.FeeUpdateReason.FEE_REMISSION_CHANGED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Stream;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.Mock;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.FeeTribunalAction;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.FeeUpdateReason;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CheckValues;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.fee.Fee;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.payment.FeesHelper;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.FeeService;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -94,14 +93,14 @@ class ManageFeeUpdateHandlerTest {
         when(featureToggler.getValue("manage-fee-update-feature", false)).thenReturn(true);
 
         final CheckValues<String> feeUpdateStatus =
-                new CheckValues<>(Collections.singletonList(
-                        "Fee update recorded"
-                ));
+            new CheckValues<>(Collections.singletonList(
+                "Fee update recorded"
+            ));
 
         final List<String> expectedFeeUpdateStatus =
-                Arrays.asList(
-                        "Fee update recorded"
-                );
+            Arrays.asList(
+                "Fee update recorded"
+            );
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -112,7 +111,7 @@ class ManageFeeUpdateHandlerTest {
         when(asylumCase.read(FEE_UPDATE_TRIBUNAL_ACTION, FeeTribunalAction.class)).thenReturn(Optional.of(REFUND));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                manageFeeUpdateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+            manageFeeUpdateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
@@ -128,22 +127,22 @@ class ManageFeeUpdateHandlerTest {
         when(featureToggler.getValue("manage-fee-update-feature", false)).thenReturn(true);
 
         final CheckValues<String> feeUpdateStatus =
-                new CheckValues<>(Arrays.asList(
-                        "Refund approved",
-                        "Fee update not required"
-                ));
+            new CheckValues<>(Arrays.asList(
+                "Refund approved",
+                "Fee update not required"
+            ));
 
         final List<String> completedStagesFeeUpdateStatus =
-                Arrays.asList(
-                        "Fee update recorded",
-                        "Refund approved"
-                );
+            Arrays.asList(
+                "Fee update recorded",
+                "Refund approved"
+            );
         final List<String> expectedFeeUpdateStatus =
-                Arrays.asList(
-                        "Fee update recorded",
-                        "Refund approved",
-                        "Fee update not required"
-                );
+            Arrays.asList(
+                "Fee update recorded",
+                "Refund approved",
+                "Fee update not required"
+            );
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -153,7 +152,7 @@ class ManageFeeUpdateHandlerTest {
         when(asylumCase.read(FEE_UPDATE_COMPLETED_STAGES)).thenReturn(Optional.of(completedStagesFeeUpdateStatus));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                manageFeeUpdateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+            manageFeeUpdateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
@@ -165,9 +164,9 @@ class ManageFeeUpdateHandlerTest {
     void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> manageFeeUpdateHandler
-                .handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
-                .hasMessage("Cannot handle callback")
-                .isExactlyInstanceOf(IllegalStateException.class);
+            .handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
+            .hasMessage("Cannot handle callback")
+            .isExactlyInstanceOf(IllegalStateException.class);
     }
 
     @Test
@@ -184,7 +183,7 @@ class ManageFeeUpdateHandlerTest {
                 boolean canHandle = manageFeeUpdateHandler.canHandle(callbackStage, callback);
 
                 if ((event == Event.MANAGE_FEE_UPDATE)
-                        && callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT) {
+                    && callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT) {
                     assertTrue(canHandle);
                 } else {
                     assertFalse(canHandle);
@@ -218,7 +217,7 @@ class ManageFeeUpdateHandlerTest {
     @Test
     void should_write_previous_and_updated_hearing_fee_options() {
         try (MockedStatic<FeesHelper> mockedStaticFeesHelper = Mockito.mockStatic(FeesHelper.class)) {
-            Mockito.when(FeesHelper.findFeeByHearingType(feeService, asylumCase)).thenReturn(mock(Fee.class));
+            mockedStaticFeesHelper.when(() -> FeesHelper.findFeeByHearingType(feeService, asylumCase)).thenReturn(mock(Fee.class));
             when(featureToggler.getValue("manage-fee-update-feature", false)).thenReturn(true);
             when(callback.getCaseDetails()).thenReturn(caseDetails);
             when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -252,7 +251,7 @@ class ManageFeeUpdateHandlerTest {
     @Test
     void should_write_previous_and_updated_hearing_fee_options_when_update_decision_hearing_fee_option_is_not_present() {
         try (MockedStatic<FeesHelper> mockedStaticFeesHelper = Mockito.mockStatic(FeesHelper.class)) {
-            Mockito.when(FeesHelper.findFeeByHearingType(feeService, asylumCase)).thenReturn(mock(Fee.class));
+            mockedStaticFeesHelper.when(() -> FeesHelper.findFeeByHearingType(feeService, asylumCase)).thenReturn(mock(Fee.class));
             when(featureToggler.getValue("manage-fee-update-feature", false)).thenReturn(true);
             when(callback.getCaseDetails()).thenReturn(caseDetails);
             when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -282,18 +281,18 @@ class ManageFeeUpdateHandlerTest {
 
     private static Stream<Arguments> provideParameterValues() {
         return Stream.of(
-                Arguments.of(DECISION_TYPE_CHANGED, REFUND),
-                Arguments.of(DECISION_TYPE_CHANGED, ADDITIONAL_PAYMENT),
-                Arguments.of(DECISION_TYPE_CHANGED, NO_ACTION),
-                Arguments.of(APPEAL_NOT_VALID, REFUND),
-                Arguments.of(APPEAL_NOT_VALID, ADDITIONAL_PAYMENT),
-                Arguments.of(APPEAL_NOT_VALID, NO_ACTION),
-                Arguments.of(FEE_REMISSION_CHANGED, REFUND),
-                Arguments.of(FEE_REMISSION_CHANGED, ADDITIONAL_PAYMENT),
-                Arguments.of(FEE_REMISSION_CHANGED, NO_ACTION),
-                Arguments.of(APPEAL_WITHDRAWN, REFUND),
-                Arguments.of(APPEAL_WITHDRAWN, ADDITIONAL_PAYMENT),
-                Arguments.of(APPEAL_WITHDRAWN, NO_ACTION)
+            Arguments.of(DECISION_TYPE_CHANGED, REFUND),
+            Arguments.of(DECISION_TYPE_CHANGED, ADDITIONAL_PAYMENT),
+            Arguments.of(DECISION_TYPE_CHANGED, NO_ACTION),
+            Arguments.of(APPEAL_NOT_VALID, REFUND),
+            Arguments.of(APPEAL_NOT_VALID, ADDITIONAL_PAYMENT),
+            Arguments.of(APPEAL_NOT_VALID, NO_ACTION),
+            Arguments.of(FEE_REMISSION_CHANGED, REFUND),
+            Arguments.of(FEE_REMISSION_CHANGED, ADDITIONAL_PAYMENT),
+            Arguments.of(FEE_REMISSION_CHANGED, NO_ACTION),
+            Arguments.of(APPEAL_WITHDRAWN, REFUND),
+            Arguments.of(APPEAL_WITHDRAWN, ADDITIONAL_PAYMENT),
+            Arguments.of(APPEAL_WITHDRAWN, NO_ACTION)
         );
     }
 }

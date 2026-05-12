@@ -1,10 +1,9 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
-import static junit.framework.TestCase.assertTrue;
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 
@@ -48,13 +47,9 @@ class MarkAppealAsAdaConfirmationTest {
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
-        assertThat(
-                callbackResponse.getConfirmationHeader().get())
-                .contains("# You have marked the appeal as ADA");
+        assertTrue(callbackResponse.getConfirmationHeader().get().contains("# You have marked the appeal as ADA"));
 
-        assertThat(
-                callbackResponse.getConfirmationBody().get())
-                .contains("#### What happens next\n\nAll parties will be notified that the appeal has been marked an accelerated detained appeal.");
+        assertTrue(callbackResponse.getConfirmationBody().get().contains("#### What happens next\n\nAll parties will be notified that the appeal has been marked an accelerated detained appeal."));
     }
 
     @Test

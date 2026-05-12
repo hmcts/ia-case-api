@@ -2,7 +2,10 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static com.beust.jcommander.internal.Lists.newArrayList;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.eq;
@@ -10,11 +13,22 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPLICATIONS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPLICATION_TIME_EXTENSION_EXISTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DIRECTIONS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DIRECTION_EDIT_DATE_DUE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DIRECTION_EDIT_PARTIES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DIRECTION_LIST;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DISABLE_OVERVIEW_PAGE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.EDITABLE_DIRECTIONS;
 
 import com.google.common.collect.Lists;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,7 +42,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Application;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ApplicationType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ClarifyingQuestion;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Direction;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DirectionTag;
@@ -61,13 +74,11 @@ class ChangeDirectionDueDateHandlerTest {
     private AsylumCase asylumCase;
 
     @Captor
-    private ArgumentCaptor<List<IdValue<Direction>>> asylumValueCaptor;
-    @Captor
-    private ArgumentCaptor<AsylumCaseFieldDefinition> asylumExtractorCaptor;
+    private ArgumentCaptor<List<IdValue<Direction>>> directionsCaptor;
     @Captor
     private ArgumentCaptor<List<IdValue<Application>>> applicationsCaptor;
     @Captor
-    private ArgumentCaptor<List<IdValue<Parties>>> directionEditPartiesCaptor;
+    private ArgumentCaptor<Parties> directionEditPartiesCaptor;
 
     private String applicationSupplier = "Legal representative";
     private String applicationReason = "applicationReason";
@@ -149,20 +160,17 @@ class ChangeDirectionDueDateHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(asylumCase, times(3)).write(asylumExtractorCaptor.capture(), asylumValueCaptor.capture());
-
         verify(asylumCase).clear(DIRECTION_LIST);
         verify(asylumCase).clear(DISABLE_OVERVIEW_PAGE);
         verify(asylumCase).clear(APPLICATION_TIME_EXTENSION_EXISTS);
+        verify(asylumCase).write(eq(DIRECTIONS), directionsCaptor.capture());
         verify(asylumCase).write(eq(APPLICATIONS), applicationsCaptor.capture());
         verify(asylumCase).write(eq(DIRECTION_EDIT_PARTIES), directionEditPartiesCaptor.capture());
         assertEquals("Completed", applicationsCaptor.getValue().get(0).getValue().getApplicationStatus());
         verify(waFieldsPublisher).addLastModifiedDirection(
                 eq(asylumCase), anyString(), any(Parties.class), anyString(), any(DirectionTag.class), anyString(), anyString());
 
-        List<List<IdValue<Direction>>> asylumCaseValues = asylumValueCaptor.getAllValues();
-        List<AsylumCaseFieldDefinition> asylumCaseFieldDefinitions = asylumExtractorCaptor.getAllValues();
-        List<IdValue<Direction>> actualDirections = asylumCaseValues.get(asylumCaseFieldDefinitions.indexOf(DIRECTIONS));
+        List<IdValue<Direction>> actualDirections = directionsCaptor.getValue();
         assertEquals(existingDirections.size(), actualDirections.size());
 
         assertEquals("1", actualDirections.get(0).getId());
@@ -312,14 +320,10 @@ class ChangeDirectionDueDateHandlerTest {
         assertEquals(asylumCase, callbackResponse.getData());
 
         verify(asylumCase, times(1)).write(
-            asylumExtractorCaptor.capture(),
-            asylumValueCaptor.capture());
+            eq(DIRECTIONS),
+            directionsCaptor.capture());
 
-        List<AsylumCaseFieldDefinition> asylumCaseFieldDefinitions = asylumExtractorCaptor.getAllValues();
-        List<List<IdValue<Direction>>> asylumCaseValues = asylumValueCaptor.getAllValues();
-
-        List<IdValue<Direction>> actualDirections =
-            asylumCaseValues.get(asylumCaseFieldDefinitions.indexOf(DIRECTIONS));
+        List<IdValue<Direction>> actualDirections = directionsCaptor.getValue();
 
         assertEquals(
             existingDirections.size(),

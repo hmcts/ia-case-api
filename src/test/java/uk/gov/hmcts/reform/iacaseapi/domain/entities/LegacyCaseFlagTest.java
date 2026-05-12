@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class LegacyCaseFlagTest {
 
@@ -14,23 +14,23 @@ public class LegacyCaseFlagTest {
             caseFlagType,
             legacyCaseFlagAdditionalInformation
         );
-        Assert.assertNotNull(legacyCaseFlag.getLegacyCaseFlagType());
-        Assert.assertNotNull(legacyCaseFlag.getLegacyCaseFlagAdditionalInformation());
-        Assert.assertEquals(caseFlagType, legacyCaseFlag.getLegacyCaseFlagType());
-        Assert.assertEquals(legacyCaseFlagAdditionalInformation, legacyCaseFlag.getLegacyCaseFlagAdditionalInformation());
+        Assertions.assertNotNull(legacyCaseFlag.getLegacyCaseFlagType());
+        Assertions.assertNotNull(legacyCaseFlag.getLegacyCaseFlagAdditionalInformation());
+        Assertions.assertEquals(caseFlagType, legacyCaseFlag.getLegacyCaseFlagType());
+        Assertions.assertEquals(legacyCaseFlagAdditionalInformation, legacyCaseFlag.getLegacyCaseFlagAdditionalInformation());
     }
 
     @Test
     public void should_check_noargs() {
         LegacyCaseFlag legacyCaseFlag1 = new LegacyCaseFlag();
-        Assert.assertNotNull(legacyCaseFlag1);
-        Assert.assertNull(legacyCaseFlag1.getLegacyCaseFlagType());
-        Assert.assertNull(legacyCaseFlag1.getLegacyCaseFlagAdditionalInformation());
+        Assertions.assertNotNull(legacyCaseFlag1);
+        Assertions.assertNull(legacyCaseFlag1.getLegacyCaseFlagType());
+        Assertions.assertNull(legacyCaseFlag1.getLegacyCaseFlagAdditionalInformation());
 
         legacyCaseFlag1.setLegacyCaseFlagType(caseFlagType);
         legacyCaseFlag1.setLegacyCaseFlagAdditionalInformation(legacyCaseFlagAdditionalInformation);
-        Assert.assertEquals(caseFlagType, legacyCaseFlag1.getLegacyCaseFlagType());
-        Assert.assertEquals(legacyCaseFlagAdditionalInformation, legacyCaseFlag1.getLegacyCaseFlagAdditionalInformation());
+        Assertions.assertEquals(caseFlagType, legacyCaseFlag1.getLegacyCaseFlagType());
+        Assertions.assertEquals(legacyCaseFlagAdditionalInformation, legacyCaseFlag1.getLegacyCaseFlagAdditionalInformation());
     }
 
 }

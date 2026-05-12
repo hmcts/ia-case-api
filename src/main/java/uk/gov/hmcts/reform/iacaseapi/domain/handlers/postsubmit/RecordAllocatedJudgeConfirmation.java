@@ -32,8 +32,10 @@ public class RecordAllocatedJudgeConfirmation implements PostSubmitCallbackHandl
 
         postSubmitResponse.setConfirmationHeader("# You've recorded which judge is dealing with the application");
         postSubmitResponse.setConfirmationBody(
-            "#### What happens next\n\n"
-            + "The judge will consider the application."
+            """
+            #### What happens next
+            
+            The judge will consider the application."""
         );
 
         return postSubmitResponse;

@@ -38,9 +38,7 @@ class ForceDecidedStateConfirmationTest {
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
-        assertThat(
-            callbackResponse.getConfirmationHeader().get())
-            .contains("# The appeal has been moved to the decided state");
+        assertTrue(callbackResponse.getConfirmationHeader().get().contains("# The appeal has been moved to the decided state"));
 
         assertThat(
             callbackResponse.getConfirmationBody().get())

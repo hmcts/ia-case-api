@@ -4,7 +4,7 @@ import au.com.dius.pact.consumer.dsl.DslPart;
 import au.com.dius.pact.consumer.dsl.PactDslWithProvider;
 import au.com.dius.pact.consumer.junit5.PactConsumerTestExt;
 import au.com.dius.pact.consumer.junit5.PactTestFor;
-import au.com.dius.pact.core.model.RequestResponsePact;
+import au.com.dius.pact.core.model.V4Pact;
 import au.com.dius.pact.core.model.annotations.Pact;
 import au.com.dius.pact.core.model.annotations.PactFolder;
 import com.google.common.collect.Maps;
@@ -16,12 +16,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
@@ -41,12 +41,12 @@ import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.Classification.*;
 
-@ExtendWith(SpringExtension.class)
 @ExtendWith(PactConsumerTestExt.class)
+@ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @PactFolder("pacts")
 @PactTestFor(providerName = "am_roleAssignment_queryAssignment", port = "8991")
-@ContextConfiguration(classes = {RoleAssignmentConsumerApplication.class})
+@SpringJUnitConfig(classes = {RoleAssignmentConsumerApplication.class})
 @TestPropertySource(locations = {"classpath:application.properties"})
 public class RoleAssignmentQueryConsumerTest {
 
@@ -95,7 +95,7 @@ public class RoleAssignmentQueryConsumerTest {
     }
 
     @Pact(provider = "am_roleAssignment_queryAssignment", consumer = "ia_caseApi")
-    public RequestResponsePact generatePactFragmentForQueryRoleAssignments(PactDslWithProvider builder) throws JSONException {
+    public V4Pact generatePactFragmentForQueryRoleAssignments(PactDslWithProvider builder) throws JSONException {
         return builder
             .given("A list of role assignments for the search query")
             .uponReceiving("A query request for roles")
@@ -108,7 +108,7 @@ public class RoleAssignmentQueryConsumerTest {
             .status(HttpStatus.OK.value())
             .headers(getResponseHeaders())
             .body(createRoleAssignmentResponseSearchQueryResponse())
-            .toPact();
+            .toPact(V4Pact.class);
     }
 
     @Test
@@ -157,17 +157,19 @@ public class RoleAssignmentQueryConsumerTest {
     }
 
     private String createRoleAssignmentRequestSearchQueryMultipleRoleAssignments() {
-        return "{\n"
-            + "\"roleType\": [\"ORGANISATION\"],\n"
-            + "\"roleName\": [\"tribunal-caseworker\",\"senior-tribunal-caseworker\"],\n"
-            + "\"classification\": [\"PUBLIC\",\"RESTRICTED\",\"PRIVATE\"],\n"
-            + "\"grantType\": [\"STANDARD\"],\n"
-            + "\"validAt\": \"2021-12-04T00:00:00\",\n"
-            + "\"attributes\": {\n"
-            + "\"primaryLocation\": [\"500A2S\"],\n"
-            + "\"jurisdiction\": [\"IA\"]\n"
-            + "}\n"
-            + "}";
+        return """
+            {
+            "roleType": ["ORGANISATION"],
+            "roleName": ["tribunal-caseworker","senior-tribunal-caseworker"],
+            "classification": ["PUBLIC","RESTRICTED","PRIVATE"],
+            "grantType": ["STANDARD"],
+            "validAt": "2021-12-04T00:00:00",
+            "attributes": {
+            "primaryLocation": ["500A2S"],
+            "jurisdiction": ["IA"]
+            }
+            }\
+            """;
     }
 
     private Map<String, String> getResponseHeaders() {

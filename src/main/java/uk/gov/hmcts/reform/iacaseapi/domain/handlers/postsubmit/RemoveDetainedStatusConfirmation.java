@@ -34,9 +34,12 @@ public class RemoveDetainedStatusConfirmation implements PostSubmitCallbackHandl
 
         postSubmitResponse.setConfirmationHeader("# You have removed the detained status from this appeal");
         postSubmitResponse.setConfirmationBody(
-            "#### What happens next\n\n"
-            + "All parties will be notified that the appellant's detention status has been updated.\n\n"
-            + "You should update the hearing centre, if necessary."
+            """
+            #### What happens next
+            
+            All parties will be notified that the appellant's detention status has been updated.
+            
+            You should update the hearing centre, if necessary."""
         );
 
         return postSubmitResponse;

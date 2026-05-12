@@ -11,8 +11,8 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_ADJOURNMENT_WHEN;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MANUAL_CANCEL_HEARINGS_REQUIRED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MANUAL_CREATE_HEARING_REQUIRED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPDATE_HMC_REQUEST_SUCCESS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.RELIST_CASE_IMMEDIATELY;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPDATE_HMC_REQUEST_SUCCESS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.RECORD_ADJOURNMENT_DETAILS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SUBMIT_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
@@ -206,12 +206,14 @@ class RecordAdjournmentDetailsConfirmationTest {
 
     @Test
     void should_return_auto_hearing_request_failed_confirmation() {
-        expectedResponse.setConfirmationBody("![Hearing could not be listed](https://raw.githubusercontent.com/hmcts/"
-                                 + "ia-appeal-frontend/master/app/assets/images/hearingCouldNotBeListed.png)"
-                                 + "\n\n"
-                                 + "#### What happens next\n\n"
-                                 + "The hearing could not be auto-requested. Please manually request the "
-                                 + "hearing via the [Hearings tab](/cases/case-details/1/hearings)");
+        expectedResponse.setConfirmationBody("""
+                                 ![Hearing could not be listed](https://raw.githubusercontent.com/hmcts/\
+                                 ia-appeal-frontend/master/app/assets/images/hearingCouldNotBeListed.png)
+                                 
+                                 #### What happens next
+                                 
+                                 The hearing could not be auto-requested. Please manually request the \
+                                 hearing via the [Hearings tab](/cases/case-details/1/hearings)""");
         String header = "# You have recorded the adjournment details";
         expectedResponse.setConfirmationHeader(header);
 

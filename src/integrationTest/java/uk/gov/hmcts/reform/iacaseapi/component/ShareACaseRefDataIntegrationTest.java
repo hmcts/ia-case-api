@@ -11,7 +11,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.APPEAL_STA
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.DECISION;
 
 import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
 
@@ -48,7 +48,7 @@ class ShareACaseRefDataIntegrationTest extends SpringBootIntegrationTest impleme
     void should_get_users_from_professional_ref_data() throws Exception {
 
         String prdResponseJson =
-            new String(Files.readAllBytes(Paths.get(resourceFile.getURI())));
+            new String(Files.readAllBytes(Path.of(resourceFile.getURI())));
 
         assertThat(prdResponseJson).isNotBlank();
 
@@ -92,7 +92,7 @@ class ShareACaseRefDataIntegrationTest extends SpringBootIntegrationTest impleme
     void should_get_users_from_professional_ref_data_no_org_id() throws Exception {
 
         String prdResponseJsonNoOrgId =
-            new String(Files.readAllBytes(Paths.get(resourceFileNoOrgId.getURI())));
+            new String(Files.readAllBytes(Path.of(resourceFileNoOrgId.getURI())));
 
         assertThat(prdResponseJsonNoOrgId).isNotBlank();
 
@@ -136,7 +136,7 @@ class ShareACaseRefDataIntegrationTest extends SpringBootIntegrationTest impleme
     void should_get_organisation_identifier_from_professional_ref_data() throws Exception {
 
         String prdResponseJson =
-            new String(Files.readAllBytes(Paths.get(resourceFile.getURI())));
+            new String(Files.readAllBytes(Path.of(resourceFile.getURI())));
 
         assertThat(prdResponseJson).isNotBlank();
 

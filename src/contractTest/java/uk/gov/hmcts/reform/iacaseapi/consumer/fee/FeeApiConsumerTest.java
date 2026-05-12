@@ -1,67 +1,52 @@
 package uk.gov.hmcts.reform.iacaseapi.consumer.fee;
 
-import java.math.BigDecimal;
 import au.com.dius.pact.consumer.dsl.PactDslJsonBody;
 import au.com.dius.pact.consumer.dsl.PactDslWithProvider;
 import au.com.dius.pact.consumer.junit5.PactConsumerTestExt;
 import au.com.dius.pact.consumer.junit5.PactTestFor;
-import au.com.dius.pact.core.model.RequestResponsePact;
+import au.com.dius.pact.core.model.V4Pact;
 import au.com.dius.pact.core.model.annotations.Pact;
 import au.com.dius.pact.core.model.annotations.PactFolder;
-import org.apache.http.HttpHeaders;
-import org.apache.http.HttpStatus;
-import org.apache.http.client.fluent.Executor;
-import org.junit.jupiter.api.AfterEach;
+import java.math.BigDecimal;
+import org.apache.hc.core5.http.HttpHeaders;
+import org.apache.hc.core5.http.HttpStatus;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.fee.FeeResponse;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.FeesRegisterApi;
 
-@ExtendWith(SpringExtension.class)
 @ExtendWith(PactConsumerTestExt.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @PactFolder("pacts")
 @PactTestFor(providerName = "feeRegister_lookUp", port = "8991")
-@ContextConfiguration(classes = {FeeApiConsumerApplication.class})
+@SpringJUnitConfig(classes = {FeeApiConsumerApplication.class})
 @TestPropertySource(locations = {"classpath:application.properties"})
 public class FeeApiConsumerTest {
 
     @Autowired
     FeesRegisterApi feesRegisterApi;
 
-    @BeforeEach
-    public void prepareTest() throws Exception {
-        Thread.sleep(2000);
-    }
-
-    @AfterEach
-    void teardown() {
-        Executor.closeIdleConnections();
-    }
-
     @Pact(provider = "feeRegister_lookUp", consumer = "ia_caseApi")
-    private RequestResponsePact generateFeeWithHearingPact(PactDslWithProvider builder) {
-        return getRequestResponsePact(builder, "HearingOral", "FEE0238",
+    private V4Pact generateFeeWithHearingPact(PactDslWithProvider builder) {
+        return getV4Pact(builder, "HearingOral", "FEE0238",
             "Appeal determined with a hearing", BigDecimal.valueOf(140.00)
         );
     }
 
     @Pact(provider = "feeRegister_lookUp", consumer = "ia_caseApi")
-    private RequestResponsePact generateFeeWithoutHearingPact(PactDslWithProvider builder) {
-        return getRequestResponsePact(builder, "HearingPaper", "FEE0372",
+    private V4Pact generateFeeWithoutHearingPact(PactDslWithProvider builder) {
+        return getV4Pact(builder, "HearingPaper", "FEE0372",
             "Appeal determined without a hearing", BigDecimal.valueOf(80.00)
         );
     }
 
-    private RequestResponsePact getRequestResponsePact(PactDslWithProvider builder, String keyword, String code,
+    private V4Pact getV4Pact(PactDslWithProvider builder, String keyword, String code,
                                                        String description, BigDecimal feeAmount) {
         return builder
             .given("Fees exist for IA")
@@ -78,7 +63,7 @@ public class FeeApiConsumerTest {
             .matchHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
             .body(buildFeesResponseDsl(code, description, feeAmount))
             .status(HttpStatus.SC_OK)
-            .toPact();
+            .toPact(V4Pact.class);
     }
 
     private PactDslJsonBody buildFeesResponseDsl(String code, String description, BigDecimal feeAmount) {

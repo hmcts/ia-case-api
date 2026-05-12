@@ -121,7 +121,7 @@ public class CcdCaseAssignment {
         }
 
         log.info("Revoke Access. Http status received from CCD API; {} for case {}",
-                response.getStatusCodeValue(), caseId);
+                response.getStatusCode().value(), caseId);
     }
 
     public void assignAccessToCase(
@@ -164,7 +164,7 @@ public class CcdCaseAssignment {
         }
 
         log.info("Assign Access. Http status received from AAC API; {} for case {}",
-            response.getStatusCodeValue(), callback.getCaseDetails().getId());
+            response.getStatusCode().value(), callback.getCaseDetails().getId());
     }
 
     public void applyNoc(
@@ -203,7 +203,7 @@ public class CcdCaseAssignment {
         }
 
         log.info("Apply NoC. Http status received from AAC API; {} for case {}",
-            response.getStatusCodeValue(), callback.getCaseDetails().getId());
+            response.getStatusCode().value(), callback.getCaseDetails().getId());
     }
 
     public Map<String, Object> buildRevokeAccessPayload(String organisationIdentifier, long caseId, String idamUserId) {

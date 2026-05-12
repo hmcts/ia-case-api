@@ -114,8 +114,8 @@ public class ListEditCaseHandler implements PreSubmitCallbackHandler<AsylumCase>
             HearingCentre listCaseHearingCentre = HearingCentre
                 .fromEpimsId(listingLocationId, true)
                 .orElseThrow(() -> new IllegalStateException(
-                    String.format("No Hearing Centre found for Listing location with Epimms ID: %s",
-                        listingLocationId)));
+                "No Hearing Centre found for Listing location with Epimms ID: %s".formatted(
+                    listingLocationId)));
             asylumCase.write(LIST_CASE_HEARING_CENTRE, listCaseHearingCentre);
 
             if (HearingCentre.IAC_NATIONAL_VIRTUAL.getEpimsId().equals(listingLocationId)) {
@@ -127,8 +127,8 @@ public class ListEditCaseHandler implements PreSubmitCallbackHandler<AsylumCase>
             if (locationRefDataService.isCaseManagementLocation(listingLocationId)) {
                 HearingCentre hearingCentre = HearingCentre.fromEpimsId(listingLocationId, false)
                     .orElseThrow(() -> new IllegalStateException(
-                        String.format("No Hearing Centre found for Listing location with Epimms ID: %s",
-                            listingLocationId)));
+                    "No Hearing Centre found for Listing location with Epimms ID: %s".formatted(
+                        listingLocationId)));
 
                 Optional<DynamicList> optionalHearingCentreDynamicList =
                     asylumCase.read(HEARING_CENTRE_DYNAMIC_LIST, DynamicList.class);
@@ -259,16 +259,17 @@ public class ListEditCaseHandler implements PreSubmitCallbackHandler<AsylumCase>
             directionAppender.append(
                 asylumCase,
                 existingDirections,
-                "You have a direction for this case.\n"
-                + "\n"
-                + "The accelerated detained appeal has been listed and you should tell the Tribunal if the appellant has any hearing requirements.\n"
-                + "\n"
-                + "# Next steps\n"
-                + "Log in to the service and select the case from your case list. You’ll be able to submit the hearing requirements by selecting Submit hearing requirements from the Next step dropdown on the overview tab.\n"
-                + "\n"
-                + "The Tribunal will review the hearing requirements and any requests for additional adjustments.\n"
-                + "\n"
-                + "If you do not submit the hearing requirements by the date indicated below, the Tribunal may not be able to accommodate the appellant’s needs for the hearing.",
+                """
+                You have a direction for this case.
+                
+                The accelerated detained appeal has been listed and you should tell the Tribunal if the appellant has any hearing requirements.
+                
+                # Next steps
+                Log in to the service and select the case from your case list. You’ll be able to submit the hearing requirements by selecting Submit hearing requirements from the Next step dropdown on the overview tab.
+                
+                The Tribunal will review the hearing requirements and any requests for additional adjustments.
+                
+                If you do not submit the hearing requirements by the date indicated below, the Tribunal may not be able to accommodate the appellant’s needs for the hearing.""",
                 resolvePartiesForListCase(asylumCase),
                 directionDueDate.toString(),
                 DirectionTag.ADA_LIST_CASE,
