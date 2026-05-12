@@ -3,7 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi.component.testutils;
 import static uk.gov.hmcts.reform.iacaseapi.infrastructure.security.idam.IdamAuthoritiesConverter.REGISTRATION_ID;
 
 import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientProperties;
-import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientPropertiesRegistrationAdapter;
+import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientPropertiesMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -21,7 +21,7 @@ public class TestConfiguration {
         return new ClientRegistrationRepository() {
             @Override
             public ClientRegistration findByRegistrationId(String registrationId) {
-                return OAuth2ClientPropertiesRegistrationAdapter.getClientRegistrations(properties).get(REGISTRATION_ID);
+                return new OAuth2ClientPropertiesMapper(properties).asClientRegistrations().get(REGISTRATION_ID);
             }
         };
     }
