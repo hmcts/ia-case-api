@@ -18,7 +18,6 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.IdamService;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.IdamApi;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.idam.UserInfo;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.AccessTokenProvider;
 
@@ -29,8 +28,6 @@ class IdamUserDetailsProviderTest {
 
     @Mock
     private AccessTokenProvider accessTokenProvider;
-    @Mock
-    private IdamApi idamApi;
     @Mock
     private IdamService idamService;
 
@@ -43,13 +40,12 @@ class IdamUserDetailsProviderTest {
         idamUserDetailsProvider =
             new IdamUserDetailsProvider(
                 accessTokenProvider,
-                idamApi,
                 idamService
             );
     }
 
     @Test
-    void should_call_idam_api_to_get_user_details() {
+    void should_call_idam_service_to_get_user_details() {
 
         String expectedAccessToken = "ABCDEFG";
         String expectedId = "1234";

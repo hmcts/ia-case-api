@@ -5,8 +5,10 @@ import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isIntegrated;
 
+import lombok.extern.slf4j.Slf4j;
 import java.util.List;
 import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
@@ -31,6 +33,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.PreviousHearingAppender;
 
 @Component
+@Slf4j
 public class RequestNewHearingRequirementsDirectionHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final int hearingRequirementsDueInDays;
@@ -107,7 +110,6 @@ public class RequestNewHearingRequirementsDirectionHandler implements PreSubmitC
         asylumCase.clear(SEND_DIRECTION_DATE_DUE);
 
         writePreviousHearingsToAsylumCase(asylumCase);
-
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 
@@ -127,10 +129,11 @@ public class RequestNewHearingRequirementsDirectionHandler implements PreSubmitC
 
         final Optional<HoursAndMinutes> actualCaseHearingLength = asylumCase.read(ACTUAL_CASE_HEARING_LENGTH, HoursAndMinutes.class);
 
-        final HearingCentre listCaseHearingCentre = asylumCase.read(LIST_CASE_HEARING_CENTRE, HearingCentre.class).orElse(null);
-
         final boolean decisionWithoutHearing = asylumCase.read(IS_DECISION_WITHOUT_HEARING, YesOrNo.class)
                 .map(yesOrNo -> YesOrNo.YES == yesOrNo).orElse(false);
+
+        final HearingCentre listCaseHearingCentre = asylumCase.read(LIST_CASE_HEARING_CENTRE, HearingCentre.class)
+                .orElse(decisionWithoutHearing ? HearingCentre.DECISION_WITHOUT_HEARING : null);
 
         String listCaseHearingDate = null;
         String ariaListingReference = null;
@@ -175,10 +178,14 @@ public class RequestNewHearingRequirementsDirectionHandler implements PreSubmitC
             finalDecisionAndReasonsDocuments
         );
 
+        log.info("previous hearing: " + previousHearing);
+
         List<IdValue<PreviousHearing>> allPreviousHearings =
             previousHearingAppender.append(
                 existingPreviousHearings,
                 previousHearing);
+
+        log.info("all previous hearings: " + previousHearing);
 
         asylumCase.write(PREVIOUS_HEARINGS, allPreviousHearings);
 

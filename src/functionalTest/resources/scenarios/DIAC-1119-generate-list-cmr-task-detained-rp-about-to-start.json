@@ -1,0 +1,34 @@
+{
+  "description": "DIAC-1119: CMR for a detained appeal RP and PA - validation at about to start",
+  "enabled": true,
+  "request": {
+    "uri": "/asylum/ccdAboutToStart",
+    "credentials": "CaseOfficer",
+    "input": {
+      "eventId": "generateListCmrTask",
+      "state": "appealSubmitted",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "appealType": "revocationOfProtection",
+          "appellantInDetention": "Yes",
+          "homeOfficeSearchStatus": "FAIL"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [
+      "You need to match the appellant details before you can generate the list CMR task."
+    ],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "appealType": "revocationOfProtection",
+        "appellantInDetention": "Yes",
+        "homeOfficeSearchStatus": "FAIL"
+      }
+    }
+  }
+} 

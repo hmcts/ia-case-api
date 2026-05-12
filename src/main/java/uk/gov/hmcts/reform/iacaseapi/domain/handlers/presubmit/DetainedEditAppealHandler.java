@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.DetentionFacility.OTHER;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
@@ -51,7 +52,13 @@ public class DetainedEditAppealHandler implements PreSubmitCallbackHandler<Asylu
         if (appellantInDetention.equals(YES)) {
             //Clear all 'non-detained' fields when switching to a detained case
             asylumCase.clear(APPELLANT_HAS_FIXED_ADDRESS);
-            asylumCase.clear(APPELLANT_ADDRESS);
+            String detentionFacility = asylumCase.read(DETENTION_FACILITY, String.class)
+                .orElseThrow(() -> new IllegalStateException("detentionFacility missing for appellant in detention"));
+
+            if (!detentionFacility.equals(OTHER.getValue())) {
+                // We use this to store "Other" detention facility address
+                asylumCase.clear(APPELLANT_ADDRESS);
+            }
             asylumCase.clear(SEARCH_POSTCODE);
 
             asylumCase.clear(HAS_CORRESPONDENCE_ADDRESS);

@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.IdamService;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.RoleAssignmentService;
 
 
@@ -31,6 +32,8 @@ class RemoveAppealFromOnlineConfirmationTest {
     private CaseDetails<AsylumCase> caseDetails;
     @Mock
     private RoleAssignmentService roleAssignmentService;
+    @Mock
+    private IdamService idamService;
     @InjectMocks
     private RemoveAppealFromOnlineConfirmation removeAppealFromOnlineConfirmation;
 

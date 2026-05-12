@@ -18,7 +18,8 @@ public enum BaseLocation {
 
     YARLS_WOOD("649000"),
     ALLOA_SHERRIF("999971"),
-    CROWN_HOUSE("420587");
+    CROWN_HOUSE("420587"),
+    IAC_NATIONAL_VIRTUAL("999970");
 
     @JsonValue
     private final String id;

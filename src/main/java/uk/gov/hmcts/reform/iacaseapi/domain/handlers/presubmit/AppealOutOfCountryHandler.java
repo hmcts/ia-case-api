@@ -65,8 +65,6 @@ public class AppealOutOfCountryHandler implements PreSubmitCallbackHandler<Asylu
                 .getCaseDetails()
                 .getCaseData();
 
-        boolean isAipJourney = HandlerUtils.isAipJourney(asylumCase);
-
         //Default consider appellant living in UK
         AtomicReference<YesOrNo> outOfCountry = new AtomicReference<>(NO);
         asylumCase.read(APPELLANT_IN_UK, YesOrNo.class).ifPresent(
@@ -83,7 +81,7 @@ public class AppealOutOfCountryHandler implements PreSubmitCallbackHandler<Asylu
             log.info("Sponsor present for Out Of Country appeal. case ID {}", caseId);
 
             String sponsorNameForDisplay = null;
-
+            boolean isAipJourney = HandlerUtils.isAipJourney(asylumCase);
             if (!isAipJourney) {
                 final String sponsorGivenNames =
                     asylumCase

@@ -1,6 +1,8 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.clients;
 
+import static java.time.LocalDate.parse;
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SAVE_NOTIFICATIONS_TO_DATA_DATE;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,9 +17,11 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.Scheduler;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.TimedEvent;
 
 import java.security.SecureRandom;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -27,6 +31,7 @@ public class AsylumCaseNotificationApiSender implements NotificationSender<Asylu
     private final String notificationsApiEndpoint;
     private final String aboutToSubmitPath;
     private final boolean timedEventServiceEnabled;
+    private final boolean saveNotificationToDataEnabled;
     private final int saveNotificationScheduleAtHour;
     private final int saveNotificationScheduleMaxMinutes;
     private final DateProvider dateProvider;
@@ -39,6 +44,7 @@ public class AsylumCaseNotificationApiSender implements NotificationSender<Asylu
         @Value("${notificationsApi.endpoint}") String notificationsApiEndpoint,
         @Value("${notificationsApi.aboutToSubmitPath}") String aboutToSubmitPath,
         @Value("${featureFlag.timedEventServiceEnabled}") boolean timedEventServiceEnabled,
+        @Value("${saveNotificationsData.enabled}") boolean saveNotificationToDataEnabled,
         @Value("${saveNotificationsData.scheduleAtHour}") int saveNotificationScheduleAtHour,
         @Value("${saveNotificationsData.scheduleMaxMinutes}") int saveNotificationScheduleMaxMinutes,
         DateProvider dateProvider,
@@ -49,6 +55,7 @@ public class AsylumCaseNotificationApiSender implements NotificationSender<Asylu
         this.notificationsApiEndpoint = notificationsApiEndpoint;
         this.aboutToSubmitPath = aboutToSubmitPath;
         this.timedEventServiceEnabled = timedEventServiceEnabled;
+        this.saveNotificationToDataEnabled = saveNotificationToDataEnabled;
         this.saveNotificationScheduleAtHour = saveNotificationScheduleAtHour;
         this.saveNotificationScheduleMaxMinutes = saveNotificationScheduleMaxMinutes;
         this.dateProvider = dateProvider;
@@ -61,8 +68,24 @@ public class AsylumCaseNotificationApiSender implements NotificationSender<Asylu
     ) {
         requireNonNull(callback, "callback must not be null");
 
-        if (featureToggler.getValue("save-notifications-feature", false)) {
-            scheduleSaveNotificationToData(callback);
+        log.info("saveNotificationToDataEnabled env var value: {}", saveNotificationToDataEnabled);
+        boolean featureTogglerValue = featureToggler.getValue("save-notifications-feature", false);
+        log.info("save-notifications-feature LD flag value: {}", featureTogglerValue);
+
+        if (featureTogglerValue && saveNotificationToDataEnabled) {
+            AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
+            Optional<String> saveNotificationToDataDateOpt = asylumCase.read(SAVE_NOTIFICATIONS_TO_DATA_DATE, String.class);
+            if (saveNotificationToDataDateOpt.isEmpty()
+                    || parse(saveNotificationToDataDateOpt.get()).isBefore(LocalDate.now())) {
+                scheduleSaveNotificationToData(callback);
+                String saveNotificationsToDataDate = LocalDate.now().toString();
+                log.info("Writing saveNotificationsToDataDate to caseData: {}", saveNotificationsToDataDate);
+                asylumCase.write(SAVE_NOTIFICATIONS_TO_DATA_DATE, saveNotificationsToDataDate);
+            } else {
+                log.info("saveNotificationsToDataDate field already present: {}", saveNotificationToDataDateOpt.get());
+            }
+        } else {
+            log.info("Skipping saveNotificationsToData event schedule");
         }
 
         return asylumCaseCallbackApiDelegator.delegate(
@@ -86,7 +109,8 @@ public class AsylumCaseNotificationApiSender implements NotificationSender<Asylu
                         )
                 );
             } catch (AsylumCaseServiceResponseException e) {
-                log.error("Scheduling SAVE_NOTIFICATIONS_TO_DATA event failed: ", e);
+                log.error("Scheduling SAVE_NOTIFICATIONS_TO_DATA event failed for case reference {}, event name: {}",
+                        callback.getCaseDetails().getId(), callback.getEvent().toString(), e);
             }
         }
     }

@@ -13,12 +13,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockFilterConfig;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.context.WebApplicationContext;
 import uk.gov.hmcts.reform.iacaseapi.Application;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.wiremock.DocumentsApiCallbackTransformer;
+import uk.gov.hmcts.reform.iacaseapi.component.testutils.wiremock.HomeOfficeIntegrationApiCallbackTransformer;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.wiremock.NotificationsApiCallbackTransformer;
 
 
@@ -34,12 +36,18 @@ import uk.gov.hmcts.reform.iacaseapi.component.testutils.wiremock.NotificationsA
     "IA_CASE_NOTIFICATIONS_API_URL=http://localhost:8990/ia-case-notifications-api",
     "prof.ref.data.url=http://localhost:8990",
     "CCD_URL=http://127.0.0.1:8990/ccd-data-store",
+    "CCD_CASE_ACCESS_URL=http://127.0.0.1:8990/ccd-data-store",
     "AAC_URL=http://127.0.0.1:8990",
+    "ROLE_ASSIGNMENT_URL=http://127.0.0.1:8990/amRoleAssignment",
     "IA_TIMED_EVENT_SERVICE_URL=http://127.0.0.1:8990/timed-event-service",
-    "IA_DOCMOSIS_ENABLED=true"})
+    "IA_DOCMOSIS_ENABLED=true",
+    "IA_IDAM_CLIENT_ID=ia",
+    "IA_HOME_OFFICE_INTEGRATION_API_URL=http://127.0.0.1:8990/home-office-integration-api",
+    "IA_S2S_MICROSERVICE=ia"})
 @AutoConfigureMockMvc(addFilters = false)
 @ActiveProfiles("integration")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@DirtiesContext
 public abstract class SpringBootIntegrationTest {
 
     @Autowired
@@ -57,8 +65,11 @@ public abstract class SpringBootIntegrationTest {
     public void spinUp() {
         server = new WireMockServer(WireMockConfiguration.options()
             .notifier(new Slf4jNotifier(true))
-            .extensions(new DocumentsApiCallbackTransformer(), new NotificationsApiCallbackTransformer())
-            .port(8990));
+            .extensions(
+                new DocumentsApiCallbackTransformer(),
+                new NotificationsApiCallbackTransformer(),
+                new HomeOfficeIntegrationApiCallbackTransformer()
+            ).port(8990));
         server.start();
     }
 

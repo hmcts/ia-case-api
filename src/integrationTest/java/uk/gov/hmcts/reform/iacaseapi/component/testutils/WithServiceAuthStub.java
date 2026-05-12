@@ -25,6 +25,15 @@ public interface WithServiceAuthStub {
                     .withBody(SERVICE_TOKEN)
                     .build()));
 
-    }
+        server.addStubMapping(
+            new StubMapping(
+                newRequestPattern(RequestMethod.GET, urlEqualTo("/serviceAuth/details"))
+                    .build(),
+                aResponse()
+                    .withStatus(200)
+                    .withHeader("Content-Type", "application/json")
+                    .withBody("ia")
+                    .build()));
 
+    }
 }

@@ -74,7 +74,7 @@ public class RoleAssignmentApiConsumerTest {
 
         when(caseDetails.getId()).thenReturn(caseId);
 
-        roleAssignmentService = new RoleAssignmentService(authTokenGenerator, roleAssignmentApi, userDetails, idamService);
+        roleAssignmentService = new RoleAssignmentService(authTokenGenerator, roleAssignmentApi, userDetails);
     }
 
     @AfterEach

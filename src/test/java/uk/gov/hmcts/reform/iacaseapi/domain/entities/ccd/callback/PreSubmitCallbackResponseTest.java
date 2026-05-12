@@ -66,4 +66,12 @@ class PreSubmitCallbackResponseTest {
         assertEquals("error1", storedErrors[2]);
         assertEquals("error5", storedErrors[3]);
     }
+
+    @Test
+    void should_return_error_on_with_error() {
+        PreSubmitCallbackResponse<CaseData> response = preSubmitCallbackResponse.withError("error1");
+        assertEquals(1, response.getErrors().size());
+        assertEquals("error1", response.getErrors().iterator().next());
+        assertEquals(preSubmitCallbackResponse, response);
+    }
 }

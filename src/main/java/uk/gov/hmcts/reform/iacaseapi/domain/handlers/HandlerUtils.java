@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers;
 
+import static java.util.Collections.emptyList;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingAdjournmentDay.BEFORE_HEARING_DATE;
@@ -16,47 +17,39 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagTyp
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.service.StrategicCaseFlagService.ACTIVE_STATUS;
-import static org.apache.commons.lang3.ObjectUtils.isEmpty;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingAdjournmentDay.BEFORE_HEARING_DATE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingAdjournmentDay.ON_HEARING_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HelpWithFeesOption.WILL_PAY_FOR_APPEAL;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagType.AUDIO_VIDEO_EVIDENCE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagType.FOREIGN_NATIONAL_OFFENDER;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagType.LACKING_CAPACITY;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagType.LITIGATION_FRIEND;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagType.PRESIDENTIAL_PANEL;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagType.SIGN_LANGUAGE_INTERPRETER;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
-import static uk.gov.hmcts.reform.iacaseapi.domain.service.StrategicCaseFlagService.ACTIVE_STATUS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfCountryCircumstances.ENTRY_CLEARANCE_DECISION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfCountryDecisionType.REFUSAL_OF_HUMAN_RIGHTS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfCountryDecisionType.REFUSE_PERMIT;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.io.ClassPathResource;
+import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseFlagDetail;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.Direction;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DirectionTag;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.FeeRemissionType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingAdjournmentDay;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.HelpWithFeesOption;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.Parties;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionOption;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlag;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.DirectionAppender;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationBasedFeatureToggler;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -66,6 +59,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfCountryCircumstances;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfCountryDecisionType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.SourceOfAppeal;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.OrganisationPolicy;
 
 
 public class HandlerUtils {
@@ -99,35 +93,35 @@ public class HandlerUtils {
 
     public static void formatHearingAdjustmentResponses(AsylumCase asylumCase) {
         formatHearingAdjustmentResponse(asylumCase, VULNERABILITIES_TRIBUNAL_RESPONSE, IS_VULNERABILITIES_ALLOWED)
-                .ifPresent(response -> asylumCase.write(VULNERABILITIES_DECISION_FOR_DISPLAY, response));
+            .ifPresent(response -> asylumCase.write(VULNERABILITIES_DECISION_FOR_DISPLAY, response));
         formatHearingAdjustmentResponse(asylumCase, REMOTE_VIDEO_CALL_TRIBUNAL_RESPONSE, IS_REMOTE_HEARING_ALLOWED)
-                .ifPresent(response -> asylumCase.write(REMOTE_HEARING_DECISION_FOR_DISPLAY, response));
+            .ifPresent(response -> asylumCase.write(REMOTE_HEARING_DECISION_FOR_DISPLAY, response));
         formatHearingAdjustmentResponse(asylumCase, MULTIMEDIA_TRIBUNAL_RESPONSE, IS_MULTIMEDIA_ALLOWED)
-                .ifPresent(response -> asylumCase.write(MULTIMEDIA_DECISION_FOR_DISPLAY, response));
+            .ifPresent(response -> asylumCase.write(MULTIMEDIA_DECISION_FOR_DISPLAY, response));
         formatHearingAdjustmentResponse(asylumCase, SINGLE_SEX_COURT_TRIBUNAL_RESPONSE, IS_SINGLE_SEX_COURT_ALLOWED)
-                .ifPresent(response -> asylumCase.write(SINGLE_SEX_COURT_DECISION_FOR_DISPLAY, response));
+            .ifPresent(response -> asylumCase.write(SINGLE_SEX_COURT_DECISION_FOR_DISPLAY, response));
         formatHearingAdjustmentResponse(asylumCase, IN_CAMERA_COURT_TRIBUNAL_RESPONSE, IS_IN_CAMERA_COURT_ALLOWED)
-                .ifPresent(response -> asylumCase.write(IN_CAMERA_COURT_DECISION_FOR_DISPLAY, response));
+            .ifPresent(response -> asylumCase.write(IN_CAMERA_COURT_DECISION_FOR_DISPLAY, response));
         formatHearingAdjustmentResponse(asylumCase, ADDITIONAL_TRIBUNAL_RESPONSE, IS_ADDITIONAL_ADJUSTMENTS_ALLOWED)
-                .ifPresent(response -> asylumCase.write(OTHER_DECISION_FOR_DISPLAY, response));
+            .ifPresent(response -> asylumCase.write(OTHER_DECISION_FOR_DISPLAY, response));
     }
 
     public static String getAppellantFullName(AsylumCase asylumCase) {
         return asylumCase.read(APPELLANT_NAME_FOR_DISPLAY, String.class).orElseGet(() -> {
             final String appellantGivenNames = asylumCase
-                    .read(APPELLANT_GIVEN_NAMES, String.class)
-                    .orElseThrow(() -> new IllegalStateException("Appellant given names required"));
+                .read(APPELLANT_GIVEN_NAMES, String.class)
+                .orElseThrow(() -> new IllegalStateException("Appellant given names required"));
             final String appellantFamilyName = asylumCase
-                    .read(APPELLANT_FAMILY_NAME, String.class)
-                    .orElseThrow(() -> new IllegalStateException("Appellant family name required"));
+                .read(APPELLANT_FAMILY_NAME, String.class)
+                .orElseThrow(() -> new IllegalStateException("Appellant family name required"));
             return appellantGivenNames + " " + appellantFamilyName;
         });
     }
 
     private static Optional<String> formatHearingAdjustmentResponse(
-            AsylumCase asylumCase,
-            AsylumCaseFieldDefinition responseDefinition,
-            AsylumCaseFieldDefinition decisionDefinition) {
+        AsylumCase asylumCase,
+        AsylumCaseFieldDefinition responseDefinition,
+        AsylumCaseFieldDefinition decisionDefinition) {
         String response = asylumCase.read(responseDefinition, String.class).orElse(null);
         String decision = asylumCase.read(decisionDefinition, String.class).orElse(null);
 
@@ -157,10 +151,10 @@ public class HandlerUtils {
 
     private static boolean hasActiveFlags(AsylumCase asylumCase) {
         List<StrategicCaseFlag> appellantLevelFlags = asylumCase.read(APPELLANT_LEVEL_FLAGS, StrategicCaseFlag.class)
-            .map(List::of).orElse(Collections.emptyList());
+            .map(List::of).orElse(emptyList());
 
         List<StrategicCaseFlag> caseLevelFlag = asylumCase.read(CASE_LEVEL_FLAGS, StrategicCaseFlag.class)
-            .map(List::of).orElse(Collections.emptyList());
+            .map(List::of).orElse(emptyList());
 
         boolean hasActiveFlags = false;
 
@@ -236,6 +230,10 @@ public class HandlerUtils {
         return (asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).orElse(NO) == YesOrNo.YES;
     }
 
+    public static boolean isAppellantsRepresentation(AsylumCase asylumCase) {
+        return (asylumCase.read(APPELLANTS_REPRESENTATION, YesOrNo.class)).orElse(NO) == YesOrNo.YES;
+    }
+
     public static boolean isInternalCase(AsylumCase asylumCase) {
         return (asylumCase.read(IS_ADMIN, YesOrNo.class)).orElse(NO) == YesOrNo.YES;
     }
@@ -271,6 +269,16 @@ public class HandlerUtils {
     // This method uses the Source of Appeal value to check if it is EJP during Start Appeal event
     public static boolean sourceOfAppealEjp(AsylumCase asylumCase) {
         return (asylumCase.read(SOURCE_OF_APPEAL, SourceOfAppeal.class)).orElse(SourceOfAppeal.PAPER_FORM) == SourceOfAppeal.TRANSFERRED_FROM_UPPER_TRIBUNAL;
+    }
+
+    // This method uses the Source of Appeal value to check if it is a Rehydrated appeal during Start Appeal event
+    public static boolean sourceOfAppealRehydratedAppeal(AsylumCase asylumCase) {
+        return (asylumCase.read(SOURCE_OF_APPEAL, SourceOfAppeal.class)).orElse(SourceOfAppeal.PAPER_FORM) == SourceOfAppeal.REHYDRATED_APPEAL;
+    }
+
+    // This method uses the isRehydratedAppeal field which is set yes for Rehydrated appeals when a case is saved or no if paper form
+    public static boolean isRehydratedAppeal(AsylumCase asylumCase) {
+        return asylumCase.read(IS_REHYDRATED_APPEAL, YesOrNo.class).orElse(NO) == YesOrNo.YES;
     }
 
     // This method uses the isEjp field which is set yes for EJP when a case is saved or no if paper form
@@ -327,8 +335,8 @@ public class HandlerUtils {
                 .map(remote -> YES == remote).orElse(false);
 
             return hearingCenterUnchanged(asylumCase, asylumCaseBefore)
-                   && hearingDateUnchanged(asylumCase, asylumCaseBefore)
-                   && prevHearingIsRemote && currentHearingIsRemote;
+                && hearingDateUnchanged(asylumCase, asylumCaseBefore)
+                && prevHearingIsRemote && currentHearingIsRemote;
         } else {
             return false;
         }
@@ -358,10 +366,15 @@ public class HandlerUtils {
             && remissionType.get() != RemissionType.NO_REMISSION;
     }
 
-    public  static boolean isRemissionExistsAip(Optional<RemissionOption> remissionOption, Optional<HelpWithFeesOption> helpWithFeesOption, boolean isDlrmFeeRemissionFlag) {
+    public static boolean isRemissionExistsAip(Optional<RemissionOption> remissionOption, Optional<HelpWithFeesOption> helpWithFeesOption, boolean isDlrmFeeRemissionFlag) {
         return isDlrmFeeRemissionFlag
             && ((remissionOption.isPresent() && remissionOption.get() != RemissionOption.NO_REMISSION)
             || (helpWithFeesOption.isPresent() && helpWithFeesOption.get() != WILL_PAY_FOR_APPEAL));
+    }
+
+    public static boolean isHelpWithFees(RemissionOption remissionOption, HelpWithFeesOption helpWithFeesOption) {
+        return (remissionOption.equals(RemissionOption.I_WANT_TO_GET_HELP_WITH_FEES))
+            || (remissionOption.equals(RemissionOption.NO_REMISSION) && helpWithFeesOption != WILL_PAY_FOR_APPEAL);
     }
 
     public static boolean outOfCountryDecisionTypeIsRefusalOfHumanRightsOrPermit(AsylumCase asylumCase) {
@@ -373,5 +386,348 @@ public class HandlerUtils {
         return asylumCase.read(OOC_APPEAL_ADMIN_J, OutOfCountryCircumstances.class)
             .map(ENTRY_CLEARANCE_DECISION::equals)
             .orElse(false);
+    }
+
+    public static boolean isAdmin(AsylumCase asylumCase) {
+        return (asylumCase.read(IS_ADMIN, YesOrNo.class)).orElse(NO) == YesOrNo.YES;
+    }
+
+    public static boolean isAppellantInPersonManual(AsylumCase asylumCase) {
+        return isAdmin(asylumCase) && isAppellantsRepresentation(asylumCase);
+    }
+
+    public static boolean hasAddedLegalRepDetails(AsylumCase asylumCase) {
+        return (asylumCase.read(HAS_ADDED_LEGAL_REP_DETAILS, YesOrNo.class)).orElse(NO) == YesOrNo.YES;
+    }
+
+    public static void clearRequestRemissionFields(AsylumCase asylumCase) {
+        asylumCase.clear(LATE_REMISSION_TYPE);
+        asylumCase.clear(REMISSION_CLAIM);
+        asylumCase.clear(ASYLUM_SUPPORT_REFERENCE);
+        asylumCase.clear(ASYLUM_SUPPORT_DOCUMENT);
+        asylumCase.clear(LEGAL_AID_ACCOUNT_NUMBER);
+        asylumCase.clear(SECTION17_DOCUMENT);
+        asylumCase.clear(SECTION20_DOCUMENT);
+        asylumCase.clear(HOME_OFFICE_WAIVER_DOCUMENT);
+        asylumCase.clear(HELP_WITH_FEES_REFERENCE_NUMBER);
+        asylumCase.clear(EXCEPTIONAL_CIRCUMSTANCES);
+        asylumCase.clear(REMISSION_EC_EVIDENCE_DOCUMENTS);
+    }
+
+    public static void clearPreviousRemissionCaseFields(AsylumCase asylumCase) {
+        final Optional<RemissionType> lateRemissionTypeOpt = asylumCase.read(LATE_REMISSION_TYPE, RemissionType.class);
+        String remissionClaim = asylumCase.read(REMISSION_CLAIM, String.class).orElse("");
+
+        if (lateRemissionTypeOpt.isPresent()) {
+
+            switch (lateRemissionTypeOpt.get()) {
+                case HO_WAIVER_REMISSION:
+                    switch (remissionClaim) {
+                        case "asylumSupport" -> {
+                            clearLegalAidAccountNumberRemissionDetails(asylumCase);
+                            clearSection17RemissionDetails(asylumCase);
+                            clearSection20RemissionDetails(asylumCase);
+                            clearHomeOfficeWaiverRemissionDetails(asylumCase);
+                            clearHelpWithFeesRemissionDetails(asylumCase);
+                            clearExceptionalCircumstancesRemissionDetails(asylumCase);
+                            clearLocalAuthorityLetters(asylumCase);
+                        }
+                        case "legalAid" -> {
+                            clearAsylumSupportRemissionDetails(asylumCase);
+                            clearSection17RemissionDetails(asylumCase);
+                            clearSection20RemissionDetails(asylumCase);
+                            clearHomeOfficeWaiverRemissionDetails(asylumCase);
+                            clearHelpWithFeesRemissionDetails(asylumCase);
+                            clearExceptionalCircumstancesRemissionDetails(asylumCase);
+                            clearLocalAuthorityLetters(asylumCase);
+                        }
+                        case "section17" -> {
+                            clearAsylumSupportRemissionDetails(asylumCase);
+                            clearLegalAidAccountNumberRemissionDetails(asylumCase);
+                            clearSection20RemissionDetails(asylumCase);
+                            clearHomeOfficeWaiverRemissionDetails(asylumCase);
+                            clearHelpWithFeesRemissionDetails(asylumCase);
+                            clearExceptionalCircumstancesRemissionDetails(asylumCase);
+                        }
+                        case "section20" -> {
+                            clearAsylumSupportRemissionDetails(asylumCase);
+                            clearLegalAidAccountNumberRemissionDetails(asylumCase);
+                            clearSection17RemissionDetails(asylumCase);
+                            clearHomeOfficeWaiverRemissionDetails(asylumCase);
+                            clearHelpWithFeesRemissionDetails(asylumCase);
+                            clearExceptionalCircumstancesRemissionDetails(asylumCase);
+                        }
+                        case "homeOfficeWaiver" -> {
+                            clearAsylumSupportRemissionDetails(asylumCase);
+                            clearLegalAidAccountNumberRemissionDetails(asylumCase);
+                            clearSection17RemissionDetails(asylumCase);
+                            clearSection20RemissionDetails(asylumCase);
+                            clearHelpWithFeesRemissionDetails(asylumCase);
+                            clearExceptionalCircumstancesRemissionDetails(asylumCase);
+                            clearLocalAuthorityLetters(asylumCase);
+                        }
+                        default -> {
+                            // do nothing
+                        }
+                    }
+                    break;
+
+                case HELP_WITH_FEES:
+                    clearAsylumSupportRemissionDetails(asylumCase);
+                    clearLegalAidAccountNumberRemissionDetails(asylumCase);
+                    clearSection17RemissionDetails(asylumCase);
+                    clearSection20RemissionDetails(asylumCase);
+                    clearHomeOfficeWaiverRemissionDetails(asylumCase);
+                    clearExceptionalCircumstancesRemissionDetails(asylumCase);
+                    clearLocalAuthorityLetters(asylumCase);
+                    break;
+
+                case EXCEPTIONAL_CIRCUMSTANCES_REMISSION:
+                    clearAsylumSupportRemissionDetails(asylumCase);
+                    clearLegalAidAccountNumberRemissionDetails(asylumCase);
+                    clearSection17RemissionDetails(asylumCase);
+                    clearSection20RemissionDetails(asylumCase);
+                    clearHomeOfficeWaiverRemissionDetails(asylumCase);
+                    clearHelpWithFeesRemissionDetails(asylumCase);
+                    clearLocalAuthorityLetters(asylumCase);
+                    break;
+
+                default:
+                    break;
+            }
+        }
+    }
+
+    public static void clearPreviousRemissionCaseFieldsFromAip(AsylumCase asylumCase) {
+        final Optional<RemissionOption> lateRemissionOptionOpt = asylumCase.read(REMISSION_OPTION, RemissionOption.class);
+        if (lateRemissionOptionOpt.isPresent()) {
+            switch (lateRemissionOptionOpt.get()) {
+                case ASYLUM_SUPPORT_FROM_HOME_OFFICE -> {
+                    clearLegalAidAccountNumberRemissionDetails(asylumCase);
+                    clearSection17RemissionDetails(asylumCase);
+                    clearSection20RemissionDetails(asylumCase);
+                    clearHomeOfficeWaiverRemissionDetails(asylumCase);
+                    clearHelpWithFeesRemissionDetails(asylumCase);
+                    clearExceptionalCircumstancesRemissionDetails(asylumCase);
+                    clearLocalAuthorityLetters(asylumCase);
+                }
+                case UNDER_18_GET_SUPPORT, PARENT_GET_SUPPORT -> {
+                    clearAsylumSupportRemissionDetails(asylumCase);
+                    clearLegalAidAccountNumberRemissionDetails(asylumCase);
+                    clearHomeOfficeWaiverRemissionDetails(asylumCase);
+                    clearHelpWithFeesRemissionDetails(asylumCase);
+                    clearExceptionalCircumstancesRemissionDetails(asylumCase);
+                }
+                case FEE_WAIVER_FROM_HOME_OFFICE -> {
+                    clearAsylumSupportRemissionDetails(asylumCase);
+                    clearLegalAidAccountNumberRemissionDetails(asylumCase);
+                    clearSection17RemissionDetails(asylumCase);
+                    clearSection20RemissionDetails(asylumCase);
+                    clearHelpWithFeesRemissionDetails(asylumCase);
+                    clearExceptionalCircumstancesRemissionDetails(asylumCase);
+                    clearLocalAuthorityLetters(asylumCase);
+                }
+                case I_WANT_TO_GET_HELP_WITH_FEES, NO_REMISSION -> {
+                    if (isHelpWithFees(lateRemissionOptionOpt.get(), asylumCase.read(HELP_WITH_FEES_OPTION, HelpWithFeesOption.class).orElse(WILL_PAY_FOR_APPEAL))) {
+                        clearAsylumSupportRemissionDetails(asylumCase);
+                        clearLegalAidAccountNumberRemissionDetails(asylumCase);
+                        clearSection17RemissionDetails(asylumCase);
+                        clearSection20RemissionDetails(asylumCase);
+                        clearHomeOfficeWaiverRemissionDetails(asylumCase);
+                        clearExceptionalCircumstancesRemissionDetails(asylumCase);
+                        clearLocalAuthorityLetters(asylumCase);
+                    }
+                }
+                default -> {
+                    // do nothing
+                }
+            }
+        }
+    }
+
+    public static void clearRemissionDecisionFields(AsylumCase asylumCase) {
+        asylumCase.clear(REMISSION_DECISION);
+        asylumCase.clear(AMOUNT_REMITTED);
+        asylumCase.clear(AMOUNT_LEFT_TO_PAY);
+        asylumCase.clear(REMISSION_DECISION_REASON);
+    }
+
+    private static void clearAsylumSupportRemissionDetails(AsylumCase asylumCase) {
+        asylumCase.clear(ASYLUM_SUPPORT_REFERENCE);
+        asylumCase.clear(ASYLUM_SUPPORT_DOCUMENT);
+        asylumCase.clear(ASYLUM_SUPPORT_REF_NUMBER);
+    }
+
+    private static void clearLegalAidAccountNumberRemissionDetails(AsylumCase asylumCase) {
+        asylumCase.clear(LEGAL_AID_ACCOUNT_NUMBER);
+    }
+
+    private static void clearSection17RemissionDetails(AsylumCase asylumCase) {
+        asylumCase.clear(SECTION17_DOCUMENT);
+    }
+
+    private static void clearSection20RemissionDetails(AsylumCase asylumCase) {
+        asylumCase.clear(SECTION20_DOCUMENT);
+    }
+
+    private static void clearLocalAuthorityLetters(AsylumCase asylumCase) {
+        asylumCase.clear(LOCAL_AUTHORITY_LETTERS);
+    }
+
+    private static void clearHomeOfficeWaiverRemissionDetails(AsylumCase asylumCase) {
+        asylumCase.clear(HOME_OFFICE_WAIVER_DOCUMENT);
+    }
+
+    private static void clearHelpWithFeesRemissionDetails(AsylumCase asylumCase) {
+        asylumCase.clear(HELP_WITH_FEES_REFERENCE_NUMBER);
+        asylumCase.clear(HELP_WITH_FEES_REF_NUMBER);
+    }
+
+    private static void clearExceptionalCircumstancesRemissionDetails(AsylumCase asylumCase) {
+        asylumCase.clear(EXCEPTIONAL_CIRCUMSTANCES);
+        asylumCase.clear(REMISSION_EC_EVIDENCE_DOCUMENTS);
+    }
+
+    public static boolean appealHasRemissionOptionOrType(Optional<RemissionOption> remissionOption,
+                                                         Optional<HelpWithFeesOption> helpWithFeesOption,
+                                                         Optional<RemissionType> remissionType,
+                                                         Optional<RemissionType> lateRemissionType) {
+        return (remissionOption.isPresent() && remissionOption.get() != RemissionOption.NO_REMISSION)
+            || (helpWithFeesOption.isPresent() && helpWithFeesOption.get() != WILL_PAY_FOR_APPEAL)
+            || (remissionType.isPresent() && remissionType.get() != RemissionType.NO_REMISSION)
+            || (lateRemissionType.isPresent() && lateRemissionType.get() != RemissionType.NO_REMISSION);
+    }
+
+    public static void setFeeRemissionTypeDetails(AsylumCase asylumCase) {
+        Optional<RemissionType> lateRemissionTypeOpt = asylumCase.read(LATE_REMISSION_TYPE, RemissionType.class);
+        String remissionClaim = asylumCase.read(REMISSION_CLAIM, String.class)
+            .orElse("");
+
+        if (lateRemissionTypeOpt.isPresent()) {
+            RemissionType lateRemissionType = lateRemissionTypeOpt.get();
+            asylumCase.write(REMISSION_TYPE, lateRemissionType);
+            if (lateRemissionType == RemissionType.HO_WAIVER_REMISSION) {
+                switch (remissionClaim) {
+                    case "asylumSupport":
+                        asylumCase.write(FEE_REMISSION_TYPE, FeeRemissionType.ASYLUM_SUPPORT);
+                        break;
+
+                    case "legalAid":
+                        asylumCase.write(FEE_REMISSION_TYPE, FeeRemissionType.LEGAL_AID);
+                        break;
+
+                    case "section17":
+                        asylumCase.write(FEE_REMISSION_TYPE, FeeRemissionType.SECTION_17);
+                        break;
+
+                    case "section20":
+                        asylumCase.write(FEE_REMISSION_TYPE, FeeRemissionType.SECTION_20);
+                        break;
+
+                    case "homeOfficeWaiver":
+                        asylumCase.write(FEE_REMISSION_TYPE, FeeRemissionType.HO_WAIVER);
+                        break;
+
+                    default:
+                        break;
+                }
+            } else if (lateRemissionType == RemissionType.HELP_WITH_FEES) {
+                asylumCase.write(FEE_REMISSION_TYPE, FeeRemissionType.HELP_WITH_FEES);
+            } else if (lateRemissionType == RemissionType.EXCEPTIONAL_CIRCUMSTANCES_REMISSION) {
+                asylumCase.write(FEE_REMISSION_TYPE, FeeRemissionType.EXCEPTIONAL_CIRCUMSTANCES);
+            }
+        }
+    }
+
+    public static boolean hasRepresentation(AsylumCase asylumCase) {
+        Optional<OrganisationPolicy> localAuthorityPolicy = asylumCase.read(AsylumCaseFieldDefinition.LOCAL_AUTHORITY_POLICY);
+        return isRepJourney(asylumCase)
+            && localAuthorityPolicy.isPresent()
+            && localAuthorityPolicy.get().getOrganisation() != null
+            && StringUtils.isNotBlank(localAuthorityPolicy.get().getOrganisation().getOrganisationID());
+    }
+
+    public static boolean hasUpdatedLegalRepFields(Callback<AsylumCase> callback) {
+        AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
+
+        Optional<CaseDetails<AsylumCase>> caseDetailsBefore = callback.getCaseDetailsBefore();
+
+        if (caseDetailsBefore.isPresent()) {
+            AsylumCase asylumCaseBefore = caseDetailsBefore.get().getCaseData();
+
+            return !asylumCaseBefore.read(LEGAL_REP_NAME).equals(asylumCase.read(LEGAL_REP_NAME))
+                || !asylumCaseBefore.read(LEGAL_REP_FAMILY_NAME).equals(asylumCase.read(LEGAL_REP_FAMILY_NAME))
+                || !asylumCaseBefore.read(LEGAL_REP_COMPANY).equals(asylumCase.read(LEGAL_REP_COMPANY))
+                || !asylumCaseBefore.read(LEGAL_REPRESENTATIVE_EMAIL_ADDRESS).equals(asylumCase.read(LEGAL_REPRESENTATIVE_EMAIL_ADDRESS))
+                || !asylumCaseBefore.read(LEGAL_REP_MOBILE_PHONE_NUMBER).equals(asylumCase.read(LEGAL_REP_MOBILE_PHONE_NUMBER));
+        }
+        return false;
+    }
+
+    public static void clearLegalRepFields(AsylumCase asylumCase) {
+        asylumCase.clear(APPEAL_WAS_NOT_SUBMITTED_REASON);
+        asylumCase.clear(APPEAL_NOT_SUBMITTED_REASON_DOCUMENTS);
+        asylumCase.clear(LEGAL_REP_COMPANY_PAPER_J);
+        asylumCase.clear(LEGAL_REP_GIVEN_NAME);
+        asylumCase.clear(LEGAL_REP_FAMILY_NAME_PAPER_J);
+        asylumCase.clear(LEGAL_REP_EMAIL);
+        asylumCase.clear(LEGAL_REP_REF_NUMBER_PAPER_J);
+
+        asylumCase.clear(LEGAL_REP_ADDRESS_U_K);
+        asylumCase.clear(OOC_ADDRESS_LINE_1);
+        asylumCase.clear(OOC_ADDRESS_LINE_2);
+        asylumCase.clear(OOC_ADDRESS_LINE_3);
+        asylumCase.clear(OOC_ADDRESS_LINE_4);
+        asylumCase.clear(OOC_COUNTRY_LINE);
+        asylumCase.clear(OOC_LR_COUNTRY_GOV_UK_ADMIN_J);
+        asylumCase.clear(LEGAL_REP_HAS_ADDRESS);
+    }
+
+    public static boolean isPayLater(AsylumCase asylumCase) {
+        boolean isAipJourney = HandlerUtils.isAipJourney(asylumCase);
+        boolean isRepJourney = HandlerUtils.isRepJourney(asylumCase);
+        String paAppealTypePaymentOption = asylumCase.read(PA_APPEAL_TYPE_PAYMENT_OPTION, String.class).orElse("");
+        String paAppealTypeAipPaymentOption = asylumCase.read(PA_APPEAL_TYPE_AIP_PAYMENT_OPTION, String.class).orElse("");
+        boolean isAipPayLater = isAipJourney && "payLater".equals(paAppealTypeAipPaymentOption);
+        boolean isLRPayLater = isRepJourney && "payLater".equals(paAppealTypePaymentOption);
+        return isAipPayLater || isLRPayLater;
+    }
+
+    public static Parties getParty(AsylumCase asylumCase) {
+        return HandlerUtils.isAipJourney(asylumCase) ? Parties.APPELLANT : Parties.LEGAL_REPRESENTATIVE;
+    }
+
+    public static AsylumCase feeDirectionReminder(AsylumCase asylumCase, DirectionAppender directionAppender, DateProvider dateProvider, int paPayLaterDueDate, DirectionTag directionTag, String content) {
+        Optional<List<IdValue<Direction>>> maybeDirections = asylumCase.read(DIRECTIONS);
+
+        final List<IdValue<Direction>> existingDirections =
+            maybeDirections.orElse(emptyList());
+
+        List<IdValue<Direction>> allDirections =
+            directionAppender.append(
+                asylumCase,
+                existingDirections,
+                content,
+                getParty(asylumCase),
+                dateProvider
+                    .now()
+                    .plusDays(paPayLaterDueDate)
+                    .toString(),
+                directionTag
+            );
+
+        asylumCase.write(DIRECTIONS, allDirections);
+        return asylumCase;
+    }
+
+    public static String getFeeAmount(AsylumCase asylumCase) {
+        boolean decisionHearingFeeOption = asylumCase.read(DECISION_HEARING_FEE_OPTION, String.class).orElse("")
+            .equals("decisionWithHearing");
+        return decisionHearingFeeOption
+            ? asylumCase.read(FEE_WITH_HEARING, String.class)
+            .orElseThrow(() -> new IllegalStateException("Fee with hearing is not present"))
+            : asylumCase.read(FEE_WITHOUT_HEARING, String.class)
+            .orElseThrow(() -> new IllegalStateException("Fee without hearing is not present"));
+
     }
 }

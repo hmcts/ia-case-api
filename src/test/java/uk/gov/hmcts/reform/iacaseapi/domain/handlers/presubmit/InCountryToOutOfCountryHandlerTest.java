@@ -43,6 +43,7 @@ public class InCountryToOutOfCountryHandlerTest {
         inCountryToOutOfCountryHandler = new InCountryToOutOfCountryHandler();
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getPageId()).thenReturn("outOfCountry");
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
         when(asylumCase.read(SOURCE_OF_APPEAL, SourceOfAppeal.class)).thenReturn(Optional.empty());

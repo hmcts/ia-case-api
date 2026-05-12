@@ -115,6 +115,8 @@ class PreSubmitCallbackDispatcherTest {
     @Test
     void should_add_errors_if_events_invalid_for_journey_type() {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getCaseDetails().getId()).thenReturn(1L);
+        when(callback.getEvent()).thenReturn(Event.BUILD_CASE);
         when(caseDetails.getCaseData()).thenReturn(caseData);
         when(eventValidChecker.check(any(Callback.class))).thenReturn(new EventValid("Invalid reason"));
 
@@ -241,6 +243,8 @@ class PreSubmitCallbackDispatcherTest {
         for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
 
             when(callback.getEvent()).thenReturn(Event.BUILD_CASE);
+            when(callback.getCaseDetails()).thenReturn(caseDetails);
+            when(callback.getCaseDetails().getId()).thenReturn(1L);
 
             doThrow(AccessDeniedException.class)
                 .when(ccdEventAuthorizor)

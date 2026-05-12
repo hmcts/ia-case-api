@@ -22,6 +22,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.security.test.context.support.WithMockUser;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.SpringBootIntegrationTest;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.WithReferenceDataStub;
+import uk.gov.hmcts.reform.iacaseapi.component.testutils.WithRoleAssignmentStub;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.WithServiceAuthStub;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.WithUserDetailsStub;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.PreSubmitCallbackResponseForTest;
@@ -29,7 +30,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.OrganisationPolicy;
 
 class ShareACaseRefDataIntegrationTest extends SpringBootIntegrationTest implements WithServiceAuthStub,
-    WithUserDetailsStub, WithReferenceDataStub {
+    WithUserDetailsStub, WithReferenceDataStub, WithRoleAssignmentStub {
 
     @org.springframework.beans.factory.annotation.Value("classpath:prd-org-users-response.json")
     private Resource resourceFile;
@@ -57,6 +58,7 @@ class ShareACaseRefDataIntegrationTest extends SpringBootIntegrationTest impleme
         addServiceAuthStub(server);
         addLegalRepUserDetailsStub(server);
         addReferenceDataPrdResponseStub(server, refDataPath, prdResponseJson);
+        addRoleAssignmentQueryStub(server);
 
         PreSubmitCallbackResponseForTest response = iaCaseApiClient.aboutToStart(callback()
             .event(SHARE_A_CASE)
@@ -100,6 +102,7 @@ class ShareACaseRefDataIntegrationTest extends SpringBootIntegrationTest impleme
         addServiceAuthStub(server);
         addLegalRepUserDetailsStub(server);
         addReferenceDataPrdResponseStub(server, refDataPath, prdResponseJsonNoOrgId);
+        addRoleAssignmentQueryStub(server);
 
         PreSubmitCallbackResponseForTest response = iaCaseApiClient.aboutToStart(callback()
             .event(SHARE_A_CASE)
@@ -143,6 +146,7 @@ class ShareACaseRefDataIntegrationTest extends SpringBootIntegrationTest impleme
         addServiceAuthStub(server);
         addLegalRepUserDetailsStub(server);
         addReferenceDataPrdResponseStub(server, refDataPath, prdResponseJson);
+        addRoleAssignmentQueryStub(server);
 
         PreSubmitCallbackResponseForTest response = iaCaseApiClient.aboutToStart(callback()
             .event(START_APPEAL)

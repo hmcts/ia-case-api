@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
+import java.util.Objects;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CHANGE_HEARING_DATE_RANGE_EARLIEST;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CHANGE_HEARING_DATE_RANGE_LATEST;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CHANGE_HEARING_DATE_TYPE;
@@ -10,7 +11,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubm
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -72,7 +72,7 @@ public class HearingsUpdateHearingRequestMidEventHandler implements PreSubmitCal
 
     private boolean isNeededDateRangeNonCompliant(AsylumCase asylumCase) {
         return asylumCase.read(CHANGE_HEARING_DATE_YES_NO, String.class)
-                   .map(yesOrNo -> StringUtils.equals("yes", yesOrNo)).orElse(false)
+                   .map(yesOrNo -> Objects.equals("yes", yesOrNo)).orElse(false)
                && asylumCase.read(CHANGE_HEARING_DATE_TYPE, String.class)
                    .map(type -> type.equals(CHOOSE_A_DATE_RANGE)).orElse(false)
                && asylumCase.read(CHANGE_HEARING_DATE_RANGE_EARLIEST, String.class).isEmpty()

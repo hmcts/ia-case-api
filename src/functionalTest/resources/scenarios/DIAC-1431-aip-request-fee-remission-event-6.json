@@ -1,0 +1,72 @@
+{
+  "description": "DIAC-1431 AiP journey admin officer apply for helpWithFees when previous asylumSupportFromHo decided",
+  "launchDarklyKey": "dlrm-refund-feature-flag:true",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "AdminOfficer",
+    "input": {
+      "id": 8070,
+      "eventId": "requestFeeRemission",
+      "state": "appealSubmitted",
+      "caseData": {
+        "template": "appeal-submitted-remission-aip.json",
+        "replacements": {
+          "lateRemissionType": "helpWithFees",
+          "remissionOption": "asylumSupportFromHo",
+          "caseDataBefore": {
+            "template": "minimal-appeal-submitted.json"
+          }
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "appeal-submitted-remission-aip.json",
+      "replacements": {
+        "lateRemissionType": "helpWithFees",
+        "remissionClaim": null,
+        "isLateRemissionRequest": "Yes",
+        "remissionType": "helpWithFees",
+        "feeRemissionType": "Help with Fees",
+        "legalAidAccountNumber": null,
+        "asylumSupportRefNumber": null,
+        "helpWithFeesRefNumber": null,
+        "lateRemissionOption": null,
+        "lateAsylumSupportRefNumber": null,
+        "lateHelpWithFeesOption": null,
+        "lateHelpWithFeesRefNumber": null,
+        "lateLocalAuthorityLetters": null,
+        "asylumSupportReference": null,
+        "asylumSupportDocument": null,
+        "section17Document": null,
+        "section20Document": null,
+        "localAuthorityLetters": null,
+        "homeOfficeWaiverDocument": null,
+        "helpWithFeesReferenceNumber": "helpWithFeesReferenceNumber",
+        "exceptionalCircumstances": null,
+        "remissionEcEvidenceDocuments": null,
+        "remissionDecision": null,
+        "amountRemitted": null,
+        "amountLeftToPay": null,
+        "remissionDecisionReason": null,
+        "remissionOption": "asylumSupportFromHo",
+        "previousRemissionDetails": [
+          {
+            "id": "1",
+            "value": {
+              "feeAmount": "14000",
+              "amountRemitted": "140.00",
+              "amountLeftToPay": "00.00",
+              "feeRemissionType": "Asylum support",
+              "asylumSupportReference": "asylumSupportRefNumber",
+              "remissionDecision": "Approved"
+            }
+          }
+        ]
+      }
+    }
+  }
+}

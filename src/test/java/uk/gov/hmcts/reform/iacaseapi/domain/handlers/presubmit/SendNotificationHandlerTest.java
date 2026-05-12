@@ -1,10 +1,32 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre.GLASGOW;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.EDIT_CASE_LISTING;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Stream;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -24,21 +46,9 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.NotificationSender;
 
-import java.util.Arrays;
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre.GLASGOW;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.EDIT_CASE_LISTING;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
-
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-@SuppressWarnings("unchecked")
 class SendNotificationHandlerTest {
 
     @Mock
@@ -74,109 +84,24 @@ class SendNotificationHandlerTest {
     }
 
     @Test
-    void should_send_notification_and_update_the_case() {
+    void should_send_notification_and_update_the_case_with_valid_event() {
+        AsylumCase expectedUpdatedCase = mock(AsylumCase.class);
 
-        Arrays.asList(
-            Event.SUBMIT_APPEAL,
-            Event.SEND_DIRECTION,
-            Event.CHANGE_DIRECTION_DUE_DATE,
-            Event.REQUEST_RESPONDENT_EVIDENCE,
-            Event.UPLOAD_RESPONDENT_EVIDENCE,
-            Event.REQUEST_RESPONDENT_REVIEW,
-            Event.ADD_APPEAL_RESPONSE,
-            Event.REQUEST_HEARING_REQUIREMENTS,
-            Event.DRAFT_HEARING_REQUIREMENTS,
-            Event.REVIEW_HEARING_REQUIREMENTS,
-            Event.REQUEST_HEARING_REQUIREMENTS_FEATURE,
-            Event.DECISION_WITHOUT_HEARING,
-            Event.LIST_CASE,
-            Event.LIST_CASE_WITHOUT_HEARING_REQUIREMENTS,
-            Event.EDIT_CASE_LISTING,
-            Event.END_APPEAL,
-            Event.UPLOAD_HOME_OFFICE_BUNDLE,
-            Event.REQUEST_CASE_BUILDING,
-            Event.UPLOAD_HOME_OFFICE_APPEAL_RESPONSE,
-            Event.REQUEST_RESPONSE_REVIEW,
-            Event.SUBMIT_CASE,
-            Event.SEND_DECISION_AND_REASONS,
-            Event.UPLOAD_ADDITIONAL_EVIDENCE,
-            Event.UPLOAD_ADDITIONAL_EVIDENCE_HOME_OFFICE,
-            Event.UPLOAD_ADDENDUM_EVIDENCE,
-            Event.UPLOAD_ADDENDUM_EVIDENCE_LEGAL_REP,
-            Event.UPLOAD_ADDENDUM_EVIDENCE_HOME_OFFICE,
-            Event.UPLOAD_ADDENDUM_EVIDENCE_ADMIN_OFFICER,
-            Event.REQUEST_REASONS_FOR_APPEAL,
-            Event.SUBMIT_REASONS_FOR_APPEAL,
-            Event.UPDATE_HEARING_ADJUSTMENTS,
-            Event.REMOVE_APPEAL_FROM_ONLINE,
-            Event.CHANGE_HEARING_CENTRE,
-            Event.APPLY_FOR_FTPA_APPELLANT,
-            Event.APPLY_FOR_FTPA_RESPONDENT,
-            Event.REVIEW_TIME_EXTENSION,
-            Event.SUBMIT_TIME_EXTENSION,
-            Event.SEND_DIRECTION_WITH_QUESTIONS,
-            Event.SUBMIT_CLARIFYING_QUESTION_ANSWERS,
-            Event.REQUEST_CASE_EDIT,
-            Event.FORCE_CASE_TO_CASE_UNDER_REVIEW,
-            Event.FORCE_CASE_TO_SUBMIT_HEARING_REQUIREMENTS,
-            Event.SUBMIT_TIME_EXTENSION,
-            Event.ADJOURN_HEARING_WITHOUT_DATE,
-            Event.RECORD_ADJOURNMENT_DETAILS,
-            Event.RESTORE_STATE_FROM_ADJOURN,
-            Event.REQUEST_CMA_REQUIREMENTS,
-            Event.SUBMIT_CMA_REQUIREMENTS,
-            Event.LIST_CMA,
-            Event.EDIT_APPEAL_AFTER_SUBMIT,
-            Event.UNLINK_APPEAL,
-            Event.LINK_APPEAL,
-            Event.LEADERSHIP_JUDGE_FTPA_DECISION,
-            Event.RESIDENT_JUDGE_FTPA_DECISION,
-            Event.REQUEST_RESPONSE_AMEND,
-            Event.MARK_APPEAL_PAID,
-            Event.MAKE_AN_APPLICATION,
-            Event.REINSTATE_APPEAL,
-            Event.DECIDE_AN_APPLICATION,
-            Event.REQUEST_NEW_HEARING_REQUIREMENTS,
-            Event.RECORD_REMISSION_DECISION,
-            Event.REQUEST_FEE_REMISSION,
-            Event.MANAGE_FEE_UPDATE,
-            Event.REQUEST_FEE_REMISSION,
-            Event.RECORD_OUT_OF_TIME_DECISION,
-            Event.UPDATE_PAYMENT_STATUS,
-            Event.ADA_SUITABILITY_REVIEW,
-            Event.TRANSFER_OUT_OF_ADA,
-            Event.MARK_APPEAL_AS_ADA,
-            Event.REMOVE_DETAINED_STATUS,
-            Event.MARK_APPEAL_AS_DETAINED,
-            Event.CREATE_CASE_LINK,
-            Event.MAINTAIN_CASE_LINKS,
-            Event.MARK_AS_READY_FOR_UT_TRANSFER,
-            Event.REQUEST_RESPONSE_AMEND,
-            Event.UPLOAD_ADDENDUM_EVIDENCE_ADMIN_OFFICER,
-            Event.MAINTAIN_CASE_LINKS,
-            Event.DECIDE_FTPA_APPLICATION
-        ).forEach(event -> {
+        when(callback.getEvent()).thenReturn(Event.SEND_DIRECTION);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)).thenReturn(Optional.of(PaymentStatus.PAID));
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
+        when(featureToggler.getValue("aip-ftpa-feature", false)).thenReturn(true);
+        when(notificationSender.send(callback)).thenReturn(expectedUpdatedCase);
 
-            AsylumCase expectedUpdatedCase = mock(AsylumCase.class);
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            sendNotificationHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
-            when(callback.getEvent()).thenReturn(event);
-            when(callback.getCaseDetails()).thenReturn(caseDetails);
-            when(caseDetails.getCaseData()).thenReturn(asylumCase);
-            when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)).thenReturn(Optional.of(PaymentStatus.PAID));
-            when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
-            when(featureToggler.getValue("aip-ftpa-feature", false)).thenReturn(true);
-            when(notificationSender.send(callback)).thenReturn(expectedUpdatedCase);
+        assertNotNull(callbackResponse);
+        assertEquals(expectedUpdatedCase, callbackResponse.getData());
 
-            PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                sendNotificationHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
-
-            assertNotNull(callbackResponse);
-            assertEquals(expectedUpdatedCase, callbackResponse.getData());
-
-            verify(notificationSender, times(1)).send(callback);
-            reset(callback);
-            reset(notificationSender);
-        });
+        verify(notificationSender, times(1)).send(callback);
     }
 
     @Test
@@ -195,9 +120,6 @@ class SendNotificationHandlerTest {
         assertEquals(expectedUpdatedCase, callbackResponse.getData());
 
         verify(notificationSender, times(1)).send(callback);
-
-        reset(callback);
-        reset(notificationSender);
     }
 
     @Test
@@ -218,293 +140,95 @@ class SendNotificationHandlerTest {
             .isExactlyInstanceOf(IllegalStateException.class);
     }
 
-    @Test
-    void it_can_handle_callback() {
+    @ParameterizedTest
+    @MethodSource("allowedEventsSource")
+    void it_can_handle_callback(Event event) {
+        when(callback.getEvent()).thenReturn(event);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)).thenReturn(Optional.of(PaymentStatus.PAYMENT_PENDING));
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
+        when(featureToggler.getValue("aip-ftpa-feature", false)).thenReturn(true);
 
-        for (Event event : Event.values()) {
+        boolean canHandle = sendNotificationHandler.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
-            when(callback.getEvent()).thenReturn(event);
-            when(callback.getCaseDetails()).thenReturn(caseDetails);
-            when(caseDetails.getCaseData()).thenReturn(asylumCase);
-            when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)).thenReturn(Optional.of(PaymentStatus.PAYMENT_PENDING));
-            when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
-            when(featureToggler.getValue("aip-ftpa-feature", false)).thenReturn(true);
-
-            for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
-
-                boolean canHandle = sendNotificationHandler.canHandle(callbackStage, callback);
-
-                if (callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-                    &&
-                    Arrays.asList(
-                        Event.START_APPEAL,
-                        Event.EDIT_APPEAL,
-                        Event.SUBMIT_APPEAL,
-                        Event.SEND_DIRECTION,
-                        Event.CHANGE_DIRECTION_DUE_DATE,
-                        Event.REQUEST_RESPONDENT_EVIDENCE,
-                        Event.UPLOAD_RESPONDENT_EVIDENCE,
-                        Event.REQUEST_RESPONDENT_REVIEW,
-                        Event.ADD_APPEAL_RESPONSE,
-                        Event.REQUEST_HEARING_REQUIREMENTS,
-                        Event.DRAFT_HEARING_REQUIREMENTS,
-                        Event.REVIEW_HEARING_REQUIREMENTS,
-                        Event.REQUEST_HEARING_REQUIREMENTS_FEATURE,
-                        Event.DECISION_WITHOUT_HEARING,
-                        Event.LIST_CASE,
-                        Event.LIST_CASE_WITHOUT_HEARING_REQUIREMENTS,
-                        Event.EDIT_CASE_LISTING,
-                        Event.END_APPEAL,
-                        Event.UPLOAD_HOME_OFFICE_BUNDLE,
-                        Event.REQUEST_CASE_BUILDING,
-                        Event.UPLOAD_HOME_OFFICE_APPEAL_RESPONSE,
-                        Event.SEND_DECISION_AND_REASONS,
-                        Event.UPLOAD_ADDITIONAL_EVIDENCE,
-                        Event.UPLOAD_ADDITIONAL_EVIDENCE_HOME_OFFICE,
-                        Event.UPLOAD_ADDENDUM_EVIDENCE,
-                        Event.UPLOAD_ADDENDUM_EVIDENCE_LEGAL_REP,
-                        Event.UPLOAD_ADDENDUM_EVIDENCE_HOME_OFFICE,
-                        Event.UPLOAD_ADDENDUM_EVIDENCE_ADMIN_OFFICER,
-                        Event.REQUEST_REASONS_FOR_APPEAL,
-                        Event.SUBMIT_REASONS_FOR_APPEAL,
-                        Event.UPDATE_HEARING_ADJUSTMENTS,
-                        Event.REMOVE_APPEAL_FROM_ONLINE,
-                        Event.CHANGE_HEARING_CENTRE,
-                        Event.APPLY_FOR_FTPA_APPELLANT,
-                        Event.APPLY_FOR_FTPA_RESPONDENT,
-                        Event.REVIEW_TIME_EXTENSION,
-                        Event.SUBMIT_TIME_EXTENSION,
-                        Event.SEND_DIRECTION_WITH_QUESTIONS,
-                        Event.SUBMIT_CLARIFYING_QUESTION_ANSWERS,
-                        Event.REQUEST_CASE_EDIT,
-                        Event.FORCE_CASE_TO_CASE_UNDER_REVIEW,
-                        Event.FORCE_CASE_TO_SUBMIT_HEARING_REQUIREMENTS,
-                        Event.ADJOURN_HEARING_WITHOUT_DATE,
-                        Event.RECORD_ADJOURNMENT_DETAILS,
-                        Event.RESTORE_STATE_FROM_ADJOURN,
-                        Event.REQUEST_CMA_REQUIREMENTS,
-                        Event.SUBMIT_CMA_REQUIREMENTS,
-                        Event.SUBMIT_CASE,
-                        Event.EDIT_APPEAL_AFTER_SUBMIT,
-                        Event.LINK_APPEAL,
-                        Event.UNLINK_APPEAL,
-                        Event.EDIT_DOCUMENTS,
-                        Event.LIST_CMA,
-                        Event.FORCE_REQUEST_CASE_BUILDING,
-                        Event.LEADERSHIP_JUDGE_FTPA_DECISION,
-                        Event.REQUEST_RESPONSE_AMEND,
-                        Event.RESIDENT_JUDGE_FTPA_DECISION,
-                        Event.MARK_APPEAL_PAID,
-                        Event.MAKE_AN_APPLICATION,
-                        Event.REINSTATE_APPEAL,
-                        Event.DECIDE_AN_APPLICATION,
-                        Event.REQUEST_NEW_HEARING_REQUIREMENTS,
-                        Event.RECORD_REMISSION_DECISION,
-                        Event.REQUEST_FEE_REMISSION,
-                        Event.MANAGE_FEE_UPDATE,
-                        Event.RECORD_OUT_OF_TIME_DECISION,
-                        Event.END_APPEAL_AUTOMATICALLY,
-                        Event.UPDATE_PAYMENT_STATUS,
-                        Event.ADA_SUITABILITY_REVIEW,
-                        Event.TRANSFER_OUT_OF_ADA,
-                        Event.MARK_APPEAL_AS_ADA,
-                        Event.REMOVE_DETAINED_STATUS,
-                        Event.MARK_APPEAL_AS_DETAINED,
-                        Event.CREATE_CASE_LINK,
-                        Event.MAINTAIN_CASE_LINKS,
-                        Event.MARK_AS_READY_FOR_UT_TRANSFER,
-                        Event.UPDATE_DETENTION_LOCATION,
-                        Event.APPLY_FOR_COSTS,
-                        Event.RESPOND_TO_COSTS,
-                        Event.ADD_EVIDENCE_FOR_COSTS,
-                        Event.CONSIDER_MAKING_COSTS_ORDER,
-                        Event.DECIDE_COSTS_APPLICATION,
-                        Event.DECIDE_FTPA_APPLICATION,
-                        Event.UPDATE_TRIBUNAL_DECISION,
-                        Event.REQUEST_RESPONSE_REVIEW,
-                        Event.RECORD_REMISSION_REMINDER,
-                        Event.MARK_APPEAL_AS_REMITTED,
-                        Event.REFUND_CONFIRMATION
-                    ).contains(event)) {
-                    assertTrue(canHandle);
-                } else {
-                    assertFalse(canHandle);
-                }
-            }
-
-            reset(callback);
-        }
+        assertTrue(canHandle);
     }
 
     @ParameterizedTest
-    @EnumSource(Event.class)
+    @MethodSource("notAllowedEventsSource")
+    void it_cannot_handle_callback_if_event_not_allowed(Event event) {
+        when(callback.getEvent()).thenReturn(event);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)).thenReturn(Optional.of(PaymentStatus.PAYMENT_PENDING));
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
+        when(featureToggler.getValue("aip-ftpa-feature", false)).thenReturn(true);
+
+        boolean canHandle = sendNotificationHandler.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertFalse(canHandle);
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = PreSubmitCallbackStage.class, mode = EnumSource.Mode.EXCLUDE, names = {"ABOUT_TO_SUBMIT"})
+    void it_cannot_handle_callback_if_incorrect_stage(PreSubmitCallbackStage stage) {
+        when(callback.getEvent()).thenReturn(Event.SEND_DIRECTION);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)).thenReturn(Optional.of(PaymentStatus.PAYMENT_PENDING));
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
+        when(featureToggler.getValue("aip-ftpa-feature", false)).thenReturn(true);
+
+        assertFalse(sendNotificationHandler.canHandle(stage, callback));
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = PreSubmitCallbackStage.class, mode = EnumSource.Mode.EXCLUDE, names = {"ABOUT_TO_SUBMIT"})
+    void it_cannot_handle_callback_given_internal_case_if_incorrect_stage(PreSubmitCallbackStage stage) {
+        when(callback.getEvent()).thenReturn(Event.DECIDE_AN_APPLICATION);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+
+        assertFalse(sendNotificationHandler.canHandle(stage, callback));
+    }
+
+    @ParameterizedTest
+    @MethodSource("notAllowedInternalEventsSource")
+    void it_cannot_handle_callback_given_internal_case_if_event_not_allowed(Event event) {
+        when(callback.getEvent()).thenReturn(event);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+
+        assertFalse(sendNotificationHandler.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback));
+    }
+
+    @ParameterizedTest
+    @MethodSource("allowedInternalEventsSource")
     void it_can_handle_callback_given_internal_case(Event event) {
         when(callback.getEvent()).thenReturn(event);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
-        when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)).thenReturn(Optional.of(PaymentStatus.PAYMENT_PENDING));
 
-        for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
-
-            boolean canHandle = sendNotificationHandler.canHandle(callbackStage, callback);
-
-            if (callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-                &&
-                Arrays.asList(
-                    Event.EDIT_APPEAL_AFTER_SUBMIT,
-                    Event.REQUEST_RESPONDENT_EVIDENCE,
-                    Event.REQUEST_RESPONDENT_REVIEW,
-                    Event.DECIDE_AN_APPLICATION,
-                    Event.MAKE_AN_APPLICATION,
-                    Event.ADA_SUITABILITY_REVIEW,
-                    Event.APPLY_FOR_FTPA_APPELLANT,
-                    Event.APPLY_FOR_FTPA_RESPONDENT,
-                    Event.REMOVE_DETAINED_STATUS,
-                    Event.REINSTATE_APPEAL,
-                    Event.RECORD_OUT_OF_TIME_DECISION,
-                    Event.END_APPEAL,
-                    Event.START_APPEAL,
-                    Event.EDIT_APPEAL,
-                    Event.SUBMIT_APPEAL,
-                    Event.UPDATE_HEARING_ADJUSTMENTS,
-                    Event.MARK_AS_READY_FOR_UT_TRANSFER,
-                    Event.REQUEST_CASE_BUILDING,
-                    Event.UPDATE_DETENTION_LOCATION,
-                    Event.GENERATE_HEARING_BUNDLE,
-                    Event.SEND_DECISION_AND_REASONS,
-                    Event.END_APPEAL_AUTOMATICALLY,
-                    Event.RECORD_REMISSION_DECISION,
-                    Event.MARK_APPEAL_PAID,
-                    Event.LIST_CASE,
-                    Event.REQUEST_HEARING_REQUIREMENTS_FEATURE,
-                    Event.REQUEST_RESPONSE_REVIEW,
-                    Event.MARK_APPEAL_AS_ADA,
-                    Event.EDIT_CASE_LISTING,
-                    Event.TRANSFER_OUT_OF_ADA,
-                    Event.SEND_DIRECTION,
-                    Event.RESIDENT_JUDGE_FTPA_DECISION,
-                    Event.MAINTAIN_CASE_LINKS,
-                    Event.CHANGE_HEARING_CENTRE,
-                    Event.CREATE_CASE_LINK,
-                    Event.UPLOAD_ADDITIONAL_EVIDENCE,
-                    Event.REQUEST_RESPONSE_AMEND,
-                    Event.UPLOAD_ADDENDUM_EVIDENCE_ADMIN_OFFICER,
-                    Event.EDIT_APPEAL_AFTER_SUBMIT,
-                    Event.CHANGE_HEARING_CENTRE,
-                    Event.CHANGE_DIRECTION_DUE_DATE,
-                    Event.UPLOAD_ADDITIONAL_EVIDENCE_HOME_OFFICE,
-                    Event.UPLOAD_ADDENDUM_EVIDENCE_HOME_OFFICE,
-                    Event.UPLOAD_ADDENDUM_EVIDENCE,
-                    Event.TURN_ON_NOTIFICATIONS,
-                    Event.DECISION_WITHOUT_HEARING,
-                    Event.FORCE_CASE_TO_SUBMIT_HEARING_REQUIREMENTS,
-                    Event.REMOVE_APPEAL_FROM_ONLINE,
-                    Event.ADJOURN_HEARING_WITHOUT_DATE,
-                    Event.MANAGE_FEE_UPDATE,
-                    Event.MARK_APPEAL_AS_REMITTED,
-                    Event.DECIDE_FTPA_APPLICATION,
-                    Event.UPDATE_TRIBUNAL_DECISION,
-                    Event.END_APPEAL_AUTOMATICALLY,
-                    Event.UPLOAD_HOME_OFFICE_APPEAL_RESPONSE,
-                    Event.SEND_PAYMENT_REMINDER_NOTIFICATION,
-                    Event.PROGRESS_MIGRATED_CASE,
-                    Event.REFUND_CONFIRMATION
-                ).contains(event)) {
-                assertTrue(canHandle);
-            } else {
-                assertFalse(canHandle);
-            }
-        }
-
-        reset(callback);
-
+        assertTrue(sendNotificationHandler.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback));
     }
 
     @Test
-    void it_can_handle_internal_case_callback() {
+    void out_of_ada_cannot_handle_uploadHomeOfficeAppealResponse() {
+        when(callback.getEvent()).thenReturn(Event.UPLOAD_HOME_OFFICE_APPEAL_RESPONSE);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
 
-        for (Event event : Event.values()) {
+        assertTrue(sendNotificationHandler.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback));
 
-            when(callback.getEvent()).thenReturn(event);
-            when(callback.getCaseDetails()).thenReturn(caseDetails);
-            when(caseDetails.getCaseData()).thenReturn(asylumCase);
-            when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
-            when(asylumCase.read(ADA_HEARING_REQUIREMENTS_SUBMITTED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
-            when(asylumCase.read(HAS_TRANSFERRED_OUT_OF_ADA, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(ADA_HEARING_REQUIREMENTS_SUBMITTED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(HAS_TRANSFERRED_OUT_OF_ADA, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
 
-            for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
-
-                boolean canHandle = sendNotificationHandler.canHandle(callbackStage, callback);
-
-                if (callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-                    &&
-                    Arrays.asList(
-                        Event.EDIT_APPEAL_AFTER_SUBMIT,
-                        Event.REQUEST_RESPONDENT_EVIDENCE,
-                        Event.REQUEST_RESPONDENT_REVIEW,
-                        Event.DECIDE_AN_APPLICATION,
-                        Event.MAKE_AN_APPLICATION,
-                        Event.ADA_SUITABILITY_REVIEW,
-                        Event.APPLY_FOR_FTPA_APPELLANT,
-                        Event.APPLY_FOR_FTPA_RESPONDENT,
-                        Event.REMOVE_DETAINED_STATUS,
-                        Event.REINSTATE_APPEAL,
-                        Event.RECORD_OUT_OF_TIME_DECISION,
-                        Event.END_APPEAL,
-                        Event.START_APPEAL,
-                        Event.EDIT_APPEAL,
-                        Event.SUBMIT_APPEAL,
-                        Event.UPDATE_HEARING_ADJUSTMENTS,
-                        Event.MARK_AS_READY_FOR_UT_TRANSFER,
-                        Event.REQUEST_CASE_BUILDING,
-                        Event.UPDATE_DETENTION_LOCATION,
-                        Event.GENERATE_HEARING_BUNDLE,
-                        Event.SEND_DECISION_AND_REASONS,
-                        Event.END_APPEAL_AUTOMATICALLY,
-                        Event.RECORD_REMISSION_DECISION,
-                        Event.MARK_APPEAL_PAID,
-                        Event.LIST_CASE,
-                        Event.REQUEST_HEARING_REQUIREMENTS_FEATURE,
-                        Event.REQUEST_RESPONSE_REVIEW,
-                        Event.MARK_APPEAL_AS_ADA,
-                        Event.EDIT_CASE_LISTING,
-                        Event.TRANSFER_OUT_OF_ADA,
-                        Event.SEND_DIRECTION,
-                        Event.RESIDENT_JUDGE_FTPA_DECISION,
-                        Event.MAINTAIN_CASE_LINKS,
-                        Event.CHANGE_HEARING_CENTRE,
-                        Event.CREATE_CASE_LINK,
-                        Event.UPLOAD_ADDITIONAL_EVIDENCE,
-                        Event.REQUEST_RESPONSE_AMEND,
-                        Event.UPLOAD_ADDENDUM_EVIDENCE_ADMIN_OFFICER,
-                        Event.EDIT_APPEAL_AFTER_SUBMIT,
-                        Event.CHANGE_HEARING_CENTRE,
-                        Event.CHANGE_DIRECTION_DUE_DATE,
-                        Event.UPLOAD_ADDITIONAL_EVIDENCE_HOME_OFFICE,
-                        Event.UPLOAD_ADDENDUM_EVIDENCE_HOME_OFFICE,
-                        Event.UPLOAD_ADDENDUM_EVIDENCE,
-                        Event.TURN_ON_NOTIFICATIONS,
-                        Event.DECISION_WITHOUT_HEARING,
-                        Event.FORCE_CASE_TO_SUBMIT_HEARING_REQUIREMENTS,
-                        Event.REMOVE_APPEAL_FROM_ONLINE,
-                        Event.ADJOURN_HEARING_WITHOUT_DATE,
-                        Event.MANAGE_FEE_UPDATE,
-                        Event.MARK_APPEAL_AS_REMITTED,
-                        Event.DECIDE_FTPA_APPLICATION,
-                        Event.PROGRESS_MIGRATED_CASE,
-                        Event.UPDATE_TRIBUNAL_DECISION,
-                        Event.SEND_PAYMENT_REMINDER_NOTIFICATION,
-                        Event.REFUND_CONFIRMATION
-                    ).contains(event)) {
-                    assertTrue(canHandle);
-                } else {
-                    assertFalse(canHandle);
-                }
-            }
-
-            reset(callback);
-        }
+        assertFalse(sendNotificationHandler.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback));
     }
 
     @Test
@@ -518,22 +242,13 @@ class SendNotificationHandlerTest {
         when(asylumCase.read(HAS_TRANSFERRED_OUT_OF_ADA, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(asylumCase.read(ADA_HEARING_REQUIREMENTS_SUBMITTED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
 
-        for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
-
-            boolean canHandle = sendNotificationHandler.canHandle(callbackStage, callback);
-
-            if (callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-                && callback.getEvent() == Event.REQUEST_RESPONSE_REVIEW) {
-
-                assertFalse(canHandle);
-            }
-        }
-
-        reset(callback);
+        assertFalse(sendNotificationHandler.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback));
     }
 
-    @Test
-    void cannot_handle_edit_case_listing_for_remote_to_remote_hearing_channel_update() {
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void cannot_handle_edit_case_listing_for_remote_to_remote_hearing_channel_update(boolean isInternal) {
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(isInternal ? YesOrNo.YES : YesOrNo.NO));
         when(asylumCaseBefore.read(LIST_CASE_HEARING_CENTRE, HearingCentre.class))
             .thenReturn(Optional.of(GLASGOW));
         when(asylumCase.read(LIST_CASE_HEARING_CENTRE, HearingCentre.class))
@@ -552,16 +267,7 @@ class SendNotificationHandlerTest {
         when(callback.getCaseDetailsBefore()).thenReturn(Optional.of(caseDetailsBefore));
         when(caseDetailsBefore.getCaseData()).thenReturn(asylumCaseBefore);
 
-        for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
-
-            boolean canHandle = sendNotificationHandler.canHandle(callbackStage, callback);
-
-            if (callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-                && callback.getEvent() == Event.REQUEST_RESPONSE_REVIEW) {
-
-                assertFalse(canHandle);
-            }
-        }
+        assertFalse(sendNotificationHandler.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback));
     }
 
     @Test
@@ -618,7 +324,7 @@ class SendNotificationHandlerTest {
         when(notificationSender.send(callback)).thenReturn(expectedUpdatedCase);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                sendNotificationHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+            sendNotificationHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
 
@@ -626,12 +332,9 @@ class SendNotificationHandlerTest {
         verify(asylumCase, times(1)).write(IS_DLRM_SET_ASIDE_ENABLED, YesOrNo.YES);
     }
 
-    @ParameterizedTest
-    @EnumSource(value = Event.class, names = {
-        "SUBMIT_APPEAL"
-    })
-    void should_set_dlrm_fee_remission_feature_flag(Event event) {
-        when(callback.getEvent()).thenReturn(event);
+    @Test
+    void should_set_dlrm_fee_remission_feature_flag() {
+        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(featureToggler.getValue("dlrm-fee-remission-feature-flag", false)).thenReturn(true);
@@ -666,5 +369,202 @@ class SendNotificationHandlerTest {
         assertThatThrownBy(() -> sendNotificationHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
+    }
+
+    @Test
+    void ifSaveAndContinueEnabled_false_should_handle_build_case() {
+        ReflectionTestUtils.setField(sendNotificationHandler, "isSaveAndContinueEnabled", false);
+        when(callback.getEvent()).thenReturn(Event.BUILD_CASE);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        assertTrue(sendNotificationHandler.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback));
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {"LEADERSHIP_JUDGE_FTPA_DECISION", "RESIDENT_JUDGE_FTPA_DECISION"})
+    void if_isRespondentApplication_then_should_handle_judge_ftpa_decisions(Event event) {
+        when(callback.getEvent()).thenReturn(event);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of("respondent"));
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+
+        assertTrue(sendNotificationHandler.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback));
+    }
+
+    private static final List<Event> allowedEventTypes = List.of(
+        Event.START_APPEAL,
+        Event.EDIT_APPEAL,
+        Event.SUBMIT_APPEAL,
+        Event.SEND_DIRECTION,
+        Event.CHANGE_DIRECTION_DUE_DATE,
+        Event.REQUEST_RESPONDENT_EVIDENCE,
+        Event.UPLOAD_RESPONDENT_EVIDENCE,
+        Event.REQUEST_RESPONDENT_REVIEW,
+        Event.ADD_APPEAL_RESPONSE,
+        Event.REQUEST_HEARING_REQUIREMENTS,
+        Event.DRAFT_HEARING_REQUIREMENTS,
+        Event.REVIEW_HEARING_REQUIREMENTS,
+        Event.REQUEST_HEARING_REQUIREMENTS_FEATURE,
+        Event.DECISION_WITHOUT_HEARING,
+        Event.LIST_CASE,
+        Event.LIST_CASE_WITHOUT_HEARING_REQUIREMENTS,
+        Event.EDIT_CASE_LISTING,
+        Event.END_APPEAL,
+        Event.UPLOAD_HOME_OFFICE_BUNDLE,
+        Event.REQUEST_CASE_BUILDING,
+        Event.UPLOAD_HOME_OFFICE_APPEAL_RESPONSE,
+        Event.SEND_DECISION_AND_REASONS,
+        Event.UPLOAD_ADDITIONAL_EVIDENCE,
+        Event.UPLOAD_ADDITIONAL_EVIDENCE_HOME_OFFICE,
+        Event.UPLOAD_ADDENDUM_EVIDENCE,
+        Event.UPLOAD_ADDENDUM_EVIDENCE_LEGAL_REP,
+        Event.UPLOAD_ADDENDUM_EVIDENCE_HOME_OFFICE,
+        Event.UPLOAD_ADDENDUM_EVIDENCE_ADMIN_OFFICER,
+        Event.REQUEST_REASONS_FOR_APPEAL,
+        Event.SUBMIT_REASONS_FOR_APPEAL,
+        Event.UPDATE_HEARING_ADJUSTMENTS,
+        Event.REMOVE_APPEAL_FROM_ONLINE,
+        Event.CHANGE_HEARING_CENTRE,
+        Event.APPLY_FOR_FTPA_APPELLANT,
+        Event.APPLY_FOR_FTPA_RESPONDENT,
+        Event.REVIEW_TIME_EXTENSION,
+        Event.SUBMIT_TIME_EXTENSION,
+        Event.SEND_DIRECTION_WITH_QUESTIONS,
+        Event.SUBMIT_CLARIFYING_QUESTION_ANSWERS,
+        Event.REQUEST_CASE_EDIT,
+        Event.FORCE_CASE_TO_CASE_UNDER_REVIEW,
+        Event.FORCE_CASE_TO_SUBMIT_HEARING_REQUIREMENTS,
+        Event.ADJOURN_HEARING_WITHOUT_DATE,
+        Event.RECORD_ADJOURNMENT_DETAILS,
+        Event.RESTORE_STATE_FROM_ADJOURN,
+        Event.REQUEST_CMA_REQUIREMENTS,
+        Event.SUBMIT_CMA_REQUIREMENTS,
+        Event.SUBMIT_CASE,
+        Event.EDIT_APPEAL_AFTER_SUBMIT,
+        Event.LINK_APPEAL,
+        Event.UNLINK_APPEAL,
+        Event.EDIT_DOCUMENTS,
+        Event.LIST_CMA,
+        Event.FORCE_REQUEST_CASE_BUILDING,
+        Event.LEADERSHIP_JUDGE_FTPA_DECISION,
+        Event.REQUEST_RESPONSE_AMEND,
+        Event.RESIDENT_JUDGE_FTPA_DECISION,
+        Event.MARK_APPEAL_PAID,
+        Event.MAKE_AN_APPLICATION,
+        Event.REINSTATE_APPEAL,
+        Event.DECIDE_AN_APPLICATION,
+        Event.REQUEST_NEW_HEARING_REQUIREMENTS,
+        Event.RECORD_REMISSION_DECISION,
+        Event.REQUEST_FEE_REMISSION,
+        Event.MANAGE_FEE_UPDATE,
+        Event.RECORD_OUT_OF_TIME_DECISION,
+        Event.END_APPEAL_AUTOMATICALLY,
+        Event.UPDATE_PAYMENT_STATUS,
+        Event.ADA_SUITABILITY_REVIEW,
+        Event.TRANSFER_OUT_OF_ADA,
+        Event.MARK_APPEAL_AS_ADA,
+        Event.REMOVE_DETAINED_STATUS,
+        Event.MARK_APPEAL_AS_DETAINED,
+        Event.CREATE_CASE_LINK,
+        Event.MAINTAIN_CASE_LINKS,
+        Event.MARK_AS_READY_FOR_UT_TRANSFER,
+        Event.UPDATE_DETENTION_LOCATION,
+        Event.APPLY_FOR_COSTS,
+        Event.RESPOND_TO_COSTS,
+        Event.ADD_EVIDENCE_FOR_COSTS,
+        Event.CONSIDER_MAKING_COSTS_ORDER,
+        Event.DECIDE_COSTS_APPLICATION,
+        Event.DECIDE_FTPA_APPLICATION,
+        Event.UPDATE_TRIBUNAL_DECISION,
+        Event.REQUEST_RESPONSE_REVIEW,
+        Event.RECORD_REMISSION_REMINDER,
+        Event.MARK_APPEAL_AS_REMITTED,
+        Event.REFUND_CONFIRMATION,
+        Event.REVOKE_CITIZEN_ACCESS,
+        Event.HEARING_CANCELLED,
+        Event.REMOVE_STATUTORY_TIMEFRAME_24_WEEKS
+    );
+
+    private static final List<Event> allowedInternalEventTypes = List.of(
+        Event.PROGRESS_MIGRATED_CASE,
+        Event.HEARING_CANCELLED,
+        Event.REINSTATE_APPEAL,
+        Event.UPLOAD_ADDITIONAL_EVIDENCE,
+        Event.SEND_DIRECTION,
+        Event.TRANSFER_OUT_OF_ADA,
+        Event.EDIT_APPEAL_AFTER_SUBMIT,
+        Event.END_APPEAL,
+        Event.REQUEST_RESPONSE_AMEND,
+        Event.DECIDE_FTPA_APPLICATION,
+        Event.CREATE_CASE_LINK,
+        Event.MAINTAIN_CASE_LINKS,
+        Event.REQUEST_HEARING_REQUIREMENTS_FEATURE,
+        Event.TURN_ON_NOTIFICATIONS,
+        Event.UPLOAD_ADDENDUM_EVIDENCE_ADMIN_OFFICER,
+        Event.START_APPEAL,
+        Event.RECORD_REMISSION_DECISION,
+        Event.UPLOAD_ADDENDUM_EVIDENCE_HOME_OFFICE,
+        Event.RESIDENT_JUDGE_FTPA_DECISION,
+        Event.UPLOAD_HOME_OFFICE_APPEAL_RESPONSE,
+        Event.MAKE_AN_APPLICATION,
+        Event.SEND_DECISION_AND_REASONS,
+        Event.RECORD_OUT_OF_TIME_DECISION,
+        Event.REMOVE_DETAINED_STATUS,
+        Event.UPLOAD_ADDENDUM_EVIDENCE,
+        Event.END_APPEAL_AUTOMATICALLY,
+        Event.MARK_APPEAL_AS_DETAINED,
+        Event.UPDATE_DETENTION_LOCATION,
+        Event.ADJOURN_HEARING_WITHOUT_DATE,
+        Event.UPLOAD_ADDITIONAL_EVIDENCE_HOME_OFFICE,
+        Event.MANAGE_FEE_UPDATE,
+        Event.UPDATE_HEARING_ADJUSTMENTS,
+        Event.GENERATE_HEARING_BUNDLE,
+        Event.MARK_APPEAL_AS_REMITTED,
+        Event.REQUEST_CASE_BUILDING,
+        Event.CHANGE_HEARING_CENTRE,
+        Event.APPLY_FOR_FTPA_RESPONDENT,
+        Event.MARK_APPEAL_AS_ADA,
+        Event.REQUEST_RESPONSE_REVIEW,
+        Event.SEND_PAYMENT_REMINDER_NOTIFICATION,
+        Event.DECIDE_AN_APPLICATION,
+        Event.APPLY_FOR_FTPA_APPELLANT,
+        Event.SUBMIT_APPEAL,
+        Event.UPDATE_TRIBUNAL_DECISION,
+        Event.FORCE_CASE_TO_SUBMIT_HEARING_REQUIREMENTS,
+        Event.ADA_SUITABILITY_REVIEW,
+        Event.EDIT_CASE_LISTING,
+        Event.MARK_AS_READY_FOR_UT_TRANSFER,
+        Event.REFUND_CONFIRMATION,
+        Event.REMOVE_APPEAL_FROM_ONLINE,
+        Event.EDIT_APPEAL,
+        Event.REQUEST_RESPONDENT_REVIEW,
+        Event.MARK_APPEAL_PAID,
+        Event.LIST_CASE,
+        Event.DECISION_WITHOUT_HEARING,
+        Event.REQUEST_RESPONDENT_EVIDENCE,
+        Event.REMOVE_STATUTORY_TIMEFRAME_24_WEEKS,
+        Event.CHANGE_DIRECTION_DUE_DATE
+    );
+
+    private static Stream<Event> allowedEventsSource() {
+        return Arrays.stream(Event.values())
+            .filter(allowedEventTypes::contains);
+    }
+
+    private static Stream<Event> notAllowedEventsSource() {
+        return Arrays.stream(Event.values())
+            .filter(event -> !allowedEventTypes.contains(event));
+    }
+
+
+    private static Stream<Event> allowedInternalEventsSource() {
+        return Arrays.stream(Event.values())
+            .filter(allowedInternalEventTypes::contains);
+    }
+
+    private static Stream<Event> notAllowedInternalEventsSource() {
+        return Arrays.stream(Event.values())
+            .filter(event -> !allowedInternalEventTypes.contains(event));
     }
 }

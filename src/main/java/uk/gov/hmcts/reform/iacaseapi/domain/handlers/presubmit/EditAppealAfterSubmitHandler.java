@@ -20,11 +20,15 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.RequiredFieldMissingException;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithDescription;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithMetadata;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Application;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ApplicationType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ContactPreference;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfCountryDecisionType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -35,6 +39,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DueDateService;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentReceiver;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
 
 @Component
 public class EditAppealAfterSubmitHandler implements PreSubmitCallbackHandler<AsylumCase> {
@@ -43,22 +49,28 @@ public class EditAppealAfterSubmitHandler implements PreSubmitCallbackHandler<As
     private final int appealOutOfTimeDaysUk;
     private final int appealOutOfTimeDaysOoc;
     private final int appealOutOfTimeAcceleratedDetainedWorkingDays;
+    private final DocumentReceiver documentReceiver;
+    private final DocumentsAppender documentsAppender;
 
     private final DueDateService dueDateService;
-    private static final String HOME_OFFICE_DECISION_PAGE_ID = "homeOfficeDecision";
+    private static final String HOME_OFFICE_DECISION_PAGE_ID = "homeOfficeDecisionLetter";
 
     public EditAppealAfterSubmitHandler(
         DateProvider dateProvider,
         DueDateService dueDateService,
         @Value("${appealOutOfTimeDaysUk}") int appealOutOfTimeDaysUk,
         @Value("${appealOutOfTimeDaysOoc}") int appealOutOfTimeDaysOoc,
-        @Value("${appealOutOfTimeAcceleratedDetainedWorkingDays}") int appealOutOfTimeAcceleratedDetainedWorkingDays
+        @Value("${appealOutOfTimeAcceleratedDetainedWorkingDays}") int appealOutOfTimeAcceleratedDetainedWorkingDays,
+        DocumentReceiver documentReceiver,
+        DocumentsAppender documentsAppender
     ) {
         this.dateProvider = dateProvider;
         this.appealOutOfTimeDaysUk = appealOutOfTimeDaysUk;
         this.appealOutOfTimeDaysOoc = appealOutOfTimeDaysOoc;
         this.appealOutOfTimeAcceleratedDetainedWorkingDays = appealOutOfTimeAcceleratedDetainedWorkingDays;
         this.dueDateService = dueDateService;
+        this.documentReceiver = documentReceiver;
+        this.documentsAppender = documentsAppender;
     }
 
     public boolean canHandle(
@@ -86,7 +98,19 @@ public class EditAppealAfterSubmitHandler implements PreSubmitCallbackHandler<As
                 .getCaseDetails()
                 .getCaseData();
 
-        asylumCase.write(HAS_ADDED_LEGAL_REP_DETAILS, YesOrNo.YES);
+
+        final String legalRepReferenceNumber = asylumCase.read(LEGAL_REP_REFERENCE_NUMBER, String.class)
+                .orElse("");
+        Optional<CaseDetails<AsylumCase>> caseDetailsBefore = callback.getCaseDetailsBefore();
+        if (caseDetailsBefore.isPresent()) {
+            final String prevLegalRepReferenceNumber = caseDetailsBefore
+                    .get().getCaseData().read(LEGAL_REP_REFERENCE_NUMBER, String.class).orElse("");
+            if (!legalRepReferenceNumber.equals(prevLegalRepReferenceNumber)) {
+                asylumCase.write(HAS_ADDED_LEGAL_REP_DETAILS, YesOrNo.YES);
+            }
+        }
+
+
 
         Optional<OutOfCountryDecisionType> outOfCountryDecisionTypeOptional = asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class);
         YesOrNo appellantInUk = asylumCase.read(APPELLANT_IN_UK, YesOrNo.class).orElse(NO);
@@ -116,8 +140,44 @@ public class EditAppealAfterSubmitHandler implements PreSubmitCallbackHandler<As
                 .orElse(State.UNKNOWN);
             asylumCase.write(CURRENT_CASE_STATE_VISIBLE_TO_CASE_OFFICER, maybePreviousState);
             clearNewMatters(asylumCase);
-            if (isInternalCase(asylumCase)) {
-                clearLegalRepFields(asylumCase);
+
+            Optional<List<IdValue<DocumentWithDescription>>> maybeNoticeOfDecision =
+                    asylumCase.read(UPLOAD_THE_NOTICE_OF_DECISION_DOCS);
+
+            List<DocumentWithMetadata> noticeOfDecision =
+                    maybeNoticeOfDecision
+                            .orElse(emptyList())
+                            .stream()
+                            .map(IdValue::getValue)
+                            .map(document -> documentReceiver.tryReceive(document, DocumentTag.HO_DECISION_LETTER))
+                            .filter(Optional::isPresent)
+                            .map(Optional::get)
+                            .collect(Collectors.toList());
+
+            Optional<List<IdValue<DocumentWithMetadata>>> maybeExistingLegalRepDocuments =
+                    asylumCase.read(LEGAL_REPRESENTATIVE_DOCUMENTS);
+
+            List<IdValue<DocumentWithMetadata>> existingLegalRepDocuments =
+                    maybeExistingLegalRepDocuments.orElse(emptyList());
+
+            existingLegalRepDocuments = existingLegalRepDocuments.stream()
+                    .filter(doc -> doc.getValue().getTag() != DocumentTag.HO_DECISION_LETTER)
+                    .toList();
+
+            if (!noticeOfDecision.isEmpty()) {
+                List<IdValue<DocumentWithMetadata>> allLegalRepDocuments =
+                        documentsAppender.prepend(existingLegalRepDocuments, noticeOfDecision);
+                asylumCase.write(LEGAL_REPRESENTATIVE_DOCUMENTS, allLegalRepDocuments);
+            }
+
+            if (isInternalCase(asylumCase) && HandlerUtils.isAppellantsRepresentation(asylumCase)) {
+                HandlerUtils.clearLegalRepFields(asylumCase);
+            } else if (HandlerUtils.hasRepresentation(asylumCase)
+                && HandlerUtils.hasUpdatedLegalRepFields(callback)) {
+                asylumCase.write(HAS_ADDED_LEGAL_REP_DETAILS, YesOrNo.YES);
+            }
+            if (!HandlerUtils.hasRepresentation(asylumCase)) {
+                asylumCase.write(HAS_ADDED_LEGAL_REP_DETAILS, NO);
             }
         }
 
@@ -150,28 +210,6 @@ public class EditAppealAfterSubmitHandler implements PreSubmitCallbackHandler<As
                         }
                     }
             );
-        }
-    }
-
-    private void clearLegalRepFields(AsylumCase asylumCase) {
-        YesOrNo appellantsRepresentation = asylumCase.read(APPELLANTS_REPRESENTATION, YesOrNo.class).orElse(NO);
-        if (YES.equals(appellantsRepresentation)) {
-            asylumCase.clear(APPEAL_WAS_NOT_SUBMITTED_REASON);
-            asylumCase.clear(APPEAL_NOT_SUBMITTED_REASON_DOCUMENTS);
-            asylumCase.clear(LEGAL_REP_COMPANY_PAPER_J);
-            asylumCase.clear(LEGAL_REP_GIVEN_NAME);
-            asylumCase.clear(LEGAL_REP_FAMILY_NAME_PAPER_J);
-            asylumCase.clear(LEGAL_REP_EMAIL);
-            asylumCase.clear(LEGAL_REP_REF_NUMBER_PAPER_J);
-
-            asylumCase.clear(LEGAL_REP_ADDRESS_U_K);
-            asylumCase.clear(OOC_ADDRESS_LINE_1);
-            asylumCase.clear(OOC_ADDRESS_LINE_2);
-            asylumCase.clear(OOC_ADDRESS_LINE_3);
-            asylumCase.clear(OOC_ADDRESS_LINE_4);
-            asylumCase.clear(OOC_COUNTRY_LINE);
-            asylumCase.clear(OOC_LR_COUNTRY_GOV_UK_ADMIN_J);
-            asylumCase.clear(LEGAL_REP_HAS_ADDRESS);
         }
     }
 

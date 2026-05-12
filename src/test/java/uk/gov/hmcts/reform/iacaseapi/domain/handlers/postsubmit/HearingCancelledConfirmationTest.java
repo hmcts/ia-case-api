@@ -27,7 +27,6 @@ class HearingCancelledConfirmationTest {
 
     @Mock
     private Callback<AsylumCase> callback;
-
     private HearingCancelledConfirmation handler = new HearingCancelledConfirmation();
 
     @ParameterizedTest

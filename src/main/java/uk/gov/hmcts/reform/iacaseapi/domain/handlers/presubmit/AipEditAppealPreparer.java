@@ -10,7 +10,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
-import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
@@ -49,10 +48,6 @@ public class AipEditAppealPreparer implements PreSubmitCallbackHandler<AsylumCas
                         .getCaseData();
 
         PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
-
-        if (HandlerUtils.isAipJourney(asylumCase)) {
-            response.addError("This option is not available for 'Appellant in person' appeals.");
-        }
 
         if (featureToggler.getValue("home-office-uan-feature", false)) {
 

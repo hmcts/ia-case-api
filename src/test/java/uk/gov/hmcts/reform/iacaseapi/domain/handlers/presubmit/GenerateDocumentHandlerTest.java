@@ -63,6 +63,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ACCELERATED_DETAINED_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ADMIN;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_DECISION_ALLOWED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_NOTIFICATION_TURNED_OFF;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_REMOTE_HEARING;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LIST_CASE_HEARING_CENTRE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LIST_CASE_HEARING_DATE;
@@ -189,16 +190,15 @@ class GenerateDocumentHandlerTest {
         "REQUEST_CASE_BUILDING",
         "ASYNC_STITCHING_COMPLETE",
         "UPDATE_TRIBUNAL_DECISION",
-        "SAVE_NOTIFICATIONS_TO_DATA"
+        "SAVE_NOTIFICATIONS_TO_DATA",
+        "MARK_APPEAL_AS_REMITTED"
     })
     void should_generate_document_and_update_the_case(Event event) {
-        AsylumCase expectedUpdatedCase = mock(AsylumCase.class);
-
         when(callback.getEvent()).thenReturn(event);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(RELIST_CASE_IMMEDIATELY, YesOrNo.class)).thenReturn(Optional.of(NO));
-
+        AsylumCase expectedUpdatedCase = mock(AsylumCase.class);
         if (event.equals(EDIT_CASE_LISTING)) {
             when(callback.getCaseDetails()).thenReturn(caseDetails);
             when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -385,7 +385,12 @@ class GenerateDocumentHandlerTest {
                     SUBMIT_CLARIFYING_QUESTION_ANSWERS,
                     UPDATE_TRIBUNAL_DECISION,
                     SAVE_NOTIFICATIONS_TO_DATA,
-                    MANAGE_FEE_UPDATE
+                    MANAGE_FEE_UPDATE,
+                    REMOVE_REPRESENTATION,
+                    REMOVE_LEGAL_REPRESENTATIVE,
+                    MARK_APPEAL_AS_REMITTED,
+                    DECIDE_FTPA_APPLICATION,
+                    DECISION_WITHOUT_HEARING
                 ).contains(event)) {
 
                 assertTrue(canHandle);
@@ -393,6 +398,23 @@ class GenerateDocumentHandlerTest {
                 assertFalse(canHandle, "failed callback: " + callbackStage + ", failed event " + event);
             }
         }
+    }
+
+    @Test
+    void should_not_generate_document_when_notification_turned_off() {
+
+        when(callback.getEvent()).thenReturn(SUBMIT_APPEAL);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(IS_NOTIFICATION_TURNED_OFF, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(asylumCase.read(RELIST_CASE_IMMEDIATELY, YesOrNo.class)).thenReturn(Optional.empty());
+
+        PreSubmitCallbackResponse<AsylumCase> response =
+            generateDocumentHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(response);
+        assertEquals(asylumCase, response.getData());
+        verify(documentGenerator, times(0)).generate(callback);
     }
 
     @ParameterizedTest
@@ -536,7 +558,12 @@ class GenerateDocumentHandlerTest {
                     SUBMIT_CLARIFYING_QUESTION_ANSWERS,
                     UPDATE_TRIBUNAL_DECISION,
                     SAVE_NOTIFICATIONS_TO_DATA,
-                    MANAGE_FEE_UPDATE
+                    MANAGE_FEE_UPDATE,
+                    REMOVE_REPRESENTATION,
+                    REMOVE_LEGAL_REPRESENTATIVE,
+                    MARK_APPEAL_AS_REMITTED,
+                    DECIDE_FTPA_APPLICATION,
+                    DECISION_WITHOUT_HEARING
                 );
 
             if (callbackStage.equals(PreSubmitCallbackStage.ABOUT_TO_SUBMIT)

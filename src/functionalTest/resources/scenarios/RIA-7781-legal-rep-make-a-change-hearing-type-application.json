@@ -1,5 +1,5 @@
 {
-  "description": "RIA-7781: Legal rep make a Change Hearing Type application",
+  "description": "RIA-7781: Legal rep make a Change Decision Type application",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "LegalRepresentative",
@@ -20,7 +20,7 @@
           "makeAnApplicationTypes": {
             "value": {
               "code": "changeHearingType",
-              "label": "Change hearing type"
+              "label": "Change decision type (ie with or without a hearing)"
             },
             "list_items": [
               {
@@ -28,12 +28,12 @@
                 "label": "Judge's review of application decision"
               },
               {
-                "code": "changeHearingType",
-                "label": "Change hearing type"
+                "code": "changeDecisionType",
+                "label": "Change decision type (ie with or without a hearing)"
               }
             ]
           },
-          "makeAnApplicationDetails": "I want to change the hearing type",
+          "makeAnApplicationDetails": "I want to change the decision type",
           "makeAnApplicationEvidence": [
             {
               "id": "223a2858-8779-45a5-b12d-bf9d689e6d7d",
@@ -66,8 +66,8 @@
             "id": "1",
             "value": {
               "date": "{$TODAY}",
-              "type": "Change hearing type",
-              "details": "I want to change the hearing type",
+              "type": "Change decision type (ie with or without a hearing)",
+              "details": "I want to change the decision type",
               "decision": "Pending",
               "evidence": [
                 {

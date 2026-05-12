@@ -66,8 +66,6 @@ class AipEditAppealPreparerTest {
         assertThat(response).isNotNull();
         assertThat(response.getData()).isNotEmpty();
         assertThat(response.getData()).isEqualTo(asylumCase);
-        assertThat(response.getErrors()).isNotEmpty();
-        assertThat(response.getErrors()).contains("This option is not available for 'Appellant in person' appeals.");
 
     }
 

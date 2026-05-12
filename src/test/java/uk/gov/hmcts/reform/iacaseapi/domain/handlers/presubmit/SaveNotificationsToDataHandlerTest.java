@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -81,6 +82,7 @@ class SaveNotificationsToDataHandlerTest {
         saveNotificationsToDataHandler = new SaveNotificationsToDataHandler(
             notificationClient,
             storedNotificationAppender,
+            true,
             featureToggler);
     }
 
@@ -452,4 +454,30 @@ class SaveNotificationsToDataHandlerTest {
             }
         }
     }
+
+    @CsvSource({
+        "true, false",
+        "false, true",
+        "false, false"
+    })
+    @ParameterizedTest
+    void it_can_handle_callback_when_save_notification_to_data_env_var_or_feature_flag_is_false(
+            boolean saveNotificationsFeatureEnabled,
+            boolean saveNotificationsToDataEnvVarEnabled
+    ) {
+        when(featureToggler.getValue("save-notifications-feature", false))
+                .thenReturn(saveNotificationsFeatureEnabled);
+        when(callback.getEvent()).thenReturn(SAVE_NOTIFICATIONS_TO_DATA);
+
+        saveNotificationsToDataHandler = new SaveNotificationsToDataHandler(
+                notificationClient,
+                storedNotificationAppender,
+                saveNotificationsToDataEnvVarEnabled,
+                featureToggler);
+
+        boolean canHandle = saveNotificationsToDataHandler.canHandle(
+                PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+        assertFalse(canHandle);
+    }
+
 }

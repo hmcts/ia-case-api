@@ -5,6 +5,8 @@ import static java.util.Objects.requireNonNull;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseData;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
@@ -20,6 +22,7 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.eventvalidation.EventValidCh
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.CcdEventAuthorizor;
 
 @Component
+@Slf4j
 public class PreSubmitCallbackDispatcher<T extends CaseData> {
 
     private final CcdEventAuthorizor ccdEventAuthorizor;
@@ -53,7 +56,8 @@ public class PreSubmitCallbackDispatcher<T extends CaseData> {
     ) {
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
-
+        log.info("Checking user event access for case reference: {}, event: '{}'",
+                callback.getCaseDetails().getId(), callback.getEvent().toString());
         ccdEventAuthorizor.throwIfNotAuthorized(callback.getEvent());
 
         T caseData =

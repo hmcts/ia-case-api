@@ -24,10 +24,11 @@ class BaseLocationTest {
         assertEquals("649000", BaseLocation.YARLS_WOOD.getId());
         assertEquals("999971", BaseLocation.ALLOA_SHERRIF.getId());
         assertEquals("420587", BaseLocation.CROWN_HOUSE.getId());
+        assertEquals("999970", BaseLocation.IAC_NATIONAL_VIRTUAL.getId());
     }
 
     @Test
     void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(15, BaseLocation.values().length);
+        assertEquals(16, BaseLocation.values().length);
     }
 }

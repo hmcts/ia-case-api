@@ -22,7 +22,7 @@ class MakeAnApplicationTypesTest {
         assertEquals("Transfer out of accelerated detained appeals process",
             MakeAnApplicationTypes.TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.toString());
         assertEquals("Other", MakeAnApplicationTypes.OTHER.toString());
-        assertEquals("Change hearing type", MakeAnApplicationTypes.CHANGE_HEARING_TYPE.toString());
+        assertEquals("Change decision type (ie with or without a hearing)", MakeAnApplicationTypes.CHANGE_DECISION_TYPE.toString());
         assertEquals("Set aside a decision", MakeAnApplicationTypes.SET_ASIDE_A_DECISION.toString());
         assertEquals("Application under rule 31 or rule 32", MakeAnApplicationTypes.APPLICATION_UNDER_RULE_31_OR_RULE_32.toString());
     }

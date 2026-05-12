@@ -7,9 +7,12 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 
 import feign.FeignException;
 import java.time.ZonedDateTime;
+import java.time.LocalDateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -103,6 +106,49 @@ class TimedEventServiceSchedulerTest {
         // Then
         verify(timedEventServiceApi).deleteTimedEvent(authToken, s2sToken, "1234567");
         assertThat(result).isFalse();
+    }
+
+    @Test
+    void should_schedule_timed_event_with_given_date() {
+        // Given
+        String caseId = "1234567890";
+        ZonedDateTime scheduledDate = ZonedDateTime.now().plusDays(1);
+        Event event = Event.REQUEST_HEARING_REQUIREMENTS_FEATURE;
+        
+        TimedEvent expectedTimedEvent = new TimedEvent(
+            "",
+            event,
+            scheduledDate,
+            "IA",
+            "Asylum",
+            Long.parseLong(caseId)
+        );
+        
+        when(timedEventServiceApi.submitTimedEvent(eq(authToken), eq(s2sToken), any(TimedEvent.class)))
+            .thenReturn(expectedTimedEvent);
+
+        // When
+        timedEventServiceScheduler.scheduleTimedEvent(caseId, scheduledDate, event, "");
+
+        // Then
+        verify(timedEventServiceApi).submitTimedEvent(eq(authToken), eq(s2sToken), any(TimedEvent.class));
+    }
+
+    @Test
+    void should_schedule_timed_event_now() {
+        // Given
+        String caseId = "1234567890";
+        Event event = Event.REQUEST_HEARING_REQUIREMENTS_FEATURE;
+        LocalDateTime now = LocalDateTime.now();
+        
+        when(timedEventServiceApi.submitTimedEvent(eq(authToken), eq(s2sToken), any(TimedEvent.class)))
+            .thenReturn(new TimedEvent("", event, ZonedDateTime.now(), "IA", "Asylum", Long.parseLong(caseId)));
+
+        // When
+        timedEventServiceScheduler.scheduleTimedEventNow(caseId, event);
+
+        // Then
+        verify(timedEventServiceApi).submitTimedEvent(eq(authToken), eq(s2sToken), any(TimedEvent.class));
     }
 
 }

@@ -7,7 +7,8 @@ import static java.util.Arrays.stream;
 public enum SourceOfAppeal {
 
     PAPER_FORM("paperForm"),
-    TRANSFERRED_FROM_UPPER_TRIBUNAL("transferredFromUpperTribunal");
+    TRANSFERRED_FROM_UPPER_TRIBUNAL("transferredFromUpperTribunal"),
+    REHYDRATED_APPEAL("rehydratedAppeal");
 
     @JsonValue
     private String value;

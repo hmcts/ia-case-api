@@ -21,8 +21,10 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_CENTRE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_CENTRE_DYNAMIC_LIST;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_CASE_USING_LOCATION_REF_DATA;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_VIRTUAL_HEARING;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SELECTED_HEARING_CENTRE_REF_DATA;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre.HATTON_CROSS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre.IAC_NATIONAL_VIRTUAL;
 
 import java.util.Collections;
 import java.util.List;
@@ -211,5 +213,33 @@ class ChangeHearingCentreHandlerTest {
             hearingCentreList.getValue().getLabel());
 
         verify(asylumCase).write(CASE_MANAGEMENT_LOCATION_REF_DATA, expectedCml);
+    }
+
+    @Test
+    void should_virtual_region_flag_set_when_virtual_hearing_centre_is_selected() {
+        when(asylumCase.read(IS_CASE_USING_LOCATION_REF_DATA, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+
+        final DynamicList hearingCentreList = new DynamicList(
+            new Value("999970", "IAC National (Virtual)"),
+            List.of(
+                new Value("999970", "IAC National (Virtual)"))
+        );
+        when(asylumCase.read(HEARING_CENTRE_DYNAMIC_LIST, DynamicList.class)).thenReturn(Optional.of(hearingCentreList));
+
+        CaseManagementLocationRefData
+            expectedCml = new CaseManagementLocationRefData(Region.NATIONAL, hearingCentreList);
+
+        when(caseManagementLocationService.getRefDataCaseManagementLocation(any()))
+            .thenReturn(expectedCml);
+
+        changeHearingCentreHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        verify(asylumCase).read(HEARING_CENTRE_DYNAMIC_LIST, DynamicList.class);
+        verify(asylumCase).write(HEARING_CENTRE, IAC_NATIONAL_VIRTUAL);
+        verify(asylumCase).write(SELECTED_HEARING_CENTRE_REF_DATA,
+            hearingCentreList.getValue().getLabel());
+
+        verify(asylumCase).write(CASE_MANAGEMENT_LOCATION_REF_DATA, expectedCml);
+        verify(asylumCase).write(IS_VIRTUAL_HEARING, YesOrNo.YES);
     }
 }

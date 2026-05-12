@@ -9,15 +9,20 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PostSubmitCallbackHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.IdamService;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.RoleAssignmentService;
 
 @Slf4j
 @Component
 public class SendDecisionAndReasonsConfirmation implements PostSubmitCallbackHandler<AsylumCase> {
     private final RoleAssignmentService roleAssignmentService;
+    private final IdamService idamService;
+    private final String serviceToken = "serviceToken";
 
-    public SendDecisionAndReasonsConfirmation(RoleAssignmentService roleAssignmentService) {
+    public SendDecisionAndReasonsConfirmation(RoleAssignmentService roleAssignmentService,
+                                              IdamService idamService) {
         this.roleAssignmentService = roleAssignmentService;
+        this.idamService = idamService;
     }
 
     public boolean canHandle(
@@ -35,7 +40,8 @@ public class SendDecisionAndReasonsConfirmation implements PostSubmitCallbackHan
             throw new IllegalStateException("Cannot handle callback");
         }
 
-        roleAssignmentService.removeCaseManagerRole(String.valueOf(callback.getCaseDetails().getId()));
+        roleAssignmentService.removeCaseRoleAssignments(String.valueOf(callback.getCaseDetails().getId()),
+            idamService.getServiceUserToken());
 
         PostSubmitCallbackResponse postSubmitResponse =
                 new PostSubmitCallbackResponse();

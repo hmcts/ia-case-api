@@ -4,19 +4,25 @@ import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDecision.APPROVED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.clearPreviousRemissionCaseFields;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.clearRemissionDecisionFields;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isAipJourney;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.setFeeRemissionTypeDetails;
 
 import java.util.List;
 import java.util.Optional;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsHelper;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.FeeRemissionType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDecision;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDetails;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserRoleLabel;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
@@ -34,13 +40,19 @@ public class RequestFeeRemissionHandler implements PreSubmitCallbackHandler<Asyl
 
     private final FeatureToggler featureToggler;
     private final RemissionDetailsAppender remissionDetailsAppender;
+    private final UserDetails userDetails;
+    private final UserDetailsHelper userDetailsHelper;
 
     public RequestFeeRemissionHandler(
         FeatureToggler featureToggler,
-        RemissionDetailsAppender remissionDetailsAppender
+        RemissionDetailsAppender remissionDetailsAppender,
+        UserDetails userDetails,
+        UserDetailsHelper userDetailsHelper
     ) {
         this.featureToggler = featureToggler;
         this.remissionDetailsAppender = remissionDetailsAppender;
+        this.userDetails = userDetails;
+        this.userDetailsHelper = userDetailsHelper;
     }
 
     public boolean canHandle(
@@ -87,172 +99,14 @@ public class RequestFeeRemissionHandler implements PreSubmitCallbackHandler<Asyl
         }
 
         clearPreviousRemissionCaseFields(asylumCase);
+        clearRemissionDecisionFields(asylumCase);
+        asylumCase.clear(REMISSION_TYPE);
 
+        UserRoleLabel currentUser = userDetailsHelper.getLoggedInUserRoleLabel(userDetails);
+        asylumCase.write(REMISSION_REQUESTED_BY, currentUser);
         asylumCase.write(REQUEST_FEE_REMISSION_FLAG_FOR_SERVICE_REQUEST, YesOrNo.YES);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
-    }
-
-    private void setFeeRemissionTypeDetails(AsylumCase asylumCase) {
-
-        log.info("Setting fee remission type details");
-
-        Optional<RemissionType> lateRemissionTypeOpt = asylumCase.read(LATE_REMISSION_TYPE, RemissionType.class);
-        String remissionClaim = asylumCase.read(REMISSION_CLAIM, String.class)
-            .orElse("");
-
-        if (lateRemissionTypeOpt.isPresent()) {
-            RemissionType lateRemissionType = lateRemissionTypeOpt.get();
-
-            if (lateRemissionType == RemissionType.HO_WAIVER_REMISSION) {
-                switch (remissionClaim) {
-                    case "asylumSupport":
-                        asylumCase.write(FEE_REMISSION_TYPE, "Asylum support");
-                        break;
-
-                    case "legalAid":
-                        asylumCase.write(FEE_REMISSION_TYPE, "Legal Aid");
-                        break;
-
-                    case "section17":
-                        asylumCase.write(FEE_REMISSION_TYPE, "Section 17");
-                        break;
-
-                    case "section20":
-                        asylumCase.write(FEE_REMISSION_TYPE, "Section 20");
-                        break;
-
-                    case "homeOfficeWaiver":
-                        asylumCase.write(FEE_REMISSION_TYPE, "Home Office fee waiver");
-                        break;
-
-                    default:
-                        break;
-                }
-            } else if (lateRemissionType == RemissionType.HELP_WITH_FEES) {
-                asylumCase.write(FEE_REMISSION_TYPE, "Help with Fees");
-            } else if (lateRemissionType == RemissionType.EXCEPTIONAL_CIRCUMSTANCES_REMISSION) {
-                asylumCase.write(FEE_REMISSION_TYPE, "Exceptional circumstances");
-            }
-        }
-    }
-
-    private void clearPreviousRemissionCaseFields(AsylumCase asylumCase) {
-
-        log.info("Clearing previous remission case fields");
-
-        final Optional<RemissionType> lateRemissionTypeOpt = asylumCase.read(LATE_REMISSION_TYPE, RemissionType.class);
-        String remissionClaim = asylumCase.read(REMISSION_CLAIM, String.class).orElse("");
-
-        if (lateRemissionTypeOpt.isPresent()) {
-
-            switch (lateRemissionTypeOpt.get()) {
-                case HO_WAIVER_REMISSION:
-                    switch (remissionClaim) {
-                        case "asylumSupport" -> {
-                            clearLegalAidAccountNumberRemissionDetails(asylumCase);
-                            clearSection17RemissionDetails(asylumCase);
-                            clearSection20RemissionDetails(asylumCase);
-                            clearHomeOfficeWaiverRemissionDetails(asylumCase);
-                            clearHelpWithFeesRemissionDetails(asylumCase);
-                            clearExceptionalCircumstancesRemissionDetails(asylumCase);
-                        }
-                        case "legalAid" -> {
-                            clearAsylumSupportRemissionDetails(asylumCase);
-                            clearSection17RemissionDetails(asylumCase);
-                            clearSection20RemissionDetails(asylumCase);
-                            clearHomeOfficeWaiverRemissionDetails(asylumCase);
-                            clearHelpWithFeesRemissionDetails(asylumCase);
-                            clearExceptionalCircumstancesRemissionDetails(asylumCase);
-                        }
-                        case "section17" -> {
-                            clearAsylumSupportRemissionDetails(asylumCase);
-                            clearLegalAidAccountNumberRemissionDetails(asylumCase);
-                            clearSection20RemissionDetails(asylumCase);
-                            clearHomeOfficeWaiverRemissionDetails(asylumCase);
-                            clearHelpWithFeesRemissionDetails(asylumCase);
-                            clearExceptionalCircumstancesRemissionDetails(asylumCase);
-                        }
-                        case "section20" -> {
-                            clearAsylumSupportRemissionDetails(asylumCase);
-                            clearLegalAidAccountNumberRemissionDetails(asylumCase);
-                            clearSection17RemissionDetails(asylumCase);
-                            clearHomeOfficeWaiverRemissionDetails(asylumCase);
-                            clearHelpWithFeesRemissionDetails(asylumCase);
-                            clearExceptionalCircumstancesRemissionDetails(asylumCase);
-                        }
-                        case "homeOfficeWaiver" -> {
-                            clearAsylumSupportRemissionDetails(asylumCase);
-                            clearLegalAidAccountNumberRemissionDetails(asylumCase);
-                            clearSection17RemissionDetails(asylumCase);
-                            clearSection20RemissionDetails(asylumCase);
-                            clearHelpWithFeesRemissionDetails(asylumCase);
-                            clearExceptionalCircumstancesRemissionDetails(asylumCase);
-                        }
-                        default -> {
-
-                        }
-                    }
-                    break;
-
-                case HELP_WITH_FEES:
-                    clearAsylumSupportRemissionDetails(asylumCase);
-                    clearLegalAidAccountNumberRemissionDetails(asylumCase);
-                    clearSection17RemissionDetails(asylumCase);
-                    clearSection20RemissionDetails(asylumCase);
-                    clearHomeOfficeWaiverRemissionDetails(asylumCase);
-                    clearExceptionalCircumstancesRemissionDetails(asylumCase);
-                    break;
-
-                case EXCEPTIONAL_CIRCUMSTANCES_REMISSION:
-                    clearAsylumSupportRemissionDetails(asylumCase);
-                    clearLegalAidAccountNumberRemissionDetails(asylumCase);
-                    clearSection17RemissionDetails(asylumCase);
-                    clearSection20RemissionDetails(asylumCase);
-                    clearHomeOfficeWaiverRemissionDetails(asylumCase);
-                    clearHelpWithFeesRemissionDetails(asylumCase);
-                    break;
-
-                default:
-                    break;
-            }
-
-            asylumCase.clear(REMISSION_DECISION);
-            asylumCase.clear(AMOUNT_REMITTED);
-            asylumCase.clear(AMOUNT_LEFT_TO_PAY);
-            asylumCase.clear(REMISSION_DECISION_REASON);
-            asylumCase.clear(REMISSION_TYPE);
-        }
-    }
-
-    private void clearAsylumSupportRemissionDetails(AsylumCase asylumCase) {
-        asylumCase.clear(ASYLUM_SUPPORT_REFERENCE);
-        asylumCase.clear(ASYLUM_SUPPORT_DOCUMENT);
-    }
-
-    private void clearLegalAidAccountNumberRemissionDetails(AsylumCase asylumCase) {
-        asylumCase.clear(LEGAL_AID_ACCOUNT_NUMBER);
-    }
-
-    private void clearSection17RemissionDetails(AsylumCase asylumCase) {
-        asylumCase.clear(SECTION17_DOCUMENT);
-    }
-
-    private void clearSection20RemissionDetails(AsylumCase asylumCase) {
-        asylumCase.clear(SECTION20_DOCUMENT);
-    }
-
-    private void clearHomeOfficeWaiverRemissionDetails(AsylumCase asylumCase) {
-        asylumCase.clear(HOME_OFFICE_WAIVER_DOCUMENT);
-    }
-
-    private void clearHelpWithFeesRemissionDetails(AsylumCase asylumCase) {
-        asylumCase.clear(HELP_WITH_FEES_REFERENCE_NUMBER);
-    }
-
-    private void clearExceptionalCircumstancesRemissionDetails(AsylumCase asylumCase) {
-        asylumCase.clear(EXCEPTIONAL_CIRCUMSTANCES);
-        asylumCase.clear(REMISSION_EC_EVIDENCE_DOCUMENTS);
     }
 
     private void appendTempPreviousRemissionDetails(AsylumCase asylumCase) {
@@ -270,7 +124,7 @@ public class RequestFeeRemissionHandler implements PreSubmitCallbackHandler<Asyl
             String feeRemissionType = feeRemissionTypeOpt.get();
 
             switch (feeRemissionType) {
-                case "Asylum support":
+                case FeeRemissionType.ASYLUM_SUPPORT:
                     String asylumSupportReference = asylumCase.read(ASYLUM_SUPPORT_REFERENCE, String.class)
                             .orElse("");
                     Optional<Document> asylumSupportDocument = asylumCase.read(ASYLUM_SUPPORT_DOCUMENT);
@@ -284,7 +138,7 @@ public class RequestFeeRemissionHandler implements PreSubmitCallbackHandler<Asyl
                             );
                     break;
 
-                case "Legal Aid":
+                case FeeRemissionType.LEGAL_AID:
                     String legalAidAccountNumber = asylumCase.read(LEGAL_AID_ACCOUNT_NUMBER, String.class)
                             .orElse("");
 
@@ -296,7 +150,7 @@ public class RequestFeeRemissionHandler implements PreSubmitCallbackHandler<Asyl
                             );
                     break;
 
-                case "Section 17":
+                case FeeRemissionType.SECTION_17:
                     Optional<Document> section17Document = asylumCase.read(SECTION17_DOCUMENT);
 
                     if (section17Document.isPresent()) {
@@ -310,7 +164,7 @@ public class RequestFeeRemissionHandler implements PreSubmitCallbackHandler<Asyl
 
                     break;
 
-                case "Section 20":
+                case FeeRemissionType.SECTION_20:
                     Optional<Document> section20Document = asylumCase.read(SECTION20_DOCUMENT);
 
                     if (section20Document.isPresent()) {
@@ -324,7 +178,7 @@ public class RequestFeeRemissionHandler implements PreSubmitCallbackHandler<Asyl
 
                     break;
 
-                case "Home Office fee waiver":
+                case FeeRemissionType.HO_WAIVER:
                     Optional<Document> homeOfficeWaiverDocument = asylumCase.read(HOME_OFFICE_WAIVER_DOCUMENT);
 
                     if (homeOfficeWaiverDocument.isPresent()) {
@@ -337,7 +191,7 @@ public class RequestFeeRemissionHandler implements PreSubmitCallbackHandler<Asyl
                     }
                     break;
 
-                case "Help with Fees":
+                case FeeRemissionType.HELP_WITH_FEES:
                     String helpWithReference =
                             asylumCase.read(HELP_WITH_FEES_REFERENCE_NUMBER, String.class).orElse("");
 
@@ -349,7 +203,7 @@ public class RequestFeeRemissionHandler implements PreSubmitCallbackHandler<Asyl
                             );
                     break;
 
-                case "Exceptional circumstances":
+                case FeeRemissionType.EXCEPTIONAL_CIRCUMSTANCES:
                     String exceptionalCircumstances = asylumCase.read(EXCEPTIONAL_CIRCUMSTANCES, String.class)
                             .orElseThrow(() -> new IllegalStateException("Exceptional circumstances details not present"));
                     Optional<List<IdValue<Document>>> exceptionalCircumstancesDocuments =

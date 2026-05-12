@@ -49,7 +49,10 @@ public class CaseManagementLocationService {
 
     private Optional<BaseLocation> getBaseLocation(String staffLocationName) {
         String fromStaffLocationNameToBaseLocationEnumName =
-                StringUtils.upperCase(staffLocationName).replace(" ", "_");
+                StringUtils.upperCase(staffLocationName)
+                        .replace(" ", "_")
+                        .replace("(", "")
+                        .replace(")", "");
         BaseLocation baseLocation = BaseLocation.valueOf(fromStaffLocationNameToBaseLocationEnumName);
         return Optional.of(baseLocation);
 

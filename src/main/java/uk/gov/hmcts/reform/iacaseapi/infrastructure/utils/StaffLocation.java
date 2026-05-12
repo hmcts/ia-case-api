@@ -42,6 +42,8 @@ public class StaffLocation {
                 return new Location("", "Remote hearing");
             case "decisionWithoutHearing":
                 return new Location("", "Decision Without Hearing");
+            case "iacNationalVirtual":
+                return new Location("", "IAC National (Virtual)");
             default:
                 throw new IllegalArgumentException("no hearing centre found");
         }
@@ -68,6 +70,8 @@ public class StaffLocation {
                 return new Location("", "Newport");
             case "765324":
                 return new Location("", "Taylor House");
+            case "999970":
+                return new Location("", "IAC National (Virtual)");
             default:
                 throw new IllegalArgumentException("no hearing centre found");
         }
