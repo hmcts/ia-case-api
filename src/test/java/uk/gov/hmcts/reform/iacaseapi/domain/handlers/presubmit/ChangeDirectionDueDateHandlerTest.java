@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
-import static com.beust.jcommander.internal.Lists.newArrayList;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -137,8 +136,8 @@ class ChangeDirectionDueDateHandlerTest {
                     "2020-11-01",
                     "2019-11-01",
                     DirectionTag.RESPONDENT_REVIEW,
-                    newArrayList(new IdValue<>("1", new PreviousDates("2018-05-01", "2018-03-01"))),
-                    newArrayList(new IdValue<>("1", new ClarifyingQuestion("is this a sample question?"))),
+                    List.of(new IdValue<>("1", new PreviousDates("2018-05-01", "2018-03-01"))),
+                    List.of(new IdValue<>("1", new ClarifyingQuestion("is this a sample question?"))),
                     UUID.randomUUID().toString(),
                     "directionType2"
                 ))

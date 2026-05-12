@@ -9,7 +9,7 @@ plugins {
     id 'org.flywaydb.flyway' version '5.2.4'
     id 'org.owasp.dependencycheck' version '10.0.4'
     id 'org.sonarqube' version '6.2.0.5505'
-    id 'org.springframework.boot' version '3.1.12'
+    id 'org.springframework.boot' version '3.2.12'
     id 'uk.gov.hmcts.java' version '0.12.68'
     id 'au.com.dius.pact' version '4.6.20'
     id "io.freefair.lombok" version '9.2.0'
@@ -21,9 +21,9 @@ plugins {
 rewrite {
 //    activeRecipe('org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_0')
 //  activeRecipe('org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_1')
-  activeRecipe('org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_2')
+//  activeRecipe('org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_2')
 //  activeRecipe('org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_3')
-//  activeRecipe('org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_4')
+  activeRecipe('org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_4')
 //  activeRecipe('org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_5')
 //  activeRecipe('org.openrewrite.java.migrate.UpgradeToJava21')
 //  setExportDatatables(true)
@@ -211,7 +211,7 @@ task fortifyScan(type: JavaExec, description: 'Run fortify scan.')  {
 project.ext {
     pacticipant = 'ia_caseApi'
     pacticipantVersion = getCheckedOutGitCommitHash()
-    set('springCloudVersion', "2022.0.5")
+    set('springCloudVersion', "2023.0.6")
 }
 
 jacoco {
@@ -370,7 +370,7 @@ dependencies {
         }
     }
     implementation group: 'commons-io', name: 'commons-io', version: '2.19.0'
-    implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.2.0'
+    implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.5.0'
     implementation group: 'org.postgresql', name: 'postgresql', version: '42.7.11'
     implementation group: 'com.sun.xml.bind', name: 'jaxb-osgi', version: '2.3.9'
 
@@ -391,8 +391,8 @@ dependencies {
 
     implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: '7.0.0'
     implementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '5.3.3'
-    implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '4.0.6'
-    implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-bootstrap' , version: '4.0.5'
+    implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '4.1.5'
+    implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-bootstrap' , version: '4.1.6'
 
     implementation group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '5.2.1-RELEASE'
 
@@ -423,7 +423,7 @@ dependencies {
 
     testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test'
 
-    testImplementation(group: 'org.springframework.cloud', name: 'spring-cloud-contract-wiremock', version: '4.0.5') {
+    testImplementation(group: 'org.springframework.cloud', name: 'spring-cloud-contract-wiremock', version: '4.1.6') {
         exclude group: "com.github.tomakehurst", module: "wiremock-standalone"
     }
 
