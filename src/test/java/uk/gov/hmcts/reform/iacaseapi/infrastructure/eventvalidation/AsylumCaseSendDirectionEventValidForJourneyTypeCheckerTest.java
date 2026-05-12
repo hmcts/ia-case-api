@@ -152,4 +152,17 @@ class AsylumCaseSendDirectionEventValidForJourneyTypeCheckerTest {
         when(asylumCase.read(AsylumCaseFieldDefinition.SEND_DIRECTION_PARTIES, Parties.class))
                 .thenReturn(Optional.of(party));
     }
+
+    @Test
+    void cannotSendDirectionToAppellantAndRespondentForManualCase() {
+        setupInternalCaseCallback(Parties.APPELLANT_AND_RESPONDENT);
+        EventValid eventValid = new AsylumCaseSendDirectionEventValidForJourneyTypeChecker().check(callback);
+
+        assertThat(eventValid).isEqualTo(
+                new EventValid("You cannot select appellant and respondent as joint recipients on a manual appeal. The direction will need to be issued to the recipients individually."));
+
+        Assertions.assertThat(loggingEventListAppender.list)
+                .extracting(ILoggingEvent::getMessage, ILoggingEvent::getLevel)
+                .contains(Tuple.tuple("You cannot select appellant and respondent as joint recipients on a manual appeal. The direction will need to be issued to the recipients individually.", Level.ERROR));
+    }
 }
