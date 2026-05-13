@@ -67,6 +67,56 @@ public class EditDocsService {
         return deletedFinalDecisionAndReasonsDocIds.contains(currentFTPADecisionAndReasonDocumentId);
     }
 
+    public void cleanUpAppealTabDocs(AsylumCase asylumCase, AsylumCase asylumCaseBefore) {
+        List<String> deletedLRDocIds = getDeletedAppealDocIds(asylumCase, asylumCaseBefore);
+
+        cleanUpAppealDocumentList(asylumCase, LEGAL_REPRESENTATIVE_DOCUMENTS, deletedLRDocIds);
+        cleanUpAppealDocumentList(asylumCase, REASONS_FOR_APPEAL_DOCUMENTS, deletedLRDocIds);
+    }
+
+    private void cleanUpAppealDocumentList(
+            AsylumCase asylumCase,
+            AsylumCaseFieldDefinition documentType,
+            List<String> deletedDocIds
+    ) {
+        Document currentDocument = asylumCase.read(documentType, Document.class).orElse(null);
+
+        if (currentDocument != null && doWeHaveToCleanUpAppealTabDoc(deletedDocIds, currentDocument)) {
+            asylumCase.clear(documentType);
+        }
+    }
+
+    private boolean doWeHaveToCleanUpAppealTabDoc(List<String> deletedLRDocIds,
+                                                    Document currentLRPdf) {
+        String currentLRPdfId = getIdFromDocUrl(currentLRPdf.getDocumentUrl());
+        return deletedLRDocIds.contains(currentLRPdfId);
+    }
+
+    private List<String> getDeletedAppealDocIds(AsylumCase asylumCase, AsylumCase asylumCaseBefore) {
+
+        List<String> updatedAndDeletedDocIdsForGivenField =
+                docsAuditService.getUpdatedAndDeletedDocIdsForGivenField(
+                        asylumCase,
+                        asylumCaseBefore,
+                        LEGAL_REPRESENTATIVE_DOCUMENTS
+                );
+
+        Optional<List<IdValue<DocumentWithMetadata>>> optionalDocuments =
+                asylumCase.read(LEGAL_REPRESENTATIVE_DOCUMENTS);
+
+        List<String> currentDocIds = new ArrayList<>();
+
+        if (optionalDocuments.isPresent()) {
+            currentDocIds = optionalDocuments.get().stream()
+                    .map(idValue -> getIdFromDocUrl(idValue.getValue().getDocument().getDocumentUrl()))
+                    .toList();
+        }
+
+        updatedAndDeletedDocIdsForGivenField.removeAll(currentDocIds);
+
+        return updatedAndDeletedDocIdsForGivenField;
+    }
+
     private List<String> getDeletedDocIds(AsylumCase asylumCase, AsylumCase asylumCaseBefore) {
         List<String> updatedAndDeletedDocIdsForGivenField = docsAuditService.getUpdatedAndDeletedDocIdsForGivenField(
             asylumCase, asylumCaseBefore, FINAL_DECISION_AND_REASONS_DOCUMENTS);
