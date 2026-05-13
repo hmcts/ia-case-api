@@ -205,7 +205,7 @@ class ProgressMigratedCaseHandlerTest {
         assertEquals(fullName, writtenCaseNote1.getUser());
         assertEquals(currentDate.toString(), writtenCaseNote1.getDateAdded());
 
-        CaseNote writtenCaseNote2 = writtenCaseNotes.get(0).getValue();
+        CaseNote writtenCaseNote2 = writtenCaseNotes.getFirst().getValue();
 
         assertEquals(subject2, writtenCaseNote2.getCaseNoteSubject());
         assertEquals(description2, writtenCaseNote2.getCaseNoteDescription());
@@ -268,7 +268,7 @@ class ProgressMigratedCaseHandlerTest {
         assertEquals(fullName, writtenCaseNote1.getUser());
         assertEquals(currentDate.toString(), writtenCaseNote1.getDateAdded());
 
-        CaseNote writtenCaseNote2 = writtenCaseNotes.get(0).getValue();
+        CaseNote writtenCaseNote2 = writtenCaseNotes.getFirst().getValue();
 
         assertEquals(subject2, writtenCaseNote2.getCaseNoteSubject());
         assertEquals(description2, writtenCaseNote2.getCaseNoteDescription());

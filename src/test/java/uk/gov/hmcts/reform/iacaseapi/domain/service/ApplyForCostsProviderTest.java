@@ -76,7 +76,7 @@ class ApplyForCostsProviderTest {
         List<Value> applyForCostsForRespondent = applyForCostsProvider.getApplyForCostsForRespondent(asylumCase);
         assertNotNull(applyForCostsForRespondent);
         assertThat(applyForCostsForRespondent.size()).isEqualTo(1);
-        assertThat(applyForCostsForRespondent.get(0).getLabel().equals("Costs 1, Wasted Costs, 10 Nov 2023"));
+        assertThat(applyForCostsForRespondent.getFirst().getLabel().equals("Costs 1, Wasted Costs, 10 Nov 2023"));
     }
 
     @ParameterizedTest
@@ -91,7 +91,7 @@ class ApplyForCostsProviderTest {
         List<Value> applyForCostsList = applyForCostsProvider.getApplyForCostsForAdditionalEvidence(asylumCase);
         assertNotNull(applyForCostsList);
         assertThat(applyForCostsList.size()).isEqualTo(1);
-        assertThat(applyForCostsList.get(0).getLabel().equals("Costs 1, Wasted Costs, 10 Nov 2023"));
+        assertThat(applyForCostsList.getFirst().getLabel().equals("Costs 1, Wasted Costs, 10 Nov 2023"));
     }
 
     @Test
@@ -99,7 +99,7 @@ class ApplyForCostsProviderTest {
         List<Value> applyForCostsForJudgeDecision = applyForCostsProvider.getApplyForCostsForJudgeDecision(asylumCase);
         assertNotNull(applyForCostsForJudgeDecision);
         assertThat(applyForCostsForJudgeDecision.size()).isEqualTo(1);
-        assertThat(applyForCostsForJudgeDecision.get(0).getLabel().equals("Costs 1, Wasted Costs, 10 Nov 2023"));
+        assertThat(applyForCostsForJudgeDecision.getFirst().getLabel().equals("Costs 1, Wasted Costs, 10 Nov 2023"));
     }
 
     @Test

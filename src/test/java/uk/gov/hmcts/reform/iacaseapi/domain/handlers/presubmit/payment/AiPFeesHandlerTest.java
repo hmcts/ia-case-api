@@ -145,7 +145,7 @@ class AiPFeesHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(feePayment, times(1)).aboutToSubmit(callback);;
+        verify(feePayment, times(1)).aboutToSubmit(callback);
         verify(asylumCase, times(1)).write(PAYMENT_STATUS, PAYMENT_PENDING);
         verify(asylumCase, times(1)).clear(PA_APPEAL_TYPE_PAYMENT_OPTION);
         verifyRemissionsDetailsCleared();

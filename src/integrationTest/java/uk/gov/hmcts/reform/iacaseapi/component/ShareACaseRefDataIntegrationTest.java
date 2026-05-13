@@ -80,9 +80,9 @@ class ShareACaseRefDataIntegrationTest extends SpringBootIntegrationTest impleme
         List<Value> listItems = dynamicList.getListItems();
         assertThat(listItems.size()).isEqualTo(2);
 
-        assertThat(listItems.get(0).getCode()).isEqualTo(prdSuccessResponse.getUsers().get(0).getUserIdentifier());
+        assertThat(listItems.getFirst().getCode()).isEqualTo(prdSuccessResponse.getUsers().getFirst().getUserIdentifier());
         assertThat(listItems.get(1).getCode()).isEqualTo(prdSuccessResponse.getUsers().get(1).getUserIdentifier());
-        assertThat(listItems.get(0).getLabel()).isEqualTo(prdSuccessResponse.getUsers().get(0).getEmail());
+        assertThat(listItems.getFirst().getLabel()).isEqualTo(prdSuccessResponse.getUsers().getFirst().getEmail());
         assertThat(listItems.get(1).getLabel()).isEqualTo(prdSuccessResponse.getUsers().get(1).getEmail());
 
     }
@@ -124,9 +124,9 @@ class ShareACaseRefDataIntegrationTest extends SpringBootIntegrationTest impleme
         List<Value> listItems = dynamicList.getListItems();
         assertThat(listItems.size()).isEqualTo(2);
 
-        assertThat(listItems.get(0).getCode()).isEqualTo(prdSuccessResponse.getUsers().get(0).getUserIdentifier());
+        assertThat(listItems.getFirst().getCode()).isEqualTo(prdSuccessResponse.getUsers().getFirst().getUserIdentifier());
         assertThat(listItems.get(1).getCode()).isEqualTo(prdSuccessResponse.getUsers().get(1).getUserIdentifier());
-        assertThat(listItems.get(0).getLabel()).isEqualTo(prdSuccessResponse.getUsers().get(0).getEmail());
+        assertThat(listItems.getFirst().getLabel()).isEqualTo(prdSuccessResponse.getUsers().getFirst().getEmail());
         assertThat(listItems.get(1).getLabel()).isEqualTo(prdSuccessResponse.getUsers().get(1).getEmail());
 
     }

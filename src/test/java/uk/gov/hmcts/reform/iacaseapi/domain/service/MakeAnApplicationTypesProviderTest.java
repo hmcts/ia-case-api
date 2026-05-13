@@ -101,7 +101,7 @@ class MakeAnApplicationTypesProviderTest {
             new Value(CHANGE_DECISION_TYPE.name(), CHANGE_DECISION_TYPE.toString()));
 
         DynamicList expectedList =
-            new DynamicList(values.get(0), values);
+            new DynamicList(values.getFirst(), values);
 
         DynamicList actualList = makeAnApplicationTypesProvider.getMakeAnApplicationTypes(callback);
         assertNotNull(actualList);
@@ -129,7 +129,7 @@ class MakeAnApplicationTypesProviderTest {
             new Value(APPLICATION_UNDER_RULE_31_OR_RULE_32.name(), APPLICATION_UNDER_RULE_31_OR_RULE_32.toString()),
             new Value(OTHER.name(), OTHER.toString()));
         DynamicList expectedList =
-            new DynamicList(values.get(0), values);
+            new DynamicList(values.getFirst(), values);
 
         DynamicList actualList = makeAnApplicationTypesProvider.getMakeAnApplicationTypes(callback);
         assertNotNull(actualList);
@@ -179,7 +179,7 @@ class MakeAnApplicationTypesProviderTest {
         }
 
         DynamicList expectedList =
-            new DynamicList(values.get(0), values);
+            new DynamicList(values.getFirst(), values);
 
         DynamicList actualList = makeAnApplicationTypesProvider.getMakeAnApplicationTypes(callback);
         assertNotNull(actualList);
@@ -228,7 +228,7 @@ class MakeAnApplicationTypesProviderTest {
             new Value(CHANGE_DECISION_TYPE.name(), CHANGE_DECISION_TYPE.toString()));
 
         DynamicList expectedList =
-            new DynamicList(values.get(0), values);
+            new DynamicList(values.getFirst(), values);
 
         DynamicList actualList = makeAnApplicationTypesProvider.getMakeAnApplicationTypes(callback);
         assertNotNull(actualList);
@@ -268,7 +268,7 @@ class MakeAnApplicationTypesProviderTest {
             new Value(OTHER.name(), OTHER.toString()));
 
         DynamicList expectedList =
-            new DynamicList(values.get(0), values);
+            new DynamicList(values.getFirst(), values);
 
         DynamicList actualList = makeAnApplicationTypesProvider.getMakeAnApplicationTypes(callback);
         assertNotNull(actualList);
@@ -336,7 +336,7 @@ class MakeAnApplicationTypesProviderTest {
             new Value(JUDGE_REVIEW_LO.name(), JUDGE_REVIEW_LO.toString()),
             new Value(OTHER.name(), OTHER.toString()));
         DynamicList expectedList =
-            new DynamicList(values.get(0), values);
+            new DynamicList(values.getFirst(), values);
 
         DynamicList actualList = makeAnApplicationTypesProvider.getMakeAnApplicationTypes(callback);
         assertNotNull(actualList);
@@ -371,7 +371,7 @@ class MakeAnApplicationTypesProviderTest {
             new Value(CHANGE_DECISION_TYPE.name(), CHANGE_DECISION_TYPE.toString()));
 
         DynamicList expectedList =
-            new DynamicList(values.get(0), values);
+            new DynamicList(values.getFirst(), values);
 
         DynamicList actualList = makeAnApplicationTypesProvider.getMakeAnApplicationTypes(callback);
         assertNotNull(actualList);
@@ -406,7 +406,7 @@ class MakeAnApplicationTypesProviderTest {
             new Value(OTHER.name(), OTHER.toString()),
             new Value(CHANGE_DECISION_TYPE.name(), CHANGE_DECISION_TYPE.toString()));
         DynamicList expectedList =
-            new DynamicList(values.get(0), values);
+            new DynamicList(values.getFirst(), values);
 
         DynamicList actualList = makeAnApplicationTypesProvider.getMakeAnApplicationTypes(callback);
         assertNotNull(actualList);
@@ -428,7 +428,7 @@ class MakeAnApplicationTypesProviderTest {
             new Value(JUDGE_REVIEW_LO.name(), JUDGE_REVIEW_LO.toString()),
             new Value(REINSTATE.name(), REINSTATE.toString()));
         DynamicList expectedList =
-            new DynamicList(values.get(0), values);
+            new DynamicList(values.getFirst(), values);
 
         DynamicList actualList = makeAnApplicationTypesProvider.getMakeAnApplicationTypes(callback);
         assertNotNull(actualList);
@@ -460,7 +460,7 @@ class MakeAnApplicationTypesProviderTest {
                 TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.toString()),
             new Value(OTHER.name(), OTHER.toString()));
         DynamicList expectedList =
-            new DynamicList(values.get(0), values);
+            new DynamicList(values.getFirst(), values);
 
         DynamicList actualList = makeAnApplicationTypesProvider.getMakeAnApplicationTypes(callback);
         assertNotNull(actualList);
@@ -487,7 +487,7 @@ class MakeAnApplicationTypesProviderTest {
             new Value(LINK_OR_UNLINK.name(), LINK_OR_UNLINK.toString()),
             new Value(CHANGE_DECISION_TYPE.name(), CHANGE_DECISION_TYPE.toString()));
         DynamicList expectedList =
-            new DynamicList(values.get(0), values);
+            new DynamicList(values.getFirst(), values);
 
         DynamicList actualList = makeAnApplicationTypesProvider.getMakeAnApplicationTypes(callback);
         assertNotNull(actualList);
@@ -518,7 +518,7 @@ class MakeAnApplicationTypesProviderTest {
             new Value(LINK_OR_UNLINK.name(), LINK_OR_UNLINK.toString()),
             new Value(CHANGE_DECISION_TYPE.name(), CHANGE_DECISION_TYPE.toString()));
         DynamicList expectedList =
-            new DynamicList(values.get(0), values);
+            new DynamicList(values.getFirst(), values);
 
         DynamicList actualList = makeAnApplicationTypesProvider.getMakeAnApplicationTypes(callback);
         assertNotNull(actualList);
@@ -549,7 +549,7 @@ class MakeAnApplicationTypesProviderTest {
             new Value(LINK_OR_UNLINK.name(), LINK_OR_UNLINK.toString()),
             new Value(CHANGE_DECISION_TYPE.name(), CHANGE_DECISION_TYPE.toString()));
         DynamicList expectedList =
-            new DynamicList(values.get(0), values);
+            new DynamicList(values.getFirst(), values);
 
         DynamicList actualList = makeAnApplicationTypesProvider.getMakeAnApplicationTypes(callback);
         assertNotNull(actualList);
@@ -573,7 +573,7 @@ class MakeAnApplicationTypesProviderTest {
             new Value(UPDATE_APPEAL_DETAILS.name(),
                 UPDATE_APPEAL_DETAILS.toString()));
         DynamicList expectedList =
-            new DynamicList(values.get(0), values);
+            new DynamicList(values.getFirst(), values);
 
         DynamicList actualList = makeAnApplicationTypesProvider.getMakeAnApplicationTypes(callback);
         assertNotNull(actualList);
@@ -605,7 +605,7 @@ class MakeAnApplicationTypesProviderTest {
                 UPDATE_HEARING_REQUIREMENTS.toString()));
         }
         DynamicList expectedList =
-            new DynamicList(values.get(0), values);
+            new DynamicList(values.getFirst(), values);
 
         DynamicList actualList = makeAnApplicationTypesProvider.getMakeAnApplicationTypes(callback);
         assertNotNull(actualList);
@@ -631,7 +631,7 @@ class MakeAnApplicationTypesProviderTest {
         Collections.addAll(values,
             new Value(TRANSFER.name(), TRANSFER.toString()));
         DynamicList actualList =
-            new DynamicList(values.get(0), values);
+            new DynamicList(values.getFirst(), values);
 
         DynamicList expectedList = makeAnApplicationTypesProvider.getMakeAnApplicationTypes(callback);
         assertNotNull(expectedList);
@@ -656,7 +656,7 @@ class MakeAnApplicationTypesProviderTest {
         Collections.addAll(values,
             new Value(TRANSFER.name(), TRANSFER.toString()));
         DynamicList actualList =
-            new DynamicList(values.get(0), values);
+            new DynamicList(values.getFirst(), values);
 
         DynamicList expectedList = makeAnApplicationTypesProvider.getMakeAnApplicationTypes(callback);
         assertNotNull(expectedList);
@@ -683,7 +683,7 @@ class MakeAnApplicationTypesProviderTest {
             new Value(EXPEDITE.name(), EXPEDITE.toString())
         );
         DynamicList actualList =
-            new DynamicList(values.get(0), values);
+            new DynamicList(values.getFirst(), values);
 
         DynamicList expectedList = makeAnApplicationTypesProvider.getMakeAnApplicationTypes(callback);
         assertNotNull(expectedList);
@@ -719,7 +719,7 @@ class MakeAnApplicationTypesProviderTest {
             new Value(EXPEDITE.name(), EXPEDITE.toString())
         );
         DynamicList actualList =
-            new DynamicList(values.get(0), values);
+            new DynamicList(values.getFirst(), values);
 
         DynamicList expectedList = makeAnApplicationTypesProvider.getMakeAnApplicationTypes(callback);
         assertNotNull(expectedList);
@@ -736,7 +736,7 @@ class MakeAnApplicationTypesProviderTest {
         assertNotNull(actualList);
 
         List<Value> values = actualList.getListItems();
-        assertThatThrownBy(() -> values.get(0))
+        assertThatThrownBy(() -> values.getFirst())
             .isExactlyInstanceOf(NullPointerException.class);
     }
 
@@ -760,7 +760,7 @@ class MakeAnApplicationTypesProviderTest {
             new Value(LINK_OR_UNLINK.name(), LINK_OR_UNLINK.toString()),
             new Value(OTHER.name(), OTHER.toString()));
         DynamicList expectedList =
-            new DynamicList(values.get(0), values);
+            new DynamicList(values.getFirst(), values);
 
         DynamicList actualList = makeAnApplicationTypesProvider.getMakeAnApplicationTypes(callback);
         assertNotNull(actualList);
@@ -786,7 +786,7 @@ class MakeAnApplicationTypesProviderTest {
             new Value(WITHDRAW.name(), WITHDRAW.toString()),
             new Value(JUDGE_REVIEW.name(), JUDGE_REVIEW.toString()));
         DynamicList expectedList =
-            new DynamicList(values.get(0), values);
+            new DynamicList(values.getFirst(), values);
 
         DynamicList actualList = makeAnApplicationTypesProvider.getMakeAnApplicationTypes(callback);
         assertNotNull(actualList);
@@ -812,7 +812,7 @@ class MakeAnApplicationTypesProviderTest {
         Collections.addAll(values,
             new Value(EXPEDITE.name(), EXPEDITE.toString()));
         DynamicList expectedList =
-            new DynamicList(values.get(0), values);
+            new DynamicList(values.getFirst(), values);
 
         DynamicList actualList = makeAnApplicationTypesProvider.getMakeAnApplicationTypes(callback);
         assertNotNull(actualList);
@@ -837,7 +837,7 @@ class MakeAnApplicationTypesProviderTest {
         Collections.addAll(values,
             new Value(EXPEDITE.name(), EXPEDITE.toString()));
         DynamicList expectedList =
-            new DynamicList(values.get(0), values);
+            new DynamicList(values.getFirst(), values);
 
         DynamicList actualList = makeAnApplicationTypesProvider.getMakeAnApplicationTypes(callback);
         assertNotNull(actualList);

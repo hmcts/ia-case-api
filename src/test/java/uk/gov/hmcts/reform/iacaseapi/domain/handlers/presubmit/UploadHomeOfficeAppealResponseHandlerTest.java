@@ -237,7 +237,7 @@ class UploadHomeOfficeAppealResponseHandlerTest {
         List<IdValue<DocumentWithMetadata>> respondentDocuments =
             respondentDocumentsCaptor
                 .getAllValues()
-                .get(0);
+                .getFirst();
 
         assertEquals(0, respondentDocuments.size());
 

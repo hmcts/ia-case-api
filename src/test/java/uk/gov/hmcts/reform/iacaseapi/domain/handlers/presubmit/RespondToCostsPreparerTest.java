@@ -68,7 +68,7 @@ class RespondToCostsPreparerTest {
             respondToCostsPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
         assertNotNull(callbackResponse);
-        verify(asylumCase, times(1)).write(RESPOND_TO_COSTS_LIST, new DynamicList(applyForCostsList.get(0), applyForCostsList));
+        verify(asylumCase, times(1)).write(RESPOND_TO_COSTS_LIST, new DynamicList(applyForCostsList.getFirst(), applyForCostsList));
     }
 
 

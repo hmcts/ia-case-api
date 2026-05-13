@@ -288,7 +288,7 @@ class EndAppealHandlerTest {
         verify(asylumCase).clear(REINSTATE_APPEAL_DATE);
         verify(asylumCase).clear(MANUAL_CANCEL_HEARINGS_REQUIRED);
         verify(asylumCase).write(eq(APPLICATIONS), applicationsCaptor.capture());
-        assertEquals("Completed", applicationsCaptor.getValue().get(0).getValue().getApplicationStatus());
+        assertEquals("Completed", applicationsCaptor.getValue().getFirst().getValue().getApplicationStatus());
     }
 
     @ParameterizedTest

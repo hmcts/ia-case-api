@@ -167,7 +167,7 @@ class CreateFlagHandlerTest {
         assertEquals(asylumCase, callbackResponse.getData());
 
         verify(asylumCase, times(1)).write(eq(APPELLANT_LEVEL_FLAGS), appellantFlagsCaptor.capture());
-        assertEquals("flagId", appellantFlagsCaptor.getValue().getDetails().get(0).getId());
+        assertEquals("flagId", appellantFlagsCaptor.getValue().getDetails().getFirst().getId());
         assertEquals(ROLE_ON_CASE_APPELLANT, appellantFlagsCaptor.getValue().getRoleOnCase());
         assertEquals(appellantNameForDisplay, appellantFlagsCaptor.getValue().getPartyName());
     }
@@ -193,7 +193,7 @@ class CreateFlagHandlerTest {
         verify(asylumCase, times(1)).write(eq(WITNESS_LEVEL_FLAGS), witnessFlagsCaptor.capture());
         assertNotNull(witnessFlagsCaptor.getValue());
         assertEquals(2, witnessFlagsCaptor.getValue().size());
-        assertTrue(witnessFlagsCaptor.getValue().contains(expected.get(0)));
+        assertTrue(witnessFlagsCaptor.getValue().contains(expected.getFirst()));
         assertTrue(witnessFlagsCaptor.getValue().contains(expected.get(1)));
     }
 
@@ -223,7 +223,7 @@ class CreateFlagHandlerTest {
                 .write(eq(WITNESS_LEVEL_FLAGS), witnessFlagsCaptor.capture());
         assertNotNull(witnessFlagsCaptor.getValue());
         assertEquals(2, witnessFlagsCaptor.getValue().size());
-        assertTrue(witnessFlagsCaptor.getValue().contains(expected.get(0)));
+        assertTrue(witnessFlagsCaptor.getValue().contains(expected.getFirst()));
         assertTrue(witnessFlagsCaptor.getValue().contains(expected.get(1)));
     }
 
@@ -250,7 +250,7 @@ class CreateFlagHandlerTest {
                 .write(eq(INTERPRETER_LEVEL_FLAGS), interpreterFlagsCaptor.capture());
         assertNotNull(interpreterFlagsCaptor.getValue());
         assertEquals(2, interpreterFlagsCaptor.getValue().size());
-        assertTrue(interpreterFlagsCaptor.getValue().contains(expected.get(0)));
+        assertTrue(interpreterFlagsCaptor.getValue().contains(expected.getFirst()));
         assertTrue(interpreterFlagsCaptor.getValue().contains(expected.get(1)));
     }
 
@@ -281,7 +281,7 @@ class CreateFlagHandlerTest {
         verify(asylumCase, times(1)).write(eq(INTERPRETER_LEVEL_FLAGS), interpreterFlagsCaptor.capture());
         assertNotNull(interpreterFlagsCaptor.getValue());
         assertEquals(2, interpreterFlagsCaptor.getValue().size());
-        assertTrue(interpreterFlagsCaptor.getValue().contains(expected.get(0)));
+        assertTrue(interpreterFlagsCaptor.getValue().contains(expected.getFirst()));
         assertTrue(interpreterFlagsCaptor.getValue().contains(expected.get(1)));
     }
 

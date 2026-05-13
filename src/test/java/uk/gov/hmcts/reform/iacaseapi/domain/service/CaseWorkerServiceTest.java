@@ -143,7 +143,7 @@ class CaseWorkerServiceTest {
 
         List<CaseWorkerName> actualCaseWorkerName = caseWorkerService.getCaseWorkerNameForActorIds(someActorIds);
 
-        assertThat(actualCaseWorkerName.get(0)).isEqualTo(scenario.getExpectedCaseWorkerName());
+        assertThat(actualCaseWorkerName.getFirst()).isEqualTo(scenario.getExpectedCaseWorkerName());
     }
 
     private static Stream<CaseWorkerNameScenario> getCaseWorkerNameForActorIdScenarioProvider() {

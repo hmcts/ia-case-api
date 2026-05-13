@@ -125,7 +125,7 @@ public class RoleAssignmentQueryConsumerTest {
             .queryRoleAssignments(buildQueryRequest()
             ).getRoleAssignmentResponse();
 
-        assertThat(queryRoleAssignmentResponse.get(0).getActorId(), is(assigneeId));
+        assertThat(queryRoleAssignmentResponse.getFirst().getActorId(), is(assigneeId));
 
     }
 

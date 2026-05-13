@@ -211,7 +211,7 @@ class CreateCaseSummaryHandlerTest {
         List<IdValue<DocumentWithMetadata>> hearingDocuments =
             hearingDocumentsCaptor
                 .getAllValues()
-                .get(0);
+                .getFirst();
 
         assertEquals(0, hearingDocuments.size());
 
@@ -248,7 +248,7 @@ class CreateCaseSummaryHandlerTest {
         List<IdValue<DocumentWithMetadata>> hearingDocuments =
             hearingDocumentsCaptor
                 .getAllValues()
-                .get(0);
+                .getFirst();
 
         assertEquals(0, hearingDocuments.size());
 

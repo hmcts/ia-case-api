@@ -123,6 +123,6 @@ public class IdamService {
             log.error("No user found for userId: {}", userId);
             return null;
         }
-        return response.getBody().get(0);
+        return response.getBody().getFirst();
     }
 }

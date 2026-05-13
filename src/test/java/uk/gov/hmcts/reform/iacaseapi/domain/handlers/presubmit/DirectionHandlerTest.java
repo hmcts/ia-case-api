@@ -250,7 +250,7 @@ class DirectionHandlerTest {
         List<IdValue<Direction>> actualExistingDirections =
                 existingDirectionsCaptor
                         .getAllValues()
-                        .get(0);
+                        .getFirst();
 
         assertEquals(0, actualExistingDirections.size());
         verifyCaseAfterHandling(event, allDirections);
@@ -311,7 +311,7 @@ class DirectionHandlerTest {
         List<IdValue<Direction>> actualExistingDirections =
                 existingDirectionsCaptor
                         .getAllValues()
-                        .get(0);
+                        .getFirst();
         assertEquals(0, actualExistingDirections.size());
 
         verifyCaseAfterHandling(event, allDirections);

@@ -15,18 +15,6 @@ plugins {
     id "io.freefair.lombok" version '9.2.0'
     id 'org.gradle.test-retry' version '1.5.7'
     id 'net.serenity-bdd.serenity-gradle-plugin' version '3.6.22'
-    id 'org.openrewrite.rewrite' version '7.30.0'
-}
-
-rewrite {
-//    activeRecipe('org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_0')
-//  activeRecipe('org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_1')
-//  activeRecipe('org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_2')
-//  activeRecipe('org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_3')
-//  activeRecipe('org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_4')
-  activeRecipe('org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_5')
-//  activeRecipe('org.openrewrite.java.migrate.UpgradeToJava21')
-//  setExportDatatables(true)
 }
 
 apply plugin: 'java'
@@ -52,7 +40,7 @@ version = '0.0.1'
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(17)
+        languageVersion = JavaLanguageVersion.of(21)
     }
 }
 
@@ -280,7 +268,7 @@ dependencyManagement {
 
     dependencies {
 
-        dependencySet(group: 'com.google.guava', version: '32.1.3-jre') {
+        dependencySet(group: 'com.google.guava', version: '29.0-jre') {
             entry 'guava'
         }
 
@@ -327,8 +315,6 @@ dependencyManagement {
 }
 
 dependencies {
-    rewrite('org.openrewrite.recipe:rewrite-migrate-java:3.32.0')
-    rewrite('org.openrewrite.recipe:rewrite-spring:6.28.2')
     modules {
         module("org.codehaus.groovy:groovy") {
             replacedBy("org.apache.groovy:groovy", "conflicts in current rest-assured version")
@@ -376,10 +362,7 @@ dependencies {
     implementation group: 'com.sun.xml.bind', name: 'jaxb-osgi', version: '2.3.9'
 
     implementation group: 'com.google.guava', name: 'guava'
-    implementation group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '6.3.0'
-
-    // TODO delete this after upgrade to java 21
-    implementation group: 'net.bytebuddy', name: 'byte-buddy', version: '1.18.8'
+    implementation group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '7.13.2'
 
     implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.5.32'
     implementation group: 'ch.qos.logback', name: 'logback-core', version: '1.5.32'
@@ -387,7 +370,7 @@ dependencies {
 
     implementation group: 'org.javamoney.moneta', name: 'moneta-core', version: '1.4.5'
 
-    implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: '7.0.0'
+    implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: '8.0.0'
     implementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '5.3.3'
     implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '4.3.2'
     implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-bootstrap' , version: '4.3.2'

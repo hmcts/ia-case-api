@@ -58,8 +58,8 @@ class EditDocsAuditServiceTest {
     }
 
     private static Object[] generateNewFileAddedForNameScenarios() {
-        idValue1 = buildIdValue("1", "1111-2222", "desc1", false, "someDocName1").get(0);
-        idValue2 = buildIdValue("2", "2222-3333", "desc2", false, "someDocName2").get(0);
+        idValue1 = buildIdValue("1", "1111-2222", "desc1", false, "someDocName1").getFirst();
+        idValue2 = buildIdValue("2", "2222-3333", "desc2", false, "someDocName2").getFirst();
         idValuesAfter = Arrays.asList(idValue1, idValue2);
         idValuesBefore = Collections.singletonList(idValue1);
 
@@ -71,10 +71,10 @@ class EditDocsAuditServiceTest {
     }
 
     private static Object[] generateFileUpdatedForNameScenarios() {
-        idValue1 = buildIdValue("1", "1111-2222", "desc1", false, "someDocName1").get(0);
-        idValue2 = buildIdValue("2", "2222-3333", "desc2", false, "someDocName2").get(0);
+        idValue1 = buildIdValue("1", "1111-2222", "desc1", false, "someDocName1").getFirst();
+        idValue2 = buildIdValue("2", "2222-3333", "desc2", false, "someDocName2").getFirst();
         IdValue<HasDocument> idValue2Updated = buildIdValue("2", "3333-4444", "desc3",
-            false, "someDocNameUpdated").get(0);
+            false, "someDocNameUpdated").getFirst();
         idValuesAfter = Arrays.asList(idValue1, idValue2Updated);
         idValuesBefore = Arrays.asList(idValue1, idValue2);
 
@@ -86,8 +86,8 @@ class EditDocsAuditServiceTest {
     }
 
     private static Object[] generateDeleteFileForNameScenarios() {
-        idValue1 = buildIdValue("1", "1111-2222", "desc1", false, "someDocNameDeleted").get(0);
-        idValue2 = buildIdValue("2", "2222-3333", "desc2", false, "someDocName2").get(0);
+        idValue1 = buildIdValue("1", "1111-2222", "desc1", false, "someDocNameDeleted").getFirst();
+        idValue2 = buildIdValue("2", "2222-3333", "desc2", false, "someDocName2").getFirst();
         idValuesAfter = Collections.singletonList(idValue2);
         idValuesBefore = Arrays.asList(idValue1, idValue2);
 
@@ -121,15 +121,15 @@ class EditDocsAuditServiceTest {
     }
 
     private static Object[] generateNewFileAddedScenarios() {
-        idValue1 = buildIdValue("1", "1111-2222", "desc1", false, "someDocName").get(0);
-        idValue2 = buildIdValue("2", "2222-3333", "desc2", false, "someDocName").get(0);
+        idValue1 = buildIdValue("1", "1111-2222", "desc1", false, "someDocName").getFirst();
+        idValue2 = buildIdValue("2", "2222-3333", "desc2", false, "someDocName").getFirst();
         idValuesAfter = Arrays.asList(idValue1, idValue2);
         idValuesBefore = Collections.singletonList(idValue1);
 
         idValue1WithHearingRecDoc = buildIdValue(
-            "1", "1111-2222", "desc1", true, "someDocName").get(0);
+            "1", "1111-2222", "desc1", true, "someDocName").getFirst();
         idValueW2ithHearingRecDoc = buildIdValue(
-            "2", "2222-3333", "desc2", true, "someDocName").get(0);
+            "2", "2222-3333", "desc2", true, "someDocName").getFirst();
         idValuesWithHearingAfter = Arrays.asList(
             idValue1WithHearingRecDoc, idValueW2ithHearingRecDoc);
         idValuesWithHearingBefore = Collections.singletonList(idValue1WithHearingRecDoc);
@@ -144,19 +144,19 @@ class EditDocsAuditServiceTest {
     }
 
     private static Object[] generateFileUpdatedScenarios() {
-        idValue1 = buildIdValue("1", "1111-2222", "desc1", false, "someDocName").get(0);
-        idValue2 = buildIdValue("2", "2222-3333", "desc2", false, "someDocName").get(0);
+        idValue1 = buildIdValue("1", "1111-2222", "desc1", false, "someDocName").getFirst();
+        idValue2 = buildIdValue("2", "2222-3333", "desc2", false, "someDocName").getFirst();
         IdValue<HasDocument> idValue2Updated = buildIdValue("2", "3333-4444", "desc3",
-            false, "someDocName").get(0);
+            false, "someDocName").getFirst();
         idValuesAfter = Arrays.asList(idValue1, idValue2Updated);
         idValuesBefore = Arrays.asList(idValue1, idValue2);
 
         idValue1WithHearingRecDoc = buildIdValue(
-            "1", "1111-2222", "desc1", true, "someDocName").get(0);
+            "1", "1111-2222", "desc1", true, "someDocName").getFirst();
         idValueW2ithHearingRecDoc = buildIdValue(
-            "2", "2222-3333", "desc2", true, "someDocName").get(0);
+            "2", "2222-3333", "desc2", true, "someDocName").getFirst();
         IdValue<HasDocument> idValue2WithHearingRecDocUpdated = buildIdValue(
-            "2", "3333-4444", "desc3", true, "someDocName").get(0);
+            "2", "3333-4444", "desc3", true, "someDocName").getFirst();
         idValuesWithHearingAfter = Arrays.asList(idValue1WithHearingRecDoc, idValue2WithHearingRecDocUpdated);
         idValuesWithHearingBefore = Arrays.asList(idValue1WithHearingRecDoc, idValueW2ithHearingRecDoc);
 
@@ -170,15 +170,15 @@ class EditDocsAuditServiceTest {
     }
 
     private static Object[] generateDeleteFileScenarios() {
-        idValue1 = buildIdValue("1", "1111-2222", "desc1", false, "someDocName").get(0);
-        idValue2 = buildIdValue("2", "2222-3333", "desc2", false, "someDocName").get(0);
+        idValue1 = buildIdValue("1", "1111-2222", "desc1", false, "someDocName").getFirst();
+        idValue2 = buildIdValue("2", "2222-3333", "desc2", false, "someDocName").getFirst();
         idValuesAfter = Collections.singletonList(idValue2);
         idValuesBefore = Arrays.asList(idValue1, idValue2);
 
         idValue1WithHearingRecDoc = buildIdValue(
-            "1", "1111-2222", "desc1", true, "someDocName").get(0);
+            "1", "1111-2222", "desc1", true, "someDocName").getFirst();
         idValueW2ithHearingRecDoc = buildIdValue(
-            "2", "2222-3333", "desc2", true, "someDocName").get(0);
+            "2", "2222-3333", "desc2", true, "someDocName").getFirst();
         idValuesWithHearingAfter = Collections.singletonList(idValueW2ithHearingRecDoc);
         idValuesWithHearingBefore = Arrays.asList(idValue1WithHearingRecDoc, idValueW2ithHearingRecDoc);
 

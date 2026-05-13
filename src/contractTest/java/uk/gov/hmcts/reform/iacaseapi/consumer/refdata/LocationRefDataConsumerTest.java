@@ -69,8 +69,8 @@ public class LocationRefDataConsumerTest {
         assertEquals("serviceCode", courtLocationCategory.getServiceCode());
         assertEquals("courtTypeId", courtLocationCategory.getCourtTypeId());
         assertEquals("courtType", courtLocationCategory.getCourtType());
-        assertEquals("siteName", courtLocationCategory.getCourtVenues().get(0).getSiteName());
-        assertEquals("epimmsId", courtLocationCategory.getCourtVenues().get(0).getEpimmsId());
+        assertEquals("siteName", courtLocationCategory.getCourtVenues().getFirst().getSiteName());
+        assertEquals("epimmsId", courtLocationCategory.getCourtVenues().getFirst().getEpimmsId());
     }
 
     private DslPart buildLocationResponsePactDsl() {

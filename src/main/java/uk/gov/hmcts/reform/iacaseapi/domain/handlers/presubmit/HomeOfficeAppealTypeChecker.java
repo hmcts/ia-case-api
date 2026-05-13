@@ -19,25 +19,17 @@ public class HomeOfficeAppealTypeChecker {
 
     protected static boolean isAppealTypeEnabled(FeatureToggler featureToggler, AppealType appealType) {
 
-        switch (appealType) {
-            case DC:
-                return featureToggler.getValue(HO_UAN_DC_FEATURE, false);
-            case EA:
-                return featureToggler.getValue(HO_UAN_EA_FEATURE, false);
-            case HU:
-                return featureToggler.getValue(HO_UAN_HU_FEATURE, false);
-            case EU:
-                return featureToggler.getValue(HO_UAN_EU_FEATURE, false);
-            case PA:
-                return featureToggler.getValue(HO_UAN_PA_FEATURE, false);
-            case RP:
-                return featureToggler.getValue(HO_UAN_RP_FEATURE, false);
-            case AG:
-                return featureToggler.getValue(HO_UAN_AG_FEATURE, false);
+        return switch (appealType) {
+            case DC -> featureToggler.getValue(HO_UAN_DC_FEATURE, false);
+            case EA -> featureToggler.getValue(HO_UAN_EA_FEATURE, false);
+            case HU -> featureToggler.getValue(HO_UAN_HU_FEATURE, false);
+            case EU -> featureToggler.getValue(HO_UAN_EU_FEATURE, false);
+            case PA -> featureToggler.getValue(HO_UAN_PA_FEATURE, false);
+            case RP -> featureToggler.getValue(HO_UAN_RP_FEATURE, false);
+            case AG -> featureToggler.getValue(HO_UAN_AG_FEATURE, false);
 
-            default:
-                return false;
-        }
+            default -> false;
+        };
     }
 
 }

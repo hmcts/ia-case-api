@@ -378,7 +378,6 @@ class RequestRespondentEvidencePreparerTest {
 
         assertNotNull(callbackResponse);
         assertTrue(callbackResponse.getErrors().isEmpty());
-        ;
     }
 
     @ParameterizedTest

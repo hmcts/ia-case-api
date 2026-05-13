@@ -69,7 +69,7 @@ public class RefDataConsumerTest {
             AUTH_TOKEN,
             SERVICE_AUTH_TOKEN,
             getUserIds());
-        assertEquals("firstName", caseWorkerProfiles.get(0).getFirstName());
+        assertEquals("firstName", caseWorkerProfiles.getFirst().getFirstName());
 
     }
 

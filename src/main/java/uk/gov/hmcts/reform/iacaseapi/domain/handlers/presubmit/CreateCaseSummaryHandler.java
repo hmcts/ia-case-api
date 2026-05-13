@@ -115,7 +115,7 @@ public class CreateCaseSummaryHandler implements PreSubmitCallbackHandler<Asylum
             List<IdValue<ReheardHearingDocuments>> existingReheardDocuments = maybeExistingReheardDocuments.orElse(emptyList());
 
             return (!existingReheardDocuments.isEmpty())
-                    ? existingReheardDocuments.get(0).getValue().getReheardHearingDocs()
+                    ? existingReheardDocuments.getFirst().getValue().getReheardHearingDocs()
                     : emptyList();
         }
         return maybeHearingDocuments.orElse(emptyList());

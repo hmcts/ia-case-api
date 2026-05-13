@@ -98,7 +98,7 @@ class CompleteClarifyingQuestionsHandlerTest {
         List<IdValue<ClarifyingQuestionAnswer>> answers = answersCaptor.getValue();
         assertEquals(1, answers.size());
         assertEquals(expectedAnswer,
-            answers.get(0).getValue().getAnswer());
+            answers.getFirst().getValue().getAnswer());
     }
 
     @Test
@@ -146,7 +146,7 @@ class CompleteClarifyingQuestionsHandlerTest {
 
         List<IdValue<ClarifyingQuestionAnswer>> answers = answersCaptor.getValue();
         assertEquals(1, answers.size());
-        assertEquals(clarifyingQuestionAnswer.getAnswer(), answers.get(0).getValue().getAnswer());
+        assertEquals(clarifyingQuestionAnswer.getAnswer(), answers.getFirst().getValue().getAnswer());
     }
 
     @ParameterizedTest
@@ -201,12 +201,12 @@ class CompleteClarifyingQuestionsHandlerTest {
                 : "No answer submitted because the question was marked as complete by the Tribunal";
 
         // unanswered direction with clarifying question 2
-        assertEquals(clarifyingQuestions2.get(0).getValue().getQuestion(), answers.get(0).getValue().getQuestion());
-        assertEquals(defaultAnswer, answers.get(0).getValue().getAnswer());
+        assertEquals(clarifyingQuestions2.getFirst().getValue().getQuestion(), answers.getFirst().getValue().getQuestion());
+        assertEquals(defaultAnswer, answers.getFirst().getValue().getAnswer());
 
         // answered direction with clarifying question 1
         assertEquals(
-                answeredClarifyingQuestions1.get(0).getValue().getQuestion(), answers.get(1).getValue().getQuestion());
+                answeredClarifyingQuestions1.getFirst().getValue().getQuestion(), answers.get(1).getValue().getQuestion());
         assertEquals(clarifyingQuestionAnswer1.getAnswer(), answers.get(1).getValue().getAnswer());
     }
 

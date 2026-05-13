@@ -51,7 +51,7 @@ public class DecideCostsPreparer implements PreSubmitCallbackHandler<AsylumCase>
         if (applyForCostsList.isEmpty()) {
             response.addError("You do not have any cost applications to decide.");
         } else {
-            DynamicList dynamicList = new DynamicList(applyForCostsList.get(0), applyForCostsList);
+            DynamicList dynamicList = new DynamicList(applyForCostsList.getFirst(), applyForCostsList);
             asylumCase.write(DECIDE_COSTS_APPLICATION_LIST, dynamicList);
         }
 

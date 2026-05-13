@@ -603,8 +603,8 @@ class HomeOfficeDecisionDateCheckerTest {
         List<AsylumCaseFieldDefinition> keys = asylumExtractor.getAllValues();
         List<YesOrNo> values = valueCaptor.getAllValues();
 
-        assertThat(keys.get(0)).isEqualTo(SUBMISSION_OUT_OF_TIME);
-        assertThat(values.get(0)).isEqualTo(NO);
+        assertThat(keys.getFirst()).isEqualTo(SUBMISSION_OUT_OF_TIME);
+        assertThat(values.getFirst()).isEqualTo(NO);
     }
 
     @Test
@@ -625,8 +625,8 @@ class HomeOfficeDecisionDateCheckerTest {
         List<AsylumCaseFieldDefinition> keys = asylumExtractor.getAllValues();
         List<YesOrNo> values = valueCaptor.getAllValues();
 
-        assertThat(keys.get(0)).isEqualTo(SUBMISSION_OUT_OF_TIME);
-        assertThat(values.get(0)).isEqualTo(YES);
+        assertThat(keys.getFirst()).isEqualTo(SUBMISSION_OUT_OF_TIME);
+        assertThat(values.getFirst()).isEqualTo(YES);
 
         assertThat(keys.get(1)).isEqualTo(RECORDED_OUT_OF_TIME_DECISION);
         assertThat(values.get(1)).isEqualTo(NO);
@@ -650,8 +650,8 @@ class HomeOfficeDecisionDateCheckerTest {
         List<AsylumCaseFieldDefinition> keys = asylumExtractor.getAllValues();
         List<YesOrNo> values = valueCaptor.getAllValues();
 
-        assertThat(keys.get(0)).isEqualTo(SUBMISSION_OUT_OF_TIME);
-        assertThat(values.get(0)).isEqualTo(YES);
+        assertThat(keys.getFirst()).isEqualTo(SUBMISSION_OUT_OF_TIME);
+        assertThat(values.getFirst()).isEqualTo(YES);
 
         assertThat(keys.get(1)).isEqualTo(RECORDED_OUT_OF_TIME_DECISION);
         assertThat(values.get(1)).isEqualTo(NO);
@@ -673,8 +673,8 @@ class HomeOfficeDecisionDateCheckerTest {
         List<AsylumCaseFieldDefinition> keys = asylumExtractor.getAllValues();
         List<YesOrNo> values = valueCaptor.getAllValues();
 
-        assertThat(keys.get(0)).isEqualTo(SUBMISSION_OUT_OF_TIME);
-        assertThat(values.get(0)).isEqualTo(YES);
+        assertThat(keys.getFirst()).isEqualTo(SUBMISSION_OUT_OF_TIME);
+        assertThat(values.getFirst()).isEqualTo(YES);
 
         assertThat(keys.get(1)).isEqualTo(RECORDED_OUT_OF_TIME_DECISION);
         assertThat(values.get(1)).isEqualTo(NO);
@@ -696,8 +696,8 @@ class HomeOfficeDecisionDateCheckerTest {
         List<AsylumCaseFieldDefinition> keys = asylumExtractor.getAllValues();
         List<YesOrNo> values = valueCaptor.getAllValues();
 
-        assertThat(keys.get(0)).isEqualTo(SUBMISSION_OUT_OF_TIME);
-        assertThat(values.get(0)).isEqualTo(YES);
+        assertThat(keys.getFirst()).isEqualTo(SUBMISSION_OUT_OF_TIME);
+        assertThat(values.getFirst()).isEqualTo(YES);
 
         assertThat(keys.get(1)).isEqualTo(RECORDED_OUT_OF_TIME_DECISION);
         assertThat(values.get(1)).isEqualTo(NO);
@@ -723,8 +723,8 @@ class HomeOfficeDecisionDateCheckerTest {
         List<AsylumCaseFieldDefinition> keys = asylumExtractor.getAllValues();
         List<YesOrNo> values = valueCaptor.getAllValues();
 
-        assertThat(keys.get(0)).isEqualTo(SUBMISSION_OUT_OF_TIME);
-        assertThat(values.get(0)).isEqualTo(NO);
+        assertThat(keys.getFirst()).isEqualTo(SUBMISSION_OUT_OF_TIME);
+        assertThat(values.getFirst()).isEqualTo(NO);
     }
 
     @Test
@@ -746,8 +746,8 @@ class HomeOfficeDecisionDateCheckerTest {
         List<AsylumCaseFieldDefinition> keys = asylumExtractor.getAllValues();
         List<YesOrNo> values = valueCaptor.getAllValues();
 
-        assertThat(keys.get(0)).isEqualTo(SUBMISSION_OUT_OF_TIME);
-        assertThat(values.get(0)).isEqualTo(YES);
+        assertThat(keys.getFirst()).isEqualTo(SUBMISSION_OUT_OF_TIME);
+        assertThat(values.getFirst()).isEqualTo(YES);
 
         assertThat(keys.get(1)).isEqualTo(RECORDED_OUT_OF_TIME_DECISION);
         assertThat(values.get(1)).isEqualTo(NO);
@@ -771,8 +771,8 @@ class HomeOfficeDecisionDateCheckerTest {
         List<AsylumCaseFieldDefinition> keys = asylumExtractor.getAllValues();
         List<YesOrNo> values = valueCaptor.getAllValues();
 
-        assertThat(keys.get(0)).isEqualTo(SUBMISSION_OUT_OF_TIME);
-        assertThat(values.get(0)).isEqualTo(YES);
+        assertThat(keys.getFirst()).isEqualTo(SUBMISSION_OUT_OF_TIME);
+        assertThat(values.getFirst()).isEqualTo(YES);
 
         assertThat(keys.get(1)).isEqualTo(RECORDED_OUT_OF_TIME_DECISION);
         assertThat(values.get(1)).isEqualTo(NO);

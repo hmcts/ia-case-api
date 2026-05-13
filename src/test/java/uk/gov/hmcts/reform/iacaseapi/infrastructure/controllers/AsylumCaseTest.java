@@ -72,7 +72,7 @@ class AsylumCaseTest {
 
         Optional<List<IdValue<DocumentWithDescription>>> maybeRespondentEvidence = asylumCase.read(RESPONDENT_EVIDENCE);
 
-        IdValue<DocumentWithDescription> documentWithDescriptionIdValue = maybeRespondentEvidence.get().get(0);
+        IdValue<DocumentWithDescription> documentWithDescriptionIdValue = maybeRespondentEvidence.get().getFirst();
 
         assertThat(documentWithDescriptionIdValue.getId())
             .isEqualTo("d019091d-806c-49cf-af64-669fb3d21361");
@@ -224,8 +224,8 @@ class AsylumCaseTest {
 
         List<IdValue<DocumentWithMetadata>> idValues = maybeRespondentDocuments.get();
 
-        assertThat(idValues.get(0).getId()).isEqualTo("3");
-        assertThat(idValues.get(0).getValue()).isInstanceOf(DocumentWithMetadata.class);
+        assertThat(idValues.getFirst().getId()).isEqualTo("3");
+        assertThat(idValues.getFirst().getValue()).isInstanceOf(DocumentWithMetadata.class);
 
         assertThat(idValues.get(1).getId()).isEqualTo("2");
         assertThat(idValues.get(1).getValue()).isInstanceOf(DocumentWithMetadata.class);
@@ -297,7 +297,7 @@ class AsylumCaseTest {
 
         Optional<List<IdValue<DocumentWithDescription>>> maybeRespondentEvidence = asylumCase.read(RESPONDENT_EVIDENCE);
 
-        IdValue<DocumentWithDescription> documentWithDescriptionIdValue = maybeRespondentEvidence.get().get(0);
+        IdValue<DocumentWithDescription> documentWithDescriptionIdValue = maybeRespondentEvidence.get().getFirst();
 
 
         assertThat(maybeRespondentEvidence.get().size())

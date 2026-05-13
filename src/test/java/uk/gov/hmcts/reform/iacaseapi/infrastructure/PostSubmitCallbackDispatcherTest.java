@@ -166,7 +166,7 @@ class PostSubmitCallbackDispatcherTest {
                 .getField(dispatcher, "sortedCallbackHandlers");
 
         assertEquals(6, sortedDispatcher.size());
-        assertEquals(h1, sortedDispatcher.get(0));
+        assertEquals(h1, sortedDispatcher.getFirst());
         assertEquals(h2, sortedDispatcher.get(1));
         assertEquals(h3, sortedDispatcher.get(2));
         assertEquals(h4, sortedDispatcher.get(3));
