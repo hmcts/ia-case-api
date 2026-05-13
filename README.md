@@ -11,7 +11,7 @@ Immigration &amp; Asylum case API is a Spring Boot based application to manage c
 
 To run the project you will need to have the following installed:
 
-* Java 17
+* Java 21
 * Docker (optional)
 
 For information about the software versions used to build this API and a complete list of its dependencies, see build.gradle
