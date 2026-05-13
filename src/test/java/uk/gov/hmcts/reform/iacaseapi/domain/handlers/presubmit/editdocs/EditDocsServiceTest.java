@@ -347,10 +347,10 @@ class EditDocsServiceTest {
 
     private static Object[] reasonsForAppealCleanupScenario() {
         return new Object[]{
-                new Object[]{
-                        LEGAL_REPRESENTATIVE_DOCUMENTS,
-                        REASONS_FOR_APPEAL_DOCUMENTS
-                }
+            new Object[]{
+                LEGAL_REPRESENTATIVE_DOCUMENTS,
+                REASONS_FOR_APPEAL_DOCUMENTS
+            }
         };
     }
 
