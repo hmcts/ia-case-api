@@ -1015,23 +1015,24 @@ ccd:
       ingressHost: ccd-definition-store-${SERVICE_FQDN}
 
   elasticsearch:
+    image: 'hmctsprod.azurecr.io/imported/elastic/elasticsearch'
+    imageTag: 9.3.4
     nameOverride: ${SERVICE_NAME}-es
     clusterName: "es"
+    createCert: false
+    protocol: http
     replicas: 1
     minimumMasterNodes: 1
     antiAffinity: "soft"
     esJavaOpts: "-Xmx512m -Xms512m"
     # Their tests delete the pod after succeeding, we pass --logs to the test command which fail if the pod has already been deleted
     # The tests do pass, at least as of 2023-01-19
+    esConfig:
+      elasticsearch.yml: |
+        action.auto_create_index: .security*,.watches,.triggered_watches,.watcher-history-*,.ml*,ccd-logstash-dead-letter
+        xpack.security.enabled: false
     tests:
       enabled: false
-    extraEnvs:
-      - name: discovery.type
-        value: single-node
-      - name: cluster.initial_master_nodes
-        value: ""
-      - name: action.auto_create_index
-        value: .security*,.watches,.triggered_watches,.watcher-history-*,.logstash_dead_letter,.ml*
     persistence:
       enabled: false
     ingress:

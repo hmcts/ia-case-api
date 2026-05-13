@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.common.Slf4jNotifier;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
-import com.microsoft.applicationinsights.web.internal.WebRequestTrackingFilter;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,10 +74,7 @@ public abstract class SpringBootIntegrationTest {
 
     @BeforeEach
     void setUp() {
-        WebRequestTrackingFilter filter;
-        filter = new WebRequestTrackingFilter();
-        filter.init(new MockFilterConfig());
-        mockMvc = webAppContextSetup(wac).addFilters(filter).build();
+        mockMvc = webAppContextSetup(wac).build();
     }
 
     protected IaCaseApiClient iaCaseApiClient;
