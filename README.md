@@ -181,7 +181,9 @@ Before running the script make sure you set up correct branches on your local:
 - ia-ccd-definitions -> master branch
 - ia-case-api -> RIA-* feature branch
 
-Run the script
+cd into `/bin/validation`
+Set `IA_CCD_DIR` to your local path to `ia-ccd-definitions` repository.
+Run `yarn install` to install dependencies and then run the script
 ```
 yarn validate
 ```
