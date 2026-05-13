@@ -16,9 +16,7 @@ import au.com.dius.pact.core.model.annotations.Pact;
 import au.com.dius.pact.core.model.annotations.PactFolder;
 import java.text.MessageFormat;
 import java.util.List;
-import org.apache.http.client.fluent.Executor;
 import org.json.JSONException;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -48,11 +46,6 @@ public class IdamClientApiConsumerTest {
     @BeforeEach
     public void prepareTest() throws Exception {
         Thread.sleep(2000);
-    }
-
-    @AfterEach
-    void teardown() {
-        Executor.closeIdleConnections();
     }
 
     private DslPart createUserResponseEntityResponse() {

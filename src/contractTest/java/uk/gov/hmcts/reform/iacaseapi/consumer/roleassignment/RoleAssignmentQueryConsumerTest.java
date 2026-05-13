@@ -20,9 +20,7 @@ import com.google.common.collect.Maps;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
-import org.apache.http.client.fluent.Executor;
 import org.json.JSONException;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -94,11 +92,6 @@ public class RoleAssignmentQueryConsumerTest {
         when(caseDetails.getId()).thenReturn(caseId);
 
         roleAssignmentService = new RoleAssignmentService(authTokenGenerator, roleAssignmentApi, userDetails);
-    }
-
-    @AfterEach
-    void teardown() {
-        Executor.closeIdleConnections();
     }
 
     @Pact(provider = "am_roleAssignment_queryAssignment", consumer = "ia_caseApi")

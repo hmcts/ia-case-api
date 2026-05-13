@@ -32,7 +32,7 @@ public class DbAppealReferenceNumberGenerator implements AppealReferenceNumberGe
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    @Retryable(include = {TransientDataAccessException.class, IllegalStateException.class}, maxAttemptsExpression = "${spring.retry.maxAttempts}")
+    @Retryable(retryFor = {TransientDataAccessException.class, IllegalStateException.class}, maxAttemptsExpression = "${spring.retry.maxAttempts}")
     public String generate(
         long caseId,
         AppealType appealType) {

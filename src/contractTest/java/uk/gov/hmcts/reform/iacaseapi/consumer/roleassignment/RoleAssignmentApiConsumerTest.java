@@ -11,9 +11,7 @@ import au.com.dius.pact.core.model.annotations.Pact;
 import au.com.dius.pact.core.model.annotations.PactFolder;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.http.client.fluent.Executor;
 import org.json.JSONException;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -75,11 +73,6 @@ public class RoleAssignmentApiConsumerTest {
         when(caseDetails.getId()).thenReturn(caseId);
 
         roleAssignmentService = new RoleAssignmentService(authTokenGenerator, roleAssignmentApi, userDetails);
-    }
-
-    @AfterEach
-    void teardown() {
-        Executor.closeIdleConnections();
     }
 
     @Pact(provider = "am_roleAssignment_createAssignment", consumer = "ia_caseApi")
