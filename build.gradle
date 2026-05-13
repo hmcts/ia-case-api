@@ -12,7 +12,7 @@ plugins {
     id 'org.springframework.boot' version '3.5.14'
     id 'org.flywaydb.flyway' version '9.22.3'
     id 'au.com.dius.pact' version '4.6.20'
-    id 'uk.gov.hmcts.java' version '0.12.68'
+    id 'uk.gov.hmcts.java' version '0.12.67'
     id 'org.gradle.test-retry' version '1.6.4'
     id 'net.serenity-bdd.serenity-gradle-plugin' version '5.3.9'
 }
@@ -273,6 +273,21 @@ dependencyManagement {
         mavenBom 'org.springframework.cloud:spring-cloud-dependencies:2025.0.2'
         mavenBom 'com.fasterxml.jackson:jackson-bom:2.21.3'
         mavenBom "net.serenity-bdd:serenity-bom:5.3.10"
+
+        // CVE-2026-34478
+        // CVE-2026-34479
+        // CVE-2026-34480
+        // CVE-2026-34481
+        // CVE-2026-34477
+        // CVE-2025-68161
+        // CVE-2026-41417
+        // CVE-2025-55163
+        // CVE-2025-58056
+        // CVE-2025-58057
+        // CVE-2026-33870
+        // CVE-2026-33871
+        // CVE-2025-67735 - from spring-boot-starter-data-redis@3.5.14
+        mavenBom "io.netty:netty-bom:4.1.133.Final"
     }
 
     dependencies {
@@ -297,6 +312,24 @@ dependencyManagement {
         }
 
         dependency group: 'org.springframework.retry', name: 'spring-retry', version: '2.0.12'
+
+        // CVE-2026-34478
+        // CVE-2026-34479
+        // CVE-2026-34480
+        // CVE-2026-34481
+        // CVE-2026-34477
+        // CVE-2025-68161 - from spring-boot-starter-logging@3.5.14
+        dependencySet(group: 'org.apache.logging.log4j', version: '2.25.4') {
+            entry 'log4j-to-slf4j'
+            entry 'log4j-api'
+        }
+
+        // due to Serenity 5.3.10 forcing spring-context-support@6.2.10
+        dependency group: 'org.springframework', name: 'spring-context-support', version: '6.2.18'
+
+        // CVE-2020-13956 - transitive from service-auth-provider-java-client@5.3.3
+        dependency group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.14'
+
     }
 }
 
