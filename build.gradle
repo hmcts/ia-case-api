@@ -348,7 +348,7 @@ dependencies {
 
     implementation group: 'org.javamoney.moneta', name: 'moneta-core', version: '1.4.5'
 
-    implementation group: 'org.elasticsearch', name: 'elasticsearch', version: '7.17.29'
+    implementation group: 'org.elasticsearch', name: 'elasticsearch', version: '9.2.4'
 
     implementation group: 'com.googlecode.libphonenumber', name: 'libphonenumber', version: '8.13.55'
 
