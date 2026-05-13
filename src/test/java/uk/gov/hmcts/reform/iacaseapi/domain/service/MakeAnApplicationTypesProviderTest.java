@@ -1,9 +1,9 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ADA_HEARING_REQUIREMENTS_TO_REVIEW;
@@ -735,9 +735,8 @@ class MakeAnApplicationTypesProviderTest {
         DynamicList actualList = makeAnApplicationTypesProvider.getMakeAnApplicationTypes(callback);
         assertNotNull(actualList);
 
-        List<Value> values = actualList.getListItems();
-        assertThatThrownBy(() -> values.getFirst())
-            .isExactlyInstanceOf(NullPointerException.class);
+        assertNull(actualList.getListItems());
+        assertTrue(actualList.getValue().getLabel().isBlank());
     }
 
     @Test

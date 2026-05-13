@@ -30,7 +30,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ref.OrganisationEntityRespo
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.WARN)
 @SuppressWarnings({"unchecked", "rawtypes"})
-public class ProfessionalOrganisationRetrieverTest {
+class ProfessionalOrganisationRetrieverTest {
 
     private ProfessionalOrganisationRetriever professionalOrganisationRetriever;
 
@@ -47,7 +47,7 @@ public class ProfessionalOrganisationRetrieverTest {
     private ResponseEntity responseEntity;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
 
         professionalOrganisationRetriever = new ProfessionalOrganisationRetriever(restTemplate,
             serviceAuthTokenGenerator,
@@ -58,7 +58,7 @@ public class ProfessionalOrganisationRetrieverTest {
     }
 
     @Test
-    public void should_successfully_get_prof_orgaisation_response() {
+    void should_successfully_get_prof_orgaisation_response() {
 
         final String expectedServiceToken = "ABCDEFG";
         final String expectedAccessToken = "HIJKLMN";

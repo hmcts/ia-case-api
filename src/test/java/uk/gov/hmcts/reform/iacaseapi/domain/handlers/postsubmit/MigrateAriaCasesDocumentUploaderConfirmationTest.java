@@ -54,8 +54,11 @@ class MigrateAriaCasesDocumentUploaderConfirmationTest {
         assertNotNull(callbackResponse);
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
-
-        assertTrue(callbackResponse.getConfirmationHeader().get().contains("# You have progressed this case \n## New state: \n## '%s'".formatted("Appeal submitted")));
+        String expectedHeader = """
+            # You have progressed this case\s
+            ## New state:\s
+            ## '%s'""";
+        assertTrue(callbackResponse.getConfirmationHeader().get().contains(expectedHeader.formatted("Appeal submitted")));
 
         assertThat(
             callbackResponse.getConfirmationBody().get())
