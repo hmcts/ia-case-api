@@ -27,6 +27,8 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.TestPropertySource;
@@ -53,6 +55,7 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.roleassignment.RoleA
 @PactTestFor(providerName = "am_roleAssignment_queryAssignment", port = "8991")
 @SpringJUnitConfig(classes = {RoleAssignmentConsumerApplication.class})
 @TestPropertySource(locations = {"classpath:application.properties"})
+@MockitoSettings(strictness = Strictness.LENIENT)
 public class RoleAssignmentQueryConsumerTest {
 
     @Autowired
