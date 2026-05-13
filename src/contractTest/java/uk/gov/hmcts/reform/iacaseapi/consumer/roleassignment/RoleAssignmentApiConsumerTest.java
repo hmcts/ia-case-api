@@ -63,8 +63,7 @@ public class RoleAssignmentApiConsumerTest {
     private final long caseId = 1212121212121213L;
 
     @BeforeEach
-    void setUp() throws Exception {
-        Thread.sleep(2000);
+    void setUp() {
         when(authTokenGenerator.generate()).thenReturn(SERVICE_AUTH_TOKEN);
 
         when(userDetails.getAccessToken()).thenReturn(AUTH_TOKEN);

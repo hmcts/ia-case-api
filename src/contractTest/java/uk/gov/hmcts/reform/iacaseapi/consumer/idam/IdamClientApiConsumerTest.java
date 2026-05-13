@@ -17,7 +17,6 @@ import au.com.dius.pact.core.model.annotations.PactFolder;
 import java.text.MessageFormat;
 import java.util.List;
 import org.json.JSONException;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -42,11 +41,6 @@ public class IdamClientApiConsumerTest {
     private static final String USER_ID = "1111-2222-3333-4567";
     private static final String EMAIL = "ia-caseofficer%40fake.hmcts.net";
     private static final String QUERY = MessageFormat.format("id:{0}", USER_ID);
-
-    @BeforeEach
-    public void prepareTest() throws Exception {
-        Thread.sleep(2000);
-    }
 
     private DslPart createUserResponseEntityResponse() {
         return PactDslJsonArray.arrayEachLike()

@@ -81,9 +81,7 @@ public class RoleAssignmentQueryConsumerTest {
     private final LocalDateTime validAtDate = LocalDateTime.parse("2021-12-04T00:00:00");
 
     @BeforeEach
-    void setUp() throws Exception {
-        Thread.sleep(2000);
-
+    void setUp() {
         when(authTokenGenerator.generate()).thenReturn(SERVICE_AUTH_TOKEN);
 
         when(userDetails.getAccessToken()).thenReturn(AUTH_TOKEN);

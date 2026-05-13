@@ -15,7 +15,6 @@ import au.com.dius.pact.core.model.annotations.PactFolder;
 import com.google.common.collect.ImmutableMap;
 import java.util.Map;
 import org.json.JSONException;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -41,11 +40,6 @@ public class IdamApiConsumerTest {
     @Autowired
     IdamApi idamApi;
     private static final String AUTH_TOKEN = "Bearer someAuthorizationToken";
-
-    @BeforeEach
-    public void prepareTest() throws Exception {
-        Thread.sleep(2000);
-    }
 
     @Pact(provider = "idamApi_oidc", consumer = "ia_caseApi")
     public V4Pact generatePactFragmentUserInfo(PactDslWithProvider builder) throws JSONException {
