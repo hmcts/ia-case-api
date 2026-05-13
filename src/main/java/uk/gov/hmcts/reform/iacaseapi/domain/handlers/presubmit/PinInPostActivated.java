@@ -1,6 +1,8 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Collections.emptyList;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANTS_REPRESENTATION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ADMIN;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LEGAL_REPRESENTATIVE_DOCUMENTS;
 
 import java.util.Arrays;
@@ -73,6 +75,8 @@ public class PinInPostActivated implements PreSubmitCallbackStateHandler<AsylumC
     private void updateJourneyType(AsylumCase asylumCase) {
         asylumCase.write(AsylumCaseFieldDefinition.JOURNEY_TYPE, JourneyType.AIP);
         asylumCase.write(AsylumCaseFieldDefinition.PREV_JOURNEY_TYPE, JourneyType.REP);
+        asylumCase.write(IS_ADMIN, YesOrNo.NO);
+        asylumCase.write(APPELLANTS_REPRESENTATION, YesOrNo.NO);
     }
 
     private void updatePaymentOption(AsylumCase asylumCase) {
