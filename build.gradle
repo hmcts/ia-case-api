@@ -384,7 +384,6 @@ dependencies {
     implementation group: 'org.apache.logging.log4j', name: 'log4j-to-slf4j', version: '2.17.1'
 
     implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: versions.reformLogging
-    implementation group: 'com.github.hmcts.java-logging', name: 'logging-appinsights', version: versions.reformLogging
     implementation(group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '4.1.2') {
         exclude group: "org.bouncycastle", module: "bcprov-jdk15on"
     }
