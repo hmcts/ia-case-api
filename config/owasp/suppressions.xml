@@ -5,7 +5,7 @@
         <cve>CVE-2025-15104</cve>
     </suppress>
     <suppress>
-        <notes>False positive fixed by dependencyCheck plugin v12+ so need to upgrade uk.gov.hmcts.java past 0.12.67 when a new non broken version is available - https://github.com/dependency-check/DependencyCheck/issues/8130</notes>
-        <cve>CVE-2025-7962</cve>
+        <notes>False positive caused by incorrect change made seen in change history on NVD side - https://github.com/dependency-check/DependencyCheck/issues/8343</notes>
+        <cve>CVE-2020-29582</cve>
     </suppress>
 </suppressions>
