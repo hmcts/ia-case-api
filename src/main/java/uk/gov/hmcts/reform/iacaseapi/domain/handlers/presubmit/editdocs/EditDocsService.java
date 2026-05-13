@@ -68,10 +68,15 @@ public class EditDocsService {
     }
 
     public void cleanUpAppealTabDocs(AsylumCase asylumCase, AsylumCase asylumCaseBefore) {
-        List<String> deletedLRDocIds = getDeletedAppealDocIds(asylumCase, asylumCaseBefore);
 
-        cleanUpAppealDocumentList(asylumCase, LEGAL_REPRESENTATIVE_DOCUMENTS, deletedLRDocIds);
-        cleanUpAppealDocumentList(asylumCase, REASONS_FOR_APPEAL_DOCUMENTS, deletedLRDocIds);
+        List<String> deletedLRDocIds =
+                getDeletedAppealDocIds(asylumCase, asylumCaseBefore);
+
+        cleanUpAppealDocumentList(
+                asylumCase,
+                REASONS_FOR_APPEAL_DOCUMENTS,
+                deletedLRDocIds
+        );
     }
 
     private void cleanUpAppealDocumentList(
@@ -79,17 +84,22 @@ public class EditDocsService {
             AsylumCaseFieldDefinition documentType,
             List<String> deletedDocIds
     ) {
-        Document currentDocument = asylumCase.read(documentType, Document.class).orElse(null);
 
-        if (currentDocument != null && doWeHaveToCleanUpAppealTabDoc(deletedDocIds, currentDocument)) {
-            asylumCase.clear(documentType);
-        }
-    }
+        Optional<List<IdValue<DocumentWithMetadata>>> currentDocuments =
+                asylumCase.read(documentType);
 
-    private boolean doWeHaveToCleanUpAppealTabDoc(List<String> deletedLRDocIds,
-                                                    Document currentLRPdf) {
-        String currentLRPdfId = getIdFromDocUrl(currentLRPdf.getDocumentUrl());
-        return deletedLRDocIds.contains(currentLRPdfId);
+        currentDocuments.ifPresent(documentList -> {
+
+            documentList.removeIf(idValue ->
+                    deletedDocIds.contains(
+                            getIdFromDocUrl(
+                                    idValue.getValue().getDocument().getDocumentUrl()
+                            )
+                    )
+            );
+
+            asylumCase.write(documentType, documentList);
+        });
     }
 
     private List<String> getDeletedAppealDocIds(AsylumCase asylumCase, AsylumCase asylumCaseBefore) {
