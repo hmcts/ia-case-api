@@ -19,7 +19,7 @@ public class AsylumCaseValueInitializerFixer<T> implements DataFixer {
     @Override
     public void fix(AsylumCase asylumCase) {
 
-        if (!asylumCase.read(field).isPresent()) {
+        if (asylumCase.read(field).isEmpty()) {
             asylumCase.write(field, value);
         }
     }

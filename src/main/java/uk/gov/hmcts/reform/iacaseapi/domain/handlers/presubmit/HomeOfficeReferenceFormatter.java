@@ -68,7 +68,7 @@ public class HomeOfficeReferenceFormatter implements PreSubmitCallbackHandler<As
             // TODO: check here that the Home Office reference number conforms to UAN or GWF format (and possibly CEPR if needed)
             if (isInteger.test(homeOfficeReferenceNumber) && homeOfficeReferenceNumber.length() < REQUIRED_CID_REF_LENGTH) {
                 asylumCase.write(HOME_OFFICE_REFERENCE_NUMBER,
-                    String.format("%09d", Integer.parseInt(homeOfficeReferenceNumber)));
+                    "%09d".formatted(Integer.parseInt(homeOfficeReferenceNumber)));
             }
         }
 

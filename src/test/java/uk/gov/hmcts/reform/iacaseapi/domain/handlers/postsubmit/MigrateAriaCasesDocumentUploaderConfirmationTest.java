@@ -58,17 +58,21 @@ class MigrateAriaCasesDocumentUploaderConfirmationTest {
 
         assertThat(
             callbackResponse.getConfirmationHeader().get())
-            .contains(String.format("# You have progressed this case \n## New state: \n## '%s'", "Appeal submitted"));
+            .contains("# You have progressed this case \n## New state: \n## '%s'".formatted("Appeal submitted"));
 
         assertThat(
             callbackResponse.getConfirmationBody().get())
-            .contains("#### What happens next\n\n"
-                + "You can add or edit documents at any time through the 'Next step' \n"
-                + "dropdown list in your case details, using 'Edit documents'.\n\n"
-                + "#### If this case was listed for a hearing\n\n"
-                + "Listings have not been migrated. If this case was listed for a hearing,     \n"
-                + "you must transfer the listing over to the hearing management     \n"
-                + "component (HMC) as part of the migration process.");
+            .contains("""
+                #### What happens next
+                
+                You can add or edit documents at any time through the 'Next step'\s
+                dropdown list in your case details, using 'Edit documents'.
+                
+                #### If this case was listed for a hearing
+                
+                Listings have not been migrated. If this case was listed for a hearing,    \s
+                you must transfer the listing over to the hearing management    \s
+                component (HMC) as part of the migration process.""");
     }
 
     @Test

@@ -28,9 +28,11 @@ public class RequestCmaRequirementsConfirmation implements PostSubmitCallbackHan
 
         postSubmitResponse.setConfirmationHeader("# Your direction has been sent");
         postSubmitResponse.setConfirmationBody(
-                "#### What happens next\n\n"
-                        + "The appellant will be directed to submit requirements for a case management appointment."
-                        + " You will be notified when they are ready to review."
+                """
+                #### What happens next
+                
+                The appellant will be directed to submit requirements for a case management appointment.\
+                 You will be notified when they are ready to review."""
         );
 
         return postSubmitResponse;

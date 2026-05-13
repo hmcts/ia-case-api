@@ -18,7 +18,8 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.APPEAL_STA
 
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.nio.file.Path;
+
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -51,7 +52,7 @@ class DocumentApiDelgationTest extends SpringBootIntegrationTest implements With
     @WithMockUser(authorities = {"caseworker-ia", "caseworker-ia-legalrep-solicitor"})
     void doesnt_delegate_to_document_api() throws IOException {
         String prdResponseJson =
-            new String(Files.readAllBytes(Paths.get(resourceFile.getURI())));
+            new String(Files.readAllBytes(Path.of(resourceFile.getURI())));
 
         assertThat(prdResponseJson).isNotBlank();
 
@@ -81,7 +82,7 @@ class DocumentApiDelgationTest extends SpringBootIntegrationTest implements With
     @WithMockUser(authorities = {"caseworker-ia", "caseworker-ia-legalrep-solicitor"})
     void does_delegate_to_document_api_when_notification_not_turned_off() throws IOException {
         String prdResponseJson =
-            new String(Files.readAllBytes(Paths.get(resourceFile.getURI())));
+            new String(Files.readAllBytes(Path.of(resourceFile.getURI())));
 
         assertThat(prdResponseJson).isNotBlank();
 

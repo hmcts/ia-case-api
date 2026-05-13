@@ -55,8 +55,8 @@ class PreviousRepresentationAppenderTest {
         assertNotNull(allPreviousRepresentations);
         assertEquals(3, allPreviousRepresentations.size());
 
-        assertEquals("3", allPreviousRepresentations.get(0).getId());
-        assertEquals(newPreviousRepresentation1, allPreviousRepresentations.get(0).getValue());
+        assertEquals("3", allPreviousRepresentations.getFirst().getId());
+        assertEquals(newPreviousRepresentation1, allPreviousRepresentations.getFirst().getValue());
 
         assertEquals("2", allPreviousRepresentations.get(1).getId());
         assertEquals(existingPreviousRepresentation1, allPreviousRepresentations.get(1).getValue());
@@ -76,8 +76,8 @@ class PreviousRepresentationAppenderTest {
         assertNotNull(allPreviousRepresentations);
         assertEquals(1, allPreviousRepresentations.size());
 
-        assertEquals("1", allPreviousRepresentations.get(0).getId());
-        assertEquals(newPreviousRepresentation1, allPreviousRepresentations.get(0).getValue());
+        assertEquals("1", allPreviousRepresentations.getFirst().getId());
+        assertEquals(newPreviousRepresentation1, allPreviousRepresentations.getFirst().getValue());
     }
 
     @Test

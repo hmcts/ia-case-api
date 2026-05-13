@@ -206,12 +206,14 @@ class RecordAdjournmentDetailsConfirmationTest {
 
     @Test
     void should_return_auto_hearing_request_failed_confirmation() {
-        expectedResponse.setConfirmationBody("![Hearing could not be listed](https://raw.githubusercontent.com/hmcts/"
-                                 + "ia-appeal-frontend/master/app/assets/images/hearingCouldNotBeListed.png)"
-                                 + "\n\n"
-                                 + "#### What happens next\n\n"
-                                 + "The hearing could not be auto-requested. Please manually request the "
-                                 + "hearing via the [Hearings tab](/cases/case-details/1/hearings)");
+        expectedResponse.setConfirmationBody("""
+                                 ![Hearing could not be listed](https://raw.githubusercontent.com/hmcts/\
+                                 ia-appeal-frontend/master/app/assets/images/hearingCouldNotBeListed.png)
+                                 
+                                 #### What happens next
+                                 
+                                 The hearing could not be auto-requested. Please manually request the \
+                                 hearing via the [Hearings tab](/cases/case-details/1/hearings)""");
         String header = "# You have recorded the adjournment details";
         expectedResponse.setConfirmationHeader(header);
 

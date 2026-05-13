@@ -91,7 +91,7 @@ public class ProfessionalUsersConsumerTest {
     public void verifyUserOrganisation() {
         ProfessionalUsersResponse usersResponse = professionalUsersRetriever.retrieve();
         assertThat(usersResponse, is(notNullValue()));
-        assertThat(usersResponse.getUsers().get(0).getUserIdentifier(), is("userId"));
+        assertThat(usersResponse.getUsers().getFirst().getUserIdentifier(), is("userId"));
     }
 
     protected DslPart buildOrganisationsResponsePactDsl() {

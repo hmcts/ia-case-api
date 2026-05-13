@@ -96,7 +96,7 @@ public class RefDataUserServiceTest {
         List<Value> listOfValues = refDataUserService
             .mapCategoryValuesToDynamicListValues(listOfCategoryValues);
 
-        assertEquals("key", listOfValues.get(0).getCode());
-        assertEquals("valueEn", listOfValues.get(0).getLabel());
+        assertEquals("key", listOfValues.getFirst().getCode());
+        assertEquals("valueEn", listOfValues.getFirst().getLabel());
     }
 }

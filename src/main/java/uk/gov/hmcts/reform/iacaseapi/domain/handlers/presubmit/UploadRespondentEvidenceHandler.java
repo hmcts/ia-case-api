@@ -68,8 +68,7 @@ public class UploadRespondentEvidenceHandler implements PreSubmitCallbackHandler
                 .stream()
                 .map(IdValue::getValue)
                 .map(document -> documentReceiver.tryReceive(document, DocumentTag.RESPONDENT_EVIDENCE))
-                .filter(Optional::isPresent)
-                .map(Optional::get)
+                .flatMap(Optional::stream)
                 .collect(Collectors.toList());
 
         Optional<List<IdValue<DocumentWithMetadata>>> maybeExistingRespondentDocuments =

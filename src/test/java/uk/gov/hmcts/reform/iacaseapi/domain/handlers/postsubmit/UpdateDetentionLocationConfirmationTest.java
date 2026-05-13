@@ -54,8 +54,10 @@ class UpdateDetentionLocationConfirmationTest {
 
         assertThat(
                 callbackResponse.getConfirmationBody().get())
-                .contains("#### What happens next\n\n"
-                        + "The appeal will continue.");
+                .contains("""
+                        #### What happens next
+                        
+                        The appeal will continue.""");
     }
 
     @Test

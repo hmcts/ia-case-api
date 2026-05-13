@@ -43,9 +43,11 @@ class RequestFeeRemissionConfirmationTest {
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
         assertSame("# Your remission request has been submitted", callbackResponse.getConfirmationHeader().get());
-        assertSame("#### What happens next\n\n"
-                      + "The Tribunal will review the remission request. The decision details will be available to view in the appeal tab "
-                      + "when a decision has been made.<br>", callbackResponse.getConfirmationBody().get());
+        assertSame("""
+                      #### What happens next
+                      
+                      The Tribunal will review the remission request. The decision details will be available to view in the appeal tab \
+                      when a decision has been made.<br>""", callbackResponse.getConfirmationBody().get());
     }
 
     @Test

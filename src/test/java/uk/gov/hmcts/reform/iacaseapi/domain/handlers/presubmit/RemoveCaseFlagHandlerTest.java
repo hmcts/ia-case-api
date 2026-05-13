@@ -99,7 +99,7 @@ public class RemoveCaseFlagHandlerTest {
         verify(asylumCase).write(eq(INTERPRETER_LEVEL_FLAGS), interpreterFlagsCaptor.capture());
         assertNotNull(interpreterFlagsCaptor.getValue());
         assertEquals(2, interpreterFlagsCaptor.getValue().size());
-        assertTrue(interpreterFlagsCaptor.getValue().contains(expected.get(0)));
+        assertTrue(interpreterFlagsCaptor.getValue().contains(expected.getFirst()));
         assertTrue(interpreterFlagsCaptor.getValue().contains(expected.get(1)));
 
     }
@@ -126,7 +126,7 @@ public class RemoveCaseFlagHandlerTest {
         verify(asylumCase).write(eq(INTERPRETER_LEVEL_FLAGS), interpreterFlagsCaptor.capture());
         assertNotNull(interpreterFlagsCaptor.getValue());
         assertEquals(1, interpreterFlagsCaptor.getValue().size());
-        assertTrue(interpreterFlagsCaptor.getValue().contains(expected.get(0)));
+        assertTrue(interpreterFlagsCaptor.getValue().contains(expected.getFirst()));
     }
 
     @Test

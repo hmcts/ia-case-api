@@ -45,9 +45,12 @@ class RequestHomeOfficeDataConfirmationTest {
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
         assertSame("# You have matched the appellant details", callbackResponse.getConfirmationHeader().get());
-        assertSame("#### Do this next\n\nYou must review the appeal data and cross reference it with "
-                        + "Home Office data in the validation tab. If the appeal looks valid, you must tell the "
-                        + "respondent to supply their evidence.<br>", callbackResponse.getConfirmationBody().get());
+        assertSame("""
+                        #### Do this next
+                        
+                        You must review the appeal data and cross reference it with \
+                        Home Office data in the validation tab. If the appeal looks valid, you must tell the \
+                        respondent to supply their evidence.<br>""", callbackResponse.getConfirmationBody().get());
     }
 
     @Test

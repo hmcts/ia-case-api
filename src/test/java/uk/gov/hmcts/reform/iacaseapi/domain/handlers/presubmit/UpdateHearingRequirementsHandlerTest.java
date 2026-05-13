@@ -168,7 +168,7 @@ public class UpdateHearingRequirementsHandlerTest {
         verify(asylumCase).clear(OTHER_DECISION_FOR_DISPLAY);
 
         verify(asylumCase).write(eq(APPLICATIONS), applicationsCaptor.capture());
-        assertEquals("Completed", applicationsCaptor.getValue().get(0).getValue().getApplicationStatus());
+        assertEquals("Completed", applicationsCaptor.getValue().getFirst().getValue().getApplicationStatus());
     }
 
     @Test
@@ -211,7 +211,7 @@ public class UpdateHearingRequirementsHandlerTest {
         verify(asylumCase).clear(OTHER_DECISION_FOR_DISPLAY);
 
         verify(asylumCase).write(eq(APPLICATIONS), applicationsCaptor.capture());
-        assertEquals("Completed", applicationsCaptor.getValue().get(0).getValue().getApplicationStatus());
+        assertEquals("Completed", applicationsCaptor.getValue().getFirst().getValue().getApplicationStatus());
     }
 
     @Test
@@ -278,7 +278,7 @@ public class UpdateHearingRequirementsHandlerTest {
             .forClass(InterpreterLanguageRefData.class);
         verify(asylumCase).write(eq(APPELLANT_INTERPRETER_SPOKEN_LANGUAGE), languageCaptor.capture());
         verify(asylumCase).write(eq(APPELLANT_INTERPRETER_SIGN_LANGUAGE), languageCaptor.capture());
-        assertNull(languageCaptor.getAllValues().get(0).getLanguageManualEntryDescription());
+        assertNull(languageCaptor.getAllValues().getFirst().getLanguageManualEntryDescription());
         assertNull(languageCaptor.getAllValues().get(1).getLanguageManualEntryDescription());
     }
 
@@ -312,7 +312,7 @@ public class UpdateHearingRequirementsHandlerTest {
             .forClass(InterpreterLanguageRefData.class);
         verify(asylumCase).write(eq(APPELLANT_INTERPRETER_SPOKEN_LANGUAGE), languageCaptor.capture());
         verify(asylumCase).write(eq(APPELLANT_INTERPRETER_SIGN_LANGUAGE), languageCaptor.capture());
-        assertNull(languageCaptor.getAllValues().get(0).getLanguageRefData());
+        assertNull(languageCaptor.getAllValues().getFirst().getLanguageRefData());
         assertNull(languageCaptor.getAllValues().get(1).getLanguageRefData());
     }
 
@@ -491,9 +491,9 @@ public class UpdateHearingRequirementsHandlerTest {
         ArgumentCaptor<WitnessDetails> witnessDetailsCaptor = ArgumentCaptor.forClass(WitnessDetails.class);
         verify(asylumCase).write(eq(WITNESS_1), witnessDetailsCaptor.capture());
         verify(asylumCase).write(eq(WITNESS_2), witnessDetailsCaptor.capture());
-        assertEquals("A", witnessDetailsCaptor.getAllValues().get(0).getWitnessName());
+        assertEquals("A", witnessDetailsCaptor.getAllValues().getFirst().getWitnessName());
         assertEquals("C", witnessDetailsCaptor.getAllValues().get(1).getWitnessName());
-        assertEquals("a", witnessDetailsCaptor.getAllValues().get(0).getWitnessFamilyName());
+        assertEquals("a", witnessDetailsCaptor.getAllValues().getFirst().getWitnessFamilyName());
         assertEquals("c", witnessDetailsCaptor.getAllValues().get(1).getWitnessFamilyName());
 
         verify(asylumCase).write(eq(WITNESS_DETAILS), anyList());
@@ -572,7 +572,7 @@ public class UpdateHearingRequirementsHandlerTest {
         ArgumentCaptor<WitnessDetails> witnessDetailsCaptor = ArgumentCaptor.forClass(WitnessDetails.class);
         verify(asylumCase).write(eq(WITNESS_1), witnessDetailsCaptor.capture());
         verify(asylumCase).write(eq(WITNESS_2), witnessDetailsCaptor.capture());
-        assertEquals("A a", witnessDetailsCaptor.getAllValues().get(0).buildWitnessFullName());
+        assertEquals("A a", witnessDetailsCaptor.getAllValues().getFirst().buildWitnessFullName());
         assertEquals("C c", witnessDetailsCaptor.getAllValues().get(1).buildWitnessFullName());
 
         ArgumentCaptor<List<IdValue<WitnessDetails>>> listCaptor = ArgumentCaptor.forClass(List.class);

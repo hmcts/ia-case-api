@@ -16,13 +16,16 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PostSubmitCallbackHandler;
 public class HearingsUpdateHearingRequestConfirmation implements PostSubmitCallbackHandler<AsylumCase> {
 
     public static final String HEARING_UPDATE_FAILED_CONFIRMATION_MESSAGE =
-        "![Hearing could not be updated](https://raw.githubusercontent.com/hmcts/"
-        + "ia-appeal-frontend/master/app/assets/images/hearingCouldNotBeUpdated.png)"
-        + "\n\n"
-        + "#### What happens next\n\n"
-        + "The hearing could not be automatically updated. You must manually update the hearing in the "
-        + "[Hearings tab](/cases/case-details/%s/hearings)\n\n"
-        + "If required, parties will be informed of the changes to the hearing.";
+        """
+        ![Hearing could not be updated](https://raw.githubusercontent.com/hmcts/\
+        ia-appeal-frontend/master/app/assets/images/hearingCouldNotBeUpdated.png)
+        
+        #### What happens next
+        
+        The hearing could not be automatically updated. You must manually update the hearing in the \
+        [Hearings tab](/cases/case-details/%s/hearings)
+        
+        If required, parties will be informed of the changes to the hearing.""";
 
     @Override
     public boolean canHandle(Callback<AsylumCase> callback) {
@@ -44,7 +47,7 @@ public class HearingsUpdateHearingRequestConfirmation implements PostSubmitCallb
         if (asylumCase.read(MANUAL_UPDATE_HEARING_REQUIRED).isPresent()) {
             postSubmitResponse.setConfirmationHeader("");
             postSubmitResponse.setConfirmationBody(
-                String.format(HEARING_UPDATE_FAILED_CONFIRMATION_MESSAGE, callback.getCaseDetails().getId())
+                HEARING_UPDATE_FAILED_CONFIRMATION_MESSAGE.formatted(callback.getCaseDetails().getId())
             );
         } else {
             postSubmitResponse.setConfirmationHeader("# You've updated the hearing");

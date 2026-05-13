@@ -60,7 +60,7 @@ class AdditionalEvidenceForCostsPreparerTest {
             additionalEvidenceForCostsPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
         assertNotNull(callbackResponse);
-        verify(asylumCase, times(1)).write(ADD_EVIDENCE_FOR_COSTS_LIST, new DynamicList(applyForCostsList.get(0), applyForCostsList));
+        verify(asylumCase, times(1)).write(ADD_EVIDENCE_FOR_COSTS_LIST, new DynamicList(applyForCostsList.getFirst(), applyForCostsList));
     }
 
     @Test

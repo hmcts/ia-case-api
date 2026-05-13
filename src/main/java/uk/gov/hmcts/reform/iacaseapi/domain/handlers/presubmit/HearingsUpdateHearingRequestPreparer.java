@@ -48,7 +48,7 @@ public class HearingsUpdateHearingRequestPreparer implements PreSubmitCallbackHa
         }
         requireNonNull(callback, "callback must not be null");
 
-        AsylumCase asylumCase = iaHearingsApiService.aboutToStart(callback);;
+        AsylumCase asylumCase = iaHearingsApiService.aboutToStart(callback);
 
         if (hasNoHearings(asylumCase)) {
             PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);

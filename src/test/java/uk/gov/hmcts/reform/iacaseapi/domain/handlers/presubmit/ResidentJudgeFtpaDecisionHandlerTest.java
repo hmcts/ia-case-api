@@ -316,13 +316,13 @@ class ResidentJudgeFtpaDecisionHandlerTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of(applicantType));
         when(featureToggler.getValue(DLRM_SETASIDE_FEATURE_FLAG, false)).thenReturn(true);
-        when(asylumCase.read(valueOf(String.format("FTPA_%s_RJ_DECISION_OUTCOME_TYPE", applicantType.toUpperCase())), String.class)).thenReturn(Optional.of("reheardRule35"));
+        when(asylumCase.read(valueOf("FTPA_%s_RJ_DECISION_OUTCOME_TYPE".formatted(applicantType.toUpperCase())), String.class)).thenReturn(Optional.of("reheardRule35"));
 
-        when(asylumCase.read(valueOf(String.format("FTPA_R35_%s_DOCUMENT", applicantType.toUpperCase())), Document.class))
+        when(asylumCase.read(valueOf("FTPA_R35_%s_DOCUMENT".formatted(applicantType.toUpperCase())), Document.class))
                 .thenReturn(Optional.of(maybeFtpaSetAsideR35Document));
 
         when(documentReceiver.receive(maybeFtpaSetAsideR35Document, "",DocumentTag.FTPA_SET_ASIDE)).thenReturn(ftpaSetAsideR35Document);
-        when(asylumCase.read(valueOf(String.format("FTPA_%s_R35_NOTICE_DOCUMENT", applicantType.toUpperCase())))).thenReturn(Optional.of(maybeFtpaR35CommunicationNoticeDocument));
+        when(asylumCase.read(valueOf("FTPA_%s_R35_NOTICE_DOCUMENT".formatted(applicantType.toUpperCase())))).thenReturn(Optional.of(maybeFtpaR35CommunicationNoticeDocument));
         when(documentReceiver.tryReceiveAll(maybeFtpaR35CommunicationNoticeDocument, DocumentTag.FTPA_SET_ASIDE))
                 .thenReturn(singletonList(ftpaSetAsideR35NoticeDocument));
 
@@ -344,10 +344,10 @@ class ResidentJudgeFtpaDecisionHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(asylumCase, times(1)).read(valueOf(String.format("FTPA_R35_%s_DOCUMENT", applicantType.toUpperCase())), Document.class);
+        verify(asylumCase, times(1)).read(valueOf("FTPA_R35_%s_DOCUMENT".formatted(applicantType.toUpperCase())), Document.class);
         verify(documentReceiver, times(1)).receive(maybeFtpaSetAsideR35Document, "", DocumentTag.FTPA_SET_ASIDE);
 
-        verify(asylumCase, times(1)).read(valueOf(String.format("FTPA_%s_R35_NOTICE_DOCUMENT", applicantType.toUpperCase())));
+        verify(asylumCase, times(1)).read(valueOf("FTPA_%s_R35_NOTICE_DOCUMENT".formatted(applicantType.toUpperCase())));
         verify(asylumCase, times(1)).read(ALL_SET_ASIDE_DOCS);
 
 
@@ -515,13 +515,13 @@ class ResidentJudgeFtpaDecisionHandlerTest {
         when(featureToggler.getValue("dlrm-setaside-feature-flag", false)).thenReturn(true);
 
         when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of(applicantType));
-        when(asylumCase.read(valueOf(String.format("FTPA_%s_RJ_DECISION_OUTCOME_TYPE", applicantType.toUpperCase())), String.class)).thenReturn(Optional.of("reheardRule35"));
+        when(asylumCase.read(valueOf("FTPA_%s_RJ_DECISION_OUTCOME_TYPE".formatted(applicantType.toUpperCase())), String.class)).thenReturn(Optional.of("reheardRule35"));
 
-        when(asylumCase.read(valueOf(String.format("FTPA_R35_%s_DOCUMENT", applicantType.toUpperCase())), Document.class))
+        when(asylumCase.read(valueOf("FTPA_R35_%s_DOCUMENT".formatted(applicantType.toUpperCase())), Document.class))
                 .thenReturn(Optional.of(maybeFtpaSetAsideR35Document));
 
         when(documentReceiver.receive(maybeFtpaSetAsideR35Document, "",DocumentTag.FTPA_SET_ASIDE)).thenReturn(ftpaSetAsideR35Document);
-        when(asylumCase.read(valueOf(String.format("FTPA_%s_R35_NOTICE_DOCUMENT", applicantType.toUpperCase())))).thenReturn(Optional.of(maybeFtpaR35CommunicationNoticeDocument));
+        when(asylumCase.read(valueOf("FTPA_%s_R35_NOTICE_DOCUMENT".formatted(applicantType.toUpperCase())))).thenReturn(Optional.of(maybeFtpaR35CommunicationNoticeDocument));
         when(documentReceiver.tryReceiveAll(maybeFtpaR35CommunicationNoticeDocument, DocumentTag.FTPA_SET_ASIDE))
                 .thenReturn(singletonList(ftpaSetAsideR35NoticeDocument));
 
@@ -541,7 +541,7 @@ class ResidentJudgeFtpaDecisionHandlerTest {
                 residentJudgeFtpaDecisionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
-        verify(asylumCase, times(1)).write(valueOf(String.format("FTPA_%s_REASON_REHEARING", applicantType.toUpperCase())),"Set aside and to be reheard under rule 35");
+        verify(asylumCase, times(1)).write(valueOf("FTPA_%s_REASON_REHEARING".formatted(applicantType.toUpperCase())),"Set aside and to be reheard under rule 35");
     }
 
     @Test

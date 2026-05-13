@@ -113,8 +113,10 @@ class AdjournWithoutDateConfirmationTest {
 
         assertThat(
             callbackResponse.getConfirmationBody().get())
-            .contains("#### What happens next\n\n"
-                + "A new Notice of Hearing has been generated."
+            .contains("""
+                #### What happens next
+                
+                A new Notice of Hearing has been generated."""
             );
     }
 

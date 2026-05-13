@@ -7,7 +7,8 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
 import com.microsoft.applicationinsights.web.internal.WebRequestTrackingFilter;
 import java.io.OutputStream;
 import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.nio.file.Path;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -56,7 +57,7 @@ class OpenApiPublisher {
             .getResponse()
             .getContentAsByteArray();
 
-        try (OutputStream outputStream = Files.newOutputStream(Paths.get("/tmp/swagger-specs.json"))) {
+        try (OutputStream outputStream = Files.newOutputStream(Path.of("/tmp/swagger-specs.json"))) {
             outputStream.write(specs);
         }
 

@@ -99,7 +99,7 @@ public class PinInPostActivatedTest {
 
         assertTrue(expectedSubscriptions.isPresent());
         assertEquals(1, expectedSubscriptions.get().size());
-        assertEquals(USER_ID, expectedSubscriptions.get().get(0).getId());
+        assertEquals(USER_ID, expectedSubscriptions.get().getFirst().getId());
 
         Subscriber expectedSubscriber = new Subscriber(
             SubscriberType.APPELLANT,
@@ -107,7 +107,7 @@ public class PinInPostActivatedTest {
             YesOrNo.YES,
             APPELLANT_MOBILE_NUMBER,
             YesOrNo.NO);
-        assertThat(expectedSubscriptions.get().get(0).getValue()).usingRecursiveComparison().isEqualTo(expectedSubscriber);
+        assertThat(expectedSubscriptions.get().getFirst().getValue()).usingRecursiveComparison().isEqualTo(expectedSubscriber);
     }
 
     @Test
@@ -128,7 +128,7 @@ public class PinInPostActivatedTest {
 
         assertTrue(expectedSubscriptions.isPresent());
         assertEquals(1, expectedSubscriptions.get().size());
-        assertEquals(USER_ID, expectedSubscriptions.get().get(0).getId());
+        assertEquals(USER_ID, expectedSubscriptions.get().getFirst().getId());
 
         Subscriber expectedSubscriber = new Subscriber(
             SubscriberType.APPELLANT,
@@ -136,7 +136,7 @@ public class PinInPostActivatedTest {
             YesOrNo.NO,
             APPELLANT_MOBILE_NUMBER,
             YesOrNo.YES);
-        assertThat(expectedSubscriptions.get().get(0).getValue()).usingRecursiveComparison().isEqualTo(expectedSubscriber);
+        assertThat(expectedSubscriptions.get().getFirst().getValue()).usingRecursiveComparison().isEqualTo(expectedSubscriber);
     }
 
     @Test
@@ -165,7 +165,7 @@ public class PinInPostActivatedTest {
 
         assertTrue(expectedSubscriptions.isPresent());
         assertEquals(1, expectedSubscriptions.get().size());
-        assertEquals(USER_ID, expectedSubscriptions.get().get(0).getId());
+        assertEquals(USER_ID, expectedSubscriptions.get().getFirst().getId());
 
         Subscriber expectedSubscriber = new Subscriber(
             SubscriberType.APPELLANT,
@@ -173,7 +173,7 @@ public class PinInPostActivatedTest {
             YesOrNo.YES,
             APPELLANT_MOBILE_NUMBER,
             YesOrNo.NO);
-        assertThat(expectedSubscriptions.get().get(0).getValue()).usingRecursiveComparison().isEqualTo(expectedSubscriber);
+        assertThat(expectedSubscriptions.get().getFirst().getValue()).usingRecursiveComparison().isEqualTo(expectedSubscriber);
     }
 
     @Test

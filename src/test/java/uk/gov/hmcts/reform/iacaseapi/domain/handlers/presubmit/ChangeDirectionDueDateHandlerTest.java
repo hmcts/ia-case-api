@@ -156,7 +156,7 @@ class ChangeDirectionDueDateHandlerTest {
         verify(asylumCase).clear(APPLICATION_TIME_EXTENSION_EXISTS);
         verify(asylumCase).write(eq(APPLICATIONS), applicationsCaptor.capture());
         verify(asylumCase).write(eq(DIRECTION_EDIT_PARTIES), directionEditPartiesCaptor.capture());
-        assertEquals("Completed", applicationsCaptor.getValue().get(0).getValue().getApplicationStatus());
+        assertEquals("Completed", applicationsCaptor.getValue().getFirst().getValue().getApplicationStatus());
         verify(waFieldsPublisher).addLastModifiedDirection(
                 eq(asylumCase), anyString(), any(Parties.class), anyString(), any(DirectionTag.class), anyString(), anyString());
 
@@ -165,13 +165,13 @@ class ChangeDirectionDueDateHandlerTest {
         List<IdValue<Direction>> actualDirections = asylumCaseValues.get(asylumCaseFieldDefinitions.indexOf(DIRECTIONS));
         assertEquals(existingDirections.size(), actualDirections.size());
 
-        assertEquals("1", actualDirections.get(0).getId());
-        assertEquals("explanation-1", actualDirections.get(0).getValue().getExplanation());
-        assertEquals(Parties.LEGAL_REPRESENTATIVE, actualDirections.get(0).getValue().getParties());
-        assertEquals("2020-12-01", actualDirections.get(0).getValue().getDateDue());
-        assertEquals("2019-12-01", actualDirections.get(0).getValue().getDateSent());
-        assertEquals(Collections.emptyList(), actualDirections.get(0).getValue().getClarifyingQuestions());
-        assertEquals(DirectionTag.LEGAL_REPRESENTATIVE_REVIEW, actualDirections.get(0).getValue().getTag());
+        assertEquals("1", actualDirections.getFirst().getId());
+        assertEquals("explanation-1", actualDirections.getFirst().getValue().getExplanation());
+        assertEquals(Parties.LEGAL_REPRESENTATIVE, actualDirections.getFirst().getValue().getParties());
+        assertEquals("2020-12-01", actualDirections.getFirst().getValue().getDateDue());
+        assertEquals("2019-12-01", actualDirections.getFirst().getValue().getDateSent());
+        assertEquals(Collections.emptyList(), actualDirections.getFirst().getValue().getClarifyingQuestions());
+        assertEquals(DirectionTag.LEGAL_REPRESENTATIVE_REVIEW, actualDirections.getFirst().getValue().getTag());
 
         // "Direction 1" in UI is equivalent of Direction with IdValue "2" in backend
         assertEquals("2", actualDirections.get(1).getId());
@@ -181,20 +181,20 @@ class ChangeDirectionDueDateHandlerTest {
         assertEquals(dateSent.toString(), actualDirections.get(1).getValue().getDateSent());
         assertEquals(DirectionTag.RESPONDENT_REVIEW, actualDirections.get(1).getValue().getTag());
         assertEquals(2, actualDirections.get(1).getValue().getPreviousDates().size());
-        assertEquals("2", actualDirections.get(1).getValue().getPreviousDates().get(0).getId());
+        assertEquals("2", actualDirections.get(1).getValue().getPreviousDates().getFirst().getId());
         assertEquals("2020-11-01",
-            actualDirections.get(1).getValue().getPreviousDates().get(0).getValue().getDateDue());
+            actualDirections.get(1).getValue().getPreviousDates().getFirst().getValue().getDateDue());
         assertEquals("2019-11-01",
-            actualDirections.get(1).getValue().getPreviousDates().get(0).getValue().getDateSent());
+            actualDirections.get(1).getValue().getPreviousDates().getFirst().getValue().getDateSent());
         assertEquals("1", actualDirections.get(1).getValue().getPreviousDates().get(1).getId());
         assertEquals("2018-05-01",
             actualDirections.get(1).getValue().getPreviousDates().get(1).getValue().getDateDue());
         assertEquals("2018-03-01",
             actualDirections.get(1).getValue().getPreviousDates().get(1).getValue().getDateSent());
         assertEquals(1, actualDirections.get(1).getValue().getClarifyingQuestions().size());
-        assertEquals("1", actualDirections.get(1).getValue().getClarifyingQuestions().get(0).getId());
+        assertEquals("1", actualDirections.get(1).getValue().getClarifyingQuestions().getFirst().getId());
         assertEquals("is this a sample question?",
-                actualDirections.get(1).getValue().getClarifyingQuestions().get(0).getValue().getQuestion());
+                actualDirections.get(1).getValue().getClarifyingQuestions().getFirst().getValue().getQuestion());
 
     }
 
@@ -326,12 +326,12 @@ class ChangeDirectionDueDateHandlerTest {
             actualDirections.size()
         );
 
-        assertEquals("1", actualDirections.get(0).getId());
-        assertEquals("explanation-1", actualDirections.get(0).getValue().getExplanation());
-        assertEquals(Parties.LEGAL_REPRESENTATIVE, actualDirections.get(0).getValue().getParties());
-        assertEquals("2222-12-01", actualDirections.get(0).getValue().getDateDue());
-        assertEquals("2019-12-01", actualDirections.get(0).getValue().getDateSent());
-        assertEquals(DirectionTag.LEGAL_REPRESENTATIVE_REVIEW, actualDirections.get(0).getValue().getTag());
+        assertEquals("1", actualDirections.getFirst().getId());
+        assertEquals("explanation-1", actualDirections.getFirst().getValue().getExplanation());
+        assertEquals(Parties.LEGAL_REPRESENTATIVE, actualDirections.getFirst().getValue().getParties());
+        assertEquals("2222-12-01", actualDirections.getFirst().getValue().getDateDue());
+        assertEquals("2019-12-01", actualDirections.getFirst().getValue().getDateSent());
+        assertEquals(DirectionTag.LEGAL_REPRESENTATIVE_REVIEW, actualDirections.getFirst().getValue().getTag());
 
         assertEquals("2", actualDirections.get(1).getId());
         assertEquals("explanation-2", actualDirections.get(1).getValue().getExplanation());

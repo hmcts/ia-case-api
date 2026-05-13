@@ -131,9 +131,11 @@ class DecideAnApplicationConfirmationTest {
                     + " or [unlink the appeal](/case/IA/Asylum/"
                     + id + "/trigger/unlinkAppeal).";
 
-            case "Judge's review of application decision" -> "#### What happens next\n\n"
-                    + "The application decision has been recorded and is now available in the applications tab. "
-                    + "Both parties will receive a notification detailing your decision.";
+            case "Judge's review of application decision" -> """
+                    #### What happens next
+                    
+                    The application decision has been recorded and is now available in the applications tab. \
+                    Both parties will receive a notification detailing your decision.""";
 
             case "Reinstate an ended appeal" -> "#### What happens next\n\n"
                     + "The application decision has been recorded and is now available in the applications tab. "
@@ -158,8 +160,10 @@ class DecideAnApplicationConfirmationTest {
                     + "The application decision has been recorded and is now available in the applications tab. "
                     + "You must now [end the appeal](/case/IA/Asylum/" + id + "/trigger/endAppeal)";
 
-            default -> "#### What happens next\n\n"
-                    + "The application decision has been recorded and is now available in the applications tab. ";
+            default -> """
+                    #### What happens next
+                    
+                    The application decision has been recorded and is now available in the applications tab. """;
         };
         assertThat(callbackResponse.getConfirmationBody()).contains(expectedBody);
     }
@@ -194,9 +198,12 @@ class DecideAnApplicationConfirmationTest {
         assertThat(callbackResponse.getConfirmationHeader()).contains("# You have decided an application");
 
         assertThat(callbackResponse.getConfirmationBody()).contains(
-            "#### What happens next\n\nThe application decision has been recorded and is now available in"
-            + " the applications tab. You need to tell the listing team to relist the case. Once the case is relisted"
-            + " a new Notice of Hearing will be sent to all parties.");
+            """
+            #### What happens next
+            
+            The application decision has been recorded and is now available in\
+             the applications tab. You need to tell the listing team to relist the case. Once the case is relisted\
+             a new Notice of Hearing will be sent to all parties.""");
     }
 
     @Test
@@ -225,9 +232,11 @@ class DecideAnApplicationConfirmationTest {
         assertThat(callbackResponse.getConfirmationHeader().orElseThrow()).contains("You have decided an application");
 
         assertThat(callbackResponse.getConfirmationBody().orElseThrow()).contains(
-            "#### What happens next\n\n"
-                + "The application decision has been recorded and is now available in the applications tab. "
-                + "Both parties will be notified that the application was refused."
+            """
+            #### What happens next
+            
+            The application decision has been recorded and is now available in the applications tab. \
+            Both parties will be notified that the application was refused."""
         );
     }
 

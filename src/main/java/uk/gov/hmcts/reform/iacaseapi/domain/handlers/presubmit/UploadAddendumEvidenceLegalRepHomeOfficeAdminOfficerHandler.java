@@ -77,8 +77,7 @@ public class UploadAddendumEvidenceLegalRepHomeOfficeAdminOfficerHandler impleme
                 .stream()
                 .map(IdValue::<DocumentWithDescription>getValue)
                 .map(document -> documentReceiver.tryReceive(document, DocumentTag.ADDENDUM_EVIDENCE, party))
-                .filter(Optional::isPresent)
-                .map(Optional::get)
+                .flatMap(Optional::stream)
                 .map(doc -> callback.getEvent() == Event.UPLOAD_ADDENDUM_EVIDENCE_ADMIN_OFFICER
                         ? new DocumentWithMetadata(doc.getDocument(), doc.getDescription(), doc.getDateUploaded(), doc.getTag(), doc.getSuppliedBy(), "TCW")
                         : doc)

@@ -86,13 +86,13 @@ public class FtpaMigrateLegacyDataHandler implements PreSubmitCallbackHandler<As
         if (existingApplications.isEmpty()) {
             for (String party : parties) {
                 boolean isFtpaDecidedBefore = asylumCaseBefore
-                        .read(valueOf(String.format("FTPA_%s_RJ_DECISION_OUTCOME_TYPE", party.toUpperCase()))).isPresent();
+                        .read(valueOf("FTPA_%s_RJ_DECISION_OUTCOME_TYPE".formatted(party.toUpperCase()))).isPresent();
                 if (isFtpaDecidedBefore) {
                     existingApplications = migrateFtpaDecided(asylumCaseBefore, existingApplications, party);
                 }
 
                 boolean isFtpaStartedBefore = asylumCaseBefore
-                        .read(valueOf(String.format("FTPA_%s_GROUNDS_DOCUMENTS", party.toUpperCase()))).isPresent();
+                        .read(valueOf("FTPA_%s_GROUNDS_DOCUMENTS".formatted(party.toUpperCase()))).isPresent();
                 if (isFtpaStartedBefore) {
                     existingApplications = migrateFtpaStarted(asylumCaseBefore, existingApplications, party);
                 }
@@ -111,7 +111,7 @@ public class FtpaMigrateLegacyDataHandler implements PreSubmitCallbackHandler<As
         final String ftpaApplicantUpperCase = ftpaApplicantType.toUpperCase();
 
         String applicationDate = asylumCaseBefore
-                .read(valueOf(String.format("FTPA_%s_APPLICATION_DATE", ftpaApplicantUpperCase)), String.class)
+                .read(valueOf("FTPA_%s_APPLICATION_DATE".formatted(ftpaApplicantUpperCase)), String.class)
                 .orElseThrow(() -> new IllegalStateException("ftpaApplicationDate is not present"));
 
         Optional<IdValue<FtpaApplications>> existingFtpaApplication = existingApplications.stream()
@@ -124,13 +124,13 @@ public class FtpaMigrateLegacyDataHandler implements PreSubmitCallbackHandler<As
                 : FtpaApplications.builder().ftpaApplicant(ftpaApplicantType).build();
 
         final Optional<List<IdValue<DocumentWithDescription>>> maybeGroundsDocument =
-                asylumCaseBefore.read(valueOf(String.format("FTPA_%s_GROUNDS_DOCUMENTS", ftpaApplicantUpperCase)));
+                asylumCaseBefore.read(valueOf("FTPA_%s_GROUNDS_DOCUMENTS".formatted(ftpaApplicantUpperCase)));
         final Optional<List<IdValue<DocumentWithDescription>>> maybeFtpaEvidence =
-                asylumCaseBefore.read(valueOf(String.format("FTPA_%s_EVIDENCE_DOCUMENTS", ftpaApplicantUpperCase)));
+                asylumCaseBefore.read(valueOf("FTPA_%s_EVIDENCE_DOCUMENTS".formatted(ftpaApplicantUpperCase)));
         final Optional<List<IdValue<DocumentWithDescription>>> maybeOutOfTimeDocuments =
-                asylumCaseBefore.read(valueOf(String.format("FTPA_%s_OUT_OF_TIME_DOCUMENTS", ftpaApplicantUpperCase)));
+                asylumCaseBefore.read(valueOf("FTPA_%s_OUT_OF_TIME_DOCUMENTS".formatted(ftpaApplicantUpperCase)));
         final String ftpaOutOfTimeExplanation =
-                asylumCaseBefore.read(valueOf(String.format("FTPA_%s_OUT_OF_TIME_EXPLANATION", ftpaApplicantUpperCase)), String.class)
+                asylumCaseBefore.read(valueOf("FTPA_%s_OUT_OF_TIME_EXPLANATION".formatted(ftpaApplicantUpperCase)), String.class)
                         .orElse("");
 
         newFtpaApplication.setFtpaApplicationDate(applicationDate);

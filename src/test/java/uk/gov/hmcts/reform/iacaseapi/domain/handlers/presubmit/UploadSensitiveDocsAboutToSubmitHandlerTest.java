@@ -100,7 +100,7 @@ class UploadSensitiveDocsAboutToSubmitHandlerTest {
             actualResponse.getData().read(UPLOAD_SENSITIVE_DOCS);
 
         if (actualUploadSensitiveDocsOptional.isPresent()) {
-            assertEquals(someDocWithMetadata, actualUploadSensitiveDocsOptional.get().get(0).getValue());
+            assertEquals(someDocWithMetadata, actualUploadSensitiveDocsOptional.get().getFirst().getValue());
         } else {
             fail("expected sensitive document not found");
         }
@@ -110,7 +110,7 @@ class UploadSensitiveDocsAboutToSubmitHandlerTest {
 
         verify(documentReceiver, times(1))
             .tryReceiveAll(docWithDescListCaptor.capture(), eq(DocumentTag.SENSITIVE_DOCUMENT), eq(suppliedBy));
-        assertEquals(uploadedSensitiveDoc, docWithDescListCaptor.getValue().get(0).getValue());
+        assertEquals(uploadedSensitiveDoc, docWithDescListCaptor.getValue().getFirst().getValue());
 
     }
 

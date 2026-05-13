@@ -202,7 +202,7 @@ class RemissionDetailsAppenderTest {
 
         IdValue<DocumentWithMetadata> idValue = new IdValue<>("1", Mockito.mock(DocumentWithMetadata.class));
 
-        when(localAuthorityLetterList.get(0)).thenReturn(idValue);
+        when(localAuthorityLetterList.getFirst()).thenReturn(idValue);
 
         when(localAuthorityLetterList.size()).thenReturn(2);
 

@@ -107,7 +107,7 @@ class DbAppealReferenceNumberGeneratorTest {
         MapSqlParameterSource actualInsertParameters =
             insertParametersCaptor
                 .getAllValues()
-                .get(0);
+                .getFirst();
 
         assertEquals(caseId, actualInsertParameters.getValue("caseId"));
         assertEquals(appealType.name(), actualInsertParameters.getValue("appealType"));
@@ -117,7 +117,7 @@ class DbAppealReferenceNumberGeneratorTest {
         MapSqlParameterSource actualSelectParameters =
             selectParametersCaptor
                 .getAllValues()
-                .get(0);
+                .getFirst();
 
         assertEquals(caseId, actualSelectParameters.getValue("caseId"));
     }

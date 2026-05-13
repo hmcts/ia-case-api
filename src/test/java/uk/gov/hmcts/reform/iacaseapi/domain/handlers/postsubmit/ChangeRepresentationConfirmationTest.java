@@ -78,9 +78,11 @@ class ChangeRepresentationConfirmationTest {
         assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains(
-                "We've sent you an email confirming you're no longer representing this client.\n"
-                + "You have been removed from this case and no longer have access to it.\n\n"
-                + "[View case list](/cases)"
+                """
+                We've sent you an email confirming you're no longer representing this client.
+                You have been removed from this case and no longer have access to it.
+                
+                [View case list](/cases)"""
             );
     }
 
@@ -261,8 +263,12 @@ class ChangeRepresentationConfirmationTest {
                 .contains("# You have updated this case to Appellant in Person - Manual");
         assertThat(
                 callbackResponse.getConfirmationBody().get())
-                .contains("#### What happens next\n\n"
-                        + "This appeal will have to be continued by internal users\n\n");
+                .contains("""
+                        #### What happens next
+                        
+                        This appeal will have to be continued by internal users
+                        
+                        """);
 
         verify(roleAssignmentService, times(1)).queryRoleAssignments(queryRequest);
         verify(roleAssignmentService, times(1)).deleteRoleAssignment(assignmentId, serviceUserToken);

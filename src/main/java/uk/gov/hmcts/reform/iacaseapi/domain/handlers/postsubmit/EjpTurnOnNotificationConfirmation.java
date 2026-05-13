@@ -31,8 +31,11 @@ public class EjpTurnOnNotificationConfirmation implements PostSubmitCallbackHand
 
         postSubmitResponse.setConfirmationHeader("# You have turned on notifications");
         postSubmitResponse.setConfirmationBody(
-                "#### What happens next\n\n"
-                        + "All parties will be notified that the case has been transferred to the First-tier Tribunal.\n "
+                """
+                #### What happens next
+                
+                All parties will be notified that the case has been transferred to the First-tier Tribunal.
+                 """
         );
 
         return postSubmitResponse;

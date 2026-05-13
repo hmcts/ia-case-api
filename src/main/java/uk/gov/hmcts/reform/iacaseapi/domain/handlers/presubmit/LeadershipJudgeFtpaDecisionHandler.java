@@ -82,11 +82,11 @@ public class LeadershipJudgeFtpaDecisionHandler implements PreSubmitCallbackHand
                 .orElseThrow(() -> new IllegalStateException("FtpaApplicantType is not present"));
 
         final Optional<List<IdValue<DocumentWithDescription>>> maybeFtpaDecisionAndReasonsDocument = asylumCase.read(
-            valueOf(String.format("FTPA_%s_DECISION_DOCUMENT", ftpaApplicantType.toUpperCase())));
+            valueOf("FTPA_%s_DECISION_DOCUMENT".formatted(ftpaApplicantType.toUpperCase())));
         final List<IdValue<DocumentWithDescription>> existingFtpaDecisionAndReasonsDocuments = maybeFtpaDecisionAndReasonsDocument.orElse(Collections.emptyList());
 
         final Optional<List<IdValue<DocumentWithMetadata>>> maybeFtpaDecisionDocuments = asylumCase.read(
-            valueOf(String.format("ALL_FTPA_%s_DECISION_DOCS", ftpaApplicantType.toUpperCase())));
+            valueOf("ALL_FTPA_%s_DECISION_DOCS".formatted(ftpaApplicantType.toUpperCase())));
         final List<IdValue<DocumentWithMetadata>> existingFtpaDecisionDocuments = maybeFtpaDecisionDocuments.orElse(Collections.emptyList());
 
         List<DocumentWithMetadata> ftpaDecisionAndReasonsDocuments = new ArrayList<>();
@@ -104,36 +104,36 @@ public class LeadershipJudgeFtpaDecisionHandler implements PreSubmitCallbackHand
                 ftpaDecisionAndReasonsDocuments
             );
 
-        String ftpaDecisionOutcomeType = asylumCase.read(valueOf(String.format("FTPA_%s_DECISION_OUTCOME_TYPE", ftpaApplicantType.toUpperCase())), String.class)
+        String ftpaDecisionOutcomeType = asylumCase.read(valueOf("FTPA_%s_DECISION_OUTCOME_TYPE".formatted(ftpaApplicantType.toUpperCase())), String.class)
             .orElseThrow(() -> new IllegalStateException("ftpaDecisionOutcomeType is not present"));
 
         if (ftpaDecisionOutcomeType.equals("granted") || ftpaDecisionOutcomeType.equals("partiallyGranted")) {
 
-            asylumCase.write(valueOf(String.format("IS_%s_FTPA_DECISION_VISIBLE_TO_ALL", ftpaApplicantType.toUpperCase())), YES);
+            asylumCase.write(valueOf("IS_%s_FTPA_DECISION_VISIBLE_TO_ALL".formatted(ftpaApplicantType.toUpperCase())), YES);
 
-            asylumCase.write(valueOf(String.format("IS_FTPA_%s_GROUNDS_DOCS_VISIBLE_IN_DECIDED", ftpaApplicantType.toUpperCase())), YES);
-            asylumCase.write(valueOf(String.format("IS_FTPA_%s_EVIDENCE_DOCS_VISIBLE_IN_DECIDED", ftpaApplicantType.toUpperCase())), YES);
-            asylumCase.write(valueOf(String.format("IS_FTPA_%s_OOT_DOCS_VISIBLE_IN_DECIDED", ftpaApplicantType.toUpperCase())), YES);
-            asylumCase.write(valueOf(String.format("IS_FTPA_%s_OOT_EXPLANATION_VISIBLE_IN_DECIDED", ftpaApplicantType.toUpperCase())), YES);
-            asylumCase.write(valueOf(String.format("IS_FTPA_%s_DOCS_VISIBLE_IN_DECIDED", ftpaApplicantType.toUpperCase())), YES);
+            asylumCase.write(valueOf("IS_FTPA_%s_GROUNDS_DOCS_VISIBLE_IN_DECIDED".formatted(ftpaApplicantType.toUpperCase())), YES);
+            asylumCase.write(valueOf("IS_FTPA_%s_EVIDENCE_DOCS_VISIBLE_IN_DECIDED".formatted(ftpaApplicantType.toUpperCase())), YES);
+            asylumCase.write(valueOf("IS_FTPA_%s_OOT_DOCS_VISIBLE_IN_DECIDED".formatted(ftpaApplicantType.toUpperCase())), YES);
+            asylumCase.write(valueOf("IS_FTPA_%s_OOT_EXPLANATION_VISIBLE_IN_DECIDED".formatted(ftpaApplicantType.toUpperCase())), YES);
+            asylumCase.write(valueOf("IS_FTPA_%s_DOCS_VISIBLE_IN_DECIDED".formatted(ftpaApplicantType.toUpperCase())), YES);
 
-            asylumCase.write(valueOf(String.format("IS_FTPA_%s_GROUNDS_DOCS_VISIBLE_IN_SUBMITTED", ftpaApplicantType.toUpperCase())), NO);
-            asylumCase.write(valueOf(String.format("IS_FTPA_%s_EVIDENCE_DOCS_VISIBLE_IN_SUBMITTED", ftpaApplicantType.toUpperCase())), NO);
-            asylumCase.write(valueOf(String.format("IS_FTPA_%s_OOT_DOCS_VISIBLE_IN_SUBMITTED", ftpaApplicantType.toUpperCase())), NO);
-            asylumCase.write(valueOf(String.format("IS_FTPA_%s_OOT_EXPLANATION_VISIBLE_IN_SUBMITTED", ftpaApplicantType.toUpperCase())), NO);
-            asylumCase.write(valueOf(String.format("IS_FTPA_%s_DOCS_VISIBLE_IN_SUBMITTED", ftpaApplicantType.toUpperCase())), NO);
+            asylumCase.write(valueOf("IS_FTPA_%s_GROUNDS_DOCS_VISIBLE_IN_SUBMITTED".formatted(ftpaApplicantType.toUpperCase())), NO);
+            asylumCase.write(valueOf("IS_FTPA_%s_EVIDENCE_DOCS_VISIBLE_IN_SUBMITTED".formatted(ftpaApplicantType.toUpperCase())), NO);
+            asylumCase.write(valueOf("IS_FTPA_%s_OOT_DOCS_VISIBLE_IN_SUBMITTED".formatted(ftpaApplicantType.toUpperCase())), NO);
+            asylumCase.write(valueOf("IS_FTPA_%s_OOT_EXPLANATION_VISIBLE_IN_SUBMITTED".formatted(ftpaApplicantType.toUpperCase())), NO);
+            asylumCase.write(valueOf("IS_FTPA_%s_DOCS_VISIBLE_IN_SUBMITTED".formatted(ftpaApplicantType.toUpperCase())), NO);
         }
 
         asylumCase.write(
-            valueOf(String.format("ALL_FTPA_%s_DECISION_DOCS", ftpaApplicantType.toUpperCase())), allFtpaDecisionDocuments);
+            valueOf("ALL_FTPA_%s_DECISION_DOCS".formatted(ftpaApplicantType.toUpperCase())), allFtpaDecisionDocuments);
         asylumCase.write(
-            valueOf(String.format("FTPA_%s_DECISION_DATE", ftpaApplicantType.toUpperCase())), dateProvider.now().toString());
+            valueOf("FTPA_%s_DECISION_DATE".formatted(ftpaApplicantType.toUpperCase())), dateProvider.now().toString());
         asylumCase.write(
-            valueOf(String.format("IS_FTPA_%s_DECIDED", ftpaApplicantType.toUpperCase())), YES);
+            valueOf("IS_FTPA_%s_DECIDED".formatted(ftpaApplicantType.toUpperCase())), YES);
 
         String currentDecision =
             asylumCase.read(
-                valueOf(String.format("FTPA_%s_DECISION_OUTCOME_TYPE", ftpaApplicantType.toUpperCase())), String.class)
+                valueOf("FTPA_%s_DECISION_OUTCOME_TYPE".formatted(ftpaApplicantType.toUpperCase())), String.class)
                 .orElse("");
 
         String ftpaFirstDecision =

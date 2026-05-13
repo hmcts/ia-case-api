@@ -179,7 +179,7 @@ class RevokeCaseAccessHandlerTest {
 
         assertThat(callbackResponse.getErrors()).isNotEmpty();
         assertThat(callbackResponse.getErrors())
-                .contains(String.format("User doesn't have access to case: %s caseId: %s", userId, caseId));
+                .contains("User doesn't have access to case: %s caseId: %s".formatted(userId, caseId));
 
         verifyNoInteractions(ccdCaseAssignment);
     }

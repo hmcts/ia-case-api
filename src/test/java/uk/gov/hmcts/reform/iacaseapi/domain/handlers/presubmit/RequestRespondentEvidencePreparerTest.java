@@ -374,7 +374,7 @@ class RequestRespondentEvidencePreparerTest {
             requestRespondentEvidencePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
         assertNotNull(callbackResponse);
-        assertTrue(callbackResponse.getErrors().isEmpty());;
+        assertTrue(callbackResponse.getErrors().isEmpty());
     }
 
     @ParameterizedTest

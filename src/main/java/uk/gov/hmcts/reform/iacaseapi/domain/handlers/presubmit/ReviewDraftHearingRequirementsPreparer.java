@@ -76,7 +76,7 @@ public class ReviewDraftHearingRequirementsPreparer implements PreSubmitCallback
             return asylumCasePreSubmitCallbackResponse;
         }
 
-        if (!reviewedHearingRequirements.isPresent()) {
+        if (reviewedHearingRequirements.isEmpty()) {
             final PreSubmitCallbackResponse<AsylumCase> asylumCasePreSubmitCallbackResponse = new PreSubmitCallbackResponse<>(asylumCase);
             asylumCasePreSubmitCallbackResponse.addError("The case is already listed, you can't request hearing requirements");
             return asylumCasePreSubmitCallbackResponse;
@@ -118,7 +118,7 @@ public class ReviewDraftHearingRequirementsPreparer implements PreSubmitCallback
 
         witnessDetails.ifPresent(idValues -> asylumCase.write(WITNESS_DETAILS_READONLY, idValues
             .stream()
-            .map(w -> String.format("Name\t\t%s", w.getValue().buildWitnessFullName()))
+            .map(w -> "Name\t\t%s".formatted(w.getValue().buildWitnessFullName()))
             .collect(Collectors.joining("\n"))));
 
         interpreterLanguage.ifPresent(idValues -> asylumCase.write(INTERPRETER_LANGUAGE_READONLY, idValues
@@ -140,15 +140,15 @@ public class ReviewDraftHearingRequirementsPreparer implements PreSubmitCallback
             asylumCase.read(IS_EVIDENCE_FROM_OUTSIDE_UK_IN_COUNTRY, YesOrNo.class);
 
 
-        if (!isAppealOutOfCountry.isPresent()) {
+        if (isAppealOutOfCountry.isEmpty()) {
             asylumCase.write(APPEAL_OUT_OF_COUNTRY, YesOrNo.NO);
         }
 
-        if (!isEvidenceFromOutsideUkOoc.isPresent()) {
+        if (isEvidenceFromOutsideUkOoc.isEmpty()) {
             asylumCase.write(IS_EVIDENCE_FROM_OUTSIDE_UK_OOC, YesOrNo.NO);
         }
 
-        if (!isEvidenceFromOutsideUkInCountry.isPresent()) {
+        if (isEvidenceFromOutsideUkInCountry.isEmpty()) {
             asylumCase.write(IS_EVIDENCE_FROM_OUTSIDE_UK_IN_COUNTRY, YesOrNo.NO);
         }
     }

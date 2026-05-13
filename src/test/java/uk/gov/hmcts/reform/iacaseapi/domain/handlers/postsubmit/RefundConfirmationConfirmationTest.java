@@ -54,8 +54,10 @@ class RefundConfirmationConfirmationTest {
 
         assertThat(
             callbackResponse.getConfirmationBody().get())
-            .contains("#### What happens next\n\n"
-                      + "Parties will be notified with the next steps");
+            .contains("""
+                      #### What happens next
+                      
+                      Parties will be notified with the next steps""");
     }
 
     @Test

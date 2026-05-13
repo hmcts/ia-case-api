@@ -60,7 +60,7 @@ public class ErrorResponseLoggerTest {
 
         List<ILoggingEvent> logEvents = this.listAppender.list;
         assertEquals(logEvents.size(), 1);
-        assertThat(logEvents.get(0).getFormattedMessage())
+        assertThat(logEvents.getFirst().getFormattedMessage())
                 .startsWith("Error returned with status: "
                         + HttpStatus.BAD_GATEWAY.value()
                         + ". \nWith response body: "
@@ -83,7 +83,7 @@ public class ErrorResponseLoggerTest {
         List<ILoggingEvent> logEvents = this.listAppender.list;
         assertEquals(logEvents.size(), 1);
 
-        assertThat(logEvents.get(0).getFormattedMessage())
+        assertThat(logEvents.getFirst().getFormattedMessage())
                 .startsWith("Error returned with status: "
                         + HttpStatus.INTERNAL_SERVER_ERROR.value()
                         + ". \nWith response body: ");

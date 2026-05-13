@@ -116,8 +116,14 @@ class UpdateDetentionLocationCaseNoteHandlerTest {
         assertThat(capturedCaseNote.getCaseNoteSubject()).isEqualTo(newCaseNoteSubject);
         assertThat(capturedCaseNote.getUser()).isEqualTo(forename + " " + surname);
         assertThat(capturedCaseNote.getDateAdded()).isEqualTo(now.toString());
-        assertThat(capturedCaseNote.getCaseNoteDescription()).isEqualTo("The detention location for this appellant has changed from: \n\n"
-                        + "Dungavel IRC\n\n to: \n\nAylesbury Prison");
+        assertThat(capturedCaseNote.getCaseNoteDescription()).isEqualTo("""
+                        The detention location for this appellant has changed from:\s
+                        
+                        Dungavel IRC
+                        
+                         to:\s
+                        
+                        Aylesbury Prison""");
 
         assertThat(existingCaseNotesCaptor.getValue()).isEqualTo(existingCaseNotes);
 

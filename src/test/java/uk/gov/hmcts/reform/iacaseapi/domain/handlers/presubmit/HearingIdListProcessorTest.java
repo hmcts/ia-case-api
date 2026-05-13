@@ -57,8 +57,8 @@ class HearingIdListProcessorTest {
         verify(asylumCase).write(eq(HEARING_ID_LIST), newHearingIdListArgumentCaptor.capture());
         List<IdValue<String>> hearingIdList = newHearingIdListArgumentCaptor.getValue();
         assertEquals(1, hearingIdList.size());
-        assertEquals("1", hearingIdList.get(0).getId());
-        assertEquals("12345", hearingIdList.get(0).getValue());
+        assertEquals("1", hearingIdList.getFirst().getId());
+        assertEquals("12345", hearingIdList.getFirst().getValue());
     }
 
     @Test
@@ -77,8 +77,8 @@ class HearingIdListProcessorTest {
         verify(asylumCase).write(eq(HEARING_ID_LIST), newHearingIdListArgumentCaptor.capture());
         List<IdValue<String>> newHearingIdList = newHearingIdListArgumentCaptor.getValue();
         assertEquals(3, newHearingIdList.size());
-        assertEquals("1", newHearingIdList.get(0).getId());
-        assertEquals("23456", newHearingIdList.get(0).getValue());
+        assertEquals("1", newHearingIdList.getFirst().getId());
+        assertEquals("23456", newHearingIdList.getFirst().getValue());
         assertEquals("2", newHearingIdList.get(1).getId());
         assertEquals("34567", newHearingIdList.get(1).getValue());
         assertEquals("3", newHearingIdList.get(2).getId());

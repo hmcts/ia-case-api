@@ -45,9 +45,11 @@ class SendDirectionWithQuestionsConfirmationTest {
 
         assertThat(
             callbackResponse.getConfirmationBody().get())
-            .contains("#### What happens next\n\n"
-                + "The appellant will be directed to answer the questions. "
-                + "You will be notified when they are ready to review.");
+            .contains("""
+                #### What happens next
+                
+                The appellant will be directed to answer the questions. \
+                You will be notified when they are ready to review.""");
 
     }
 

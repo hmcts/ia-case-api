@@ -61,7 +61,7 @@ class CcdElasticSearchQueryBuilderTest {
         assertEquals(1, must.size());
         
         // Verify the must clause is a match_phrase query for appeal reference number
-        Map<String, Object> firstClause = must.get(0);
+        Map<String, Object> firstClause = must.getFirst();
         assertThat(firstClause).containsKey("match_phrase");
         
         @SuppressWarnings("unchecked")
@@ -101,7 +101,7 @@ class CcdElasticSearchQueryBuilderTest {
         assertEquals(1, mustNot.size());
 
         // Verify the must_not clause is a term query for reference
-        Map<String, Object> mustNotClause = mustNot.get(0);
+        Map<String, Object> mustNotClause = mustNot.getFirst();
         assertThat(mustNotClause).containsKey("term");
 
         @SuppressWarnings("unchecked")
@@ -154,7 +154,7 @@ class CcdElasticSearchQueryBuilderTest {
         List<Map<String, Object>> mustNot = (List<Map<String, Object>>) bool.get("must_not");
 
         @SuppressWarnings("unchecked")
-        Map<String, Object> termClause = (Map<String, Object>) mustNot.get(0).get("term");
+        Map<String, Object> termClause = (Map<String, Object>) mustNot.getFirst().get("term");
 
         assertEquals(1234567890123456L, termClause.get("reference"));
     }

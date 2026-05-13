@@ -46,9 +46,11 @@ class RequestCmaRequirementsConfirmationTest {
 
         assertThat(
             callbackResponse.getConfirmationBody().get())
-            .contains("#### What happens next\n\n"
-                + "The appellant will be directed to submit requirements for a case management appointment."
-                + " You will be notified when they are ready to review.");
+            .contains("""
+                #### What happens next
+                
+                The appellant will be directed to submit requirements for a case management appointment.\
+                 You will be notified when they are ready to review.""");
 
     }
 

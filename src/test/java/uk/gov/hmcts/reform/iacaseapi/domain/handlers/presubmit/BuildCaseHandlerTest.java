@@ -218,7 +218,7 @@ class BuildCaseHandlerTest {
         List<IdValue<DocumentWithMetadata>> legalRepresentativeDocuments =
             legalRepresentativeDocumentsCaptor
                 .getAllValues()
-                .get(0);
+                .getFirst();
 
         assertEquals(0, legalRepresentativeDocuments.size());
 
