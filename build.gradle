@@ -24,7 +24,7 @@ plugins {
     id 'org.springframework.boot' version '2.7.18'
     id 'uk.gov.hmcts.java' version '0.12.67'
     id 'au.com.dius.pact' version '4.6.17'
-    id "io.freefair.lombok" version "6.6.3"
+    id "io.freefair.lombok" version "9.2.0"
     id 'org.gradle.test-retry' version '1.5.7'
 }
 
@@ -314,6 +314,7 @@ dependencyManagement {
         dependencySet(group: 'com.fasterxml.jackson.module', version: '2.19.1') {
             entry 'jackson-module-parameter-names'
         }
+
         // CVE-2023-3635
         dependency 'com.squareup.okio:okio:3.5.0'
     }
@@ -396,11 +397,6 @@ dependencies {
     implementation group: 'org.bouncycastle', name: 'bcprov-jdk18on', version: '1.81'
     implementation group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '5.2.1-RELEASE'
 
-    compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.46'
-    annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.46'
-    testCompileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.46'
-    testAnnotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.46'
-
     implementation group: 'org.springframework.retry', name: 'spring-retry', version: '1.3.4'
     implementation group: 'org.springframework.security', name: 'spring-security-crypto'
 
@@ -427,11 +423,8 @@ dependencies {
 
     testImplementation group: 'com.h2database', name: 'h2', version: '1.4.197'
 
-    testImplementation group: 'org.mockito', name: 'mockito-junit-jupiter', version: '3.12.4'
 
     testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test'
-
-    testImplementation group: 'org.mockito', name: 'mockito-core', version :'4.11.0'
     testImplementation group: 'org.mockito', name: 'mockito-inline', version :'5.2.0'
     testImplementation group: 'org.testcontainers', name: 'testcontainers', version: '2.0.2'
     testImplementation group: 'org.testcontainers', name: 'testcontainers-junit-jupiter', version: '2.0.2'
@@ -439,7 +432,6 @@ dependencies {
     testImplementation(group: 'org.springframework.cloud', name: 'spring-cloud-contract-wiremock', version: '3.1.10') {
         exclude group: "com.github.tomakehurst", module: "wiremock-standalone"
     }
-    testImplementation group: 'org.powermock', name: 'powermock-api-mockito2', version: '2.0.9'
 
     testImplementation(group: 'io.rest-assured', name: 'rest-assured-all', version: versions.restAssured)
     testImplementation group: 'io.rest-assured', name: 'rest-assured', version: versions.restAssured
@@ -506,6 +498,11 @@ task runAndPublishConsumerPactTests(type: Test) {
     testClassesDirs = sourceSets.contractTest.output.classesDirs
     classpath = sourceSets.contractTest.runtimeClasspath
 
+}
+
+tasks.withType(Test).configureEach {
+    jvmArgs '-XX:+EnableDynamicAgentLoading'
+    jvmArgs '-Dnet.bytebuddy.experimental=true'
 }
 
 pact {
