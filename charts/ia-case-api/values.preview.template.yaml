@@ -932,6 +932,7 @@ ccd:
         ELASTIC_SEARCH_ENABLED: true
         ELASTIC_SEARCH_HOSTS: ${SERVICE_NAME}-es-master:9200
         ELASTIC_SEARCH_SCHEME: http
+        ELASTIC_SEARCH_NODES_DISCOVERY_ENABLED: false
         ELASTIC_SEARCH_DATA_NODES_HOSTS: http://${SERVICE_NAME}-es-master:9200
         ENABLE_ATTRIBUTE_BASED_ACCESS_CONTROL: true
         ENABLE_PSEUDO_ROLE_ASSIGNMENTS_GENERATION: true
@@ -1017,8 +1018,12 @@ ccd:
       ingressHost: ccd-definition-store-${SERVICE_FQDN}
 
   elasticsearch:
+    image: hmctsprod.azurecr.io/imported/elastic/elasticsearch
+    imageTag: 9.2.3
     nameOverride: ${SERVICE_NAME}-es
     clusterName: "es"
+    createCert: false
+    protocol: http
     replicas: 1
     minimumMasterNodes: 1
     antiAffinity: "soft"
