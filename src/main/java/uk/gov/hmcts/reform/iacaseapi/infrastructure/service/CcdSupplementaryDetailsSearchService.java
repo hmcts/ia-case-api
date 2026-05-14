@@ -8,11 +8,11 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.extern.slf4j.Slf4j;
-import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.index.query.TermsQueryBuilder;
-import org.elasticsearch.search.builder.SearchSourceBuilder;
-import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -83,17 +83,11 @@ public class CcdSupplementaryDetailsSearchService implements SupplementaryDetail
 
         for (List<String> splitCcdCaseList : chunkedCcdCaseList) {
             CompletableFuture<List<SupplementaryInfo>> completableFuture = CompletableFuture.supplyAsync(
-                () -> {
-                    SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
-                    TermsQueryBuilder termQueryBuilder = QueryBuilders.termsQuery("reference", splitCcdCaseList);
-                    searchSourceBuilder.size(maxRecords);
-                    searchSourceBuilder.from(0);
-                    searchSourceBuilder.sort("created_date", SortOrder.DESC);
-                    searchSourceBuilder.query(termQueryBuilder);
-
-                    return search(userToken, s2sToken, searchSourceBuilder.toString());
-                },
-                executorService
+                    () -> {
+                        String query = buildSearchQuery(splitCcdCaseList);
+                        return search(userToken, s2sToken, query);
+                    },
+                    executorService
             );
             completableFutureList.add(completableFuture);
         }
@@ -110,6 +104,42 @@ public class CcdSupplementaryDetailsSearchService implements SupplementaryDetail
         }
 
         return allResults;
+    }
+
+    private String buildSearchQuery(List<String> caseReferences) {
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectNode root = mapper.createObjectNode();
+
+        // size + from
+        root.put("size", maxRecords);
+        root.put("from", 0);
+
+        // sort: created_date DESC
+        ArrayNode sortArray = mapper.createArrayNode();
+        ObjectNode sortField = mapper.createObjectNode();
+        ObjectNode sortOrder = mapper.createObjectNode();
+        sortOrder.put("order", "desc");
+        sortField.set("created_date", sortOrder);
+        sortArray.add(sortField);
+        root.set("sort", sortArray);
+
+        // query: terms on reference
+        ArrayNode valuesArray = mapper.createArrayNode();
+        caseReferences.forEach(valuesArray::add);
+
+        ObjectNode termsNode = mapper.createObjectNode();
+        termsNode.set("reference", valuesArray);
+
+        ObjectNode queryNode = mapper.createObjectNode();
+        queryNode.set("terms", termsNode);
+
+        root.set("query", queryNode);
+
+        try {
+            return mapper.writeValueAsString(root);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to build ES query", e);
+        }
     }
 
     private List<SupplementaryInfo> search(String userAuthorisation, String serviceAuthToken, String query) {
