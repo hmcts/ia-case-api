@@ -1027,7 +1027,7 @@ ccd:
     # The tests do pass, at least as of 2023-01-19
     esConfig:
       elasticsearch.yml: |
-        action.auto_create_index: .security*,.watches,.triggered_watches,.watcher-history-*,.ml*,ccd-logstash-dead-letter
+        action.auto_create_index: .security*,.watches,.triggered_watches,.watcher-history-*,.logstash_dead_letter,.ml*,ccd-logstash-dead-letter
         xpack.security.enabled: false
     tests:
       enabled: false
