@@ -391,7 +391,7 @@ dependencies {
     implementation group: 'net.minidev', name: 'json-smart', version: '2.5.2'
     implementation 'joda-time:joda-time:2.14.0'
 
-    implementation group: 'org.elasticsearch', name: 'elasticsearch', version: '9.2.4'
+    implementation 'co.elastic.clients:elasticsearch-java:8.17.4'
 
     implementation group: 'com.googlecode.libphonenumber', name: 'libphonenumber', version: '8.13.55'
 
