@@ -149,12 +149,11 @@ static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
 
 withPipeline(type, product, component) {
     def githubApi = new GithubAPI(this)
-    env.ENABLE_WA = false
     env.ENABLE_TES = false
     env.TES_URL = "http://ia-timed-event-service-aat.service.core-compute-aat.internal/"
     for (label in githubApi.getLabelsbyPattern(env.BRANCH_NAME, "enable_") ) {
         if (label == "enable_wa") {
-            env.ENABLE_WA = true
+            env.ENABLE_WA = "true"
             env.SERVICES_WORK_ALLOCATION_TASK_API = "http://ia-case-api-pr-${CHANGE_ID}-wa-task-management-api"
             env.SERVICES_WA_WORKFLOW_API_URL = "http://ia-case-api-pr-${CHANGE_ID}-wa-workflow-api"
             env.WA_SUPPORTED_JURISDICTIONS = "IA"
@@ -201,7 +200,7 @@ enableSecurityScan()
 
     afterSuccess('akschartsinstall') {
         onPR {
-            if (env.ENABLE_WA) {
+            if (env.ENABLE_WA === "true") {
                 githubUpdateDeploymentStatus(githubCreateDeployment("-AIP"), "https://ia-case-api-pr-${CHANGE_ID}-aip-frontend.preview.platform.hmcts.net")
                 githubUpdateDeploymentStatus(githubCreateDeployment("-LR"), "https://xui-ia-case-api-pr-${CHANGE_ID}." + "preview.platform.hmcts.net")
                 env.IDAM_API_URL = "https://idam-api.aat.platform.hmcts.net"
