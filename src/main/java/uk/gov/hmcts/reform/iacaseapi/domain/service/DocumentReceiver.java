@@ -88,8 +88,7 @@ public class DocumentReceiver {
             .stream()
             .map(IdValue::getValue)
             .map(document -> tryReceive(document, tag))
-            .filter(Optional::isPresent)
-            .map(Optional::get)
+            .flatMap(Optional::stream)
             .collect(Collectors.toList());
     }
 
@@ -102,8 +101,7 @@ public class DocumentReceiver {
             .stream()
             .map(IdValue::getValue)
             .map(document -> tryReceive(document, tag, suppliedBy))
-            .filter(Optional::isPresent)
-            .map(Optional::get)
+            .flatMap(Optional::stream)
             .collect(Collectors.toList());
     }
 }

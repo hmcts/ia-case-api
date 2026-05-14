@@ -1,6 +1,6 @@
 {
   "description": "DIAC-86 Updated hearing bundle preparer appealTakenOffline state",
-  "enabled": "{$featureFlag.isEmStitchingEnabled}",
+  "disabled": "!{$featureFlag.isEmStitchingEnabled}",
   "request": {
     "uri": "/asylum/ccdAboutToStart",
     "credentials": "CaseOfficer",

@@ -57,18 +57,14 @@ class LeadershipJudgeFtpaDecisionConfirmationTest {
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
-        assertThat(
-            callbackResponse.getConfirmationHeader().get())
-            .contains("You've recorded the First-tier permission to appeal decision");
+        assertTrue(callbackResponse.getConfirmationHeader().get().contains("You've recorded the First-tier permission to appeal decision"));
 
         assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains(
                 "Both parties have been notified of the decision. The Upper Tribunal has also been notified, and will now proceed with the case.<br>");
 
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("#### What happens next");
+        assertTrue(callbackResponse.getConfirmationBody().get().contains("#### What happens next"));
 
     }
 
@@ -89,18 +85,14 @@ class LeadershipJudgeFtpaDecisionConfirmationTest {
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
-        assertThat(
-            callbackResponse.getConfirmationHeader().get())
-            .contains("You've recorded the First-tier permission to appeal decision");
+        assertTrue(callbackResponse.getConfirmationHeader().get().contains("You've recorded the First-tier permission to appeal decision"));
 
         assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains(
                 "Both parties have been notified of the decision. The Upper Tribunal has also been notified, and will now proceed with the case.<br>");
 
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("#### What happens next");
+        assertTrue(callbackResponse.getConfirmationBody().get().contains("#### What happens next"));
 
     }
 
@@ -120,18 +112,14 @@ class LeadershipJudgeFtpaDecisionConfirmationTest {
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
-        assertThat(
-            callbackResponse.getConfirmationHeader().get())
-            .contains("You've recorded the First-tier permission to appeal decision");
+        assertTrue(callbackResponse.getConfirmationHeader().get().contains("You've recorded the First-tier permission to appeal decision"));
 
         assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains(
                 "Both parties have been notified that permission was refused. They'll also be able to access this information in the FTPA tab.<br>");
 
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("#### What happens next");
+        assertTrue(callbackResponse.getConfirmationBody().get().contains("#### What happens next"));
 
     }
 
@@ -152,18 +140,14 @@ class LeadershipJudgeFtpaDecisionConfirmationTest {
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
-        assertThat(
-            callbackResponse.getConfirmationHeader().get())
-            .contains("You've recorded the First-tier permission to appeal decision");
+        assertTrue(callbackResponse.getConfirmationHeader().get().contains("You've recorded the First-tier permission to appeal decision"));
 
         assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains(
                 "The applicant has been notified that the application was not admitted. They'll also be able to access this information in the FTPA tab.<br>");
 
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("#### What happens next");
+        assertTrue(callbackResponse.getConfirmationBody().get().contains("#### What happens next"));
 
     }
 

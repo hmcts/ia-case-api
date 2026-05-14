@@ -134,7 +134,7 @@ class ChangeHearingCentreHandlerTest {
         verify(asylumCase).write(eq(APPLICATIONS), applicationsCaptor.capture());
         verify(asylumCase).clear(APPLICATION_CHANGE_HEARING_CENTRE_EXISTS);
 
-        assertEquals("Completed", applicationsCaptor.getValue().get(0).getValue().getApplicationStatus());
+        assertEquals("Completed", applicationsCaptor.getValue().getFirst().getValue().getApplicationStatus());
     }
 
     @Test

@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -73,8 +73,7 @@ public class UploadAddendumEvidenceHandler implements PreSubmitCallbackHandler<A
                 .stream()
                 .map(IdValue::getValue)
                 .map(document -> documentReceiver.tryReceive(document, DocumentTag.ADDENDUM_EVIDENCE, appelantRespodent))
-                .filter(Optional::isPresent)
-                .map(Optional::get)
+                .flatMap(Optional::stream)
                 .map(doc -> new DocumentWithMetadata(doc.getDocument(), doc.getDescription(), doc.getDateUploaded(), doc.getTag(), doc.getSuppliedBy(), "TCW"))
                 .collect(Collectors.toList());
 

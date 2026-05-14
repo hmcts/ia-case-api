@@ -18,12 +18,12 @@ public class ResourceLoader {
         try (InputStream io = ResourceLoader.class.getClassLoader().getResourceAsStream(filePath)) {
 
             if (io == null) {
-                throw new IllegalArgumentException(String.format("Empty resource in path %s", filePath));
+                throw new IllegalArgumentException("Empty resource in path %s".formatted(filePath));
             } else {
                 allBytes = io.readAllBytes();
             }
         } catch (NullPointerException nullPointerException) {
-            throw new IllegalArgumentException(String.format("Could not find resource in path %s", filePath));
+            throw new IllegalArgumentException("Could not find resource in path %s".formatted(filePath));
         }
 
         return allBytes;

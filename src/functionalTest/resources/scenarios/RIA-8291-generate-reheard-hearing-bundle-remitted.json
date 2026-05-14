@@ -37,18 +37,19 @@
               }
             }
           ],
-          "caseBundles": [{
-            "id": "1",
-            "value": {
-              "stitchStatus": "DONE",
-              "stitchedDocument": {
-                "document_url": "http://document-store/CCC",
-                "document_binary_url": "http://document-store/CCC/binary",
-                "document_filename": "PA 11111 2019-Awan-remitted-hearing-bundle.pdf"
+          "caseBundles": [
+            {
+              "id": "1",
+              "value": {
+                "stitchStatus": "DONE",
+                "stitchedDocument": {
+                  "document_url": "http://document-store/CCC",
+                  "document_binary_url": "http://document-store/CCC/binary",
+                  "document_filename": "PA 11111 2019-Awan-remitted-hearing-bundle.pdf"
+                }
               }
             }
-          }]
-
+          ]
         }
       }
     }
@@ -59,12 +60,14 @@
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {
-        "caseBundles": [{
-          "id": "1",
-          "value": {
-            "stitchStatus": "DONE"
+        "caseBundles": [
+          {
+            "id": "1",
+            "value": {
+              "stitchStatus": "DONE"
+            }
           }
-        }],
+        ],
         "reheardHearingDocumentsCollection": [
           {
             "id": "1",

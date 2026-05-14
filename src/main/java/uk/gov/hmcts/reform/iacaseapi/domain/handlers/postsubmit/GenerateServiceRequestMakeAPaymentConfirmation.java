@@ -47,8 +47,12 @@ public class GenerateServiceRequestMakeAPaymentConfirmation implements PostSubmi
         postSubmitResponse.setConfirmationHeader("# You have created a service request");
         if (currentUser == UserRoleLabel.ADMIN_OFFICER) {
             postSubmitResponse.setConfirmationBody(
-                "### What happens next\n\n"
-                    + "The legal representative can now pay for this appeal in the 'Service Request' tab on the case details screen.\n\n"
+                """
+                ### What happens next
+                
+                The legal representative can now pay for this appeal in the 'Service Request' tab on the case details screen.
+                
+                """
             );
         } else {
             postSubmitResponse.setConfirmationBody(

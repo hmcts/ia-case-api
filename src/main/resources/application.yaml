@@ -16,9 +16,7 @@ management:
         include: health, info, ping
   health:
     redis:
-      enabled: false  # don't let Redis affect pod health
-    probes:
-      enabled: true
+      enabled: false
     group:
       readiness:
         include: ping
@@ -49,6 +47,7 @@ management:
     ccd:
       uri: ${CCD_URL:http://127.0.0.1:4452}/health
       response: '"status":"UP"'
+  endpoint.health.probes.enabled: true
 fees-register:
   api:
     url: ${FEES_REGISTER_API_URL:http://localhost:8991}
@@ -75,6 +74,8 @@ logging:
     io.lettuce.core: WARN
 
 spring:
+  retry:
+    max-attempts: 3
   config:
     import: "optional:configtree:/mnt/secrets/ia/"
   application:
@@ -1394,6 +1395,9 @@ security:
 ### dependency configuration
 ccdGatewayUrl: ${CCD_GW_URL:http://localhost:3453}
 core_case_data_api_url: ${CCD_URL:http://127.0.0.1:4452}
+core_case_data:
+  api:
+    url: ${CCD_URL:http://127.0.0.1:4452}
 case_access:
   core_case_data_api_url: ${CCD_CASE_ACCESS_URL:http://127.0.0.1:4452}
 document_management.url: ${DM_URL:http://127.0.0.1:4506}

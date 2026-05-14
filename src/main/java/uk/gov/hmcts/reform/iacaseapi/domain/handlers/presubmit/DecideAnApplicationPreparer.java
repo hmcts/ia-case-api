@@ -61,7 +61,7 @@ public class DecideAnApplicationPreparer implements PreSubmitCallbackHandler<Asy
             return callbackResponse;
         }
 
-        DynamicList dynamicList = new DynamicList(makeAnApplicationsListElements.get(0), makeAnApplicationsListElements);
+        DynamicList dynamicList = new DynamicList(makeAnApplicationsListElements.getFirst(), makeAnApplicationsListElements);
 
         asylumCase.write(MAKE_AN_APPLICATIONS_LIST, dynamicList);
 

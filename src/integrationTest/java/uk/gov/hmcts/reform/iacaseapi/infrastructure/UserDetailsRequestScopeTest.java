@@ -18,8 +18,8 @@ import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.SpringBootIntegrationTest;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.WithNotificationsApiStub;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.WithRoleAssignmentStub;
@@ -33,10 +33,10 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.RequestUserAccessTo
 class UserDetailsRequestScopeTest extends SpringBootIntegrationTest implements WithNotificationsApiStub,
     WithServiceAuthStub, WithRoleAssignmentStub {
 
-    @MockBean
+    @MockitoBean
     private RequestUserAccessTokenProvider requestTokenProvider;
 
-    @MockBean
+    @MockitoBean
     private IdamApi idamApi;
 
     private final String token = "Bearer token";

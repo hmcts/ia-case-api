@@ -1,6 +1,6 @@
 {
   "description": "RIA-362-RIA-1673 Edit hearing notice PDF (Docmosis enabled)",
-  "enabled": "{$featureFlag.docmosisEnabled}",
+  "disabled": "!{$featureFlag.docmosisEnabled}",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",

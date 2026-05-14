@@ -1,6 +1,5 @@
 {
   "description": "RIA-8782 Start list, populating listing location from ref data",
-  "enabled": "true",
   "request": {
     "uri": "/asylum/ccdAboutToStart",
     "credentials": "AdminOfficer",

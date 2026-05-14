@@ -32,8 +32,10 @@ public class UploadAdditionalEvidenceConfirmation implements PostSubmitCallbackH
 
         postSubmitResponse.setConfirmationHeader("# You have uploaded a document");
         postSubmitResponse.setConfirmationBody(
-            "#### What happens next\n\n"
-            + "The document is now available in the documents tab."
+            """
+            #### What happens next
+            
+            The document is now available in the documents tab."""
         );
 
         return postSubmitResponse;

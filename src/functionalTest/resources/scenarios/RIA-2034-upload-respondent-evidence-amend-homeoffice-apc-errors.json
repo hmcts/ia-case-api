@@ -34,7 +34,9 @@
   },
   "expectation": {
     "status": 200,
-    "errors": ["You cannot upload more documents until the evidence bundle has been reviewed"],
+    "errors": [
+      "You cannot upload more documents until the evidence bundle has been reviewed"
+    ],
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {

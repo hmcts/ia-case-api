@@ -53,17 +53,11 @@ class FtpaRespondentConfirmationTest {
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
-        assertThat(
-            callbackResponse.getConfirmationHeader().get())
-            .contains("You've applied for permission to appeal to the Upper Tribunal");
+        assertTrue(callbackResponse.getConfirmationHeader().get().contains("You've applied for permission to appeal to the Upper Tribunal"));
 
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("The First-tier Tribunal will review your application and decide shortly.<br>");
+        assertTrue(callbackResponse.getConfirmationBody().get().contains("The First-tier Tribunal will review your application and decide shortly.<br>"));
 
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("#### What happens next");
+        assertTrue(callbackResponse.getConfirmationBody().get().contains("#### What happens next"));
 
     }
 
@@ -81,17 +75,11 @@ class FtpaRespondentConfirmationTest {
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
-        assertThat(
-            callbackResponse.getConfirmationHeader().get())
-            .contains("You've applied for permission to appeal to the Upper Tribunal");
+        assertTrue(callbackResponse.getConfirmationHeader().get().contains("You've applied for permission to appeal to the Upper Tribunal"));
 
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("The First-tier Tribunal will review your application and decide shortly.<br>");
+        assertTrue(callbackResponse.getConfirmationBody().get().contains("The First-tier Tribunal will review your application and decide shortly.<br>"));
 
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("#### What happens next");
+        assertTrue(callbackResponse.getConfirmationBody().get().contains("#### What happens next"));
 
     }
 
@@ -112,13 +100,9 @@ class FtpaRespondentConfirmationTest {
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
-        assertThat(
-            callbackResponse.getConfirmationHeader().get())
-            .contains("");
+        assertTrue(callbackResponse.getConfirmationHeader().get().contains(""));
 
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("#### What happens next");
+        assertTrue(callbackResponse.getConfirmationBody().get().contains("#### What happens next"));
 
         assertThat(
             callbackResponse.getConfirmationBody().get())

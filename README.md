@@ -11,7 +11,7 @@ Immigration &amp; Asylum case API is a Spring Boot based application to manage c
 
 To run the project you will need to have the following installed:
 
-* Java 17
+* Java 21
 * Docker (optional)
 
 For information about the software versions used to build this API and a complete list of its dependencies, see build.gradle
@@ -181,7 +181,9 @@ Before running the script make sure you set up correct branches on your local:
 - ia-ccd-definitions -> master branch
 - ia-case-api -> RIA-* feature branch
 
-Run the script
+cd into `/bin/validation`
+Set `IA_CCD_DIR` to your local path to `ia-ccd-definitions` repository.
+Run `yarn install` to install dependencies and then run the script
 ```
 yarn validate
 ```

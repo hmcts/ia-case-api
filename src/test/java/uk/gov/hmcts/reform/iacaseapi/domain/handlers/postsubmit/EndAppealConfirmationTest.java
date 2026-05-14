@@ -55,13 +55,9 @@ class EndAppealConfirmationTest {
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
-        assertThat(
-            callbackResponse.getConfirmationHeader().get())
-            .contains("# You have ended the appeal");
+        assertTrue(callbackResponse.getConfirmationHeader().get().contains("# You have ended the appeal"));
 
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("Any hearings requested or listed in List Assist have been automatically cancelled.");
+        assertTrue(callbackResponse.getConfirmationBody().get().contains("Any hearings requested or listed in List Assist have been automatically cancelled."));
     }
 
     @Test
@@ -82,13 +78,9 @@ class EndAppealConfirmationTest {
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
-        assertThat(
-            callbackResponse.getConfirmationHeader().get())
-            .contains("# You have ended the appeal");
+        assertTrue(callbackResponse.getConfirmationHeader().get().contains("# You have ended the appeal"));
 
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("[Cancel the hearing on the Hearings tab](/cases/case-details/0/hearings)");
+        assertTrue(callbackResponse.getConfirmationBody().get().contains("[Cancel the hearing on the Hearings tab](/cases/case-details/0/hearings)"));
     }
 
     @Test

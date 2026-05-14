@@ -30,7 +30,8 @@
                 },
                 "description": "test"
               }
-            }]
+            }
+          ]
         }
       }
     }
@@ -60,7 +61,8 @@
               },
               "description": "test"
             }
-          }],
+          }
+        ],
         "sendDirectionActionAvailable": "No",
         "remittalDocuments": [
           {

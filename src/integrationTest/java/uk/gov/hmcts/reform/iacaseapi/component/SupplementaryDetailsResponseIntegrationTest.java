@@ -9,6 +9,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
+import org.springframework.test.web.servlet.ResultMatcher;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.SpringBootIntegrationTest;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.WithCcdStub;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.WithIdamStub;
@@ -77,13 +78,13 @@ public class SupplementaryDetailsResponseIntegrationTest
 
     @ParameterizedTest
     @MethodSource("responseMethodSource")
-    public void should_return_status_codes_for_responses() throws Exception {
+    public void should_return_status_codes_for_responses(Resource resource, String responseRequest, ResultMatcher status, String expectedResponse) throws Exception {
         addUserInfoStub(server);
         addIdamTokenStub(server);
         addServiceAuthStub(server);
-        addSearchStub(server, resourceFile);
-        String response = iaCaseApiClient.supplementaryResponseRequest(fullResponseRequest, status().isOk());
-        assertEquals(fullResponse, response);
+        addSearchStub(server, resource);
+        String response = iaCaseApiClient.supplementaryResponseRequest(responseRequest, status);
+        assertEquals(expectedResponse, response);
     }
 
     private Stream<Arguments> responseMethodSource() {

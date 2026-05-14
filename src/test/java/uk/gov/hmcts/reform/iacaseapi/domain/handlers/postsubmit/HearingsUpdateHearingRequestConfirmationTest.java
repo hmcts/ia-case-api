@@ -67,8 +67,8 @@ public class HearingsUpdateHearingRequestConfirmationTest {
         PostSubmitCallbackResponse callbackResponse =
             hearingsUpdateHearingRequestConfirmation.handle(callback);
 
-        final String confirmationBody = String
-            .format(HEARING_UPDATE_FAILED_CONFIRMATION_MESSAGE, 123L);
+        final String confirmationBody = HEARING_UPDATE_FAILED_CONFIRMATION_MESSAGE
+            .formatted(123L);
 
         assertNotNull(callbackResponse);
         assertEquals("", callbackResponse.getConfirmationHeader().get());

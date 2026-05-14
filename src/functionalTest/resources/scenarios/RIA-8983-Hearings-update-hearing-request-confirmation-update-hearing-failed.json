@@ -1,6 +1,5 @@
 {
   "description": "RIA-8983 Hearings update hearing request confirmation when update hearing failed",
-  "enabled": true,
   "request": {
     "uri": "/asylum/ccdSubmitted",
     "credentials": "CaseOfficer",

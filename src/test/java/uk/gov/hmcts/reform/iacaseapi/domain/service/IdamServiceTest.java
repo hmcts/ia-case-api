@@ -262,7 +262,7 @@ class IdamServiceTest {
         idamService.getUserInfo(expectedAccessToken);
         List<ILoggingEvent> logEvents = listAppender.list;
         assertEquals(1, logEvents.size());
-        assertEquals("Error fetching AM roles for user: 1234", logEvents.get(0).getFormattedMessage());
+        assertEquals("Error fetching AM roles for user: 1234", logEvents.getFirst().getFormattedMessage());
 
         verify(idamApi).userInfo(expectedAccessToken);
     }

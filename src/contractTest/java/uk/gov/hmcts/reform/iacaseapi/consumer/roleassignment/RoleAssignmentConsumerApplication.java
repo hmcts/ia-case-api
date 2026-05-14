@@ -1,8 +1,8 @@
 package uk.gov.hmcts.reform.iacaseapi.consumer.roleassignment;
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.cloud.openfeign.EnableFeignClients;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.roleassignment.RoleAssignmentApi;
 
@@ -13,6 +13,6 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.roleassignment.RoleA
 })
 public class RoleAssignmentConsumerApplication {
 
-    @MockBean
+    @MockitoBean
     RestTemplate restTemplate;
 }

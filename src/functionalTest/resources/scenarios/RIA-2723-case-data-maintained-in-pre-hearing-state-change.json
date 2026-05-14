@@ -1,6 +1,5 @@
 {
   "description": "RIA-2723 Current case state is maintained in fields for Case Officer, Admin Officer, Legal Representative and Judge #2",
-  "enabled": "true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",

@@ -8,7 +8,9 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.AUTO_REQUEST_HEARING;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_PANEL_REQUIRED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MANUAL_CREATE_HEARING_REQUIRED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.LIST_CASE_WITHOUT_HEARING_REQUIREMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
@@ -111,12 +113,14 @@ class ListCaseWithoutHearingRequirementsConfirmationTest {
 
     @Test
     void should_return_failed_confirmation_for_auto_request_hearing() {
-        expectedResponse.setConfirmationBody("![Hearing could not be listed](https://raw.githubusercontent.com/hmcts/"
-                                 + "ia-appeal-frontend/master/app/assets/images/hearingCouldNotBeListed.png)"
-                                 + "\n\n"
-                                 + "#### What happens next\n\n"
-                                 + "The hearing could not be auto-requested. Please manually request the "
-                                 + "hearing via the [Hearings tab](/cases/case-details/1/hearings)");
+        expectedResponse.setConfirmationBody("""
+                                 ![Hearing could not be listed](https://raw.githubusercontent.com/hmcts/\
+                                 ia-appeal-frontend/master/app/assets/images/hearingCouldNotBeListed.png)
+                                 
+                                 #### What happens next
+                                 
+                                 The hearing could not be auto-requested. Please manually request the \
+                                 hearing via the [Hearings tab](/cases/case-details/1/hearings)""");
         String header = "# Hearing listed";
         expectedResponse.setConfirmationHeader(header);
 
@@ -138,9 +142,11 @@ class ListCaseWithoutHearingRequirementsConfirmationTest {
     @Test
     void should_return_confirmation_when_panel_not_required() {
         final String header = "# You've recorded the agreed hearing adjustments";
-        final String body = "#### What happens next\n\n"
-                                 + "The listing team will now list the case."
-                                 + " All parties will be notified when the Hearing Notice is available to view.<br><br>";
+        final String body = """
+                                 #### What happens next
+                                 
+                                 The listing team will now list the case.\
+                                  All parties will be notified when the Hearing Notice is available to view.<br><br>""";
 
         when(autoRequestHearingService.shouldAutoRequestHearing(asylumCase, true)).thenReturn(false);
 
@@ -217,21 +223,19 @@ class ListCaseWithoutHearingRequirementsConfirmationTest {
 
 
         if (yesOrNo.equals(YesOrNo.NO)) {
-            assertThat(
-                    callbackResponse.getConfirmationHeader().get())
-                    .contains("# You've recorded the agreed hearing adjustments");
+            assertTrue(callbackResponse.getConfirmationHeader().get().contains("# You've recorded the agreed hearing adjustments"));
 
             assertThat(
                     callbackResponse.getConfirmationBody().get())
                     .contains(
-                            "#### What happens next\n\n"
-                                    + "The listing team will now list the case. All parties will be notified when "
-                                    + "the Hearing Notice is available to view");
+                            """
+                            #### What happens next
+                            
+                            The listing team will now list the case. All parties will be notified when \
+                            the Hearing Notice is available to view""");
 
         } else {
-            assertThat(
-                    callbackResponse.getConfirmationHeader().get())
-                    .contains("You've recorded the agreed hearing adjustments");
+            assertTrue(callbackResponse.getConfirmationHeader().get().contains("You've recorded the agreed hearing adjustments"));
 
             assertThat(
                     callbackResponse.getConfirmationBody().get())

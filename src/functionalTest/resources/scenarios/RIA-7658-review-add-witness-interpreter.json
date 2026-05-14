@@ -1,6 +1,5 @@
 {
   "description": "RIA-7658 review sign language requirements for witness with legal rep",
-  "enabled": "true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",
@@ -49,7 +48,9 @@
             "signLanguageInterpreter"
           ],
           "witness1InterpreterSignLanguage": {
-            "languageManualEntry": ["Yes"],
+            "languageManualEntry": [
+              "Yes"
+            ],
             "languageManualEntryDescription": "manual sign language"
           },
           "isHearingRoomNeeded": "No",
@@ -125,7 +126,9 @@
         "isAnyWitnessInterpreterRequired": "Yes",
         "isInterpreterServicesNeeded": "Yes",
         "witness1InterpreterSignLanguage": {
-          "languageManualEntry": ["Yes"],
+          "languageManualEntry": [
+            "Yes"
+          ],
           "languageManualEntryDescription": "manual sign language"
         },
         "isHearingRoomNeeded": "No",

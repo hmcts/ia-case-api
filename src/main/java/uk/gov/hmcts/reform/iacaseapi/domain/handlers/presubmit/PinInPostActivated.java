@@ -131,7 +131,7 @@ public class PinInPostActivated implements PreSubmitCallbackStateHandler<AsylumC
     }
 
     private void updateExistingSubscriptions(AsylumCase asylumCase, List<IdValue<Subscriber>> existingSubscriptions) {
-        Subscriber existingSubscriber = existingSubscriptions.get(0).getValue();
+        Subscriber existingSubscriber = existingSubscriptions.getFirst().getValue();
         String existingSubscriberEmail = existingSubscriber.getEmail();
         String authUserEmail = userDetailsProvider.getUserDetails().getEmailAddress();
         if (existingSubscriber.getWantsEmail() == YesOrNo.YES && !existingSubscriberEmail.equals(authUserEmail)) {
@@ -160,8 +160,8 @@ public class PinInPostActivated implements PreSubmitCallbackStateHandler<AsylumC
                 .collect(Collectors.toList());
 
             if (!caseArgumentDocuments.isEmpty()) {
-                asylumCase.write(AsylumCaseFieldDefinition.REASONS_FOR_APPEAL_DECISION, caseArgumentDocuments.get(0).getValue().getDescription());
-                asylumCase.write(AsylumCaseFieldDefinition.REASONS_FOR_APPEAL_DATE_UPLOADED, caseArgumentDocuments.get(0).getValue().getDateUploaded());
+                asylumCase.write(AsylumCaseFieldDefinition.REASONS_FOR_APPEAL_DECISION, caseArgumentDocuments.getFirst().getValue().getDescription());
+                asylumCase.write(AsylumCaseFieldDefinition.REASONS_FOR_APPEAL_DATE_UPLOADED, caseArgumentDocuments.getFirst().getValue().getDateUploaded());
                 asylumCase.write(AsylumCaseFieldDefinition.REASONS_FOR_APPEAL_DOCUMENTS, caseArgumentDocuments);
             }
         }

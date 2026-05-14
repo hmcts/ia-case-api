@@ -9,7 +9,6 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
-import static java.lang.String.format;
 import static java.time.LocalDate.parse;
 import static java.time.format.DateTimeFormatter.ofPattern;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
@@ -55,7 +54,7 @@ public class STF24WeeksBannerTextService {
         } else {
             stf24WeeksAddedToDate = add24WeeksToDate(tribunalReceivedDate);
         }
-        return format(PRE_24W_BANNER_TEXT, stf24WeeksAddedToDate);
+        return PRE_24W_BANNER_TEXT.formatted(stf24WeeksAddedToDate);
     }
 
     private String getAppealSubmissionDate(AsylumCase asylumCase) {

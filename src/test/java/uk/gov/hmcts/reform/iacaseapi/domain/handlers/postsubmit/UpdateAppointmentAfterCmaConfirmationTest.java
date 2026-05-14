@@ -40,9 +40,7 @@ class UpdateAppointmentAfterCmaConfirmationTest {
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
-        assertThat(
-            callbackResponse.getConfirmationHeader().get())
-            .contains("You have updated the details of the appointment");
+        assertTrue(callbackResponse.getConfirmationHeader().get().contains("You have updated the details of the appointment"));
 
         assertThat(
             callbackResponse.getConfirmationBody().get())

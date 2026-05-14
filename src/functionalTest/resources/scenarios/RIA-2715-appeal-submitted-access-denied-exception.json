@@ -1,6 +1,6 @@
 {
   "description": "RIA-2715 Throws an Access Denied Exception for appeal submitted for incorrect user role",
-  "enabled": "false",
+  "disabled": "true",
   "request": {
     "uri": "/asylum/ccdAboutToStart",
     "credentials": "CaseOfficer",
@@ -17,5 +17,5 @@
   },
   "expectation": {
     "status": 403
-    }
+  }
 }

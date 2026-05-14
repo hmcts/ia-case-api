@@ -36,7 +36,7 @@ public class UnlinkAppealPreparerHandler implements PreSubmitCallbackHandler<Asy
             asylumCase.read(REASON_FOR_LINK_APPEAL, ReasonForLinkAppealOptions.class);
 
         PreSubmitCallbackResponse<AsylumCase> preSubmitCallbackResponse = new PreSubmitCallbackResponse<>(asylumCase);
-        if (!reasonForLinkAppeal.isPresent()) {
+        if (reasonForLinkAppeal.isEmpty()) {
             preSubmitCallbackResponse.addError("This appeal is not linked and so cannot be unlinked");
         }
 

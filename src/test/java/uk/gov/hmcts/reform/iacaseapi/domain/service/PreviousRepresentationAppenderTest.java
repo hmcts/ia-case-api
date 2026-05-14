@@ -3,7 +3,10 @@ package uk.gov.hmcts.reform.iacaseapi.domain.service;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -55,8 +58,8 @@ class PreviousRepresentationAppenderTest {
         assertNotNull(allPreviousRepresentations);
         assertEquals(3, allPreviousRepresentations.size());
 
-        assertEquals("3", allPreviousRepresentations.get(0).getId());
-        assertEquals(newPreviousRepresentation1, allPreviousRepresentations.get(0).getValue());
+        assertEquals("3", allPreviousRepresentations.getFirst().getId());
+        assertEquals(newPreviousRepresentation1, allPreviousRepresentations.getFirst().getValue());
 
         assertEquals("2", allPreviousRepresentations.get(1).getId());
         assertEquals(existingPreviousRepresentation1, allPreviousRepresentations.get(1).getValue());
@@ -76,8 +79,8 @@ class PreviousRepresentationAppenderTest {
         assertNotNull(allPreviousRepresentations);
         assertEquals(1, allPreviousRepresentations.size());
 
-        assertEquals("1", allPreviousRepresentations.get(0).getId());
-        assertEquals(newPreviousRepresentation1, allPreviousRepresentations.get(0).getValue());
+        assertEquals("1", allPreviousRepresentations.getFirst().getId());
+        assertEquals(newPreviousRepresentation1, allPreviousRepresentations.getFirst().getValue());
     }
 
     @Test

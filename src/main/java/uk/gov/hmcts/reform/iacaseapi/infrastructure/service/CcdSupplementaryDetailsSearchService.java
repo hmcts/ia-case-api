@@ -13,7 +13,6 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.TermsQueryBuilder;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.sort.SortOrder;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -39,7 +38,6 @@ public class CcdSupplementaryDetailsSearchService implements SupplementaryDetail
     private final int maxRecords;
     private final ExecutorService executorService;
 
-    @Autowired
     public CcdSupplementaryDetailsSearchService(IdamService idamService,
                                                 CcdDataCaseAccessApi ccdDataCaseAccessApi,
                                                 AuthTokenGenerator s2sAuthTokenGenerator,

@@ -1,8 +1,8 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.controllers;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -19,8 +19,6 @@ class WelcomeControllerTest {
 
         assertNotNull(responseEntity);
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-        assertThat(
-            responseEntity.getBody())
-            .contains("Welcome to Immigration & Asylum case API");
+        assertTrue(responseEntity.getBody().contains("Welcome to Immigration & Asylum case API"));
     }
 }

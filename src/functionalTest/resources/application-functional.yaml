@@ -26,8 +26,9 @@ citizenEmail: ${TEST_CITIZEN_USERNAME:ia-citizen@fake.hmcts.net}
 core_case_data:
   api:
     url: ${CCD_URL:http://127.0.0.1:4452}
-
 spring:
+  retry:
+    max-attempts: 3
   security:
     oauth2:
       client:

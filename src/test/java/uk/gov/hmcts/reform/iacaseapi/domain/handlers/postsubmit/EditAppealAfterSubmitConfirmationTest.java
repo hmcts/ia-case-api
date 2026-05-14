@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -40,21 +39,13 @@ class EditAppealAfterSubmitConfirmationTest {
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
-        assertThat(
-            callbackResponse.getConfirmationHeader().get())
-            .contains("You've updated the application");
+        assertTrue(callbackResponse.getConfirmationHeader().get().contains("You've updated the application"));
 
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("What happens next");
+        assertTrue(callbackResponse.getConfirmationBody().get().contains("What happens next"));
 
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("Both parties have been notified and the service will be updated.");
+        assertTrue(callbackResponse.getConfirmationBody().get().contains("Both parties have been notified and the service will be updated."));
 
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("The new details will be used on all future correspondence and documents.");
+        assertTrue(callbackResponse.getConfirmationBody().get().contains("The new details will be used on all future correspondence and documents."));
 
     }
 

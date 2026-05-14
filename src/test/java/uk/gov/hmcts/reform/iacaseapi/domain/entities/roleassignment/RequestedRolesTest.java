@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Collections;
 import org.junit.jupiter.api.Test;

@@ -5,9 +5,16 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ADMIN;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOURNEY_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LOCAL_AUTHORITY_POLICY;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PA_APPEAL_TYPE_PAYMENT_OPTION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMISSION_TYPE;
 
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -96,13 +103,9 @@ class AppealSavedConfirmationTest {
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
-        assertThat(
-            callbackResponse.getConfirmationHeader().get())
-            .contains("# You have saved your appeal");
+        assertTrue(callbackResponse.getConfirmationHeader().get().contains("# You have saved your appeal"));
 
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("### Do this next");
+        assertTrue(callbackResponse.getConfirmationBody().get().contains("### Do this next"));
 
         assertThat(
             callbackResponse.getConfirmationBody().get())
@@ -111,13 +114,9 @@ class AppealSavedConfirmationTest {
                     "the 'Next step' dropdown list from your case details page."
             );
 
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("Not ready to submit your appeal yet?");
+        assertTrue(callbackResponse.getConfirmationBody().get().contains("Not ready to submit your appeal yet?"));
 
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("You can return to the case details page to make changes from the ‘Next step’ dropdown list.");
+        assertTrue(callbackResponse.getConfirmationBody().get().contains("You can return to the case details page to make changes from the ‘Next step’ dropdown list."));
 
         verify(ccdCaseAssignment, times(1)).revokeAccessToCase(callback, organisationIdentifier);
     }
@@ -145,13 +144,9 @@ class AppealSavedConfirmationTest {
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
-        assertThat(
-            callbackResponse.getConfirmationHeader().get())
-            .contains("# You have saved your appeal");
+        assertTrue(callbackResponse.getConfirmationHeader().get().contains("# You have saved your appeal"));
 
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("### Do this next");
+        assertTrue(callbackResponse.getConfirmationBody().get().contains("### Do this next"));
 
         assertThat(
             callbackResponse.getConfirmationBody().get())
@@ -159,13 +154,9 @@ class AppealSavedConfirmationTest {
                 ""
             );
 
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("Not ready to submit your appeal yet?");
+        assertTrue(callbackResponse.getConfirmationBody().get().contains("Not ready to submit your appeal yet?"));
 
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("You can return to the case details page to make changes from the ‘Next step’ dropdown list.");
+        assertTrue(callbackResponse.getConfirmationBody().get().contains("You can return to the case details page to make changes from the ‘Next step’ dropdown list."));
 
         verify(ccdCaseAssignment, times(1)).revokeAccessToCase(callback, organisationIdentifier);
     }
@@ -193,13 +184,9 @@ class AppealSavedConfirmationTest {
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
-        assertThat(
-            callbackResponse.getConfirmationHeader().get())
-            .contains("# You have saved your appeal");
+        assertTrue(callbackResponse.getConfirmationHeader().get().contains("# You have saved your appeal"));
 
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("### Do this next");
+        assertTrue(callbackResponse.getConfirmationBody().get().contains("### Do this next"));
 
         assertThat(
             callbackResponse.getConfirmationBody().get())
@@ -207,13 +194,9 @@ class AppealSavedConfirmationTest {
                 ""
             );
 
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("Not ready to submit your appeal yet?");
+        assertTrue(callbackResponse.getConfirmationBody().get().contains("Not ready to submit your appeal yet?"));
 
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("You can return to the case details page to make changes from the ‘Next step’ dropdown list.");
+        assertTrue(callbackResponse.getConfirmationBody().get().contains("You can return to the case details page to make changes from the ‘Next step’ dropdown list."));
 
         verify(ccdCaseAssignment, times(1)).revokeAccessToCase(callback, organisationIdentifier);
     }
@@ -241,13 +224,9 @@ class AppealSavedConfirmationTest {
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
-        assertThat(
-            callbackResponse.getConfirmationHeader().get())
-            .contains("# You have saved your appeal");
+        assertTrue(callbackResponse.getConfirmationHeader().get().contains("# You have saved your appeal"));
 
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("### Do this next");
+        assertTrue(callbackResponse.getConfirmationBody().get().contains("### Do this next"));
 
         assertThat(
             callbackResponse.getConfirmationBody().get())
@@ -255,13 +234,9 @@ class AppealSavedConfirmationTest {
                 ""
             );
 
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("Not ready to submit your appeal yet?");
+        assertTrue(callbackResponse.getConfirmationBody().get().contains("Not ready to submit your appeal yet?"));
 
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("You can return to the case details page to make changes from the ‘Next step’ dropdown list.");
+        assertTrue(callbackResponse.getConfirmationBody().get().contains("You can return to the case details page to make changes from the ‘Next step’ dropdown list."));
 
         verify(ccdCaseAssignment, times(1)).revokeAccessToCase(callback, organisationIdentifier);
     }
@@ -291,13 +266,9 @@ class AppealSavedConfirmationTest {
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
-        assertThat(
-            callbackResponse.getConfirmationHeader().get())
-            .contains("# You have saved your appeal");
+        assertTrue(callbackResponse.getConfirmationHeader().get().contains("# You have saved your appeal"));
 
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("### Do this next");
+        assertTrue(callbackResponse.getConfirmationBody().get().contains("### Do this next"));
 
         assertThat(
             callbackResponse.getConfirmationBody().get())
@@ -305,13 +276,9 @@ class AppealSavedConfirmationTest {
                 ""
             );
 
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("Not ready to submit your appeal yet?");
+        assertTrue(callbackResponse.getConfirmationBody().get().contains("Not ready to submit your appeal yet?"));
 
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("You can return to the case details page to make changes from the ‘Next step’ dropdown list.");
+        assertTrue(callbackResponse.getConfirmationBody().get().contains("You can return to the case details page to make changes from the ‘Next step’ dropdown list."));
 
         verify(ccdCaseAssignment, times(1)).revokeAccessToCase(callback, organisationIdentifier);
     }
@@ -340,13 +307,9 @@ class AppealSavedConfirmationTest {
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
-        assertThat(
-            callbackResponse.getConfirmationHeader().get())
-            .contains("# You have saved your appeal");
+        assertTrue(callbackResponse.getConfirmationHeader().get().contains("# You have saved your appeal"));
 
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("### Do this next");
+        assertTrue(callbackResponse.getConfirmationBody().get().contains("### Do this next"));
 
         assertThat(
             callbackResponse.getConfirmationBody().get())
@@ -354,13 +317,9 @@ class AppealSavedConfirmationTest {
                 ""
             );
 
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("Not ready to submit your appeal yet?");
+        assertTrue(callbackResponse.getConfirmationBody().get().contains("Not ready to submit your appeal yet?"));
 
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("You can return to the case details page to make changes from the ‘Next step’ dropdown list.");
+        assertTrue(callbackResponse.getConfirmationBody().get().contains("You can return to the case details page to make changes from the ‘Next step’ dropdown list."));
 
         verify(ccdCaseAssignment, times(1)).revokeAccessToCase(callback, organisationIdentifier);
     }
@@ -550,13 +509,9 @@ class AppealSavedConfirmationTest {
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
-        assertThat(
-            callbackResponse.getConfirmationHeader().get())
-            .contains("# You have saved your appeal");
+        assertTrue(callbackResponse.getConfirmationHeader().get().contains("# You have saved your appeal"));
 
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("### Do this next");
+        assertTrue(callbackResponse.getConfirmationBody().get().contains("### Do this next"));
 
         assertThat(
             callbackResponse.getConfirmationBody().get())
@@ -565,13 +520,9 @@ class AppealSavedConfirmationTest {
                     "the 'Next step' dropdown list from your case details page."
             );
 
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("Not ready to submit your appeal yet?");
+        assertTrue(callbackResponse.getConfirmationBody().get().contains("Not ready to submit your appeal yet?"));
 
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("You can return to the case details page to make changes from the ‘Next step’ dropdown list.");
+        assertTrue(callbackResponse.getConfirmationBody().get().contains("You can return to the case details page to make changes from the ‘Next step’ dropdown list."));
 
     }
 

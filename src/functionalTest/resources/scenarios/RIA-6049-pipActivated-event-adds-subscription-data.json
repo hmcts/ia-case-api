@@ -27,11 +27,11 @@
         "subscriptions": [
           {
             "value": {
-              "subscriber":"appellant",
-              "email":"{$citizenEmail}",
-              "wantsEmail":"Yes",
-              "mobileNumber":"01234123123",
-              "wantsSms":"No"
+              "subscriber": "appellant",
+              "email": "{$citizenEmail}",
+              "wantsEmail": "Yes",
+              "mobileNumber": "01234123123",
+              "wantsSms": "No"
             }
           }
         ],

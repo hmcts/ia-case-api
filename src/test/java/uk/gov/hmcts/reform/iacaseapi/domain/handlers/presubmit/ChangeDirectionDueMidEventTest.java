@@ -15,7 +15,11 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DIRECTION_EDIT_PARTIES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DIRECTION_LIST;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -102,13 +106,13 @@ class ChangeDirectionDueMidEventTest {
 
         verify(asylumCase, times(5)).write(asylumExtractorCaptor.capture(), editableDirectionsCaptor.capture());
 
-        assertEquals(DIRECTION_EDIT_EXPLANATION, asylumExtractorCaptor.getAllValues().get(0));
+        assertEquals(DIRECTION_EDIT_EXPLANATION, asylumExtractorCaptor.getAllValues().getFirst());
         assertEquals(DIRECTION_EDIT_PARTIES, asylumExtractorCaptor.getAllValues().get(1));
         assertEquals(DIRECTION_EDIT_DATE_DUE, asylumExtractorCaptor.getAllValues().get(2));
         assertEquals(DIRECTION_EDIT_DATE_SENT, asylumExtractorCaptor.getAllValues().get(3));
         assertEquals(DIRECTION_LIST, asylumExtractorCaptor.getAllValues().get(4));
 
-        assertEquals("explanation-2", editableDirectionsCaptor.getAllValues().get(0));
+        assertEquals("explanation-2", editableDirectionsCaptor.getAllValues().getFirst());
         assertEquals(Parties.RESPONDENT, editableDirectionsCaptor.getAllValues().get(1));
         assertEquals("2020-11-01", editableDirectionsCaptor.getAllValues().get(2));
         assertEquals("2019-11-01", editableDirectionsCaptor.getAllValues().get(3));
@@ -117,8 +121,8 @@ class ChangeDirectionDueMidEventTest {
         assertEquals(direction1, exactDirectionList.getValue().getCode());
         assertEquals(direction1, exactDirectionList.getValue().getLabel());
         assertEquals(2, exactDirectionList.getListItems().size());
-        assertEquals(direction2, exactDirectionList.getListItems().get(0).getCode());
-        assertEquals(direction2, exactDirectionList.getListItems().get(0).getLabel());
+        assertEquals(direction2, exactDirectionList.getListItems().getFirst().getCode());
+        assertEquals(direction2, exactDirectionList.getListItems().getFirst().getLabel());
         assertEquals(direction1, exactDirectionList.getListItems().get(1).getCode());
         assertEquals(direction1, exactDirectionList.getListItems().get(1).getLabel());
     }

@@ -1,6 +1,5 @@
 {
   "description": "RIA-4116 does not trigger home office notifications when validation is not success",
-  "enabled": true,
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",

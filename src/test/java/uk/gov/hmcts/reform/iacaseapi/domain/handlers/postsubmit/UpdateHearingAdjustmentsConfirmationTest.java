@@ -53,21 +53,13 @@ class UpdateHearingAdjustmentsConfirmationTest {
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
-        assertThat(
-            callbackResponse.getConfirmationHeader().get())
-            .contains("You've recorded the agreed hearing adjustments");
+        assertTrue(callbackResponse.getConfirmationHeader().get().contains("You've recorded the agreed hearing adjustments"));
 
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("You should ensure that the case flags reflect the hearing requests that have been approved. This may require adding new case flags or making active flags inactive.");
+        assertTrue(callbackResponse.getConfirmationBody().get().contains("You should ensure that the case flags reflect the hearing requests that have been approved. This may require adding new case flags or making active flags inactive."));
 
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("[Add case flag](/case/IA/Asylum/" + caseId + "/trigger/createFlag)");
+        assertTrue(callbackResponse.getConfirmationBody().get().contains("[Add case flag](/case/IA/Asylum/" + caseId + "/trigger/createFlag)"));
 
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("[Manage case flags](/case/IA/Asylum/" + caseId + "/trigger/manageFlags)");
+        assertTrue(callbackResponse.getConfirmationBody().get().contains("[Manage case flags](/case/IA/Asylum/" + caseId + "/trigger/manageFlags)"));
 
         assertThat(
             callbackResponse.getConfirmationBody().get())

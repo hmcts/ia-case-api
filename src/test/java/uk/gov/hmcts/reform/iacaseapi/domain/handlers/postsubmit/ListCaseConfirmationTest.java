@@ -57,30 +57,18 @@ class ListCaseConfirmationTest {
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
         if (isAda.equals(YesOrNo.YES)) {
-            assertThat(
-                    callbackResponse.getConfirmationHeader().get())
-                    .contains("You have listed the case");
+            assertTrue(callbackResponse.getConfirmationHeader().get().contains("You have listed the case"));
 
-            assertThat(
-                    callbackResponse.getConfirmationBody().get())
-                    .contains("The legal representative will be directed to submit the appellant's hearing<br>");
+            assertTrue(callbackResponse.getConfirmationBody().get().contains("The legal representative will be directed to submit the appellant's hearing<br>"));
 
-            assertThat(
-                    callbackResponse.getConfirmationBody().get())
-                    .contains("requirements and a Notice of Hearing will be sent to all parties.");
+            assertTrue(callbackResponse.getConfirmationBody().get().contains("requirements and a Notice of Hearing will be sent to all parties."));
 
         } else {
-            assertThat(
-                    callbackResponse.getConfirmationHeader().get())
-                    .contains("You have listed the case");
+            assertTrue(callbackResponse.getConfirmationHeader().get().contains("You have listed the case"));
 
-            assertThat(
-                    callbackResponse.getConfirmationBody().get())
-                    .contains("The hearing notice will be sent to all parties.<br>");
+            assertTrue(callbackResponse.getConfirmationBody().get().contains("The hearing notice will be sent to all parties.<br>"));
 
-            assertThat(
-                    callbackResponse.getConfirmationBody().get())
-                    .contains("You don't need to do any more on this case.");
+            assertTrue(callbackResponse.getConfirmationBody().get().contains("You don't need to do any more on this case."));
         }
 
     }
@@ -108,12 +96,8 @@ class ListCaseConfirmationTest {
             .contains("![Respondent notification failed confirmation]"
                            + "(https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/respondent_notification_failed.svg)");
 
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("#### Do this next");
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("Contact the respondent to tell them what has changed, including any action they need to take.");
+        assertTrue(callbackResponse.getConfirmationBody().get().contains("#### Do this next"));
+        assertTrue(callbackResponse.getConfirmationBody().get().contains("Contact the respondent to tell them what has changed, including any action they need to take."));
     }
 
     @Test

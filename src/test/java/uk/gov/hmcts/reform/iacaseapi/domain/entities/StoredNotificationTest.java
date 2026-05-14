@@ -1,11 +1,12 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.mock;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
-
-import static org.assertj.core.api.Assertions.*;
-import static org.mockito.Mockito.mock;
 
 class StoredNotificationTest {
 

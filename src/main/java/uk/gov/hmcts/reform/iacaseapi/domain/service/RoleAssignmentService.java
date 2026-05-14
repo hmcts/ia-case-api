@@ -125,7 +125,7 @@ public class RoleAssignmentService {
         );
     }
 
-    @Retryable(include = FeignException.class)
+    @Retryable(retryFor = FeignException.class)
     public List<String> getAmRolesFromUser(String actorId, String authorization) {
         RoleAssignmentResource roleAssignmentResource = roleAssignmentApi.queryRoleAssignments(
             authorization,

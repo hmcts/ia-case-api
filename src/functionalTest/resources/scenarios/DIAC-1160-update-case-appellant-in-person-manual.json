@@ -1,7 +1,6 @@
 {
   "description": "DIAC-1160 Update Case Appellant In Person - Manual",
-  "disabled": false,
-  "request": {
+    "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "AdminOfficer",
     "input": {

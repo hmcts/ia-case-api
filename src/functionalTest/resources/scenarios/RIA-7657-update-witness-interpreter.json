@@ -1,6 +1,5 @@
 {
   "description": "RIA-7657 update interpreter language requirements for witness with legal rep",
-  "enabled": "true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",

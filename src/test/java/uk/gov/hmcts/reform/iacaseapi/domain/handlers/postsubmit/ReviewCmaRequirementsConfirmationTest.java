@@ -46,9 +46,7 @@ class ReviewCmaRequirementsConfirmationTest {
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
-        assertThat(
-            callbackResponse.getConfirmationHeader().get())
-            .contains("You've recorded the agreed case management appointment requirements");
+        assertTrue(callbackResponse.getConfirmationHeader().get().contains("You've recorded the agreed case management appointment requirements"));
 
         assertThat(
             callbackResponse.getConfirmationBody().get())

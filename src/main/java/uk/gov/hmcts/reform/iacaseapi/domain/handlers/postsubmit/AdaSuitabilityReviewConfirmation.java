@@ -45,8 +45,10 @@ public class AdaSuitabilityReviewConfirmation implements PostSubmitCallbackHandl
         if (decision.equals(AdaSuitabilityReviewDecision.SUITABLE)) {
             postSubmitResponse.setConfirmationHeader("# Appeal determined suitable to continue as ADA");
             postSubmitResponse.setConfirmationBody(
-                "#### What happens next\n\n"
-                    + "All parties have been notified. The Accelerated Detained Appeal Suitability Decision is available to view in the documents tab.<br>"
+                """
+                #### What happens next
+                
+                All parties have been notified. The Accelerated Detained Appeal Suitability Decision is available to view in the documents tab.<br>"""
             );
         } else {
             postSubmitResponse.setConfirmationHeader("# Appeal determined unsuitable to continue as ADA");

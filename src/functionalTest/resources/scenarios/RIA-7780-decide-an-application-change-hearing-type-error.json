@@ -65,7 +65,9 @@
   },
   "expectation": {
     "status": 200,
-    "errors": ["Could not delete some hearing request(s)"],
+    "errors": [
+      "Could not delete some hearing request(s)"
+    ],
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {

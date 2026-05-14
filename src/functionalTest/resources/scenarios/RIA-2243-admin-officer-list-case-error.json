@@ -19,7 +19,9 @@
   },
   "expectation": {
     "status": 200,
-    "errors": ["You've made an invalid request. You cannot list the case until the hearing requirements have been reviewed."],
+    "errors": [
+      "You've made an invalid request. You cannot list the case until the hearing requirements have been reviewed."
+    ],
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {

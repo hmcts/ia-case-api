@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -51,13 +50,9 @@ public class ListAssistIntegrationConfirmationTest {
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
-        assertThat(
-            callbackResponse.getConfirmationHeader().get())
-            .contains("# List Assist Integration");
+        assertTrue(callbackResponse.getConfirmationHeader().get().contains("# List Assist Integration"));
 
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("List hearing in List Assist: " + yesOrNo);
+        assertTrue(callbackResponse.getConfirmationBody().get().contains("List hearing in List Assist: " + yesOrNo));
 
     }
 

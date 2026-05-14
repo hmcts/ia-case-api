@@ -5,7 +5,10 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOURNEY_TYPE;
 
 import java.util.List;
@@ -170,7 +173,7 @@ class CcdSupplementaryUpdaterTest {
                 )
         ).thenReturn(responseEntity);
 
-        when(responseEntity.getStatusCodeValue()).thenReturn(HttpStatus.CREATED.value());
+        when(responseEntity.getStatusCode()).thenReturn(HttpStatus.CREATED);
     }
 
 }

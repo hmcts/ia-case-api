@@ -1,6 +1,5 @@
 {
   "description": "RIA-3275 fixing duplicate directions",
-  "enabled": true,
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",

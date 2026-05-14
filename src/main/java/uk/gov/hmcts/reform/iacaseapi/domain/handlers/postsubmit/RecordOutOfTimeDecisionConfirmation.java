@@ -46,8 +46,10 @@ public class RecordOutOfTimeDecisionConfirmation implements PostSubmitCallbackHa
             case APPROVED:
                 postSubmitResponse.setConfirmationHeader("# You have recorded an out of time decision");
                 postSubmitResponse.setConfirmationBody(
-                    "#### What happens next\n\n"
-                    + "This appeal will proceed as usual.");
+                    """
+                    #### What happens next
+                    
+                    This appeal will proceed as usual.""");
                 break;
 
             case REJECTED:

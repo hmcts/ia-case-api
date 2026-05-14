@@ -13,10 +13,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.allocatecase.CaseWorkerName;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.CaseWorkerService;
@@ -26,17 +25,17 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.IdamService;
 @ActiveProfiles("integration")
 
 @TestPropertySource(properties = {
+    "core_case_data.api.url=http://127.0.0.1:8990/ccd-data-store",
     "REF_DATA_CASE_WORKER_URL=http://127.0.0.1:8990"
 })
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@DirtiesContext
 class CaseWorkerServiceTest {
 
     private static WireMockServer server;
 
-    @MockBean
+    @MockitoBean
     private IdamService idamService;
-    @MockBean
+    @MockitoBean
     private AuthTokenGenerator authTokenGenerator;
     @Autowired
     private CaseWorkerService caseWorkerService;
@@ -57,7 +56,7 @@ class CaseWorkerServiceTest {
 
         List<CaseWorkerName> actualCaseWorkerNames = caseWorkerService.getCaseWorkerNameForActorIds(newArrayList(ACTOR_ID));
 
-        assertThat(actualCaseWorkerNames.get(0)).isEqualTo(new CaseWorkerName(ACTOR_ID, "Case Officer"));
+        assertThat(actualCaseWorkerNames.getFirst()).isEqualTo(new CaseWorkerName(ACTOR_ID, "Case Officer"));
     }
 
     @AfterAll

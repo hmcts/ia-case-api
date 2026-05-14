@@ -59,11 +59,16 @@ public class RequestNewHearingRequirementsDirectionPreparer implements PreSubmit
             response.addError("You cannot request hearing requirements for this appeal in this state.");
         } else {
 
-            String explanation = "This appeal will be reheard. You should tell the Tribunal if the appellant’s hearing requirements have changed.\n\n"
-                                 + "# Next steps\n\n"
-                                 + "Visit the online service and use the HMCTS reference to find the case. Use the link on the overview tab to submit the appellant’s hearing requirements.\n\n"
-                                 + "The Tribunal will review the hearing requirements and any requests for additional adjustments. You'll then be sent a hearing date.\n\n"
-                                 + "If you do not submit the hearing requirements by the date indicated below, the Tribunal may not be able to accommodate the appellant's needs for the hearing.";
+            String explanation = """
+                                 This appeal will be reheard. You should tell the Tribunal if the appellant’s hearing requirements have changed.
+                                 
+                                 # Next steps
+                                 
+                                 Visit the online service and use the HMCTS reference to find the case. Use the link on the overview tab to submit the appellant’s hearing requirements.
+                                 
+                                 The Tribunal will review the hearing requirements and any requests for additional adjustments. You'll then be sent a hearing date.
+                                 
+                                 If you do not submit the hearing requirements by the date indicated below, the Tribunal may not be able to accommodate the appellant's needs for the hearing.""";
 
             asylumCase.write(SEND_DIRECTION_EXPLANATION, explanation);
 

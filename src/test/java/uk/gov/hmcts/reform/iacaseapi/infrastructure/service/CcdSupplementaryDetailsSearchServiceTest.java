@@ -85,7 +85,7 @@ class CcdSupplementaryDetailsSearchServiceTest {
 
     @Test
     void should_return_supplementary_details() {
-        when(searchResult.getCases()).thenReturn(Arrays.asList(caseDetails));
+        when(searchResult.getCases()).thenReturn(List.of(caseDetails));
         when(caseDetails.getId()).thenReturn(caseId);
         when(caseDetails.getCaseData()).thenReturn(data);
 
@@ -93,8 +93,8 @@ class CcdSupplementaryDetailsSearchServiceTest {
             ccdSupplementaryDetailsSearchService.getSupplementaryDetails(ccdCaseNumberList);
 
         assertEquals(1, supplementaryInfoList.size());
-        assertEquals("1234", supplementaryInfoList.get(0).getCcdCaseNumber());
-        assertEquals("Johnson", supplementaryInfoList.get(0).getSupplementaryDetails().getSurname());
+        assertEquals("1234", supplementaryInfoList.getFirst().getCcdCaseNumber());
+        assertEquals("Johnson", supplementaryInfoList.getFirst().getSupplementaryDetails().getSurname());
 
         verify(idamService).getServiceUserToken();
         verify(coreCaseDataApi).searchCases(authorisation, serviceToken, caseType, searchSourceBuilder.toString());

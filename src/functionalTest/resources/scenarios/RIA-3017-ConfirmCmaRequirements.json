@@ -17,7 +17,7 @@
     "status": 200,
     "confirmation": {
       "header": "# Your direction has been sent",
-      "body":  "#### What happens next\n\nThe appellant will be directed to submit requirements for a case management appointment. You will be notified when they are ready to review."
+      "body": "#### What happens next\n\nThe appellant will be directed to submit requirements for a case management appointment. You will be notified when they are ready to review."
     }
   }
 }

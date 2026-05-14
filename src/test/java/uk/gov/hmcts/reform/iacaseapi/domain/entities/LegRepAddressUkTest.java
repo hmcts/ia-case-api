@@ -1,9 +1,9 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-public class LegRepAddressUkTest {
+class LegRepAddressUkTest {
 
     private final String addressLine1 = "A";
     private final String addressLine2 = "B";
@@ -24,14 +24,14 @@ public class LegRepAddressUkTest {
     );
 
     @Test
-    public void should_hold_onto_values() {
+    void should_hold_onto_values() {
 
-        Assert.assertEquals(addressLine1, legRepAddressUk.getAddressLine1());
-        Assert.assertEquals(addressLine2, legRepAddressUk.getAddressLine2());
-        Assert.assertEquals(addressLine3, legRepAddressUk.getAddressLine3());
-        Assert.assertEquals(townCity, legRepAddressUk.getTownCity());
-        Assert.assertEquals(county, legRepAddressUk.getCounty());
-        Assert.assertEquals(postCode, legRepAddressUk.getPostCode());
-        Assert.assertEquals(country, legRepAddressUk.getCountry());
+        Assertions.assertEquals(addressLine1, legRepAddressUk.getAddressLine1());
+        Assertions.assertEquals(addressLine2, legRepAddressUk.getAddressLine2());
+        Assertions.assertEquals(addressLine3, legRepAddressUk.getAddressLine3());
+        Assertions.assertEquals(townCity, legRepAddressUk.getTownCity());
+        Assertions.assertEquals(county, legRepAddressUk.getCounty());
+        Assertions.assertEquals(postCode, legRepAddressUk.getPostCode());
+        Assertions.assertEquals(country, legRepAddressUk.getCountry());
     }
 }

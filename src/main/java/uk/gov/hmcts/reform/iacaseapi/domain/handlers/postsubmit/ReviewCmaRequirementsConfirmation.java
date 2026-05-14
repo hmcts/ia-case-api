@@ -33,9 +33,11 @@ public class ReviewCmaRequirementsConfirmation implements PostSubmitCallbackHand
 
         postSubmitResponse.setConfirmationHeader("# You've recorded the agreed case management appointment requirements");
         postSubmitResponse.setConfirmationBody(
-            "#### What happens next\n\n"
-            + "The listing team will now list the appointment. All parties will be notified when the Notice of Case "
-                    + "Management Appointment is available to view.<br><br>"
+            """
+            #### What happens next
+            
+            The listing team will now list the appointment. All parties will be notified when the Notice of Case \
+            Management Appointment is available to view.<br><br>"""
         );
 
         return postSubmitResponse;

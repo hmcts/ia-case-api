@@ -4,12 +4,34 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DATE_CLIENT_LEAVE_UK;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DATE_CLIENT_LEAVE_UK_ADMIN_J;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DATE_ENTRY_CLEARANCE_DECISION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DATE_ON_DECISION_LETTER;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DECISION_LETTER_RECEIVED_DATE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.GWF_REFERENCE_NUMBER;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_DECISION_DATE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_REFERENCE_NUMBER;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ACCELERATED_DETAINED_APPEAL;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ADMIN;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_EJP;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_REHYDRATED_APPEAL;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOURNEY_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.OOC_APPEAL_ADMIN_J;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.OUT_OF_COUNTRY_DECISION_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.RECORDED_OUT_OF_TIME_DECISION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SUBMISSION_OUT_OF_TIME;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.TRIBUNAL_RECEIVED_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
-import java.time.*;
+import java.time.LocalDate;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -581,8 +603,8 @@ class HomeOfficeDecisionDateCheckerTest {
         List<AsylumCaseFieldDefinition> keys = asylumExtractor.getAllValues();
         List<YesOrNo> values = valueCaptor.getAllValues();
 
-        assertThat(keys.get(0)).isEqualTo(SUBMISSION_OUT_OF_TIME);
-        assertThat(values.get(0)).isEqualTo(NO);
+        assertThat(keys.getFirst()).isEqualTo(SUBMISSION_OUT_OF_TIME);
+        assertThat(values.getFirst()).isEqualTo(NO);
     }
 
     @Test
@@ -603,8 +625,8 @@ class HomeOfficeDecisionDateCheckerTest {
         List<AsylumCaseFieldDefinition> keys = asylumExtractor.getAllValues();
         List<YesOrNo> values = valueCaptor.getAllValues();
 
-        assertThat(keys.get(0)).isEqualTo(SUBMISSION_OUT_OF_TIME);
-        assertThat(values.get(0)).isEqualTo(YES);
+        assertThat(keys.getFirst()).isEqualTo(SUBMISSION_OUT_OF_TIME);
+        assertThat(values.getFirst()).isEqualTo(YES);
 
         assertThat(keys.get(1)).isEqualTo(RECORDED_OUT_OF_TIME_DECISION);
         assertThat(values.get(1)).isEqualTo(NO);
@@ -628,8 +650,8 @@ class HomeOfficeDecisionDateCheckerTest {
         List<AsylumCaseFieldDefinition> keys = asylumExtractor.getAllValues();
         List<YesOrNo> values = valueCaptor.getAllValues();
 
-        assertThat(keys.get(0)).isEqualTo(SUBMISSION_OUT_OF_TIME);
-        assertThat(values.get(0)).isEqualTo(YES);
+        assertThat(keys.getFirst()).isEqualTo(SUBMISSION_OUT_OF_TIME);
+        assertThat(values.getFirst()).isEqualTo(YES);
 
         assertThat(keys.get(1)).isEqualTo(RECORDED_OUT_OF_TIME_DECISION);
         assertThat(values.get(1)).isEqualTo(NO);
@@ -651,8 +673,8 @@ class HomeOfficeDecisionDateCheckerTest {
         List<AsylumCaseFieldDefinition> keys = asylumExtractor.getAllValues();
         List<YesOrNo> values = valueCaptor.getAllValues();
 
-        assertThat(keys.get(0)).isEqualTo(SUBMISSION_OUT_OF_TIME);
-        assertThat(values.get(0)).isEqualTo(YES);
+        assertThat(keys.getFirst()).isEqualTo(SUBMISSION_OUT_OF_TIME);
+        assertThat(values.getFirst()).isEqualTo(YES);
 
         assertThat(keys.get(1)).isEqualTo(RECORDED_OUT_OF_TIME_DECISION);
         assertThat(values.get(1)).isEqualTo(NO);
@@ -674,8 +696,8 @@ class HomeOfficeDecisionDateCheckerTest {
         List<AsylumCaseFieldDefinition> keys = asylumExtractor.getAllValues();
         List<YesOrNo> values = valueCaptor.getAllValues();
 
-        assertThat(keys.get(0)).isEqualTo(SUBMISSION_OUT_OF_TIME);
-        assertThat(values.get(0)).isEqualTo(YES);
+        assertThat(keys.getFirst()).isEqualTo(SUBMISSION_OUT_OF_TIME);
+        assertThat(values.getFirst()).isEqualTo(YES);
 
         assertThat(keys.get(1)).isEqualTo(RECORDED_OUT_OF_TIME_DECISION);
         assertThat(values.get(1)).isEqualTo(NO);
@@ -701,8 +723,8 @@ class HomeOfficeDecisionDateCheckerTest {
         List<AsylumCaseFieldDefinition> keys = asylumExtractor.getAllValues();
         List<YesOrNo> values = valueCaptor.getAllValues();
 
-        assertThat(keys.get(0)).isEqualTo(SUBMISSION_OUT_OF_TIME);
-        assertThat(values.get(0)).isEqualTo(NO);
+        assertThat(keys.getFirst()).isEqualTo(SUBMISSION_OUT_OF_TIME);
+        assertThat(values.getFirst()).isEqualTo(NO);
     }
 
     @Test
@@ -724,8 +746,8 @@ class HomeOfficeDecisionDateCheckerTest {
         List<AsylumCaseFieldDefinition> keys = asylumExtractor.getAllValues();
         List<YesOrNo> values = valueCaptor.getAllValues();
 
-        assertThat(keys.get(0)).isEqualTo(SUBMISSION_OUT_OF_TIME);
-        assertThat(values.get(0)).isEqualTo(YES);
+        assertThat(keys.getFirst()).isEqualTo(SUBMISSION_OUT_OF_TIME);
+        assertThat(values.getFirst()).isEqualTo(YES);
 
         assertThat(keys.get(1)).isEqualTo(RECORDED_OUT_OF_TIME_DECISION);
         assertThat(values.get(1)).isEqualTo(NO);
@@ -749,8 +771,8 @@ class HomeOfficeDecisionDateCheckerTest {
         List<AsylumCaseFieldDefinition> keys = asylumExtractor.getAllValues();
         List<YesOrNo> values = valueCaptor.getAllValues();
 
-        assertThat(keys.get(0)).isEqualTo(SUBMISSION_OUT_OF_TIME);
-        assertThat(values.get(0)).isEqualTo(YES);
+        assertThat(keys.getFirst()).isEqualTo(SUBMISSION_OUT_OF_TIME);
+        assertThat(values.getFirst()).isEqualTo(YES);
 
         assertThat(keys.get(1)).isEqualTo(RECORDED_OUT_OF_TIME_DECISION);
         assertThat(values.get(1)).isEqualTo(NO);

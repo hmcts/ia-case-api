@@ -34,8 +34,10 @@ public class TurnOnNotificationAndWorkAllocatioConfirmation implements PostSubmi
 
         postSubmitResponse.setConfirmationHeader("# You have turned on notifications/WA tasks");
         postSubmitResponse.setConfirmationBody(
-                "#### What happens next\n\n"
-                        + "The rehydration process has now been completed and the case can be progressed."
+                """
+                #### What happens next
+                
+                The rehydration process has now been completed and the case can be progressed."""
         );
 
         return postSubmitResponse;

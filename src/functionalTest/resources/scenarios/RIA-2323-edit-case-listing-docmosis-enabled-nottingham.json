@@ -1,6 +1,6 @@
 {
   "description": "RIA-2323 Edit hearing notice PDF (Docmosis enabled) - Listing Only Hearing centre",
-  "enabled": "{$featureFlag.docmosisEnabled}",
+  "disabled": "!{$featureFlag.docmosisEnabled}",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",

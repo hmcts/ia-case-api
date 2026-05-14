@@ -1,6 +1,5 @@
 {
   "description": "RIA-2176 Build case- legal rep - list uploaded files - about to start",
-  "enabled": true,
   "request": {
     "uri": "/asylum/ccdAboutToStart",
     "credentials": "LegalRepresentative",

@@ -1,7 +1,6 @@
 {
   "description": "RIA-1309 Upload appeal response (Home Office Generic)",
-  "disabled": false,
-  "request": {
+    "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "HomeOfficeGeneric",
     "input": {

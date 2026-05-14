@@ -1,26 +1,29 @@
 package uk.gov.hmcts.reform.iacaseapi.consumer.roleassignment;
 
+import static org.mockito.Mockito.when;
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+
 import au.com.dius.pact.consumer.dsl.PactDslWithProvider;
 import au.com.dius.pact.consumer.junit5.PactConsumerTestExt;
 import au.com.dius.pact.consumer.junit5.PactTestFor;
-import au.com.dius.pact.core.model.RequestResponsePact;
+import au.com.dius.pact.core.model.V4Pact;
 import au.com.dius.pact.core.model.annotations.Pact;
 import au.com.dius.pact.core.model.annotations.PactFolder;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.http.client.fluent.Executor;
 import org.json.JSONException;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseData;
@@ -29,22 +32,20 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.IdamService;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.RoleAssignmentService;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.roleassignment.RoleAssignmentApi;
 
-import static org.mockito.Mockito.when;
-import static org.springframework.http.HttpHeaders.AUTHORIZATION;
-
-@ExtendWith(SpringExtension.class)
 @ExtendWith(PactConsumerTestExt.class)
+@ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @PactFolder("pacts")
 @PactTestFor(providerName = "am_roleAssignment_createAssignment", port = "8991")
-@ContextConfiguration(classes = {RoleAssignmentConsumerApplication.class})
+@SpringJUnitConfig(classes = {RoleAssignmentConsumerApplication.class})
 @TestPropertySource(locations = {"classpath:application.properties"})
+@MockitoSettings(strictness = Strictness.LENIENT)
 public class RoleAssignmentApiConsumerTest {
 
     @Autowired
     RoleAssignmentApi roleAssignmentApi;
 
-    @MockBean
+    @MockitoBean
     AuthTokenGenerator authTokenGenerator;
 
     @Mock
@@ -65,8 +66,7 @@ public class RoleAssignmentApiConsumerTest {
     private final long caseId = 1212121212121213L;
 
     @BeforeEach
-    void setUp() throws Exception {
-        Thread.sleep(2000);
+    void setUp() {
         when(authTokenGenerator.generate()).thenReturn(SERVICE_AUTH_TOKEN);
 
         when(userDetails.getAccessToken()).thenReturn(AUTH_TOKEN);
@@ -77,13 +77,8 @@ public class RoleAssignmentApiConsumerTest {
         roleAssignmentService = new RoleAssignmentService(authTokenGenerator, roleAssignmentApi, userDetails);
     }
 
-    @AfterEach
-    void teardown() {
-        Executor.closeIdleConnections();
-    }
-
     @Pact(provider = "am_roleAssignment_createAssignment", consumer = "ia_caseApi")
-    public RequestResponsePact generatePactFragment(PactDslWithProvider builder)
+    public V4Pact generatePactFragment(PactDslWithProvider builder)
         throws JSONException, JsonProcessingException {
         return builder
             .given("The assignment request is valid with one requested role and replaceExisting flag as true")
@@ -96,7 +91,7 @@ public class RoleAssignmentApiConsumerTest {
                 .writeValueAsString(roleAssignmentService.getRoleAssignment(caseId, assigneeId, userId)))
             .willRespondWith()            
             .status(201)
-            .toPact();
+            .toPact(V4Pact.class);
     }
 
 

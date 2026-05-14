@@ -1,5 +1,16 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CURRENT_HEARING_ID;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_ID_LIST;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,18 +23,6 @@ import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.verify;
-import static org.powermock.api.mockito.internal.verification.VerifyNoMoreInteractions.verifyNoMoreInteractions;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CURRENT_HEARING_ID;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_ID_LIST;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -57,8 +56,8 @@ class HearingIdListProcessorTest {
         verify(asylumCase).write(eq(HEARING_ID_LIST), newHearingIdListArgumentCaptor.capture());
         List<IdValue<String>> hearingIdList = newHearingIdListArgumentCaptor.getValue();
         assertEquals(1, hearingIdList.size());
-        assertEquals("1", hearingIdList.get(0).getId());
-        assertEquals("12345", hearingIdList.get(0).getValue());
+        assertEquals("1", hearingIdList.getFirst().getId());
+        assertEquals("12345", hearingIdList.getFirst().getValue());
     }
 
     @Test
@@ -77,8 +76,8 @@ class HearingIdListProcessorTest {
         verify(asylumCase).write(eq(HEARING_ID_LIST), newHearingIdListArgumentCaptor.capture());
         List<IdValue<String>> newHearingIdList = newHearingIdListArgumentCaptor.getValue();
         assertEquals(3, newHearingIdList.size());
-        assertEquals("1", newHearingIdList.get(0).getId());
-        assertEquals("23456", newHearingIdList.get(0).getValue());
+        assertEquals("1", newHearingIdList.getFirst().getId());
+        assertEquals("23456", newHearingIdList.getFirst().getValue());
         assertEquals("2", newHearingIdList.get(1).getId());
         assertEquals("34567", newHearingIdList.get(1).getValue());
         assertEquals("3", newHearingIdList.get(2).getId());

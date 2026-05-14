@@ -1,10 +1,10 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
-import static junit.framework.TestCase.assertTrue;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 
@@ -48,15 +48,16 @@ class RemoveDetainedStatusConfirmationTest {
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
-        assertThat(
-            callbackResponse.getConfirmationHeader().get())
-            .contains("# You have removed the detained status from this appeal");
+        assertTrue(callbackResponse.getConfirmationHeader().get().contains("# You have removed the detained status from this appeal"));
 
         assertThat(
             callbackResponse.getConfirmationBody().get())
-            .contains("#### What happens next\n\n"
-                      + "All parties will be notified that the appellant's detention status has been updated.\n\n"
-                      + "You should update the hearing centre, if necessary.");
+            .contains("""
+                      #### What happens next
+                      
+                      All parties will be notified that the appellant's detention status has been updated.
+                      
+                      You should update the hearing centre, if necessary.""");
     }
 
     @Test
