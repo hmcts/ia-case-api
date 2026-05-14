@@ -1017,12 +1017,8 @@ ccd:
       ingressHost: ccd-definition-store-${SERVICE_FQDN}
 
   elasticsearch:
-    image: 'hmctsprod.azurecr.io/imported/elastic/elasticsearch'
-    imageTag: 9.3.4
     nameOverride: ${SERVICE_NAME}-es
     clusterName: "es"
-    createCert: false
-    protocol: http
     replicas: 1
     minimumMasterNodes: 1
     antiAffinity: "soft"
@@ -1250,6 +1246,10 @@ em-stitching:
       SPRING_DATASOURCE_PASSWORD: ${GENERIC_VALUES_PREVIEW_YAML_PASS}
       SPRING_DATASOURCE_OPTIONS: "?ssl=disable"
       ENABLE_DB_MIGRATE: true
+      CALLBACK_HTTP_SCHEME: https
+      CALLBACK_HTTP_HOST_PORT: 80
+      CALLBACK_DOMAINS: em-ccdorc-${SERVICE_FQDN}
+      CALLBACK_ENV: PR
       RUN_DB_MIGRATION_ON_STARTUP: true
       FLYWAY_POSTGRESQL_TRANSACTIONAL_LOCK: false
       IDAM_API_BASE_URI: https://idam-api.aat.platform.hmcts.net
