@@ -54,7 +54,7 @@ public class HomeOfficeReferenceHandler implements PreSubmitCallbackHandler<Asyl
             Callback<AsylumCase> callback) {
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
-
+        System.out.println("!!!!!! HomeOfficeReferenceHandler::canHandle called with callbackStage: " + callbackStage + " and event: " + callback.getEvent() + " and pageId: " + callback.getPageId());
         // TODO - check logic for oocHomeOfficeReferenceNumber (and do any other screens that display the UAN)
         return callbackStage == PreSubmitCallbackStage.MID_EVENT
                 && List.of(Event.START_APPEAL, Event.EDIT_APPEAL).contains(callback.getEvent())
@@ -171,6 +171,7 @@ public class HomeOfficeReferenceHandler implements PreSubmitCallbackHandler<Asyl
         if (hoReference == null) {
             return false;
         } else {
+
             Optional<List<IdValue<HomeOfficeAppellant>>> homeOfficeAppellants = homeOfficeReferenceService.getHomeOfficeReferenceData(hoReference, callback);
             if (homeOfficeAppellants.isEmpty()) {
                 return false;

@@ -1479,4 +1479,4 @@ ia:
 
 app:
   home-office-validation:
-    enabled: ${HOME_OFFICE_VALIDATION_ENABLED:true}
+    enabled: true
