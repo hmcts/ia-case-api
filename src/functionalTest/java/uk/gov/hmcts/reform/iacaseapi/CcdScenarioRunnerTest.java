@@ -143,16 +143,18 @@ public class CcdScenarioRunnerTest {
                 Map<String, Object> scenario = deserializeWithExpandedValues(scenarioSource);
                 String description = MapValueExtractor.extract(scenario, "description");
                 String scenarioDisabled = MapValueExtractor.extractOrDefault(scenario, "disabled", "false");
-                boolean isDisabled = Boolean.parseBoolean(scenarioDisabled);
-                boolean isDisabledFromFlag = false;
+                boolean isDisabled = scenarioDisabled.startsWith("!")
+                    ? !Boolean.parseBoolean(scenarioDisabled.substring(1))
+                    : Boolean.parseBoolean(scenarioDisabled);
                 String launchDarklyKey = MapValueExtractor.extract(scenario, "launchDarklyKey");
                 final String credentials = MapValueExtractor.extractOrDefault(scenario, "request.credentials", "none");
                 final Headers authorizationHeaders = getAuthorizationHeaders(credentials);
+                boolean isDisabledFromFlag = false;
                 if (launchDarklyKey instanceof String string && !string.isBlank()) {
                     String[] keys = string.split(":");
                     isDisabledFromFlag = launchDarklyFunctionalTestClient
                         .getKey(keys[0], authorizationHeaders.getValue("Authorization"))
-                        && !Boolean.parseBoolean(keys[1]);
+                        != Boolean.parseBoolean(keys[1]);
                 }
                 if (isDisabled || isDisabledFromFlag) {
                     return Arguments.of("Disabled: " + fileName, description, null, null, null, null, 0, 0, null);
