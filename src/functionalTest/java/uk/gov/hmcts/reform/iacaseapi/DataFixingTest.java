@@ -54,6 +54,7 @@ public class DataFixingTest {
 
         Map<String, Object> asylumCaseMap = new HashMap<>();
         asylumCaseMap.put("appealType", "refusalOfHumanRights");
+        asylumCaseMap.put("appellantInUk", "Yes");
         asylumCaseMap.put("respondentsAgreedScheduleOfIssuesDescription", "some-value");
 
         String callbackBody = buildCallbackBodyWithMinimalRequired(
