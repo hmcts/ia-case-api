@@ -110,11 +110,9 @@ public class CcdSupplementaryDetailsSearchService implements SupplementaryDetail
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode root = mapper.createObjectNode();
 
-        // size + from
         root.put("size", maxRecords);
         root.put("from", 0);
 
-        // sort: created_date DESC
         ArrayNode sortArray = mapper.createArrayNode();
         ObjectNode sortField = mapper.createObjectNode();
         ObjectNode sortOrder = mapper.createObjectNode();
@@ -123,12 +121,12 @@ public class CcdSupplementaryDetailsSearchService implements SupplementaryDetail
         sortArray.add(sortField);
         root.set("sort", sortArray);
 
-        // query: terms on reference
         ArrayNode valuesArray = mapper.createArrayNode();
         caseReferences.forEach(valuesArray::add);
 
         ObjectNode termsNode = mapper.createObjectNode();
         termsNode.set("reference", valuesArray);
+        termsNode.put("boost", 1.0);
 
         ObjectNode queryNode = mapper.createObjectNode();
         queryNode.set("terms", termsNode);
