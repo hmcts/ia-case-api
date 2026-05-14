@@ -13,7 +13,9 @@
   },
   "expectation": {
     "status": 200,
-    "errors": ["The case is already listed, you can't request hearing requirements"],
+    "errors": [
+      "The case is already listed, you can't request hearing requirements"
+    ],
     "caseData": {
       "template": "minimal-appeal-submitted.json"
     }

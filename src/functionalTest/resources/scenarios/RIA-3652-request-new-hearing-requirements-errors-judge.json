@@ -22,7 +22,9 @@
   },
   "expectation": {
     "status": 200,
-    "errors": ["You cannot request hearing requirements for this appeal in this state."],
+    "errors": [
+      "You cannot request hearing requirements for this appeal in this state."
+    ],
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {

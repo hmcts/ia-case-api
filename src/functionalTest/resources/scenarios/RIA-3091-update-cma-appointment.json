@@ -9,12 +9,12 @@
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
-           "attendingTCW": "TCW",
-           "appointmentSummary": "Test",
-           "attendingJudge": "Judge",
-           "attendingAppellant": "Appellant",
-           "attendingAppellantsLegalRepresentative": "Legal Rep",
-           "attendingHomeOfficeLegalRepresentative": "Home Office"
+          "attendingTCW": "TCW",
+          "appointmentSummary": "Test",
+          "attendingJudge": "Judge",
+          "attendingAppellant": "Appellant",
+          "attendingAppellantsLegalRepresentative": "Legal Rep",
+          "attendingHomeOfficeLegalRepresentative": "Home Office"
         }
       }
     }

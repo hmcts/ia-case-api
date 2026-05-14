@@ -1,6 +1,5 @@
 {
   "description": "RIA-481 appeal skeleton (save and continue disabled)",
-  "enabled": true,
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "LegalRepresentative",

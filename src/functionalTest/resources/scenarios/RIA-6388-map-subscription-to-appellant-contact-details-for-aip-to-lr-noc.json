@@ -14,11 +14,11 @@
           "subscriptions": [
             {
               "value": {
-                "subscriber":"appellant",
-                "email":"citizen@example.com",
-                "wantsEmail":"Yes",
-                "mobileNumber":"01234123123",
-                "wantsSms":"No"
+                "subscriber": "appellant",
+                "email": "citizen@example.com",
+                "wantsEmail": "Yes",
+                "mobileNumber": "01234123123",
+                "wantsSms": "No"
               }
             }
           ]

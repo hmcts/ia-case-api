@@ -1,6 +1,5 @@
 {
   "description": "DIAC-1119: CMR for a detained appeal RP and PA - successful submission for PA appeal",
-  "enabled": true,
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",

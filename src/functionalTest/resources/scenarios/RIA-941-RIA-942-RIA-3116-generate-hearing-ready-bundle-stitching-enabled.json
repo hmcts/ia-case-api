@@ -1,6 +1,6 @@
 {
   "description": "RIA-941-generate-hearing-ready-bundle (stitching enabled) RIA-942-notification-to-ho-and-legal-rep",
-  "enabled": "{$featureFlag.isEmStitchingEnabled}",
+  "disabled": "!{$featureFlag.isEmStitchingEnabled}",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",
@@ -41,13 +41,14 @@
               }
             }
           ],
-          "caseBundles": [{
-            "id": "1",
-            "value": {
-              "stitchStatus": "DONE"
+          "caseBundles": [
+            {
+              "id": "1",
+              "value": {
+                "stitchStatus": "DONE"
+              }
             }
-          }]
-
+          ]
         }
       }
     }
@@ -58,12 +59,14 @@
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {
-        "caseBundles": [{
-          "id": "1",
-          "value": {
-            "stitchStatus": "DONE"
+        "caseBundles": [
+          {
+            "id": "1",
+            "value": {
+              "stitchStatus": "DONE"
+            }
           }
-        }],
+        ],
         "hearingDocuments": [
           {
             "id": "2",

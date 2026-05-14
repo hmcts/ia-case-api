@@ -18,7 +18,9 @@
   },
   "expectation": {
     "status": 200,
-    "errors": ["You can only select yes if the appellant is detained in an immigration removal centre"],
+    "errors": [
+      "You can only select yes if the appellant is detained in an immigration removal centre"
+    ],
     "caseData": {
       "template": "minimal-appeal-started.json",
       "replacements": {

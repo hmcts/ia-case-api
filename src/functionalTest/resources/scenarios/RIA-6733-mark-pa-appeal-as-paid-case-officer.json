@@ -1,6 +1,5 @@
 {
   "description": "RIA-6733 Mark PA appeal as paid Case Officer",
-  "enabled": "true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",

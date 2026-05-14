@@ -1,6 +1,5 @@
 {
   "description": "RIA-7771 Record adjournment details confirmation",
-  "enabled": true,
   "request": {
     "uri": "/asylum/ccdSubmitted",
     "credentials": "CaseOfficer",

@@ -1,6 +1,6 @@
 {
   "description": "RIA-517 Submit case confirmation (feature enabled)",
-  "enabled": "{$featureFlag.isSaveAndContinueEnabled}",
+  "disabled": "!{$featureFlag.isSaveAndContinueEnabled}",
   "request": {
     "uri": "/asylum/ccdSubmitted",
     "credentials": "LegalRepresentative",

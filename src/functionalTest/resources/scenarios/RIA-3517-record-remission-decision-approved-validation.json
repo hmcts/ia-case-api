@@ -24,7 +24,9 @@
   },
   "expectation": {
     "status": 200,
-    "errors": ["The Amount remitted and the amount left to pay must equal the full fee amount"],
+    "errors": [
+      "The Amount remitted and the amount left to pay must equal the full fee amount"
+    ],
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {

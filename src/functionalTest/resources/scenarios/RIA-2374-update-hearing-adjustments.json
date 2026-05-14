@@ -1,6 +1,6 @@
 {
   "description": "RIA-2374 update hearing adjustments",
-  "enabled": "{$featureFlag.isSubmitHearingRequirementsEnabled}",
+  "disabled": "!{$featureFlag.isSubmitHearingRequirementsEnabled}",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",

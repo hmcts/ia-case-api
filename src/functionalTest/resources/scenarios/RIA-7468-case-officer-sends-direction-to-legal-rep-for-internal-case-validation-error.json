@@ -21,7 +21,9 @@
   },
   "expectation": {
     "status": 200,
-    "errors": ["This is an appellant in person case. You cannot select legal representative as the recipient."],
+    "errors": [
+      "This is an appellant in person case. You cannot select legal representative as the recipient."
+    ],
     "caseData": {
       "template": "minimal-appeal-submitted.json"
     }

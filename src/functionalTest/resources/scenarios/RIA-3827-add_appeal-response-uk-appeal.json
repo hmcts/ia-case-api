@@ -1,6 +1,5 @@
 {
   "description": "RIA-3827 add appeal reason for uk appeal",
-  "enabled": true,
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",
