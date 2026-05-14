@@ -1240,6 +1240,10 @@ em-stitching:
     devcpuLimits: 2
     devmemoryLimits: 4Gi
     environment:
+      CALLBACK_HTTP_SCHEME: https
+      CALLBACK_HTTP_HOST_PORT: 80
+      CALLBACK_DOMAINS: em-ccdorc-${SERVICE_FQDN}
+      CALLBACK_ENV: PR
       SPRING_DATASOURCE_HOST: ia-preview.postgres.database.azure.com
       SPRING_DATASOURCE_USERNAME: hmcts
       SPRING_DATASOURCE_NAME: "pr-${CHANGE_ID}-emstitch"
