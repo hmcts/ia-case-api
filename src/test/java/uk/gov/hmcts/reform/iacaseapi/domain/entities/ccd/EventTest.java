@@ -195,6 +195,8 @@ class EventTest {
             Arguments.of("rollbackMigration", Event.ROLLBACK_MIGRATION.toString()),
             Arguments.of("revokeCitizenAccess", Event.REVOKE_CITIZEN_ACCESS.toString()),
             Arguments.of("completeCaseReview", Event.COMPLETE_CASE_REVIEW.toString()),
+            Arguments.of("queryManagementRaiseQuery", Event.QUERY_MANAGEMENT_RAISE_QUERY.toString()),
+            Arguments.of("queryManagementRespondQuery", Event.QUERY_MANAGEMENT_RESPOND_QUERY.toString()),
             Arguments.of("unknown", Event.UNKNOWN.toString())
         );
     }
