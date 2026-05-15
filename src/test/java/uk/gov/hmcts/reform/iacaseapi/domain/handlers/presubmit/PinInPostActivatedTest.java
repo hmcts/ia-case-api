@@ -79,6 +79,10 @@ public class PinInPostActivatedTest {
 
         Optional<JourneyType> details = response.getData().read(AsylumCaseFieldDefinition.JOURNEY_TYPE, JourneyType.class);
         assertEquals(JourneyType.AIP, details.get());
+        assertEquals(YesOrNo.NO,
+                response.getData().read(AsylumCaseFieldDefinition.IS_ADMIN, YesOrNo.class).orElse(null));
+        assertEquals(YesOrNo.NO,
+                response.getData().read(AsylumCaseFieldDefinition.APPELLANTS_REPRESENTATION, YesOrNo.class).orElse(null));
     }
 
     @Test
