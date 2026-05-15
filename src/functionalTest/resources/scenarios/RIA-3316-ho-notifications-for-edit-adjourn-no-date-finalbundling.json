@@ -1,6 +1,5 @@
 {
   "description": "RIA-3316 sends ho notification for adjourn no date event for state finalbundling",
-  "launchDarklyKey": "home-office-notification-feature:true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "AdminOfficer",

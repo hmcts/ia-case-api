@@ -30,7 +30,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -43,16 +42,13 @@ class SendDecisionAndReasonsPreparerTest {
     private CaseDetails<AsylumCase> caseDetails;
     @Mock
     private AsylumCase asylumCase;
-    @Mock
-    private FeatureToggler featureToggler;
 
     private SendDecisionAndReasonsPreparer sendDecisionAndReasonsPreparer;
 
     @BeforeEach
     public void setUp() {
 
-        sendDecisionAndReasonsPreparer = new SendDecisionAndReasonsPreparer(featureToggler);
-        when(featureToggler.getValue("reheard-feature", false)).thenReturn(true);
+        sendDecisionAndReasonsPreparer = new SendDecisionAndReasonsPreparer();
     }
 
     @Test
@@ -93,18 +89,6 @@ class SendDecisionAndReasonsPreparerTest {
         verify(asylumCase, times(0)).clear(FINAL_DECISION_AND_REASONS_DOCUMENT);
         verify(asylumCase, times(0)).clear(IS_DOCUMENT_SIGNED_TODAY);
         verify(asylumCase, times(0)).clear(IS_FEE_CONSISTENT_WITH_DECISION);
-    }
-
-    @Test
-    void cannot_handle_if_feature_flag_disabled() {
-
-        when(callback.getEvent()).thenReturn(Event.SEND_DECISION_AND_REASONS);
-        when(featureToggler.getValue("reheard-feature", false)).thenReturn(false);
-
-        sendDecisionAndReasonsPreparer = new SendDecisionAndReasonsPreparer(featureToggler);
-        boolean canHandle = sendDecisionAndReasonsPreparer.canHandle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
-
-        assertFalse(canHandle);
     }
 
     @Test

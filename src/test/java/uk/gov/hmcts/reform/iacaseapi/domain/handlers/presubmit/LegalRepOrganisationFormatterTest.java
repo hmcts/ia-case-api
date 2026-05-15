@@ -107,7 +107,6 @@ class LegalRepOrganisationFormatterTest {
         when(organisationEntityResponse.getContactInformation()).thenReturn(addresses);
         when(organisationEntityResponse.getName()).thenReturn(companyName);
         when(organisationEntityResponse.getOrganisationIdentifier()).thenReturn(organisationIdentifier);
-        when(featureToggler.getValue("share-case-feature", false)).thenReturn(true);
 
         PreSubmitCallbackResponse<AsylumCase> response =
             legalRepOrganisationFormatter.handle(
@@ -163,7 +162,6 @@ class LegalRepOrganisationFormatterTest {
         when(organisationEntityResponse.getContactInformation()).thenReturn(addresses);
         when(organisationEntityResponse.getName()).thenReturn(companyName);
         when(organisationEntityResponse.getOrganisationIdentifier()).thenReturn(organisationIdentifier);
-        when(featureToggler.getValue("share-case-feature", false)).thenReturn(true);
 
         PreSubmitCallbackResponse<AsylumCase> response =
             legalRepOrganisationFormatter.handle(
@@ -191,30 +189,6 @@ class LegalRepOrganisationFormatterTest {
                 callback
             );
 
-        assertEquals(asylumCase, response.getData());
-
-        verify(asylumCase, times(0)).write(LOCAL_AUTHORITY_POLICY, organisationPolicy);
-    }
-
-    @Test
-    void should_not_write_to_local_authority_policy_if_feature_not_enabled() {
-
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(callback.getEvent()).thenReturn(Event.START_APPEAL);
-        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.REP));
-        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
-        when(organisationEntityResponse.getOrganisationIdentifier()).thenReturn("SomeId");
-        when(professionalOrganisationRetriever.retrieve()).thenReturn(organisationEntityResponse);
-        when(featureToggler.getValue("share-case-feature", false)).thenReturn(false);
-
-        PreSubmitCallbackResponse<AsylumCase> response =
-            legalRepOrganisationFormatter.handle(
-                PreSubmitCallbackStage.ABOUT_TO_SUBMIT,
-                callback
-            );
-
-        assertNotNull(response);
         assertEquals(asylumCase, response.getData());
 
         verify(asylumCase, times(0)).write(LOCAL_AUTHORITY_POLICY, organisationPolicy);
@@ -351,7 +325,6 @@ class LegalRepOrganisationFormatterTest {
         when(organisationEntityResponse.getContactInformation()).thenReturn(addresses);
         when(organisationEntityResponse.getName()).thenReturn(companyName);
         when(organisationEntityResponse.getOrganisationIdentifier()).thenReturn(organisationIdentifier);
-        when(featureToggler.getValue("share-case-feature", false)).thenReturn(true);
 
         AddressUk emptyAddressUk = new AddressUk(
                 "","","","","","",""

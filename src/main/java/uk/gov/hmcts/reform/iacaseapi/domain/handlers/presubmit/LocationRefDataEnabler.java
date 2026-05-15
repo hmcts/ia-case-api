@@ -26,8 +26,6 @@ public class LocationRefDataEnabler  implements PreSubmitCallbackHandler<AsylumC
     "true" or can be refactored so that the feature isn't hidden behind this filter.
      */
 
-    private static final String APPEALS_LOCATION_REFERENCE_DATA = "appeals-location-reference-data";
-
     private final FeatureToggler featureToggler;
 
     public boolean canHandle(
@@ -54,15 +52,7 @@ public class LocationRefDataEnabler  implements PreSubmitCallbackHandler<AsylumC
                 .getCaseDetails()
                 .getCaseData();
 
-        boolean isEnabledForCurrentUser = featureToggler
-            .getValue(APPEALS_LOCATION_REFERENCE_DATA, false);
-
-        if (isEnabledForCurrentUser) {
-            asylumCase.write(IS_CASE_USING_LOCATION_REF_DATA, YES);
-        }
-
-        log.info("Current user is creating a case that {} Location Ref Data",
-            isEnabledForCurrentUser ? "USES" : "DOES NOT USE");
+        asylumCase.write(IS_CASE_USING_LOCATION_REF_DATA, YES);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }

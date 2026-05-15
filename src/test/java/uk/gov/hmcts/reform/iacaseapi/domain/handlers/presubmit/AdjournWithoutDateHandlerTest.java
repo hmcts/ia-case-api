@@ -135,7 +135,6 @@ class AdjournWithoutDateHandlerTest {
         when(caseDetails.getState()).thenReturn(State.PREPARE_FOR_HEARING);
         when(asylumCase.read(LIST_CASE_HEARING_DATE, String.class)).thenReturn(Optional.of("05/05/2020"));
         when(asylumCase.read(IS_INTEGRATED, YesOrNo.class)).thenReturn(Optional.of(NO));
-        when(nextHearingDateService.enabled()).thenReturn(true);
 
         handler.handle(ABOUT_TO_SUBMIT, callback);
 
@@ -151,7 +150,6 @@ class AdjournWithoutDateHandlerTest {
         when(caseDetails.getState()).thenReturn(State.PREPARE_FOR_HEARING);
         when(asylumCase.read(LIST_CASE_HEARING_DATE, String.class)).thenReturn(Optional.of("05/05/2020"));
         when(asylumCase.read(IS_INTEGRATED, YesOrNo.class)).thenReturn(Optional.of(YES));
-        when(nextHearingDateService.enabled()).thenReturn(true);
 
         handler.handle(ABOUT_TO_SUBMIT, callback);
 

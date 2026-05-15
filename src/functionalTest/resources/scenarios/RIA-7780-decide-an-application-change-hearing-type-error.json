@@ -1,6 +1,5 @@
 {
   "description": "RIA-7780 Decide an application (change decision type) failure message",
-  "launchDarklyKey": "wa-R2-feature:true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",

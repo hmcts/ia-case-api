@@ -29,7 +29,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DirectionAppender;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.PreviousHearingAppender;
 
 @Component
@@ -40,20 +39,17 @@ public class RequestNewHearingRequirementsDirectionHandler implements PreSubmitC
     private final DateProvider dateProvider;
     private final DirectionAppender directionAppender;
     private final PreviousHearingAppender previousHearingAppender;
-    private final FeatureToggler featureToggler;
 
     public RequestNewHearingRequirementsDirectionHandler(
         @Value("${legalRepresentativeHearingRequirements.dueInDays}") int hearingRequirementsDueInDays,
         DateProvider dateProvider,
         DirectionAppender directionAppender,
-        PreviousHearingAppender previousHearingAppender,
-        FeatureToggler featureToggler
+        PreviousHearingAppender previousHearingAppender
     ) {
         this.hearingRequirementsDueInDays = hearingRequirementsDueInDays;
         this.dateProvider = dateProvider;
         this.directionAppender = directionAppender;
         this.previousHearingAppender = previousHearingAppender;
-        this.featureToggler = featureToggler;
     }
 
     public boolean canHandle(PreSubmitCallbackStage callbackStage, Callback<AsylumCase> callback) {
@@ -61,8 +57,7 @@ public class RequestNewHearingRequirementsDirectionHandler implements PreSubmitC
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-               && callback.getEvent() == Event.REQUEST_NEW_HEARING_REQUIREMENTS
-               && featureToggler.getValue("reheard-feature", false);
+               && callback.getEvent() == Event.REQUEST_NEW_HEARING_REQUIREMENTS;
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(PreSubmitCallbackStage callbackStage, Callback<AsylumCase> callback) {

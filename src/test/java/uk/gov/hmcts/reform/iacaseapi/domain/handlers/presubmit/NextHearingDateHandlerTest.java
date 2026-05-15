@@ -80,28 +80,8 @@ class NextHearingDateHandlerTest {
 
     @ParameterizedTest
     @EnumSource(value = Event.class, names = {"EDIT_CASE_LISTING", "LIST_CASE", "UPDATE_NEXT_HEARING_INFO", "CMR_LISTING", "CMR_RE_LISTING"})
-    public void should_not_set_next_hearing_date_if_feature_not_enabled(Event event) {
-        when(callback.getEvent()).thenReturn(event);
-        when(nextHearingDateSerice.enabled()).thenReturn(false);
-        when(asylumCase.read(IS_INTEGRATED, YesOrNo.class)).thenReturn(Optional.of(YES));
-
-        if (event == UPDATE_NEXT_HEARING_INFO) {
-            handler.handle(ABOUT_TO_START, callback);
-        } else {
-            handler.handle(ABOUT_TO_SUBMIT, callback);
-        }
-
-        verify(nextHearingDateSerice, never()).calculateNextHearingDateFromHearings(
-                        callback, event == UPDATE_NEXT_HEARING_INFO ? ABOUT_TO_START : ABOUT_TO_SUBMIT);
-        verify(nextHearingDateSerice, never()).calculateNextHearingDateFromCaseData(callback);
-        verify(asylumCase, never()).write(eq(NEXT_HEARING_DETAILS), any());
-    }
-
-    @ParameterizedTest
-    @EnumSource(value = Event.class, names = {"EDIT_CASE_LISTING", "LIST_CASE", "UPDATE_NEXT_HEARING_INFO", "CMR_LISTING", "CMR_RE_LISTING"})
     public void should_set_next_hearing_date_from_hearings(Event event) {
         when(callback.getEvent()).thenReturn(event);
-        when(nextHearingDateSerice.enabled()).thenReturn(true);
         when(asylumCase.read(IS_INTEGRATED, YesOrNo.class)).thenReturn(Optional.of(YES));
 
         NextHearingDetails nextHearingDetails = NextHearingDetails.builder()
@@ -125,7 +105,6 @@ class NextHearingDateHandlerTest {
     @EnumSource(value = Event.class, names = {"EDIT_CASE_LISTING", "LIST_CASE", "CMR_LISTING", "CMR_RE_LISTING"})
     public void should_set_next_hearing_date_from_case_data(Event event) {
         when(callback.getEvent()).thenReturn(event);
-        when(nextHearingDateSerice.enabled()).thenReturn(true);
         when(asylumCase.read(IS_INTEGRATED, YesOrNo.class)).thenReturn(Optional.of(NO));
         when(asylumCase.read(LIST_CASE_HEARING_DATE, String.class)).thenReturn(Optional.of(listCaseHearingDate));
 
@@ -141,7 +120,6 @@ class NextHearingDateHandlerTest {
     @Test
     public void should_reset_next_hearing_date() {
         when(callback.getEvent()).thenReturn(UPDATE_NEXT_HEARING_INFO);
-        when(nextHearingDateSerice.enabled()).thenReturn(true);
         when(asylumCase.read(IS_INTEGRATED, YesOrNo.class)).thenReturn(Optional.of(NO));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =

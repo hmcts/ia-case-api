@@ -22,7 +22,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CcdSupplementaryUpdater;
 
 @ExtendWith(SpringExtension.class)
@@ -32,8 +31,6 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CcdSupplementaryUpda
 @TestPropertySource(locations = {"classpath:application.properties"})
 public class CcdSupplementaryProviderBaseTest {
 
-    @MockBean
-    FeatureToggler featureToggler;
     @MockBean
     AuthTokenGenerator serviceAuthTokenGenerator;
     @MockBean
@@ -65,7 +62,7 @@ public class CcdSupplementaryProviderBaseTest {
         String urlPath = UriComponentsBuilder.fromPath(supplementaryUrl).build(CASE_ID).toString();
 
         ccdSupplementaryUpdater =
-            new CcdSupplementaryUpdater(featureToggler, new RestTemplate(), serviceAuthTokenGenerator, userDetails, ccdUrl,
+            new CcdSupplementaryUpdater(new RestTemplate(), serviceAuthTokenGenerator, userDetails, ccdUrl,
                     urlPath, hmctsServiceId);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getId()).thenReturn(CASE_ID);

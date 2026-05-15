@@ -29,7 +29,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -42,16 +41,13 @@ class DecisionAndReasonsGeneratedPreparerTest {
     private CaseDetails<AsylumCase> caseDetails;
     @Mock
     private AsylumCase asylumCase;
-    @Mock
-    private FeatureToggler featureToggler;
 
     private DecisionAndReasonsGeneratedPreparer decisionAndReasonsGeneratedPreparer;
 
     @BeforeEach
     public void setUp() {
 
-        decisionAndReasonsGeneratedPreparer = new DecisionAndReasonsGeneratedPreparer(featureToggler);
-        when(featureToggler.getValue("reheard-feature", false)).thenReturn(true);
+        decisionAndReasonsGeneratedPreparer = new DecisionAndReasonsGeneratedPreparer();
     }
 
     @Test
@@ -90,19 +86,6 @@ class DecisionAndReasonsGeneratedPreparerTest {
         verify(asylumCase, times(0)).clear(ANONYMITY_ORDER);
         verify(asylumCase, times(0)).clear(APPELLANT_REPRESENTATIVE);
         verify(asylumCase, times(0)).clear(RESPONDENT_REPRESENTATIVE);
-    }
-
-    @Test
-    void cannot_handle_if_feature_flag_disabled() {
-
-        when(callback.getEvent()).thenReturn(Event.GENERATE_DECISION_AND_REASONS);
-        when(featureToggler.getValue("reheard-feature", false)).thenReturn(false);
-
-        decisionAndReasonsGeneratedPreparer = new DecisionAndReasonsGeneratedPreparer(featureToggler);
-        boolean canHandle =
-            decisionAndReasonsGeneratedPreparer.canHandle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
-
-        assertFalse(canHandle);
     }
 
     @Test
