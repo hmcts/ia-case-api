@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum HomeOfficeApiResponseStatusType {
 
+    BADLY_FORMATTED_DATA(-4, "badlyFormattedData", UserFacingErrorText.SERVER, "The Home Office validation API's response contained data that did not match the expected format."),
     OTHER_APPLICATION_DATA(-3, "otherApplicationData", UserFacingErrorText.SERVER, "The Home Office validation API's response contained data from a different application."),
     NO_DATA(-2, "noData", UserFacingErrorText.SERVER, "The Home Office validation API's response contained no data."),
     DID_NOT_RESPOND(-1, "didNotRespond", UserFacingErrorText.SERVER, "The Home Office validation API did not respond."),
