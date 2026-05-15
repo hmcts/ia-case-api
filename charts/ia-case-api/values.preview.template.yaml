@@ -510,7 +510,7 @@ ia-bail-case-api:
             alias: IA_REDIS_ENCRYPTION_KEY
 
 ia-timed-event-service:
-  enabled: ${ENABLE_TES}
+  enabled: true
   java:
     imagePullPolicy: Always
     image: hmctsprod.azurecr.io/ia/timed-event-service:latest
