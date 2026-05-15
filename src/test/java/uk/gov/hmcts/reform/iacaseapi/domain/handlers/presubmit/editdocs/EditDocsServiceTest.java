@@ -345,6 +345,15 @@ class EditDocsServiceTest {
         };
     }
 
+    private static Object[] reasonsForAppealCleanupScenario() {
+        return new Object[]{
+            new Object[]{
+                LEGAL_REPRESENTATIVE_DOCUMENTS,
+                REASONS_FOR_APPEAL_DOCUMENTS
+            }
+        };
+    }
+
     private void assertDocumentWithDescriptionListEquality(List<IdValue<DocumentWithDescription>> expected, Optional<List<IdValue<DocumentWithDescription>>> actual) {
         assertThat(actual).isEqualTo(Optional.of(expected));
     }
@@ -359,6 +368,25 @@ class EditDocsServiceTest {
 
     private static IdValue<DocumentWithDescription> buildIdValueWithDescriptionFromParams(String idValue, String docId, String description) {
         return new IdValue<>(idValue, new DocumentWithDescription(new Document("https://dm-store/" + docId, "https://dm-store/" + docId + "/binary", DOCUMENT_FILENAME), description));
+    }
+
+    @ParameterizedTest
+    @MethodSource("reasonsForAppealCleanupScenario")
+    void reasonsForAppealDocumentsAreCleanedUp() {
+
+        given(editDocsAuditService.getUpdatedAndDeletedDocIdsForGivenField(
+                any(), any(), eq(LEGAL_REPRESENTATIVE_DOCUMENTS)))
+                .willReturn(DOC_ID_LIST);
+
+        asylumCase.write(REASONS_FOR_APPEAL_DOCUMENTS,
+                Optional.of(DOC_ID_VALUE_LIST));
+
+        editDocsService.cleanUpAppealTabDocs(asylumCase, asylumCase);
+
+        assertDocumentWithMetadataListEquality(
+                new ArrayList<>(),
+                asylumCase.read(REASONS_FOR_APPEAL_DOCUMENTS)
+        );
     }
 
 }
