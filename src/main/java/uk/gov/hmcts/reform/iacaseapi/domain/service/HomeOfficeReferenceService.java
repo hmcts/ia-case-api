@@ -52,7 +52,7 @@ public class HomeOfficeReferenceService {
             log.info("Home Office biographic data retrieved for case with reference ID {}.", hoReference);
             // Update the case record object with the Home Office reference data
             homeOfficeAppellants = asylumCaseWithHomeOfficeData.read(HOME_OFFICE_APPELLANTS);
-            asylumCase.write(HOME_OFFICE_APPELLANTS, homeOfficeAppellants);
+            asylumCase.write(HOME_OFFICE_APPELLANTS, homeOfficeAppellants.get());
             asylumCase.write(HOME_OFFICE_APPELLANT_CLAIM_DATE, asylumCaseWithHomeOfficeData.read(HOME_OFFICE_APPELLANT_CLAIM_DATE, String.class).orElse(null));
             asylumCase.write(HOME_OFFICE_APPELLANT_DECISION_DATE, asylumCaseWithHomeOfficeData.read(HOME_OFFICE_APPELLANT_DECISION_DATE, String.class).orElse(null));
             asylumCase.write(HOME_OFFICE_APPELLANT_DECISION_LETTER_DATE, asylumCaseWithHomeOfficeData.read(HOME_OFFICE_APPELLANT_DECISION_LETTER_DATE, String.class).orElse(null));
