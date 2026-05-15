@@ -1323,7 +1323,26 @@ aac-manage-case-assignment:
 # https://github.com/hmcts/wa-chart/blob/master/wa/values.yaml
 # 1.0.4
 wa:
-  enabled: ${ENABLE_WA:false}
+  taskManagement:
+    enabled: ${ENABLE_WA:false}
+  taskMonitor:
+    enabled: ${ENABLE_WA:false}
+  eventHandler:
+    enabled: ${ENABLE_WA:false}
+  workflow:
+    enabled: ${ENABLE_WA:false}
+  taskBatchCron:
+    enabled: ${ENABLE_WA:false}
+  messageCron:
+    enabled: ${ENABLE_WA:false}
+  camunda:
+    enabled: ${ENABLE_WA:false}
+  postgresql:
+    enabled: ${ENABLE_WA:false}
+  reconfigurationBatchCron:
+    enabled: ${ENABLE_WA:false}
+  terminationBatchCron:
+    enabled: ${ENABLE_WA:false}
   global:
     postgresUsername: hmcts
     postgresSecret: postgres

@@ -151,8 +151,11 @@ withPipeline(type, product, component) {
     def githubApi = new GithubAPI(this)
     env.ENABLE_TES = false
     env.TES_URL = "http://ia-timed-event-service-aat.service.core-compute-aat.internal/"
+    println "ploop"
     for (label in githubApi.getLabelsbyPattern(env.BRANCH_NAME, "enable_") ) {
+        println "label: ${label}"
         if (label == "enable_wa") {
+            println "Enabling WA for this PR"
             env.ENABLE_WA = "true"
             env.SERVICES_WORK_ALLOCATION_TASK_API = "http://ia-case-api-pr-${CHANGE_ID}-wa-task-management-api"
             env.SERVICES_WA_WORKFLOW_API_URL = "http://ia-case-api-pr-${CHANGE_ID}-wa-workflow-api"
@@ -162,6 +165,7 @@ withPipeline(type, product, component) {
             env.TES_URL = "https://ia-case-api-pr-${CHANGE_ID}-timed-event-service.preview.platform.hmcts.net"
         }
     }
+    println env.ENABLE_WA
     env.IA_CASE_DOCUMENTS_API_URL = "http://ia-case-documents-api-aat.service.core-compute-aat.internal/"
     env.IA_CASE_NOTIFICATIONS_API_URL = "http://ia-case-notifications-api-aat.service.core-compute-aat.internal/"
     env.IA_TIMED_EVENT_SERVICE_URL = "http://ia-timed-event-service-aat.service.core-compute-aat.internal/"
