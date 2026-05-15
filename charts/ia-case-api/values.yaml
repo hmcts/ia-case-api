@@ -52,6 +52,8 @@ java:
     SAVE_NOTIFICATIONS_TO_DATA_EVENT_ENABLED: true
     SAVE_NOTIFICATIONS_DATA_SCHEDULE_HOUR: 19
     SAVE_NOTIFICATIONS_DATA_SCHEDULE_MAX_MINUTES: 600
+    PA_PAY_LATER_DUE_DATE: 14
+    HOME_OFFICE_VALIDATION_ENABLED: "false"
   postgresql:
     auth:
       username: ia_case_api
@@ -105,7 +107,12 @@ java:
           alias: IA_SYSTEM_ACCESS_USERNAME
         - name: ia-system-access-password
           alias: IA_SYSTEM_ACCESS_PASSWORD
-
+        - name: ia-redis-connection-string
+          alias: IA_REDIS_CONNECTION_STRING
+        - name: ia-redis-access-key
+          alias: IA_REDIS_ACCESS_KEY
+        - name: ia-redis-encryption-key
+          alias: IA_REDIS_ENCRYPTION_KEY
 
 ia-case-payments-api:
   enabled: false

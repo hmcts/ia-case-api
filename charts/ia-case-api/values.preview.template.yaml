@@ -24,7 +24,7 @@ java:
     CCD_URL: "http://{{ .Release.Name }}-ccd-data-store-api"
     CCD_GW_URL: "http://dm-store-aat.service.core-compute-aat.internal"
     DM_URL: "http://dm-store-aat.service.core-compute-aat.internal"
-    IDAM_URL: "https://idam-web-public.aat.platform.hmcts.net"
+    IDAM_URL: "https://idam-api.aat.platform.hmcts.net"
     OPEN_ID_IDAM_URL: "https://idam-web-public.aat.platform.hmcts.net"
     S2S_URL: "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
     IS_SAVE_AND_CONTINUE_ENABLED: "false"
@@ -37,8 +37,9 @@ java:
     PAYMENT_REMINDER_DUE_IN_MINUTES: 1
     ROLE_ASSIGNMENT_API_URL: https://am-role-assignment-ia-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net
     SAVE_NOTIFICATIONS_TO_DATA_EVENT_ENABLED: true
-    SAVE_NOTIFICATIONS_DATA_SCHEDULE_HOUR: 18
+    SAVE_NOTIFICATIONS_DATA_SCHEDULE_HOUR: 16
     SAVE_NOTIFICATIONS_DATA_SCHEDULE_MAX_MINUTES: 5
+    HOME_OFFICE_VALIDATION_ENABLED: "false"
   keyVaults:
     ia:
       resourceGroup: ia
@@ -81,11 +82,23 @@ java:
           alias: azure.application-insights.instrumentation-key
         - name: ia-config-validator-secret
           alias: IA_CONFIG_VALIDATOR_SECRET
+        - name: ia-redis-connection-string
+          alias: IA_REDIS_CONNECTION_STRING
+        - name: ia-redis-access-key
+          alias: IA_REDIS_ACCESS_KEY
+        - name: ia-redis-encryption-key
+          alias: IA_REDIS_ENCRYPTION_KEY
   secrets:
     POSTGRES_PASSWORD:
       secretRef: postgres
       key: PASSWORD
       disabled: false
+  redis:
+    enabled: true
+    serviceAccount:
+      create: false
+      name: "iac"
+      automountServiceAccountToken: true
 
 global:
   postgresHostname: "ia-preview.postgres.database.azure.com"
@@ -139,6 +152,12 @@ ia-case-payments-api:
             alias: IA_SYSTEM_PASSWORD
           - name: ia-config-validator-secret
             alias: IA_CONFIG_VALIDATOR_SECRET
+          - name: ia-redis-connection-string
+            alias: IA_REDIS_CONNECTION_STRING
+          - name: ia-redis-access-key
+            alias: IA_REDIS_ACCESS_KEY
+          - name: ia-redis-encryption-key
+            alias: IA_REDIS_ENCRYPTION_KEY
 
 ia-case-documents-api:
   enabled: true #set to true if testing against a local branch
@@ -212,6 +231,12 @@ ia-case-documents-api:
             alias: IA_HEARING_CENTRE_GLASGOW_EMAIL
           - name: app-insights-connection-string
             alias: app-insights-connection-string
+          - name: ia-redis-connection-string
+            alias: IA_REDIS_CONNECTION_STRING
+          - name: ia-redis-access-key
+            alias: IA_REDIS_ACCESS_KEY
+          - name: ia-redis-encryption-key
+            alias: IA_REDIS_ENCRYPTION_KEY
 
 ia-case-notifications-api:
   enabled: true #set to true if testing against a local branch
@@ -415,6 +440,12 @@ ia-case-notifications-api:
             alias: IA_CONFIG_VALIDATOR_SECRET
           - name: ia-det-prison-email-mappings
             alias: IA_DET_PRISON_EMAIL_MAPPINGS
+          - name: ia-redis-connection-string
+            alias: IA_REDIS_CONNECTION_STRING
+          - name: ia-redis-access-key
+            alias: IA_REDIS_ACCESS_KEY
+          - name: ia-redis-encryption-key
+            alias: IA_REDIS_ENCRYPTION_KEY
 
 ia-bail-case-api:
   enabled: true
@@ -471,6 +502,12 @@ ia-bail-case-api:
             alias: azure.application-insights.instrumentation-key
           - name: ia-config-validator-secret
             alias: IA_CONFIG_VALIDATOR_SECRET
+          - name: ia-redis-connection-string
+            alias: IA_REDIS_CONNECTION_STRING
+          - name: ia-redis-access-key
+            alias: IA_REDIS_ACCESS_KEY
+          - name: ia-redis-encryption-key
+            alias: IA_REDIS_ENCRYPTION_KEY
 
 ia-timed-event-service:
   enabled: ${ENABLE_TES}
@@ -522,6 +559,12 @@ ia-timed-event-service:
             alias: app-insights-connection-string
           - name: ia-config-validator-secret
             alias: IA_CONFIG_VALIDATOR_SECRET
+          - name: ia-redis-connection-string
+            alias: IA_REDIS_CONNECTION_STRING
+          - name: ia-redis-access-key
+            alias: IA_REDIS_ACCESS_KEY
+          - name: ia-redis-encryption-key
+            alias: IA_REDIS_ENCRYPTION_KEY
 
 ia-home-office-integration-api:
   enabled: true #set to true if testing against a local branch
@@ -541,6 +584,11 @@ ia-home-office-integration-api:
       ROLE_ASSIGNMENT_URL: https://am-role-assignment-${SERVICE_FQDN}
       IA_IDAM_REDIRECT_URI: https://${SERVICE_NAME}-home-office-integration-api.preview.platform.hmcts.net/oauth2/callback
       CCD_URL: http://{{ .Release.Name }}-ccd-data-store-api
+      POSTGRES_HOST: ia-preview.postgres.database.azure.com
+      POSTGRES_PORT: 5432
+      POSTGRES_NAME: "pr-${CHANGE_ID}-ia-case-api"
+      POSTGRES_USERNAME: hmcts
+      POSTGRES_PASSWORD: ${GENERIC_VALUES_PREVIEW_YAML_PASS}
     keyVaults:
       ia:
         resourceGroup: ia
@@ -567,6 +615,12 @@ ia-home-office-integration-api:
             alias: IA_SYSTEM_USERNAME
           - name: system-password
             alias: IA_SYSTEM_PASSWORD
+          - name: ia-redis-connection-string
+            alias: IA_REDIS_CONNECTION_STRING
+          - name: ia-redis-access-key
+            alias: IA_REDIS_ACCESS_KEY
+          - name: ia-redis-encryption-key
+            alias: IA_REDIS_ENCRYPTION_KEY
 
 ia-case-access-api:
   enabled: false
@@ -597,6 +651,12 @@ ia-case-access-api:
             alias: IA_CONFIG_VALIDATOR_SECRET
           - name: app-insights-connection-string
             alias: app-insights-connection-string
+          - name: ia-redis-connection-string
+            alias: IA_REDIS_CONNECTION_STRING
+          - name: ia-redis-access-key
+            alias: IA_REDIS_ACCESS_KEY
+          - name: ia-redis-encryption-key
+            alias: IA_REDIS_ENCRYPTION_KEY
 
 ia-aip-frontend:
   enabled: true
@@ -677,6 +737,12 @@ ia-aip-frontend:
             alias: customer-services-telephone
           - name: customer-services-email
             alias: customer-services-email
+          - name: ia-redis-connection-string
+            alias: IA_REDIS_CONNECTION_STRING
+          - name: ia-redis-access-key
+            alias: IA_REDIS_ACCESS_KEY
+          - name: ia-redis-encryption-key
+            alias: IA_REDIS_ENCRYPTION_KEY
   redis:
     enabled: false
     architecture: standalone
@@ -770,7 +836,8 @@ xui-webapp:
             alias: system-user-name
           - name: system-user-password
             alias: system-user-password
-
+          - name: mc-session-secret
+            alias: mc-session-secret
 ccd:
   enabled: true
   ccd:
@@ -869,6 +936,7 @@ ccd:
         DEFINITION_STORE_HOST: https://ccd-definition-store-${SERVICE_FQDN}
         ELASTIC_SEARCH_ENABLED: true
         ELASTIC_SEARCH_HOSTS: ${SERVICE_NAME}-es-master:9200
+        ELASTIC_SEARCH_SCHEME: http
         ELASTIC_SEARCH_DATA_NODES_HOSTS: http://${SERVICE_NAME}-es-master:9200
         ENABLE_ATTRIBUTE_BASED_ACCESS_CONTROL: true
         ENABLE_PSEUDO_ROLE_ASSIGNMENTS_GENERATION: true
@@ -947,29 +1015,31 @@ ccd:
         OIDC_ISSUER: https://forgerock-am.service.core-compute-idam-aat2.internal:8443/openam/oauth2/hmcts
         ELASTIC_SEARCH_ENABLED: true
         ELASTIC_SEARCH_HOST: ${SERVICE_NAME}-es-master
+        ELASTIC_SEARCH_SCHEME: http
         ELASTIC_SEARCH_FAIL_ON_IMPORT: false
         USER_PROFILE_HOST: https://ccd-user-profile-api-${SERVICE_FQDN}
       keyVaults: [ ]
       ingressHost: ccd-definition-store-${SERVICE_FQDN}
 
   elasticsearch:
+    image: hmctsprod.azurecr.io/imported/elastic/elasticsearch
+    imageTag: 9.2.3
     nameOverride: ${SERVICE_NAME}-es
     clusterName: "es"
+    createCert: false
+    protocol: http
     replicas: 1
     minimumMasterNodes: 1
     antiAffinity: "soft"
     esJavaOpts: "-Xmx512m -Xms512m"
     # Their tests delete the pod after succeeding, we pass --logs to the test command which fail if the pod has already been deleted
     # The tests do pass, at least as of 2023-01-19
+    esConfig:
+      elasticsearch.yml: |
+        action.auto_create_index: .security*,.watches,.triggered_watches,.watcher-history-*,.logstash_dead_letter,.ml*,ccd-logstash-dead-letter
+        xpack.security.enabled: false
     tests:
       enabled: false
-    extraEnvs:
-      - name: discovery.type
-        value: single-node
-      - name: cluster.initial_master_nodes
-        value: ""
-      - name: action.auto_create_index
-        value: .security*,.watches,.triggered_watches,.watcher-history-*,.logstash_dead_letter,.ml*
     persistence:
       enabled: false
     ingress:
@@ -980,14 +1050,14 @@ ccd:
       #     paths:
       #       - path: /
   logstash:
-    image: "hmctsprod.azurecr.io/imported/logstash/logstash"
-    imageTag: "7.16.1"
+    image: "hmctsprod.azurecr.io/imported/elastic/logstash"
+    imageTag: "9.2.4"
     imagePullPolicy: "IfNotPresent"
     logstashJavaOpts: "-Xmx1g -Xms512M"
     extraInitContainers: |
       - name: download-postgres-jdbc
         image: hmctsprod.azurecr.io/curl:7.70.0
-        command: ['curl', '-L', 'https://jdbc.postgresql.org/download/postgresql-42.2.18.jar', '-o', '/logstash-lib/postgresql.jar']
+        command: ['curl', '-L', 'https://jdbc.postgresql.org/download/postgresql-42.7.9.jar', '-o', '/logstash-lib/postgresql.jar']
         volumeMounts:
         - name: logstash-lib
           mountPath: /logstash-lib
@@ -1005,11 +1075,12 @@ ccd:
         readOnly: true
     logstashConfig:
       logstash.yml: |
-        http.host: 0.0.0.0
+        api.http.host: 0.0.0.0
         xpack.monitoring.enabled: false
         xpack.monitoring.elasticsearch.hosts: ["http://{{ .Release.Name }}-es-master:9200"]
         queue.type: persisted
         dead_letter_queue.enable: true
+        pipeline.ecs_compatibility: disabled
       pipelines.yml: |
         - pipeline.id: main
           path.config: "/usr/share/logstash/pipeline/{01_input,02_filter,03_output}.conf"
@@ -1184,6 +1255,10 @@ em-stitching:
       SPRING_DATASOURCE_PASSWORD: ${GENERIC_VALUES_PREVIEW_YAML_PASS}
       SPRING_DATASOURCE_OPTIONS: "?ssl=disable"
       ENABLE_DB_MIGRATE: true
+      CALLBACK_HTTP_SCHEME: https
+      CALLBACK_HTTP_HOST_PORT: 80
+      CALLBACK_DOMAINS: em-ccdorc-${SERVICE_FQDN}
+      CALLBACK_ENV: PR
       RUN_DB_MIGRATION_ON_STARTUP: true
       FLYWAY_POSTGRESQL_TRANSACTIONAL_LOCK: false
       IDAM_API_BASE_URI: https://idam-api.aat.platform.hmcts.net
@@ -1396,7 +1471,7 @@ ccd-message-publisher:
 am-org-role-mapping-service:
   enabled: true
   java:
-    image: 'hmctsprod.azurecr.io/am/org-role-mapping-service:latest'
+    image: hmctsprod.azurecr.io/am/org-role-mapping-service:latest
     ingressHost: am-org-role-mapping-service-${SERVICE_FQDN}
     releaseNameOverride: ${SERVICE_NAME}-am-org-role-mapping-service
     secrets:
@@ -1460,7 +1535,7 @@ ia-hearings-api:
   enabled: true
   java:
     imagePullPolicy: Always
-    image: 'hmctsprod.azurecr.io/ia/hearings-api:latest'
+    image: hmctsprod.azurecr.io/ia/hearings-api:latest
     releaseNameOverride: ${SERVICE_NAME}-hearings-api
     ingressHost: ${SERVICE_NAME}-hearings-api.preview.platform.hmcts.net
     devcpuRequests: 500m
@@ -1492,12 +1567,50 @@ ia-hearings-api:
       ROLE_ASSIGNMENT_API_URL: https://am-role-assignment-ia-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net
       HMC_API_URL: "http://hmc-cft-hearing-service-aat.service.core-compute-aat.internal"
       ROLE_ASSIGNMENT_URL: https://am-role-assignment-${SERVICE_FQDN}
+      DEPLOYMENT_FILTER_ENABLED: true
+    keyVaults:
+      ia:
+        secrets:
+          - name: docmosis-enabled
+            alias: IA_DOCMOSIS_ENABLED
+          - name: em-stitching-enabled
+            alias: IA_EM_STITCHING_ENABLED
+          - name: system-username
+            alias: IA_SYSTEM_USERNAME
+          - name: system-password
+            alias: IA_SYSTEM_PASSWORD
+          - name: idam-client-id
+            alias: IA_IDAM_CLIENT_ID
+          - name: idam-secret
+            alias: IA_IDAM_SECRET
+          - name: s2s-secret
+            alias: IA_S2S_SECRET
+          - name: s2s-microservice
+            alias: IA_S2S_MICROSERVICE
+          - name: prof-ref-data-url
+            alias: PROF_REF_DATA_URL
+          - name: launch-darkly-sdk-key
+            alias: LAUNCH_DARKLY_SDK_KEY
+          - name: ia-config-validator-secret
+            alias: IA_CONFIG_VALIDATOR_SECRET
+          - name: app-insights-connection-string
+            alias: app-insights-connection-string
+          - name: hmc-servicebus-connection-string
+            alias: HEARINGS_TOPIC_CONNECTION_STRING
+          - name: hmc-servicebus-shared-access-key-tf
+            alias: HMC_HEARINGS_TOPIC_ACCESS_KEY
+          - name: ia-redis-connection-string
+            alias: IA_REDIS_CONNECTION_STRING
+          - name: ia-redis-access-key
+            alias: IA_REDIS_ACCESS_KEY
+          - name: ia-redis-encryption-key
+            alias: IA_REDIS_ENCRYPTION_KEY
 
 ia-cron-hearings-processor:
   enabled: true
   job:
     kind: CronJob
-    image: 'hmctsprod.azurecr.io/ia/hearings-api:latest'
+    image: hmctsprod.azurecr.io/ia/hearings-api:latest
     releaseNameOverride: ${SERVICE_NAME}-ia-cron-hearings-processor
     name: ${SERVICE_NAME}-ia-cron-hearings-processor
     schedule: "*/5 * * * *"
@@ -1521,6 +1634,44 @@ ia-cron-hearings-processor:
       ROLE_ASSIGNMENT_API_URL: https://am-role-assignment-ia-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net
       LOCATION_REF_DATA_URL: "http://rd-location-ref-api-aat.service.core-compute-aat.internal"
       TASK_NAME: UnNotifiedHearingsProcessor
+      DEPLOYMENT_FILTER_ENABLED: true
+    keyVaults:
+      ia:
+        secrets:
+          - name: docmosis-enabled
+            alias: IA_DOCMOSIS_ENABLED
+          - name: em-stitching-enabled
+            alias: IA_EM_STITCHING_ENABLED
+          - name: system-username
+            alias: IA_SYSTEM_USERNAME
+          - name: system-password
+            alias: IA_SYSTEM_PASSWORD
+          - name: idam-client-id
+            alias: IA_IDAM_CLIENT_ID
+          - name: idam-secret
+            alias: IA_IDAM_SECRET
+          - name: s2s-secret
+            alias: IA_S2S_SECRET
+          - name: s2s-microservice
+            alias: IA_S2S_MICROSERVICE
+          - name: prof-ref-data-url
+            alias: PROF_REF_DATA_URL
+          - name: launch-darkly-sdk-key
+            alias: LAUNCH_DARKLY_SDK_KEY
+          - name: ia-config-validator-secret
+            alias: IA_CONFIG_VALIDATOR_SECRET
+          - name: app-insights-connection-string
+            alias: app-insights-connection-string
+          - name: hmc-servicebus-connection-string
+            alias: HEARINGS_TOPIC_CONNECTION_STRING
+          - name: hmc-servicebus-shared-access-key-tf
+            alias: HMC_HEARINGS_TOPIC_ACCESS_KEY
+          - name: ia-redis-connection-string
+            alias: IA_REDIS_CONNECTION_STRING
+          - name: ia-redis-access-key
+            alias: IA_REDIS_ACCESS_KEY
+          - name: ia-redis-encryption-key
+            alias: IA_REDIS_ENCRYPTION_KEY
 
 
 hmcsb:
