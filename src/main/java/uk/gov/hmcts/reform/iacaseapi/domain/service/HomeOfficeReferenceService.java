@@ -34,7 +34,7 @@ public class HomeOfficeReferenceService {
         final AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
         Optional<List<IdValue<HomeOfficeAppellant>>> homeOfficeAppellants = asylumCase.read(HOME_OFFICE_APPELLANTS);
         // If we have a list of appellants already, don't call the API again.
-        if (homeOfficeAppellants.isPresent()) {
+        if (!homeOfficeAppellants.isEmpty() && !homeOfficeAppellants.get().isEmpty()) {
             log.info("Returning previously retrieved Home Office reference data for case with Home Office reference {}.", hoReference);
             return homeOfficeAppellants;
         }
@@ -53,9 +53,9 @@ public class HomeOfficeReferenceService {
             // Update the case record object with the Home Office reference data
             homeOfficeAppellants = asylumCaseWithHomeOfficeData.read(HOME_OFFICE_APPELLANTS);
             asylumCase.write(HOME_OFFICE_APPELLANTS, homeOfficeAppellants);
-            asylumCase.write(HOME_OFFICE_APPELLANT_CLAIM_DATE, asylumCaseWithHomeOfficeData.read(HOME_OFFICE_APPELLANT_CLAIM_DATE, String.class));
-            asylumCase.write(HOME_OFFICE_APPELLANT_DECISION_DATE, asylumCaseWithHomeOfficeData.read(HOME_OFFICE_APPELLANT_DECISION_DATE, String.class));
-            asylumCase.write(HOME_OFFICE_APPELLANT_DECISION_LETTER_DATE, asylumCaseWithHomeOfficeData.read(HOME_OFFICE_APPELLANT_DECISION_LETTER_DATE, String.class));
+            asylumCase.write(HOME_OFFICE_APPELLANT_CLAIM_DATE, asylumCaseWithHomeOfficeData.read(HOME_OFFICE_APPELLANT_CLAIM_DATE, String.class).orElse(null));
+            asylumCase.write(HOME_OFFICE_APPELLANT_DECISION_DATE, asylumCaseWithHomeOfficeData.read(HOME_OFFICE_APPELLANT_DECISION_DATE, String.class).orElse(null));
+            asylumCase.write(HOME_OFFICE_APPELLANT_DECISION_LETTER_DATE, asylumCaseWithHomeOfficeData.read(HOME_OFFICE_APPELLANT_DECISION_LETTER_DATE, String.class).orElse(null));
         } else {
             // The API did not return any data; log the diagnostic message appropriately
             String logMessage = "Biographic information from Home Office asylum (etc.) application with Home Office reference "
