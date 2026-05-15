@@ -7,6 +7,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
@@ -45,6 +46,11 @@ public class RequestHearingRequirementsPreparer implements PreSubmitCallbackHand
         boolean is24WeeksCase = asylumCase.read(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class)
             .map(flag -> flag.equals(YesOrNo.YES))
             .orElse(false);
+
+        State currentState = callback.getCaseDetails().getState();
+        if (!is24WeeksCase && !currentState.equals(State.RESPONDENT_REVIEW) || is24WeeksCase && !currentState.equals(State.CASE_UNDER_REVIEW)) {
+            response.addError("This event cannot be run on this case.");
+        }
 
         if (!is24WeeksCase && asylumCase.read(REVIEW_HOME_OFFICE_RESPONSE_BY_LEGAL_REP, YesOrNo.class).map(flag -> flag.equals(YesOrNo.NO)).orElse(true)) {
             response.addError("You cannot submit your hearing requirements before the Home Office response has been uploaded.");
