@@ -71,7 +71,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre.GLASGOW;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -390,7 +389,8 @@ class GenerateDocumentHandlerTest {
                     REMOVE_LEGAL_REPRESENTATIVE,
                     MARK_APPEAL_AS_REMITTED,
                     DECIDE_FTPA_APPLICATION,
-                    DECISION_WITHOUT_HEARING
+                    DECISION_WITHOUT_HEARING,
+                    Event.COMPLETE_CASE_REVIEW
                 ).contains(event)) {
 
                 assertTrue(canHandle);
@@ -563,7 +563,8 @@ class GenerateDocumentHandlerTest {
                     REMOVE_LEGAL_REPRESENTATIVE,
                     MARK_APPEAL_AS_REMITTED,
                     DECIDE_FTPA_APPLICATION,
-                    DECISION_WITHOUT_HEARING
+                    DECISION_WITHOUT_HEARING,
+                    Event.COMPLETE_CASE_REVIEW
                 );
 
             if (callbackStage.equals(PreSubmitCallbackStage.ABOUT_TO_SUBMIT)
