@@ -1267,10 +1267,6 @@ em-stitching:
       DM_STORE_APP_URL: http://dm-store-aat.service.core-compute-aat.internal
       CDAM_URL: http://${SERVICE_NAME}-ccd-case-document-am-api
       APPINSIGHTS_INSTRUMENTATIONKEY: '00000000-0000-0000-0000-000000000000'
-      CALLBACK_HTTP_SCHEME: https
-      CALLBACK_HTTP_HOST_PORT: 80
-      CALLBACK_DOMAINS: em-ccdorc-${SERVICE_FQDN}
-      CALLBACK_ENV: PR
     keyVaults:
       em-stitching:
         resourceGroup: em-stitching
