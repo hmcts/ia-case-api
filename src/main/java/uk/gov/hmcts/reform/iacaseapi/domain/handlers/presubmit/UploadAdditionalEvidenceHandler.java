@@ -73,8 +73,7 @@ public class UploadAdditionalEvidenceHandler implements PreSubmitCallbackHandler
                 .stream()
                 .map(IdValue::getValue)
                 .map(document -> documentReceiver.tryReceive(document, DocumentTag.ADDITIONAL_EVIDENCE))
-                .filter(Optional::isPresent)
-                .map(Optional::get)
+                .flatMap(Optional::stream)
                 .collect(Collectors.toList());
 
         Optional<List<IdValue<DocumentWithMetadata>>> maybeExistingAdditionalEvidenceDocuments =

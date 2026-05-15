@@ -1,12 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.health;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.powermock.api.mockito.PowerMockito.when;
-
 import com.google.common.collect.ImmutableMap;
-import java.util.HashMap;
-import java.util.Map;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,6 +8,13 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.config.HealthCheckConfiguration;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")

@@ -82,7 +82,7 @@ public class UpperTribunalStitchingCallbackHandler implements PreSubmitCallbackH
             throw new IllegalStateException("case bundles size is not 1 and is : " + caseBundles.size());
         }
 
-        final Bundle upperTribunalBundle = caseBundles.get(0);
+        final Bundle upperTribunalBundle = caseBundles.getFirst();
 
         final Optional<Document> stitchedDocument = upperTribunalBundle.getStitchedDocument();
 

@@ -53,11 +53,14 @@ class ApplyForCostsConfirmationTest {
         if (isApplyForCostsOot.equals(YesOrNo.YES)) {
             assertThat(
                     callbackResponse.getConfirmationBody().get())
-                    .contains("![Out of time confirmation](https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/outOfTimeApplyForCostsConfirmation.svg)\n\n"
-                            +
-                            "## What happens next\n\n"
-                            + "The Tribunal will consider the reason it has been submitted out of time.\n\n"
-                            + "If the Tribunal accepts your reason, it will consider your application and make a decision shortly.");
+                    .contains("""
+                            ![Out of time confirmation](https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/outOfTimeApplyForCostsConfirmation.svg)
+                            
+                            ## What happens next
+                            
+                            The Tribunal will consider the reason it has been submitted out of time.
+                            
+                            If the Tribunal accepts your reason, it will consider your application and make a decision shortly.""");
         } else {
             assertThat(
                     callbackResponse.getConfirmationHeader().get())

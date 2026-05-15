@@ -47,8 +47,10 @@ class UpdateTribunalDecisionConfirmationTest {
         assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains(
-                "#### What happens next?\n\n"
-                + "All parties have been notified and the relevant appeal details have been updated.");
+                """
+                #### What happens next?
+                
+                All parties have been notified and the relevant appeal details have been updated.""");
 
 
     }

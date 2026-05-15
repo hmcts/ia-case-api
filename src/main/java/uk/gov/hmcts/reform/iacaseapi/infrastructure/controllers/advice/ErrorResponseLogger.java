@@ -14,9 +14,7 @@ public class ErrorResponseLogger {
 
     public void maybeLogException(Throwable ex) {
 
-        if (ex instanceof RestClientResponseException) {
-
-            RestClientResponseException cause = (RestClientResponseException) ex;
+        if (ex instanceof RestClientResponseException cause) {
             String responseBody = cause.getResponseBodyAsString();
 
             log.error("Error returned with status: {}. \nWith response body: {}",

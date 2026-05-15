@@ -90,7 +90,7 @@ public class IdamClientApiConsumerTest {
         List<User> userList = idamClientApi.getUser(AUTH_TOKEN, QUERY).getBody();
         assertNotNull(userList);
         assertFalse(userList.isEmpty());
-        User userInfo = userList.get(0);
+        User userInfo = userList.getFirst();
         assertEquals(EMAIL, userInfo.getEmail());
         assertEquals(USER_ID, userInfo.getId());
         assertEquals("Case", userInfo.getForename());

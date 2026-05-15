@@ -1,23 +1,5 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.editdocs;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.fail;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.then;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.powermock.api.mockito.PowerMockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag.ADDITIONAL_EVIDENCE;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -39,6 +21,23 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
+import static org.mockito.Mockito.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag.ADDITIONAL_EVIDENCE;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)

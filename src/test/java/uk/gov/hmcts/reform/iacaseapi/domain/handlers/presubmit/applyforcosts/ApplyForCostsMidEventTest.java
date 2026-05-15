@@ -74,8 +74,8 @@ class ApplyForCostsMidEventTest {
         applyForCostsMidEvent.handle(PreSubmitCallbackStage.MID_EVENT, callback);
 
         verify(asylumCase, times(1)).write(asylumExtractorCaptor.capture(), appliesForCostsTypesCaptor.capture());
-        DynamicList exactAppliesForCostsTypes = (DynamicList) appliesForCostsTypesCaptor.getAllValues().get(0);
-        assertEquals(applyForCostsType1, exactAppliesForCostsTypes.getListItems().get(0).getCode());
+        DynamicList exactAppliesForCostsTypes = (DynamicList) appliesForCostsTypesCaptor.getAllValues().getFirst();
+        assertEquals(applyForCostsType1, exactAppliesForCostsTypes.getListItems().getFirst().getCode());
         assertEquals(applyForCostsType2, exactAppliesForCostsTypes.getListItems().get(1).getCode());
     }
 

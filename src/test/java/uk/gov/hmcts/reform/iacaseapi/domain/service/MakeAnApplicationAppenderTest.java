@@ -74,16 +74,16 @@ class MakeAnApplicationAppenderTest {
         assertNotNull(allMakeAnApplications);
         assertEquals(3, allMakeAnApplications.size());
 
-        assertEquals("3", allMakeAnApplications.get(0).getId());
+        assertEquals("3", allMakeAnApplications.getFirst().getId());
         assertEquals("2", allMakeAnApplications.get(1).getId());
         assertEquals("1", allMakeAnApplications.get(2).getId());
 
-        assertEquals(newMakeAnApplicationType, allMakeAnApplications.get(0).getValue().getType());
-        assertEquals(newMakeAnApplicationDesc, allMakeAnApplications.get(0).getValue().getDetails());
-        assertEquals(newMakeAnApplicationEvidence, allMakeAnApplications.get(0).getValue().getEvidence());
-        assertEquals(newMakeAnApplicationDecision, allMakeAnApplications.get(0).getValue().getDecision());
-        assertEquals(newMakeAnApplicationState, allMakeAnApplications.get(0).getValue().getState());
-        assertEquals(UserRole.HOME_OFFICE_APC.toString(), allMakeAnApplications.get(0).getValue().getApplicantRole());
+        assertEquals(newMakeAnApplicationType, allMakeAnApplications.getFirst().getValue().getType());
+        assertEquals(newMakeAnApplicationDesc, allMakeAnApplications.getFirst().getValue().getDetails());
+        assertEquals(newMakeAnApplicationEvidence, allMakeAnApplications.getFirst().getValue().getEvidence());
+        assertEquals(newMakeAnApplicationDecision, allMakeAnApplications.getFirst().getValue().getDecision());
+        assertEquals(newMakeAnApplicationState, allMakeAnApplications.getFirst().getValue().getState());
+        assertEquals(UserRole.HOME_OFFICE_APC.toString(), allMakeAnApplications.getFirst().getValue().getApplicantRole());
 
         assertEquals(existingMakeAnApplication1, allMakeAnApplications.get(1).getValue());
         assertEquals(existingMakeAnApplication2, allMakeAnApplications.get(2).getValue());
@@ -106,13 +106,13 @@ class MakeAnApplicationAppenderTest {
         assertNotNull(allMakeAnApplications);
         assertEquals(1, allMakeAnApplications.size());
 
-        assertEquals(newMakeAnApplicationType, allMakeAnApplications.get(0).getValue().getType());
-        assertEquals(newMakeAnApplicationDesc, allMakeAnApplications.get(0).getValue().getDetails());
-        assertEquals(newMakeAnApplicationEvidence, allMakeAnApplications.get(0).getValue().getEvidence());
-        assertEquals(newMakeAnApplicationDecision, allMakeAnApplications.get(0).getValue().getDecision());
-        assertEquals(newMakeAnApplicationState, allMakeAnApplications.get(0).getValue().getState());
+        assertEquals(newMakeAnApplicationType, allMakeAnApplications.getFirst().getValue().getType());
+        assertEquals(newMakeAnApplicationDesc, allMakeAnApplications.getFirst().getValue().getDetails());
+        assertEquals(newMakeAnApplicationEvidence, allMakeAnApplications.getFirst().getValue().getEvidence());
+        assertEquals(newMakeAnApplicationDecision, allMakeAnApplications.getFirst().getValue().getDecision());
+        assertEquals(newMakeAnApplicationState, allMakeAnApplications.getFirst().getValue().getState());
         assertEquals(UserRole.LEGAL_REPRESENTATIVE.toString(),
-            allMakeAnApplications.get(0).getValue().getApplicantRole());
+            allMakeAnApplications.getFirst().getValue().getApplicantRole());
     }
 
     @Test
@@ -132,13 +132,13 @@ class MakeAnApplicationAppenderTest {
         assertNotNull(allMakeAnApplications);
         assertEquals(1, allMakeAnApplications.size());
 
-        assertEquals(newMakeAnApplicationType, allMakeAnApplications.get(0).getValue().getType());
-        assertEquals(newMakeAnApplicationDesc, allMakeAnApplications.get(0).getValue().getDetails());
-        assertEquals(newMakeAnApplicationEvidence, allMakeAnApplications.get(0).getValue().getEvidence());
-        assertEquals(newMakeAnApplicationDecision, allMakeAnApplications.get(0).getValue().getDecision());
-        assertEquals(newMakeAnApplicationState, allMakeAnApplications.get(0).getValue().getState());
+        assertEquals(newMakeAnApplicationType, allMakeAnApplications.getFirst().getValue().getType());
+        assertEquals(newMakeAnApplicationDesc, allMakeAnApplications.getFirst().getValue().getDetails());
+        assertEquals(newMakeAnApplicationEvidence, allMakeAnApplications.getFirst().getValue().getEvidence());
+        assertEquals(newMakeAnApplicationDecision, allMakeAnApplications.getFirst().getValue().getDecision());
+        assertEquals(newMakeAnApplicationState, allMakeAnApplications.getFirst().getValue().getState());
         assertEquals(UserRole.CITIZEN.toString(),
-                allMakeAnApplications.get(0).getValue().getApplicantRole());
+                allMakeAnApplications.getFirst().getValue().getApplicantRole());
     }
 
     @Test

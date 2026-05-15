@@ -24,7 +24,7 @@ plugins {
     id 'org.springframework.boot' version '2.7.18'
     id 'uk.gov.hmcts.java' version '0.12.67'
     id 'au.com.dius.pact' version '4.6.17'
-    id "io.freefair.lombok" version "6.6.3"
+    id "io.freefair.lombok" version "9.2.0"
     id 'org.gradle.test-retry' version '1.5.7'
 }
 
@@ -63,7 +63,7 @@ version = '0.0.1'
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(17)
+        languageVersion = JavaLanguageVersion.of(21)
     }
 }
 
@@ -279,6 +279,7 @@ repositories {
 dependencyManagement {
     imports {
         mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+        mavenBom 'com.fasterxml.jackson:jackson-bom:2.21.3'
     }
 
     dependencies {
@@ -295,25 +296,6 @@ dependencyManagement {
             entry 'commons-fileupload'
         }
 
-        dependencySet(group: 'com.fasterxml.jackson.core', version: '2.19.1') {
-            entry 'jackson-databind'
-            entry 'jackson-core'
-            entry 'jackson-annotations'
-        }
-
-        dependencySet(group: 'com.fasterxml.jackson.dataformat', version: '2.19.1') {
-            entry 'jackson-dataformat-csv'
-            entry 'jackson-dataformat-yaml'
-        }
-
-        dependencySet(group: 'com.fasterxml.jackson.datatype', version: '2.19.1') {
-            entry 'jackson-datatype-jsr310'
-            entry 'jackson-datatype-jdk8'
-        }
-
-        dependencySet(group: 'com.fasterxml.jackson.module', version: '2.19.1') {
-            entry 'jackson-module-parameter-names'
-        }
         // CVE-2023-3635
         dependency 'com.squareup.okio:okio:3.5.0'
     }
@@ -383,7 +365,6 @@ dependencies {
     implementation group: 'org.apache.logging.log4j', name: 'log4j-to-slf4j', version: '2.17.1'
 
     implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: versions.reformLogging
-    implementation group: 'com.github.hmcts.java-logging', name: 'logging-appinsights', version: versions.reformLogging
     implementation(group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '4.1.2') {
         exclude group: "org.bouncycastle", module: "bcprov-jdk15on"
     }
@@ -395,11 +376,6 @@ dependencies {
     }
     implementation group: 'org.bouncycastle', name: 'bcprov-jdk18on', version: '1.81'
     implementation group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '5.2.1-RELEASE'
-
-    compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.38'
-    annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.38'
-    testCompileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.38'
-    testAnnotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.38'
 
     implementation group: 'org.springframework.retry', name: 'spring-retry', version: '1.3.4'
     implementation group: 'org.springframework.security', name: 'spring-security-crypto'
@@ -415,8 +391,6 @@ dependencies {
     implementation group: 'net.minidev', name: 'json-smart', version: '2.5.2'
     implementation 'joda-time:joda-time:2.14.0'
 
-    implementation group: 'org.elasticsearch', name: 'elasticsearch', version: '7.17.15'
-
     implementation group: 'com.googlecode.libphonenumber', name: 'libphonenumber', version: '8.13.55'
 
     implementation group: 'org.apiguardian', name: 'apiguardian-api', version: '1.1.2'
@@ -427,11 +401,8 @@ dependencies {
 
     testImplementation group: 'com.h2database', name: 'h2', version: '1.4.197'
 
-    testImplementation group: 'org.mockito', name: 'mockito-junit-jupiter', version: '3.12.4'
 
     testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test'
-
-    testImplementation group: 'org.mockito', name: 'mockito-core', version :'4.11.0'
     testImplementation group: 'org.mockito', name: 'mockito-inline', version :'5.2.0'
     testImplementation group: 'org.testcontainers', name: 'testcontainers', version: '2.0.2'
     testImplementation group: 'org.testcontainers', name: 'testcontainers-junit-jupiter', version: '2.0.2'
@@ -439,7 +410,6 @@ dependencies {
     testImplementation(group: 'org.springframework.cloud', name: 'spring-cloud-contract-wiremock', version: '3.1.10') {
         exclude group: "com.github.tomakehurst", module: "wiremock-standalone"
     }
-    testImplementation group: 'org.powermock', name: 'powermock-api-mockito2', version: '2.0.9'
 
     testImplementation(group: 'io.rest-assured', name: 'rest-assured-all', version: versions.restAssured)
     testImplementation group: 'io.rest-assured', name: 'rest-assured', version: versions.restAssured
@@ -462,12 +432,12 @@ dependencies {
 
     testImplementation group: 'org.awaitility', name: 'awaitility', version: '4.2.0'
 
-    implementation(group: 'com.github.hmcts', name: 'core-case-data-store-client', version: '4.9.2') {
+    implementation(group: 'com.github.hmcts', name: 'core-case-data-store-client', version: '5.2.0') {
         exclude group: "org.bouncycastle", module: "bcprov-jdk15on"
     }
 
-    implementation group: 'com.github.hmcts', name: 'core-case-data-store-client', version: '4.9.2'
-    functionalTestImplementation group: 'com.github.hmcts', name: 'core-case-data-store-client', version: '4.9.2'
+    implementation group: 'com.github.hmcts', name: 'core-case-data-store-client', version: '5.2.0'
+    functionalTestImplementation group: 'com.github.hmcts', name: 'core-case-data-store-client', version: '5.2.0'
 
 
     //pact contract testing
@@ -506,6 +476,11 @@ task runAndPublishConsumerPactTests(type: Test) {
     testClassesDirs = sourceSets.contractTest.output.classesDirs
     classpath = sourceSets.contractTest.runtimeClasspath
 
+}
+
+tasks.withType(Test).configureEach {
+    jvmArgs '-XX:+EnableDynamicAgentLoading'
+    jvmArgs '-Dnet.bytebuddy.experimental=true'
 }
 
 pact {

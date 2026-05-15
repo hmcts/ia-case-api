@@ -32,8 +32,11 @@ public class MarkAsReadyForUtTransferConfirmation implements PostSubmitCallbackH
         PostSubmitCallbackResponse postSubmitResponse = new PostSubmitCallbackResponse();
         postSubmitResponse.setConfirmationHeader("# You've marked this appeal as ready to be transferred to the Upper Tribunal");
         postSubmitResponse.setConfirmationBody(
-                "#### What happens next\n\n"
-                + "All parties have been notified. The Upper Tribunal will transfer the appeal.\n"
+                """
+                #### What happens next
+                
+                All parties have been notified. The Upper Tribunal will transfer the appeal.
+                """
         );
 
         return postSubmitResponse;

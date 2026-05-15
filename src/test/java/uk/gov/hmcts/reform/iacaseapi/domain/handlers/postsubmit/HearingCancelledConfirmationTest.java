@@ -70,8 +70,10 @@ class HearingCancelledConfirmationTest {
 
         assertThat(
                 callbackResponse.getConfirmationBody().get())
-                .contains("#### What happens next\n\n"
-                    + "Add new hearing information as required."
+                .contains("""
+                    #### What happens next
+                    
+                    Add new hearing information as required."""
             );
     }
 

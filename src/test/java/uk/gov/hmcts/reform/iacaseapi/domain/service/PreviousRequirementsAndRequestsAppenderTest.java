@@ -75,8 +75,8 @@ class PreviousRequirementsAndRequestsAppenderTest {
         assertNotNull(allPreviousRequirementsAndRequests);
         assertEquals(3, allPreviousRequirementsAndRequests.size());
 
-        assertEquals("3", allPreviousRequirementsAndRequests.get(0).getId());
-        assertEquals(newPreviousRequirementsAndRequests1, allPreviousRequirementsAndRequests.get(0).getValue());
+        assertEquals("3", allPreviousRequirementsAndRequests.getFirst().getId());
+        assertEquals(newPreviousRequirementsAndRequests1, allPreviousRequirementsAndRequests.getFirst().getValue());
 
         assertEquals("2", allPreviousRequirementsAndRequests.get(1).getId());
         assertEquals(existingPreviousRequirementsAndRequests1, allPreviousRequirementsAndRequests.get(1).getValue());
@@ -97,8 +97,8 @@ class PreviousRequirementsAndRequestsAppenderTest {
         assertNotNull(allPreviousRequirementsAndRequests);
         assertEquals(1, allPreviousRequirementsAndRequests.size());
 
-        assertEquals("1", allPreviousRequirementsAndRequests.get(0).getId());
-        assertEquals(newPreviousRequirementsAndRequests1, allPreviousRequirementsAndRequests.get(0).getValue());
+        assertEquals("1", allPreviousRequirementsAndRequests.getFirst().getId());
+        assertEquals(newPreviousRequirementsAndRequests1, allPreviousRequirementsAndRequests.getFirst().getValue());
     }
 
     @Test

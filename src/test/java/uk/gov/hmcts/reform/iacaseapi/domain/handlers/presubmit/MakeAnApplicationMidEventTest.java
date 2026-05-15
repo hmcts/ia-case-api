@@ -107,7 +107,7 @@ class MakeAnApplicationMidEventTest {
             new Value(SET_ASIDE_A_DECISION.name(), OTHER.toString()),
             new Value(APPLICATION_UNDER_RULE_31_OR_RULE_32.name(), OTHER.toString()));
         DynamicList makeAnApplicationTypes =
-            new DynamicList(values.get(0), values);
+            new DynamicList(values.getFirst(), values);
 
         DynamicList selectedMakeAnApplicationTypes =
             new DynamicList(

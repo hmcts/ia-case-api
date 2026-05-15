@@ -103,16 +103,17 @@ class ListEditCaseHandlerTest {
     @Mock
     private HearingIdListProcessor hearingIdListProcessor;
 
-    private final String directionExplanation = "You have a direction for this case.\n"
-                                          + "\n"
-                                          + "The accelerated detained appeal has been listed and you should tell the Tribunal if the appellant has any hearing requirements.\n"
-                                          + "\n"
-                                          + "# Next steps\n"
-                                          + "Log in to the service and select the case from your case list. You’ll be able to submit the hearing requirements by selecting Submit hearing requirements from the Next step dropdown on the overview tab.\n"
-                                          + "\n"
-                                          + "The Tribunal will review the hearing requirements and any requests for additional adjustments.\n"
-                                          + "\n"
-                                          + "If you do not submit the hearing requirements by the date indicated below, the Tribunal may not be able to accommodate the appellant’s needs for the hearing.";
+    private final String directionExplanation = """
+                                          You have a direction for this case.
+                                          
+                                          The accelerated detained appeal has been listed and you should tell the Tribunal if the appellant has any hearing requirements.
+                                          
+                                          # Next steps
+                                          Log in to the service and select the case from your case list. You’ll be able to submit the hearing requirements by selecting Submit hearing requirements from the Next step dropdown on the overview tab.
+                                          
+                                          The Tribunal will review the hearing requirements and any requests for additional adjustments.
+                                          
+                                          If you do not submit the hearing requirements by the date indicated below, the Tribunal may not be able to accommodate the appellant’s needs for the hearing.""";
 
     private ListEditCaseHandler listEditCaseHandler;
     private final String listCaseHearingDate = LocalDateTime.now().plusDays(1).toString();

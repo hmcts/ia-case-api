@@ -28,9 +28,11 @@ public class SendDirectionWithQuestionsConfirmation implements PostSubmitCallbac
 
         postSubmitResponse.setConfirmationHeader("# Your direction has been sent");
         postSubmitResponse.setConfirmationBody(
-                "#### What happens next\n\n"
-                        + "The appellant will be directed to answer the questions. "
-                        + "You will be notified when they are ready to review."
+                """
+                #### What happens next
+                
+                The appellant will be directed to answer the questions. \
+                You will be notified when they are ready to review."""
         );
 
         return postSubmitResponse;

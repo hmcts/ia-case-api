@@ -1,35 +1,5 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.payment;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.reset;
-import static org.powermock.api.mockito.PowerMockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.AG;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.EA;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.EU;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.HU;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.PA;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_IN_DETENTION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ACCELERATED_DETAINED_APPEAL;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ADMIN;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOURNEY_TYPE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LATE_REMISSION_TYPE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PAYMENT_STATUS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PA_APPEAL_TYPE_PAYMENT_OPTION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMISSION_DECISION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMISSION_TYPE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionOption.NO_REMISSION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType.HO_WAIVER_REMISSION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType.AIP;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType.REP;
-
-import java.util.Optional;
-import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -44,11 +14,7 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDecision;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -58,6 +24,22 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
+
+import java.util.Optional;
+import java.util.stream.Stream;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionOption.NO_REMISSION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType.HO_WAIVER_REMISSION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType.AIP;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType.REP;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)

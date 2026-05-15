@@ -208,7 +208,7 @@ public class UpdateInterpreterBookingStatusPreparer implements PreSubmitCallback
         String witnessName = "";
         switch (witness) {
             case WITNESS_1_INTERPRETER_SPOKEN_LANGUAGE -> {
-                witnessName = buildWitnessFullName(witnesses.get(0).getValue());
+                witnessName = buildWitnessFullName(witnesses.getFirst().getValue());
                 assignBookingStatus(
                     witnessName,
                     WITNESS_1_INTERPRETER_SPOKEN_LANGUAGE,
@@ -356,7 +356,7 @@ public class UpdateInterpreterBookingStatusPreparer implements PreSubmitCallback
         String witnessName = "";
         switch (language) {
             case WITNESS_1_INTERPRETER_SIGN_LANGUAGE -> {
-                witnessName = buildWitnessFullName(witnesses.get(0).getValue());
+                witnessName = buildWitnessFullName(witnesses.getFirst().getValue());
                 assignBookingStatus(
                     witnessName,
                     WITNESS_1_INTERPRETER_SIGN_LANGUAGE,
@@ -524,8 +524,7 @@ public class UpdateInterpreterBookingStatusPreparer implements PreSubmitCallback
     }
 
     private String formatBookingDetails(String name, String party, String language) {
-        return String.format(
-            "%s - %s - %s",
+        return "%s - %s - %s".formatted(
             name,
             party,
             language

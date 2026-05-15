@@ -187,7 +187,7 @@ class UploadAdditionalEvidenceHomeOfficeHandlerTest {
         List<IdValue<DocumentWithMetadata>> actualExistingAdditionalDocuments =
             existingAdditionalEvidenceDocumentsCaptor
                 .getAllValues()
-                .get(0);
+                .getFirst();
 
         assertEquals(0, actualExistingAdditionalDocuments.size());
 
@@ -225,7 +225,7 @@ class UploadAdditionalEvidenceHomeOfficeHandlerTest {
         List<IdValue<DocumentWithMetadata>> actualExistingAdditionalDocuments =
             existingAdditionalEvidenceDocumentsCaptor
                 .getAllValues()
-                .get(0);
+                .getFirst();
 
         assertEquals(0, actualExistingAdditionalDocuments.size());
 

@@ -230,7 +230,7 @@ class GenerateDocumentHandlerTest {
             verify(expectedUpdatedCase).clear(APPLICATION_EDIT_LISTING_EXISTS);
             verify(expectedUpdatedCase).write(CURRENT_CASE_STATE_VISIBLE_TO_CASE_OFFICER, state);
             verify(expectedUpdatedCase).write(eq(APPLICATIONS), applicationsCaptor.capture());
-            assertEquals("Completed", applicationsCaptor.getValue().get(0).getValue().getApplicationStatus());
+            assertEquals("Completed", applicationsCaptor.getValue().getFirst().getValue().getApplicationStatus());
         }
 
         if (event.equals(SEND_DECISION_AND_REASONS)) {
@@ -284,7 +284,7 @@ class GenerateDocumentHandlerTest {
 
             verify(expectedUpdatedCase).clear(APPLICATION_EDIT_LISTING_EXISTS);
             verify(expectedUpdatedCase).write(eq(APPLICATIONS), applicationsCaptor.capture());
-            assertEquals("Completed", applicationsCaptor.getValue().get(0).getValue().getApplicationStatus());
+            assertEquals("Completed", applicationsCaptor.getValue().getFirst().getValue().getApplicationStatus());
 
             reset(documentGenerator);
         });

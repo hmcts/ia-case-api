@@ -184,8 +184,8 @@ class ListCaseWithoutHearingRequirementsPreparerTest {
         verify(asylumCase, times(1))
             .write(eq(HEARING_LOCATION), hearingLocationsCaptor.capture());
         DynamicList actual = hearingLocationsCaptor.getValue();
-        assertEquals("key1", actual.getListItems().get(0).getCode());
-        assertEquals("value1", actual.getListItems().get(0).getLabel());
+        assertEquals("key1", actual.getListItems().getFirst().getCode());
+        assertEquals("value1", actual.getListItems().getFirst().getLabel());
     }
 
     @Test

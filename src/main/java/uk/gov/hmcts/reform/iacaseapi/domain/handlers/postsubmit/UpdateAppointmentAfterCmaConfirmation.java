@@ -31,8 +31,10 @@ public class UpdateAppointmentAfterCmaConfirmation implements PostSubmitCallback
 
         postSubmitResponse.setConfirmationHeader("# You have updated the details of the appointment");
         postSubmitResponse.setConfirmationBody(
-            "#### What happens next\n\n"
-            + "The updated details are available to view in the hearing and appointment tab. All parties will be notified that the appointments details have been updated."
+            """
+            #### What happens next
+            
+            The updated details are available to view in the hearing and appointment tab. All parties will be notified that the appointments details have been updated."""
         );
 
         return postSubmitResponse;

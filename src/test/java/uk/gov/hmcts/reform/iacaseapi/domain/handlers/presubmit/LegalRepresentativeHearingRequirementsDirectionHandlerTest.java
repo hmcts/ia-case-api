@@ -179,7 +179,7 @@ class LegalRepresentativeHearingRequirementsDirectionHandlerTest {
         List<IdValue<Direction>> actualExistingDirections =
             existingDirectionsCaptor
                 .getAllValues()
-                .get(0);
+                .getFirst();
 
         assertEquals(0, actualExistingDirections.size());
 

@@ -105,7 +105,7 @@ class RevokeCitizenPreparerTest {
         DynamicList actualDl = captor.getValue();
         assertNull(actualDl.getValue());
         assertEquals(2, actualDl.getListItems().size());
-        Value value1 = actualDl.getListItems().get(0);
+        Value value1 = actualDl.getListItems().getFirst();
         Value value2 = actualDl.getListItems().get(1);
         assertEquals(userId1, value1.getCode());
         assertEquals(userName1, value1.getLabel());
@@ -151,7 +151,7 @@ class RevokeCitizenPreparerTest {
         DynamicList actualDl = captor.getValue();
         assertNull(actualDl.getValue());
         assertEquals(1, actualDl.getListItems().size());
-        Value value = actualDl.getListItems().get(0);
+        Value value = actualDl.getListItems().getFirst();
         assertEquals(userId2, value.getCode());
         assertEquals(userName2, value.getLabel());
     }

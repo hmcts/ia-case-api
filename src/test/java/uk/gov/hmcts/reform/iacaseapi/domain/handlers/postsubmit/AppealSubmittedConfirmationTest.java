@@ -626,10 +626,11 @@ class AppealSubmittedConfirmationTest {
 
             assertThat(
                 callbackResponse.getConfirmationBody().get())
-                .contains("![Out of time confirmation](https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/outOfTimeConfirmation.png)\n"
-                    + "You have submitted an appeal with a remission application. Your remission details will be reviewed and you may be"
-                    + " asked to provide more information. Once the review is complete you will be notified if there is any fee to pay.\n"
-                    + "A Tribunal Caseworker will then review the reasons your appeal was submitted out of time and you will be notified if it can proceed."
+                .contains("""
+                    ![Out of time confirmation](https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/outOfTimeConfirmation.png)
+                    You have submitted an appeal with a remission application. Your remission details will be reviewed and you may be\
+                     asked to provide more information. Once the review is complete you will be notified if there is any fee to pay.
+                    A Tribunal Caseworker will then review the reasons your appeal was submitted out of time and you will be notified if it can proceed."""
                 );
         }
 
@@ -678,13 +679,11 @@ class AppealSubmittedConfirmationTest {
             assertThat(
                 callbackResponse.getConfirmationBody().get())
                 .contains(
-                    "![Out of time confirmation](https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/outOfTimeConfirmation.png)\n"
-                        +
-                        "You have submitted an appeal with a remission application. Your remission details will be reviewed and you may be"
-                        +
-                        " asked to provide more information. Once the review is complete you will be notified if there is any fee to pay.\n"
-                        +
-                        "A Tribunal Caseworker will then review the reasons your appeal was submitted out of time and you will be notified if it can proceed."
+                    """
+                    ![Out of time confirmation](https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/outOfTimeConfirmation.png)
+                    You have submitted an appeal with a remission application. Your remission details will be reviewed and you may be\
+                     asked to provide more information. Once the review is complete you will be notified if there is any fee to pay.
+                    A Tribunal Caseworker will then review the reasons your appeal was submitted out of time and you will be notified if it can proceed."""
                 );
         }
 
@@ -785,13 +784,11 @@ class AppealSubmittedConfirmationTest {
             assertThat(
                 callbackResponse.getConfirmationBody().get())
                 .contains(
-                    "![Out of time confirmation](https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/outOfTimeConfirmation.png)\n"
-                        +
-                        "You have submitted an appeal with a remission application. Your remission details will be reviewed and you may be"
-                        +
-                        " asked to provide more information. Once the review is complete you will be notified if there is any fee to pay.\n"
-                        +
-                        "A Tribunal Caseworker will then review the reasons your appeal was submitted out of time and you will be notified if it can proceed."
+                    """
+                    ![Out of time confirmation](https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/outOfTimeConfirmation.png)
+                    You have submitted an appeal with a remission application. Your remission details will be reviewed and you may be\
+                     asked to provide more information. Once the review is complete you will be notified if there is any fee to pay.
+                    A Tribunal Caseworker will then review the reasons your appeal was submitted out of time and you will be notified if it can proceed."""
                 );
 
         }
@@ -824,8 +821,10 @@ class AppealSubmittedConfirmationTest {
 
             assertThat(
                 callbackResponse.getConfirmationBody().get())
-                .contains("You will receive an email confirming that this appeal has been submitted successfully."
-                          + "\n\nYou can now apply for [interim relief](#).");
+                .contains("""
+                          You will receive an email confirming that this appeal has been submitted successfully.
+                          
+                          You can now apply for [interim relief](#).""");
         }
 
         if (flag.equals(YES.toString())) {
@@ -839,9 +838,11 @@ class AppealSubmittedConfirmationTest {
 
             assertThat(
                 callbackResponse.getConfirmationBody().get())
-                .contains("You have submitted this appeal beyond the deadline. The Tribunal Case Officer will decide if it can proceed. You'll get an email "
-                          + "telling you whether your appeal can go ahead."
-                          + "\n\nYou can now apply for [interim relief](#).");
+                .contains("""
+                          You have submitted this appeal beyond the deadline. The Tribunal Case Officer will decide if it can proceed. You'll get an email \
+                          telling you whether your appeal can go ahead.
+                          
+                          You can now apply for [interim relief](#).""");
         }
 
     }

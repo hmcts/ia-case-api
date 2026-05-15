@@ -31,8 +31,10 @@ public class CompleteCaseReviewConfirmation implements PostSubmitCallbackHandler
 
         postSubmitResponse.setConfirmationHeader("# You have completed the case review");
         postSubmitResponse.setConfirmationBody(
-            "#### What happens next\n\n"
-            + "The case has been validated and will proceed accordingly."
+            """
+            #### What happens next
+            
+            The case has been validated and will proceed accordingly."""
         );
 
         return postSubmitResponse;

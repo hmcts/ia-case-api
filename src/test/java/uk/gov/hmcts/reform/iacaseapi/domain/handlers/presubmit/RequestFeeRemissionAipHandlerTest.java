@@ -223,7 +223,7 @@ class RequestFeeRemissionAipHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(callbackResponse.getData(), asylumCase);
         assertRemissionAppended(expectedRemissionDetails);
-        RemissionDetails appendedRemissionDetails = remissionDetailsAppender.getRemissions().get(0).getValue();
+        RemissionDetails appendedRemissionDetails = remissionDetailsAppender.getRemissions().getFirst().getValue();
         assertEquals("Approved", appendedRemissionDetails.getRemissionDecision());
         assertEquals(feeAmount, appendedRemissionDetails.getFeeAmount());
         assertEquals(feeAmount, appendedRemissionDetails.getAmountRemitted());
@@ -259,7 +259,7 @@ class RequestFeeRemissionAipHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(callbackResponse.getData(), asylumCase);
         assertRemissionAppended(expectedRemissionDetails);
-        RemissionDetails appendedRemissionDetails = remissionDetailsAppender.getRemissions().get(0).getValue();
+        RemissionDetails appendedRemissionDetails = remissionDetailsAppender.getRemissions().getFirst().getValue();
 
         assertEquals("Partially approved", appendedRemissionDetails.getRemissionDecision());
         assertEquals(feeAmount, appendedRemissionDetails.getFeeAmount());
@@ -293,7 +293,7 @@ class RequestFeeRemissionAipHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(callbackResponse.getData(), asylumCase);
         assertRemissionAppended(expectedRemissionDetails);
-        RemissionDetails appendedRemissionDetails = remissionDetailsAppender.getRemissions().get(0).getValue();
+        RemissionDetails appendedRemissionDetails = remissionDetailsAppender.getRemissions().getFirst().getValue();
         assertEquals("Rejected", appendedRemissionDetails.getRemissionDecision());
         assertEquals(feeAmount, appendedRemissionDetails.getFeeAmount());
         assertNull(appendedRemissionDetails.getAmountRemitted());
@@ -330,7 +330,7 @@ class RequestFeeRemissionAipHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(callbackResponse.getData(), asylumCase);
         assertRemissionAppended(expectedRemissionDetails);
-        RemissionDetails appendedRemissionDetails = remissionDetailsAppender.getRemissions().get(0).getValue();
+        RemissionDetails appendedRemissionDetails = remissionDetailsAppender.getRemissions().getFirst().getValue();
         assertEquals("Approved", appendedRemissionDetails.getRemissionDecision());
         assertEquals(feeAmount, appendedRemissionDetails.getFeeAmount());
         assertEquals(feeAmount, appendedRemissionDetails.getAmountRemitted());
@@ -366,7 +366,7 @@ class RequestFeeRemissionAipHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(callbackResponse.getData(), asylumCase);
         assertRemissionAppended(expectedRemissionDetails);
-        RemissionDetails appendedRemissionDetails = remissionDetailsAppender.getRemissions().get(0).getValue();
+        RemissionDetails appendedRemissionDetails = remissionDetailsAppender.getRemissions().getFirst().getValue();
         assertEquals("Approved", appendedRemissionDetails.getRemissionDecision());
         assertEquals(feeAmount, appendedRemissionDetails.getFeeAmount());
         assertEquals(feeAmount, appendedRemissionDetails.getAmountRemitted());
@@ -401,7 +401,7 @@ class RequestFeeRemissionAipHandlerTest {
         List<IdValue<RemissionDetails>> remissionDetailsList = remissionDetailsAppender.getRemissions();
         verify(asylumCase, times(1)).write(PREVIOUS_REMISSION_DETAILS, remissionDetailsList);
         assertEquals(1, remissionDetailsList.size());
-        RemissionDetails appendedRemissionDetails = remissionDetailsList.get(0).getValue();
+        RemissionDetails appendedRemissionDetails = remissionDetailsList.getFirst().getValue();
         assertEquals(remissionDetails.getFeeRemissionType(), appendedRemissionDetails.getFeeRemissionType());
         assertEquals(remissionDetails.getAsylumSupportReference(), appendedRemissionDetails.getAsylumSupportReference());
         assertEquals(remissionDetails.getAsylumSupportDocument(), appendedRemissionDetails.getAsylumSupportDocument());

@@ -54,9 +54,12 @@ class RemoveDetainedStatusConfirmationTest {
 
         assertThat(
             callbackResponse.getConfirmationBody().get())
-            .contains("#### What happens next\n\n"
-                      + "All parties will be notified that the appellant's detention status has been updated.\n\n"
-                      + "You should update the hearing centre, if necessary.");
+            .contains("""
+                      #### What happens next
+                      
+                      All parties will be notified that the appellant's detention status has been updated.
+                      
+                      You should update the hearing centre, if necessary.""");
     }
 
     @Test

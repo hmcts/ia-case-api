@@ -106,19 +106,19 @@ class ChangeDirectionDueDatePreparerTest {
 
         verify(asylumCase, times(2)).write(asylumExtractorCaptor.capture(), editableDirectionsCaptor.capture());
 
-        DynamicList dynamicList = (DynamicList) editableDirectionsCaptor.getAllValues().get(0);
+        DynamicList dynamicList = (DynamicList) editableDirectionsCaptor.getAllValues().getFirst();
 
         assertEquals(
             DIRECTION_LIST,
-            asylumExtractorCaptor.getAllValues().get(0)
+            asylumExtractorCaptor.getAllValues().getFirst()
         );
 
         assertEquals(direction2, dynamicList.getValue().getCode());
         assertEquals(direction2, dynamicList.getValue().getLabel());
 
         assertEquals(2, dynamicList.getListItems().size());
-        assertEquals(direction2, dynamicList.getListItems().get(0).getCode());
-        assertEquals(direction2, dynamicList.getListItems().get(0).getLabel());
+        assertEquals(direction2, dynamicList.getListItems().getFirst().getCode());
+        assertEquals(direction2, dynamicList.getListItems().getFirst().getLabel());
         assertEquals(direction1, dynamicList.getListItems().get(1).getCode());
         assertEquals(direction1, dynamicList.getListItems().get(1).getLabel());
 
@@ -135,13 +135,13 @@ class ChangeDirectionDueDatePreparerTest {
             actualEditableDirections.size()
         );
 
-        assertEquals(existingDirections.get(0).getId(), actualEditableDirections.get(0).getId());
-        assertEquals(existingDirections.get(0).getValue().getExplanation(),
-            actualEditableDirections.get(0).getValue().getExplanation());
-        assertEquals(existingDirections.get(0).getValue().getParties(),
-            actualEditableDirections.get(0).getValue().getParties());
-        assertEquals(existingDirections.get(0).getValue().getDateDue(),
-            actualEditableDirections.get(0).getValue().getDateDue());
+        assertEquals(existingDirections.getFirst().getId(), actualEditableDirections.getFirst().getId());
+        assertEquals(existingDirections.getFirst().getValue().getExplanation(),
+            actualEditableDirections.getFirst().getValue().getExplanation());
+        assertEquals(existingDirections.getFirst().getValue().getParties(),
+            actualEditableDirections.getFirst().getValue().getParties());
+        assertEquals(existingDirections.getFirst().getValue().getDateDue(),
+            actualEditableDirections.getFirst().getValue().getDateDue());
 
         assertEquals(existingDirections.get(1).getId(), actualEditableDirections.get(1).getId());
         assertEquals(existingDirections.get(1).getValue().getExplanation(),

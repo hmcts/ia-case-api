@@ -104,7 +104,7 @@ public class AdvancedFinalBundlingStitchingCallbackHandler implements PreSubmitC
         }
 
         //stictchStatusflags -  NEW, IN_PROGRESS, DONE, FAILED
-        final Bundle hearingBundle = caseBundles.get(0);
+        final Bundle hearingBundle = caseBundles.getFirst();
 
         final Optional<Document> stitchedDocument = hearingBundle.getStitchedDocument();
 
@@ -212,7 +212,7 @@ public class AdvancedFinalBundlingStitchingCallbackHandler implements PreSubmitC
                     asylumCase.read(REHEARD_HEARING_DOCUMENTS_COLLECTION);
                 List<IdValue<ReheardHearingDocuments>> existingReheardDocuments = maybeExistingReheardDocuments.orElse(emptyList());
                 if (!existingReheardDocuments.isEmpty()) {
-                    existingReheardDocuments.get(0).getValue().setReheardHearingDocs(allHearingDocuments);
+                    existingReheardDocuments.getFirst().getValue().setReheardHearingDocs(allHearingDocuments);
                 } else {
                     Appender<ReheardHearingDocuments> documentsCollectionAppender =
                         new Appender<>();
@@ -237,7 +237,7 @@ public class AdvancedFinalBundlingStitchingCallbackHandler implements PreSubmitC
             List<IdValue<ReheardHearingDocuments>> existingReheardDocuments = maybeExistingReheardDocuments.orElse(emptyList());
 
             return (!existingReheardDocuments.isEmpty())
-                ? existingReheardDocuments.get(0).getValue().getReheardHearingDocs()
+                ? existingReheardDocuments.getFirst().getValue().getReheardHearingDocs()
                 : emptyList();
         }
         Optional<List<IdValue<DocumentWithMetadata>>> maybeHearingDocuments =

@@ -46,8 +46,11 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
         "You have submitted an appeal with a remission application. Your remission details will be reviewed and you may be asked to "
             + "provide more information. Once the review is complete you will be notified if there is any fee to pay.";
     private static final String REVIEW_LABEL =
-        "\n\nOnce you have paid for the appeal, a Tribunal Caseworker will review the reasons your appeal was out of time and you will be "
-            + "notified if it can proceed.";
+        """
+        
+        
+        Once you have paid for the appeal, a Tribunal Caseworker will review the reasons your appeal was out of time and you will be \
+        notified if it can proceed.""";
     private static final String OUT_OF_TIME_PNG =
         "![Out of time confirmation](https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/outOfTimeConfirmation.png)\n\n";
     private static final String OUT_OF_TIME_ADMIN_PNG =

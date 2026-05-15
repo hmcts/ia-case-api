@@ -107,21 +107,21 @@ class ApplyForCostsAppenderTest {
         assertNotNull(allAppliesForCosts);
         assertEquals(3, allAppliesForCosts.size());
 
-        assertEquals("3", allAppliesForCosts.get(0).getId());
+        assertEquals("3", allAppliesForCosts.getFirst().getId());
         assertEquals("2", allAppliesForCosts.get(1).getId());
         assertEquals("1", allAppliesForCosts.get(2).getId());
 
-        assertEquals(typesOfAppliedCosts, allAppliesForCosts.get(0).getValue().getAppliedCostsType());
-        assertEquals(argumentsAndEvidenceDetails, allAppliesForCosts.get(0).getValue().getArgumentsAndEvidenceDetails());
-        assertEquals(argumentsAndEvidenceDocuments, allAppliesForCosts.get(0).getValue().getArgumentsAndEvidenceDocuments());
-        assertEquals(scheduleOfCostsDocuments, allAppliesForCosts.get(0).getValue().getScheduleOfCostsDocuments());
-        assertEquals(applyForCostsHearingType, allAppliesForCosts.get(0).getValue().getApplyForCostsHearingType());
-        assertEquals(applyForCostsHearingTypeExplanation, allAppliesForCosts.get(0).getValue().getApplyForCostsHearingTypeExplanation());
-        assertEquals(applyForCostsDecision, allAppliesForCosts.get(0).getValue().getApplyForCostsDecision());
-        assertEquals(applyForCostsApplicantTypeHM, allAppliesForCosts.get(0).getValue().getApplyForCostsApplicantType());
-        assertEquals(applyForCostsCreationDate, allAppliesForCosts.get(0).getValue().getApplyForCostsCreationDate());
-        assertEquals(respondentToCostsOrder, allAppliesForCosts.get(0).getValue().getRespondentToCostsOrder());
-        assertEquals(applyForCostsRespondentRoleLr, allAppliesForCosts.get(0).getValue().getApplyForCostsRespondentRole());
+        assertEquals(typesOfAppliedCosts, allAppliesForCosts.getFirst().getValue().getAppliedCostsType());
+        assertEquals(argumentsAndEvidenceDetails, allAppliesForCosts.getFirst().getValue().getArgumentsAndEvidenceDetails());
+        assertEquals(argumentsAndEvidenceDocuments, allAppliesForCosts.getFirst().getValue().getArgumentsAndEvidenceDocuments());
+        assertEquals(scheduleOfCostsDocuments, allAppliesForCosts.getFirst().getValue().getScheduleOfCostsDocuments());
+        assertEquals(applyForCostsHearingType, allAppliesForCosts.getFirst().getValue().getApplyForCostsHearingType());
+        assertEquals(applyForCostsHearingTypeExplanation, allAppliesForCosts.getFirst().getValue().getApplyForCostsHearingTypeExplanation());
+        assertEquals(applyForCostsDecision, allAppliesForCosts.getFirst().getValue().getApplyForCostsDecision());
+        assertEquals(applyForCostsApplicantTypeHM, allAppliesForCosts.getFirst().getValue().getApplyForCostsApplicantType());
+        assertEquals(applyForCostsCreationDate, allAppliesForCosts.getFirst().getValue().getApplyForCostsCreationDate());
+        assertEquals(respondentToCostsOrder, allAppliesForCosts.getFirst().getValue().getRespondentToCostsOrder());
+        assertEquals(applyForCostsRespondentRoleLr, allAppliesForCosts.getFirst().getValue().getApplyForCostsRespondentRole());
 
         assertEquals(existingApplyForCosts1, allAppliesForCosts.get(1).getValue());
         assertEquals(existingApplyForCosts2, allAppliesForCosts.get(2).getValue());
@@ -153,18 +153,18 @@ class ApplyForCostsAppenderTest {
         assertNotNull(allAppliesForCosts);
         assertEquals(3, allAppliesForCosts.size());
 
-        assertEquals("3", allAppliesForCosts.get(0).getId());
+        assertEquals("3", allAppliesForCosts.getFirst().getId());
         assertEquals("2", allAppliesForCosts.get(1).getId());
         assertEquals("1", allAppliesForCosts.get(2).getId());
 
-        assertEquals(applyForCostsDecision, allAppliesForCosts.get(0).getValue().getApplyForCostsDecision());
-        assertEquals(typesOfAppliedCosts, allAppliesForCosts.get(0).getValue().getAppliedCostsType());
-        assertEquals(applyForCostsApplicantTypeJudge, allAppliesForCosts.get(0).getValue().getApplyForCostsApplicantType());
-        assertEquals(consideringReason, allAppliesForCosts.get(0).getValue().getTribunalConsideringReason());
-        assertEquals(argumentsAndEvidenceDocuments, allAppliesForCosts.get(0).getValue().getJudgeEvidenceForCostsOrder());
-        assertEquals(applyForCostsCreationDate, allAppliesForCosts.get(0).getValue().getApplyForCostsCreationDate());
-        assertEquals(respondentToCostsOrder, allAppliesForCosts.get(0).getValue().getRespondentToCostsOrder());
-        assertEquals(respondentToCostsOrder, allAppliesForCosts.get(0).getValue().getApplyForCostsRespondentRole());
+        assertEquals(applyForCostsDecision, allAppliesForCosts.getFirst().getValue().getApplyForCostsDecision());
+        assertEquals(typesOfAppliedCosts, allAppliesForCosts.getFirst().getValue().getAppliedCostsType());
+        assertEquals(applyForCostsApplicantTypeJudge, allAppliesForCosts.getFirst().getValue().getApplyForCostsApplicantType());
+        assertEquals(consideringReason, allAppliesForCosts.getFirst().getValue().getTribunalConsideringReason());
+        assertEquals(argumentsAndEvidenceDocuments, allAppliesForCosts.getFirst().getValue().getJudgeEvidenceForCostsOrder());
+        assertEquals(applyForCostsCreationDate, allAppliesForCosts.getFirst().getValue().getApplyForCostsCreationDate());
+        assertEquals(respondentToCostsOrder, allAppliesForCosts.getFirst().getValue().getRespondentToCostsOrder());
+        assertEquals(respondentToCostsOrder, allAppliesForCosts.getFirst().getValue().getApplyForCostsRespondentRole());
 
         assertEquals(existingApplyForCosts1, allAppliesForCosts.get(1).getValue());
         assertEquals(existingApplyForCosts2, allAppliesForCosts.get(2).getValue());
@@ -195,17 +195,17 @@ class ApplyForCostsAppenderTest {
         assertNotNull(allAppliesForCosts);
         assertEquals(1, allAppliesForCosts.size());
 
-        assertEquals(typesOfAppliedCosts, allAppliesForCosts.get(0).getValue().getAppliedCostsType());
-        assertEquals(argumentsAndEvidenceDetails, allAppliesForCosts.get(0).getValue().getArgumentsAndEvidenceDetails());
-        assertEquals(argumentsAndEvidenceDocuments, allAppliesForCosts.get(0).getValue().getArgumentsAndEvidenceDocuments());
-        assertEquals(scheduleOfCostsDocuments, allAppliesForCosts.get(0).getValue().getScheduleOfCostsDocuments());
-        assertEquals(applyForCostsHearingType, allAppliesForCosts.get(0).getValue().getApplyForCostsHearingType());
-        assertEquals(applyForCostsHearingTypeExplanation, allAppliesForCosts.get(0).getValue().getApplyForCostsHearingTypeExplanation());
-        assertEquals(applyForCostsDecision, allAppliesForCosts.get(0).getValue().getApplyForCostsDecision());
-        assertEquals(applyForCostsApplicantTypeLegalRep, allAppliesForCosts.get(0).getValue().getApplyForCostsApplicantType());
-        assertEquals(applyForCostsCreationDate, allAppliesForCosts.get(0).getValue().getApplyForCostsCreationDate());
-        assertEquals(respondentToCostsOrderHomeOffice, allAppliesForCosts.get(0).getValue().getRespondentToCostsOrder());
-        assertEquals(applyForCostsRespondentRoleHo, allAppliesForCosts.get(0).getValue().getApplyForCostsRespondentRole());
+        assertEquals(typesOfAppliedCosts, allAppliesForCosts.getFirst().getValue().getAppliedCostsType());
+        assertEquals(argumentsAndEvidenceDetails, allAppliesForCosts.getFirst().getValue().getArgumentsAndEvidenceDetails());
+        assertEquals(argumentsAndEvidenceDocuments, allAppliesForCosts.getFirst().getValue().getArgumentsAndEvidenceDocuments());
+        assertEquals(scheduleOfCostsDocuments, allAppliesForCosts.getFirst().getValue().getScheduleOfCostsDocuments());
+        assertEquals(applyForCostsHearingType, allAppliesForCosts.getFirst().getValue().getApplyForCostsHearingType());
+        assertEquals(applyForCostsHearingTypeExplanation, allAppliesForCosts.getFirst().getValue().getApplyForCostsHearingTypeExplanation());
+        assertEquals(applyForCostsDecision, allAppliesForCosts.getFirst().getValue().getApplyForCostsDecision());
+        assertEquals(applyForCostsApplicantTypeLegalRep, allAppliesForCosts.getFirst().getValue().getApplyForCostsApplicantType());
+        assertEquals(applyForCostsCreationDate, allAppliesForCosts.getFirst().getValue().getApplyForCostsCreationDate());
+        assertEquals(respondentToCostsOrderHomeOffice, allAppliesForCosts.getFirst().getValue().getRespondentToCostsOrder());
+        assertEquals(applyForCostsRespondentRoleHo, allAppliesForCosts.getFirst().getValue().getApplyForCostsRespondentRole());
     }
 
     @Test

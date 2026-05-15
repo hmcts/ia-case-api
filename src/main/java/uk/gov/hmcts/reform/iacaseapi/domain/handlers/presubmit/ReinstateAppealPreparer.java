@@ -44,7 +44,7 @@ public class ReinstateAppealPreparer implements PreSubmitCallbackHandler<AsylumC
         final Optional<State> stateBeforeEndAppeal = asylumCase.read(STATE_BEFORE_END_APPEAL, State.class);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse = new PreSubmitCallbackResponse<>(asylumCase);
-        if (!stateBeforeEndAppeal.isPresent()) {
+        if (stateBeforeEndAppeal.isEmpty()) {
             callbackResponse.addErrors(
                 Collections.singleton("The appeal cannot be reinstated"));
         }

@@ -57,7 +57,7 @@ class CaseWorkerServiceTest {
 
         List<CaseWorkerName> actualCaseWorkerNames = caseWorkerService.getCaseWorkerNameForActorIds(newArrayList(ACTOR_ID));
 
-        assertThat(actualCaseWorkerNames.get(0)).isEqualTo(new CaseWorkerName(ACTOR_ID, "Case Officer"));
+        assertThat(actualCaseWorkerNames.getFirst()).isEqualTo(new CaseWorkerName(ACTOR_ID, "Case Officer"));
     }
 
     @AfterAll

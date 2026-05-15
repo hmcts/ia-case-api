@@ -66,8 +66,7 @@ public class UploadDecisionLetterHandler implements PreSubmitCallbackHandler<Asy
                 .stream()
                 .map(IdValue::getValue)
                 .map(document -> documentReceiver.tryReceive(document, DocumentTag.HO_DECISION_LETTER))
-                .filter(Optional::isPresent)
-                .map(Optional::get)
+                .flatMap(Optional::stream)
                 .collect(Collectors.toList());
 
         Optional<List<IdValue<DocumentWithMetadata>>> maybeExistingLegalRepDocuments =

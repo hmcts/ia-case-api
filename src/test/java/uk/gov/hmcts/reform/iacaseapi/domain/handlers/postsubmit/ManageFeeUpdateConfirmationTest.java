@@ -66,8 +66,10 @@ class ManageFeeUpdateConfirmationTest {
 
         assertThat(
             callbackResponse.getConfirmationBody().get())
-            .contains("#### What happens next\n\n"
-                + "The appropriate team will be notified to review the fee update and take the next steps.");
+            .contains("""
+                #### What happens next
+                
+                The appropriate team will be notified to review the fee update and take the next steps.""");
     }
 
     @Test
@@ -96,12 +98,18 @@ class ManageFeeUpdateConfirmationTest {
 
         assertThat(
             callbackResponse.getConfirmationBody().get())
-            .contains("#### What happens next\n\n"
-                + "If you have recorded that a refund has been approved, you must now instruct the refund.\n\n"
-                + "If you have recorded that an additional fee has been requested, "
-                + "the legal representative will be instructed to pay the fee.\n\n"
-                + "If you have recorded that no fee update is required, you need to contact "
-                + "the legal representative and tell them why the fee update is no longer required.\n\n");
+            .contains("""
+                #### What happens next
+                
+                If you have recorded that a refund has been approved, you must now instruct the refund.
+                
+                If you have recorded that an additional fee has been requested, \
+                the legal representative will be instructed to pay the fee.
+                
+                If you have recorded that no fee update is required, you need to contact \
+                the legal representative and tell them why the fee update is no longer required.
+                
+                """);
     }
 
     @Test
@@ -131,8 +139,12 @@ class ManageFeeUpdateConfirmationTest {
 
         assertThat(
             callbackResponse.getConfirmationBody().get())
-            .contains("#### What happens next\n\n"
-                + "The legal representative will be notified that the refund has been instructed.\n\n");
+            .contains("""
+                #### What happens next
+                
+                The legal representative will be notified that the refund has been instructed.
+                
+                """);
     }
 
     @ParameterizedTest

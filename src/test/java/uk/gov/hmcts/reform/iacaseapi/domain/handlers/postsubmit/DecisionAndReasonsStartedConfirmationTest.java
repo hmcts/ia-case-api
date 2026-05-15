@@ -104,7 +104,7 @@ class DecisionAndReasonsStartedConfirmationTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(caseDetails.getId()).thenReturn(1L);
         when(autoRequestHearingService.shouldAutoRequestHearing(asylumCase))
-            .thenReturn(true);;
+            .thenReturn(true);
         when(callback.getEvent()).thenReturn(Event.DECISION_AND_REASONS_STARTED);
         when(asylumCase.read(MANUAL_CREATE_HEARING_REQUIRED, YesOrNo.class)).thenReturn(Optional.of(YES));
 

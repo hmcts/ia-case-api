@@ -118,7 +118,7 @@ public class RoleAssignmentQueryConsumerTest {
             .queryRoleAssignments(buildQueryRequest()
             ).getRoleAssignmentResponse();
 
-        assertThat(queryRoleAssignmentResponse.get(0).getActorId(), is(assigneeId));
+        assertThat(queryRoleAssignmentResponse.getFirst().getActorId(), is(assigneeId));
 
     }
 
@@ -157,17 +157,19 @@ public class RoleAssignmentQueryConsumerTest {
     }
 
     private String createRoleAssignmentRequestSearchQueryMultipleRoleAssignments() {
-        return "{\n"
-            + "\"roleType\": [\"ORGANISATION\"],\n"
-            + "\"roleName\": [\"tribunal-caseworker\",\"senior-tribunal-caseworker\"],\n"
-            + "\"classification\": [\"PUBLIC\",\"RESTRICTED\",\"PRIVATE\"],\n"
-            + "\"grantType\": [\"STANDARD\"],\n"
-            + "\"validAt\": \"2021-12-04T00:00:00\",\n"
-            + "\"attributes\": {\n"
-            + "\"primaryLocation\": [\"500A2S\"],\n"
-            + "\"jurisdiction\": [\"IA\"]\n"
-            + "}\n"
-            + "}";
+        return """
+            {
+            "roleType": ["ORGANISATION"],
+            "roleName": ["tribunal-caseworker","senior-tribunal-caseworker"],
+            "classification": ["PUBLIC","RESTRICTED","PRIVATE"],
+            "grantType": ["STANDARD"],
+            "validAt": "2021-12-04T00:00:00",
+            "attributes": {
+            "primaryLocation": ["500A2S"],
+            "jurisdiction": ["IA"]
+            }
+            }\
+            """;
     }
 
     private Map<String, String> getResponseHeaders() {

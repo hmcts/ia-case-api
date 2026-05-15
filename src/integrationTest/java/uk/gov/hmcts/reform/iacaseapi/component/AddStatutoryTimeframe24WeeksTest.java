@@ -65,7 +65,7 @@ class AddStatutoryTimeframe24WeeksTest extends SpringBootIntegrationTest impleme
 
         Optional<List<IdValue<CaseNote>>> caseNotes = response.getAsylumCase().read(CASE_NOTES);
 
-        CaseNote caseNote = caseNotes.get().get(0).getValue();
+        CaseNote caseNote = caseNotes.get().getFirst().getValue();
 
         assertThat(caseNotes.get()).hasSize(1);
         assertThat(caseNote.getUser()).isEqualTo("Case Officer");
@@ -76,9 +76,9 @@ class AddStatutoryTimeframe24WeeksTest extends SpringBootIntegrationTest impleme
         List<IdValue<StatutoryTimeframe24WeeksHistory>> statutoryTimeframe24WeekHistory = statutoryTimeframe24Weeks.get().getHistory();
 
         assertThat(statutoryTimeframe24WeekHistory).hasSize(1);
-        assertThat(statutoryTimeframe24WeekHistory.get(0).getValue().getUser()).isEqualTo("Case Officer");
-        assertThat(statutoryTimeframe24WeekHistory.get(0).getValue().getStatus()).isEqualTo(YesOrNo.YES);
-        assertThat(statutoryTimeframe24WeekHistory.get(0).getValue().getReason()).isEqualTo(reason);
+        assertThat(statutoryTimeframe24WeekHistory.getFirst().getValue().getUser()).isEqualTo("Case Officer");
+        assertThat(statutoryTimeframe24WeekHistory.getFirst().getValue().getStatus()).isEqualTo(YesOrNo.YES);
+        assertThat(statutoryTimeframe24WeekHistory.getFirst().getValue().getReason()).isEqualTo(reason);
     }
 
     @Test
