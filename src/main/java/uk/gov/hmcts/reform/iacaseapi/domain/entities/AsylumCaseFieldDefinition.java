@@ -53,6 +53,12 @@ public enum AsylumCaseFieldDefinition {
     HOME_OFFICE_APPELLANTS(
         "homeOfficeAppellants", new TypeReference<List<IdValue<HomeOfficeAppellant>>>(){}),
 
+    HOME_OFFICE_APPELLANT(
+        "homeOfficeAppellant", new TypeReference<HomeOfficeAppellant>(){}),
+
+    HOME_OFFICE_APPLES(
+        "homeOfficeApples", new TypeReference<List<IdValue<String>>>(){}),
+
     APPELLANT_GIVEN_NAMES(
         "appellantGivenNames", new TypeReference<String>(){}),
 

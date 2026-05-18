@@ -1,11 +1,14 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.service;
 
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_APPELLANTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_APPELLANT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_APPLES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_APPELLANT_CLAIM_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_APPELLANT_DECISION_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_APPELLANT_DECISION_LETTER_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -53,6 +56,12 @@ public class HomeOfficeReferenceService {
             // Update the case record object with the Home Office reference data
             homeOfficeAppellants = asylumCaseWithHomeOfficeData.read(HOME_OFFICE_APPELLANTS);
             asylumCase.write(HOME_OFFICE_APPELLANTS, homeOfficeAppellants.get());
+            asylumCase.write(HOME_OFFICE_APPELLANT, homeOfficeAppellants.get().get(0));
+            List<IdValue<String>> homeOfficeApples = new ArrayList<>();
+            homeOfficeApples.add(new IdValue<String>(String.valueOf(1), "grannySmith"));
+            homeOfficeApples.add(new IdValue<String>(String.valueOf(2), "bramley"));
+            homeOfficeApples.add(new IdValue<String>(String.valueOf(3), "goldenDelicious"));
+            asylumCase.write(HOME_OFFICE_APPLES, homeOfficeApples);
             asylumCase.write(HOME_OFFICE_APPELLANT_CLAIM_DATE, asylumCaseWithHomeOfficeData.read(HOME_OFFICE_APPELLANT_CLAIM_DATE, String.class).orElse(null));
             asylumCase.write(HOME_OFFICE_APPELLANT_DECISION_DATE, asylumCaseWithHomeOfficeData.read(HOME_OFFICE_APPELLANT_DECISION_DATE, String.class).orElse(null));
             asylumCase.write(HOME_OFFICE_APPELLANT_DECISION_LETTER_DATE, asylumCaseWithHomeOfficeData.read(HOME_OFFICE_APPELLANT_DECISION_LETTER_DATE, String.class).orElse(null));
