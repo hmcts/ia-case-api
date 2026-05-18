@@ -23,7 +23,7 @@ public class DbUtils {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    @Retryable(include = TransientDataAccessException.class)
+    @Retryable(retryFor = TransientDataAccessException.class)
     public String getCaseId(
             String appealReferenceNumber
     ) {
