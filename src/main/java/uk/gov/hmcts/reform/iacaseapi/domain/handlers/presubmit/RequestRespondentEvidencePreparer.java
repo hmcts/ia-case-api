@@ -78,6 +78,12 @@ public class RequestRespondentEvidencePreparer implements PreSubmitCallbackHandl
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse = new PreSubmitCallbackResponse<>(asylumCase);
 
+        boolean completeCaseReviewDone = asylumCase.read(COMPLETE_CASE_REVIEW_DATE, String.class).isPresent();
+        if (!completeCaseReviewDone) {
+            callbackResponse.addError("You must run the Complete case review before running the 'Request respondent evidence' event");
+            return callbackResponse;
+        }
+
         final AppealType appealType = asylumCase.read(APPEAL_TYPE, AppealType.class)
                 .orElseThrow(() -> new IllegalStateException("AppealType is not present."));
 
