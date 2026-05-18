@@ -584,6 +584,11 @@ ia-home-office-integration-api:
       ROLE_ASSIGNMENT_URL: https://am-role-assignment-${SERVICE_FQDN}
       IA_IDAM_REDIRECT_URI: https://${SERVICE_NAME}-home-office-integration-api.preview.platform.hmcts.net/oauth2/callback
       CCD_URL: http://{{ .Release.Name }}-ccd-data-store-api
+      POSTGRES_HOST: ia-preview.postgres.database.azure.com
+      POSTGRES_PORT: 5432
+      POSTGRES_NAME: "pr-${CHANGE_ID}-ia-case-api"
+      POSTGRES_USERNAME: hmcts
+      POSTGRES_PASSWORD: ${GENERIC_VALUES_PREVIEW_YAML_PASS}
     keyVaults:
       ia:
         resourceGroup: ia
@@ -1017,20 +1022,24 @@ ccd:
       ingressHost: ccd-definition-store-${SERVICE_FQDN}
 
   elasticsearch:
+    image: hmctsprod.azurecr.io/imported/elastic/elasticsearch
+    imageTag: 9.2.3
     nameOverride: ${SERVICE_NAME}-es
     clusterName: "es"
+    createCert: false
+    protocol: http
     replicas: 1
     minimumMasterNodes: 1
     antiAffinity: "soft"
     esJavaOpts: "-Xmx512m -Xms512m"
     # Their tests delete the pod after succeeding, we pass --logs to the test command which fail if the pod has already been deleted
     # The tests do pass, at least as of 2023-01-19
-    tests:
-      enabled: false
     esConfig:
       elasticsearch.yml: |
         action.auto_create_index: .security*,.watches,.triggered_watches,.watcher-history-*,.logstash_dead_letter,.ml*,ccd-logstash-dead-letter
         xpack.security.enabled: false
+    tests:
+      enabled: false
     persistence:
       enabled: false
     ingress:
@@ -1246,6 +1255,10 @@ em-stitching:
       SPRING_DATASOURCE_PASSWORD: ${GENERIC_VALUES_PREVIEW_YAML_PASS}
       SPRING_DATASOURCE_OPTIONS: "?ssl=disable"
       ENABLE_DB_MIGRATE: true
+      CALLBACK_HTTP_SCHEME: https
+      CALLBACK_HTTP_HOST_PORT: 80
+      CALLBACK_DOMAINS: em-ccdorc-${SERVICE_FQDN}
+      CALLBACK_ENV: PR
       RUN_DB_MIGRATION_ON_STARTUP: true
       FLYWAY_POSTGRESQL_TRANSACTIONAL_LOCK: false
       IDAM_API_BASE_URI: https://idam-api.aat.platform.hmcts.net
@@ -1481,7 +1494,7 @@ ccd-message-publisher:
 am-org-role-mapping-service:
   enabled: true
   java:
-    image: 'hmctsprod.azurecr.io/am/org-role-mapping-service:latest'
+    image: hmctsprod.azurecr.io/am/org-role-mapping-service:latest
     ingressHost: am-org-role-mapping-service-${SERVICE_FQDN}
     releaseNameOverride: ${SERVICE_NAME}-am-org-role-mapping-service
     secrets:
@@ -1620,7 +1633,7 @@ ia-cron-hearings-processor:
   enabled: true
   job:
     kind: CronJob
-    image: 'hmctsprod.azurecr.io/ia/hearings-api:latest'
+    image: hmctsprod.azurecr.io/ia/hearings-api:latest
     releaseNameOverride: ${SERVICE_NAME}-ia-cron-hearings-processor
     name: ${SERVICE_NAME}-ia-cron-hearings-processor
     schedule: "*/5 * * * *"
