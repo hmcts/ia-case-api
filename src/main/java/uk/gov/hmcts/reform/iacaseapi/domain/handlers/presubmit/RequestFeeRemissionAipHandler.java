@@ -124,8 +124,8 @@ public class RequestFeeRemissionAipHandler implements PreSubmitCallbackHandler<A
         RemissionDecision remissionDecision = asylumCase.read(REMISSION_DECISION, RemissionDecision.class).orElse(null);
 
         if (hasPreviousRemission && remissionDecision != null) {
-            appendPreviousRemissionDetails(asylumCaseBefore);
-            asylumCase.write(PREVIOUS_REMISSION_DETAILS, remissionDetailsAppender.getRemissions());
+            List<IdValue<RemissionDetails>> remissions = appendPreviousRemissionDetails(asylumCaseBefore);
+            asylumCase.write(PREVIOUS_REMISSION_DETAILS, remissions);
         }
         asylumCase.write(IS_LATE_REMISSION_REQUEST, YesOrNo.YES);
         UserRoleLabel currentUser = userDetailsHelper.getLoggedInUserRoleLabel(userDetails);
@@ -199,7 +199,7 @@ public class RequestFeeRemissionAipHandler implements PreSubmitCallbackHandler<A
         }
     }
 
-    private void appendPreviousRemissionDetails(AsylumCase asylumCase) {
+    private List<IdValue<RemissionDetails>> appendPreviousRemissionDetails(AsylumCase asylumCase) {
         List<IdValue<RemissionDetails>> previousRemissionDetails = Collections.emptyList();
 
         Optional<List<IdValue<RemissionDetails>>> maybeExistingRemissionDetails = asylumCase.read(PREVIOUS_REMISSION_DETAILS);
@@ -214,6 +214,7 @@ public class RequestFeeRemissionAipHandler implements PreSubmitCallbackHandler<A
             previousRemissionDetails = appendPreviousRemissionDetailsNonAppellant(asylumCase, previousRemissionDetails, existingRemissionDetails);
         }
         appendPreviousRemissionDecisionDetails(previousRemissionDetails, asylumCase);
+        return previousRemissionDetails;
     }
 
     private List<IdValue<RemissionDetails>> appendPreviousRemissionDetailsAppellant(AsylumCase asylumCase,
@@ -365,8 +366,6 @@ public class RequestFeeRemissionAipHandler implements PreSubmitCallbackHandler<A
                     }
                 }
             });
-
-        remissionDetailsAppender.setRemissions(previousRemissionDetails);
     }
 
     private void clearLateRemissionFields(AsylumCase asylumCase) {

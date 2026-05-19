@@ -31,11 +31,9 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentReceiver;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.OutOfTimeDecisionDetailsAppender;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
-@SuppressWarnings("unchecked")
 class RecordOutOfTimeDecisionHandlerTest {
 
     @Mock private DocumentsAppender documentsAppender;
@@ -54,8 +52,6 @@ class RecordOutOfTimeDecisionHandlerTest {
     @Mock private List<IdValue<DocumentWithMetadata>> existingTribunalDocuments;
     @Mock private List<IdValue<DocumentWithMetadata>> allTribunalDocuments;
 
-    @Mock private OutOfTimeDecisionDetailsAppender outOfTimeDecisionDetailsAppender;
-
     private RecordOutOfTimeDecisionHandler recordOutOfTimeDecisionHandler;
 
     @BeforeEach
@@ -63,8 +59,7 @@ class RecordOutOfTimeDecisionHandlerTest {
 
         recordOutOfTimeDecisionHandler =
             new RecordOutOfTimeDecisionHandler(
-                outOfTimeDecisionDetailsAppender, userDetailsHelper,
-                userDetails, documentsAppender, documentReceiver);
+                userDetailsHelper, userDetails, documentsAppender, documentReceiver);
     }
 
     @Test
@@ -84,36 +79,6 @@ class RecordOutOfTimeDecisionHandlerTest {
         assertEquals(callbackResponse.getData(), asylumCase);
 
         verify(asylumCase, times(1)).write(RECORDED_OUT_OF_TIME_DECISION, YES);
-        verify(asylumCase, times(1))
-            .write(OUT_OF_TIME_DECISION_MAKER, "Tribunal Caseworker");
-    }
-
-    @Test
-    void should_append_write_previous_out_of_time_decision_details() {
-
-        OutOfTimeDecisionDetails outOfTimeDecisionDetails =
-            new OutOfTimeDecisionDetails(OutOfTimeDecisionType.APPROVED.name(),
-                UserRoleLabel.TRIBUNAL_CASEWORKER.name(), document);
-        List<IdValue<OutOfTimeDecisionDetails>> previousOutOfTimeDecisionDetails =
-            Arrays.asList(new IdValue<>("1", outOfTimeDecisionDetails));
-
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(callback.getEvent()).thenReturn(Event.RECORD_OUT_OF_TIME_DECISION);
-
-        when(asylumCase.read(RECORDED_OUT_OF_TIME_DECISION, YesOrNo.class)).thenReturn(Optional.of(YES));
-        when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(UserRoleLabel.TRIBUNAL_CASEWORKER);
-        when(outOfTimeDecisionDetailsAppender.getAllOutOfTimeDecisionDetails()).thenReturn(previousOutOfTimeDecisionDetails);
-        when(asylumCase.read(OUT_OF_TIME_DECISION_DOCUMENT, Document.class)).thenReturn(Optional.of(outOfTimeDecisionDocument));
-
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            recordOutOfTimeDecisionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
-
-        assertNotNull(callbackResponse);
-        assertEquals(callbackResponse.getData(), asylumCase);
-
-        verify(asylumCase, times(1))
-            .write(PREVIOUS_OUT_OF_TIME_DECISION_DETAILS, outOfTimeDecisionDetailsAppender.getAllOutOfTimeDecisionDetails());
         verify(asylumCase, times(1))
             .write(OUT_OF_TIME_DECISION_MAKER, "Tribunal Caseworker");
     }

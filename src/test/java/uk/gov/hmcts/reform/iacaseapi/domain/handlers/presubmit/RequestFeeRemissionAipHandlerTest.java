@@ -72,6 +72,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -222,8 +223,10 @@ class RequestFeeRemissionAipHandlerTest {
         verify(asylumCase, never()).write(eq(REMISSION_TYPE), any());
         assertNotNull(callbackResponse);
         assertEquals(callbackResponse.getData(), asylumCase);
-        assertRemissionAppended(expectedRemissionDetails);
-        RemissionDetails appendedRemissionDetails = remissionDetailsAppender.getRemissions().get(0).getValue();
+        List<IdValue<RemissionDetails>> remissionDetailsList = captureWrittenRemissionDetails();
+        assertEquals(1, remissionDetailsList.size());
+        RemissionDetails appendedRemissionDetails = remissionDetailsList.get(0).getValue();
+        assertEquals(expectedRemissionDetails.getFeeRemissionType(), appendedRemissionDetails.getFeeRemissionType());
         assertEquals("Approved", appendedRemissionDetails.getRemissionDecision());
         assertEquals(feeAmount, appendedRemissionDetails.getFeeAmount());
         assertEquals(feeAmount, appendedRemissionDetails.getAmountRemitted());
@@ -258,8 +261,10 @@ class RequestFeeRemissionAipHandlerTest {
 
         assertNotNull(callbackResponse);
         assertEquals(callbackResponse.getData(), asylumCase);
-        assertRemissionAppended(expectedRemissionDetails);
-        RemissionDetails appendedRemissionDetails = remissionDetailsAppender.getRemissions().get(0).getValue();
+        List<IdValue<RemissionDetails>> remissionDetailsList = captureWrittenRemissionDetails();
+        assertEquals(1, remissionDetailsList.size());
+        RemissionDetails appendedRemissionDetails = remissionDetailsList.get(0).getValue();
+        assertEquals(expectedRemissionDetails.getFeeRemissionType(), appendedRemissionDetails.getFeeRemissionType());
 
         assertEquals("Partially approved", appendedRemissionDetails.getRemissionDecision());
         assertEquals(feeAmount, appendedRemissionDetails.getFeeAmount());
@@ -292,8 +297,10 @@ class RequestFeeRemissionAipHandlerTest {
 
         assertNotNull(callbackResponse);
         assertEquals(callbackResponse.getData(), asylumCase);
-        assertRemissionAppended(expectedRemissionDetails);
-        RemissionDetails appendedRemissionDetails = remissionDetailsAppender.getRemissions().get(0).getValue();
+        List<IdValue<RemissionDetails>> remissionDetailsList = captureWrittenRemissionDetails();
+        assertEquals(1, remissionDetailsList.size());
+        RemissionDetails appendedRemissionDetails = remissionDetailsList.get(0).getValue();
+        assertEquals(expectedRemissionDetails.getFeeRemissionType(), appendedRemissionDetails.getFeeRemissionType());
         assertEquals("Rejected", appendedRemissionDetails.getRemissionDecision());
         assertEquals(feeAmount, appendedRemissionDetails.getFeeAmount());
         assertNull(appendedRemissionDetails.getAmountRemitted());
@@ -329,8 +336,10 @@ class RequestFeeRemissionAipHandlerTest {
         verify(asylumCase, times(1)).write(REMISSION_TYPE, previousRemissionType);
         assertNotNull(callbackResponse);
         assertEquals(callbackResponse.getData(), asylumCase);
-        assertRemissionAppended(expectedRemissionDetails);
-        RemissionDetails appendedRemissionDetails = remissionDetailsAppender.getRemissions().get(0).getValue();
+        List<IdValue<RemissionDetails>> remissionDetailsList = captureWrittenRemissionDetails();
+        assertEquals(1, remissionDetailsList.size());
+        RemissionDetails appendedRemissionDetails = remissionDetailsList.get(0).getValue();
+        assertEquals(expectedRemissionDetails.getFeeRemissionType(), appendedRemissionDetails.getFeeRemissionType());
         assertEquals("Approved", appendedRemissionDetails.getRemissionDecision());
         assertEquals(feeAmount, appendedRemissionDetails.getFeeAmount());
         assertEquals(feeAmount, appendedRemissionDetails.getAmountRemitted());
@@ -365,8 +374,10 @@ class RequestFeeRemissionAipHandlerTest {
         verify(asylumCase, never()).write(eq(REMISSION_TYPE), any());
         assertNotNull(callbackResponse);
         assertEquals(callbackResponse.getData(), asylumCase);
-        assertRemissionAppended(expectedRemissionDetails);
-        RemissionDetails appendedRemissionDetails = remissionDetailsAppender.getRemissions().get(0).getValue();
+        List<IdValue<RemissionDetails>> remissionDetailsList = captureWrittenRemissionDetails();
+        assertEquals(1, remissionDetailsList.size());
+        RemissionDetails appendedRemissionDetails = remissionDetailsList.get(0).getValue();
+        assertEquals(expectedRemissionDetails.getFeeRemissionType(), appendedRemissionDetails.getFeeRemissionType());
         assertEquals("Approved", appendedRemissionDetails.getRemissionDecision());
         assertEquals(feeAmount, appendedRemissionDetails.getFeeAmount());
         assertEquals(feeAmount, appendedRemissionDetails.getAmountRemitted());
@@ -397,9 +408,15 @@ class RequestFeeRemissionAipHandlerTest {
             .isExactlyInstanceOf(IllegalStateException.class);
     }
 
+    @SuppressWarnings("unchecked")
+    List<IdValue<RemissionDetails>> captureWrittenRemissionDetails() {
+        ArgumentCaptor<List<IdValue<RemissionDetails>>> captor = ArgumentCaptor.forClass(List.class);
+        verify(asylumCase, times(1)).write(eq(PREVIOUS_REMISSION_DETAILS), captor.capture());
+        return captor.getValue();
+    }
+
     void assertRemissionAppended(RemissionDetails remissionDetails) {
-        List<IdValue<RemissionDetails>> remissionDetailsList = remissionDetailsAppender.getRemissions();
-        verify(asylumCase, times(1)).write(PREVIOUS_REMISSION_DETAILS, remissionDetailsList);
+        List<IdValue<RemissionDetails>> remissionDetailsList = captureWrittenRemissionDetails();
         assertEquals(1, remissionDetailsList.size());
         RemissionDetails appendedRemissionDetails = remissionDetailsList.get(0).getValue();
         assertEquals(remissionDetails.getFeeRemissionType(), appendedRemissionDetails.getFeeRemissionType());
@@ -440,8 +457,7 @@ class RequestFeeRemissionAipHandlerTest {
 
         assertNotNull(callbackResponse);
         assertEquals(callbackResponse.getData(), asylumCase);
-        List<IdValue<RemissionDetails>> previousRemissions = remissionDetailsAppender.getRemissions();
-        assertNull(previousRemissions);
+        verify(asylumCase, never()).write(eq(PREVIOUS_REMISSION_DETAILS), any());
         verify(asylumCase, times(1)).read(LATE_REMISSION_OPTION, RemissionOption.class);
         verify(asylumCase, times(1)).clear(ASYLUM_SUPPORT_REF_NUMBER);
         verify(asylumCase, times(1)).clear(HELP_WITH_FEES_OPTION);
@@ -465,8 +481,7 @@ class RequestFeeRemissionAipHandlerTest {
 
         assertNotNull(callbackResponse);
         assertEquals(callbackResponse.getData(), asylumCase);
-        List<IdValue<RemissionDetails>> previousRemissions = remissionDetailsAppender.getRemissions();
-        assertNull(previousRemissions);
+        verify(asylumCase, never()).write(eq(PREVIOUS_REMISSION_DETAILS), any());
         verify(asylumCase, times(1)).read(LATE_REMISSION_OPTION, RemissionOption.class);
         verify(asylumCase, never()).clear(ASYLUM_SUPPORT_REF_NUMBER);
         verify(asylumCase, never()).clear(HELP_WITH_FEES_OPTION);

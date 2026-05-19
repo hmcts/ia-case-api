@@ -2,11 +2,16 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
+import org.mockito.ArgumentCaptor;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfTimeDecisionDetails;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -124,7 +129,10 @@ class RecordOutOfTimeDecisionPreparerTest {
 
         assertNotNull(callbackResponse);
         assertEquals(callbackResponse.getData(), asylumCase);
-        assertEquals(1, outOfTimeDecisionDetailsAppender.getAllOutOfTimeDecisionDetails().size());
+
+        ArgumentCaptor<List<IdValue<OutOfTimeDecisionDetails>>> captor = ArgumentCaptor.forClass(List.class);
+        verify(asylumCase, times(1)).write(eq(PREVIOUS_OUT_OF_TIME_DECISION_DETAILS), captor.capture());
+        assertEquals(1, captor.getValue().size());
 
         verify(asylumCase, times(1)).clear(OUT_OF_TIME_DECISION_TYPE);
         verify(asylumCase, times(1)).clear(OUT_OF_TIME_DECISION_MAKER);

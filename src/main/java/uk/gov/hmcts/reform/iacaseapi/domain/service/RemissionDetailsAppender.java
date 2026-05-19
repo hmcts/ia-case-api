@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.iacaseapi.domain.service;
 import java.util.ArrayList;
 import java.util.List;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithMetadata;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDetails;
@@ -11,10 +10,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 
 @Service
-@Slf4j
 public class RemissionDetailsAppender {
-
-    private List<IdValue<RemissionDetails>> remissions;
 
     public List<IdValue<RemissionDetails>> appendAsylumSupportRemissionDetails(
         List<IdValue<RemissionDetails>> existingRemissionDetails,
@@ -165,14 +161,4 @@ public class RemissionDetailsAppender {
         return allRemissionDetails;
     }
 
-    public void setRemissions(List<IdValue<RemissionDetails>> remissions) {
-        log.info("SETTING REMISSION: " + remissions);
-        log.info("TO: " + this.remissions);
-        this.remissions = remissions;
-    }
-
-    public List<IdValue<RemissionDetails>> getRemissions() {
-        log.info("GETTING REMISSIONS: " + remissions);
-        return remissions;
-    }
 }
