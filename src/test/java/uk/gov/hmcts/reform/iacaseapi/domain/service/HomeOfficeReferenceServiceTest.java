@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.service;
 
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_APPELLANTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS;
 
 import java.util.Collections;
@@ -58,27 +59,49 @@ class HomeOfficeReferenceServiceTest {
 
         Mockito.when(callback.getCaseDetails()).thenReturn(caseDetails);
         Mockito.when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        Mockito.when(asylumCase.read(
+            HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY,
+            String.class))
+            .thenReturn(Optional.empty());
     }
 
     @Test
-    void should_return_existing_appellants_without_calling_api() {
+    void should_return_existing_appellants_without_calling_api() throws Exception {
 
-        Mockito.when(asylumCase.read(HOME_OFFICE_APPELLANTS))
-            .thenReturn(Optional.of(appellants));
+        HomeOfficeAppellant hoAppellant = new HomeOfficeAppellant();
+        hoAppellant.setFamilyName("Smith");
 
-        Optional<List<IdValue<HomeOfficeAppellant>>> result =
+        IdValue<HomeOfficeAppellant> idValue =
+            new IdValue<>("1", hoAppellant);
+
+        List<IdValue<HomeOfficeAppellant>> expected =
+            Collections.singletonList(idValue);
+
+        String json =
+            "[{\"id\":\"1\",\"value\":{\"familyName\":\"Smith\"}}]";
+
+        Mockito.when(asylumCase.read(
+            HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY,
+            String.class))
+            .thenReturn(Optional.of(json));
+
+        List<IdValue<HomeOfficeAppellant>> result =
             service.getHomeOfficeReferenceData(HO_REFERENCE, callback);
 
-        Assertions.assertTrue(result.isPresent());
-        Assertions.assertEquals(appellants, result.get());
+        Assertions.assertFalse(result.isEmpty());
+        Assertions.assertEquals(expected, result);
 
-        Mockito.verify(homeOfficeApi, Mockito.never()).midEvent(Mockito.any());
+        Mockito.verify(homeOfficeApi, Mockito.never())
+            .midEvent(Mockito.any());
     }
 
     @Test
     void should_call_api_and_store_data_when_status_ok() {
 
-        Mockito.when(asylumCase.read(HOME_OFFICE_APPELLANTS))
+        Mockito.when(asylumCase.read(
+            HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY,
+            String.class))
             .thenReturn(Optional.empty());
 
         Mockito.when(homeOfficeApi.midEvent(callback))
@@ -92,25 +115,27 @@ class HomeOfficeReferenceServiceTest {
         Mockito.when(asylumCaseWithApiData.read(HOME_OFFICE_APPELLANTS))
             .thenReturn(Optional.of(appellants));
 
-        Optional<List<IdValue<HomeOfficeAppellant>>> result =
+        List<IdValue<HomeOfficeAppellant>> result =
             service.getHomeOfficeReferenceData(HO_REFERENCE, callback);
 
-        Assertions.assertTrue(result.isPresent());
-        Assertions.assertEquals(appellants, result.get());
+        Assertions.assertFalse(result.isEmpty());
+        Assertions.assertEquals(appellants, result);
 
         Mockito.verify(asylumCase).write(
             HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS,
             HomeOfficeApiResponseStatusType.OK);
 
         Mockito.verify(asylumCase).write(
-            HOME_OFFICE_APPELLANTS,
-            Optional.of(appellants));
+            Mockito.eq(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY),
+            Mockito.any(String.class));
     }
 
     @Test
     void should_handle_not_found_status() {
 
-        Mockito.when(asylumCase.read(HOME_OFFICE_APPELLANTS))
+        Mockito.when(asylumCase.read(
+            HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY,
+            String.class))
             .thenReturn(Optional.empty());
 
         Mockito.when(homeOfficeApi.midEvent(callback))
@@ -121,10 +146,10 @@ class HomeOfficeReferenceServiceTest {
             HomeOfficeApiResponseStatusType.class))
             .thenReturn(Optional.of(HomeOfficeApiResponseStatusType.NOT_FOUND));
 
-        Optional<List<IdValue<HomeOfficeAppellant>>> result =
+        List<IdValue<HomeOfficeAppellant>> result =
             service.getHomeOfficeReferenceData(HO_REFERENCE, callback);
 
-        Assertions.assertFalse(result.isPresent());
+        Assertions.assertTrue(result.isEmpty());
 
         Mockito.verify(asylumCase).write(
             HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS,
@@ -134,7 +159,9 @@ class HomeOfficeReferenceServiceTest {
     @Test
     void should_handle_server_error_status() {
 
-        Mockito.when(asylumCase.read(HOME_OFFICE_APPELLANTS))
+        Mockito.when(asylumCase.read(
+            HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY,
+            String.class))
             .thenReturn(Optional.empty());
 
         Mockito.when(homeOfficeApi.midEvent(callback))
@@ -145,10 +172,10 @@ class HomeOfficeReferenceServiceTest {
             HomeOfficeApiResponseStatusType.class))
             .thenReturn(Optional.of(HomeOfficeApiResponseStatusType.INTERNAL_SERVER_ERROR));
 
-        Optional<List<IdValue<HomeOfficeAppellant>>> result =
+        List<IdValue<HomeOfficeAppellant>> result =
             service.getHomeOfficeReferenceData(HO_REFERENCE, callback);
 
-        Assertions.assertFalse(result.isPresent());
+        Assertions.assertTrue(result.isEmpty());
 
         Mockito.verify(asylumCase).write(
             HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS,
@@ -158,7 +185,9 @@ class HomeOfficeReferenceServiceTest {
     @Test
     void should_handle_client_error_status() {
 
-        Mockito.when(asylumCase.read(HOME_OFFICE_APPELLANTS))
+        Mockito.when(asylumCase.read(
+            HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY,
+            String.class))
             .thenReturn(Optional.empty());
 
         Mockito.when(homeOfficeApi.midEvent(callback))
@@ -169,10 +198,10 @@ class HomeOfficeReferenceServiceTest {
             HomeOfficeApiResponseStatusType.class))
             .thenReturn(Optional.of(HomeOfficeApiResponseStatusType.BAD_REQUEST));
 
-        Optional<List<IdValue<HomeOfficeAppellant>>> result =
+        List<IdValue<HomeOfficeAppellant>> result =
             service.getHomeOfficeReferenceData(HO_REFERENCE, callback);
 
-        Assertions.assertFalse(result.isPresent());
+        Assertions.assertTrue(result.isEmpty());
 
         Mockito.verify(asylumCase).write(
             HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS,
@@ -182,7 +211,9 @@ class HomeOfficeReferenceServiceTest {
     @Test
     void should_use_unknown_when_status_missing() {
 
-        Mockito.when(asylumCase.read(HOME_OFFICE_APPELLANTS))
+        Mockito.when(asylumCase.read(
+            HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY,
+            String.class))
             .thenReturn(Optional.empty());
 
         Mockito.when(homeOfficeApi.midEvent(callback))
@@ -193,10 +224,10 @@ class HomeOfficeReferenceServiceTest {
             HomeOfficeApiResponseStatusType.class))
             .thenReturn(Optional.empty());
 
-        Optional<List<IdValue<HomeOfficeAppellant>>> result =
+        List<IdValue<HomeOfficeAppellant>> result =
             service.getHomeOfficeReferenceData(HO_REFERENCE, callback);
 
-        Assertions.assertFalse(result.isPresent());
+        Assertions.assertTrue(result.isEmpty());
 
         Mockito.verify(asylumCase).write(
             HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS,

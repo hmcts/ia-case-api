@@ -1,20 +1,20 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.service;
 
+import static java.util.Collections.emptyList;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_APPELLANTS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_APPELLANT;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_APPLES;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_APPOGGIATURAS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NOTIFICATIONS_SENT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_APPELLANT_CLAIM_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_APPELLANT_DECISION_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_APPELLANT_DECISION_LETTER_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.extern.slf4j.Slf4j;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -22,6 +22,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.HomeOfficeApiResponseStatus
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.HomeOfficeAppellant;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValueMixin;
 
 @Slf4j
 @Service
@@ -34,14 +35,27 @@ public class HomeOfficeReferenceService {
     }
 
     // Note: don't cache this response, as we want to get fresh data each time in case something changes at the Home Office's end.
-    public Optional<List<IdValue<HomeOfficeAppellant>>> getHomeOfficeReferenceData(String hoReference, Callback<AsylumCase> callback) {
-
+    public List<IdValue<HomeOfficeAppellant>> getHomeOfficeReferenceData(String hoReference, Callback<AsylumCase> callback) {
+        // We need the mapper and mix-in to overcome a CCD bug concerning collections during the mid-event (see comments below).
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.addMixIn(IdValue.class, IdValueMixin.class);        
+        // Check case for existing data.
         final AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
-        Optional<List<IdValue<HomeOfficeAppellant>>> homeOfficeAppellants = asylumCase.read(HOME_OFFICE_APPELLANTS);
-        // If we have a list of appellants already, don't call the API again.
-        if (!homeOfficeAppellants.isEmpty() && !homeOfficeAppellants.get().isEmpty()) {
-            log.info("Returning previously retrieved Home Office reference data for case with Home Office reference {}.", hoReference);
-            return homeOfficeAppellants;
+        String homeOfficeAppellantsSerialised = asylumCase.read(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, String.class).orElse("");
+        List<IdValue<HomeOfficeAppellant>> homeOfficeAppellants = emptyList();
+        // If we have a list of appellants already (in serialised form - see comments below), don't call the API again.
+        if (!homeOfficeAppellantsSerialised.isEmpty()) {
+            log.info("Deserialising and returning previously retrieved Home Office appellant data for case with Home Office reference {}.", hoReference);
+            try {
+                homeOfficeAppellants = mapper.readValue(
+                                                            homeOfficeAppellantsSerialised,
+                                                            new TypeReference<List<IdValue<HomeOfficeAppellant>>>() {}
+                                                       );
+                return homeOfficeAppellants;
+            } catch (Exception ex) {
+                log.error("Could not deserialise list of Home Office appellants from serialised string {} for case with Home Office reference {}:\n\n{}",
+                          homeOfficeAppellantsSerialised, hoReference, ex.getMessage());
+            }
         }
 
         // Home Office API has not been called yet (or was unavailable the last time we tried) - call it now
@@ -56,22 +70,17 @@ public class HomeOfficeReferenceService {
         if (responseStatus.equals(HomeOfficeApiResponseStatusType.OK)) {
             log.info("Home Office biographic data retrieved for case with reference ID {}.", hoReference);
             // Update the case record object with the Home Office reference data
-            homeOfficeAppellants = asylumCaseWithHomeOfficeData.read(HOME_OFFICE_APPELLANTS);
-            asylumCase.write(HOME_OFFICE_APPELLANTS, homeOfficeAppellants.get());
-            asylumCase.write(HOME_OFFICE_APPELLANT, homeOfficeAppellants.get().get(0).getValue());
-            List<IdValue<String>> homeOfficeApplesBlank = new ArrayList<>();
-            asylumCase.write(HOME_OFFICE_APPLES, homeOfficeApplesBlank);
-            Optional<List<IdValue<String>>> homeOfficeApplesOpt = asylumCase.read(HOME_OFFICE_APPLES);
-            List<IdValue<String>> homeOfficeApples = homeOfficeApplesOpt.get();
-            homeOfficeApples.add(new IdValue<String>(String.valueOf(1), "grannySmith"));
-            homeOfficeApples.add(new IdValue<String>(String.valueOf(2), "bramley"));
-            homeOfficeApples.add(new IdValue<String>(String.valueOf(3), "goldenDelicious"));
-            asylumCase.write(HOME_OFFICE_APPLES, homeOfficeApples);
-            List<IdValue<Integer>> homeOfficeAppoggiaturas = new ArrayList<>();
-            homeOfficeAppoggiaturas.add(new IdValue<Integer>(String.valueOf(1), 25));
-            homeOfficeAppoggiaturas.add(new IdValue<Integer>(String.valueOf(2), 49));
-            homeOfficeAppoggiaturas.add(new IdValue<Integer>(String.valueOf(3), 16));
-            asylumCase.write(HOME_OFFICE_APPOGGIATURAS, homeOfficeAppoggiaturas);
+            Optional<List<IdValue<HomeOfficeAppellant>>> homeOfficeAppellantsOpt = asylumCaseWithHomeOfficeData.read(HOME_OFFICE_APPELLANTS);
+            homeOfficeAppellants = homeOfficeAppellantsOpt.orElse(emptyList());
+            // asylumCase.write(HOME_OFFICE_APPELLANTS, homeOfficeAppellants); -- this DOES NOT WORK due to a bug in CCD when altering collections during the mid-event.
+            // Instead, we need to serialise the list and write it to a scalar (string) field; then later we will reconstitute the list from this field and store it.
+            try {
+                homeOfficeAppellantsSerialised = mapper.writerWithDefaultPrettyPrinter()
+                                                       .writeValueAsString(homeOfficeAppellants);
+                asylumCase.write(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, homeOfficeAppellantsSerialised);
+            } catch (Exception ex) {
+                log.error("Could not serialise list of Home Office appellants: {}", ex.getMessage());
+            }
             asylumCase.write(HOME_OFFICE_APPELLANT_CLAIM_DATE, asylumCaseWithHomeOfficeData.read(HOME_OFFICE_APPELLANT_CLAIM_DATE, String.class).orElse(null));
             asylumCase.write(HOME_OFFICE_APPELLANT_DECISION_DATE, asylumCaseWithHomeOfficeData.read(HOME_OFFICE_APPELLANT_DECISION_DATE, String.class).orElse(null));
             asylumCase.write(HOME_OFFICE_APPELLANT_DECISION_LETTER_DATE, asylumCaseWithHomeOfficeData.read(HOME_OFFICE_APPELLANT_DECISION_LETTER_DATE, String.class).orElse(null));

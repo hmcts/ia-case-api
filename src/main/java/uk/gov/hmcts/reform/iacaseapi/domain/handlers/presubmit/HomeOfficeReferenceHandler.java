@@ -8,7 +8,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_REFERENCE_NUMBER;
 import java.text.Normalizer;
 import java.util.List;
-import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -57,7 +56,7 @@ public class HomeOfficeReferenceHandler implements PreSubmitCallbackHandler<Asyl
 
         // TODO - check logic for oocHomeOfficeReferenceNumber (and do any other screens that display the UAN)
         return callbackStage == PreSubmitCallbackStage.MID_EVENT
-                && List.of(Event.START_APPEAL, Event.EDIT_APPEAL).contains(callback.getEvent())
+                && List.of(Event.START_APPEAL, Event.EDIT_APPEAL, Event.EDIT_APPEAL_AFTER_SUBMIT).contains(callback.getEvent())
                 && List.of(
                     "homeOfficeReferenceNumber", "oocHomeOfficeReferenceNumber", "appellantBasicDetails", // ExUI pages
                     "cuiHomeOfficeReferenceNumber", "cuiAppellantName", "cuiAppellantDob") // CUI pages
@@ -171,8 +170,8 @@ public class HomeOfficeReferenceHandler implements PreSubmitCallbackHandler<Asyl
         if (hoReference == null) {
             return false;
         } else {
-            Optional<List<IdValue<HomeOfficeAppellant>>> homeOfficeAppellants = homeOfficeReferenceService.getHomeOfficeReferenceData(hoReference, callback);
-            return !(homeOfficeAppellants.isEmpty() || homeOfficeAppellants.get().isEmpty());
+            List<IdValue<HomeOfficeAppellant>> homeOfficeAppellants = homeOfficeReferenceService.getHomeOfficeReferenceData(hoReference, callback);
+            return !homeOfficeAppellants.isEmpty();
         }
     }
 
@@ -230,8 +229,8 @@ public class HomeOfficeReferenceHandler implements PreSubmitCallbackHandler<Asyl
     }
 
     private List<HomeOfficeAppellant> retrieveHomeOfficeAppellantDOs(String hoReference, Callback<AsylumCase> callback) {
-        Optional<List<IdValue<HomeOfficeAppellant>>> homeOfficeAppellants = homeOfficeReferenceService.getHomeOfficeReferenceData(hoReference, callback);
-        if (homeOfficeAppellants.isEmpty() || homeOfficeAppellants.get().isEmpty()) {
+        List<IdValue<HomeOfficeAppellant>> homeOfficeAppellants = homeOfficeReferenceService.getHomeOfficeReferenceData(hoReference, callback);
+        if (homeOfficeAppellants.isEmpty()) {
             // This should not have happened - we should always have at least one appellant from the Home Office by this point. Log an error.
             log.error(
                     "No appellants returned from the Home Office for reference number {} although it appeared to match a record in Atlas.",
@@ -240,7 +239,6 @@ public class HomeOfficeReferenceHandler implements PreSubmitCallbackHandler<Asyl
         }
         // Extract and return appellants
         return homeOfficeAppellants
-                .orElseThrow(() -> new IllegalStateException("No appellants were returned by the Home Office."))
                 .stream()
                 .map(IdValue::getValue)
                 .collect(Collectors.toList());
