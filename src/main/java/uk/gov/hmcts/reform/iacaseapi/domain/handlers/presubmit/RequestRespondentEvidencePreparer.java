@@ -80,7 +80,13 @@ public class RequestRespondentEvidencePreparer implements PreSubmitCallbackHandl
 
         boolean completeCaseReviewDone = asylumCase.read(COMPLETE_CASE_REVIEW_DATE, String.class).isPresent();
         if (!completeCaseReviewDone) {
-            callbackResponse.addError("You must run the Complete case review before running the 'Request respondent evidence' event");
+            boolean is24WeekStfCase = asylumCase.read(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class)
+                .map(status -> status == YES)
+                .orElse(false);
+            String errorMessage = is24WeekStfCase
+                ? "You must run the Complete case review and list the case before running the 'Request respondent evidence' event"
+                : "You must run the Complete case review before running the 'Request respondent evidence' event";
+            callbackResponse.addError(errorMessage);
             return callbackResponse;
         }
 

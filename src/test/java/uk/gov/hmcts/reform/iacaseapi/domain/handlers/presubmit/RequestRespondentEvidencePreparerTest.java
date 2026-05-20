@@ -98,6 +98,24 @@ class RequestRespondentEvidencePreparerTest {
     }
 
     @Test
+    void handler_should_return_stf_specific_error_if_complete_case_review_not_done_on_24_week_case() {
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONDENT_EVIDENCE);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(COMPLETE_CASE_REVIEW_DATE, String.class)).thenReturn(Optional.empty());
+        when(asylumCase.read(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            requestRespondentEvidencePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        assertNotNull(callbackResponse);
+        assertFalse(callbackResponse.getErrors().isEmpty());
+        assertThat(callbackResponse.getErrors())
+            .contains("You must run the Complete case review and list the case before running the 'Request respondent evidence' event");
+    }
+
+    @Test
     void handler_should_return_error_if_appeal_type_not_present() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
