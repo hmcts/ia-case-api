@@ -372,14 +372,29 @@ class EditDocsServiceTest {
 
     @ParameterizedTest
     @MethodSource("reasonsForAppealCleanupScenario")
-    void reasonsForAppealDocumentsAreCleanedUp() {
+    void shouldClearReasonsForAppealFieldsWhenDocumentsBecomeEmpty() {
 
         given(editDocsAuditService.getUpdatedAndDeletedDocIdsForGivenField(
                 any(), any(), eq(LEGAL_REPRESENTATIVE_DOCUMENTS)))
                 .willReturn(DOC_ID_LIST);
 
-        asylumCase.write(REASONS_FOR_APPEAL_DOCUMENTS,
-                Optional.of(DOC_ID_VALUE_LIST));
+        asylumCase.write(
+                REASONS_FOR_APPEAL_DOCUMENTS,
+                Optional.of(DOC_ID_VALUE_LIST)
+        );
+
+        asylumCase.write(REASONS_FOR_APPEAL_DECISION, "");
+        asylumCase.write(REASONS_FOR_APPEAL_DATE_UPLOADED, "2026-05-20");
+
+        asylumCase.write(CURRENT_CASE_STATE_VISIBLE_TO_JUDGE, "reasonsForAppealSubmitted");
+        asylumCase.write(CURRENT_CASE_STATE_VISIBLE_TO_CASE_OFFICER, "reasonsForAppealSubmitted");
+        asylumCase.write(CURRENT_CASE_STATE_VISIBLE_TO_ADMIN_OFFICER, "reasonsForAppealSubmitted");
+        asylumCase.write(CURRENT_CASE_STATE_VISIBLE_TO_HOME_OFFICE_ALL, "reasonsForAppealSubmitted");
+        asylumCase.write(CURRENT_CASE_STATE_VISIBLE_TO_HOME_OFFICE_APC, "reasonsForAppealSubmitted");
+        asylumCase.write(CURRENT_CASE_STATE_VISIBLE_TO_HOME_OFFICE_POU, "reasonsForAppealSubmitted");
+        asylumCase.write(CURRENT_CASE_STATE_VISIBLE_TO_HOME_OFFICE_LART, "reasonsForAppealSubmitted");
+        asylumCase.write(CURRENT_CASE_STATE_VISIBLE_TO_HOME_OFFICE_GENERIC, "reasonsForAppealSubmitted");
+        asylumCase.write(CURRENT_CASE_STATE_VISIBLE_TO_LEGAL_REPRESENTATIVE, "reasonsForAppealSubmitted");
 
         editDocsService.cleanUpAppealTabDocs(asylumCase, asylumCase);
 
@@ -387,6 +402,19 @@ class EditDocsServiceTest {
                 new ArrayList<>(),
                 asylumCase.read(REASONS_FOR_APPEAL_DOCUMENTS)
         );
+
+        assertThat(asylumCase.read(REASONS_FOR_APPEAL_DECISION)).isEmpty();
+        assertThat(asylumCase.read(REASONS_FOR_APPEAL_DATE_UPLOADED)).isEmpty();
+
+        assertThat(asylumCase.read(CURRENT_CASE_STATE_VISIBLE_TO_JUDGE)).isEmpty();
+        assertThat(asylumCase.read(CURRENT_CASE_STATE_VISIBLE_TO_CASE_OFFICER)).isEmpty();
+        assertThat(asylumCase.read(CURRENT_CASE_STATE_VISIBLE_TO_ADMIN_OFFICER)).isEmpty();
+        assertThat(asylumCase.read(CURRENT_CASE_STATE_VISIBLE_TO_HOME_OFFICE_ALL)).isEmpty();
+        assertThat(asylumCase.read(CURRENT_CASE_STATE_VISIBLE_TO_HOME_OFFICE_APC)).isEmpty();
+        assertThat(asylumCase.read(CURRENT_CASE_STATE_VISIBLE_TO_HOME_OFFICE_POU)).isEmpty();
+        assertThat(asylumCase.read(CURRENT_CASE_STATE_VISIBLE_TO_HOME_OFFICE_LART)).isEmpty();
+        assertThat(asylumCase.read(CURRENT_CASE_STATE_VISIBLE_TO_HOME_OFFICE_GENERIC)).isEmpty();
+        assertThat(asylumCase.read(CURRENT_CASE_STATE_VISIBLE_TO_LEGAL_REPRESENTATIVE)).isEmpty();
     }
 
 }
