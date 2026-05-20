@@ -53,7 +53,8 @@ public class AppealWasNotSubmittedSupportingDocumentsHandler implements PreSubmi
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-            && callback.getCaseDetails().getState() != State.APPEAL_STARTED;
+            && callback.getCaseDetails().getState() != State.APPEAL_STARTED
+                && callback.getCaseDetails().getState() != State.MIGRATED;
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
@@ -107,12 +108,14 @@ public class AppealWasNotSubmittedSupportingDocumentsHandler implements PreSubmi
 
     private static List<IdValue<DocumentWithMetadata>> removeAppealNotSubmittedDocument(List<IdValue<DocumentWithMetadata>> existingLegalRepDocuments) {
         return Optional.ofNullable(existingLegalRepDocuments)
-                    .orElse(emptyList())
-                    .stream()
-                    .filter(Objects::nonNull)
-                    .filter(doc -> doc.getValue() != null)
-                    .filter(doc -> doc.getValue().getTag() != DocumentTag.APPEAL_WAS_NOT_SUBMITTED_SUPPORTING_DOCUMENT)
-                    .collect(Collectors.toList());
+                .orElse(emptyList())
+                .stream()
+                .filter(Objects::nonNull)
+                .filter(doc -> doc.getValue() != null)
+                .filter(doc ->
+                        !DocumentTag.APPEAL_WAS_NOT_SUBMITTED_SUPPORTING_DOCUMENT
+                                .equals(doc.getValue().getTag()))
+                .collect(Collectors.toList());
     }
 
 }
