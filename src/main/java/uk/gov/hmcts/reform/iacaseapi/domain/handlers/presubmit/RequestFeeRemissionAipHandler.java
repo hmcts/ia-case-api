@@ -32,6 +32,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMISSION_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SECTION17_DOCUMENT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SECTION20_DOCUMENT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.TEMP_PREVIOUS_REMISSION_DETAILS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HelpWithFeesOption.WILL_PAY_FOR_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDecision.APPROVED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.clearPreviousRemissionCaseFields;
@@ -124,8 +125,9 @@ public class RequestFeeRemissionAipHandler implements PreSubmitCallbackHandler<A
         RemissionDecision remissionDecision = asylumCase.read(REMISSION_DECISION, RemissionDecision.class).orElse(null);
 
         if (hasPreviousRemission && remissionDecision != null) {
-            appendPreviousRemissionDetails(asylumCaseBefore);
-            asylumCase.write(PREVIOUS_REMISSION_DETAILS, remissionDetailsAppender.getRemissions());
+            List<IdValue<RemissionDetails>> previousRemissionDetails = appendPreviousRemissionDetails(asylumCaseBefore);
+            asylumCase.write(TEMP_PREVIOUS_REMISSION_DETAILS, previousRemissionDetails);
+            asylumCase.write(PREVIOUS_REMISSION_DETAILS, previousRemissionDetails);
         }
         asylumCase.write(IS_LATE_REMISSION_REQUEST, YesOrNo.YES);
         UserRoleLabel currentUser = userDetailsHelper.getLoggedInUserRoleLabel(userDetails);
@@ -199,10 +201,10 @@ public class RequestFeeRemissionAipHandler implements PreSubmitCallbackHandler<A
         }
     }
 
-    private void appendPreviousRemissionDetails(AsylumCase asylumCase) {
+    private List<IdValue<RemissionDetails>> appendPreviousRemissionDetails(AsylumCase asylumCase) {
         List<IdValue<RemissionDetails>> previousRemissionDetails = Collections.emptyList();
 
-        Optional<List<IdValue<RemissionDetails>>> maybeExistingRemissionDetails = asylumCase.read(PREVIOUS_REMISSION_DETAILS);
+        Optional<List<IdValue<RemissionDetails>>> maybeExistingRemissionDetails = asylumCase.read(TEMP_PREVIOUS_REMISSION_DETAILS);
         final List<IdValue<RemissionDetails>> existingRemissionDetails = maybeExistingRemissionDetails.orElse(Collections.emptyList());
 
         UserRoleLabel previousRemissionRequestedBy = asylumCase.read(REMISSION_REQUESTED_BY, UserRoleLabel.class)
@@ -214,6 +216,7 @@ public class RequestFeeRemissionAipHandler implements PreSubmitCallbackHandler<A
             previousRemissionDetails = appendPreviousRemissionDetailsNonAppellant(asylumCase, previousRemissionDetails, existingRemissionDetails);
         }
         appendPreviousRemissionDecisionDetails(previousRemissionDetails, asylumCase);
+        return previousRemissionDetails;
     }
 
     private List<IdValue<RemissionDetails>> appendPreviousRemissionDetailsAppellant(
@@ -372,8 +375,6 @@ public class RequestFeeRemissionAipHandler implements PreSubmitCallbackHandler<A
                     }
                 }
             });
-
-        remissionDetailsAppender.setRemissions(previousRemissionDetails);
     }
 
     private void clearLateRemissionFields(AsylumCase asylumCase) {
