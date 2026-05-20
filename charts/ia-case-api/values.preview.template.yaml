@@ -1336,6 +1336,7 @@ aac-manage-case-assignment:
 # https://github.com/hmcts/wa-chart/blob/master/wa/values.yaml
 # 1.0.4
 wa:
+  enabled: ${ENABLE_WA:false}
   taskManagement:
     enabled: ${ENABLE_WA:false}
   taskMonitor:
