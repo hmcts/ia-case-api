@@ -106,15 +106,6 @@ public class EditDocsService {
                 asylumCase.clear(REASONS_FOR_APPEAL_DECISION);
                 asylumCase.clear(REASONS_FOR_APPEAL_DATE_UPLOADED);
 
-                asylumCase.clear(CURRENT_CASE_STATE_VISIBLE_TO_JUDGE);
-                asylumCase.clear(CURRENT_CASE_STATE_VISIBLE_TO_CASE_OFFICER);
-                asylumCase.clear(CURRENT_CASE_STATE_VISIBLE_TO_ADMIN_OFFICER);
-                asylumCase.clear(CURRENT_CASE_STATE_VISIBLE_TO_HOME_OFFICE_ALL);
-                asylumCase.clear(CURRENT_CASE_STATE_VISIBLE_TO_HOME_OFFICE_APC);
-                asylumCase.clear(CURRENT_CASE_STATE_VISIBLE_TO_HOME_OFFICE_POU);
-                asylumCase.clear(CURRENT_CASE_STATE_VISIBLE_TO_HOME_OFFICE_LART);
-                asylumCase.clear(CURRENT_CASE_STATE_VISIBLE_TO_HOME_OFFICE_GENERIC);
-                asylumCase.clear(CURRENT_CASE_STATE_VISIBLE_TO_LEGAL_REPRESENTATIVE);
             }
         });
     }
