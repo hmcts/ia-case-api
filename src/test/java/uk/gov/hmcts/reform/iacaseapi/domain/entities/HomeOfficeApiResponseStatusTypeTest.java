@@ -17,6 +17,7 @@ class HomeOfficeApiResponseStatusTypeTest {
     @Test
     void should_return_correct_status_codes_for_all_enum_values() {
 
+        Assertions.assertEquals(-4, HomeOfficeApiResponseStatusType.BADLY_FORMATTED_DATA.getStatusCode());
         Assertions.assertEquals(-3, HomeOfficeApiResponseStatusType.OTHER_APPLICATION_DATA.getStatusCode());
         Assertions.assertEquals(-2, HomeOfficeApiResponseStatusType.NO_DATA.getStatusCode());
         Assertions.assertEquals(-1, HomeOfficeApiResponseStatusType.DID_NOT_RESPOND.getStatusCode());
@@ -109,6 +110,9 @@ class HomeOfficeApiResponseStatusTypeTest {
 
     @Test
     void should_return_correct_string_representation() {
+
+        Assertions.assertEquals("badlyFormattedData",
+            HomeOfficeApiResponseStatusType.BADLY_FORMATTED_DATA.toString());
 
         Assertions.assertEquals("otherApplicationData",
             HomeOfficeApiResponseStatusType.OTHER_APPLICATION_DATA.toString());
