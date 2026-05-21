@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isAipJourney;
+
 import java.time.LocalDate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -50,7 +52,7 @@ public class PinInPostGenerator implements PreSubmitCallbackHandler<AsylumCase> 
                 .pinUsed(YesOrNo.NO)
                 .build());
 
-        if (callback.getEvent().equals(Event.GENERATE_PIN_IN_POST)) {
+        if (isAipJourney(asylumCase) && callback.getEvent().equals(Event.GENERATE_PIN_IN_POST)) {
             asylumCase.write(AsylumCaseFieldDefinition.IS_AIP_TRANSFER, YesOrNo.YES);
         }
 
