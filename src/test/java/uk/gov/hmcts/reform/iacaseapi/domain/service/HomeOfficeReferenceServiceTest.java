@@ -1,5 +1,10 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.service;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_APPELLANTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS;
@@ -233,4 +238,103 @@ class HomeOfficeReferenceServiceTest {
             HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS,
             HomeOfficeApiResponseStatusType.UNKNOWN);
     }
+
+    @Test
+    void should_handle_deserialisation_exception_and_call_api() {
+
+        when(callback.getCaseDetails())
+            .thenReturn(caseDetails);
+
+        when(caseDetails.getCaseData())
+            .thenReturn(asylumCase);
+
+        when(asylumCase.read(
+            HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY,
+            String.class))
+            .thenReturn(Optional.of("NOT VALID JSON"));
+
+        when(homeOfficeApi.midEvent(callback))
+            .thenReturn(asylumCaseWithApiData);
+
+        when(asylumCaseWithApiData.read(
+            HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS,
+            HomeOfficeApiResponseStatusType.class))
+            .thenReturn(Optional.of(
+                HomeOfficeApiResponseStatusType.NOT_FOUND));
+
+        List<IdValue<HomeOfficeAppellant>> result =
+            service.getHomeOfficeReferenceData(
+                HO_REFERENCE,
+                callback
+            );
+
+        Assertions.assertTrue(result.isEmpty());
+
+        verify(homeOfficeApi)
+            .midEvent(callback);
+    }
+
+    private static class SelfReferencingAppellant
+        extends HomeOfficeAppellant {
+
+        private SelfReferencingAppellant self;
+
+        public SelfReferencingAppellant() {
+            this.self = this;
+        }
+
+        public SelfReferencingAppellant getSelf() {
+            return self;
+        }
+    }
+
+    @Test
+    void should_handle_serialisation_exception() {
+
+        when(callback.getCaseDetails())
+            .thenReturn(caseDetails);
+
+        when(caseDetails.getCaseData())
+            .thenReturn(asylumCase);
+
+        when(asylumCase.read(
+            HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY,
+            String.class))
+            .thenReturn(Optional.empty());
+
+        when(homeOfficeApi.midEvent(callback))
+            .thenReturn(asylumCaseWithApiData);
+
+        when(asylumCaseWithApiData.read(
+            HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS,
+            HomeOfficeApiResponseStatusType.class))
+            .thenReturn(Optional.of(
+                HomeOfficeApiResponseStatusType.OK));
+
+        List<IdValue<HomeOfficeAppellant>> appellants =
+            List.of(
+                new IdValue<>(
+                    "1",
+                    new SelfReferencingAppellant()
+                )
+            );
+
+        when(asylumCaseWithApiData.read(HOME_OFFICE_APPELLANTS))
+            .thenReturn(Optional.of(appellants));
+
+        List<IdValue<HomeOfficeAppellant>> result =
+            service.getHomeOfficeReferenceData(
+                HO_REFERENCE,
+                callback
+            );
+
+        Assertions.assertEquals(appellants, result);
+
+        verify(asylumCase, never())
+            .write(
+                eq(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY),
+                any(String.class)
+            );
+    }
+
 }

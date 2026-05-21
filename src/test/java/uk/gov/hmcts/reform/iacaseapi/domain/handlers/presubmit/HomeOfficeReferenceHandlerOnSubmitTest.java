@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -27,9 +28,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.HomeOfficeAppellant;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 
 @ExtendWith(MockitoExtension.class)
 class HomeOfficeReferenceHandlerOnSubmitTest {
@@ -328,4 +331,140 @@ class HomeOfficeReferenceHandlerOnSubmitTest {
                 any(List.class)
             );
     }
+
+    @Test
+    void should_throw_when_handle_called_with_wrong_stage() {
+
+        IllegalStateException exception =
+            assertThrows(
+                IllegalStateException.class,
+                () -> handler.handle(
+                    PreSubmitCallbackStage.ABOUT_TO_START,
+                    callback
+                )
+            );
+
+        assertEquals(
+            "Cannot handle callback",
+            exception.getMessage()
+        );
+    }
+
+    @Test
+    void should_return_empty_response_when_serialised_value_blank() {
+
+        when(callback.getEvent())
+            .thenReturn(Event.START_APPEAL);
+
+        when(callback.getCaseDetails())
+            .thenReturn(caseDetails);
+
+        when(caseDetails.getCaseData())
+            .thenReturn(asylumCase);
+
+        when(asylumCase.read(
+            HOME_OFFICE_REFERENCE_NUMBER,
+            String.class))
+            .thenReturn(Optional.of(HO_REFERENCE));
+
+        when(asylumCase.read(
+            HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY,
+            String.class))
+            .thenReturn(Optional.of(""));
+
+        PreSubmitCallbackResponse<AsylumCase> response =
+            handler.handle(
+                PreSubmitCallbackStage.ABOUT_TO_SUBMIT,
+                callback
+            );
+
+        assertEquals(asylumCase, response.getData());
+
+        verify(asylumCase, never())
+            .write(eq(HOME_OFFICE_APPELLANTS), any());
+    }
+
+    @Test
+    void should_write_deserialised_appellants_with_expected_values() {
+
+        when(callback.getEvent())
+            .thenReturn(Event.START_APPEAL);
+
+        when(callback.getCaseDetails())
+            .thenReturn(caseDetails);
+
+        when(caseDetails.getCaseData())
+            .thenReturn(asylumCase);
+
+        when(asylumCase.read(
+            HOME_OFFICE_REFERENCE_NUMBER,
+            String.class))
+            .thenReturn(Optional.of(HO_REFERENCE));
+
+        String json =
+            "[{\"id\":\"ABC123\",\"value\":{\"familyName\":\"Smith\",\"givenNames\":\"John\"}}]";
+
+        when(asylumCase.read(
+            HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY,
+            String.class))
+            .thenReturn(Optional.of(json));
+
+        handler.handle(
+            PreSubmitCallbackStage.ABOUT_TO_SUBMIT,
+            callback
+        );
+
+        verify(asylumCase)
+            .write(
+                eq(HOME_OFFICE_APPELLANTS),
+                argThat(
+                    (List<IdValue<HomeOfficeAppellant>> appellants) ->
+                        appellants.size() == 1
+                            && "ABC123".equals(
+                                appellants.get(0).getId())
+                            && "Smith".equals(
+                                appellants.get(0)
+                                        .getValue()
+                                        .getFamilyName())
+                            && "John".equals(
+                                appellants.get(0)
+                                        .getValue()
+                                        .getGivenNames())
+                )
+            );
+    }
+
+    @Test
+    void should_handle_malformed_json_exception_branch() {
+
+        when(callback.getEvent())
+            .thenReturn(Event.START_APPEAL);
+
+        when(callback.getCaseDetails())
+            .thenReturn(caseDetails);
+
+        when(caseDetails.getCaseData())
+            .thenReturn(asylumCase);
+
+        when(asylumCase.read(
+            HOME_OFFICE_REFERENCE_NUMBER,
+            String.class))
+            .thenReturn(Optional.of(HO_REFERENCE));
+
+        when(asylumCase.read(
+            HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY,
+            String.class))
+            .thenReturn(Optional.of("{ definitely invalid json"));
+
+        assertDoesNotThrow(
+            () -> handler.handle(
+                PreSubmitCallbackStage.ABOUT_TO_SUBMIT,
+                callback
+            )
+        );
+
+        verify(asylumCase, never())
+            .write(eq(HOME_OFFICE_APPELLANTS), any());
+    }
+
 }
