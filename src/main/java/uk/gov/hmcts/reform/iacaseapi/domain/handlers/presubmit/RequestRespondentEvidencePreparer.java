@@ -90,6 +90,17 @@ public class RequestRespondentEvidencePreparer implements PreSubmitCallbackHandl
             return callbackResponse;
         }
 
+        boolean is24WeekStfCase = asylumCase.read(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class)
+            .map(status -> status == YES)
+            .orElse(false);
+        if (is24WeekStfCase) {
+            boolean listCaseDone = asylumCase.read(LIST_CASE_HEARING_DATE, String.class).isPresent();
+            if (!listCaseDone) {
+                callbackResponse.addError("You must list the case before running the 'Request respondent evidence' event");
+                return callbackResponse;
+            }
+        }
+
         final AppealType appealType = asylumCase.read(APPEAL_TYPE, AppealType.class)
                 .orElseThrow(() -> new IllegalStateException("AppealType is not present."));
 
