@@ -2023,9 +2023,6 @@ public enum AsylumCaseFieldDefinition {
     APPELLANT_PIN_IN_POST(
         "appellantPinInPost", new TypeReference<PinInPostDetails>(){}),
 
-    IS_AIP_TRANSFER(
-        "isAipTransfer", new TypeReference<YesOrNo>(){}),
-
     S94B_STATUS(
         "s94bStatus", new TypeReference<YesOrNo>(){}),
 

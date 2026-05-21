@@ -1,33 +1,49 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOURNEY_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LEGAL_REPRESENTATIVE_DOCUMENTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PREV_JOURNEY_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REASONS_FOR_APPEAL_DATE_UPLOADED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REASONS_FOR_APPEAL_DECISION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REASONS_FOR_APPEAL_DOCUMENTS;
 
-import java.util.Arrays;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ContactPreference;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithMetadata;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.Subscriber;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.SubscriberType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
@@ -38,18 +54,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.Assignment;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.Attributes;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.Jurisdiction;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.QueryRequest;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleAssignmentResource;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleCategory;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleName;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleType;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.IdamService;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.RoleAssignmentService;
 
-@MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 public class PinInPostActivatedTest {
 
@@ -62,324 +67,530 @@ public class PinInPostActivatedTest {
 
     @Mock
     private AsylumCase asylumCase;
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private UserDetailsProvider userDetailsProvider;
-    @Mock private RoleAssignmentService roleAssignmentService;
-    @Mock private IdamService idamService;
-    @Mock private UserDetails userDetails;
-
-    @Mock private PreSubmitCallbackResponse<AsylumCase> callbackResponse;
+    @Mock
+    private Callback<AsylumCase> callback;
+    @Mock
+    private CaseDetails<AsylumCase> caseDetails;
+    @Mock
+    private UserDetailsProvider userDetailsProvider;
+    @Mock
+    private UserDetails userDetails;
+    @Mock
+    private PreSubmitCallbackResponse<AsylumCase> callbackResponse;
+    @Mock
+    private Document document;
+    @Captor
+    private ArgumentCaptor<List<IdValue<Subscriber>>> subscriptionCaptor;
 
     @BeforeEach
     public void setUp() throws Exception {
+        pinInPostActivated = new PinInPostActivated(userDetailsProvider);
+    }
+
+    @Test
+    public void fields_are_updated_if_rep_journey() {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(Event.PIP_ACTIVATION);
-        when(userDetails.getId()).thenReturn(USER_ID);
         when(userDetailsProvider.getUserDetails()).thenReturn(userDetails);
         when(userDetails.getEmailAddress()).thenReturn(AUTH_USER_EMAIL);
         when(userDetails.getId()).thenReturn(USER_ID);
-        pinInPostActivated = new PinInPostActivated(userDetailsProvider, idamService, roleAssignmentService);
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.REP));
+
+        pinInPostActivated.handle(
+            PreSubmitCallbackStage.ABOUT_TO_SUBMIT,
+            callback, callbackResponse
+        );
+
+        verifyTimesJourneyTypeUpdated(1);
+        verifyTimesLrDetailsCleared(1);
+        verify(asylumCase).read(AsylumCaseFieldDefinition.PA_APPEAL_TYPE_PAYMENT_OPTION, String.class);
+        verify(asylumCase).read(AsylumCaseFieldDefinition.REASONS_FOR_APPEAL_DECISION, String.class);
+        verify(asylumCase).read(AsylumCaseFieldDefinition.SUBSCRIPTIONS);
     }
 
     @Test
-    public void journeyType_is_updated() {
-        asylumCase = new AsylumCase();
+    public void only_subscriptions_are_updated_if_aip_journey() {
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getEvent()).thenReturn(Event.PIP_ACTIVATION);
+        when(userDetailsProvider.getUserDetails()).thenReturn(userDetails);
+        when(userDetails.getEmailAddress()).thenReturn(AUTH_USER_EMAIL);
+        when(userDetails.getId()).thenReturn(USER_ID);
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
+
+        pinInPostActivated.handle(
+            PreSubmitCallbackStage.ABOUT_TO_SUBMIT,
+            callback, callbackResponse
+        );
+
+        verifyTimesJourneyTypeUpdated(0);
+        verifyTimesLrDetailsCleared(0);
+        verify(asylumCase, never()).read(AsylumCaseFieldDefinition.PA_APPEAL_TYPE_PAYMENT_OPTION, String.class);
+        verify(asylumCase, never()).read(AsylumCaseFieldDefinition.REASONS_FOR_APPEAL_DECISION, String.class);
+        verify(asylumCase).read(AsylumCaseFieldDefinition.SUBSCRIPTIONS);
+    }
+
+    void verifyTimesJourneyTypeUpdated(int times) {
+        verify(asylumCase, times(times)).write(JOURNEY_TYPE, JourneyType.AIP);
+        verify(asylumCase, times(times)).write(PREV_JOURNEY_TYPE, JourneyType.REP);
+    }
+
+    void verifyTimesLrDetailsCleared(int times) {
+        verify(asylumCase, times(times)).clear(AsylumCaseFieldDefinition.LEGAL_REP_NAME);
+        verify(asylumCase, times(times)).clear(AsylumCaseFieldDefinition.LEGAL_REPRESENTATIVE_NAME);
+        verify(asylumCase, times(times)).clear(AsylumCaseFieldDefinition.LEGAL_REPRESENTATIVE_EMAIL_ADDRESS);
+        verify(asylumCase, times(times)).clear(AsylumCaseFieldDefinition.LEGAL_REP_COMPANY);
+        verify(asylumCase, times(times)).clear(AsylumCaseFieldDefinition.LEGAL_REP_COMPANY_NAME);
+        verify(asylumCase, times(times)).clear(AsylumCaseFieldDefinition.LEGAL_REP_COMPANY_ADDRESS);
+        verify(asylumCase, times(times)).clear(AsylumCaseFieldDefinition.LEGAL_REP_REFERENCE_NUMBER);
+        verify(asylumCase, times(times)).clear(AsylumCaseFieldDefinition.LEGAL_REP_INDIVIDUAL_PARTY_ID);
+        verify(asylumCase, times(times)).clear(AsylumCaseFieldDefinition.LEGAL_REP_ORGANISATION_PARTY_ID);
+    }
+
+    static Stream<Arguments> updateCaseStateScenarios() {
+        return Stream.of(
+            Arguments.of(State.CASE_BUILDING, State.AWAITING_REASONS_FOR_APPEAL),
+            Arguments.of(State.CASE_UNDER_REVIEW, State.REASONS_FOR_APPEAL_SUBMITTED)
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("updateCaseStateScenarios")
+    public void updates_case_building_state(State initialState, State expectedState) {
+        when(caseDetails.getState()).thenReturn(initialState);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getEvent()).thenReturn(Event.PIP_ACTIVATION);
+        when(userDetailsProvider.getUserDetails()).thenReturn(userDetails);
+        when(userDetails.getEmailAddress()).thenReturn(AUTH_USER_EMAIL);
+        when(userDetails.getId()).thenReturn(USER_ID);
 
         PreSubmitCallbackResponse<AsylumCase> response = pinInPostActivated.handle(
             PreSubmitCallbackStage.ABOUT_TO_SUBMIT,
             callback, callbackResponse
         );
 
-        Optional<JourneyType> details = response.getData().read(AsylumCaseFieldDefinition.JOURNEY_TYPE, JourneyType.class);
-        assertTrue(details.isPresent());
-        assertEquals(JourneyType.AIP, details.get());
-        verify(roleAssignmentService, never()).queryRoleAssignments(any(QueryRequest.class));
-        verify(roleAssignmentService, never()).deleteRoleAssignment(anyString(), anyString());
+        assertEquals(expectedState, response.getState());
     }
 
-    @Test
-    public void should_build_subscription_with_contact_preference_email() {
-        asylumCase = new AsylumCase();
+    @ParameterizedTest
+    @EnumSource(value = State.class, mode = EnumSource.Mode.EXCLUDE, names = {"CASE_BUILDING", "CASE_UNDER_REVIEW"})
+    public void should_not_update_case_building_state(State state) {
+        when(caseDetails.getState()).thenReturn(state);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-
-        asylumCase.write(AsylumCaseFieldDefinition.SUBSCRIPTIONS, Optional.of(Collections.emptyList()));
-        asylumCase.write(AsylumCaseFieldDefinition.CONTACT_PREFERENCE, Optional.of(ContactPreference.WANTS_EMAIL));
-        asylumCase.write(AsylumCaseFieldDefinition.MOBILE_NUMBER, Optional.of(APPELLANT_MOBILE_NUMBER));
+        when(callback.getEvent()).thenReturn(Event.PIP_ACTIVATION);
+        when(userDetailsProvider.getUserDetails()).thenReturn(userDetails);
+        when(userDetails.getEmailAddress()).thenReturn(AUTH_USER_EMAIL);
+        when(userDetails.getId()).thenReturn(USER_ID);
 
         PreSubmitCallbackResponse<AsylumCase> response = pinInPostActivated.handle(
             PreSubmitCallbackStage.ABOUT_TO_SUBMIT,
             callback, callbackResponse
         );
 
-        Optional<List<IdValue<Subscriber>>> expectedSubscriptions = response.getData().read(AsylumCaseFieldDefinition.SUBSCRIPTIONS);
+        assertEquals(state, response.getState());
+    }
 
-        assertTrue(expectedSubscriptions.isPresent());
-        assertEquals(1, expectedSubscriptions.get().size());
-        assertEquals(USER_ID, expectedSubscriptions.get().get(0).getId());
+    @ParameterizedTest
+    @CsvSource({
+        "payNow,payNow",
+        "payLater,payLater",
+        "otherValue,payLater"
+    })
+    void should_updatePaymentOption_if_present(String initialPaymentOption, String expectedAipPaymentOption) {
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getEvent()).thenReturn(Event.PIP_ACTIVATION);
+        when(userDetailsProvider.getUserDetails()).thenReturn(userDetails);
+        when(userDetails.getEmailAddress()).thenReturn(AUTH_USER_EMAIL);
+        when(userDetails.getId()).thenReturn(USER_ID);
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class))
+            .thenReturn(Optional.of(JourneyType.REP));
+        when(asylumCase.read(AsylumCaseFieldDefinition.PA_APPEAL_TYPE_PAYMENT_OPTION, String.class))
+            .thenReturn(Optional.of(initialPaymentOption));
+        when(asylumCase.read(AsylumCaseFieldDefinition.REASONS_FOR_APPEAL_DECISION, String.class))
+            .thenReturn(Optional.of(REASON_FOR_APPEAL));
 
-        Subscriber expectedSubscriber = new Subscriber(
+        pinInPostActivated.handle(
+            PreSubmitCallbackStage.ABOUT_TO_SUBMIT,
+            callback, callbackResponse
+        );
+
+        verify(asylumCase).read(AsylumCaseFieldDefinition.PA_APPEAL_TYPE_PAYMENT_OPTION, String.class);
+        verify(asylumCase).write(AsylumCaseFieldDefinition.PA_APPEAL_TYPE_AIP_PAYMENT_OPTION, expectedAipPaymentOption);
+        verify(asylumCase).clear(AsylumCaseFieldDefinition.PA_APPEAL_TYPE_PAYMENT_OPTION);
+    }
+
+    @Test
+    void should_not_updatePaymentOption_if_not_present() {
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getEvent()).thenReturn(Event.PIP_ACTIVATION);
+        when(userDetailsProvider.getUserDetails()).thenReturn(userDetails);
+        when(userDetails.getEmailAddress()).thenReturn(AUTH_USER_EMAIL);
+        when(userDetails.getId()).thenReturn(USER_ID);
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class))
+            .thenReturn(Optional.of(JourneyType.REP));
+        when(asylumCase.read(AsylumCaseFieldDefinition.PA_APPEAL_TYPE_PAYMENT_OPTION, String.class))
+            .thenReturn(Optional.empty());
+        when(asylumCase.read(AsylumCaseFieldDefinition.REASONS_FOR_APPEAL_DECISION, String.class))
+            .thenReturn(Optional.of(REASON_FOR_APPEAL));
+
+        pinInPostActivated.handle(
+            PreSubmitCallbackStage.ABOUT_TO_SUBMIT,
+            callback, callbackResponse
+        );
+
+        verify(asylumCase).read(AsylumCaseFieldDefinition.PA_APPEAL_TYPE_PAYMENT_OPTION, String.class);
+        verify(asylumCase, never()).write(eq(AsylumCaseFieldDefinition.PA_APPEAL_TYPE_AIP_PAYMENT_OPTION), anyString());
+        verify(asylumCase, never()).clear(AsylumCaseFieldDefinition.PA_APPEAL_TYPE_PAYMENT_OPTION);
+    }
+
+    @Test
+    void should_buildSubscriptions_if_none_existing_no_contact_preference() {
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getEvent()).thenReturn(Event.PIP_ACTIVATION);
+        when(userDetailsProvider.getUserDetails()).thenReturn(userDetails);
+        when(userDetails.getEmailAddress()).thenReturn(AUTH_USER_EMAIL);
+        when(userDetails.getId()).thenReturn(USER_ID);
+        when(asylumCase.read(AsylumCaseFieldDefinition.SUBSCRIPTIONS)).thenReturn(Optional.empty());
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.REP));
+        when(asylumCase.read(AsylumCaseFieldDefinition.PA_APPEAL_TYPE_PAYMENT_OPTION, String.class))
+            .thenReturn(Optional.empty());
+        when(asylumCase.read(AsylumCaseFieldDefinition.REASONS_FOR_APPEAL_DECISION, String.class))
+            .thenReturn(Optional.of(REASON_FOR_APPEAL));
+
+        pinInPostActivated.handle(
+            PreSubmitCallbackStage.ABOUT_TO_SUBMIT,
+            callback, callbackResponse
+        );
+
+        verify(asylumCase).read(AsylumCaseFieldDefinition.SUBSCRIPTIONS);
+        verify(asylumCase).read(AsylumCaseFieldDefinition.CONTACT_PREFERENCE, ContactPreference.class);
+        verify(asylumCase).read(AsylumCaseFieldDefinition.MOBILE_NUMBER, String.class);
+        verify(asylumCase).write(eq(AsylumCaseFieldDefinition.SUBSCRIPTIONS), subscriptionCaptor.capture());
+        List<IdValue<Subscriber>> actualSubscriptions = subscriptionCaptor.getValue();
+        assertEquals(1, actualSubscriptions.size());
+        assertEquals(USER_ID, actualSubscriptions.get(0).getId());
+        Subscriber actualSubscriber = actualSubscriptions.get(0).getValue();
+        assertEquals(SubscriberType.APPELLANT, actualSubscriber.getSubscriber());
+        assertEquals(AUTH_USER_EMAIL, actualSubscriber.getEmail());
+        assertEquals(YesOrNo.NO, actualSubscriber.getWantsEmail());
+        assertNull(actualSubscriber.getMobileNumber());
+        assertEquals(YesOrNo.NO, actualSubscriber.getWantsSms());
+
+        verify(asylumCase).clear(AsylumCaseFieldDefinition.EMAIL);
+        verify(asylumCase).clear(AsylumCaseFieldDefinition.MOBILE_NUMBER);
+        verify(asylumCase).clear(AsylumCaseFieldDefinition.CONTACT_PREFERENCE);
+        verify(asylumCase).clear(AsylumCaseFieldDefinition.CONTACT_PREFERENCE_DESCRIPTION);
+    }
+
+    static Stream<Arguments> buildSubscriptionsScenarios() {
+        return Stream.of(
+            Arguments.of(ContactPreference.WANTS_EMAIL, YesOrNo.YES, YesOrNo.NO, null),
+            Arguments.of(ContactPreference.WANTS_SMS, YesOrNo.NO, YesOrNo.YES, null),
+            Arguments.of(null, YesOrNo.NO, YesOrNo.NO, "123456789")
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("buildSubscriptionsScenarios")
+    void should_buildSubscriptions(ContactPreference contactPreference,
+                                   YesOrNo wantsEmail,
+                                   YesOrNo wantsSms,
+                                   String mobileNumber) {
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getEvent()).thenReturn(Event.PIP_ACTIVATION);
+        when(userDetailsProvider.getUserDetails()).thenReturn(userDetails);
+        when(userDetails.getEmailAddress()).thenReturn(AUTH_USER_EMAIL);
+        when(userDetails.getId()).thenReturn(USER_ID);
+        when(asylumCase.read(AsylumCaseFieldDefinition.CONTACT_PREFERENCE, ContactPreference.class))
+            .thenReturn(Optional.ofNullable(contactPreference));
+        when(asylumCase.read(AsylumCaseFieldDefinition.MOBILE_NUMBER, String.class))
+            .thenReturn(Optional.ofNullable(mobileNumber));
+        when(asylumCase.read(AsylumCaseFieldDefinition.SUBSCRIPTIONS)).thenReturn(Optional.empty());
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.REP));
+        when(asylumCase.read(AsylumCaseFieldDefinition.PA_APPEAL_TYPE_PAYMENT_OPTION, String.class))
+            .thenReturn(Optional.empty());
+        when(asylumCase.read(AsylumCaseFieldDefinition.REASONS_FOR_APPEAL_DECISION, String.class))
+            .thenReturn(Optional.of(REASON_FOR_APPEAL));
+
+        pinInPostActivated.handle(
+            PreSubmitCallbackStage.ABOUT_TO_SUBMIT,
+            callback, callbackResponse
+        );
+
+        verify(asylumCase).read(AsylumCaseFieldDefinition.SUBSCRIPTIONS);
+        verify(asylumCase).read(AsylumCaseFieldDefinition.CONTACT_PREFERENCE, ContactPreference.class);
+        verify(asylumCase).read(AsylumCaseFieldDefinition.MOBILE_NUMBER, String.class);
+        verify(asylumCase).write(eq(AsylumCaseFieldDefinition.SUBSCRIPTIONS), subscriptionCaptor.capture());
+        List<IdValue<Subscriber>> actualSubscriptions = subscriptionCaptor.getValue();
+        assertEquals(1, actualSubscriptions.size());
+        assertEquals(USER_ID, actualSubscriptions.get(0).getId());
+        Subscriber actualSubscriber = actualSubscriptions.get(0).getValue();
+        assertEquals(SubscriberType.APPELLANT, actualSubscriber.getSubscriber());
+        assertEquals(AUTH_USER_EMAIL, actualSubscriber.getEmail());
+        assertEquals(wantsEmail, actualSubscriber.getWantsEmail());
+        assertEquals(mobileNumber, actualSubscriber.getMobileNumber());
+        assertEquals(wantsSms, actualSubscriber.getWantsSms());
+
+        verify(asylumCase).clear(AsylumCaseFieldDefinition.EMAIL);
+        verify(asylumCase).clear(AsylumCaseFieldDefinition.MOBILE_NUMBER);
+        verify(asylumCase).clear(AsylumCaseFieldDefinition.CONTACT_PREFERENCE);
+        verify(asylumCase).clear(AsylumCaseFieldDefinition.CONTACT_PREFERENCE_DESCRIPTION);
+    }
+
+    @Test
+    void should_updateExistingSubscription_if_existing() {
+        Subscriber existingSubscriber = new Subscriber(
             SubscriberType.APPELLANT,
-            AUTH_USER_EMAIL,
+            APPELLANT_EMAIL,
             YesOrNo.YES,
             APPELLANT_MOBILE_NUMBER,
             YesOrNo.NO);
-        assertThat(expectedSubscriptions.get().get(0).getValue()).usingRecursiveComparison().isEqualTo(expectedSubscriber);
-        verify(roleAssignmentService, never()).queryRoleAssignments(any(QueryRequest.class));
-        verify(roleAssignmentService, never()).deleteRoleAssignment(anyString(), anyString());
-    }
-
-    @Test
-    public void should_build_subscription_with_contact_preference_sms() {
-        asylumCase = new AsylumCase();
+        when(asylumCase.read(AsylumCaseFieldDefinition.SUBSCRIPTIONS)).thenReturn(Optional.of(List.of(new IdValue<>("existingId", existingSubscriber))));
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getEvent()).thenReturn(Event.PIP_ACTIVATION);
+        when(userDetailsProvider.getUserDetails()).thenReturn(userDetails);
+        when(userDetails.getEmailAddress()).thenReturn(AUTH_USER_EMAIL);
+        when(userDetails.getId()).thenReturn(USER_ID);
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.REP));
+        when(asylumCase.read(AsylumCaseFieldDefinition.PA_APPEAL_TYPE_PAYMENT_OPTION, String.class))
+            .thenReturn(Optional.empty());
+        when(asylumCase.read(AsylumCaseFieldDefinition.REASONS_FOR_APPEAL_DECISION, String.class))
+            .thenReturn(Optional.of(REASON_FOR_APPEAL));
 
-        asylumCase.write(AsylumCaseFieldDefinition.SUBSCRIPTIONS, Optional.of(Collections.emptyList()));
-        asylumCase.write(AsylumCaseFieldDefinition.CONTACT_PREFERENCE, Optional.of(ContactPreference.WANTS_SMS));
-        asylumCase.write(AsylumCaseFieldDefinition.MOBILE_NUMBER, Optional.of(APPELLANT_MOBILE_NUMBER));
-
-        PreSubmitCallbackResponse<AsylumCase> response = pinInPostActivated.handle(
+        pinInPostActivated.handle(
             PreSubmitCallbackStage.ABOUT_TO_SUBMIT,
             callback, callbackResponse
         );
 
-        Optional<List<IdValue<Subscriber>>> expectedSubscriptions = response.getData().read(AsylumCaseFieldDefinition.SUBSCRIPTIONS);
+        verify(asylumCase).read(AsylumCaseFieldDefinition.SUBSCRIPTIONS);
+        verify(asylumCase).clear(AsylumCaseFieldDefinition.SUBSCRIPTIONS);
+        verify(asylumCase).write(eq(AsylumCaseFieldDefinition.SUBSCRIPTIONS), subscriptionCaptor.capture());
+        List<IdValue<Subscriber>> actualSubscriptions = subscriptionCaptor.getValue();
+        assertEquals(1, actualSubscriptions.size());
+        assertEquals(USER_ID, actualSubscriptions.get(0).getId());
+        Subscriber actualSubscriber = actualSubscriptions.get(0).getValue();
+        assertEquals(SubscriberType.APPELLANT, actualSubscriber.getSubscriber());
+        assertEquals(AUTH_USER_EMAIL, actualSubscriber.getEmail());
+        assertEquals(YesOrNo.YES, actualSubscriber.getWantsEmail());
+        assertEquals(APPELLANT_MOBILE_NUMBER, actualSubscriber.getMobileNumber());
+        assertEquals(YesOrNo.NO, actualSubscriber.getWantsSms());
+    }
 
-        assertTrue(expectedSubscriptions.isPresent());
-        assertEquals(1, expectedSubscriptions.get().size());
-        assertEquals(USER_ID, expectedSubscriptions.get().get(0).getId());
-
-        Subscriber expectedSubscriber = new Subscriber(
+    @Test
+    void should_not_updateExistingSubscription_if_existing_but_wants_sms() {
+        Subscriber existingSubscriber = new Subscriber(
             SubscriberType.APPELLANT,
-            AUTH_USER_EMAIL,
+            APPELLANT_EMAIL,
             YesOrNo.NO,
             APPELLANT_MOBILE_NUMBER,
             YesOrNo.YES);
-        assertThat(expectedSubscriptions.get().get(0).getValue()).usingRecursiveComparison().isEqualTo(expectedSubscriber);
-        verify(roleAssignmentService, never()).queryRoleAssignments(any(QueryRequest.class));
-        verify(roleAssignmentService, never()).deleteRoleAssignment(anyString(), anyString());
-    }
-
-    @Test
-    public void should_update_existing_subscription() {
-        asylumCase = new AsylumCase();
+        when(asylumCase.read(AsylumCaseFieldDefinition.SUBSCRIPTIONS)).thenReturn(Optional.of(List.of(new IdValue<>("existingId", existingSubscriber))));
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(caseDetails.getState()).thenReturn(State.APPEAL_SUBMITTED);
+        when(callback.getEvent()).thenReturn(Event.PIP_ACTIVATION);
+        when(userDetailsProvider.getUserDetails()).thenReturn(userDetails);
+        when(userDetails.getEmailAddress()).thenReturn(AUTH_USER_EMAIL);
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.REP));
+        when(asylumCase.read(AsylumCaseFieldDefinition.PA_APPEAL_TYPE_PAYMENT_OPTION, String.class))
+            .thenReturn(Optional.empty());
+        when(asylumCase.read(AsylumCaseFieldDefinition.REASONS_FOR_APPEAL_DECISION, String.class))
+            .thenReturn(Optional.of(REASON_FOR_APPEAL));
 
-        Subscriber existingSubscriber = new Subscriber(
-                SubscriberType.APPELLANT,
-                APPELLANT_EMAIL,
-                YesOrNo.YES,
-                APPELLANT_MOBILE_NUMBER,
-                YesOrNo.NO);
-        asylumCase.write(AsylumCaseFieldDefinition.SUBSCRIPTIONS, Optional.of(Arrays.asList(new IdValue<>(USER_ID, existingSubscriber))));
-        asylumCase.write(AsylumCaseFieldDefinition.CONTACT_PREFERENCE, Optional.of(ContactPreference.WANTS_SMS));
-        asylumCase.write(AsylumCaseFieldDefinition.MOBILE_NUMBER, Optional.of(APPELLANT_MOBILE_NUMBER));
-
-        PreSubmitCallbackResponse<AsylumCase> response = pinInPostActivated.handle(
+        pinInPostActivated.handle(
             PreSubmitCallbackStage.ABOUT_TO_SUBMIT,
             callback, callbackResponse
         );
-        assertEquals(State.APPEAL_SUBMITTED, response.getState());
 
-        Optional<List<IdValue<Subscriber>>> expectedSubscriptions = response.getData().read(AsylumCaseFieldDefinition.SUBSCRIPTIONS);
+        verify(asylumCase).read(AsylumCaseFieldDefinition.SUBSCRIPTIONS);
+        verify(asylumCase, never()).clear(AsylumCaseFieldDefinition.SUBSCRIPTIONS);
+        verify(asylumCase, never()).write(eq(AsylumCaseFieldDefinition.SUBSCRIPTIONS), anyList());
+    }
 
-        assertTrue(expectedSubscriptions.isPresent());
-        assertEquals(1, expectedSubscriptions.get().size());
-        assertEquals(USER_ID, expectedSubscriptions.get().get(0).getId());
-
-        Subscriber expectedSubscriber = new Subscriber(
+    @Test
+    void should_not_updateExistingSubscription_if_existing_but_email_is_same() {
+        Subscriber existingSubscriber = new Subscriber(
             SubscriberType.APPELLANT,
-            AUTH_USER_EMAIL,
+            APPELLANT_EMAIL,
             YesOrNo.YES,
             APPELLANT_MOBILE_NUMBER,
             YesOrNo.NO);
-        assertThat(expectedSubscriptions.get().get(0).getValue()).usingRecursiveComparison().isEqualTo(expectedSubscriber);
-        verify(roleAssignmentService, never()).queryRoleAssignments(any(QueryRequest.class));
-        verify(roleAssignmentService, never()).deleteRoleAssignment(anyString(), anyString());
-    }
-
-    @Test
-    public void payment_type_should_be_updated_for_aip() {
-        asylumCase = new AsylumCase();
+        when(asylumCase.read(AsylumCaseFieldDefinition.SUBSCRIPTIONS)).thenReturn(Optional.of(List.of(new IdValue<>("existingId", existingSubscriber))));
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getEvent()).thenReturn(Event.PIP_ACTIVATION);
+        when(userDetailsProvider.getUserDetails()).thenReturn(userDetails);
+        when(userDetails.getEmailAddress()).thenReturn(APPELLANT_EMAIL);
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.REP));
+        when(asylumCase.read(AsylumCaseFieldDefinition.PA_APPEAL_TYPE_PAYMENT_OPTION, String.class))
+            .thenReturn(Optional.empty());
+        when(asylumCase.read(AsylumCaseFieldDefinition.REASONS_FOR_APPEAL_DECISION, String.class))
+            .thenReturn(Optional.of(REASON_FOR_APPEAL));
 
-        asylumCase.write(AsylumCaseFieldDefinition.PA_APPEAL_TYPE_PAYMENT_OPTION, Optional.of("payNow"));
-
-        PreSubmitCallbackResponse<AsylumCase> response = pinInPostActivated.handle(
-                PreSubmitCallbackStage.ABOUT_TO_SUBMIT,
-                callback, callbackResponse
-        );
-
-        Optional<String> paymentOption = response.getData().read(AsylumCaseFieldDefinition.PA_APPEAL_TYPE_PAYMENT_OPTION);
-        assertFalse(paymentOption.isPresent());
-
-        Optional<String> aipPaymentOption = response.getData().read(AsylumCaseFieldDefinition.PA_APPEAL_TYPE_AIP_PAYMENT_OPTION);
-        assertTrue(aipPaymentOption.isPresent());
-        assertEquals("payNow", aipPaymentOption.get());
-        verify(roleAssignmentService, never()).queryRoleAssignments(any(QueryRequest.class));
-        verify(roleAssignmentService, never()).deleteRoleAssignment(anyString(), anyString());
-    }
-
-    @Test
-    public void caseData_should_contain_reason_for_appeal_field() {
-        Document document = new Document(
-            "documentUrl", "documentBinaryUrl", "documentFileName"
-        );
-        DocumentWithMetadata documentWithMetadata = new DocumentWithMetadata(
-            document, "description", "dateUploaded", DocumentTag.CASE_ARGUMENT
-        );
-        IdValue<DocumentWithMetadata> documentWithMetadataIdValue = new IdValue<>("id1", documentWithMetadata);
-        List<IdValue<DocumentWithMetadata>> legalRepresentativeDocuments = Arrays.asList(documentWithMetadataIdValue);
-
-        when(asylumCase.read(LEGAL_REPRESENTATIVE_DOCUMENTS))
-            .thenReturn(Optional.of(legalRepresentativeDocuments));
-        when(asylumCase.read(AsylumCaseFieldDefinition.SUBSCRIPTIONS)).thenReturn(Optional.of(Collections.emptyList()));
-
-        PreSubmitCallbackResponse<AsylumCase> response = pinInPostActivated.handle(
+        pinInPostActivated.handle(
             PreSubmitCallbackStage.ABOUT_TO_SUBMIT,
             callback, callbackResponse
         );
-        assertNotNull(response);
-        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.LEGAL_REP_NAME);
-        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.LEGAL_REPRESENTATIVE_NAME);
-        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.LEGAL_REPRESENTATIVE_EMAIL_ADDRESS);
-        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.LEGAL_REP_COMPANY);
-        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.LEGAL_REP_COMPANY_NAME);
-        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.LEGAL_REP_COMPANY_ADDRESS);
-        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.LEGAL_REP_REFERENCE_NUMBER);
-        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.LEGAL_REP_INDIVIDUAL_PARTY_ID);
-        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.LEGAL_REP_ORGANISATION_PARTY_ID);
-        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.EMAIL);
-        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.MOBILE_NUMBER);
-        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.CONTACT_PREFERENCE);
-        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.CONTACT_PREFERENCE_DESCRIPTION);
-        verify(asylumCase, times(1)).write(AsylumCaseFieldDefinition.PREV_JOURNEY_TYPE, JourneyType.REP);
 
-        assertEquals(asylumCase, response.getData());
-
-        verify(asylumCase, times(1)).write(AsylumCaseFieldDefinition.REASONS_FOR_APPEAL_DECISION, documentWithMetadata.getDescription());
-        verify(asylumCase, times(1)).write(AsylumCaseFieldDefinition.REASONS_FOR_APPEAL_DATE_UPLOADED, documentWithMetadata.getDateUploaded());
-        verify(asylumCase, times(1)).write(AsylumCaseFieldDefinition.REASONS_FOR_APPEAL_DOCUMENTS, Arrays.asList(documentWithMetadataIdValue));
-        verify(roleAssignmentService, never()).queryRoleAssignments(any(QueryRequest.class));
-        verify(roleAssignmentService, never()).deleteRoleAssignment(anyString(), anyString());
+        verify(asylumCase).read(AsylumCaseFieldDefinition.SUBSCRIPTIONS);
+        verify(asylumCase, never()).clear(AsylumCaseFieldDefinition.SUBSCRIPTIONS);
+        verify(asylumCase, never()).write(eq(AsylumCaseFieldDefinition.SUBSCRIPTIONS), anyList());
     }
 
     @Test
-    public void when_state_caseBuilding_change_to_awaitingReasonsForAppeal() {
-        asylumCase = new AsylumCase();
+    void should_not_updateReasonForAppeal_if_decision_not_empty() {
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(caseDetails.getState()).thenReturn(State.CASE_BUILDING);
+        when(callback.getEvent()).thenReturn(Event.PIP_ACTIVATION);
+        when(userDetailsProvider.getUserDetails()).thenReturn(userDetails);
+        when(userDetails.getEmailAddress()).thenReturn(AUTH_USER_EMAIL);
+        when(userDetails.getId()).thenReturn(USER_ID);
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.REP));
+        when(asylumCase.read(AsylumCaseFieldDefinition.PA_APPEAL_TYPE_PAYMENT_OPTION, String.class))
+            .thenReturn(Optional.empty());
+        when(asylumCase.read(AsylumCaseFieldDefinition.REASONS_FOR_APPEAL_DECISION, String.class))
+            .thenReturn(Optional.of(REASON_FOR_APPEAL));
+        when(asylumCase.read(AsylumCaseFieldDefinition.SUBSCRIPTIONS)).thenReturn(Optional.empty());
 
-        PreSubmitCallbackResponse<AsylumCase> response = pinInPostActivated.handle(
-                PreSubmitCallbackStage.ABOUT_TO_SUBMIT,
-                callback, callbackResponse
+        pinInPostActivated.handle(
+            PreSubmitCallbackStage.ABOUT_TO_SUBMIT,
+            callback, callbackResponse
         );
 
-        assertEquals(State.AWAITING_REASONS_FOR_APPEAL, response.getState());
-        verify(roleAssignmentService, never()).queryRoleAssignments(any(QueryRequest.class));
-        verify(roleAssignmentService, never()).deleteRoleAssignment(anyString(), anyString());
+        verify(asylumCase, never()).read(LEGAL_REPRESENTATIVE_DOCUMENTS);
+        verify(asylumCase, never()).write(eq(REASONS_FOR_APPEAL_DECISION), anyString());
+        verify(asylumCase, never()).write(eq(REASONS_FOR_APPEAL_DATE_UPLOADED), anyString());
+        verify(asylumCase, never()).write(eq(REASONS_FOR_APPEAL_DOCUMENTS), anyList());
     }
 
     @Test
-    public void when_state_caseUnderReview_change_to_reasonsForAppealSubmitted() {
-        asylumCase = new AsylumCase();
+    void should_not_updateReasonForAppeal_if_decision_empty_no_legal_rep_documents() {
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(caseDetails.getState()).thenReturn(State.CASE_UNDER_REVIEW);
+        when(callback.getEvent()).thenReturn(Event.PIP_ACTIVATION);
+        when(userDetailsProvider.getUserDetails()).thenReturn(userDetails);
+        when(userDetails.getEmailAddress()).thenReturn(AUTH_USER_EMAIL);
+        when(userDetails.getId()).thenReturn(USER_ID);
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.REP));
+        when(asylumCase.read(AsylumCaseFieldDefinition.PA_APPEAL_TYPE_PAYMENT_OPTION, String.class))
+            .thenReturn(Optional.empty());
+        when(asylumCase.read(AsylumCaseFieldDefinition.REASONS_FOR_APPEAL_DECISION, String.class))
+            .thenReturn(Optional.empty());
+        when(asylumCase.read(AsylumCaseFieldDefinition.SUBSCRIPTIONS)).thenReturn(Optional.empty());
+        when(asylumCase.read(LEGAL_REPRESENTATIVE_DOCUMENTS)).thenReturn(Optional.empty());
 
-        PreSubmitCallbackResponse<AsylumCase> response = pinInPostActivated.handle(
+        pinInPostActivated.handle(
             PreSubmitCallbackStage.ABOUT_TO_SUBMIT,
             callback, callbackResponse
         );
 
-        assertEquals(State.REASONS_FOR_APPEAL_SUBMITTED, response.getState());
-        verify(roleAssignmentService, never()).queryRoleAssignments(any(QueryRequest.class));
-        verify(roleAssignmentService, never()).deleteRoleAssignment(anyString(), anyString());
+        verify(asylumCase).read(LEGAL_REPRESENTATIVE_DOCUMENTS);
+        verify(asylumCase, never()).write(eq(REASONS_FOR_APPEAL_DECISION), anyString());
+        verify(asylumCase, never()).write(eq(REASONS_FOR_APPEAL_DATE_UPLOADED), anyString());
+        verify(asylumCase, never()).write(eq(REASONS_FOR_APPEAL_DOCUMENTS), anyList());
     }
 
-    @Test
-    public void should_not_update_reason_for_appeal_if_already_existis() {
-        when(asylumCase.read(AsylumCaseFieldDefinition.REASONS_FOR_APPEAL_DECISION)).thenReturn(Optional.of(REASON_FOR_APPEAL));
-        Document document = new Document(
-            "documentUrl", "documentBinaryUrl", "documentFileName"
+    @ParameterizedTest
+    @EnumSource(value = DocumentTag.class, names = {"CASE_ARGUMENT"}, mode = EnumSource.Mode.EXCLUDE)
+    void should_not_updateReasonForAppeal_if_decision_empty_no_case_argument_documents(DocumentTag documentTag) {
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getEvent()).thenReturn(Event.PIP_ACTIVATION);
+        when(userDetailsProvider.getUserDetails()).thenReturn(userDetails);
+        when(userDetails.getEmailAddress()).thenReturn(AUTH_USER_EMAIL);
+        when(userDetails.getId()).thenReturn(USER_ID);
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.REP));
+        when(asylumCase.read(AsylumCaseFieldDefinition.PA_APPEAL_TYPE_PAYMENT_OPTION, String.class))
+            .thenReturn(Optional.empty());
+        when(asylumCase.read(AsylumCaseFieldDefinition.REASONS_FOR_APPEAL_DECISION, String.class))
+            .thenReturn(Optional.empty());
+        when(asylumCase.read(AsylumCaseFieldDefinition.SUBSCRIPTIONS)).thenReturn(Optional.empty());
+        List<IdValue<DocumentWithMetadata>> legalRepDocuments = List.of(
+            new IdValue<>("1", new DocumentWithMetadata(document,
+                "someDescription", "someDateUploaded", documentTag))
         );
-        DocumentWithMetadata documentWithMetadata = new DocumentWithMetadata(
-            document, "description", "dateUploaded", DocumentTag.CASE_ARGUMENT
-        );
-        IdValue<DocumentWithMetadata> documentWithMetadataIdValue = new IdValue<>("id1", documentWithMetadata);
-        List<IdValue<DocumentWithMetadata>> legalRepresentativeDocuments = Arrays.asList(documentWithMetadataIdValue);
+        when(asylumCase.read(LEGAL_REPRESENTATIVE_DOCUMENTS)).thenReturn(Optional.of(legalRepDocuments));
 
-        when(asylumCase.read(LEGAL_REPRESENTATIVE_DOCUMENTS))
-            .thenReturn(Optional.of(legalRepresentativeDocuments));
-
-        PreSubmitCallbackResponse<AsylumCase> response = pinInPostActivated.handle(
+        pinInPostActivated.handle(
             PreSubmitCallbackStage.ABOUT_TO_SUBMIT,
             callback, callbackResponse
         );
 
-        assertNotNull(response);
-
-        verify(asylumCase, times(0)).write(AsylumCaseFieldDefinition.REASONS_FOR_APPEAL_DECISION, documentWithMetadata.getDescription());
-        verify(asylumCase, times(0)).write(AsylumCaseFieldDefinition.REASONS_FOR_APPEAL_DATE_UPLOADED, documentWithMetadata.getDateUploaded());
-        verify(asylumCase, times(0)).write(AsylumCaseFieldDefinition.REASONS_FOR_APPEAL_DOCUMENTS, Arrays.asList(documentWithMetadataIdValue));
-        verify(roleAssignmentService, never()).queryRoleAssignments(any(QueryRequest.class));
-        verify(roleAssignmentService, never()).deleteRoleAssignment(anyString(), anyString());
+        verify(asylumCase).read(LEGAL_REPRESENTATIVE_DOCUMENTS);
+        verify(asylumCase, never()).write(eq(REASONS_FOR_APPEAL_DECISION), anyString());
+        verify(asylumCase, never()).write(eq(REASONS_FOR_APPEAL_DATE_UPLOADED), anyString());
+        verify(asylumCase, never()).write(eq(REASONS_FOR_APPEAL_DOCUMENTS), anyList());
     }
 
     @Test
-    public void should_revoke_appellant_access_to_case_if_aip_transfer() {
-        when(asylumCase.read(AsylumCaseFieldDefinition.IS_AIP_TRANSFER, YesOrNo.class))
-            .thenReturn(Optional.of(YesOrNo.YES));
-        when(idamService.getServiceUserToken()).thenReturn("token");
+    void should_updateReasonForAppeal_if_decision_empty_with_case_argument_documents() {
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getEvent()).thenReturn(Event.PIP_ACTIVATION);
+        when(userDetailsProvider.getUserDetails()).thenReturn(userDetails);
+        when(userDetails.getEmailAddress()).thenReturn(AUTH_USER_EMAIL);
+        when(userDetails.getId()).thenReturn(USER_ID);
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.REP));
+        when(asylumCase.read(AsylumCaseFieldDefinition.PA_APPEAL_TYPE_PAYMENT_OPTION, String.class))
+            .thenReturn(Optional.empty());
+        when(asylumCase.read(AsylumCaseFieldDefinition.REASONS_FOR_APPEAL_DECISION, String.class))
+            .thenReturn(Optional.empty());
+        when(asylumCase.read(AsylumCaseFieldDefinition.SUBSCRIPTIONS)).thenReturn(Optional.empty());
+        String docDescription = "someDescription";
+        String docDateUploaded = "someDateUploaded";
+        List<IdValue<DocumentWithMetadata>> caseArgumentDocuments = List.of(
+            new IdValue<>("1", new DocumentWithMetadata(document,
+                docDescription, docDateUploaded, DocumentTag.CASE_ARGUMENT))
+        );
+        List<IdValue<DocumentWithMetadata>> legalRepDocuments = new ArrayList<>(List.of(
+            new IdValue<>("2", new DocumentWithMetadata(document,
+                docDescription, docDateUploaded, DocumentTag.ADA_SUITABILITY))
+        ));
+        legalRepDocuments.addAll(caseArgumentDocuments);
+        when(asylumCase.read(LEGAL_REPRESENTATIVE_DOCUMENTS)).thenReturn(Optional.of(legalRepDocuments));
 
-        String assignmentId = "assignmentId";
-        QueryRequest queryRequest = QueryRequest.builder()
-            .roleType(List.of(RoleType.CASE))
-            .roleName(List.of(RoleName.CREATOR))
-            .roleCategory(List.of(RoleCategory.CITIZEN))
-            .attributes(Map.of(
-                Attributes.JURISDICTION, List.of(Jurisdiction.IA.name()),
-                Attributes.CASE_TYPE, List.of("Asylum"),
-                Attributes.CASE_ID, List.of("0")
-            )).build();
-
-        RoleAssignmentResource roleAssignmentResource =
-            new RoleAssignmentResource(Collections.singletonList(Assignment.builder().id(assignmentId).build()));
-
-        when(roleAssignmentService.queryRoleAssignments(any())).thenReturn(roleAssignmentResource);
-
-        PreSubmitCallbackResponse<AsylumCase> response = pinInPostActivated.handle(
+        pinInPostActivated.handle(
             PreSubmitCallbackStage.ABOUT_TO_SUBMIT,
             callback, callbackResponse
         );
 
-        verify(roleAssignmentService, times(1)).queryRoleAssignments(queryRequest);
-        verify(roleAssignmentService, times(1)).deleteRoleAssignment(assignmentId, "token");
-        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.IS_AIP_TRANSFER);
+        verify(asylumCase).read(LEGAL_REPRESENTATIVE_DOCUMENTS);
+        verify(asylumCase).write(REASONS_FOR_APPEAL_DECISION, docDescription);
+        verify(asylumCase).write(REASONS_FOR_APPEAL_DATE_UPLOADED, docDateUploaded);
+        verify(asylumCase).write(REASONS_FOR_APPEAL_DOCUMENTS, caseArgumentDocuments);
     }
 
     @Test
-    @SuppressWarnings("unchecked")
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
+        when(callback.getEvent()).thenReturn(Event.PIP_ACTIVATION);
+        assertTrue(pinInPostActivated.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback));
+    }
 
-        for (Event event : Event.values()) {
+    @ParameterizedTest
+    @EnumSource(value = Event.class, mode = EnumSource.Mode.EXCLUDE,
+        names = {"PIP_ACTIVATION"})
+    void it_cannot_handle_callback_invalid_event(Event event) {
+        when(callback.getEvent()).thenReturn(event);
+        assertFalse(pinInPostActivated.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback));
+    }
 
-            when(callback.getEvent()).thenReturn(event);
+    @ParameterizedTest
+    @EnumSource(value = PreSubmitCallbackStage.class, mode = EnumSource.Mode.EXCLUDE, names = {"ABOUT_TO_SUBMIT"})
+    void it_cannot_handle_callback_invalid_callbackStage(PreSubmitCallbackStage callbackStage) {
+        assertFalse(pinInPostActivated.canHandle(callbackStage, callback));
+    }
 
-            for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
-
-                boolean canHandle = pinInPostActivated.canHandle(callbackStage, callback);
-
-                if (callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-                    && event == Event.PIP_ACTIVATION) {
-                    assertTrue(canHandle);
-                } else {
-                    assertFalse(canHandle);
-                }
-            }
-            reset(callback);
-        }
+    @Test
+    void should_throw_exception_when_cannot_handle() {
+        IllegalStateException exception = assertThrows(IllegalStateException.class,
+            () -> pinInPostActivated.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback, callbackResponse));
+        assertEquals("Cannot handle callback", exception.getMessage());
     }
 }

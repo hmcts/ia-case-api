@@ -10,6 +10,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.Organisation;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.OrganisationPolicy;
 
 @Component
 public class GeneratePinInPostPreparer implements PreSubmitCallbackHandler<AsylumCase> {
@@ -35,22 +37,17 @@ public class GeneratePinInPostPreparer implements PreSubmitCallbackHandler<Asylu
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
         PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
-
-        if (isRepresented(asylumCase)) {
-            response.addError("Case still has a legal representative, cannot generate PIN in post. Please run Remove Legal Representative event to generate.");
-        }
-        return response;
+        return isUnrepresented(asylumCase) ? response : response
+            .withError("Case still has a legal representative, cannot generate PIN in post. " +
+                "Please run Remove Legal Representative event to generate.");
     }
 
-    private boolean isRepresented(AsylumCase asylumCase) {
-        return !(asylumCase.read(AsylumCaseFieldDefinition.LEGAL_REP_NAME, String.class).orElse("").isEmpty()
-            && asylumCase.read(AsylumCaseFieldDefinition.LEGAL_REPRESENTATIVE_NAME, String.class).orElse("").isEmpty()
-            && asylumCase.read(AsylumCaseFieldDefinition.LEGAL_REPRESENTATIVE_EMAIL_ADDRESS, String.class).orElse("").isEmpty()
-            && asylumCase.read(AsylumCaseFieldDefinition.LEGAL_REP_COMPANY, String.class).orElse("").isEmpty()
-            && asylumCase.read(AsylumCaseFieldDefinition.LEGAL_REP_COMPANY_NAME, String.class).orElse("").isEmpty()
-            && asylumCase.read(AsylumCaseFieldDefinition.LEGAL_REP_REFERENCE_NUMBER, String.class).orElse("").isEmpty()
-            && asylumCase.read(AsylumCaseFieldDefinition.LEGAL_REP_INDIVIDUAL_PARTY_ID, String.class).orElse("").isEmpty()
-            && asylumCase.read(AsylumCaseFieldDefinition.LEGAL_REP_ORGANISATION_PARTY_ID, String.class).orElse("").isEmpty());
+    private boolean isUnrepresented(AsylumCase asylumCase) {
+        return asylumCase.read(AsylumCaseFieldDefinition.LOCAL_AUTHORITY_POLICY, OrganisationPolicy.class)
+            .map(OrganisationPolicy::getOrganisation)
+            .map(Organisation::getOrganisationID)
+            .orElse("")
+            .isBlank();
     }
 }
 

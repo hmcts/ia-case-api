@@ -2,7 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Collections.emptyList;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LEGAL_REPRESENTATIVE_DOCUMENTS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.revokeAppellantAccessToCase;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isRepJourney;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -27,22 +27,14 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackStateHandler;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.IdamService;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.RoleAssignmentService;
 
 @Component
 public class PinInPostActivated implements PreSubmitCallbackStateHandler<AsylumCase> {
 
     private final UserDetailsProvider userDetailsProvider;
-    private final IdamService idamService;
-    private final RoleAssignmentService roleAssignmentService;
 
-    public PinInPostActivated(UserDetailsProvider userDetailsProvider,
-                              IdamService idamService,
-                              RoleAssignmentService roleAssignmentService) {
+    public PinInPostActivated(UserDetailsProvider userDetailsProvider) {
         this.userDetailsProvider = userDetailsProvider;
-        this.idamService = idamService;
-        this.roleAssignmentService = roleAssignmentService;
     }
 
     @Override
@@ -61,14 +53,8 @@ public class PinInPostActivated implements PreSubmitCallbackStateHandler<AsylumC
         }
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
-        YesOrNo isAipTransfer = asylumCase.read(AsylumCaseFieldDefinition.IS_AIP_TRANSFER, YesOrNo.class)
-            .orElse(YesOrNo.NO);
 
-        if (isAipTransfer.equals(YesOrNo.YES)) {
-            revokeAppellantAccessToCase(roleAssignmentService, String.valueOf(callback.getCaseDetails().getId()),
-                idamService.getServiceUserToken());
-            asylumCase.clear(AsylumCaseFieldDefinition.IS_AIP_TRANSFER);
-        } else {
+        if (isRepJourney(asylumCase)) {
             updateJourneyType(asylumCase);
             removeLegalRepDetails(asylumCase);
             updateReasonForAppeal(asylumCase);
@@ -95,7 +81,7 @@ public class PinInPostActivated implements PreSubmitCallbackStateHandler<AsylumC
     }
 
     private void updatePaymentOption(AsylumCase asylumCase) {
-        Optional<String> paymentOption = asylumCase.read(AsylumCaseFieldDefinition.PA_APPEAL_TYPE_PAYMENT_OPTION);
+        Optional<String> paymentOption = asylumCase.read(AsylumCaseFieldDefinition.PA_APPEAL_TYPE_PAYMENT_OPTION, String.class);
         if (paymentOption.isPresent()) {
             asylumCase.write(AsylumCaseFieldDefinition.PA_APPEAL_TYPE_AIP_PAYMENT_OPTION,
                 "payNow".equals(paymentOption.get()) ? "payNow" : "payLater");
@@ -130,8 +116,8 @@ public class PinInPostActivated implements PreSubmitCallbackStateHandler<AsylumC
     }
 
     private void buildSubscriptions(AsylumCase asylumCase) {
-        Optional<ContactPreference> contactPreference = asylumCase.read(AsylumCaseFieldDefinition.CONTACT_PREFERENCE);
-        Optional<String> mobileNumber = asylumCase.read(AsylumCaseFieldDefinition.MOBILE_NUMBER);
+        Optional<ContactPreference> contactPreference = asylumCase.read(AsylumCaseFieldDefinition.CONTACT_PREFERENCE, ContactPreference.class);
+        Optional<String> mobileNumber = asylumCase.read(AsylumCaseFieldDefinition.MOBILE_NUMBER, String.class);
 
         Subscriber subscriber = new Subscriber(
             SubscriberType.APPELLANT,
@@ -171,7 +157,7 @@ public class PinInPostActivated implements PreSubmitCallbackStateHandler<AsylumC
     }
 
     private void updateReasonForAppeal(AsylumCase asylumCase) {
-        if (asylumCase.read(AsylumCaseFieldDefinition.REASONS_FOR_APPEAL_DECISION).isEmpty()) {
+        if (asylumCase.read(AsylumCaseFieldDefinition.REASONS_FOR_APPEAL_DECISION, String.class).isEmpty()) {
             Optional<List<IdValue<DocumentWithMetadata>>> legalRepDocumentsOptional =
                 asylumCase.read(LEGAL_REPRESENTATIVE_DOCUMENTS);
             List<IdValue<DocumentWithMetadata>> caseArgumentDocuments = legalRepDocumentsOptional.orElse(emptyList()).stream()

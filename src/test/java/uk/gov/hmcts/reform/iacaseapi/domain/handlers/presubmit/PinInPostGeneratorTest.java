@@ -6,23 +6,16 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_PIN_IN_POST;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_AIP_TRANSFER;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOURNEY_TYPE;
 
 import java.time.LocalDate;
-import java.util.Optional;
-import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.EnumSource;
-import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
@@ -35,8 +28,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -61,26 +54,15 @@ class PinInPostGeneratorTest {
         pinInPostGenerator = new PinInPostGenerator(ACCESS_CODE_EXPIRY_DAYS);
     }
 
-    static Stream<Arguments> scenarios() {
-        return Stream.of(
-            Arguments.of(Event.REMOVE_REPRESENTATION, JourneyType.AIP, 0),
-            Arguments.of(Event.GENERATE_PIN_IN_POST, JourneyType.AIP, 1),
-            Arguments.of(Event.REMOVE_REPRESENTATION, JourneyType.REP, 0),
-            Arguments.of(Event.GENERATE_PIN_IN_POST, JourneyType.REP, 0)
-        );
-    }
-
-    @ParameterizedTest
-    @MethodSource("scenarios")
-    void appellantPinInPost_is_generated_and_aip_transfer_set_appropriately(Event event, JourneyType journeyType, int expectedAipTransferWrites) {
+    @Test
+    void appellantPinInPost_is_generated() {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(callback.getEvent()).thenReturn(event);
-        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(journeyType));
+        when(callback.getEvent()).thenReturn(Event.REMOVE_LEGAL_REPRESENTATIVE);
 
         pinInPostGenerator.handle(
-            PreSubmitCallbackStage.ABOUT_TO_SUBMIT,
-            callback
+                PreSubmitCallbackStage.ABOUT_TO_SUBMIT,
+                callback
         );
 
         verify(asylumCase).write(eq(APPELLANT_PIN_IN_POST), pipDetailsCaptor.capture());
@@ -89,8 +71,6 @@ class PinInPostGeneratorTest {
         assertEquals(12, details.getAccessCode().length());
         assertEquals(LocalDate.now().plusDays(ACCESS_CODE_EXPIRY_DAYS).toString(), details.getExpiryDate());
         assertEquals(YesOrNo.NO, details.getPinUsed());
-
-        verify(asylumCase, times(expectedAipTransferWrites)).write(IS_AIP_TRANSFER, YesOrNo.YES);
     }
 
     @ParameterizedTest
