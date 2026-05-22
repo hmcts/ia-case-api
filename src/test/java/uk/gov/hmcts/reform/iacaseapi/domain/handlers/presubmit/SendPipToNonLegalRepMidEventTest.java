@@ -70,7 +70,7 @@ class SendPipToNonLegalRepMidEventTest {
         when(callback.getEvent()).thenReturn(SEND_PIP_TO_NON_LEGAL_REP);
         when(asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class)).thenReturn(Optional.of(
             NonLegalRepDetails.builder().emailAddress("nlrEmail@test.com").build()));
-        when(idamService.getUserFromEmailV1(anyString())).thenReturn(null);
+        when(idamService.getUserFromEmail(anyString())).thenReturn(null);
 
         PreSubmitCallbackResponse<AsylumCase> response =
             sendPipToNonLegalRepMidEvent.handle(PreSubmitCallbackStage.MID_EVENT, callback);
@@ -86,7 +86,7 @@ class SendPipToNonLegalRepMidEventTest {
         when(callback.getEvent()).thenReturn(SEND_PIP_TO_NON_LEGAL_REP);
         when(asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class)).thenReturn(Optional.of(
             NonLegalRepDetails.builder().emailAddress("nlrEmail@test.com").build()));
-        when(idamService.getUserFromEmailV1(anyString())).thenReturn(user);
+        when(idamService.getUserFromEmail(anyString())).thenReturn(user);
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             sendPipToNonLegalRepMidEvent.handle(PreSubmitCallbackStage.MID_EVENT, callback);
 

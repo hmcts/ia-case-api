@@ -74,7 +74,7 @@ class SendInviteToNonLegalRepHandlerTest {
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
         when(asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class)).thenReturn(Optional.of(
             NonLegalRepDetails.builder().emailAddress("nlrEmail@test.com").build()));
-        when(idamService.getUserFromEmailV1("nlrEmail@test.com")).thenReturn(user);
+        when(idamService.getUserFromEmail("nlrEmail@test.com")).thenReturn(user);
         sendInviteToNonLegalRepHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
         verify(asylumCase, never()).write(eq(SHOULD_INVITE_NLR_TO_IDAM), any(YesOrNo.class));
     }
@@ -85,7 +85,7 @@ class SendInviteToNonLegalRepHandlerTest {
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
         when(asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class)).thenReturn(Optional.of(
             NonLegalRepDetails.builder().emailAddress("nlrEmail@test.com").build()));
-        when(idamService.getUserFromEmailV1("nlrEmail@test.com")).thenReturn(null);
+        when(idamService.getUserFromEmail("nlrEmail@test.com")).thenReturn(null);
         sendInviteToNonLegalRepHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
         verify(asylumCase).write(SHOULD_INVITE_NLR_TO_IDAM, YesOrNo.YES);
     }

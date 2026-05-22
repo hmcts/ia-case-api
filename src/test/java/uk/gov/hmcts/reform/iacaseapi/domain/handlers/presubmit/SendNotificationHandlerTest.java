@@ -483,6 +483,10 @@ class SendNotificationHandlerTest {
         Event.REFUND_CONFIRMATION,
         Event.REVOKE_CITIZEN_ACCESS,
         Event.HEARING_CANCELLED,
+        Event.SEND_INVITE_TO_NON_LEGAL_REP,
+        Event.SEND_PIP_TO_NON_LEGAL_REP,
+        Event.JOIN_APPEAL_CONFIRMATION,
+        Event.NLR_DETAILS_UPDATED,
         Event.REMOVE_STATUTORY_TIMEFRAME_24_WEEKS,
         Event.COMPLETE_CASE_REVIEW
     );

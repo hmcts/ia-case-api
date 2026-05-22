@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.service;
 
+import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -8,9 +9,13 @@ import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.IdamApi;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.IdamClientApi;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.idam.User;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.idam.UserInfo;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.idam.IdentityManagerResponseException;
 
 @Slf4j
 @Component
@@ -115,6 +120,21 @@ public class IdamService {
         }
         if (response.getBody().isEmpty()) {
             log.error("No user found for userId: {}", userId);
+            return null;
+        }
+        return response.getBody().get(0);
+    }
+
+    public User getUserFromEmail(String email) {
+        String idamToken = getClientCredentialsToken();
+        String query = MessageFormat.format("email:{0}", email);
+        ResponseEntity<List<User>> response = idamClientApi.getUser(idamToken, query);
+        if (!response.getStatusCode().is2xxSuccessful() || response.getBody() == null) {
+            log.error("Error fetching user details for user: {}. Response status: {}", email, response.getStatusCode());
+            return null;
+        }
+        if (response.getBody().isEmpty()) {
+            log.error("No user found for userEmail: {}", email);
             return null;
         }
         return response.getBody().get(0);

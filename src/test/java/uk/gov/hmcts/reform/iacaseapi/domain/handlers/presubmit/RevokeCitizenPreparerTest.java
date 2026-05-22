@@ -1,13 +1,22 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REVOKE_ACCESS_DL;
 
 import java.util.Collections;
 import java.util.List;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,7 +28,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Value;
@@ -80,18 +88,18 @@ class RevokeCitizenPreparerTest {
 
     @Test
     void should_populate_dynamic_list_when_assignments_exist() {
-        when(roleAssignmentService.getUsersAssignedToCase(caseId)).thenReturn(roleAssignmentResource);
+        when(roleAssignmentService.getCitizensAssignedToCase(caseId)).thenReturn(roleAssignmentResource);
         when(roleAssignmentResource.getRoleAssignmentResponse()).thenReturn(List.of(assignment, assignment2));
         when(assignment.getActorId()).thenReturn(userId1);
         when(assignment2.getActorId()).thenReturn(userId2);
         when(idamService.getUserFromId(userId1)).thenReturn(user);
         when(idamService.getUserFromId(userId2)).thenReturn(user2);
         when(user.toValueId()).thenReturn(userId1);
-        when(user.toString()).thenReturn(userName1);
+        when(user.toRevokeAccessDlString(anyString())).thenReturn(userName1);
         when(user.getRoles()).thenReturn(List.of("citizen"));
         when(user.isActive()).thenReturn(true);
         when(user2.toValueId()).thenReturn(userId2);
-        when(user2.toString()).thenReturn(userName2);
+        when(user2.toRevokeAccessDlString(anyString())).thenReturn(userName2);
         when(user2.getRoles()).thenReturn(List.of("citizen"));
         when(user2.isActive()).thenReturn(true);
 
@@ -117,27 +125,22 @@ class RevokeCitizenPreparerTest {
     @Test
     void should_populate_dynamic_list_when_assignments_exist_and_filter_correctly() {
         String userId3 = "user-3";
-        String userId4 = "user-4";
         Assignment assignment3 = mock(Assignment.class);
-        Assignment assignment4 = mock(Assignment.class);
-        User user3 = new User(userId3, "User", "3", "", true, List.of());
-        User user4 = null;
-        when(roleAssignmentService.getUsersAssignedToCase(caseId)).thenReturn(roleAssignmentResource);
-        when(roleAssignmentResource.getRoleAssignmentResponse()).thenReturn(List.of(assignment, assignment2, assignment3, assignment4));
+        User user3 = null;
+        when(roleAssignmentService.getCitizensAssignedToCase(caseId)).thenReturn(roleAssignmentResource);
+        when(roleAssignmentResource.getRoleAssignmentResponse()).thenReturn(List.of(assignment, assignment2, assignment3));
         when(assignment.getActorId()).thenReturn(userId1);
         when(assignment2.getActorId()).thenReturn(userId2);
         when(assignment3.getActorId()).thenReturn(userId3);
-        when(assignment4.getActorId()).thenReturn(userId4);
         when(idamService.getUserFromId(userId1)).thenReturn(user);
         when(idamService.getUserFromId(userId2)).thenReturn(user2);
         when(idamService.getUserFromId(userId3)).thenReturn(user3);
-        when(idamService.getUserFromId(userId4)).thenReturn(user4);
         when(user.toValueId()).thenReturn(userId1);
-        when(user.toString()).thenReturn(userName1);
+        when(user.toRevokeAccessDlString(anyString())).thenReturn(userName1);
         when(user.getRoles()).thenReturn(List.of("citizen"));
         when(user.isActive()).thenReturn(false);
         when(user2.toValueId()).thenReturn(userId2);
-        when(user2.toString()).thenReturn(userName2);
+        when(user2.toRevokeAccessDlString(anyString())).thenReturn(userName2);
         when(user2.getRoles()).thenReturn(List.of("citizen"));
         when(user2.isActive()).thenReturn(true);
 
@@ -156,17 +159,12 @@ class RevokeCitizenPreparerTest {
         assertEquals(userName2, value.getLabel());
     }
 
-
     @Test
-    void should_error_if_assignments_exist_but_no_citizens_found() {
-        when(roleAssignmentService.getUsersAssignedToCase(caseId)).thenReturn(roleAssignmentResource);
+    void should_error_if_assignments_exist_but_null_citizen_found() {
+        when(roleAssignmentService.getCitizensAssignedToCase(caseId)).thenReturn(roleAssignmentResource);
         when(roleAssignmentResource.getRoleAssignmentResponse()).thenReturn(List.of(assignment));
         when(assignment.getActorId()).thenReturn("user-1");
-        when(idamService.getUserFromId("user-1")).thenReturn(user);
-        when(user.getId()).thenReturn("user-1");
-        when(user.toString()).thenReturn("User One");
-        when(user.getRoles()).thenReturn(Collections.emptyList());
-        when(user.isActive()).thenReturn(true);
+        when(idamService.getUserFromId("user-1")).thenReturn(null);
 
         PreSubmitCallbackResponse<AsylumCase> response =
             preparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
@@ -175,18 +173,18 @@ class RevokeCitizenPreparerTest {
         assertEquals(asylumCase, response.getData());
         assertFalse(response.getErrors().isEmpty());
         verify(asylumCase, never()).write(eq(REVOKE_ACCESS_DL), any());
-        assertTrue(response.getErrors().iterator().next()
+        assertTrue(response.getErrors()
             .contains("No citizen/non LR users with case access were found: " + caseId));
     }
 
     @Test
-    void should_error_if_assignments_exist_but_no_active_itizens_found() {
-        when(roleAssignmentService.getUsersAssignedToCase(caseId)).thenReturn(roleAssignmentResource);
+    void should_error_if_assignments_exist_but_no_active_citizens_found() {
+        when(roleAssignmentService.getCitizensAssignedToCase(caseId)).thenReturn(roleAssignmentResource);
         when(roleAssignmentResource.getRoleAssignmentResponse()).thenReturn(List.of(assignment));
         when(assignment.getActorId()).thenReturn("user-1");
         when(idamService.getUserFromId("user-1")).thenReturn(user);
         when(user.getId()).thenReturn("user-1");
-        when(user.toString()).thenReturn("User One");
+        when(user.toRevokeAccessDlString(anyString())).thenReturn("User One");
         when(user.getRoles()).thenReturn(List.of("citizen"));
         when(user.isActive()).thenReturn(false);
 
@@ -197,13 +195,13 @@ class RevokeCitizenPreparerTest {
         assertEquals(asylumCase, response.getData());
         assertFalse(response.getErrors().isEmpty());
         verify(asylumCase, never()).write(eq(REVOKE_ACCESS_DL), any());
-        assertTrue(response.getErrors().iterator().next()
+        assertTrue(response.getErrors()
             .contains("No citizen/non LR users with case access were found: " + caseId));
     }
 
     @Test
     void should_return_error_when_no_assignments_found() {
-        when(roleAssignmentService.getUsersAssignedToCase(caseId)).thenReturn(roleAssignmentResource);
+        when(roleAssignmentService.getCitizensAssignedToCase(caseId)).thenReturn(roleAssignmentResource);
         when(roleAssignmentResource.getRoleAssignmentResponse()).thenReturn(Collections.emptyList());
 
         PreSubmitCallbackResponse<AsylumCase> response =
@@ -212,7 +210,7 @@ class RevokeCitizenPreparerTest {
         assertNotNull(response);
         assertEquals(asylumCase, response.getData());
         assertFalse(response.getErrors().isEmpty());
-        assertTrue(response.getErrors().iterator().next().contains("No users have case access with caseId: " + caseId));
+        assertTrue(response.getErrors().contains("No citizens have case access with caseId: " + caseId));
         verify(asylumCase, never()).write(eq(REVOKE_ACCESS_DL), any());
     }
 
@@ -227,18 +225,24 @@ class RevokeCitizenPreparerTest {
             .isExactlyInstanceOf(NullPointerException.class);
     }
 
+    @Test
+    void can_handle_only_for_correct_event_and_stage() {
+        when(callback.getEvent()).thenReturn(Event.REVOKE_CITIZEN_ACCESS);
+        assertTrue(preparer.canHandle(PreSubmitCallbackStage.ABOUT_TO_START, callback));
+    }
+
     @ParameterizedTest
-    @EnumSource(Event.class)
-    void can_handle_only_for_correct_event_and_stage(Event event) {
+    @EnumSource(value = Event.class, names = {"REVOKE_CITIZEN_ACCESS"}, mode = EnumSource.Mode.EXCLUDE)
+    void cannot_handle_for_invalid_event(Event event) {
         when(callback.getEvent()).thenReturn(event);
-        for (PreSubmitCallbackStage stage : PreSubmitCallbackStage.values()) {
-            boolean canHandle = preparer.canHandle(stage, callback);
-            if (event == Event.REVOKE_CITIZEN_ACCESS && stage == PreSubmitCallbackStage.ABOUT_TO_START) {
-                assertTrue(canHandle);
-            } else {
-                assertFalse(canHandle);
-            }
-        }
+        assertFalse(preparer.canHandle(PreSubmitCallbackStage.ABOUT_TO_START, callback));
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = PreSubmitCallbackStage.class, names = {"ABOUT_TO_START"}, mode = EnumSource.Mode.EXCLUDE)
+    void cannot_handle_for_invalid_stage(PreSubmitCallbackStage stage) {
+        when(callback.getEvent()).thenReturn(Event.REVOKE_CITIZEN_ACCESS);
+        assertFalse(preparer.canHandle(stage, callback));
     }
 
     @Test

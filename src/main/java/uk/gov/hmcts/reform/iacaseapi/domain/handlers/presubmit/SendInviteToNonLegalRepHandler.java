@@ -54,7 +54,7 @@ class SendInviteToNonLegalRepHandler implements PreSubmitCallbackHandler<AsylumC
         Optional<String> nlrEmail = asylumCase.read(AsylumCaseFieldDefinition.NLR_DETAILS, NonLegalRepDetails.class)
             .map(NonLegalRepDetails::getEmailAddress);
 
-        if (nlrEmail.isPresent() && isNull(idamService.getUserFromEmailV1(nlrEmail.get()))) {
+        if (nlrEmail.isPresent() && isNull(idamService.getUserFromEmail(nlrEmail.get()))) {
             asylumCase.write(AsylumCaseFieldDefinition.SHOULD_INVITE_NLR_TO_IDAM, YesOrNo.YES);
         }
 

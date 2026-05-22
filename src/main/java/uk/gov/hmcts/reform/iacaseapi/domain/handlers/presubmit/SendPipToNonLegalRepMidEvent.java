@@ -47,7 +47,7 @@ public class SendPipToNonLegalRepMidEvent implements PreSubmitCallbackHandler<As
             .map(NonLegalRepDetails::getEmailAddress)
             .orElseThrow(() -> new IllegalStateException("NLR email is not present"));
 
-        if (isNull(idamService.getUserFromEmailV1(nlrEmail))) {
+        if (isNull(idamService.getUserFromEmail(nlrEmail))) {
             return new PreSubmitCallbackResponse<>(asylumCase)
                 .withError("User with email " + nlrEmail + " has not signed up to HMCTS services. Please invite them to " +
                     "sign up via the \"Send invite to non legal rep\" event before sending the PIP.");
