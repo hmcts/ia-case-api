@@ -39,7 +39,10 @@ java:
     SAVE_NOTIFICATIONS_TO_DATA_EVENT_ENABLED: true
     SAVE_NOTIFICATIONS_DATA_SCHEDULE_HOUR: 16
     SAVE_NOTIFICATIONS_DATA_SCHEDULE_MAX_MINUTES: 5
-    HOME_OFFICE_VALIDATION_ENABLED: "true"
+    # Set HOME_OFFICE_VALIDATION_ENABLED: "true" if you want to run the validation against the mock HO validation API in Preview; otherwise leave at "false".
+    # The mock HO validation API lives at http://ia-home-office-mock-api-aat.service.core-compute-aat.internal/ichallenge/applications/v1/1111-2222-3333-4444
+    # (you can use any valid UAN at the end; but in the application you must enter the expected UAN, name and DOB in order to proceed past validation)
+    HOME_OFFICE_VALIDATION_ENABLED: "true" # Do not remove this this environment variable!
   keyVaults:
     ia:
       resourceGroup: ia

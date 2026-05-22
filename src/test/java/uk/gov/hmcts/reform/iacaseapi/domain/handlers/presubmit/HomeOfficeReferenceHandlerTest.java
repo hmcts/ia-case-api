@@ -11,6 +11,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_REFERENCE_NUMBER;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -163,7 +164,7 @@ class HomeOfficeReferenceHandlerTest {
             .thenReturn(Optional.of(VALID_GWF));
 
         Mockito.when(referenceService.getHomeOfficeReferenceData(VALID_GWF, callback))
-            .thenReturn(Optional.empty());
+            .thenReturn(List.of());
 
         Mockito.when(asylumCase.read(HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS, HomeOfficeApiResponseStatusType.class))
             .thenReturn(Optional.of(HomeOfficeApiResponseStatusType.NOT_FOUND));
@@ -187,7 +188,7 @@ class HomeOfficeReferenceHandlerTest {
             .thenReturn(Optional.of(VALID_GWF));
 
         Mockito.when(referenceService.getHomeOfficeReferenceData(VALID_GWF, callback))
-            .thenReturn(Optional.of(Collections.singletonList(idValue)));
+            .thenReturn(Collections.singletonList(idValue));
 
         PreSubmitCallbackResponse<AsylumCase> response =
             handler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
@@ -205,7 +206,7 @@ class HomeOfficeReferenceHandlerTest {
             .thenReturn(Optional.of(VALID_GWF));
 
         Mockito.when(referenceService.getHomeOfficeReferenceData(VALID_GWF, callback))
-            .thenReturn(Optional.of(Collections.singletonList(idValue)));
+            .thenReturn(Collections.singletonList(idValue));
 
         Mockito.when(idValue.getValue()).thenReturn(appellant);
 
@@ -241,7 +242,7 @@ class HomeOfficeReferenceHandlerTest {
             .thenReturn(Optional.of(HomeOfficeApiResponseStatusType.OK));
 
         Mockito.when(referenceService.getHomeOfficeReferenceData(VALID_GWF, callback))
-            .thenReturn(Optional.of(Collections.singletonList(idValue)));
+            .thenReturn(Collections.singletonList(idValue));
 
         Mockito.when(idValue.getValue()).thenReturn(appellant);
 
@@ -279,7 +280,7 @@ class HomeOfficeReferenceHandlerTest {
             .thenReturn(Optional.of(VALID_GWF));
 
         Mockito.when(referenceService.getHomeOfficeReferenceData(VALID_GWF, callback))
-            .thenReturn(Optional.of(Collections.singletonList(idValue)));
+            .thenReturn(Collections.singletonList(idValue));
 
         Mockito.when(idValue.getValue()).thenReturn(appellant);
 
@@ -318,7 +319,7 @@ class HomeOfficeReferenceHandlerTest {
             .thenReturn(Optional.of(VALID_GWF));
 
         Mockito.when(referenceService.getHomeOfficeReferenceData(VALID_GWF, callback))
-            .thenReturn(Optional.of(Collections.singletonList(idValue)));
+            .thenReturn(Collections.singletonList(idValue));
 
         Mockito.when(idValue.getValue()).thenReturn(appellant);
 
@@ -361,7 +362,7 @@ class HomeOfficeReferenceHandlerTest {
     void isRealHomeOfficeCaseNumber_should_return_false_when_empty_response() {
 
         Mockito.when(referenceService.getHomeOfficeReferenceData(VALID_GWF, callback))
-            .thenReturn(Optional.empty());
+            .thenReturn(List.of());
 
         assertFalse(handler.isRealHomeOfficeCaseNumber(VALID_GWF, callback));
     }
@@ -370,7 +371,7 @@ class HomeOfficeReferenceHandlerTest {
     void isRealHomeOfficeCaseNumber_should_return_true_when_appellants_exist() {
 
         Mockito.when(referenceService.getHomeOfficeReferenceData(VALID_GWF, callback))
-            .thenReturn(Optional.of(Collections.singletonList(idValue)));
+            .thenReturn(Collections.singletonList(idValue));
 
         assertTrue(handler.isRealHomeOfficeCaseNumber(VALID_GWF, callback));
     }
@@ -395,7 +396,7 @@ class HomeOfficeReferenceHandlerTest {
     void isMatchingNameAndDob_should_match() {
 
         Mockito.when(referenceService.getHomeOfficeReferenceData(VALID_GWF, callback))
-            .thenReturn(Optional.of(Collections.singletonList(idValue)));
+            .thenReturn(Collections.singletonList(idValue));
 
         Mockito.when(idValue.getValue()).thenReturn(appellant);
 
@@ -421,7 +422,7 @@ class HomeOfficeReferenceHandlerTest {
     void isMatchingNameAndDob_should_not_match() {
 
         Mockito.when(referenceService.getHomeOfficeReferenceData(VALID_GWF, callback))
-            .thenReturn(Optional.of(Collections.singletonList(idValue)));
+            .thenReturn(Collections.singletonList(idValue));
 
         Mockito.when(idValue.getValue()).thenReturn(appellant);
 
@@ -447,7 +448,7 @@ class HomeOfficeReferenceHandlerTest {
     void isMatchingName_should_match_when_given_names_have_different_second_words() {
 
         Mockito.when(referenceService.getHomeOfficeReferenceData(VALID_GWF, callback))
-            .thenReturn(Optional.of(Collections.singletonList(idValue)));
+            .thenReturn(Collections.singletonList(idValue));
 
         Mockito.when(idValue.getValue()).thenReturn(appellant);
 
@@ -469,7 +470,7 @@ class HomeOfficeReferenceHandlerTest {
     void isMatchingName_should_return_false_when_family_name_has_different_second_word() {
 
         Mockito.when(referenceService.getHomeOfficeReferenceData(VALID_GWF, callback))
-            .thenReturn(Optional.of(Collections.singletonList(idValue)));
+            .thenReturn(Collections.singletonList(idValue));
 
         Mockito.when(idValue.getValue()).thenReturn(appellant);
 
@@ -491,7 +492,7 @@ class HomeOfficeReferenceHandlerTest {
     void isMatchingNameAndDob_should_return_false_when_family_name_is_null() {
 
         Mockito.when(referenceService.getHomeOfficeReferenceData(VALID_GWF, callback))
-            .thenReturn(Optional.of(Collections.singletonList(idValue)));
+            .thenReturn(Collections.singletonList(idValue));
 
         Mockito.when(idValue.getValue()).thenReturn(appellant);
 
