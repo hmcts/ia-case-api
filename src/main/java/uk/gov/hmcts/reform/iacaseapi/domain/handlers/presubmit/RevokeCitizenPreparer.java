@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.IdamService;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.RoleAssignmentService;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.idam.User;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.idam.User;
 
 @Component
 @Slf4j
@@ -59,21 +60,23 @@ public class RevokeCitizenPreparer implements PreSubmitCallbackHandler<AsylumCas
         RoleAssignmentResource roleAssignmentResource = roleAssignmentService
             .getUsersAssignedToCase(caseId);
         List<Assignment> assignmentList = roleAssignmentResource.getRoleAssignmentResponse();
-        log.info("Found '{}' '[CREATOR]' case roles in the appeal with case ID {}",
+        log.info("Found '{}' '[CREATOR]' and '[LEGALREPRESENTATIVE]' case roles in the appeal with case ID {}",
             assignmentList.size(), caseId);
 
         if (assignmentList.isEmpty()) {
             return new PreSubmitCallbackResponse<>(asylumCase)
                 .withError("No users have case access with caseId: " + caseId);
         }
+
         String nlrIdamId = asylumCase.read(AsylumCaseFieldDefinition.NLR_DETAILS, NonLegalRepDetails.class)
             .map(NonLegalRepDetails::getIdamId).orElse("");
         List<Value> userValueList = assignmentList
             .stream()
             .map(Assignment::getActorId)
-            .map(idamService::getUserFromIdV1)
+            .map(idamService::getUserFromId)
             .filter(Objects::nonNull)
             .filter(User::isActive)
+            .filter(user.getRoles().contains("citizen"))
             .map(user -> new Value(user.toValueId(), user.toRevokeAccessDlString(nlrIdamId)))
             .toList();
 

@@ -104,8 +104,8 @@ public class RoleAssignmentService {
     public RoleAssignmentResource getUsersAssignedToCase(long caseId) {
         QueryRequest queryRequest = QueryRequest.builder()
             .roleType(List.of(RoleType.CASE))
-            .roleCategory(List.of(RoleCategory.CITIZEN))
-            .roleName(List.of(RoleName.CREATOR))
+            .roleCategory(List.of(RoleCategory.PROFESSIONAL, RoleCategory.CITIZEN))
+            .roleName(List.of(RoleName.CREATOR, RoleName.LEGAL_REPRESENTATIVE))
             .attributes(Map.of(
                 Attributes.JURISDICTION, List.of(Jurisdiction.IA.name()),
                 Attributes.CASE_TYPE, List.of("Asylum"),

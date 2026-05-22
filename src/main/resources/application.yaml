@@ -70,6 +70,10 @@ fees-register:
 files:
   detention-facilities-addresses: "/detention-facilities.csv"
 
+logging:
+  level:
+    io.lettuce.core: WARN
+
 spring:
   config:
     import: "optional:configtree:/mnt/secrets/ia/"
@@ -156,6 +160,7 @@ legalRepresentativeRemissionReminder.dueInMinutes: ${LEGAL_REP_REMISSION_REMINDE
 paymentEaHuNoRemission.dueInMinutes: ${PAYMENT_EA_HU_NO_REMISSION_DUE_IN_MINUTES:20160}
 adaCaseListedDirection.dueInDaysSinceSubmission: ${ADA_CASE_LISTED_DIRECTION_DUE_IN_DAYS:15}
 sendPaymentReminderNotification.dueInMinutesSinceSubmission: ${PAYMENT_REMINDER_DUE_IN_MINUTES:10080}
+paPayLaterDueDate: ${PA_PAY_LATER_DUE_DATE:14}
 
 core_case_data_api_url_template: "/caseworkers/{uid}/jurisdictions/{jid}/case-types/{ctid}/cases"
 core_case_data_api_metatdata_url: "/caseworkers/{uid}/jurisdictions/{jid}/case-types/{ctid}/cases/pagination_metadata"
@@ -1506,3 +1511,7 @@ ia:
   config:
     validator:
       secret: ${IA_CONFIG_VALIDATOR_SECRET:}
+
+app:
+  home-office-validation:
+    enabled: ${HOME_OFFICE_VALIDATION_ENABLED:true}
