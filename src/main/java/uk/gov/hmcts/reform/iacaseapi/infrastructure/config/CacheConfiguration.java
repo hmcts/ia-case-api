@@ -89,6 +89,7 @@ public class CacheConfiguration {
                 .withCacheConfiguration("legalRepOrgDeletedTokenCache", tokenCacheConfig)
                 .withCacheConfiguration("judgeTokenCache", tokenCacheConfig)
                 .withCacheConfiguration("citizenTokenCache", tokenCacheConfig)
+                .withCacheConfiguration("clientCredsCache", tokenCacheConfig)
                 .build();
 
         } catch (Exception e) {

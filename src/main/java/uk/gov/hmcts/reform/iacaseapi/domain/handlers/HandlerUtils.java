@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers;
 
+import static java.util.Collections.emptyList;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingAdjournmentDay.BEFORE_HEARING_DATE;
@@ -21,7 +22,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HelpWithFeesOption.W
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
@@ -29,21 +29,27 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.io.ClassPathResource;
+import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseFlagDetail;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.Direction;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DirectionTag;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.FeeRemissionType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingAdjournmentDay;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.HelpWithFeesOption;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.Parties;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionOption;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlag;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.DirectionAppender;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationBasedFeatureToggler;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -145,10 +151,10 @@ public class HandlerUtils {
 
     private static boolean hasActiveFlags(AsylumCase asylumCase) {
         List<StrategicCaseFlag> appellantLevelFlags = asylumCase.read(APPELLANT_LEVEL_FLAGS, StrategicCaseFlag.class)
-            .map(List::of).orElse(Collections.emptyList());
+            .map(List::of).orElse(emptyList());
 
         List<StrategicCaseFlag> caseLevelFlag = asylumCase.read(CASE_LEVEL_FLAGS, StrategicCaseFlag.class)
-            .map(List::of).orElse(Collections.emptyList());
+            .map(List::of).orElse(emptyList());
 
         boolean hasActiveFlags = false;
 
@@ -677,4 +683,51 @@ public class HandlerUtils {
         asylumCase.clear(LEGAL_REP_HAS_ADDRESS);
     }
 
+    public static boolean isPayLater(AsylumCase asylumCase) {
+        boolean isAipJourney = HandlerUtils.isAipJourney(asylumCase);
+        boolean isRepJourney = HandlerUtils.isRepJourney(asylumCase);
+        String paAppealTypePaymentOption = asylumCase.read(PA_APPEAL_TYPE_PAYMENT_OPTION, String.class).orElse("");
+        String paAppealTypeAipPaymentOption = asylumCase.read(PA_APPEAL_TYPE_AIP_PAYMENT_OPTION, String.class).orElse("");
+        boolean isAipPayLater = isAipJourney && "payLater".equals(paAppealTypeAipPaymentOption);
+        boolean isLRPayLater = isRepJourney && "payLater".equals(paAppealTypePaymentOption);
+        return isAipPayLater || isLRPayLater;
+    }
+
+    public static Parties getParty(AsylumCase asylumCase) {
+        return HandlerUtils.isAipJourney(asylumCase) ? Parties.APPELLANT : Parties.LEGAL_REPRESENTATIVE;
+    }
+
+    public static AsylumCase feeDirectionReminder(AsylumCase asylumCase, DirectionAppender directionAppender, DateProvider dateProvider, int paPayLaterDueDate, DirectionTag directionTag, String content) {
+        Optional<List<IdValue<Direction>>> maybeDirections = asylumCase.read(DIRECTIONS);
+
+        final List<IdValue<Direction>> existingDirections =
+            maybeDirections.orElse(emptyList());
+
+        List<IdValue<Direction>> allDirections =
+            directionAppender.append(
+                asylumCase,
+                existingDirections,
+                content,
+                getParty(asylumCase),
+                dateProvider
+                    .now()
+                    .plusDays(paPayLaterDueDate)
+                    .toString(),
+                directionTag
+            );
+
+        asylumCase.write(DIRECTIONS, allDirections);
+        return asylumCase;
+    }
+
+    public static String getFeeAmount(AsylumCase asylumCase) {
+        boolean decisionHearingFeeOption = asylumCase.read(DECISION_HEARING_FEE_OPTION, String.class).orElse("")
+            .equals("decisionWithHearing");
+        return decisionHearingFeeOption
+            ? asylumCase.read(FEE_WITH_HEARING, String.class)
+            .orElseThrow(() -> new IllegalStateException("Fee with hearing is not present"))
+            : asylumCase.read(FEE_WITHOUT_HEARING, String.class)
+            .orElseThrow(() -> new IllegalStateException("Fee without hearing is not present"));
+
+    }
 }

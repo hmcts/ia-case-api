@@ -194,6 +194,7 @@ class EventTest {
             Arguments.of("forceDecidedState", Event.FORCE_DECIDED_STATE.toString()),
             Arguments.of("forceFtpaDecidedState", Event.FORCE_FTPA_DECIDED_STATE.toString()),
             Arguments.of("rollbackMigration", Event.ROLLBACK_MIGRATION.toString()),
+            Arguments.of("revokeCitizenAccess", Event.REVOKE_CITIZEN_ACCESS.toString()),
             Arguments.of("completeCaseReview", Event.COMPLETE_CASE_REVIEW.toString()),
             Arguments.of("unknown", Event.UNKNOWN.toString())
         );
