@@ -68,7 +68,7 @@ dependencies:
     repository: 'oci://hmctsprod.azurecr.io/helm'
     condition: em-stitching.enabled
   - name: aac-manage-case-assignment
-    version: ~0.2.16
+    version: ~0.2.22
     repository: 'oci://hmctsprod.azurecr.io/helm'
     condition: aac-manage-case-assignment.enabled
   - name: wa
