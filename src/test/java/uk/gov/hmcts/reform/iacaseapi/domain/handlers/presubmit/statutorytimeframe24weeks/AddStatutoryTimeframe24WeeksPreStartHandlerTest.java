@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.statutorytimefra
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -34,20 +33,24 @@ import static org.mockito.Mockito.when;
 @SuppressWarnings("unchecked")
 class AddStatutoryTimeframe24WeeksPreStartHandlerTest {
 
+    private final LocalDate stf24wLiveDate = LocalDate.of(2026, 7, 1);
+
     @Mock private Callback<AsylumCase> callback;
     @Mock private CaseDetails<AsylumCase> caseDetails;
     @Mock private AsylumCase asylumCase;
 
-    @InjectMocks private AddStatutoryTimeframe24WeeksPreStartHandler addStatutoryTimeframe24WeeksPreStartHandler;
+    private AddStatutoryTimeframe24WeeksPreStartHandler addStatutoryTimeframe24WeeksPreStartHandler;
 
     @BeforeEach
     public void setUp() {
+        addStatutoryTimeframe24WeeksPreStartHandler = new AddStatutoryTimeframe24WeeksPreStartHandler(stf24wLiveDate);
+
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getCaseDetails().getState()).thenReturn(State.APPEAL_SUBMITTED);
         when(callback.getEvent()).thenReturn(Event.ADD_STATUTORY_TIMEFRAME_24_WEEKS);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(AsylumCaseFieldDefinition.APPEAL_SUBMISSION_DATE))
-            .thenReturn(Optional.of(LocalDate.of(2026, 7, 1).toString()));
+            .thenReturn(Optional.of(stf24wLiveDate.toString()));
     }
 
     @Test

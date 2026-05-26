@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.statutorytimeframe24weeks;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
@@ -24,7 +25,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isAppel
 @Component
 public class AddStatutoryTimeframe24WeeksPreStartHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
-    private static final LocalDate STF24W_LIVE_DATE = LocalDate.of(2026, 7, 1);
+    private final LocalDate stf24wLiveDate;
     private static final Set<State> unsupportedStates = Set.of(
         State.APPEAL_STARTED,
         State.PENDING_PAYMENT,
@@ -40,6 +41,10 @@ public class AddStatutoryTimeframe24WeeksPreStartHandler implements PreSubmitCal
         State.REMITTED,
         State.AWAITING_REASONS_FOR_APPEAL,
         State.REASONS_FOR_APPEAL_SUBMITTED);
+
+    public AddStatutoryTimeframe24WeeksPreStartHandler(@Value("${app.statutory-timeframe.live-date}") LocalDate liveDate) {
+        stf24wLiveDate = liveDate;
+    }
 
     public boolean canHandle(
         PreSubmitCallbackStage callbackStage,
@@ -73,7 +78,7 @@ public class AddStatutoryTimeframe24WeeksPreStartHandler implements PreSubmitCal
         }
 
         if (!caseReceivedAfterLive(asylumCase)) {
-            String errorMessage = "This event cannot be run on a case created before " + STF24W_LIVE_DATE.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+            String errorMessage = "This event cannot be run on a case created before " + stf24wLiveDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
             response.addError(errorMessage);
         }
         if (isAppellantInDetention(asylumCase)) {
@@ -92,7 +97,7 @@ public class AddStatutoryTimeframe24WeeksPreStartHandler implements PreSubmitCal
         Optional<String> tribunalReceivedDate = asylumCase.read(TRIBUNAL_RECEIVED_DATE);
         Optional<String> appealSubmissionDate = asylumCase.read(APPEAL_SUBMISSION_DATE);
 
-        return (tribunalReceivedDate.isPresent() && !LocalDate.parse(tribunalReceivedDate.get()).isBefore(STF24W_LIVE_DATE))
-            || (tribunalReceivedDate.isEmpty() && appealSubmissionDate.isPresent() && !LocalDate.parse(appealSubmissionDate.get()).isBefore(STF24W_LIVE_DATE));
+        return (tribunalReceivedDate.isPresent() && !LocalDate.parse(tribunalReceivedDate.get()).isBefore(stf24wLiveDate))
+            || (tribunalReceivedDate.isEmpty() && appealSubmissionDate.isPresent() && !LocalDate.parse(appealSubmissionDate.get()).isBefore(stf24wLiveDate));
     }
 }
