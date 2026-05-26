@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -108,23 +107,10 @@ class HearingCancelledHandlerTest {
         when(callback.getCaseDetailsBefore()).thenReturn(Optional.of(caseDetails));
         when(caseDetails.getState()).thenReturn(State.PREPARE_FOR_HEARING);
         when(asylumCase.read(LIST_CASE_HEARING_DATE, String.class)).thenReturn(Optional.of("05/05/2020"));
-        when(nextHearingDateService.enabled()).thenReturn(true);
 
         handler.handle(ABOUT_TO_SUBMIT, callback);
 
         verify(nextHearingDateService, times(1)).clearHearingDateInformation(asylumCase);
-    }
-
-    @Test
-    void should_not_clear_next_hearing_date_and_list_case_hearing_date() {
-        when(callback.getEvent()).thenReturn(HEARING_CANCELLED);
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(nextHearingDateService.enabled()).thenReturn(false);
-
-        handler.handle(ABOUT_TO_SUBMIT, callback);
-
-        verify(nextHearingDateService, never()).clearHearingDateInformation(asylumCase);
     }
 
     @Value

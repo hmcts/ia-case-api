@@ -292,24 +292,4 @@ public class AppealTypeHandlerTest {
         verify(asylumCase, times(1))
             .write(APPEAL_TYPE, AppealType.from(AppealTypeForDisplay.HU.getValue()));
     }
-
-    @Test
-    void should_rewrite_feature_toggle_flags_if_start_appeal() {
-        // If event = start appeal, and feature toggle is off (Pre ccd release)
-        // We want to make sure the Feature toggle values are saved on the cases.
-        when(callback.getEvent()).thenReturn(START_APPEAL);
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.read(IS_NABA_ENABLED, YesOrNo.class)).thenReturn(Optional.empty());
-        when(asylumCase.read(IS_OUT_OF_COUNTRY_ENABLED, YesOrNo.class)).thenReturn(Optional.empty());
-        when(featureToggler.getValue("naba-feature-flag", false)).thenReturn(false);
-        when(featureToggler.getValue("naba-ada-feature-flag", false)).thenReturn(false);
-        when(featureToggler.getValue("out-of-country-feature", false)).thenReturn(false);
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            appealTypeHandler.handle(ABOUT_TO_SUBMIT, callback);
-        verify(asylumCase, times(1)).write(IS_NABA_ENABLED, NO);
-        verify(asylumCase, times(1)).write(IS_NABA_ENABLED_OOC, NO);
-        verify(asylumCase, times(1)).write(IS_NABA_ADA_ENABLED, NO);
-        verify(asylumCase, times(1)).write(IS_OUT_OF_COUNTRY_ENABLED, NO);
-    }
 }

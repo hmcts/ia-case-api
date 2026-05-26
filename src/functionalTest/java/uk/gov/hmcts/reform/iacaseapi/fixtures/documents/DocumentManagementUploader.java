@@ -11,15 +11,10 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 public class DocumentManagementUploader implements DocumentUploader {
 
     private final FeatureToggler featureToggler;
-    private final DMDocumentManagementUploader dmDocumentManagementUploader;
     private final CDAMDocumentManagementUploader cdamDocumentManagementUploader;
 
     @Override
     public Document upload(Resource resource, String contentType) {
-        if (featureToggler.getValue("use-ccd-document-am", false)) {
-            return cdamDocumentManagementUploader.upload(resource, contentType);
-        } else {
-            return dmDocumentManagementUploader.upload(resource, contentType);
-        }
+        return cdamDocumentManagementUploader.upload(resource, contentType);
     }
 }

@@ -94,7 +94,6 @@ class AppealOutOfCountryHandlerTest {
         when(callback.getEvent()).thenReturn(event);
         when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
-        when(featureToggler.getValue("aip-ooc-feature", false)).thenReturn(true);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             appealOutOfCountryHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -134,7 +133,6 @@ class AppealOutOfCountryHandlerTest {
         when(callback.getEvent()).thenReturn(event);
         when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
-        when(featureToggler.getValue("aip-ooc-feature", false)).thenReturn(true);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             appealOutOfCountryHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -172,7 +170,6 @@ class AppealOutOfCountryHandlerTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
-        when(featureToggler.getValue("aip-ooc-feature", false)).thenReturn(true);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             appealOutOfCountryHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -230,7 +227,6 @@ class AppealOutOfCountryHandlerTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
-        when(featureToggler.getValue("aip-ooc-feature", false)).thenReturn(true);
         when(asylumCase.read(HAS_SPONSOR, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(asylumCase.read(SPONSOR_GIVEN_NAMES, String.class)).thenReturn(Optional.of("  test"));
         when(asylumCase.read(SPONSOR_FAMILY_NAME, String.class)).thenReturn(Optional.of("some-name "));
@@ -278,7 +274,6 @@ class AppealOutOfCountryHandlerTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
-        when(featureToggler.getValue("aip-ooc-feature", false)).thenReturn(true);
 
         assertThatThrownBy(
             () -> appealOutOfCountryHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
@@ -321,7 +316,6 @@ class AppealOutOfCountryHandlerTest {
                 when(callback.getCaseDetails()).thenReturn(caseDetails);
                 when(caseDetails.getCaseData()).thenReturn(asylumCase);
                 when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
-                when(featureToggler.getValue("aip-ooc-feature", false)).thenReturn(true);
 
                 boolean canHandle = appealOutOfCountryHandler.canHandle(callbackStage, callback);
 
