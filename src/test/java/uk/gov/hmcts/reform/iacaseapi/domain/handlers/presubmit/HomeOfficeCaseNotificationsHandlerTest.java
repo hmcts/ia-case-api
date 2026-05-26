@@ -113,15 +113,12 @@ class HomeOfficeCaseNotificationsHandlerTest {
     void setUp() {
         homeOfficeCaseNotificationsHandler =
             new HomeOfficeCaseNotificationsHandler(featureToggler, homeOfficeApi);
-        when(featureToggler.getValue("home-office-notification-feature", false)).thenReturn(true);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
     }
 
     @Test
     void handle_should_error_if_appeal_type_is_not_present() {
-
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
 
         when(callback.getEvent()).thenReturn(LIST_CASE);
         when(homeOfficeApi.aboutToSubmit(callback)).thenReturn(asylumCase);
@@ -139,8 +136,6 @@ class HomeOfficeCaseNotificationsHandlerTest {
     @ParameterizedTest
     @MethodSource("eventAndAppealTypesData")
     void should_call_home_office_api_and_update_the_case_for_enabled_appeal_types(Event event, AppealType appealType) {
-
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
 
         when(featureToggler.getValue("home-office-uan-pa-feature", false)).thenReturn(true);
         when(featureToggler.getValue("home-office-uan-rp-feature", false)).thenReturn(true);
@@ -347,8 +342,6 @@ class HomeOfficeCaseNotificationsHandlerTest {
     @ParameterizedTest
     @MethodSource("stateAndAppealTypesData")
     void should_call_home_office_api_and_update_the_case_for_direction_due_date_enabled_appeal_types(State state, AppealType appealType) {
-
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
 
         when(featureToggler.getValue("home-office-uan-pa-feature", false)).thenReturn(false);
         when(featureToggler.getValue("home-office-uan-rp-feature", false)).thenReturn(false);

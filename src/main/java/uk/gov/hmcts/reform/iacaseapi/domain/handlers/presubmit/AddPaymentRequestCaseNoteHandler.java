@@ -52,9 +52,7 @@ public class AddPaymentRequestCaseNoteHandler implements PreSubmitCallbackHandle
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage.equals(ABOUT_TO_SUBMIT)
-               && callback.getEvent().equals(MARK_PAYMENT_REQUEST_SENT)
-               && featureToggler.getValue("wa-R2-feature", false
-        );
+               && callback.getEvent().equals(MARK_PAYMENT_REQUEST_SENT);
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
