@@ -157,6 +157,7 @@ class FinancialConditionSupporterContactPreferenceMidEventHandlerTest {
         final Set<String> errors = callbackResponse.getErrors();
         assertThat(errors).hasSize(0);
     }
+
     @ParameterizedTest
     @EnumSource(value = Event.class,
         names = {"START_APPLICATION",

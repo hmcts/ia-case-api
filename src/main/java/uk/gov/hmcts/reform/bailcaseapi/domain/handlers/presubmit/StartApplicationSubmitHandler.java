@@ -9,7 +9,6 @@ import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PreSubmitCal
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.bailcaseapi.domain.handlers.PreSubmitCallbackStateHandler;
-import uk.gov.hmcts.reform.bailcaseapi.domain.service.FeatureToggleService;
 import uk.gov.hmcts.reform.bailcaseapi.domain.utils.InterpreterLanguagesUtils;
 import java.util.Objects;
 
@@ -19,7 +18,6 @@ import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefin
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.FCS_INTERPRETER_YESNO;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.INTERPRETER_YESNO;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.IS_BAILS_LOCATION_REFERENCE_DATA_ENABLED;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.YesOrNo.YES;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.utils.InterpreterLanguagesUtils.FCS_N_INTERPRETER_LANGUAGE_CATEGORY_FIELD;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.utils.InterpreterLanguagesUtils.FCS_N_INTERPRETER_SIGN_LANGUAGE;
@@ -29,10 +27,7 @@ import static uk.gov.hmcts.reform.bailcaseapi.domain.utils.InterpreterLanguagesU
 @Component
 public class StartApplicationSubmitHandler implements PreSubmitCallbackStateHandler<BailCase> {
 
-    private final FeatureToggleService featureToggleService;
-
-    public StartApplicationSubmitHandler(FeatureToggleService featureToggleService) {
-        this.featureToggleService = featureToggleService;
+    public StartApplicationSubmitHandler() {
     }
 
     @Override
@@ -56,8 +51,7 @@ public class StartApplicationSubmitHandler implements PreSubmitCallbackStateHand
 
         final BailCase bailCase = callback.getCaseDetails().getCaseData();
 
-        YesOrNo isBailsLocationReferenceDataEnabled = featureToggleService.locationRefDataEnabled() ? YES : NO;
-        bailCase.write(IS_BAILS_LOCATION_REFERENCE_DATA_ENABLED, isBailsLocationReferenceDataEnabled);
+        bailCase.write(IS_BAILS_LOCATION_REFERENCE_DATA_ENABLED, YES);
 
         boolean isApplicantInterpreterNeeded = bailCase.read(INTERPRETER_YESNO, YesOrNo.class)
             .map(yesOrNo -> Objects.equals(yesOrNo, YES))

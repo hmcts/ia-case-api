@@ -5,7 +5,6 @@ import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.ListingEvent.INITIAL_LISTING;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import java.time.LocalDate;
@@ -24,7 +23,6 @@ import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PreSubmitCal
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.PreviousListingDetails;
-import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.bailcaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.bailcaseapi.domain.service.Appender;
 import uk.gov.hmcts.reform.bailcaseapi.domain.service.DueDateService;
@@ -155,22 +153,17 @@ public class CaseListingHandler implements PreSubmitCallbackHandler<BailCase> {
     }
 
     private void updateListingLocValueByUsingRefDataLocValue(BailCase bailCase) {
-        YesOrNo isBailsLocationRefDataEnabled = bailCase.read(IS_BAILS_LOCATION_REFERENCE_DATA_ENABLED, YesOrNo.class)
-            .orElse(NO);
+        Value selectedRefDataLocation = bailCase.read(REF_DATA_LISTING_LOCATION, DynamicList.class)
+            .map(DynamicList::getValue).orElse(null);
 
-        if (isBailsLocationRefDataEnabled == YES) {
-            Value selectedRefDataLocation = bailCase.read(REF_DATA_LISTING_LOCATION, DynamicList.class)
-                .map(DynamicList::getValue).orElse(null);
+        if (selectedRefDataLocation != null) {
+            saveRefDataListingLocationDetail(bailCase, selectedRefDataLocation.getCode());
 
-            if (selectedRefDataLocation != null) {
-                saveRefDataListingLocationDetail(bailCase, selectedRefDataLocation.getCode());
+            ListingHearingCentre listingHearingCentre = ListingHearingCentre.getEpimsIdMapping()
+                .get(selectedRefDataLocation.getCode());
 
-                ListingHearingCentre listingHearingCentre = ListingHearingCentre.getEpimsIdMapping()
-                    .get(selectedRefDataLocation.getCode());
-
-                if (listingHearingCentre != null && listingHearingCentre.getValue() != null) {
-                    bailCase.write(LISTING_LOCATION, listingHearingCentre);
-                }
+            if (listingHearingCentre != null && listingHearingCentre.getValue() != null) {
+                bailCase.write(LISTING_LOCATION, listingHearingCentre);
             }
         }
     }

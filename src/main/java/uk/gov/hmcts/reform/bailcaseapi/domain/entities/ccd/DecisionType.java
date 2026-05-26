@@ -32,8 +32,11 @@ public enum DecisionType {
     }
 
     public static DecisionType getEnum(String value) {
-        for (DecisionType v : values())
-            if (v.id.equalsIgnoreCase(value)) return v;
+        for (DecisionType v : values()) {
+            if (v.id.equalsIgnoreCase(value)) {
+                return v;
+            }
+        }
         return UNKNOWN;
     }
 }

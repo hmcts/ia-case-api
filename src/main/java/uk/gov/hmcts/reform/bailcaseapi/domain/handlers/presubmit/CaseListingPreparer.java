@@ -9,26 +9,21 @@ import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
-import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.bailcaseapi.domain.handlers.PreSubmitCallbackHandler;
-import uk.gov.hmcts.reform.bailcaseapi.domain.service.FeatureToggleService;
 import uk.gov.hmcts.reform.bailcaseapi.domain.service.LocationRefDataService;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.IS_BAILS_LOCATION_REFERENCE_DATA_ENABLED;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.REF_DATA_LISTING_LOCATION;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 @Slf4j
 @Component
 public class CaseListingPreparer implements PreSubmitCallbackHandler<BailCase> {
 
-    private final FeatureToggleService featureToggleService;
     private final LocationRefDataService locationRefDataService;
 
-    public CaseListingPreparer(FeatureToggleService featureToggleService, LocationRefDataService locationRefDataService) {
-        this.featureToggleService = featureToggleService;
+    public CaseListingPreparer(LocationRefDataService locationRefDataService) {
         this.locationRefDataService = locationRefDataService;
     }
 
@@ -54,25 +49,20 @@ public class CaseListingPreparer implements PreSubmitCallbackHandler<BailCase> {
 
         final BailCase bailCase = callback.getCaseDetails().getCaseData();
 
-        YesOrNo isBailsLocationReferenceDataEnabled = featureToggleService.locationRefDataEnabled() ? YES : NO;
-        bailCase.write(IS_BAILS_LOCATION_REFERENCE_DATA_ENABLED, isBailsLocationReferenceDataEnabled);
+        bailCase.write(IS_BAILS_LOCATION_REFERENCE_DATA_ENABLED, YES);
 
-        if (isBailsLocationReferenceDataEnabled == YES) {
+        DynamicList refDataLocationDynamicList = locationRefDataService.getHearingLocationsDynamicList();
 
-            DynamicList refDataLocationDynamicList = locationRefDataService.getHearingLocationsDynamicList();
+        Value selectedRefDataLocation = bailCase.read(REF_DATA_LISTING_LOCATION, DynamicList.class)
+            .map(dynamicList -> dynamicList.getValue()).orElse(null);
 
-            Value selectedRefDataLocation = bailCase.read(REF_DATA_LISTING_LOCATION, DynamicList.class)
-                .map(dynamicList -> dynamicList.getValue()).orElse(null);
-
-            if (selectedRefDataLocation != null) {
-                bailCase.write(
-                    REF_DATA_LISTING_LOCATION,
-                    new DynamicList(selectedRefDataLocation, refDataLocationDynamicList.getListItems())
-                );
-            } else {
-                bailCase.write(REF_DATA_LISTING_LOCATION, refDataLocationDynamicList);
-            }
-
+        if (selectedRefDataLocation != null) {
+            bailCase.write(
+                REF_DATA_LISTING_LOCATION,
+                new DynamicList(selectedRefDataLocation, refDataLocationDynamicList.getListItems())
+            );
+        } else {
+            bailCase.write(REF_DATA_LISTING_LOCATION, refDataLocationDynamicList);
         }
 
         return new PreSubmitCallbackResponse<>(bailCase);

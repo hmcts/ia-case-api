@@ -75,7 +75,7 @@ public class FinancialConditionSupporterContactPreferenceMidEventHandler impleme
             && supporterContactPreferences.stream().noneMatch(list -> list.contains(EMAIL)
                 || list.contains(MOBILE)
                 || list.contains(TELEPHONE))) {
-                response.addError(FIELD_REQUIRED_ERROR);
+            response.addError(FIELD_REQUIRED_ERROR);
         }
 
         return response;

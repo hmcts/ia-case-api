@@ -16,9 +16,9 @@ import uk.gov.hmcts.reform.bailcaseapi.domain.handlers.PreSubmitCallbackHandler;
 @Component
 public class UploadSignedDecisionNoticePreparer implements PreSubmitCallbackHandler<BailCase> {
 
-    public final static String MISSING_DECISION_ERROR_MESSAGE = "Decision type is missing. Please record the decision " +
+    public static final String MISSING_DECISION_ERROR_MESSAGE = "Decision type is missing. Please record the decision " +
         "before uploading the signed decision notice.";
-    public final static String INVALID_EVENT_ERROR_MESSAGE = "This event is invalid for this decision type. Please " +
+    public static final String INVALID_EVENT_ERROR_MESSAGE = "This event is invalid for this decision type. Please " +
         "use the 'Upload signed decision notice' event from the next step dropdown.";
 
     public boolean canHandle(

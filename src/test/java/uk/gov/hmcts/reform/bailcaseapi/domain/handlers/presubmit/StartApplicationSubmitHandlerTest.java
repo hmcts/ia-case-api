@@ -3,8 +3,6 @@ package uk.gov.hmcts.reform.bailcaseapi.domain.handlers.presubmit;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -15,8 +13,6 @@ import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.YesOrNo;
-import uk.gov.hmcts.reform.bailcaseapi.domain.service.FeatureToggleService;
-import uk.gov.hmcts.reform.bailcaseapi.domain.utils.InterpreterLanguagesUtils;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -38,10 +34,6 @@ class StartApplicationSubmitHandlerTest {
     private PreSubmitCallbackResponse<BailCase> callbackResponse;
     @Mock
     private BailCase bailCase;
-    @Mock
-    private FeatureToggleService featureToggleService;
-    @Mock
-    private InterpreterLanguagesUtils interpreterLanguagesUtils;
 
     private StartApplicationSubmitHandler startApplicationSubmitHandler;
 
@@ -50,7 +42,7 @@ class StartApplicationSubmitHandlerTest {
         when(callback.getEvent()).thenReturn(Event.START_APPLICATION);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(bailCase);
-        startApplicationSubmitHandler = new StartApplicationSubmitHandler(featureToggleService);
+        startApplicationSubmitHandler = new StartApplicationSubmitHandler();
     }
 
     @Test
@@ -79,16 +71,14 @@ class StartApplicationSubmitHandlerTest {
         startApplicationSubmitHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse);
     }
 
-    @ParameterizedTest
-    @CsvSource({"true", "false"})
-    void should_set_bails_location_ref_data_field(boolean featureFlag) {
-        when(featureToggleService.locationRefDataEnabled()).thenReturn(featureFlag);
+    @Test
+    void should_set_bails_location_ref_data_field() {
         when(callback.getEvent()).thenReturn(Event.START_APPLICATION);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(bailCase);
 
         startApplicationSubmitHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse);
-        verify(bailCase, times(1)).write(IS_BAILS_LOCATION_REFERENCE_DATA_ENABLED, featureFlag ? YesOrNo.YES : YesOrNo.NO);
+        verify(bailCase, times(1)).write(IS_BAILS_LOCATION_REFERENCE_DATA_ENABLED, YesOrNo.YES);
     }
 
     @Test

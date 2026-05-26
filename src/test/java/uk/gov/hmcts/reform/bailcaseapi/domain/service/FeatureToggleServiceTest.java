@@ -35,14 +35,4 @@ class FeatureToggleServiceTest {
         assertEquals(expected, featureToggleService.imaEnabled());
     }
 
-    @ParameterizedTest
-    @ValueSource(booleans =  {true, false})
-    void test_locationRefDataEnabled(boolean expected) {
-
-        when(launchDarklyFeatureToggler.getValue("bails-location-reference-data", false))
-            .thenReturn(expected);
-
-        assertEquals(expected, featureToggleService.locationRefDataEnabled());
-    }
-
 }

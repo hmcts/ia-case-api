@@ -19,7 +19,6 @@ import uk.gov.hmcts.reform.bailcaseapi.domain.entities.Value;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.HearingCentre;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.bailcaseapi.domain.handlers.presubmit.CaseManagementLocationService;
-import uk.gov.hmcts.reform.bailcaseapi.domain.service.FeatureToggleService;
 import uk.gov.hmcts.reform.bailcaseapi.domain.service.LocationRefDataService;
 
 class HearingCentreUtilsTest {
@@ -29,8 +28,6 @@ class HearingCentreUtilsTest {
     private HearingCentre hearingCentre;
     @Mock
     private CaseManagementLocationService caseManagementLocationService;
-    @Mock
-    private FeatureToggleService featureToggleService;
     @Mock
     private LocationRefDataService locationRefDataService;
     @Mock
@@ -55,7 +52,7 @@ class HearingCentreUtilsTest {
             caseManagementLocationRefData);
 
         HearingCentreUtils.setHearingCentre(
-            bailCase, hearingCentre, caseManagementLocationService, featureToggleService, locationRefDataService);
+            bailCase, hearingCentre, caseManagementLocationService, locationRefDataService);
 
         verify(bailCase).write(HEARING_CENTRE, hearingCentre);
         verify(bailCase).write(STAFF_LOCATION, "Glasgow");
@@ -67,10 +64,9 @@ class HearingCentreUtilsTest {
     }
 
     @Test
-    void should_set_all_fields_when_location_ref_data_enabled_via_feature_toggle() {
+    void should_set_all_fields() {
         when(bailCase.read(IS_BAILS_LOCATION_REFERENCE_DATA_ENABLED_FT, YesOrNo.class))
             .thenReturn(Optional.empty());
-        when(featureToggleService.locationRefDataEnabled()).thenReturn(true);
         when(locationRefDataService.getCaseManagementLocationDynamicList())
             .thenReturn(dynamicListWithMatchingItem());
         when(caseManagementLocationService.getCaseManagementLocation(hearingCentre)).thenReturn(caseManagementLocation);
@@ -78,27 +74,12 @@ class HearingCentreUtilsTest {
             caseManagementLocationRefData);
 
         HearingCentreUtils.setHearingCentre(
-            bailCase, hearingCentre, caseManagementLocationService, featureToggleService, locationRefDataService);
+            bailCase, hearingCentre, caseManagementLocationService, locationRefDataService);
 
         verify(bailCase).write(IS_BAILS_LOCATION_REFERENCE_DATA_ENABLED, YesOrNo.YES);
         verify(bailCase).write(SELECTED_HEARING_CENTRE_REF_DATA, "TestLabel");
         verify(bailCase).write(eq(HEARING_CENTRE_REF_DATA), any(DynamicList.class));
         verify(bailCase).write(CASE_MANAGEMENT_LOCATION_REF_DATA, caseManagementLocationRefData);
-    }
-
-    @Test
-    void should_set_no_ref_data_fields_when_location_ref_data_disabled() {
-        when(bailCase.read(IS_BAILS_LOCATION_REFERENCE_DATA_ENABLED_FT, YesOrNo.class))
-            .thenReturn(Optional.of(YesOrNo.NO));
-        when(caseManagementLocationService.getCaseManagementLocation(hearingCentre)).thenReturn(caseManagementLocation);
-
-        HearingCentreUtils.setHearingCentre(
-            bailCase, hearingCentre, caseManagementLocationService, featureToggleService, locationRefDataService);
-
-        verify(bailCase).write(IS_BAILS_LOCATION_REFERENCE_DATA_ENABLED, YesOrNo.NO);
-        verify(bailCase, never()).write(eq(SELECTED_HEARING_CENTRE_REF_DATA), any());
-        verify(bailCase, never()).write(eq(HEARING_CENTRE_REF_DATA), any());
-        verify(bailCase, never()).write(eq(CASE_MANAGEMENT_LOCATION_REF_DATA), any());
     }
 
     @Test
@@ -112,7 +93,7 @@ class HearingCentreUtilsTest {
             caseManagementLocationRefData);
 
         HearingCentreUtils.setHearingCentre(
-            bailCase, hearingCentre, caseManagementLocationService, featureToggleService, locationRefDataService);
+            bailCase, hearingCentre, caseManagementLocationService, locationRefDataService);
 
         verify(bailCase, never()).write(eq(SELECTED_HEARING_CENTRE_REF_DATA), any());
         verify(bailCase).write(eq(HEARING_CENTRE_REF_DATA), any(DynamicList.class));
@@ -131,7 +112,7 @@ class HearingCentreUtilsTest {
             caseManagementLocationRefData);
 
         HearingCentreUtils.setHearingCentre(
-            bailCase, hearingCentre, caseManagementLocationService, featureToggleService, locationRefDataService);
+            bailCase, hearingCentre, caseManagementLocationService, locationRefDataService);
 
         verify(bailCase, never()).write(eq(SELECTED_HEARING_CENTRE_REF_DATA), any());
         verify(bailCase).write(HEARING_CENTRE_REF_DATA, emptyDynamicList);
@@ -153,7 +134,7 @@ class HearingCentreUtilsTest {
             caseManagementLocationRefData);
 
         HearingCentreUtils.setHearingCentre(
-            bailCase, mockHearingCentre, caseManagementLocationService, featureToggleService, locationRefDataService);
+            bailCase, mockHearingCentre, caseManagementLocationService, locationRefDataService);
 
         verify(bailCase, never()).write(eq(SELECTED_HEARING_CENTRE_REF_DATA), any());
         verify(bailCase).write(eq(HEARING_CENTRE_REF_DATA), any(DynamicList.class));

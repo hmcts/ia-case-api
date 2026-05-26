@@ -6,8 +6,6 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
@@ -22,8 +20,6 @@ import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
-import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.YesOrNo;
-import uk.gov.hmcts.reform.bailcaseapi.domain.service.FeatureToggleService;
 import uk.gov.hmcts.reform.bailcaseapi.domain.service.LocationRefDataService;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -48,8 +44,6 @@ class CaseListingPreparerTest {
     @Mock
     private BailCase bailCase;
     @Mock
-    private FeatureToggleService featureToggleService;
-    @Mock
     private LocationRefDataService locationRefDataService;
     @Captor
     private ArgumentCaptor<DynamicList> dynamicListArgumentCaptor;
@@ -63,29 +57,26 @@ class CaseListingPreparerTest {
 
     @BeforeEach
     public void setUp() {
-        caseListingPreparer = new CaseListingPreparer(featureToggleService, locationRefDataService);
+        caseListingPreparer = new CaseListingPreparer(locationRefDataService);
         locationRefDataDynamicList = new DynamicList(
             new Value("", ""), List.of(hattonCross, newCastle));
 
         when(locationRefDataService.getHearingLocationsDynamicList())
             .thenReturn(locationRefDataDynamicList);
 
-        when(featureToggleService.locationRefDataEnabled()).thenReturn(true);
         when(callback.getEvent()).thenReturn(Event.CASE_LISTING);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(bailCase);
 
     }
 
-    @ParameterizedTest
-    @CsvSource({"true", "false"})
-    void should_set_bails_location_ref_data_field(boolean featureFlag) {
-        when(featureToggleService.locationRefDataEnabled()).thenReturn(featureFlag);
+    @Test
+    void should_set_bails_location_ref_data_field() {
 
         caseListingPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
         verify(bailCase, times(1)).write(
             IS_BAILS_LOCATION_REFERENCE_DATA_ENABLED,
-            featureFlag ? YES : YesOrNo.NO
+            YES
         );
     }
 

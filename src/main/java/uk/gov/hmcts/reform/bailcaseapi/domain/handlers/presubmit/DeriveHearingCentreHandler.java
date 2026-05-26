@@ -14,7 +14,6 @@ import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.DispatchPrio
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.bailcaseapi.domain.handlers.PreSubmitCallbackHandler;
-import uk.gov.hmcts.reform.bailcaseapi.domain.service.FeatureToggleService;
 import uk.gov.hmcts.reform.bailcaseapi.domain.service.HearingCentreFinder;
 import uk.gov.hmcts.reform.bailcaseapi.domain.service.LocationRefDataService;
 import uk.gov.hmcts.reform.bailcaseapi.domain.utils.HearingCentreUtils;
@@ -25,7 +24,6 @@ public class DeriveHearingCentreHandler implements PreSubmitCallbackHandler<Bail
 
     private final HearingCentreFinder hearingCentreFinder;
     private final LocationRefDataService locationRefDataService;
-    private final FeatureToggleService featureToggleService;
     private final CaseManagementLocationService caseManagementLocationService;
 
 
@@ -74,8 +72,7 @@ public class DeriveHearingCentreHandler implements PreSubmitCallbackHandler<Bail
             bailCase.write(DESIGNATED_TRIBUNAL_CENTRE, hearingCentre);
 
             HearingCentreUtils.setHearingCentre(
-                bailCase, hearingCentre, caseManagementLocationService,
-                featureToggleService, locationRefDataService
+                bailCase, hearingCentre, caseManagementLocationService, locationRefDataService
             );
         }
     }

@@ -14,9 +14,4 @@ public class FeatureToggleService {
 
         return launchDarklyFeatureToggler.getValue("ima-feature-flag", false);
     }
-
-    public boolean locationRefDataEnabled() {
-
-        return launchDarklyFeatureToggler.getValue("bails-location-reference-data", false);
-    }
 }

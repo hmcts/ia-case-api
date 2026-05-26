@@ -11,7 +11,6 @@ import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PreSubmitCal
 import uk.gov.hmcts.reform.bailcaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 import java.util.Optional;
-import uk.gov.hmcts.reform.bailcaseapi.domain.service.FeatureToggleService;
 import uk.gov.hmcts.reform.bailcaseapi.domain.service.LocationRefDataService;
 import uk.gov.hmcts.reform.bailcaseapi.domain.utils.HearingCentreUtils;
 
@@ -23,7 +22,6 @@ import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefin
 public class ChangeTribunalCentreHandler implements PreSubmitCallbackHandler<BailCase> {
 
     private final LocationRefDataService locationRefDataService;
-    private final FeatureToggleService featureToggleService;
     private final CaseManagementLocationService caseManagementLocationService;
 
     public boolean canHandle(PreSubmitCallbackStage callbackStage, Callback<BailCase> callback) {
@@ -51,7 +49,6 @@ public class ChangeTribunalCentreHandler implements PreSubmitCallbackHandler<Bai
                 bailCase,
                 designatedTribunalCentre.get(),
                 caseManagementLocationService,
-                featureToggleService,
                 locationRefDataService
             );
         } else {

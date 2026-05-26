@@ -20,7 +20,6 @@ import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PreSubmitCal
 
 import java.util.Optional;
 import java.util.Set;
-import uk.gov.hmcts.reform.bailcaseapi.domain.service.FeatureToggleService;
 import uk.gov.hmcts.reform.bailcaseapi.domain.service.LocationRefDataService;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
@@ -43,8 +42,6 @@ class ChangeTribunalCentreHandlerTest {
     @Mock
     private LocationRefDataService locationRefDataService;
     @Mock
-    private FeatureToggleService featureToggleService;
-    @Mock
     private CaseManagementLocationService caseManagementLocationService;
     private ChangeTribunalCentreHandler changeTribunalCentreHandler;
 
@@ -52,7 +49,6 @@ class ChangeTribunalCentreHandlerTest {
     public void setUp() {
         changeTribunalCentreHandler = new ChangeTribunalCentreHandler(
             locationRefDataService,
-            featureToggleService,
             caseManagementLocationService
         );
         when(callback.getCaseDetails()).thenReturn(caseDetails);
