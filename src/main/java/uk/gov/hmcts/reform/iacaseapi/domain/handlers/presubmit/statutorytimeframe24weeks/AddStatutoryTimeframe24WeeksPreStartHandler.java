@@ -42,8 +42,8 @@ public class AddStatutoryTimeframe24WeeksPreStartHandler implements PreSubmitCal
         State.AWAITING_REASONS_FOR_APPEAL,
         State.REASONS_FOR_APPEAL_SUBMITTED);
 
-    public AddStatutoryTimeframe24WeeksPreStartHandler(@Value("${app.statutory-timeframe.live-date}") LocalDate liveDate) {
-        stf24wLiveDate = liveDate;
+    public AddStatutoryTimeframe24WeeksPreStartHandler(@Value("${app.statutory-timeframe.live-date}") String stf24wLiveDate) {
+        this.stf24wLiveDate = LocalDate.parse(stf24wLiveDate);
     }
 
     public boolean canHandle(

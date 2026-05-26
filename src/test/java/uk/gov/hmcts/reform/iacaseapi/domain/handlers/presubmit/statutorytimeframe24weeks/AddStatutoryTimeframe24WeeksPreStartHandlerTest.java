@@ -33,8 +33,6 @@ import static org.mockito.Mockito.when;
 @SuppressWarnings("unchecked")
 class AddStatutoryTimeframe24WeeksPreStartHandlerTest {
 
-    private final LocalDate stf24wLiveDate = LocalDate.of(2026, 7, 1);
-
     @Mock private Callback<AsylumCase> callback;
     @Mock private CaseDetails<AsylumCase> caseDetails;
     @Mock private AsylumCase asylumCase;
@@ -43,6 +41,7 @@ class AddStatutoryTimeframe24WeeksPreStartHandlerTest {
 
     @BeforeEach
     public void setUp() {
+        String stf24wLiveDate = "2026-07-01";
         addStatutoryTimeframe24WeeksPreStartHandler = new AddStatutoryTimeframe24WeeksPreStartHandler(stf24wLiveDate);
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -50,7 +49,7 @@ class AddStatutoryTimeframe24WeeksPreStartHandlerTest {
         when(callback.getEvent()).thenReturn(Event.ADD_STATUTORY_TIMEFRAME_24_WEEKS);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(AsylumCaseFieldDefinition.APPEAL_SUBMISSION_DATE))
-            .thenReturn(Optional.of(stf24wLiveDate.toString()));
+            .thenReturn(Optional.of(stf24wLiveDate));
     }
 
     @Test
