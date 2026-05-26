@@ -41,7 +41,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentReceiver;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -52,8 +51,6 @@ class UploadAdditionalEvidenceHomeOfficeHandlerTest {
     private DocumentReceiver documentReceiver;
     @Mock
     private DocumentsAppender documentsAppender;
-    @Mock
-    private FeatureToggler featureToggler;
     @Mock
     private Callback<AsylumCase> callback;
     @Mock
@@ -86,8 +83,7 @@ class UploadAdditionalEvidenceHomeOfficeHandlerTest {
         uploadAdditionalEvidenceHomeOfficeHandler =
             new UploadAdditionalEvidenceHomeOfficeHandler(
                 documentReceiver,
-                documentsAppender,
-                featureToggler
+                documentsAppender
             );
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -98,7 +94,6 @@ class UploadAdditionalEvidenceHomeOfficeHandlerTest {
     @Test
     void should_append_new_evidence_to_existing_additional_evidence_documents_for_a_reheard_case() {
         when(asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
-        when(featureToggler.getValue("reheard-feature", false)).thenReturn(true);
 
         when(asylumCase.read(RESPONDENT_DOCUMENTS)).thenReturn(Optional.of(respondentDocuments));
         when(asylumCase.read(RESP_ADDITIONAL_EVIDENCE_DOCS)).thenReturn(Optional.of(respondentDocuments));
@@ -159,7 +154,6 @@ class UploadAdditionalEvidenceHomeOfficeHandlerTest {
     @Test
     void should_add_new_evidence_to_a_reheard_case_when_no_additional_evidence_documents_exist() {
         when(asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
-        when(featureToggler.getValue("reheard-feature", false)).thenReturn(true);
 
         when(asylumCase.read(RESP_ADDITIONAL_EVIDENCE_DOCS)).thenReturn(Optional.empty());
         when(asylumCase.read(RESPONDENT_DOCUMENTS)).thenReturn(Optional.empty());
