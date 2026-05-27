@@ -1,6 +1,5 @@
 {
   "description": "RIA-3683 Start list reheard case - hold on to list case hearing centre, date and length fields (feature flag off)",
-  "launchDarklyKey": "reheard-feature:true",
   "request": {
     "uri": "/asylum/ccdAboutToStart",
     "credentials": "AdminOfficer",
