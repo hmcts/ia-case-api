@@ -54,11 +54,6 @@ public class EditDocsService {
             );
             asylumCase.write(documentType, documentWithDescriptionList);
         });
-        if (documentType.equals(FTPA_LIST)
-                && deletedFtpaDecisionDocIds.isEmpty()) {
-            asylumCase.clear(FTPA_APPELLANT_APPLICATION_DATE);
-            asylumCase.clear(FTPA_RESPONDENT_APPLICATION_DATE);
-        }
     }
 
     private boolean doWeHaveToCleanUpOverviewTabDoc(List<String> deletedFinalDecisionAndReasonsDocIds,
