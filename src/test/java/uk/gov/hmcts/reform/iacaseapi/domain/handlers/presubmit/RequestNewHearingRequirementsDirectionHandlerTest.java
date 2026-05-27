@@ -68,7 +68,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DirectionAppender;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.PreviousHearingAppender;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -90,8 +89,6 @@ class RequestNewHearingRequirementsDirectionHandlerTest {
     @Mock
     private AsylumCase asylumCase;
     @Mock
-    private FeatureToggler featureToggler;
-    @Mock
     private DocumentWithMetadata hearingRequirements1;
     private RequestNewHearingRequirementsDirectionHandler requestNewHearingRequirementsDirectionHandler;
 
@@ -102,8 +99,7 @@ class RequestNewHearingRequirementsDirectionHandlerTest {
                         HEARING_REQUIREMENTS_DUE_IN_DAYS,
                         dateProvider,
                         directionAppender,
-                        previousHearingAppender,
-                        featureToggler
+                        previousHearingAppender
                 );
     }
 
@@ -111,15 +107,13 @@ class RequestNewHearingRequirementsDirectionHandlerTest {
     void can_handle_request_new_hearing_requirements() {
 
         when(callback.getEvent()).thenReturn(Event.REQUEST_NEW_HEARING_REQUIREMENTS);
-        when(featureToggler.getValue("reheard-feature", false)).thenReturn(true);
 
         requestNewHearingRequirementsDirectionHandler =
                 new RequestNewHearingRequirementsDirectionHandler(
                         HEARING_REQUIREMENTS_DUE_IN_DAYS,
                         dateProvider,
                         directionAppender,
-                        previousHearingAppender,
-                        featureToggler
+                        previousHearingAppender
                 );
 
         boolean canHandle =
@@ -149,7 +143,6 @@ class RequestNewHearingRequirementsDirectionHandlerTest {
         final String listCaseHearingLength = "6 hours";
         final String appealDecision = "Dismissed";
 
-        when(featureToggler.getValue("reheard-feature", false)).thenReturn(true);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(event);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -268,7 +261,6 @@ class RequestNewHearingRequirementsDirectionHandlerTest {
         for (Event event : Event.values()) {
 
             when(callback.getEvent()).thenReturn(event);
-            when(featureToggler.getValue("reheard-feature", false)).thenReturn(true);
 
             for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
 
@@ -279,23 +271,6 @@ class RequestNewHearingRequirementsDirectionHandlerTest {
 
                     assertTrue(canHandle);
                 } else {
-                    assertFalse(canHandle);
-                }
-            }
-        }
-
-        for (Event event : Event.values()) {
-
-            when(callback.getEvent()).thenReturn(event);
-            when(featureToggler.getValue("reheard-feature", false)).thenReturn(false);
-
-            for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
-
-                boolean canHandle = requestNewHearingRequirementsDirectionHandler.canHandle(callbackStage, callback);
-
-                if (event == Event.REQUEST_NEW_HEARING_REQUIREMENTS
-                        && callbackStage == PreSubmitCallbackStage.ABOUT_TO_START) {
-
                     assertFalse(canHandle);
                 }
             }

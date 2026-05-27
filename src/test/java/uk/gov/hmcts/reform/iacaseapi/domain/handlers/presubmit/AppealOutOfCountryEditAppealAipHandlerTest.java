@@ -110,7 +110,6 @@ class AppealOutOfCountryEditAppealAipHandlerTest {
         when(callback.getEvent()).thenReturn(event);
         when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         when(asylumCase.read(APPELLANT_IN_UK_PREVIOUS_SELECTION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
-        when(featureToggler.getValue("aip-ooc-feature", false)).thenReturn(true);
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -136,7 +135,6 @@ class AppealOutOfCountryEditAppealAipHandlerTest {
         when(callback.getEvent()).thenReturn(event);
         when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(asylumCase.read(APPELLANT_IN_UK_PREVIOUS_SELECTION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
-        when(featureToggler.getValue("aip-ooc-feature", false)).thenReturn(true);
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -162,7 +160,6 @@ class AppealOutOfCountryEditAppealAipHandlerTest {
         when(callback.getEvent()).thenReturn(event);
         when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(asylumCase.read(APPELLANT_IN_UK_PREVIOUS_SELECTION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
-        when(featureToggler.getValue("aip-ooc-feature", false)).thenReturn(true);
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -189,7 +186,6 @@ class AppealOutOfCountryEditAppealAipHandlerTest {
         when(asylumCase.read(APPELLANT_IN_UK_PREVIOUS_SELECTION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.DC));
         when(asylumCase.read(APPEAL_TYPE_PREVIOUS_SELECTION, AppealType.class)).thenReturn(Optional.of(AppealType.RP));
-        when(featureToggler.getValue("aip-ooc-feature", false)).thenReturn(true);
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -218,7 +214,6 @@ class AppealOutOfCountryEditAppealAipHandlerTest {
         when(asylumCase.read(APPELLANT_IN_UK_PREVIOUS_SELECTION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.DC));
         when(asylumCase.read(APPEAL_TYPE_PREVIOUS_SELECTION, AppealType.class)).thenReturn(Optional.of(AppealType.DC));
-        when(featureToggler.getValue("aip-ooc-feature", false)).thenReturn(true);
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -249,7 +244,6 @@ class AppealOutOfCountryEditAppealAipHandlerTest {
         when(asylumCase.read(OUTSIDE_UK_WHEN_APPLICATION_MADE, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(asylumCase.read(OUTSIDE_UK_WHEN_APPLICATION_MADE_PREVIOUS_SELECTION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
 
-        when(featureToggler.getValue("aip-ooc-feature", false)).thenReturn(true);
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -280,7 +274,6 @@ class AppealOutOfCountryEditAppealAipHandlerTest {
         when(asylumCase.read(APPEAL_TYPE_PREVIOUS_SELECTION, AppealType.class)).thenReturn(Optional.of(AppealType.DC));
         when(asylumCase.read(OUTSIDE_UK_WHEN_APPLICATION_MADE, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(asylumCase.read(OUTSIDE_UK_WHEN_APPLICATION_MADE_PREVIOUS_SELECTION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
-        when(featureToggler.getValue("aip-ooc-feature", false)).thenReturn(true);
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -305,7 +298,6 @@ class AppealOutOfCountryEditAppealAipHandlerTest {
         when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.DC));
         when(asylumCase.read(HAS_SPONSOR, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
-        when(featureToggler.getValue("aip-ooc-feature", false)).thenReturn(true);
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -362,7 +354,6 @@ class AppealOutOfCountryEditAppealAipHandlerTest {
         when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.DC));
         when(asylumCase.read(SPONSOR_SUBSCRIPTIONS)).thenReturn(Optional.of(Collections.singletonList(new IdValue<>("foo", subscriber))));
-        when(featureToggler.getValue("aip-ooc-feature", false)).thenReturn(true);
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -399,7 +390,6 @@ class AppealOutOfCountryEditAppealAipHandlerTest {
         when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.DC));
         when(asylumCase.read(SPONSOR_SUBSCRIPTIONS)).thenReturn(Optional.of(Collections.singletonList(new IdValue<>("foo", subscriber))));
-        when(featureToggler.getValue("aip-ooc-feature", false)).thenReturn(true);
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -436,7 +426,6 @@ class AppealOutOfCountryEditAppealAipHandlerTest {
         when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.DC));
         when(asylumCase.read(SPONSOR_SUBSCRIPTIONS)).thenReturn(Optional.of(Collections.singletonList(new IdValue<>("foo", subscriber))));
-        when(featureToggler.getValue("aip-ooc-feature", false)).thenReturn(true);
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -458,7 +447,6 @@ class AppealOutOfCountryEditAppealAipHandlerTest {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(featureToggler.getValue("aip-ooc-feature", false)).thenReturn(true);
 
         assertThatThrownBy(
             () -> appealOutOfCountryEditAppealAipHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
@@ -475,7 +463,6 @@ class AppealOutOfCountryEditAppealAipHandlerTest {
             for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
                 when(callback.getCaseDetails()).thenReturn(caseDetails);
                 when(caseDetails.getCaseData()).thenReturn(asylumCase);
-                when(featureToggler.getValue("aip-ooc-feature", false)).thenReturn(true);
                 when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
 
                 boolean canHandle = appealOutOfCountryEditAppealAipHandler.canHandle(callbackStage, callback);

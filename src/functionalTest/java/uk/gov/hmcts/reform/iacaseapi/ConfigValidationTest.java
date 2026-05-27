@@ -43,7 +43,7 @@ class ConfigValidationTest {
     FeatureToggler featureToggler;
 
     @ParameterizedTest
-    @CsvSource("use-ccd-document-am")
+    @CsvSource("home-office-uan-dc-ea-hu-feature")
     void launchDarklyFeatureTogglesPresent(String featureToggleName) {
         boolean value1 = featureToggler.getValue(featureToggleName, true);
         boolean value2 = featureToggler.getValue(featureToggleName, false);

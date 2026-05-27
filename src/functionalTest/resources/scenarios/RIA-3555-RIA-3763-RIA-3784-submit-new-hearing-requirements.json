@@ -1,6 +1,5 @@
 {
   "description": "RIA-3555-RIA-3763-RIA-3784 Submit new hearing requirements (FTPA reheard decision)",
-    "launchDarklyKey": "reheard-feature:true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "LegalRepresentative",

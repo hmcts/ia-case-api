@@ -1,6 +1,5 @@
 {
   "description": "RIA-3314 Send decision and reasons success confirmation",
-  "launchDarklyKey": "home-office-notification-feature:true",
   "request": {
     "uri": "/asylum/ccdSubmitted",
     "credentials": "Judge",

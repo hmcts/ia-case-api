@@ -1,7 +1,7 @@
 {
   "description": "RIA-8921 Set next hearing date during case listing",
-  "launchDarklyKey": "nextHearingDateEnabled:true",
-    "request": {
+  "disabled": false,
+  "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "AdminOfficer",
     "input": {

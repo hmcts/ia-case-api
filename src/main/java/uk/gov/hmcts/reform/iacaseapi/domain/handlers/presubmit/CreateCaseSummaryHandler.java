@@ -23,23 +23,19 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentReceiver;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
 @Component
 public class CreateCaseSummaryHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final DocumentReceiver documentReceiver;
     private final DocumentsAppender documentsAppender;
-    private final FeatureToggler featureToggler;
 
     public CreateCaseSummaryHandler(
         DocumentReceiver documentReceiver,
-        DocumentsAppender documentsAppender,
-        FeatureToggler featureToggler
+        DocumentsAppender documentsAppender
     ) {
         this.documentReceiver = documentReceiver;
         this.documentsAppender = documentsAppender;
-        this.featureToggler = featureToggler;
     }
 
     public boolean canHandle(
@@ -84,24 +80,22 @@ public class CreateCaseSummaryHandler implements PreSubmitCallbackHandler<Asylum
             );
 
         Optional<YesOrNo> caseFlagSetAsideReheardExists = asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS);
-        boolean isRemittedFeature = featureToggler.getValue("dlrm-remitted-feature-flag", false);
 
         List<IdValue<DocumentWithMetadata>> allHearingDocuments =
             documentsAppender.append(
-                fetchHearingDocuments(asylumCase, caseFlagSetAsideReheardExists, isRemittedFeature),
+                fetchHearingDocuments(asylumCase, caseFlagSetAsideReheardExists),
                 singletonList(caseSummaryDocumentWithMetadata),
                 DocumentTag.CASE_SUMMARY
             );
         boolean isReheardCase = caseFlagSetAsideReheardExists.isPresent()
             && caseFlagSetAsideReheardExists.get() == YesOrNo.YES;
-        handleReheardDocumentsWrite(asylumCase, isReheardCase, isRemittedFeature, allHearingDocuments);
+        handleReheardDocumentsWrite(asylumCase, isReheardCase, allHearingDocuments);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 
     private List<IdValue<DocumentWithMetadata>> fetchHearingDocuments(AsylumCase asylumCase,
-                                                                      Optional<YesOrNo> caseFlagSetAsideReheardExists,
-                                                                      boolean remittedFlag) {
+                                                                      Optional<YesOrNo> caseFlagSetAsideReheardExists) {
 
         boolean isSetAsideReheard = caseFlagSetAsideReheardExists.map(flag -> flag.equals(YesOrNo.YES)).orElse(false);
 
@@ -109,7 +103,7 @@ public class CreateCaseSummaryHandler implements PreSubmitCallbackHandler<Asylum
                         ? asylumCase.read(REHEARD_HEARING_DOCUMENTS)
                         : asylumCase.read(HEARING_DOCUMENTS);
 
-        if (isSetAsideReheard && remittedFlag) {
+        if (isSetAsideReheard) {
             Optional<List<IdValue<ReheardHearingDocuments>>> maybeExistingReheardDocuments =
                     asylumCase.read(REHEARD_HEARING_DOCUMENTS_COLLECTION);
             List<IdValue<ReheardHearingDocuments>> existingReheardDocuments = maybeExistingReheardDocuments.orElse(emptyList());

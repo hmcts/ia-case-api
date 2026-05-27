@@ -81,7 +81,6 @@ public class AppealOutOfCountryEditAppealAipHandler implements PreSubmitCallback
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
             && (callback.getEvent() == Event.EDIT_APPEAL || callback.getEvent() == Event.EDIT_APPEAL_AFTER_SUBMIT)
-            && featureToggler.getValue("aip-ooc-feature", false)
             && HandlerUtils.isAipJourney(callback.getCaseDetails().getCaseData());
     }
 

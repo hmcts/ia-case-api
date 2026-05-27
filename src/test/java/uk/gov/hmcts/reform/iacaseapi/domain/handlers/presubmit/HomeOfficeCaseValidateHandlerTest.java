@@ -105,8 +105,6 @@ class HomeOfficeCaseValidateHandlerTest {
     @Test
     void handle_should_return_if_appeal_type_is_not_present() {
 
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
-
         when(callback.getEvent()).thenReturn(SUBMIT_APPEAL);
         when(homeOfficeApi.aboutToSubmit(callback)).thenReturn(asylumCase);
 
@@ -118,8 +116,6 @@ class HomeOfficeCaseValidateHandlerTest {
     @ParameterizedTest
     @MethodSource("eventAndAppealTypesData")
     void should_call_home_office_api_and_update_the_case(Event event, AppealType appealType) {
-
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
 
         when(featureToggler.getValue("home-office-uan-pa-feature", false)).thenReturn(true);
         when(featureToggler.getValue("home-office-uan-rp-feature", false)).thenReturn(true);
@@ -142,7 +138,6 @@ class HomeOfficeCaseValidateHandlerTest {
         nlist.add(new IdValue<>("2", new NationalityFieldValue("VA")));
 
         when(asylumCase.read(APPELLANT_NATIONALITIES)).thenReturn(Optional.of(nlist));
-        when(featureToggler.getValue("home-office-notification-feature", false)).thenReturn(true);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             homeOfficeCaseValidateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -170,8 +165,6 @@ class HomeOfficeCaseValidateHandlerTest {
     @MethodSource("eventAndAppealTypesData")
     void should_call_home_office_api_for_detained_appeals(Event event, AppealType appealType) {
 
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
-
         when(featureToggler.getValue("home-office-uan-pa-feature", false)).thenReturn(true);
         when(featureToggler.getValue("home-office-uan-rp-feature", false)).thenReturn(true);
         when(featureToggler.getValue("home-office-uan-ea-feature", false)).thenReturn(true);
@@ -194,7 +187,6 @@ class HomeOfficeCaseValidateHandlerTest {
         nlist.add(new IdValue<>("2", new NationalityFieldValue("VA")));
 
         when(asylumCase.read(APPELLANT_NATIONALITIES)).thenReturn(Optional.of(nlist));
-        when(featureToggler.getValue("home-office-notification-feature", false)).thenReturn(true);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             homeOfficeCaseValidateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -222,8 +214,6 @@ class HomeOfficeCaseValidateHandlerTest {
     @MethodSource("eventAndAppealTypesData")
     void should_not_call_home_office_api_for_ejp_appeals(Event event, AppealType appealType) {
 
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
-
         when(featureToggler.getValue("home-office-uan-pa-feature", false)).thenReturn(true);
         when(featureToggler.getValue("home-office-uan-rp-feature", false)).thenReturn(true);
         when(featureToggler.getValue("home-office-uan-ea-feature", false)).thenReturn(true);
@@ -250,8 +240,6 @@ class HomeOfficeCaseValidateHandlerTest {
     @ParameterizedTest
     @MethodSource("eventAndAppealTypesData")
     void should_not_call_home_office_api_when_isNotificationTurnedOff_yes(Event event, AppealType appealType) {
-
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
 
         when(callback.getEvent()).thenReturn(event);
 
@@ -302,8 +290,6 @@ class HomeOfficeCaseValidateHandlerTest {
     @MethodSource("eventAndAppealTypesData")
     void should_call_home_office_api_and_update_the_case_for_enabled_appeal_types(Event event, AppealType appealType) {
 
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
-
         when(featureToggler.getValue("home-office-uan-pa-feature", false)).thenReturn(false);
         when(featureToggler.getValue("home-office-uan-rp-feature", false)).thenReturn(true);
         when(featureToggler.getValue("home-office-uan-ea-feature", false)).thenReturn(false);
@@ -325,7 +311,6 @@ class HomeOfficeCaseValidateHandlerTest {
         nlist.add(new IdValue<>("2", new NationalityFieldValue("VA")));
 
         when(asylumCase.read(APPELLANT_NATIONALITIES)).thenReturn(Optional.of(nlist));
-        when(featureToggler.getValue("home-office-notification-feature", false)).thenReturn(true);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
                 homeOfficeCaseValidateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);

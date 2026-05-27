@@ -166,12 +166,11 @@ public class FtpaDisplayService {
         }
     }
 
-    public void setFtpaCaseFlag(AsylumCase asylumCase, boolean isReheardAppealEnabled, String currentDecision) {
+    public void setFtpaCaseFlag(AsylumCase asylumCase, String currentDecision) {
 
-        asylumCase.write(AsylumCaseFieldDefinition.IS_REHEARD_APPEAL_ENABLED,
-            isReheardAppealEnabled ? YesOrNo.YES : YesOrNo.NO);
+        asylumCase.write(AsylumCaseFieldDefinition.IS_REHEARD_APPEAL_ENABLED, YesOrNo.YES);
 
-        if (isReheardAppealEnabled && currentDecision.toLowerCase().contains("reheard")) {
+        if (currentDecision.toLowerCase().contains("reheard")) {
             asylumCase.write(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YES);
             asylumCase.write(STITCHING_STATUS,"");
             updateCaseFlags(asylumCase);

@@ -43,7 +43,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -68,8 +67,6 @@ class FtpaRespondentPreparerTest {
     private AsylumCase asylumCase;
     @Mock
     private DateProvider dateProvider;
-    @Mock
-    private FeatureToggler featureToggler;
 
     private FtpaRespondentPreparer ftpaRespondentPreparer;
 
@@ -77,7 +74,7 @@ class FtpaRespondentPreparerTest {
     @BeforeEach
     public void setUp() {
         ftpaRespondentPreparer =
-            new FtpaRespondentPreparer(dateProvider, featureToggler);
+            new FtpaRespondentPreparer(dateProvider);
 
         when(asylumCase.read(FTPA_RESPONDENT_SUBMITTED)).thenReturn(Optional.of("No"));
     }
@@ -220,7 +217,6 @@ class FtpaRespondentPreparerTest {
         when(callback.getEvent()).thenReturn(Event.APPLY_FOR_FTPA_RESPONDENT);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(FTPA_RESPONDENT_SUBMITTED)).thenReturn(Optional.of("Yes"));
-        when(featureToggler.getValue("reheard-feature", false)).thenReturn(true);
         when(asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
 
         when(dateProvider.now()).thenReturn(LocalDate.now());

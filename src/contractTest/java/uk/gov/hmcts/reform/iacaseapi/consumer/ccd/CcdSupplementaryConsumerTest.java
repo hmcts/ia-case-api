@@ -34,7 +34,6 @@ public class CcdSupplementaryConsumerTest extends CcdSupplementaryProviderBaseTe
 
     @Pact(provider = "ccdDataStoreAPI_supplementaryUpdate", consumer = "ia_caseApi")
     public V4Pact generatePactFragmentForSupplementaryUpdate(PactDslWithProvider builder) throws IOException {
-        when(featureToggler.getValue("wa-R3-feature", false)).thenReturn(true);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.REP));
 

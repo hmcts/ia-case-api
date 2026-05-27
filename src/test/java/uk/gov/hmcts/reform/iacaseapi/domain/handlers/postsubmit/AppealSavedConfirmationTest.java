@@ -94,7 +94,6 @@ class AppealSavedConfirmationTest {
 
         when(professionalOrganisationRetriever.retrieve()).thenReturn(organisationEntityResponse);
         when(organisationEntityResponse.getOrganisationIdentifier()).thenReturn(organisationIdentifier);
-        when(featureToggler.getValue("share-case-feature", false)).thenReturn(true);
 
         PostSubmitCallbackResponse callbackResponse =
             appealSavedConfirmation.handle(callback);
@@ -135,7 +134,6 @@ class AppealSavedConfirmationTest {
 
         when(professionalOrganisationRetriever.retrieve()).thenReturn(organisationEntityResponse);
         when(organisationEntityResponse.getOrganisationIdentifier()).thenReturn(organisationIdentifier);
-        when(featureToggler.getValue("share-case-feature", false)).thenReturn(true);
 
         PostSubmitCallbackResponse callbackResponse =
             appealSavedConfirmation.handle(callback);
@@ -175,7 +173,6 @@ class AppealSavedConfirmationTest {
 
         when(professionalOrganisationRetriever.retrieve()).thenReturn(organisationEntityResponse);
         when(organisationEntityResponse.getOrganisationIdentifier()).thenReturn(organisationIdentifier);
-        when(featureToggler.getValue("share-case-feature", false)).thenReturn(true);
 
         PostSubmitCallbackResponse callbackResponse =
             appealSavedConfirmation.handle(callback);
@@ -215,7 +212,6 @@ class AppealSavedConfirmationTest {
 
         when(professionalOrganisationRetriever.retrieve()).thenReturn(organisationEntityResponse);
         when(organisationEntityResponse.getOrganisationIdentifier()).thenReturn(organisationIdentifier);
-        when(featureToggler.getValue("share-case-feature", false)).thenReturn(true);
 
         PostSubmitCallbackResponse callbackResponse =
             appealSavedConfirmation.handle(callback);
@@ -256,8 +252,6 @@ class AppealSavedConfirmationTest {
 
         when(professionalOrganisationRetriever.retrieve()).thenReturn(organisationEntityResponse);
         when(organisationEntityResponse.getOrganisationIdentifier()).thenReturn(organisationIdentifier);
-        when(featureToggler.getValue("share-case-feature", false)).thenReturn(true);
-
 
         PostSubmitCallbackResponse callbackResponse =
             appealSavedConfirmation.handle(callback);
@@ -297,8 +291,6 @@ class AppealSavedConfirmationTest {
 
         when(professionalOrganisationRetriever.retrieve()).thenReturn(organisationEntityResponse);
         when(organisationEntityResponse.getOrganisationIdentifier()).thenReturn(organisationIdentifier);
-        when(featureToggler.getValue("share-case-feature", false)).thenReturn(true);
-
 
         PostSubmitCallbackResponse callbackResponse =
             appealSavedConfirmation.handle(callback);
@@ -339,8 +331,6 @@ class AppealSavedConfirmationTest {
 
         when(professionalOrganisationRetriever.retrieve()).thenReturn(organisationEntityResponse);
         when(organisationEntityResponse.getOrganisationIdentifier()).thenReturn(organisationIdentifier);
-        when(featureToggler.getValue("share-case-feature", false)).thenReturn(true);
-
 
         PostSubmitCallbackResponse callbackResponse =
             appealSavedConfirmation.handle(callback);
@@ -372,7 +362,6 @@ class AppealSavedConfirmationTest {
 
         when(professionalOrganisationRetriever.retrieve()).thenReturn(organisationEntityResponse);
         when(organisationEntityResponse.getOrganisationIdentifier()).thenReturn(organisationIdentifier);
-        when(featureToggler.getValue("share-case-feature", false)).thenReturn(true);
 
         PostSubmitCallbackResponse callbackResponse =
             appealSavedConfirmation.handle(callback);
@@ -403,7 +392,6 @@ class AppealSavedConfirmationTest {
         when(asylumCase.read(REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.of(RemissionType.NO_REMISSION));
         when(professionalOrganisationRetriever.retrieve()).thenReturn(organisationEntityResponse);
         when(organisationEntityResponse.getOrganisationIdentifier()).thenReturn(organisationIdentifier);
-        when(featureToggler.getValue("share-case-feature", false)).thenReturn(true);
 
         PostSubmitCallbackResponse callbackResponse =
             appealSavedConfirmation.handle(callback);
@@ -465,28 +453,6 @@ class AppealSavedConfirmationTest {
     }
 
     @Test
-    void should_not_assign_or_revoke_access_to_case_when_feature_flag_disabled() {
-
-        long caseId = 1234;
-
-        when(callback.getEvent()).thenReturn(Event.START_APPEAL);
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(caseDetails.getId()).thenReturn(caseId);
-        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.EA));
-        when(featureToggler.getValue("share-case-feature", false)).thenReturn(false);
-
-        PostSubmitCallbackResponse callbackResponse =
-            appealSavedConfirmation.handle(callback);
-
-        assertNotNull(callbackResponse);
-        assertTrue(callbackResponse.getConfirmationHeader().isPresent());
-        assertTrue(callbackResponse.getConfirmationBody().isPresent());
-
-        verify(ccdCaseAssignment, times(0)).revokeAccessToCase(callback, organisationIdentifier);
-    }
-
-    @Test
     void should_return_confirmation_for_internal_cases_admin() {
 
         long caseId = 1234;
@@ -500,7 +466,6 @@ class AppealSavedConfirmationTest {
 
         when(professionalOrganisationRetriever.retrieve()).thenReturn(organisationEntityResponse);
         when(organisationEntityResponse.getOrganisationIdentifier()).thenReturn(organisationIdentifier);
-        when(featureToggler.getValue("share-case-feature", false)).thenReturn(true);
 
         PostSubmitCallbackResponse callbackResponse =
             appealSavedConfirmation.handle(callback);
