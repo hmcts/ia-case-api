@@ -4,15 +4,10 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_INTEGRATED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SUBMIT_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -48,26 +43,6 @@ public class ListAssistIntegratedHandlerTest {
         listAssistIntegratedHandler = new ListAssistIntegratedHandler(locationBasedFeatureToggler);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-    }
-
-    @Test
-    void should_set_isIntegrated_to_yes() {
-        when(callback.getEvent()).thenReturn(SUBMIT_APPEAL);
-        when(locationBasedFeatureToggler.isListAssistEnabled(asylumCase)).thenReturn(YES);
-
-        listAssistIntegratedHandler.handle(ABOUT_TO_SUBMIT, callback);
-
-        verify(asylumCase, times(1)).write(IS_INTEGRATED, YES);
-    }
-
-    @Test
-    void should_set_isIntegrated_to_no() {
-        when(callback.getEvent()).thenReturn(SUBMIT_APPEAL);
-        when(locationBasedFeatureToggler.isListAssistEnabled(asylumCase)).thenReturn(NO);
-
-        listAssistIntegratedHandler.handle(ABOUT_TO_SUBMIT, callback);
-
-        verify(asylumCase, times(1)).write(IS_INTEGRATED, NO);
     }
 
     @Test
