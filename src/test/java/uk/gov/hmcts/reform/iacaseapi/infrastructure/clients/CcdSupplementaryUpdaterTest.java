@@ -60,10 +60,9 @@ class CcdSupplementaryUpdaterTest {
 
         when(serviceAuthTokenGenerator.generate()).thenReturn(SERVICE_TOKEN);
         when(userDetails.getAccessToken()).thenReturn(ACCESS_TOKEN);
-        when(featureToggler.getValue("wa-R3-feature", false)).thenReturn(true);
 
         ccdSupplementaryUpdater = new CcdSupplementaryUpdater(
-                featureToggler, restTemplate,
+                restTemplate,
                 serviceAuthTokenGenerator,
                 userDetails,
                 ccdUrl,
@@ -127,18 +126,6 @@ class CcdSupplementaryUpdaterTest {
         assertThatThrownBy(() -> ccdSupplementaryUpdater.setHmctsServiceIdSupplementary(null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
-
-    }
-
-    @Test
-    void should_do_nothing_when_flag_disabled() {
-        when(featureToggler.getValue("wa-R3-feature", false)).thenReturn(false);
-        setupForSuccessfulPostRequest();
-
-        ccdSupplementaryUpdater.setHmctsServiceIdSupplementary(callback);
-
-        verify(restTemplate, never())
-                .exchange(anyString(), eq(HttpMethod.POST), any(HttpEntity.class), eq(Object.class));
 
     }
 

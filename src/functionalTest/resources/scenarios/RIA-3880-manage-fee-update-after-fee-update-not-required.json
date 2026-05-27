@@ -1,6 +1,5 @@
 {
   "description": "RIA-3880 Admin officer manage fee update not available post Fee update not required",
-  "launchDarklyKey": "manage-fee-update-feature:true",
   "request": {
     "uri": "/asylum/ccdAboutToStart",
     "credentials": "AdminOfficer",

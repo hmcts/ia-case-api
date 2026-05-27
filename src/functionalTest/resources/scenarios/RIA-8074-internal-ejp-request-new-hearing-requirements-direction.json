@@ -1,6 +1,5 @@
 {
   "description": "RIA-8074 Request new hearing requirements - EJP Unrep Non-detained - Appellant party",
-  "launchDarklyKey": "reheard-feature:true",
   "request": {
     "uri": "/asylum/ccdAboutToStart",
     "credentials": "CaseOfficer",
