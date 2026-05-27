@@ -1,9 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.anyString;
-import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -28,14 +25,10 @@ class AsylumFieldCaseNameFixerTest {
     @Mock
     private AsylumCase asylumCaseMock;
 
-    @Mock
-    private FeatureToggler featureToggler;
-
     @BeforeEach
     public void setUp() {
-        when(featureToggler.getValue("wa-R3-feature", false)).thenReturn(true);
 
-        asylumFieldCaseNameFixer = new AsylumFieldCaseNameFixer(HMCTS_CASE_NAME_INTERNAL, APPELLANT_GIVEN_NAMES, APPELLANT_FAMILY_NAME, featureToggler);
+        asylumFieldCaseNameFixer = new AsylumFieldCaseNameFixer(HMCTS_CASE_NAME_INTERNAL, APPELLANT_GIVEN_NAMES, APPELLANT_FAMILY_NAME);
 
         asylumCase = new AsylumCase();
     }
@@ -135,13 +128,4 @@ class AsylumFieldCaseNameFixerTest {
         asylumFieldCaseNameFixer.fix(asylumCaseMock);
     }
 
-    @Test
-    void should_do_nothing_as_feature_disabled() {
-        when(featureToggler.getValue("wa-R3-feature", false)).thenReturn(false);
-
-        setupAndTestForSuccessfulFix();
-
-        verify(asylumCaseMock, never()).write(
-            eq(AsylumCaseFieldDefinition.CASE_NAME_HMCTS_INTERNAL), anyString());
-    }
 }

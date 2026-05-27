@@ -20,7 +20,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
 /**
  * This handler ensures stale data is removed
@@ -30,10 +29,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 @Component
 public class AppealOutOfCountryEditAppealHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
-    private final FeatureToggler featureToggler;
+    public AppealOutOfCountryEditAppealHandler() {
 
-    public AppealOutOfCountryEditAppealHandler(FeatureToggler featureToggler) {
-        this.featureToggler = featureToggler;
     }
 
     public boolean canHandle(
@@ -117,11 +114,9 @@ public class AppealOutOfCountryEditAppealHandler implements PreSubmitCallbackHan
                 asylumCase.clear(IRC_NAME);
                 asylumCase.clear(PRISON_NAME);
                 asylumCase.clear(DEPORTATION_ORDER_OPTIONS);
-                if (featureToggler.getValue("ft-detained-appeal", false)) {
-                    asylumCase.clear(REMOVAL_ORDER_OPTIONS);
-                    asylumCase.clear(REMOVAL_ORDER_DATE);
-                    asylumCase.clear(DATE_CUSTODIAL_SENTENCE);
-                }
+                asylumCase.clear(REMOVAL_ORDER_OPTIONS);
+                asylumCase.clear(REMOVAL_ORDER_DATE);
+                asylumCase.clear(DATE_CUSTODIAL_SENTENCE);
                 Optional<YesOrNo> optionalHasSponsor = asylumCase.read(HAS_SPONSOR, YesOrNo.class);
                 if (optionalHasSponsor.isPresent() && optionalHasSponsor.get().equals(NO)) {
                     clearSponsor(asylumCase);

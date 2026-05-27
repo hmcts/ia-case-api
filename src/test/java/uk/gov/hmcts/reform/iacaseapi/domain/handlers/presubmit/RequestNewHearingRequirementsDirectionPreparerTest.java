@@ -57,8 +57,7 @@ class RequestNewHearingRequirementsDirectionPreparerTest {
         requestNewHearingRequirementsDirectionPreparer =
             new RequestNewHearingRequirementsDirectionPreparer(
                 HEARING_REQUIREMENTS_DUE_IN_DAYS,
-                dateProvider,
-                featureToggler
+                dateProvider
             );
     }
 
@@ -66,13 +65,11 @@ class RequestNewHearingRequirementsDirectionPreparerTest {
     void can_handle_request_hearing_requirements_feature() {
 
         when(callback.getEvent()).thenReturn(Event.REQUEST_NEW_HEARING_REQUIREMENTS);
-        when(featureToggler.getValue("reheard-feature", false)).thenReturn(true);
 
         requestNewHearingRequirementsDirectionPreparer =
             new RequestNewHearingRequirementsDirectionPreparer(
                 HEARING_REQUIREMENTS_DUE_IN_DAYS,
-                dateProvider,
-                featureToggler
+                dateProvider
             );
 
         boolean canHandle =
@@ -99,7 +96,6 @@ class RequestNewHearingRequirementsDirectionPreparerTest {
 
         when(dateProvider.now()).thenReturn(LocalDate.parse("2020-10-01"));
         when(callback.getEvent()).thenReturn(Event.REQUEST_NEW_HEARING_REQUIREMENTS);
-        when(featureToggler.getValue("reheard-feature", false)).thenReturn(true);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
@@ -120,7 +116,6 @@ class RequestNewHearingRequirementsDirectionPreparerTest {
     void should_display_error_when_not_a_reheard_decision() {
 
         when(callback.getEvent()).thenReturn(Event.REQUEST_NEW_HEARING_REQUIREMENTS);
-        when(featureToggler.getValue("reheard-feature", false)).thenReturn(true);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
@@ -154,7 +149,6 @@ class RequestNewHearingRequirementsDirectionPreparerTest {
         for (Event event : Event.values()) {
 
             when(callback.getEvent()).thenReturn(event);
-            when(featureToggler.getValue("reheard-feature", false)).thenReturn(true);
 
             for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
 
@@ -165,23 +159,6 @@ class RequestNewHearingRequirementsDirectionPreparerTest {
 
                     assertTrue(canHandle);
                 } else {
-                    assertFalse(canHandle);
-                }
-            }
-        }
-
-        for (Event event : Event.values()) {
-
-            when(callback.getEvent()).thenReturn(event);
-            when(featureToggler.getValue("reheard-feature", false)).thenReturn(false);
-
-            for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
-
-                boolean canHandle = requestNewHearingRequirementsDirectionPreparer.canHandle(callbackStage, callback);
-
-                if (event == Event.REQUEST_NEW_HEARING_REQUIREMENTS
-                    && callbackStage == PreSubmitCallbackStage.ABOUT_TO_START) {
-
                     assertFalse(canHandle);
                 }
             }
