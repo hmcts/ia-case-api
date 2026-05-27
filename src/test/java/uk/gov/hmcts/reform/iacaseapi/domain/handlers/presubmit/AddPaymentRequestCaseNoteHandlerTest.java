@@ -72,7 +72,6 @@ class AddPaymentRequestCaseNoteHandlerTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.MARK_PAYMENT_REQUEST_SENT);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(featureToggler.getValue("wa-R2-feature", false)).thenReturn(true);
 
         when(userDetails.getForename()).thenReturn(forename);
         when(userDetails.getSurname()).thenReturn(surname);

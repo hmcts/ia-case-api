@@ -88,7 +88,6 @@ class ReviewDraftHearingRequirementsHandlerTest {
     @Test
     void should_set_list_case_hearing_length_visible_field_for_reheard_appeal() {
 
-        when(featureToggler.getValue("reheard-feature", false)).thenReturn(true);
         when(asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
 
         reviewDraftHearingRequirementsHandler.handle(ABOUT_TO_SUBMIT, callback);
@@ -99,18 +98,7 @@ class ReviewDraftHearingRequirementsHandlerTest {
     @Test
     void should_not_set_list_case_hearing_length_visible_field_for_normal_appeal() {
 
-        when(featureToggler.getValue("reheard-feature", false)).thenReturn(true);
         when(asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class)).thenReturn(Optional.of(NO));
-
-        reviewDraftHearingRequirementsHandler.handle(ABOUT_TO_SUBMIT, callback);
-
-        verify(asylumCase, times(0)).write(LIST_CASE_HEARING_LENGTH_VISIBLE, YesOrNo.YES);
-    }
-
-    @Test
-    void should_not_set_list_case_hearing_length_visible_field_when_feature_flag_disabled() {
-
-        when(featureToggler.getValue("reheard-feature", false)).thenReturn(false);
 
         reviewDraftHearingRequirementsHandler.handle(ABOUT_TO_SUBMIT, callback);
 
@@ -193,23 +181,6 @@ class ReviewDraftHearingRequirementsHandlerTest {
 
         verify(autoRequestHearingService, never())
             .autoCreateHearing(callback);
-    }
-
-    @Test
-    void should_enable_flag_to_edit_case_listing_if_transferred_out_of_ada() {
-
-        when(callback.getEvent()).thenReturn(Event.REVIEW_HEARING_REQUIREMENTS);
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(featureToggler.getValue("reheard-feature", false)).thenReturn(false);
-        when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
-        when(asylumCase.read(HAS_TRANSFERRED_OUT_OF_ADA, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
-
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            reviewDraftHearingRequirementsHandler.handle(ABOUT_TO_SUBMIT, callback);
-
-        verify(asylumCase, times(1))
-            .write(eq(ADA_EDIT_LISTING_AVAILABLE), eq(YesOrNo.YES));
     }
 
     @Test
