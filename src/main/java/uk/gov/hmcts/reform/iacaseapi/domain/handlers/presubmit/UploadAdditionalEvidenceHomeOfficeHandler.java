@@ -21,7 +21,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentReceiver;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
 
 @Component
@@ -29,16 +28,13 @@ public class UploadAdditionalEvidenceHomeOfficeHandler implements PreSubmitCallb
 
     private final DocumentReceiver documentReceiver;
     private final DocumentsAppender documentsAppender;
-    private final FeatureToggler featureToggler;
 
     public UploadAdditionalEvidenceHomeOfficeHandler(
         DocumentReceiver documentReceiver,
-        DocumentsAppender documentsAppender,
-        FeatureToggler featureToggler
+        DocumentsAppender documentsAppender
     ) {
         this.documentReceiver = documentReceiver;
         this.documentsAppender = documentsAppender;
-        this.featureToggler = featureToggler;
     }
 
     public boolean canHandle(
@@ -84,8 +80,7 @@ public class UploadAdditionalEvidenceHomeOfficeHandler implements PreSubmitCallb
         final List<IdValue<DocumentWithMetadata>> existingRespondentDocuments =
             maybeExistingRespondentDocuments.orElse(Collections.emptyList());
 
-        if (asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class).map(flag -> flag.equals(YesOrNo.YES)).orElse(false)
-             && featureToggler.getValue("reheard-feature", false)) {
+        if (asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class).map(flag -> flag.equals(YesOrNo.YES)).orElse(false)) {
 
             Optional<List<IdValue<DocumentWithMetadata>>> maybeExistingAdditionalEvidenceRespondentDocuments =
                 asylumCase.read(RESP_ADDITIONAL_EVIDENCE_DOCS);
