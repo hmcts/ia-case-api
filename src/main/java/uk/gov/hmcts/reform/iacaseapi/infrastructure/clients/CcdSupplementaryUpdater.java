@@ -95,11 +95,11 @@ public class CcdSupplementaryUpdater {
                             Object.class
                     );
 
-                log.info("Http status received from CCD supplementary update API [{}]", response.getStatusCode().value());
-            } catch (RestClientResponseException e) {
-                log.warn("Couldn't update CCD case supplementary data using API: [{}]", url);
-            }
+            log.info("Http status received from CCD supplementary update API [{}]", response.getStatusCode().value());
+        } catch (RestClientResponseException e) {
+            log.warn("Couldn't update CCD case supplementary data using API: [{}]", url);
         }
+    }
 
     private boolean hasCitizenRole(List<String> roles) {
         return roles != null && roles.contains("citizen");
