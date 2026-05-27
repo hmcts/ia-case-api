@@ -195,7 +195,7 @@ class CreateCaseSummaryHandlerTest {
             any(List.class),
             eq(Collections.singletonList(caseSummaryWithMetadata)),
             eq(DocumentTag.CASE_SUMMARY)
-        )).thenReturn(List.of(caseSummaryWithMetadata));
+        )).thenReturn(List.of(new IdValue<>("1", caseSummaryWithMetadata)));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             createCaseSummaryHandler.handle(ABOUT_TO_SUBMIT, callback);
@@ -220,7 +220,7 @@ class CreateCaseSummaryHandlerTest {
         assertEquals(1, hearingDocCaptorValue.size());
         assertEquals(1, hearingDocCaptorValue.getFirst().getValue().getReheardHearingDocs().size());
         assertEquals(caseSummaryWithMetadata,
-            hearingDocCaptorValue.getFirst().getValue().getReheardHearingDocs().getFirst());
+            hearingDocCaptorValue.getFirst().getValue().getReheardHearingDocs().getFirst().getValue());
     }
 
     @Test
