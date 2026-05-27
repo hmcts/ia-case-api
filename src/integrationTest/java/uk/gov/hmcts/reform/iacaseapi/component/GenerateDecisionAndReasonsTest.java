@@ -45,7 +45,6 @@ class GenerateDecisionAndReasonsTest extends SpringBootIntegrationTest implement
         addDocumentApiTransformerStub(server);
 
         when(userDetailsProvider.getUserDetails()).thenReturn(userDetails);
-        when(featureToggler.getValue("wa-R2-feature", false)).thenReturn(true);
 
         PreSubmitCallbackResponseForTest response = iaCaseApiClient.aboutToSubmit(callback()
             .event(GENERATE_DECISION_AND_REASONS)

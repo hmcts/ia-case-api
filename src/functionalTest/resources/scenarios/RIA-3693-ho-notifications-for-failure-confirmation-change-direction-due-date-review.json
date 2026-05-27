@@ -1,6 +1,5 @@
 {
   "description": "RIA-3693 sends ho notification failure for change direction due date",
-  "launchDarklyKey": "home-office-notification-feature:true",
   "request": {
     "uri": "/asylum/ccdSubmitted",
     "credentials": "CaseOfficer",
