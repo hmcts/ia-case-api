@@ -85,7 +85,6 @@ public class CcdScenarioRunnerTest {
     private List<Fixture> fixtures;
     @Autowired
     private LaunchDarklyFunctionalTestClient launchDarklyFunctionalTestClient;
-    private Map<String, Object> actualResponse = null;
 
     @BeforeAll
     @SneakyThrows
@@ -218,48 +217,43 @@ public class CcdScenarioRunnerTest {
                                                      int expectedStatus,
                                                      long testCaseId,
                                                      Map<String, Object> expectedResponse) throws IOException {
-        int maxRetries = 5;
         assumeFalse(fileName.startsWith("Disabled:"), "Test marked as disabled");
-        for (int i = 0; i < maxRetries; i++) {
-            try {
-                actualResponse = null;
-                String actualResponseBody =
-                    SerenityRest
-                        .given()
-                        .headers(authorizationHeaders)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .body(requestBody)
-                        .when()
-                        .post(requestUri)
-                        .then()
-                        .log().ifError()
-                        .log().ifValidationFails()
-                        .statusCode(expectedStatus)
-                        .and()
-                        .extract()
-                        .body()
-                        .asString();
+        Map<String, Object> responseForError = null;
+        try {
+            String actualResponseBody =
+                SerenityRest
+                    .given()
+                    .headers(authorizationHeaders)
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .body(requestBody)
+                    .when()
+                    .post(requestUri)
+                    .then()
+                    .log().ifError()
+                    .log().ifValidationFails()
+                    .statusCode(expectedStatus)
+                    .and()
+                    .extract()
+                    .body()
+                    .asString();
 
-                actualResponse = MapSerializer.deserialize(actualResponseBody);
+            Map<String, Object> actualResponse = MapSerializer.deserialize(actualResponseBody);
+            responseForError = actualResponse;
 
-                verifiers.forEach(verifier -> verifier.verify(
-                        testCaseId,
-                        scenario,
-                        expectedResponse,
-                        actualResponse
-                    )
-                );
-                break;
-            } catch (Error | RetryableException | NullPointerException e) {
-                log.error("Scenario failed with error {}", e.getMessage(), e);
-                if (actualResponse != null) {
-                    log.info("actualResponse: {}", objectMapper.writeValueAsString(actualResponse));
-                    log.info("expectedResponse: {}", objectMapper.writeValueAsString(expectedResponse));
-                }
-                if (i == maxRetries - 1) {
-                    throw e;
-                }
+            verifiers.forEach(verifier -> verifier.verify(
+                    testCaseId,
+                    scenario,
+                    expectedResponse,
+                    actualResponse
+                )
+            );
+        } catch (Error | RetryableException | NullPointerException e) {
+            log.error("Scenario failed with error {}", e.getMessage(), e);
+            if (responseForError != null) {
+                log.info("actualResponse: {}", objectMapper.writeValueAsString(responseForError));
+                log.info("expectedResponse: {}", objectMapper.writeValueAsString(expectedResponse));
             }
+            throw e;
         }
     }
 
