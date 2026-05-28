@@ -150,8 +150,8 @@ public class RemissionDetailsAppender {
 
     private List<IdValue<RemissionDetails>> append(
         List<IdValue<RemissionDetails>> existingRemissionDetails,
-        RemissionDetails newRemissionDetails)
-    {
+        RemissionDetails newRemissionDetails
+    ) {
 
         final List<IdValue<RemissionDetails>> allRemissionDetails = new ArrayList<>();
 
