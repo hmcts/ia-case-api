@@ -13,7 +13,10 @@ import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.State.APPLICAT
 
 import java.util.List;
 import java.util.Optional;
+
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration;
 import org.springframework.security.test.context.support.WithMockUser;
 
 import uk.gov.hmcts.reform.bailcaseapi.component.testutils.SpringBootIntegrationTest;
@@ -23,6 +26,7 @@ import uk.gov.hmcts.reform.bailcaseapi.component.testutils.fixtures.PreSubmitCal
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.CaseNote;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.IdValue;
 
+@EnableAutoConfiguration(exclude = {CacheAutoConfiguration.class})
 class AddCaseNoteTest extends SpringBootIntegrationTest implements WithUserDetailsStub {
 
     @Test

@@ -11,7 +11,6 @@ import static com.github.tomakehurst.wiremock.matching.RequestPatternBuilder.new
 public interface WithUserDetailsStub {
 
     default void addAdminOfficerUserDetailsStub(WireMockServer server) {
-
         server.addStubMapping(
             new StubMapping(
                 newRequestPattern(RequestMethod.GET, urlEqualTo("/userAuth/o/userinfo"))
@@ -20,7 +19,7 @@ public interface WithUserDetailsStub {
                     .withStatus(200)
                     .withHeader("Content-Type", "application/json")
                     .withBody("{\"sub\":\"someone@somewhere.com\","
-                        + "\"uid\":\"1\",\"roles\":[\"caseworker-ia\",\"caseworker-ia-admofficer\"],"
+                        + "\"uid\":\"admin-officer-uid-123\",\"roles\":[\"caseworker-ia\",\"caseworker-ia-admofficer\"],"
                         + "\"name\":null,\"given_name\":\"Admin\",\"family_name\":\"Officer\"}")
                     .build()));
 
