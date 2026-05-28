@@ -103,6 +103,10 @@ public class RequestFeeRemissionAipHandler implements PreSubmitCallbackHandler<A
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
+        log.info("-----------RequestFeeRemissionAipHandler callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT {}", callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT);
+        log.info("-----------RequestFeeRemissionAipHandler callback.getEvent() == Event.REQUEST_FEE_REMISSION {}", callback.getEvent() == Event.REQUEST_FEE_REMISSION);
+        log.info("-----------RequestFeeRemissionAipHandler isAipJourney(callback.getCaseDetails().getCaseData()) {}", isAipJourney(callback.getCaseDetails().getCaseData()));
+        log.info("-----------RequestFeeRemissionAipHandler featureToggler.getValue(\"dlrm-refund-feature-flag\", false) {}", featureToggler.getValue("dlrm-refund-feature-flag", false));
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
             && callback.getEvent() == Event.REQUEST_FEE_REMISSION
             && isAipJourney(callback.getCaseDetails().getCaseData())
@@ -124,13 +128,17 @@ public class RequestFeeRemissionAipHandler implements PreSubmitCallbackHandler<A
         boolean hasPreviousRemission = asylumCase.read(HAS_PREVIOUS_REMISSION, YesOrNo.class).orElse(YesOrNo.NO).equals(YesOrNo.YES);
         RemissionDecision remissionDecision = asylumCase.read(REMISSION_DECISION, RemissionDecision.class).orElse(null);
 
+        log.info("-----------RequestFeeRemissionAipHandler hasPreviousRemission {}", hasPreviousRemission);
+        log.info("-----------RequestFeeRemissionAipHandler remissionDecision != null {}", remissionDecision != null);
         if (hasPreviousRemission && remissionDecision != null) {
+            log.info("-----------RequestFeeRemissionAipHandler handle 111");
             List<IdValue<RemissionDetails>> previousRemissionDetails = appendPreviousRemissionDetails(asylumCaseBefore);
             asylumCase.write(TEMP_PREVIOUS_REMISSION_DETAILS, previousRemissionDetails);
             asylumCase.write(PREVIOUS_REMISSION_DETAILS, previousRemissionDetails);
         }
         asylumCase.write(IS_LATE_REMISSION_REQUEST, YesOrNo.YES);
         UserRoleLabel currentUser = userDetailsHelper.getLoggedInUserRoleLabel(userDetails);
+        log.info("-----------RequestFeeRemissionAipHandler currentUser == UserRoleLabel.CITIZEN {}", currentUser == UserRoleLabel.CITIZEN);
         if (currentUser == UserRoleLabel.CITIZEN) {
             setFeeRemissionOptionDetails(asylumCase);
             clearPreviousRemissionCaseFieldsFromAip(asylumCase);
