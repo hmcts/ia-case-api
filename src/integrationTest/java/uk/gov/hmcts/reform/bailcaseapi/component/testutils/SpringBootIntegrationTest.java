@@ -54,7 +54,7 @@ public abstract class SpringBootIntegrationTest {
     @Autowired
     private WebApplicationContext wac;
 
-    protected static WireMockServer server;
+    protected WireMockServer server;
 
     @BeforeAll
     public void spinUp() {
