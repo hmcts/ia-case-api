@@ -210,10 +210,19 @@ public class RequestFeeRemissionAipHandler implements PreSubmitCallbackHandler<A
         UserRoleLabel previousRemissionRequestedBy = asylumCase.read(REMISSION_REQUESTED_BY, UserRoleLabel.class)
             .orElse(null);
 
+        log.info("-----------RequestFeeRemissionAipHandler appendPreviousRemissionDetails 111");
         if (UserRoleLabel.CITIZEN.equals(previousRemissionRequestedBy)) {
-            previousRemissionDetails = appendPreviousRemissionDetailsAppellant(asylumCase, previousRemissionDetails, existingRemissionDetails);
+            previousRemissionDetails = appendPreviousRemissionDetailsAppellant(
+                asylumCase,
+                previousRemissionDetails,
+                existingRemissionDetails
+            );
         } else {
-            previousRemissionDetails = appendPreviousRemissionDetailsNonAppellant(asylumCase, previousRemissionDetails, existingRemissionDetails);
+            previousRemissionDetails = appendPreviousRemissionDetailsNonAppellant(
+                asylumCase,
+                previousRemissionDetails,
+                existingRemissionDetails
+            );
         }
         appendPreviousRemissionDecisionDetails(previousRemissionDetails, asylumCase);
         return previousRemissionDetails;
@@ -224,6 +233,7 @@ public class RequestFeeRemissionAipHandler implements PreSubmitCallbackHandler<A
             List<IdValue<RemissionDetails>> previousRemissionDetails,
             List<IdValue<RemissionDetails>> existingRemissionDetails
     ) {
+        log.info("-----------RequestFeeRemissionAipHandler appendPreviousRemissionDetailsAppellant 111");
         RemissionOption remissionOption = asylumCase.read(REMISSION_OPTION, RemissionOption.class)
             .orElseThrow(() -> new IllegalStateException("Previous fee remission type is not present"));
         switch (remissionOption) {
@@ -269,10 +279,10 @@ public class RequestFeeRemissionAipHandler implements PreSubmitCallbackHandler<A
             List<IdValue<RemissionDetails>> previousRemissionDetails,
             List<IdValue<RemissionDetails>> existingRemissionDetails
     ) {
-        RemissionType remissionType = asylumCase.read(REMISSION_TYPE, RemissionType.class)
-            .orElse(null);
-        String remissionClaim = asylumCase.read(REMISSION_CLAIM, String.class)
-            .orElse("");
+        log.info("-----------RequestFeeRemissionAipHandler appendPreviousRemissionDetailsNonAppellant 111");
+        RemissionType remissionType = asylumCase.read(REMISSION_TYPE, RemissionType.class).orElse(null);
+        String remissionClaim = asylumCase.read(REMISSION_CLAIM, String.class).orElse("");
+
         if (remissionType == null) {
             return appendPreviousRemissionDetailsAppellant(asylumCase, previousRemissionDetails, existingRemissionDetails);
         }

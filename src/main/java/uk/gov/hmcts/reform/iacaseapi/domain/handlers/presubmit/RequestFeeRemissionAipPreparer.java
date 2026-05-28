@@ -76,10 +76,18 @@ public class RequestFeeRemissionAipPreparer implements PreSubmitCallbackHandler<
         Optional<RemissionType> previousLateRemissionType = asylumCase.read(LATE_REMISSION_TYPE, RemissionType.class);
         Optional<RemissionDecision> remissionDecision = asylumCase.read(REMISSION_DECISION, RemissionDecision.class);
 
-        if (appealHasRemissionOptionOrType(previousRemissionOption, previousHelpWithFeesOptionAip, previousRemissionType, previousLateRemissionType)) {
+        log.info("----------------RequestFeeRemissionAipPreparer 111");
+        if (appealHasRemissionOptionOrType(
+            previousRemissionOption,
+            previousHelpWithFeesOptionAip,
+            previousRemissionType,
+            previousLateRemissionType
+        )) {
+            log.info("----------------RequestFeeRemissionAipPreparer 222");
             if (remissionDecision.isEmpty()) {
                 return callbackResponse.withError("You cannot request a fee remission at this time because another fee remission request for this appeal has yet to be decided.");
             } else {
+                log.info("----------------RequestFeeRemissionAipPreparer 333 writing hasPreviousRemission");
                 asylumCase.write(HAS_PREVIOUS_REMISSION, YesOrNo.YES);
             }
         }
