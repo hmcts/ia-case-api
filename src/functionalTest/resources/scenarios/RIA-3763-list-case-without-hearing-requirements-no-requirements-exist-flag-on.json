@@ -1,6 +1,5 @@
 {
   "description": "RIA-3763 List FTPA reheard case without submitting hearing requirements (no existing hearing requirements) - feature flag on",
-  "launchDarklyKey": "reheard-feature:true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",

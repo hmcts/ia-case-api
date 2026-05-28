@@ -56,8 +56,7 @@ public class ReviewDraftHearingRequirementsHandler implements PreSubmitCallbackH
 
         HandlerUtils.formatHearingAdjustmentResponses(asylumCase);
 
-        if (featureToggler.getValue("reheard-feature", false)
-            && asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class).map(flag -> flag.equals(YesOrNo.YES)).orElse(false)) {
+        if (asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class).map(flag -> flag.equals(YesOrNo.YES)).orElse(false)) {
             asylumCase.write(AsylumCaseFieldDefinition.LIST_CASE_HEARING_LENGTH_VISIBLE, YesOrNo.YES);
         }
 
