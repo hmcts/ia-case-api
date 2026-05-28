@@ -18,7 +18,10 @@ import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
 import org.springframework.security.test.context.support.WithMockUser;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.SpringBootIntegrationTest;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.WithNotificationsApiStub;
@@ -39,6 +42,9 @@ class UserDetailsRequestScopeTest extends SpringBootIntegrationTest implements W
     @MockBean
     private IdamApi idamApi;
 
+    @Autowired
+    private CacheManager cacheManager;
+
     private final String token = "Bearer token";
     private final UserInfo userInfo = new UserInfo(
         "case-officer@gmail.com",
@@ -51,10 +57,13 @@ class UserDetailsRequestScopeTest extends SpringBootIntegrationTest implements W
 
     @BeforeEach
     void setupStubs() {
+        Cache userInfoCache = cacheManager.getCache("userInfoCache");
+        if (userInfoCache != null) {
+            userInfoCache.evict(token);
+        }
 
         when(requestTokenProvider.getAccessToken()).thenReturn(token);
         when(idamApi.userInfo(token)).thenReturn(userInfo);
-
     }
 
     @Test
