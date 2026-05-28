@@ -100,8 +100,6 @@ class RequestRespondentEvidencePreparerTest {
         final Parties expectedParties = Parties.RESPONDENT;
         final String expectedDateDue = "2018-12-07";
 
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
-
         when(featureToggler.getValue("home-office-uan-pa-feature", false)).thenReturn(true);
         when(featureToggler.getValue("home-office-uan-rp-feature", false)).thenReturn(true);
         when(featureToggler.getValue("home-office-uan-ea-feature", false)).thenReturn(true);
@@ -145,8 +143,6 @@ class RequestRespondentEvidencePreparerTest {
         final String expectedExplanationContains = "A notice of appeal has been lodged against this decision.";
         final Parties expectedParties = Parties.RESPONDENT;
         final String expectedDateDue = "2023-01-22";
-
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
 
         when(featureToggler.getValue("home-office-uan-pa-feature", false)).thenReturn(true);
         when(featureToggler.getValue("home-office-uan-rp-feature", false)).thenReturn(true);
@@ -206,8 +202,6 @@ class RequestRespondentEvidencePreparerTest {
     @EnumSource(value = AppealType.class, names = { "PA", "RP", "DC", "EA", "HU", "EU", "AG" })
     void handle_should_not_error_for_out_of_country_appeals(AppealType appealType) {
 
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
-
         when(featureToggler.getValue("home-office-uan-pa-feature", false)).thenReturn(true);
         when(featureToggler.getValue("home-office-uan-rp-feature", false)).thenReturn(true);
         when(featureToggler.getValue("home-office-uan-ea-feature", false)).thenReturn(true);
@@ -235,8 +229,6 @@ class RequestRespondentEvidencePreparerTest {
     @ParameterizedTest
     @EnumSource(value = AppealType.class, names = { "PA", "RP", "DC", "EA", "HU", "EU", "AG" })
     void handle_should_return_callback_response_for_no_record_out_of_time_decision(AppealType appealType) {
-
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
 
         when(featureToggler.getValue("home-office-uan-pa-feature", false)).thenReturn(true);
         when(featureToggler.getValue("home-office-uan-rp-feature", false)).thenReturn(true);
@@ -266,8 +258,6 @@ class RequestRespondentEvidencePreparerTest {
     @EnumSource(value = AppealType.class, names = { "PA", "RP", "DC", "EA", "HU", "EU", "AG" })
     void handle_should_throw_error_for_recorded_out_of_time_decision_and_missing_decision_type(AppealType appealType) {
 
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
-
         when(featureToggler.getValue("home-office-uan-pa-feature", false)).thenReturn(true);
         when(featureToggler.getValue("home-office-uan-rp-feature", false)).thenReturn(true);
         when(featureToggler.getValue("home-office-uan-ea-feature", false)).thenReturn(true);
@@ -294,7 +284,6 @@ class RequestRespondentEvidencePreparerTest {
     @ValueSource(strings = { "FAIL", "MULTIPLE" })
     void handle_should_throw_error_for_the_failed_home_office_response_pa_appeal_type(String hoSearchStatus) {
 
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
         when(featureToggler.getValue("home-office-uan-pa-feature", false)).thenReturn(true);
 
         when(dateProvider.now()).thenReturn(LocalDate.parse("2018-11-23"));
@@ -317,7 +306,6 @@ class RequestRespondentEvidencePreparerTest {
     @ValueSource(strings = { "FAIL", "MULTIPLE" })
     void handle_should_not_throw_error_for_the_failed_home_office_response_pa_appeal_type_rehydrated_isNotificationTurnedOff_yes(String hoSearchStatus) {
  
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
         when(dateProvider.now()).thenReturn(LocalDate.parse("2018-11-23"));
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONDENT_EVIDENCE);
@@ -338,7 +326,6 @@ class RequestRespondentEvidencePreparerTest {
     @Test
     void handle_should_throw_error_for_the_detained_appeal_when_appellant_details_not_matched() {
 
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
         when(featureToggler.getValue("home-office-uan-pa-feature", false)).thenReturn(true);
 
         when(dateProvider.now()).thenReturn(LocalDate.parse("2018-11-23"));
@@ -361,8 +348,6 @@ class RequestRespondentEvidencePreparerTest {
     @Test
     void handle_should_not_throw_error_for_aa_appeal() {
 
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
-
         when(dateProvider.now()).thenReturn(LocalDate.parse("2018-11-23"));
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONDENT_EVIDENCE);
@@ -381,7 +366,6 @@ class RequestRespondentEvidencePreparerTest {
     @ValueSource(strings = { "FAIL", "MULTIPLE" })
     void handle_should_throw_error_for_the_failed_home_office_response_hu_appeal_type(String hoSearchStatus) {
 
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
         when(featureToggler.getValue("home-office-uan-hu-feature", false)).thenReturn(true);
 
         when(dateProvider.now()).thenReturn(LocalDate.parse("2018-11-23"));
@@ -403,8 +387,6 @@ class RequestRespondentEvidencePreparerTest {
     @ParameterizedTest
     @EnumSource(value = AppealType.class, names = { "PA", "RP", "DC", "EA", "HU", "EU", "AG" })
     void handle_should_return_callback_error_for_rejected_record_out_of_time_decision(AppealType appealType) {
-
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
 
         when(featureToggler.getValue("home-office-uan-pa-feature", false)).thenReturn(true);
         when(featureToggler.getValue("home-office-uan-rp-feature", false)).thenReturn(true);
@@ -546,8 +528,6 @@ class RequestRespondentEvidencePreparerTest {
         final Parties expectedParties = Parties.RESPONDENT;
         final String expectedDateDue = "2018-11-30";
 
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
-
         when(featureToggler.getValue("home-office-uan-pa-feature", false)).thenReturn(true);
         when(featureToggler.getValue("home-office-uan-rp-feature", false)).thenReturn(true);
         when(featureToggler.getValue("home-office-uan-ea-feature", false)).thenReturn(true);
@@ -592,8 +572,6 @@ class RequestRespondentEvidencePreparerTest {
         final Parties expectedParties = Parties.RESPONDENT;
         final String expectedDateDue = "2018-12-07";
 
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
-
         when(featureToggler.getValue("home-office-uan-pa-feature", false)).thenReturn(true);
         when(featureToggler.getValue("home-office-uan-rp-feature", false)).thenReturn(true);
         when(featureToggler.getValue("home-office-uan-ea-feature", false)).thenReturn(true);
@@ -633,7 +611,6 @@ class RequestRespondentEvidencePreparerTest {
     @Test
     void should_use_detention_specific_explanation_text_for_detained_appeals() {
 
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
         when(featureToggler.getValue("home-office-uan-pa-feature", false)).thenReturn(true);
 
         when(dateProvider.now()).thenReturn(LocalDate.parse("2018-11-23"));
@@ -676,7 +653,6 @@ class RequestRespondentEvidencePreparerTest {
     @Test
     void should_use_standard_explanation_text_for_non_detained_appeals() {
 
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
         when(featureToggler.getValue("home-office-uan-pa-feature", false)).thenReturn(true);
 
         when(dateProvider.now()).thenReturn(LocalDate.parse("2018-11-23"));
