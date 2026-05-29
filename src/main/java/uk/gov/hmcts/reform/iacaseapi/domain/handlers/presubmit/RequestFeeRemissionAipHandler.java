@@ -125,22 +125,16 @@ public class RequestFeeRemissionAipHandler implements PreSubmitCallbackHandler<A
         AsylumCase asylumCaseBefore = callback.getCaseDetailsBefore().map(CaseDetails::getCaseData).orElse(asylumCase);
         final PreSubmitCallbackResponse<AsylumCase> callbackResponse = new PreSubmitCallbackResponse<>(asylumCase);
 
-        boolean hasPreviousRemission = asylumCase.read(HAS_PREVIOUS_REMISSION, YesOrNo.class).orElse(YesOrNo.NO).equals(YesOrNo.YES);
         log.info(
                 "-----------RequestFeeRemissionAipHandler asylumCase.read(REMISSION_DECISION, RemissionDecision.class) {}",
                 asylumCase.read(REMISSION_DECISION, RemissionDecision.class)
         );
-        log.info(
-                "-----------RequestFeeRemissionAipHandler asylumCaseBefore.read(REMISSION_DECISION, RemissionDecision.class) {}",
-                asylumCaseBefore.read(REMISSION_DECISION, RemissionDecision.class)
-        );
         RemissionDecision remissionDecision = asylumCase.read(REMISSION_DECISION, RemissionDecision.class).orElse(null);
 
-        log.info("-----------RequestFeeRemissionAipHandler hasPreviousRemission {}", hasPreviousRemission);
         log.info("-----------RequestFeeRemissionAipHandler remissionDecision != null {}", remissionDecision != null);
-        if (/*hasPreviousRemission && */remissionDecision != null) {
+        if (remissionDecision != null) {
             log.info("-----------RequestFeeRemissionAipHandler handle 111");
-            List<IdValue<RemissionDetails>> previousRemissionDetails = appendPreviousRemissionDetails(asylumCaseBefore);
+            List<IdValue<RemissionDetails>> previousRemissionDetails = appendPreviousRemissionDetails(asylumCase/*Before*/);
             asylumCase.write(TEMP_PREVIOUS_REMISSION_DETAILS, previousRemissionDetails);
             asylumCase.write(PREVIOUS_REMISSION_DETAILS, previousRemissionDetails);
         }
@@ -222,11 +216,15 @@ public class RequestFeeRemissionAipHandler implements PreSubmitCallbackHandler<A
 
         Optional<List<IdValue<RemissionDetails>>> maybeExistingRemissionDetails = asylumCase.read(TEMP_PREVIOUS_REMISSION_DETAILS);
         final List<IdValue<RemissionDetails>> existingRemissionDetails = maybeExistingRemissionDetails.orElse(Collections.emptyList());
+        log.info("-----------RequestFeeRemissionAipHandler appendPreviousRemissionDetails 111");
+        log.info(
+                "-----------RequestFeeRemissionAipHandler appendPreviousRemissionDetails 111 existingRemissionDetails.size() {}",
+                existingRemissionDetails.size()
+        );
 
         UserRoleLabel previousRemissionRequestedBy = asylumCase.read(REMISSION_REQUESTED_BY, UserRoleLabel.class)
             .orElse(null);
 
-        log.info("-----------RequestFeeRemissionAipHandler appendPreviousRemissionDetails 111");
         if (UserRoleLabel.CITIZEN.equals(previousRemissionRequestedBy)) {
             previousRemissionDetails = appendPreviousRemissionDetailsAppellant(
                 asylumCase,
@@ -250,6 +248,14 @@ public class RequestFeeRemissionAipHandler implements PreSubmitCallbackHandler<A
         List<IdValue<RemissionDetails>> existingRemissionDetails
     ) {
         log.info("-----------RequestFeeRemissionAipHandler appendPreviousRemissionDetailsAppellant 111");
+        log.info(
+                "-----------RequestFeeRemissionAipHandler appendPreviousRemissionDetailsAppellant previousRemissionDetails.size() {}",
+                previousRemissionDetails.size()
+        );
+        log.info(
+                "-----------RequestFeeRemissionAipHandler appendPreviousRemissionDetailsAppellant existingRemissionDetails.size() {}",
+                existingRemissionDetails.size()
+        );
         RemissionOption remissionOption = asylumCase.read(REMISSION_OPTION, RemissionOption.class)
             .orElseThrow(() -> new IllegalStateException("Previous fee remission type is not present"));
         switch (remissionOption) {
@@ -287,6 +293,10 @@ public class RequestFeeRemissionAipHandler implements PreSubmitCallbackHandler<A
             default:
                 break;
         }
+        log.info(
+                "-----------RequestFeeRemissionAipHandler appendPreviousRemissionDetailsAppellant previousRemissionDetails.size() 2 {}",
+                previousRemissionDetails.size()
+        );
         return previousRemissionDetails;
     }
 
