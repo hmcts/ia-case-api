@@ -37,7 +37,7 @@ public class EditDocsService {
         cleanUpFTPADocumentList(asylumCase, FTPA_RESPONDENT_EVIDENCE_DOCUMENTS, deletedFtpaDocIds);
         updateFtpaDecision(asylumCase, ALL_FTPA_APPELLANT_DECISION_DOCS, FTPA_APPELLANT_DECISION_DOCUMENT);
         updateFtpaDecision(asylumCase, ALL_FTPA_RESPONDENT_DECISION_DOCS, FTPA_RESPONDENT_DECISION_DOCUMENT);
-        cleanUpFtpaApplicationDocuments(asylumCase, deletedFinalDecisionAndReasonsDocIds);
+        cleanUpFtpaApplicationDocuments(asylumCase, deletedFtpaDocIds);
     }
 
     private void cleanUpDocumentList(AsylumCase asylumCase, AsylumCaseFieldDefinition documentType, List<String> deletedDocIds) {
@@ -54,6 +54,66 @@ public class EditDocsService {
                     doWeHaveToCleanUpOverviewTabFTPADoc(deletedFtpaDecisionDocIds, getIdFromDocUrl(idValue.getValue().getDocument().get().getDocumentUrl()))
             );
             asylumCase.write(documentType, documentWithDescriptionList);
+        });
+    }
+
+    private void cleanUpFtpaApplicationDocuments(
+            AsylumCase asylumCase,
+            List<String> deletedDocIds
+    ) {
+
+        Optional<List<IdValue<FtpaApplications>>> optionalFtpaList =
+                asylumCase.read(FTPA_LIST);
+
+        optionalFtpaList.ifPresent(ftpaList -> {
+
+            ftpaList.forEach(ftpaApplicationIdValue -> {
+
+                FtpaApplications ftpaApplication =
+                        ftpaApplicationIdValue.getValue();
+
+                removeDeletedDocuments(
+                        ftpaApplication.getFtpaOutOfTimeDocuments(),
+                        deletedDocIds
+                );
+
+                removeDeletedDocuments(
+                        ftpaApplication.getFtpaGroundsDocuments(),
+                        deletedDocIds
+                );
+
+                removeDeletedDocuments(
+                        ftpaApplication.getFtpaEvidenceDocuments(),
+                        deletedDocIds
+                );
+            });
+
+            asylumCase.write(FTPA_LIST, ftpaList);
+        });
+    }
+
+    private void removeDeletedDocuments(
+            List<IdValue<DocumentWithDescription>> documents,
+            List<String> deletedDocIds
+    ) {
+
+        if (documents == null || documents.isEmpty()) {
+            return;
+        }
+
+        documents.removeIf(idValue -> {
+
+            Document document =
+                    idValue.getValue().getDocument().orElse(null);
+
+            if (document == null) {
+                return false;
+            }
+
+            String documentId =
+                    getIdFromDocUrl(document.getDocumentUrl());
+
+            return deletedDocIds.contains(documentId);
         });
     }
 
@@ -226,66 +286,6 @@ public class EditDocsService {
             });
             asylumCase.write(ftpaTabDocuments, ftpaDocumentsDescription);
         }));
-    }
-
-    private void cleanUpFtpaApplicationDocuments(
-            AsylumCase asylumCase,
-            List<String> deletedDocIds
-    ) {
-
-        Optional<List<IdValue<FtpaApplications>>> optionalFtpaList =
-                asylumCase.read(FTPA_LIST);
-
-        optionalFtpaList.ifPresent(ftpaList -> {
-
-            ftpaList.forEach(ftpaApplicationIdValue -> {
-
-                FtpaApplications ftpaApplication =
-                        ftpaApplicationIdValue.getValue();
-
-                removeDeletedDocuments(
-                        ftpaApplication.getFtpaOutOfTimeDocuments(),
-                        deletedDocIds
-                );
-
-                removeDeletedDocuments(
-                        ftpaApplication.getFtpaGroundsDocuments(),
-                        deletedDocIds
-                );
-
-                removeDeletedDocuments(
-                        ftpaApplication.getFtpaEvidenceDocuments(),
-                        deletedDocIds
-                );
-            });
-
-            asylumCase.write(FTPA_LIST, ftpaList);
-        });
-    }
-
-    private void removeDeletedDocuments(
-            List<IdValue<DocumentWithDescription>> documents,
-            List<String> deletedDocIds
-    ) {
-
-        if (documents == null || documents.isEmpty()) {
-            return;
-        }
-
-        documents.removeIf(idValue -> {
-
-            Document document =
-                    idValue.getValue().getDocument().orElse(null);
-
-            if (document == null) {
-                return false;
-            }
-
-            String documentId =
-                    getIdFromDocUrl(document.getDocumentUrl());
-
-            return deletedDocIds.contains(documentId);
-        });
     }
 
     private List<String> getFtpaDocIds(List<IdValue<DocumentWithMetadata>> ftpaDocuments) {
