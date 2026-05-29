@@ -650,12 +650,21 @@ class RequestFeeRemissionAipHandlerTest {
     }
 
     @Test
-    void handle_should_not_append_previous_remission_details_if_no_previous_remission() {
+    void handle_should_append_previous_remission_details_even_when_no_previous_remission_flag() {
         when(asylumCase.read(HAS_PREVIOUS_REMISSION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(asylumCase.read(REMISSION_REQUESTED_BY, UserRoleLabel.class)).thenReturn(Optional.of(UserRoleLabel.CITIZEN));
+        when(asylumCase.read(REMISSION_OPTION, RemissionOption.class)).thenReturn(Optional.of(ASYLUM_SUPPORT_FROM_HOME_OFFICE));
+        when(asylumCase.read(TEMP_PREVIOUS_REMISSION_DETAILS)).thenReturn(Optional.of(Collections.emptyList()));
+        when(asylumCase.read(REMISSION_DECISION, RemissionDecision.class)).thenReturn(Optional.of(APPROVED));
+        when(asylumCase.read(FEE_AMOUNT_GBP, String.class)).thenReturn(Optional.of("8000"));
+        when(asylumCase.read(AMOUNT_REMITTED, String.class)).thenReturn(Optional.of("8000"));
+        when(asylumCase.read(AMOUNT_LEFT_TO_PAY, String.class)).thenReturn(Optional.of("0"));
+
         PreSubmitCallbackResponse<AsylumCase> response = requestFeeRemissionAipHandler.handle(ABOUT_TO_SUBMIT, callback);
 
-        verify(asylumCase, never()).write(eq(PREVIOUS_REMISSION_DETAILS), any());
         assertEquals(response.getData(), asylumCase);
+        verify(asylumCase, times(1)).write(eq(PREVIOUS_REMISSION_DETAILS), any());
+        verify(asylumCase, times(1)).write(eq(TEMP_PREVIOUS_REMISSION_DETAILS), any());
     }
 
     @Test
