@@ -51,12 +51,6 @@ public class EditDocsService {
                         asylumCaseBefore
                 );
 
-        List<String> deletedFtpaApplicationDocIds =
-                getDeletedFtpaApplicationDocIds(
-                        asylumCase,
-                        asylumCaseBefore
-                );
-
         updateFtpaNonDecisionDocDescriptions(
                 asylumCase,
                 asylumCaseBefore,
@@ -88,6 +82,12 @@ public class EditDocsService {
                 ALL_FTPA_RESPONDENT_DECISION_DOCS,
                 FTPA_RESPONDENT_DECISION_DOCUMENT
         );
+
+        List<String> deletedFtpaApplicationDocIds =
+                getDeletedFtpaApplicationDocIds(
+                        asylumCase,
+                        asylumCaseBefore
+                );
 
         cleanUpFtpaApplicationDocuments(
                 asylumCase,
