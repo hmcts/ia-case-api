@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.DispatchPriority;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationBasedFeatureToggler;
 
@@ -53,8 +54,7 @@ public class ListAssistIntegratedHandler implements PreSubmitCallbackHandler<Asy
                 .getCaseDetails()
                 .getCaseData();
 
-        asylumCase.write(IS_INTEGRATED,
-            locationBasedFeatureToggler.isListAssistEnabled(asylumCase));
+        asylumCase.write(IS_INTEGRATED, YesOrNo.YES);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
