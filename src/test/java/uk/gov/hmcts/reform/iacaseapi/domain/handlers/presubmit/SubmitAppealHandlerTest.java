@@ -84,26 +84,6 @@ class SubmitAppealHandlerTest {
 
     @ParameterizedTest
     @EnumSource(value = AppealType.class, names = {"EA", "HU", "PA", "EU"})
-    void handle_should_return_new_and_previous_remission_details_asylum_support_aip(AppealType appealType) {
-        when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
-        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
-        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
-
-        when(asylumCase.read(FEE_REMISSION_TYPE, String.class)).thenReturn(Optional.of(FeeRemissionType.ASYLUM_SUPPORT));
-        when(asylumCase.read(ASYLUM_SUPPORT_REF_NUMBER, String.class)).thenReturn(Optional.of("123456"));
-        when(asylumCase.read(ASYLUM_SUPPORT_DOCUMENT)).thenReturn(Optional.of(document));
-
-        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
-
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse = submitAppealHandler.handle(ABOUT_TO_SUBMIT, callback);
-
-        verifyTestResults(callbackResponse);
-    }
-
-    @ParameterizedTest
-    @EnumSource(value = AppealType.class, names = {"EA", "HU", "PA", "EU"})
     void handle_should_return_new_and_previous_remission_details_legal_aid(AppealType appealType) {
         when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));

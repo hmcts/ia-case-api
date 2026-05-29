@@ -91,25 +91,22 @@ public class SubmitAppealHandler implements PreSubmitCallbackHandler<AsylumCase>
             case FeeRemissionType.ASYLUM_SUPPORT:
                 String asylumSupportReference;
 
-                if (isAipJourney(asylumCase)) {
-                    asylumSupportReference = asylumCase.read(ASYLUM_SUPPORT_REF_NUMBER, String.class).orElse("");
-                } else {
+                if (!isAipJourney(asylumCase)) {
                     asylumSupportReference = asylumCase.read(ASYLUM_SUPPORT_REFERENCE, String.class).orElse("");
-                }
-                Optional<Document>  asylumSupportDocument = asylumCase.read(ASYLUM_SUPPORT_DOCUMENT);
+                    Optional<Document>  asylumSupportDocument = asylumCase.read(ASYLUM_SUPPORT_DOCUMENT);
 
-                tempPreviousRemissionDetails =
-                    remissionDetailsAppender.appendAsylumSupportRemissionDetails(
-                        emptyList(),
-                        feeRemissionType,
-                        asylumSupportReference,
-                        asylumSupportDocument.orElse(null)
-                    );
+                    tempPreviousRemissionDetails =
+                        remissionDetailsAppender.appendAsylumSupportRemissionDetails(
+                            emptyList(),
+                            feeRemissionType,
+                            asylumSupportReference,
+                            asylumSupportDocument.orElse(null)
+                        );
+                }
                 break;
 
             case FeeRemissionType.LEGAL_AID:
-                String legalAidAccountNumber = asylumCase.read(LEGAL_AID_ACCOUNT_NUMBER, String.class)
-                        .orElse("");
+                String legalAidAccountNumber = asylumCase.read(LEGAL_AID_ACCOUNT_NUMBER, String.class).orElse("");
 
                 tempPreviousRemissionDetails =
                     remissionDetailsAppender.appendLegalAidRemissionDetails(
