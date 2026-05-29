@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_HOME_OFFICE_INTEGRATION_ENABLED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.MARK_APPEAL_PAID;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.REQUEST_HOME_OFFICE_DATA;
@@ -45,8 +46,6 @@ public class HomeOfficeCaseValidatePreparer implements PreSubmitCallbackHandler<
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
-        AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
-
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_START
             && (callback.getEvent() == SUBMIT_APPEAL
             || callback.getEvent() == MARK_APPEAL_PAID
@@ -64,7 +63,6 @@ public class HomeOfficeCaseValidatePreparer implements PreSubmitCallbackHandler<
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
         boolean isAgeAssessmentAppeal = HandlerUtils.isAgeAssessmentAppeal(asylumCase);
-
         boolean isEjpCase = HandlerUtils.isEjpCase(asylumCase);
 
         if ((callback.getEvent() == REQUEST_HOME_OFFICE_DATA) && (isAgeAssessmentAppeal || isEjpCase)) {
@@ -79,7 +77,6 @@ public class HomeOfficeCaseValidatePreparer implements PreSubmitCallbackHandler<
                 .orElseThrow(() -> new IllegalStateException("AppealType is not present."));
 
         boolean appealTypeEnabled = HomeOfficeAppealTypeChecker.isAppealTypeEnabled(featureToggler, appealType);
-        boolean isNotificationTurnedOff = HandlerUtils.isNotificationTurnedOff(asylumCase);
 
         if (!appealTypeEnabled) {
 
@@ -88,9 +85,10 @@ public class HomeOfficeCaseValidatePreparer implements PreSubmitCallbackHandler<
 
         if (isHomeOfficeIntegrationEnabled) {
             asylumCase.write(IS_HOME_OFFICE_INTEGRATION_ENABLED, YesOrNo.YES);
+            boolean isNotificationTurnedOff = HandlerUtils.isNotificationTurnedOff(asylumCase);
+            boolean validationDone = !asylumCase.read(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, String.class).orElse("").equals("");
 
-            if (appealTypeEnabled && !isAgeAssessmentAppeal && !isEjpCase
-                    && !isNotificationTurnedOff) {
+            if (appealTypeEnabled && !isAgeAssessmentAppeal && !isEjpCase && !isNotificationTurnedOff && !validationDone) {
                 asylumCase = homeOfficeApi.aboutToStart(callback);
             }
         } else {
