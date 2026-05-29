@@ -1484,3 +1484,5 @@ ia:
 app:
   home-office-validation:
     enabled: ${HOME_OFFICE_VALIDATION_ENABLED:true}
+  statutory-timeframe:
+    live-date: ${STATUTORY_TIMEFRAME_LIVE_DATE:2026-09-01}
