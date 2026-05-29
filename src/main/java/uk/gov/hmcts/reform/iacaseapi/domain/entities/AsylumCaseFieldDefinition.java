@@ -1885,7 +1885,7 @@ public enum AsylumCaseFieldDefinition {
         "caseManagementCategory", new TypeReference<DynamicList>(){}),
 
     HOME_OFFICE_SEARCH_NO_MATCH(
-            "homeOfficeSearchNoMatch", new TypeReference<>(){}),
+            "homeOfficeSearchNoMatch", new TypeReference<String>(){}),
 
     HOME_OFFICE_REFERENCE_NUMBER_BEFORE_EDIT(
             "homeOfficeReferenceNumberBeforeEdit", new TypeReference<String>(){}),

@@ -72,7 +72,7 @@ public class HomeOfficeCaseValidatePreparer implements PreSubmitCallbackHandler<
             return response;
         }
 
-        //Check if home office is enabled and set field for CCD definition
+        // Check if home office integration has been enabled and set field for CCD definition
         AppealType appealType = asylumCase.read(APPEAL_TYPE, AppealType.class)
                 .orElseThrow(() -> new IllegalStateException("AppealType is not present."));
 
@@ -86,6 +86,8 @@ public class HomeOfficeCaseValidatePreparer implements PreSubmitCallbackHandler<
         if (isHomeOfficeIntegrationEnabled) {
             asylumCase.write(IS_HOME_OFFICE_INTEGRATION_ENABLED, YesOrNo.YES);
             boolean isNotificationTurnedOff = HandlerUtils.isNotificationTurnedOff(asylumCase);
+            // Don't invoke the old  applicationStatus/getBySearchParameters  Home Office endpoint if the new  applications/v1/{id}  endpoint
+            // has already been called
             boolean validationDone = !asylumCase.read(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, String.class).orElse("").equals("");
 
             if (appealTypeEnabled && !isAgeAssessmentAppeal && !isEjpCase && !isNotificationTurnedOff && !validationDone) {

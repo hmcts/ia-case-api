@@ -1,14 +1,19 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_OUT_OF_COUNTRY;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.OUT_OF_TIME_DECISION_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.RECORDED_OUT_OF_TIME_DECISION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SEND_DIRECTION_DATE_DUE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SEND_DIRECTION_EXPLANATION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SEND_DIRECTION_PARTIES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPLOAD_HOME_OFFICE_BUNDLE_ACTION_AVAILABLE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import java.time.LocalDate;
 import java.time.ZoneOffset;
-import java.util.Arrays;
-import java.util.Optional;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
@@ -88,7 +93,7 @@ public class RequestRespondentEvidencePreparer implements PreSubmitCallbackHandl
 
             if (isInCountryAppeal
                 && shouldMatchAppellantDetails(asylumCase)
-                && appellantDetailsNotMatchedOrFailed(asylumCase)
+                && !HandlerUtils.hasAppellantDataBeenValidated(asylumCase)
                 && !isNotificationTurnedOff) {
                 callbackResponse
                     .addError("You need to match the appellant details before you can request the respondent evidence.");
@@ -127,13 +132,6 @@ public class RequestRespondentEvidencePreparer implements PreSubmitCallbackHandl
 
     private boolean shouldMatchAppellantDetails(AsylumCase asylumCase) {
         return !(HandlerUtils.isAgeAssessmentAppeal(asylumCase));
-    }
-
-    private boolean appellantDetailsNotMatchedOrFailed(AsylumCase asylumCase) {
-        Optional<String> homeOfficeSearchStatus = asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class);
-
-        return homeOfficeSearchStatus.isEmpty()
-            || Arrays.asList("FAIL", "MULTIPLE").contains(homeOfficeSearchStatus.get());
     }
 
     private LocalDate getDueDate(AsylumCase asylumCase) {
