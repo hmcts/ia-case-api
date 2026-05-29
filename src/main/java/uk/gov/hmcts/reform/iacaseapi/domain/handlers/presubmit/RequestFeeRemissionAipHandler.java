@@ -305,7 +305,7 @@ public class RequestFeeRemissionAipHandler implements PreSubmitCallbackHandler<A
                 break;
         }
         log.info(
-                "-----------RequestFeeRemissionAipHandler appendPreviousRemissionDetailsAppellant previousRemissionDetails.size() 2 {}",
+                "-----------RequestFeeRemissionAipHandler appendPreviousRemissionDetailsAppellant previousRemissionDetails.size() 222 {}",
                 previousRemissionDetails.size()
         );
         return previousRemissionDetails;
