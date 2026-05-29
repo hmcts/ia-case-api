@@ -237,7 +237,15 @@ public class RequestFeeRemissionAipHandler implements PreSubmitCallbackHandler<A
                 existingRemissionDetails
             );
         }
+        log.info(
+                "-----------RequestFeeRemissionAipHandler appendPreviousRemissionDetails 222 previousRemissionDetails.size() {}",
+                previousRemissionDetails.size()
+        );
         appendPreviousRemissionDecisionDetails(previousRemissionDetails, asylumCase);
+        log.info(
+                "-----------RequestFeeRemissionAipHandler appendPreviousRemissionDetails 333 previousRemissionDetails.size() {}",
+                previousRemissionDetails.size()
+        );
         return previousRemissionDetails;
     }
 
