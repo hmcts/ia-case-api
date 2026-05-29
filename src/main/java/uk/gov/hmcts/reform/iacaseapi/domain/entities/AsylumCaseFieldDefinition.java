@@ -1791,6 +1791,7 @@ public enum AsylumCaseFieldDefinition {
 
     GWF_REFERENCE_NUMBER(
         "gwfReferenceNumber", new TypeReference<String>(){}),
+
     DATE_ENTRY_CLEARANCE_DECISION(
         "dateEntryClearanceDecision", new TypeReference<String>(){}),
 
