@@ -4,7 +4,7 @@ plugins {
   id 'jacoco'
   id 'pmd'
   id 'com.github.ben-manes.versions' version '0.51.0'
-  id "info.solidsoft.pitest" version '1.9.0'
+  id "info.solidsoft.pitest" version '1.19.0'
   id "io.freefair.lombok" version '9.2.0'
   id 'io.spring.dependency-management' version '1.1.7'
   id 'org.owasp.dependencycheck' version '12.2.0'
@@ -96,6 +96,10 @@ processFunctionalTestResources {
 }
 
 processContractTestResources {
+  duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+processIntegrationTestResources {
   duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
@@ -192,6 +196,7 @@ jacocoTestReport {
 pitest {
   //print('./gradlew --version'.execute().text.trim())
   junit5PluginVersion = '1.2.3'
+  pitestVersion = '1.19.4'
   targetClasses = ['uk.gov.hmcts.reform.bailcaseapi.*']
   excludedClasses = [
     'uk.gov.hmcts.reform.bailcaseapi.infrastructure.config.*',
@@ -338,9 +343,6 @@ dependencies {
 
   testImplementation 'net.serenity-bdd:serenity-rest-assured'
   testImplementation 'net.serenity-bdd:serenity-spring'
-
-  testImplementation group: 'org.pitest', name: 'pitest', version: '1.9.0'
-  testImplementation "info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.9.0"
 
   testImplementation group: 'com.github.hmcts', name: 'ccd-case-document-am-client', version: '1.7.3'
 

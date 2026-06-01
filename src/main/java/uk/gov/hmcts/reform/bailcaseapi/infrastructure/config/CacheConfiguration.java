@@ -4,6 +4,7 @@ import io.lettuce.core.RedisURI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.support.NoOpCacheManager;
@@ -27,6 +28,11 @@ import java.time.Duration;
 
 @EnableCaching
 @Configuration
+@ConditionalOnProperty(
+    name = "app.cache.enabled",
+    havingValue = "true",
+    matchIfMissing = true
+)
 public class CacheConfiguration {
 
     private static final Logger log = LoggerFactory.getLogger(CacheConfiguration.class);
