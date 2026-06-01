@@ -51,20 +51,17 @@ class RemoveAppealFromOnlineConfirmationTest {
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
-        assertThat(
-            callbackResponse.getConfirmationHeader().get())
-            .contains("# You've removed this appeal from the online service");
+        assertTrue(callbackResponse.getConfirmationHeader().get().contains("# You've removed this appeal from the online service"));
 
         assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains(
-                "## Do this next\n"
-                    + "You now need to:</br>"
-                    +
-                    "1.Contact the appellant and the respondent to inform them that the case will proceed offline.</br>"
-                    + "2.Save all files associated with the appeal to the shared drive.</br>"
-                    +
-                    "3.Email a link to the saved files with the appeal reference number to: BAUArnhemHouse@justice.gov.uk"
+                """
+                ## Do this next
+                You now need to:</br>\
+                1.Contact the appellant and the respondent to inform them that the case will proceed offline.</br>\
+                2.Save all files associated with the appeal to the shared drive.</br>\
+                3.Email a link to the saved files with the appeal reference number to: BAUArnhemHouse@justice.gov.uk"""
             );
 
     }

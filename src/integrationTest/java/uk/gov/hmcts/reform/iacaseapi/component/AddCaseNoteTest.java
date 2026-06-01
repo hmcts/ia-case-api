@@ -43,7 +43,7 @@ class AddCaseNoteTest extends SpringBootIntegrationTest implements WithUserDetai
 
         Optional<List<IdValue<CaseNote>>> caseNotes = response.getAsylumCase().read(CASE_NOTES);
 
-        CaseNote caseNote = caseNotes.get().get(0).getValue();
+        CaseNote caseNote = caseNotes.get().getFirst().getValue();
 
         assertThat(caseNotes.get()).hasSize(1);
         assertThat(caseNote.getUser()).isEqualTo("Case Officer");

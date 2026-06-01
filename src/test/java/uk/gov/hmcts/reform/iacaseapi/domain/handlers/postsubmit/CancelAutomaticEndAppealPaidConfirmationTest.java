@@ -1,8 +1,9 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -10,8 +11,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOURNEY_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PAYMENT_STATUS;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,6 +18,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -105,44 +105,68 @@ class CancelAutomaticEndAppealPaidConfirmationTest {
                 .isExactlyInstanceOf(IllegalStateException.class);
     }
 
-    private static Stream<Arguments> qualifyingEventCombinations() {
-        List<Arguments> argumentsList = new ArrayList<>();
+    @Test
+    void it_can_handle_callback_valid_event_aip() {
+        when(callback.getEvent()).thenReturn(Event.PAYMENT_APPEAL);
+        when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)).thenReturn(Optional.of(PaymentStatus.PAID));
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
+        when(asylumCase.read(AUTOMATIC_END_APPEAL_TIMED_EVENT_ID)).thenReturn(Optional.of(timedEventId));
 
-        List<String> timedEventIdValues = new ArrayList<>();
-        timedEventIdValues.add(timedEventId);
-        timedEventIdValues.add(null);
-
-        for (Event currentEvent : Event.values()) {
-            for (PaymentStatus paymentStatus : PaymentStatus.values()) {
-                for (String timedEventIdValue : timedEventIdValues) {
-                    argumentsList.add(Arguments.of(JourneyType.AIP, Event.PAYMENT_APPEAL, currentEvent, paymentStatus, timedEventIdValue));
-                    argumentsList.add(Arguments.of(null, Event.UPDATE_PAYMENT_STATUS, currentEvent, paymentStatus, timedEventIdValue));
-                }
-            }
-        }
-        return argumentsList.stream();
+        assertTrue(cancelAutomaticEndAppealHandler.canHandle(callback));
     }
 
+    @Test
+    void it_can_handle_callback_valid_event_non_aip() {
+        when(callback.getEvent()).thenReturn(Event.UPDATE_PAYMENT_STATUS);
+        when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)).thenReturn(Optional.of(PaymentStatus.PAID));
+        when(asylumCase.read(AUTOMATIC_END_APPEAL_TIMED_EVENT_ID)).thenReturn(Optional.of(timedEventId));
+
+        assertTrue(cancelAutomaticEndAppealHandler.canHandle(callback));
+    }
+
+    @Test
+    void it_cannot_handle_callback_valid_not_enabled() {
+        assertFalse(new CancelAutomaticEndAppealPaidConfirmation(false, scheduler).canHandle(callback));
+    }
 
     @ParameterizedTest
-    @MethodSource("qualifyingEventCombinations")
-    void it_can_handle_callback(JourneyType journeyType, Event qualifyingEvent, Event currentEvent, PaymentStatus paymentStatus, String timedEventIdValue) {
-        // Given
-        given(callback.getEvent()).willReturn(currentEvent);
-        given(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)).willReturn(Optional.of(paymentStatus));
-        given(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).willReturn(Optional.ofNullable(journeyType));
-        given(asylumCase.read(AUTOMATIC_END_APPEAL_TIMED_EVENT_ID)).willReturn(Optional.ofNullable(timedEventIdValue));
+    @EnumSource(value = Event.class, names = {"PAYMENT_APPEAL"}, mode = EnumSource.Mode.EXCLUDE)
+    void it_cannot_handle_callback_invalid_event_aip(Event event) {
+        when(callback.getEvent()).thenReturn(event);
+        when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)).thenReturn(Optional.of(PaymentStatus.PAID));
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
+        when(asylumCase.read(AUTOMATIC_END_APPEAL_TIMED_EVENT_ID)).thenReturn(Optional.of(timedEventId));
 
-        // When
-        boolean canHandle = cancelAutomaticEndAppealHandler.canHandle(callback);
+        assertFalse(cancelAutomaticEndAppealHandler.canHandle(callback));
+    }
 
-        // Then
-        if (currentEvent == qualifyingEvent && paymentStatus == PaymentStatus.PAID
-            && timedEventIdValue != null) {
-            assertThat(canHandle).isTrue();
-        } else {
-            assertThat(canHandle).isFalse();
-        }
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {"UPDATE_PAYMENT_STATUS"}, mode = EnumSource.Mode.EXCLUDE)
+    void it_cannot_handle_callback_invalid_event_non_aip(Event event) {
+        when(callback.getEvent()).thenReturn(event);
+        when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)).thenReturn(Optional.of(PaymentStatus.PAID));
+        when(asylumCase.read(AUTOMATIC_END_APPEAL_TIMED_EVENT_ID)).thenReturn(Optional.of(timedEventId));
+
+        assertFalse(cancelAutomaticEndAppealHandler.canHandle(callback));
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = PaymentStatus.class, names = {"PAID"}, mode = EnumSource.Mode.EXCLUDE)
+    void it_cannot_handle_callback_invalid_payment_status(PaymentStatus paymentStatus) {
+        when(callback.getEvent()).thenReturn(Event.UPDATE_PAYMENT_STATUS);
+        when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)).thenReturn(Optional.of(paymentStatus));
+        when(asylumCase.read(AUTOMATIC_END_APPEAL_TIMED_EVENT_ID)).thenReturn(Optional.of(timedEventId));
+
+        assertFalse(cancelAutomaticEndAppealHandler.canHandle(callback));
+    }
+
+    @Test
+    void it_cannot_handle_callback_no_id() {
+        when(callback.getEvent()).thenReturn(Event.UPDATE_PAYMENT_STATUS);
+        when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)).thenReturn(Optional.of(PaymentStatus.PAID));
+        when(asylumCase.read(AUTOMATIC_END_APPEAL_TIMED_EVENT_ID)).thenReturn(Optional.empty());
+
+        assertFalse(cancelAutomaticEndAppealHandler.canHandle(callback));
     }
 
 }

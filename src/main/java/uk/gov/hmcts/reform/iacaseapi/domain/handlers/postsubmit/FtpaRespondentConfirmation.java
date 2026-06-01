@@ -41,16 +41,20 @@ public class FtpaRespondentConfirmation implements PostSubmitCallbackHandler<Asy
         if (mayBeOutOfTime.isPresent() && mayBeOutOfTime.get().equals(YesOrNo.YES)) {
             postSubmitResponse.setConfirmationHeader("");
             postSubmitResponse.setConfirmationBody(
-                "![FTPA Out of time confirmation](https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/ftpaOutOfTimeConfirmationSmall.png)\n"
-                + "#### What happens next\n\n"
-                + "The First-tier Tribunal will consider the reasons it has been submitted out of time. If the Tribunal accepts your reasons, it will consider your application and make a decision shortly.<br>"
+                """
+                ![FTPA Out of time confirmation](https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/ftpaOutOfTimeConfirmationSmall.png)
+                #### What happens next
+                
+                The First-tier Tribunal will consider the reasons it has been submitted out of time. If the Tribunal accepts your reasons, it will consider your application and make a decision shortly.<br>"""
             );
 
         } else {
             postSubmitResponse.setConfirmationHeader("# You've applied for permission to appeal to the Upper Tribunal");
             postSubmitResponse.setConfirmationBody(
-                "#### What happens next\n\n"
-                + "The First-tier Tribunal will review your application and decide shortly.<br>"
+                """
+                #### What happens next
+                
+                The First-tier Tribunal will review your application and decide shortly.<br>"""
             );
         }
 

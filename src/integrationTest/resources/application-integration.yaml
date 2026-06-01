@@ -1,18 +1,19 @@
 
 spring:
+  retry:
+    max-attempts: 100
   datasource:
     driverClassName: org.h2.Driver
-    url: jdbc:h2:mem:ia_case_api
+    url: jdbc:h2:mem:ia_case_api;NON_KEYWORDS=YEAR
     username: sa
     password:
-    platform: h2
   flyway.enabled: true
+  sql.init.platform: h2
 
 appealReferenceSequenceSeed: 50000
 
 featureFlag:
   timedEventServiceEnabled: true
-
 idam:
   s2s-authorised:
     services: ia
