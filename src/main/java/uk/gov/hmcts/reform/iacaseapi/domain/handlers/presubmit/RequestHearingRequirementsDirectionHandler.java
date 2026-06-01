@@ -73,11 +73,17 @@ public class RequestHearingRequirementsDirectionHandler implements PreSubmitCall
                 directionAppender.append(
                         asylumCase,
                     existingDirections,
-                    "The appeal is going to a hearing and you should tell the Tribunal if the appellant has any hearing requirements.\n\n"
-                    + "# Next steps\n\n"
-                    + "Visit the online service and use the HMCTS reference to find the case. You'll be able to submit the hearing requirements by following the instructions on the overview tab.\n\n"
-                    + "The Tribunal will review the hearing requirements and any requests for additional adjustments. You'll then be sent a hearing date.\n\n"
-                    + "If you do not submit the hearing requirements by the date indicated below, the Tribunal may not be able to accommodate the appellant's needs for the hearing.\n",
+                    """
+                    The appeal is going to a hearing and you should tell the Tribunal if the appellant has any hearing requirements.
+                    
+                    # Next steps
+                    
+                    Visit the online service and use the HMCTS reference to find the case. You'll be able to submit the hearing requirements by following the instructions on the overview tab.
+                    
+                    The Tribunal will review the hearing requirements and any requests for additional adjustments. You'll then be sent a hearing date.
+                    
+                    If you do not submit the hearing requirements by the date indicated below, the Tribunal may not be able to accommodate the appellant's needs for the hearing.
+                    """,
                     resolvePartiesForHearingRequirements(asylumCase),
                     dateProvider
                         .now()

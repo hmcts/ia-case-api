@@ -1,8 +1,9 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 
@@ -32,13 +33,9 @@ class MarkAppealAsReadyForUtTransferConfirmationTest {
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
-        assertThat(
-            callbackResponse.getConfirmationHeader().get())
-            .contains("# You've marked this appeal as ready to be transferred to the Upper Tribunal");
+        assertTrue(callbackResponse.getConfirmationHeader().get().contains("# You've marked this appeal as ready to be transferred to the Upper Tribunal"));
 
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("All parties have been notified. The Upper Tribunal will transfer the appeal.");
+        assertTrue(callbackResponse.getConfirmationBody().get().contains("All parties have been notified. The Upper Tribunal will transfer the appeal."));
     }
 
     @Test
