@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.editdocs;
 
+import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit.editdocs.EditDocsAuditService.getIdFromDocUrl;
 
@@ -239,6 +240,14 @@ public class EditDocsService {
                         ftpaApplication.getFtpaEvidenceDocuments(),
                         deletedDocIdSet
                 );
+
+                if (isEmpty(ftpaApplication.getFtpaOutOfTimeDocuments())
+                        && isEmpty(ftpaApplication.getFtpaGroundsDocuments())
+                        && isEmpty(ftpaApplication.getFtpaEvidenceDocuments())) {
+
+                    ftpaApplication.setFtpaApplicationDate(null);
+                    ftpaApplication.setFtpaApplicant(null);
+                }
             });
 
             asylumCase.write(FTPA_LIST, ftpaList);
