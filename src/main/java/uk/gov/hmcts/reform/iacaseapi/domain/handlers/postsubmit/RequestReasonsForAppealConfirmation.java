@@ -28,8 +28,10 @@ public class RequestReasonsForAppealConfirmation implements PostSubmitCallbackHa
 
         postSubmitResponse.setConfirmationHeader("# You have sent a direction");
         postSubmitResponse.setConfirmationBody(
-                "#### What happens next\n\n"
-                        + "The appellant will be directed to submit their Appeal Reasons. You will be notified when it is ready to review."
+                """
+                #### What happens next
+                
+                The appellant will be directed to submit their Appeal Reasons. You will be notified when it is ready to review."""
         );
 
         return postSubmitResponse;

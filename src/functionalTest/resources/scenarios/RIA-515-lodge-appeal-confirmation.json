@@ -1,4 +1,4 @@
-{ 
+{
   "description": "RIA-515 Lodge appeal confirmation",
   "request": {
     "uri": "/asylum/ccdSubmitted",

@@ -24,7 +24,6 @@
   },
   "homeOfficeSearchStatus": "SUCCESS",
   "homeOfficeNotificationsEligible": "Yes",
-
   "expectation": {
     "status": 200,
     "errors": [],
