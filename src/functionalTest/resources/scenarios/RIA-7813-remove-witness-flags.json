@@ -1,6 +1,5 @@
 {
   "description": "RIA-7813 remove witness flags when a witness is removed",
-  "enabled": true,
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",
@@ -32,7 +31,7 @@
           ]
         }
       },
-      "caseDataBefore":  {
+      "caseDataBefore": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
           "isWitnessesAttending": "No",

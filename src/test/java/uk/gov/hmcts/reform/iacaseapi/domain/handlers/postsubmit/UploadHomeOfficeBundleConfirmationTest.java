@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -40,13 +39,9 @@ class UploadHomeOfficeBundleConfirmationTest {
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
-        assertThat(
-            callbackResponse.getConfirmationHeader().get())
-            .contains("You've uploaded the Home Office bundle");
+        assertTrue(callbackResponse.getConfirmationHeader().get().contains("You've uploaded the Home Office bundle"));
 
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("What happens next");
+        assertTrue(callbackResponse.getConfirmationBody().get().contains("What happens next"));
     }
 
     @Test

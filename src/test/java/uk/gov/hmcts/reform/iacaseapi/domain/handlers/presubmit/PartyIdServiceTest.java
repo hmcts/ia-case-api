@@ -89,7 +89,7 @@ class PartyIdServiceTest {
         PartyIdService.appendWitnessPartyId(asylumCase);
 
         verify(asylumCase).write(eq(WITNESS_DETAILS), witnessDetailsCaptor.capture());
-        assertNotNull(witnessDetailsCaptor.getValue().get(0).getValue().getWitnessPartyId());
+        assertNotNull(witnessDetailsCaptor.getValue().getFirst().getValue().getWitnessPartyId());
         assertNotNull(witnessDetailsCaptor.getValue().get(1).getValue().getWitnessPartyId());
     }
 
@@ -107,7 +107,7 @@ class PartyIdServiceTest {
         PartyIdService.appendWitnessPartyId(asylumCase);
 
         verify(asylumCase).write(eq(WITNESS_DETAILS), witnessDetailsCaptor.capture());
-        assertEquals(WITNESS_1_PARTY_ID, witnessDetailsCaptor.getValue().get(0).getValue().getWitnessPartyId());
+        assertEquals(WITNESS_1_PARTY_ID, witnessDetailsCaptor.getValue().getFirst().getValue().getWitnessPartyId());
         assertEquals(WITNESS_2_PARTY_ID, witnessDetailsCaptor.getValue().get(1).getValue().getWitnessPartyId());
     }
 

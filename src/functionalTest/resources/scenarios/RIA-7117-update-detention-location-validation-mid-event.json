@@ -16,7 +16,9 @@
   },
   "expectation": {
     "status": 200,
-    "errors": ["You cannot update the detention location to a prison because this is an accelerated detained appeal."],
+    "errors": [
+      "You cannot update the detention location to a prison because this is an accelerated detained appeal."
+    ],
     "caseData": {
       "template": "minimal-ada-appeal-submitted.json",
       "replacements": {

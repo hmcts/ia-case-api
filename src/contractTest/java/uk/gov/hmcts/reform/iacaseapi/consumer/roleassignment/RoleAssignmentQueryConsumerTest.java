@@ -1,59 +1,67 @@
 package uk.gov.hmcts.reform.iacaseapi.consumer.roleassignment;
 
-import au.com.dius.pact.consumer.dsl.DslPart;
-import au.com.dius.pact.consumer.dsl.PactDslWithProvider;
-import au.com.dius.pact.consumer.junit5.PactConsumerTestExt;
-import au.com.dius.pact.consumer.junit5.PactTestFor;
-import au.com.dius.pact.core.model.RequestResponsePact;
-import au.com.dius.pact.core.model.annotations.Pact;
-import au.com.dius.pact.core.model.annotations.PactFolder;
-import com.google.common.collect.Maps;
-import org.apache.http.client.fluent.Executor;
-import org.json.JSONException;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.HttpStatus;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.*;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.IdamService;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.RoleAssignmentService;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.roleassignment.RoleAssignmentApi;
-
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
-
 import static au.com.dius.pact.consumer.dsl.LambdaDsl.newJsonBody;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.Classification.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.Classification.PRIVATE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.Classification.PUBLIC;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.Classification.RESTRICTED;
 
-@ExtendWith(SpringExtension.class)
+import au.com.dius.pact.consumer.dsl.DslPart;
+import au.com.dius.pact.consumer.dsl.PactDslWithProvider;
+import au.com.dius.pact.consumer.junit5.PactConsumerTestExt;
+import au.com.dius.pact.consumer.junit5.PactTestFor;
+import au.com.dius.pact.core.model.V4Pact;
+import au.com.dius.pact.core.model.annotations.Pact;
+import au.com.dius.pact.core.model.annotations.PactFolder;
+import com.google.common.collect.Maps;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
+import org.json.JSONException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
+import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.Assignment;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.Attributes;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.GrantType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.Jurisdiction;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.QueryRequest;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleName;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleType;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.IdamService;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.RoleAssignmentService;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.roleassignment.RoleAssignmentApi;
+
 @ExtendWith(PactConsumerTestExt.class)
+@ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @PactFolder("pacts")
 @PactTestFor(providerName = "am_roleAssignment_queryAssignment", port = "8991")
-@ContextConfiguration(classes = {RoleAssignmentConsumerApplication.class})
+@SpringJUnitConfig(classes = {RoleAssignmentConsumerApplication.class})
 @TestPropertySource(locations = {"classpath:application.properties"})
+@MockitoSettings(strictness = Strictness.LENIENT)
 public class RoleAssignmentQueryConsumerTest {
 
     @Autowired
     RoleAssignmentApi roleAssignmentApi;
 
-    @MockBean
+    @MockitoBean
     AuthTokenGenerator authTokenGenerator;
 
     @Mock
@@ -76,9 +84,7 @@ public class RoleAssignmentQueryConsumerTest {
     private final LocalDateTime validAtDate = LocalDateTime.parse("2021-12-04T00:00:00");
 
     @BeforeEach
-    void setUp() throws Exception {
-        Thread.sleep(2000);
-
+    void setUp() {
         when(authTokenGenerator.generate()).thenReturn(SERVICE_AUTH_TOKEN);
 
         when(userDetails.getAccessToken()).thenReturn(AUTH_TOKEN);
@@ -89,13 +95,8 @@ public class RoleAssignmentQueryConsumerTest {
         roleAssignmentService = new RoleAssignmentService(authTokenGenerator, roleAssignmentApi, userDetails);
     }
 
-    @AfterEach
-    void teardown() {
-        Executor.closeIdleConnections();
-    }
-
     @Pact(provider = "am_roleAssignment_queryAssignment", consumer = "ia_caseApi")
-    public RequestResponsePact generatePactFragmentForQueryRoleAssignments(PactDslWithProvider builder) throws JSONException {
+    public V4Pact generatePactFragmentForQueryRoleAssignments(PactDslWithProvider builder) throws JSONException {
         return builder
             .given("A list of role assignments for the search query")
             .uponReceiving("A query request for roles")
@@ -108,7 +109,7 @@ public class RoleAssignmentQueryConsumerTest {
             .status(HttpStatus.OK.value())
             .headers(getResponseHeaders())
             .body(createRoleAssignmentResponseSearchQueryResponse())
-            .toPact();
+            .toPact(V4Pact.class);
     }
 
     @Test
@@ -118,7 +119,7 @@ public class RoleAssignmentQueryConsumerTest {
             .queryRoleAssignments(buildQueryRequest()
             ).getRoleAssignmentResponse();
 
-        assertThat(queryRoleAssignmentResponse.get(0).getActorId(), is(assigneeId));
+        assertThat(queryRoleAssignmentResponse.getFirst().getActorId(), is(assigneeId));
 
     }
 
@@ -157,17 +158,19 @@ public class RoleAssignmentQueryConsumerTest {
     }
 
     private String createRoleAssignmentRequestSearchQueryMultipleRoleAssignments() {
-        return "{\n"
-            + "\"roleType\": [\"ORGANISATION\"],\n"
-            + "\"roleName\": [\"tribunal-caseworker\",\"senior-tribunal-caseworker\"],\n"
-            + "\"classification\": [\"PUBLIC\",\"RESTRICTED\",\"PRIVATE\"],\n"
-            + "\"grantType\": [\"STANDARD\"],\n"
-            + "\"validAt\": \"2021-12-04T00:00:00\",\n"
-            + "\"attributes\": {\n"
-            + "\"primaryLocation\": [\"500A2S\"],\n"
-            + "\"jurisdiction\": [\"IA\"]\n"
-            + "}\n"
-            + "}";
+        return """
+            {
+            "roleType": ["ORGANISATION"],
+            "roleName": ["tribunal-caseworker","senior-tribunal-caseworker"],
+            "classification": ["PUBLIC","RESTRICTED","PRIVATE"],
+            "grantType": ["STANDARD"],
+            "validAt": "2021-12-04T00:00:00",
+            "attributes": {
+            "primaryLocation": ["500A2S"],
+            "jurisdiction": ["IA"]
+            }
+            }\
+            """;
     }
 
     private Map<String, String> getResponseHeaders() {
