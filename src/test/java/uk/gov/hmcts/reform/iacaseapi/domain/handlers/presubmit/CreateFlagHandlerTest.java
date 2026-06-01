@@ -21,7 +21,10 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
-import static uk.gov.hmcts.reform.iacaseapi.domain.service.StrategicCaseFlagService.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.service.StrategicCaseFlagService.ACTIVE_STATUS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.service.StrategicCaseFlagService.ROLE_ON_CASE_APPELLANT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.service.StrategicCaseFlagService.ROLE_ON_CASE_INTERPRETER;
+import static uk.gov.hmcts.reform.iacaseapi.domain.service.StrategicCaseFlagService.ROLE_ON_CASE_WITNESS;
 
 import java.util.Collections;
 import java.util.List;
@@ -35,7 +38,13 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseFlagDetail;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseFlagValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterDetails;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.PartyFlagIdValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlag;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.WitnessDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -158,7 +167,7 @@ class CreateFlagHandlerTest {
         assertEquals(asylumCase, callbackResponse.getData());
 
         verify(asylumCase, times(1)).write(eq(APPELLANT_LEVEL_FLAGS), appellantFlagsCaptor.capture());
-        assertEquals("flagId", appellantFlagsCaptor.getValue().getDetails().get(0).getId());
+        assertEquals("flagId", appellantFlagsCaptor.getValue().getDetails().getFirst().getId());
         assertEquals(ROLE_ON_CASE_APPELLANT, appellantFlagsCaptor.getValue().getRoleOnCase());
         assertEquals(appellantNameForDisplay, appellantFlagsCaptor.getValue().getPartyName());
     }
@@ -184,7 +193,7 @@ class CreateFlagHandlerTest {
         verify(asylumCase, times(1)).write(eq(WITNESS_LEVEL_FLAGS), witnessFlagsCaptor.capture());
         assertNotNull(witnessFlagsCaptor.getValue());
         assertEquals(2, witnessFlagsCaptor.getValue().size());
-        assertTrue(witnessFlagsCaptor.getValue().contains(expected.get(0)));
+        assertTrue(witnessFlagsCaptor.getValue().contains(expected.getFirst()));
         assertTrue(witnessFlagsCaptor.getValue().contains(expected.get(1)));
     }
 
@@ -214,7 +223,7 @@ class CreateFlagHandlerTest {
                 .write(eq(WITNESS_LEVEL_FLAGS), witnessFlagsCaptor.capture());
         assertNotNull(witnessFlagsCaptor.getValue());
         assertEquals(2, witnessFlagsCaptor.getValue().size());
-        assertTrue(witnessFlagsCaptor.getValue().contains(expected.get(0)));
+        assertTrue(witnessFlagsCaptor.getValue().contains(expected.getFirst()));
         assertTrue(witnessFlagsCaptor.getValue().contains(expected.get(1)));
     }
 
@@ -241,7 +250,7 @@ class CreateFlagHandlerTest {
                 .write(eq(INTERPRETER_LEVEL_FLAGS), interpreterFlagsCaptor.capture());
         assertNotNull(interpreterFlagsCaptor.getValue());
         assertEquals(2, interpreterFlagsCaptor.getValue().size());
-        assertTrue(interpreterFlagsCaptor.getValue().contains(expected.get(0)));
+        assertTrue(interpreterFlagsCaptor.getValue().contains(expected.getFirst()));
         assertTrue(interpreterFlagsCaptor.getValue().contains(expected.get(1)));
     }
 
@@ -272,7 +281,7 @@ class CreateFlagHandlerTest {
         verify(asylumCase, times(1)).write(eq(INTERPRETER_LEVEL_FLAGS), interpreterFlagsCaptor.capture());
         assertNotNull(interpreterFlagsCaptor.getValue());
         assertEquals(2, interpreterFlagsCaptor.getValue().size());
-        assertTrue(interpreterFlagsCaptor.getValue().contains(expected.get(0)));
+        assertTrue(interpreterFlagsCaptor.getValue().contains(expected.getFirst()));
         assertTrue(interpreterFlagsCaptor.getValue().contains(expected.get(1)));
     }
 

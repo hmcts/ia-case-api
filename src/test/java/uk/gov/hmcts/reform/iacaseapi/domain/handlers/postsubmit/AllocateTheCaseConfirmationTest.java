@@ -43,9 +43,7 @@ class AllocateTheCaseConfirmationTest {
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
-        assertThat(
-            callbackResponse.getConfirmationHeader().get())
-            .contains("# You have allocated the case");
+        assertTrue(callbackResponse.getConfirmationHeader().get().contains("# You have allocated the case"));
 
         assertThat(
             callbackResponse.getConfirmationBody().get())

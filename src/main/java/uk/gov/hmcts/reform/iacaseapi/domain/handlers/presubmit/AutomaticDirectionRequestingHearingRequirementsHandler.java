@@ -126,7 +126,7 @@ public class AutomaticDirectionRequestingHearingRequirementsHandler implements P
             .read(AsylumCaseFieldDefinition.APPEAL_REVIEW_OUTCOME, AppealReviewOutcome.class);
 
         //Support the in-flight cases, where the homeoffice decision is not available
-        if (!reviewOutcome.isPresent()) {
+        if (reviewOutcome.isEmpty()) {
             if (HandlerUtils.isRepJourney(callback.getCaseDetails().getCaseData())) {
                 return true;
             } else {
