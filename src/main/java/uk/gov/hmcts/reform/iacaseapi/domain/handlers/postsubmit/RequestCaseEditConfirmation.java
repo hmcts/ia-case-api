@@ -32,9 +32,11 @@ public class RequestCaseEditConfirmation implements PostSubmitCallbackHandler<As
 
         postSubmitResponse.setConfirmationHeader("# You have sent a direction");
         postSubmitResponse.setConfirmationBody(
-            "#### What happens next\n\n"
-            + "The appellant now needs to edit the case in the way you have directed. "
-            + "The appellant should then submit their case again for you to review."
+            """
+            #### What happens next
+            
+            The appellant now needs to edit the case in the way you have directed. \
+            The appellant should then submit their case again for you to review."""
         );
 
         return postSubmitResponse;

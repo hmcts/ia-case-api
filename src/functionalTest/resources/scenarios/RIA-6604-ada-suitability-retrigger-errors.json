@@ -19,7 +19,9 @@
   },
   "expectation": {
     "status": 200,
-    "errors": ["ADA suitability has already been determined for this appeal."],
+    "errors": [
+      "ADA suitability has already been determined for this appeal."
+    ],
     "caseData": {
       "template": "minimal-ada-appeal-submitted.json"
     }

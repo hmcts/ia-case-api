@@ -96,7 +96,7 @@ class AsylumCaseCallbackApiDelegatorTest {
             any(ParameterizedTypeReference.class)
         );
 
-        HttpEntity actualRequestEntity = requestEntityCaptor.getAllValues().get(0);
+        HttpEntity actualRequestEntity = requestEntityCaptor.getAllValues().getFirst();
 
         final String actualContentTypeHeader = actualRequestEntity.getHeaders().getFirst(HttpHeaders.CONTENT_TYPE);
         final String actualAcceptHeader = actualRequestEntity.getHeaders().getFirst(HttpHeaders.ACCEPT);
@@ -144,7 +144,7 @@ class AsylumCaseCallbackApiDelegatorTest {
             any(ParameterizedTypeReference.class)
         );
 
-        HttpEntity actualRequestEntity = requestEntityCaptor.getAllValues().get(0);
+        HttpEntity actualRequestEntity = requestEntityCaptor.getAllValues().getFirst();
 
         final String actualContentTypeHeader = actualRequestEntity.getHeaders().getFirst(HttpHeaders.CONTENT_TYPE);
         final String actualAcceptHeader = actualRequestEntity.getHeaders().getFirst(HttpHeaders.ACCEPT);

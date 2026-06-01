@@ -53,17 +53,11 @@ class BuildCaseConfirmationTest {
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
-        assertThat(
-            callbackResponse.getConfirmationHeader().get())
-            .contains("Upload saved");
+        assertTrue(callbackResponse.getConfirmationHeader().get().contains("Upload saved"));
 
-        assertThat(
-            callbackResponse.getConfirmationHeader().get())
-            .contains("You still need to submit your case");
+        assertTrue(callbackResponse.getConfirmationHeader().get().contains("You still need to submit your case"));
 
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("What happens next");
+        assertTrue(callbackResponse.getConfirmationBody().get().contains("What happens next"));
 
         assertThat(
             callbackResponse.getConfirmationBody().get())

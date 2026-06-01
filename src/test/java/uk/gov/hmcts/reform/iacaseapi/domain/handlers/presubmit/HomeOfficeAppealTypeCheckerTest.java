@@ -8,7 +8,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.HU;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.PA;
 
 import java.util.Arrays;
-
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
@@ -16,7 +15,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
