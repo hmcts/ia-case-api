@@ -154,11 +154,31 @@ class PaymentStateHandlerTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = State.class, names = {"APPEAL_STARTED", "APPEAL_STARTED_BY_ADMIN", "PENDING_PAYMENT"})
-    void should_not_return_base_state_for_pa_pay_later_payment_appeal_invalid_state_dlrm_flag_on(State state) {
+    @EnumSource(value = AppealType.class, names = {"EA", "HU", "EU", "AG"}, mode = INCLUDE)
+    void should_maintain_state_for_payment_appeal_when_payment_failed(AppealType appealType) {
+        // When PAYMENT_APPEAL is triggered and payment status is pending/failed, state should remain unchanged
 
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(caseDetails.getState()).thenReturn(state);
+        when(caseDetails.getState()).thenReturn(PENDING_PAYMENT);
+        when(callback.getEvent()).thenReturn(Event.PAYMENT_APPEAL);
+
+        when(asylumCase.read(AsylumCaseFieldDefinition.JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(REP));
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
+        when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)).thenReturn(Optional.of(PaymentStatus.FAILED));
+
+        PreSubmitCallbackResponse<AsylumCase> returnedCallbackResponse =
+            paymentStateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse);
+
+        assertNotNull(returnedCallbackResponse);
+        Assertions.assertThat(returnedCallbackResponse.getState()).isEqualTo(PENDING_PAYMENT);
+        assertEquals(asylumCase, returnedCallbackResponse.getData());
+    }
+
+    @Test
+    void should_return_appeal_submitted_for_pa_pay_now_payment_appeal_from_pending_payment_dlrm_flag_on() {
+
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(caseDetails.getState()).thenReturn(PENDING_PAYMENT);
         when(callback.getEvent()).thenReturn(Event.PAYMENT_APPEAL);
         when(featureToggler.getValue("dlrm-fee-remission-feature-flag", false)).thenReturn(true);
 
@@ -194,12 +214,11 @@ class PaymentStateHandlerTest {
         assertEquals(asylumCase, returnedCallbackResponse.getData());
     }
 
-    @ParameterizedTest
-    @EnumSource(value = State.class, names = {"APPEAL_STARTED", "APPEAL_STARTED_BY_ADMIN", "PENDING_PAYMENT"})
-    void should_not_return_base_state_for_pa_pay_later_payment_appeal_invalid_state(State state) {
+    @Test
+    void should_return_appeal_submitted_for_pa_pay_now_payment_appeal_from_pending_payment() {
 
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(caseDetails.getState()).thenReturn(state);
+        when(caseDetails.getState()).thenReturn(PENDING_PAYMENT);
         when(callback.getEvent()).thenReturn(Event.PAYMENT_APPEAL);
 
         when(asylumCase.read(AsylumCaseFieldDefinition.JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(AIP));
@@ -216,15 +235,12 @@ class PaymentStateHandlerTest {
 
     @ParameterizedTest
     @CsvSource({
-        "payLater, PAYMENT_APPEAL, APPEAL_STARTED",
         "payLater, SUBMIT_APPEAL, RESPONDENT_REVIEW",
-        "payNow, PAYMENT_APPEAL, RESPONDENT_REVIEW",
         "payLater, SUBMIT_APPEAL, APPEAL_STARTED",
-        "payNow, PAYMENT_APPEAL, APPEAL_STARTED",
         "payNow, SUBMIT_APPEAL, RESPONDENT_REVIEW",
         "payNow, SUBMIT_APPEAL, APPEAL_STARTED",
     })
-    void should_not_return_base_state_for_false_isValidPayLaterPaymentEvent(String paPayOption, Event event, State state) {
+    void should_return_appeal_submitted_for_submit_appeal_event(String paPayOption, Event event, State state) {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(caseDetails.getState()).thenReturn(state);
         when(callback.getEvent()).thenReturn(event);
@@ -238,6 +254,25 @@ class PaymentStateHandlerTest {
 
         assertNotNull(returnedCallbackResponse);
         Assertions.assertThat(returnedCallbackResponse.getState()).isEqualTo(APPEAL_SUBMITTED);
+        assertEquals(asylumCase, returnedCallbackResponse.getData());
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = State.class, names = {"PENDING_PAYMENT"}, mode = EXCLUDE)
+    void should_maintain_state_for_payment_appeal_from_non_pending_payment_state(State state) {
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(caseDetails.getState()).thenReturn(state);
+        when(callback.getEvent()).thenReturn(Event.PAYMENT_APPEAL);
+
+        when(asylumCase.read(AsylumCaseFieldDefinition.JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(AIP));
+        when(asylumCase.read(PA_APPEAL_TYPE_AIP_PAYMENT_OPTION, String.class)).thenReturn(Optional.of("payNow"));
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.PA));
+
+        PreSubmitCallbackResponse<AsylumCase> returnedCallbackResponse =
+            paymentStateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse);
+
+        assertNotNull(returnedCallbackResponse);
+        Assertions.assertThat(returnedCallbackResponse.getState()).isEqualTo(state);
         assertEquals(asylumCase, returnedCallbackResponse.getData());
     }
 

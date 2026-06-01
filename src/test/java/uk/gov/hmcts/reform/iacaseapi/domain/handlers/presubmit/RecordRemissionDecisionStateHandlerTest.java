@@ -138,6 +138,30 @@ class RecordRemissionDecisionStateHandlerTest {
 
     @ParameterizedTest
     @EnumSource(value = AppealType.class, names = { "EA", "HU", "EU", "AG" })
+    void should_maintain_current_state_on_remission_approved_when_not_in_pending_payment(AppealType type) {
+        // When appeal is not in PENDING_PAYMENT state, it should maintain current state
+
+        when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
+
+        when(callback.getEvent()).thenReturn(Event.RECORD_REMISSION_DECISION);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getState()).thenReturn(State.DECIDED);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(type));
+        when(asylumCase.read(REMISSION_DECISION, RemissionDecision.class)).thenReturn(Optional.of(APPROVED));
+
+        PreSubmitCallbackResponse<AsylumCase> returnedCallbackResponse =
+            recordRemissionDecisionStateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse);
+
+        assertThat(returnedCallbackResponse).isNotNull();
+        assertThat(returnedCallbackResponse.getData()).isEqualTo(asylumCase);
+        assertThat(returnedCallbackResponse.getState()).isEqualTo(State.DECIDED);
+        verify(asylumCase, times(1)).write(PAYMENT_STATUS, PAID);
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = AppealType.class, names = { "EA", "HU", "EU", "AG" })
     void should_return_payment_pending_on_remission_partially_approved(AppealType type) {
         // and service-request tab should be hidden (payment is handled offline, waysToPay not yet supporting partial remissions)
         // and markAppealAsPaid should be visible, to allow admins to process offline payments

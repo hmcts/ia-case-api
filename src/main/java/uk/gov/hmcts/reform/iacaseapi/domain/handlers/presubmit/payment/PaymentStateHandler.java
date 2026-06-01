@@ -93,7 +93,8 @@ public class PaymentStateHandler implements PreSubmitCallbackStateHandler<Asylum
             boolean isPaymentStatusPendingOrFailed = paymentStatus.isPresent()
                     && (paymentStatus.get() == PAYMENT_PENDING || paymentStatus.get() == FAILED)
                     || (remissionType.isPresent());
-            return decideAppealState(appealType, isPaymentStatusPendingOrFailed, asylumCase);
+            boolean isPaymentAppealEvent = callback.getEvent() == Event.PAYMENT_APPEAL;
+            return decideAppealState(appealType, isPaymentStatusPendingOrFailed, asylumCase, currentState, isPaymentAppealEvent);
         }
     }
 
@@ -121,23 +122,39 @@ public class PaymentStateHandler implements PreSubmitCallbackStateHandler<Asylum
         } else if (isValidPayLaterPaymentEvent(callback, currentState, isPayLaterAppeal)) {
             return new PreSubmitCallbackResponse<>(asylumCase, currentState);
         } else {
-            return decideAppealState(appealType, isPaymentStatusPendingOrFailed, asylumCase);
+            boolean isPaymentAppealEvent = callback.getEvent() == Event.PAYMENT_APPEAL;
+            return decideAppealState(appealType, isPaymentStatusPendingOrFailed, asylumCase, currentState, isPaymentAppealEvent);
         }
     }
 
     private static PreSubmitCallbackResponse<AsylumCase> decideAppealState(AppealType appealType,
                                                                            boolean isPaymentStatusPendingOrFailed,
-                                                                           AsylumCase asylumCase) {
+                                                                           AsylumCase asylumCase,
+                                                                           State currentState,
+                                                                           boolean isPaymentAppealEvent) {
         switch (appealType) {
             case EA:
             case HU:
             case EU:
             case AG:
                 if (isPaymentStatusPendingOrFailed) {
+                    // For PAYMENT_APPEAL, if payment failed, remain in current state
+                    if (isPaymentAppealEvent) {
+                        return new PreSubmitCallbackResponse<>(asylumCase, currentState);
+                    }
+                    // For SUBMIT_APPEAL, go to PENDING_PAYMENT
                     return new PreSubmitCallbackResponse<>(asylumCase, PENDING_PAYMENT);
+                }
+                // For PAYMENT_APPEAL, only transition to APPEAL_SUBMITTED from PENDING_PAYMENT
+                if (isPaymentAppealEvent && currentState != PENDING_PAYMENT) {
+                    return new PreSubmitCallbackResponse<>(asylumCase, currentState);
                 }
                 return new PreSubmitCallbackResponse<>(asylumCase, APPEAL_SUBMITTED);
             default:
+                // For PAYMENT_APPEAL, only transition to APPEAL_SUBMITTED from PENDING_PAYMENT
+                if (isPaymentAppealEvent && currentState != PENDING_PAYMENT) {
+                    return new PreSubmitCallbackResponse<>(asylumCase, currentState);
+                }
                 return new PreSubmitCallbackResponse<>(asylumCase, APPEAL_SUBMITTED);
         }
     }
@@ -148,6 +165,13 @@ public class PaymentStateHandler implements PreSubmitCallbackStateHandler<Asylum
                                                                          boolean isPayLaterAppeal,
                                                                          boolean isPaymentStatusPaid) {
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
+        boolean isPaymentAppealEvent = callback.getEvent() == Event.PAYMENT_APPEAL;
+
+        // For PAYMENT_APPEAL, only transition to APPEAL_SUBMITTED from PENDING_PAYMENT
+        if (isPaymentAppealEvent && currentState != PENDING_PAYMENT) {
+            return new PreSubmitCallbackResponse<>(asylumCase, currentState);
+        }
+
         State state = !isPayLaterAppeal && !isPaymentStatusPaid && appealType != AppealType.PA ? PENDING_PAYMENT : APPEAL_SUBMITTED;
         if (isValidPayLaterPaymentEvent(callback, currentState, isPayLaterAppeal)) {
             state = currentState;

@@ -84,7 +84,8 @@ public class RecordRemissionDecisionStateHandler implements PreSubmitCallbackSta
                 asylumCase.write(IS_SERVICE_REQUEST_TAB_VISIBLE_CONSIDERING_REMISSIONS, YesOrNo.NO);
                 asylumCase.write(DISPLAY_MARK_AS_PAID_EVENT_FOR_PARTIAL_REMISSION, YesOrNo.NO);
 
-                if (Arrays.asList(AppealType.EA, AppealType.HU, AppealType.EU, AppealType.AG).contains(appealType)) {
+                if (Arrays.asList(AppealType.EA, AppealType.HU, AppealType.EU, AppealType.AG).contains(appealType)
+                    && currentState == State.PENDING_PAYMENT) {
                     return new PreSubmitCallbackResponse<>(asylumCase, State.APPEAL_SUBMITTED);
                 }
                 return new PreSubmitCallbackResponse<>(asylumCase, currentState);
