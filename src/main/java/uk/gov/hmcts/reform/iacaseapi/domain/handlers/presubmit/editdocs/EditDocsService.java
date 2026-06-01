@@ -221,7 +221,7 @@ public class EditDocsService {
 
         optionalFtpaList.ifPresent(ftpaList -> {
 
-            ftpaList.forEach(ftpaApplicationIdValue -> {
+            ftpaList.removeIf(ftpaApplicationIdValue -> {
 
                 FtpaApplications ftpaApplication =
                         ftpaApplicationIdValue.getValue();
@@ -241,13 +241,24 @@ public class EditDocsService {
                         deletedDocIdSet
                 );
 
-                if (isEmpty(ftpaApplication.getFtpaOutOfTimeDocuments())
-                        && isEmpty(ftpaApplication.getFtpaGroundsDocuments())
-                        && isEmpty(ftpaApplication.getFtpaEvidenceDocuments())) {
+                boolean noOutOfTime =
+                        isEmpty(ftpaApplication.getFtpaOutOfTimeDocuments());
 
-                    ftpaApplication.setFtpaApplicationDate(null);
-                    ftpaApplication.setFtpaApplicant(null);
+                boolean noGrounds =
+                        isEmpty(ftpaApplication.getFtpaGroundsDocuments());
+
+                boolean noEvidence =
+                        isEmpty(ftpaApplication.getFtpaEvidenceDocuments());
+
+                if (noOutOfTime && noGrounds && noEvidence) {
+                    log.info("Removing FTPA application as all document lists are empty");
+                    return true;
                 }
+
+                ftpaApplication.setFtpaApplicationDate(null);
+                ftpaApplication.setFtpaApplicant(null);
+
+                return false;
             });
 
             asylumCase.write(FTPA_LIST, ftpaList);

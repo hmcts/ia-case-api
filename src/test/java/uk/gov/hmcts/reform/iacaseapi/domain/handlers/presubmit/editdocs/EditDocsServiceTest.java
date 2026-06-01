@@ -455,22 +455,7 @@ class EditDocsServiceTest {
         Optional<List<IdValue<FtpaApplications>>> updatedFtpaList =
                 asylumCase.read(FTPA_LIST);
 
-        FtpaApplications updatedFtpaApplication =
-                updatedFtpaList.orElseThrow()
-                        .get(0)
-                        .getValue();
-
-        assertThat(updatedFtpaApplication.getFtpaOutOfTimeDocuments())
-                .isEmpty();
-        assertThat(updatedFtpaApplication.getFtpaGroundsDocuments())
-                .isEmpty();
-        assertThat(updatedFtpaApplication.getFtpaEvidenceDocuments())
-                .isEmpty();
-
-        assertThat(updatedFtpaApplication.getFtpaApplicationDate())
-                .isNull();
-        assertThat(updatedFtpaApplication.getFtpaApplicant())
-                .isNull();
+        assertThat(updatedFtpaList.orElseThrow()).isEmpty();
     }
 
 }
