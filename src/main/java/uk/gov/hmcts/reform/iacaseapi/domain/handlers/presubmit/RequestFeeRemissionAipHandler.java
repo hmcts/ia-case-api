@@ -31,7 +31,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMISSION_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SECTION17_DOCUMENT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SECTION20_DOCUMENT;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.TEMP_PREVIOUS_REMISSION_DETAILS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HelpWithFeesOption.WILL_PAY_FOR_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDecision.APPROVED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.clearPreviousRemissionCaseFields;
@@ -138,7 +137,6 @@ public class RequestFeeRemissionAipHandler implements PreSubmitCallbackHandler<A
                     "-----------RequestFeeRemissionAipHandler handle 222 previousRemissionDetails.size() {}",
                     previousRemissionDetails.size()
             );
-            asylumCase.write(TEMP_PREVIOUS_REMISSION_DETAILS, previousRemissionDetails);
             asylumCase.write(PREVIOUS_REMISSION_DETAILS, previousRemissionDetails);
         }
         asylumCase.write(IS_LATE_REMISSION_REQUEST, YesOrNo.YES);
@@ -217,7 +215,7 @@ public class RequestFeeRemissionAipHandler implements PreSubmitCallbackHandler<A
     private List<IdValue<RemissionDetails>> appendPreviousRemissionDetails(AsylumCase asylumCase) {
         List<IdValue<RemissionDetails>> previousRemissionDetails = Collections.emptyList();
 
-        Optional<List<IdValue<RemissionDetails>>> maybeExistingRemissionDetails = asylumCase.read(TEMP_PREVIOUS_REMISSION_DETAILS);
+        Optional<List<IdValue<RemissionDetails>>> maybeExistingRemissionDetails = asylumCase.read(PREVIOUS_REMISSION_DETAILS);
         final List<IdValue<RemissionDetails>> existingRemissionDetails = maybeExistingRemissionDetails.orElse(Collections.emptyList());
         log.info("-----------RequestFeeRemissionAipHandler appendPreviousRemissionDetails 111");
         log.info(

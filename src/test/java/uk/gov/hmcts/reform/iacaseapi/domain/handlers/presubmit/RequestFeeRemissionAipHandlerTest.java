@@ -46,7 +46,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMISSION_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SECTION17_DOCUMENT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SECTION20_DOCUMENT;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.TEMP_PREVIOUS_REMISSION_DETAILS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HelpWithFeesOption.WANT_TO_APPLY;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDecision.APPROVED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDecision.PARTIALLY_APPROVED;
@@ -208,7 +207,7 @@ class RequestFeeRemissionAipHandlerTest {
         when(asylumCase.read(HAS_PREVIOUS_REMISSION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.HU));
         when(asylumCase.read(REMISSION_OPTION, RemissionOption.class)).thenReturn(Optional.of(previousRemissionOption));
-        when(asylumCase.read(TEMP_PREVIOUS_REMISSION_DETAILS)).thenReturn(Optional.of(Collections.emptyList()));
+        when(asylumCase.read(PREVIOUS_REMISSION_DETAILS)).thenReturn(Optional.of(Collections.emptyList()));
         String feeAmount = "8000";
         String amountLeftToPay = "0";
         when(asylumCase.read(REMISSION_DECISION, RemissionDecision.class)).thenReturn(Optional.of(APPROVED));
@@ -243,7 +242,7 @@ class RequestFeeRemissionAipHandlerTest {
         when(asylumCase.read(HAS_PREVIOUS_REMISSION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.PA));
         when(asylumCase.read(REMISSION_OPTION, RemissionOption.class)).thenReturn(Optional.of(previousRemissionOption));
-        when(asylumCase.read(TEMP_PREVIOUS_REMISSION_DETAILS)).thenReturn(Optional.of(Collections.emptyList()));
+        when(asylumCase.read(PREVIOUS_REMISSION_DETAILS)).thenReturn(Optional.of(Collections.emptyList()));
         when(asylumCase.read(REMISSION_REQUESTED_BY, UserRoleLabel.class)).thenReturn(Optional.of(UserRoleLabel.CITIZEN));
         String feeAmount = "8000";
         String amountRemitted = "6000";
@@ -280,7 +279,7 @@ class RequestFeeRemissionAipHandlerTest {
         when(asylumCase.read(HAS_PREVIOUS_REMISSION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.EA));
         when(asylumCase.read(REMISSION_OPTION, RemissionOption.class)).thenReturn(Optional.of(previousRemissionOption));
-        when(asylumCase.read(TEMP_PREVIOUS_REMISSION_DETAILS)).thenReturn(Optional.of(Collections.emptyList()));
+        when(asylumCase.read(PREVIOUS_REMISSION_DETAILS)).thenReturn(Optional.of(Collections.emptyList()));
         String feeAmount = "8000";
         when(asylumCase.read(REMISSION_DECISION, RemissionDecision.class)).thenReturn(Optional.of(REJECTED));
         when(asylumCase.read(FEE_AMOUNT_GBP, String.class)).thenReturn(Optional.of(feeAmount));
@@ -314,7 +313,7 @@ class RequestFeeRemissionAipHandlerTest {
         when(asylumCase.read(HAS_PREVIOUS_REMISSION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.EU));
         when(asylumCase.read(REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.of(previousRemissionType));
-        when(asylumCase.read(TEMP_PREVIOUS_REMISSION_DETAILS)).thenReturn(Optional.of(Collections.emptyList()));
+        when(asylumCase.read(PREVIOUS_REMISSION_DETAILS)).thenReturn(Optional.of(Collections.emptyList()));
         String feeAmount = "8000";
         String amountLeftToPay = "0";
         when(asylumCase.read(REMISSION_DECISION, RemissionDecision.class)).thenReturn(Optional.of(APPROVED));
@@ -350,7 +349,7 @@ class RequestFeeRemissionAipHandlerTest {
         when(asylumCase.read(HAS_PREVIOUS_REMISSION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.HU));
         when(asylumCase.read(REMISSION_OPTION, RemissionOption.class)).thenReturn(Optional.of(previousRemissionOption));
-        when(asylumCase.read(TEMP_PREVIOUS_REMISSION_DETAILS)).thenReturn(Optional.of(Collections.emptyList()));
+        when(asylumCase.read(PREVIOUS_REMISSION_DETAILS)).thenReturn(Optional.of(Collections.emptyList()));
         String feeAmount = "8000";
         String amountLeftToPay = "0";
         when(asylumCase.read(REMISSION_DECISION, RemissionDecision.class)).thenReturn(Optional.of(APPROVED));
@@ -386,7 +385,7 @@ class RequestFeeRemissionAipHandlerTest {
         when(asylumCase.read(REMISSION_REQUESTED_BY, UserRoleLabel.class)).thenReturn(Optional.of(UserRoleLabel.CITIZEN));
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.HU));
         when(asylumCase.read(REMISSION_OPTION, RemissionOption.class)).thenReturn(Optional.of(I_WANT_TO_GET_HELP_WITH_FEES));
-        when(asylumCase.read(TEMP_PREVIOUS_REMISSION_DETAILS)).thenReturn(Optional.of(previousRemissionDetails));
+        when(asylumCase.read(PREVIOUS_REMISSION_DETAILS)).thenReturn(Optional.of(previousRemissionDetails));
 
         when(asylumCase.read(REMISSION_DECISION, RemissionDecision.class)).thenReturn(Optional.of(PARTIALLY_APPROVED));
         when(asylumCase.read(FEE_AMOUNT_GBP, String.class)).thenReturn(Optional.of("8000"));
@@ -403,7 +402,6 @@ class RequestFeeRemissionAipHandlerTest {
     List<IdValue<RemissionDetails>> assertRemissionAppended(RemissionDetails remissionDetails) {
         ArgumentCaptor<List<IdValue<RemissionDetails>>> captor = ArgumentCaptor.forClass(List.class);
         verify(asylumCase, times(1)).write(eq(PREVIOUS_REMISSION_DETAILS), captor.capture());
-        verify(asylumCase, times(1)).write(eq(TEMP_PREVIOUS_REMISSION_DETAILS), captor.capture());
         List<IdValue<RemissionDetails>> remissionDetailsList = captor.getValue();
         assertEquals(1, remissionDetailsList.size());
         RemissionDetails appendedRemissionDetails = remissionDetailsList.get(0).getValue();
@@ -447,7 +445,6 @@ class RequestFeeRemissionAipHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(callbackResponse.getData(), asylumCase);
         verify(asylumCase, never()).write(eq(PREVIOUS_REMISSION_DETAILS), any());
-        verify(asylumCase, never()).write(eq(TEMP_PREVIOUS_REMISSION_DETAILS), any());
         verify(asylumCase, times(1)).read(LATE_REMISSION_OPTION, RemissionOption.class);
         verify(asylumCase, times(1)).clear(ASYLUM_SUPPORT_REF_NUMBER);
         verify(asylumCase, times(1)).clear(HELP_WITH_FEES_OPTION);
@@ -472,7 +469,6 @@ class RequestFeeRemissionAipHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(callbackResponse.getData(), asylumCase);
         verify(asylumCase, never()).write(eq(PREVIOUS_REMISSION_DETAILS), any());
-        verify(asylumCase, never()).write(eq(TEMP_PREVIOUS_REMISSION_DETAILS), any());
         verify(asylumCase, times(1)).read(LATE_REMISSION_OPTION, RemissionOption.class);
         verify(asylumCase, never()).clear(ASYLUM_SUPPORT_REF_NUMBER);
         verify(asylumCase, never()).clear(HELP_WITH_FEES_OPTION);
@@ -654,7 +650,7 @@ class RequestFeeRemissionAipHandlerTest {
         when(asylumCase.read(HAS_PREVIOUS_REMISSION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         when(asylumCase.read(REMISSION_REQUESTED_BY, UserRoleLabel.class)).thenReturn(Optional.of(UserRoleLabel.CITIZEN));
         when(asylumCase.read(REMISSION_OPTION, RemissionOption.class)).thenReturn(Optional.of(ASYLUM_SUPPORT_FROM_HOME_OFFICE));
-        when(asylumCase.read(TEMP_PREVIOUS_REMISSION_DETAILS)).thenReturn(Optional.of(Collections.emptyList()));
+        when(asylumCase.read(PREVIOUS_REMISSION_DETAILS)).thenReturn(Optional.of(Collections.emptyList()));
         when(asylumCase.read(REMISSION_DECISION, RemissionDecision.class)).thenReturn(Optional.of(APPROVED));
         when(asylumCase.read(FEE_AMOUNT_GBP, String.class)).thenReturn(Optional.of("8000"));
         when(asylumCase.read(AMOUNT_REMITTED, String.class)).thenReturn(Optional.of("8000"));
@@ -664,7 +660,6 @@ class RequestFeeRemissionAipHandlerTest {
 
         assertEquals(response.getData(), asylumCase);
         verify(asylumCase, times(1)).write(eq(PREVIOUS_REMISSION_DETAILS), any());
-        verify(asylumCase, times(1)).write(eq(TEMP_PREVIOUS_REMISSION_DETAILS), any());
     }
 
     @Test
