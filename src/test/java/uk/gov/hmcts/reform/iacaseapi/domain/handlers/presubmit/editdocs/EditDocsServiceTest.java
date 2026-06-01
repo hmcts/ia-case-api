@@ -12,6 +12,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_APPELLANT_DOCUMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_APPELLANT_EVIDENCE_DOCUMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_APPELLANT_GROUNDS_DOCUMENTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_LIST;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_RESPONDENT_DECISION_DOCUMENT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_RESPONDENT_DOCUMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_RESPONDENT_EVIDENCE_DOCUMENTS;
@@ -25,7 +26,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -40,6 +43,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithDescription;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithMetadata;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.FtpaApplications;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit.editdocs.EditDocsAuditService;
@@ -409,6 +413,64 @@ class EditDocsServiceTest {
 
         assertThat(asylumCase.read(REASONS_FOR_APPEAL_DECISION)).isEmpty();
         assertThat(asylumCase.read(REASONS_FOR_APPEAL_DATE_UPLOADED)).isEmpty();
+    }
+
+    @Test
+    void shouldClearFtpaApplicationDateAndApplicantWhenAllDocumentsBecomeEmpty() {
+
+        given(editDocsAuditService.getUpdatedAndDeletedDocIdsForGivenField(
+                any(), any(), eq(FTPA_APPELLANT_DOCUMENTS)))
+                .willReturn(DOC_ID_LIST);
+
+        given(editDocsAuditService.getUpdatedAndDeletedDocIdsForGivenField(
+                any(), any(), eq(FTPA_RESPONDENT_DOCUMENTS)))
+                .willReturn(new ArrayList<>());
+
+        FtpaApplications ftpaApplication =
+                FtpaApplications.builder()
+                        .ftpaApplicant("appellant")
+                        .ftpaDecisionDate("2024-02-02")
+                        .build();
+
+        ftpaApplication.setFtpaOutOfTimeDocuments(
+                new ArrayList<>(DOC_ID_VALUE_LIST));
+        ftpaApplication.setFtpaGroundsDocuments(
+                new ArrayList<>());
+        ftpaApplication.setFtpaEvidenceDocuments(
+                new ArrayList<>());
+
+        ftpaApplication.setFtpaApplicationDate("2026-05-20");
+        ftpaApplication.setFtpaApplicant("appellant");
+
+        asylumCase.write(
+                FTPA_LIST,
+                List.of(new IdValue<>("1", ftpaApplication))
+        );
+
+        editDocsService.cleanUpOverviewTabDocs(
+                asylumCase,
+                asylumCase
+        );
+
+        Optional<List<IdValue<FtpaApplications>>> updatedFtpaList =
+                asylumCase.read(FTPA_LIST);
+
+        FtpaApplications updatedFtpaApplication =
+                updatedFtpaList.orElseThrow()
+                        .get(0)
+                        .getValue();
+
+        assertThat(updatedFtpaApplication.getFtpaOutOfTimeDocuments())
+                .isEmpty();
+        assertThat(updatedFtpaApplication.getFtpaGroundsDocuments())
+                .isEmpty();
+        assertThat(updatedFtpaApplication.getFtpaEvidenceDocuments())
+                .isEmpty();
+
+        assertThat(updatedFtpaApplication.getFtpaApplicationDate())
+                .isNull();
+        assertThat(updatedFtpaApplication.getFtpaApplicant())
+                .isNull();
     }
 
 }
