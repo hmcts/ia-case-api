@@ -1,28 +1,5 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOURNEY_TYPE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LEGAL_REPRESENTATIVE_DOCUMENTS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PREV_JOURNEY_TYPE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REASONS_FOR_APPEAL_DATE_UPLOADED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REASONS_FOR_APPEAL_DECISION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REASONS_FOR_APPEAL_DOCUMENTS;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -54,6 +31,30 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Stream;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOURNEY_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LEGAL_REPRESENTATIVE_DOCUMENTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PREV_JOURNEY_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REASONS_FOR_APPEAL_DATE_UPLOADED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REASONS_FOR_APPEAL_DECISION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REASONS_FOR_APPEAL_DOCUMENTS;
 
 @ExtendWith(MockitoExtension.class)
 public class PinInPostActivatedTest {
@@ -274,8 +275,8 @@ public class PinInPostActivatedTest {
         verify(asylumCase).write(eq(AsylumCaseFieldDefinition.SUBSCRIPTIONS), subscriptionCaptor.capture());
         List<IdValue<Subscriber>> actualSubscriptions = subscriptionCaptor.getValue();
         assertEquals(1, actualSubscriptions.size());
-        assertEquals(USER_ID, actualSubscriptions.get(0).getId());
-        Subscriber actualSubscriber = actualSubscriptions.get(0).getValue();
+        assertEquals(USER_ID, actualSubscriptions.getFirst().getId());
+        Subscriber actualSubscriber = actualSubscriptions.getFirst().getValue();
         assertEquals(SubscriberType.APPELLANT, actualSubscriber.getSubscriber());
         assertEquals(AUTH_USER_EMAIL, actualSubscriber.getEmail());
         assertEquals(YesOrNo.NO, actualSubscriber.getWantsEmail());
@@ -330,8 +331,8 @@ public class PinInPostActivatedTest {
         verify(asylumCase).write(eq(AsylumCaseFieldDefinition.SUBSCRIPTIONS), subscriptionCaptor.capture());
         List<IdValue<Subscriber>> actualSubscriptions = subscriptionCaptor.getValue();
         assertEquals(1, actualSubscriptions.size());
-        assertEquals(USER_ID, actualSubscriptions.get(0).getId());
-        Subscriber actualSubscriber = actualSubscriptions.get(0).getValue();
+        assertEquals(USER_ID, actualSubscriptions.getFirst().getId());
+        Subscriber actualSubscriber = actualSubscriptions.getFirst().getValue();
         assertEquals(SubscriberType.APPELLANT, actualSubscriber.getSubscriber());
         assertEquals(AUTH_USER_EMAIL, actualSubscriber.getEmail());
         assertEquals(wantsEmail, actualSubscriber.getWantsEmail());
@@ -375,8 +376,8 @@ public class PinInPostActivatedTest {
         verify(asylumCase).write(eq(AsylumCaseFieldDefinition.SUBSCRIPTIONS), subscriptionCaptor.capture());
         List<IdValue<Subscriber>> actualSubscriptions = subscriptionCaptor.getValue();
         assertEquals(1, actualSubscriptions.size());
-        assertEquals(USER_ID, actualSubscriptions.get(0).getId());
-        Subscriber actualSubscriber = actualSubscriptions.get(0).getValue();
+        assertEquals(USER_ID, actualSubscriptions.getFirst().getId());
+        Subscriber actualSubscriber = actualSubscriptions.getFirst().getValue();
         assertEquals(SubscriberType.APPELLANT, actualSubscriber.getSubscriber());
         assertEquals(AUTH_USER_EMAIL, actualSubscriber.getEmail());
         assertEquals(YesOrNo.YES, actualSubscriber.getWantsEmail());
