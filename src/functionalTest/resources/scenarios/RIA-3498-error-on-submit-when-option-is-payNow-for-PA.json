@@ -1,6 +1,6 @@
 {
   "description": "RIA-3498 Error on submit when option is payNow for PA AppealType.json",
-  "enabled": "false",
+  "disabled": "true",
   "request": {
     "uri": "/asylum/ccdAboutToStart",
     "credentials": "LegalRepresentative",
@@ -14,9 +14,9 @@
           "appealReferenceNumber": "PA/12345/2018",
           "appealType": "protection",
           "paAppealTypePaymentOption": "payNow"
-          }
         }
       }
+    }
   },
   "expectation": {
     "status": 200,

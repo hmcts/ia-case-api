@@ -1,6 +1,6 @@
 {
   "description": "RIA-2047-RIA-2694 Direction to legal rep to submit hearing requirements",
-  "enabled": "{$featureFlag.isSubmitHearingRequirementsEnabled}",
+  "disabled": "!{$featureFlag.isSubmitHearingRequirementsEnabled}",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",

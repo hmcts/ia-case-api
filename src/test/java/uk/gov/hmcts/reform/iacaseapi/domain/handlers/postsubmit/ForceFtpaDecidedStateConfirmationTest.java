@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -44,17 +43,11 @@ class ForceFtpaDecidedStateConfirmationTest {
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
-        assertThat(
-            callbackResponse.getConfirmationHeader().get())
-            .contains("# The appeal has been moved to the FTPA decided state");
+        assertTrue(callbackResponse.getConfirmationHeader().get().contains("# The appeal has been moved to the FTPA decided state"));
 
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("#### What happens next");
+        assertTrue(callbackResponse.getConfirmationBody().get().contains("#### What happens next"));
 
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("The appeal can now be progressed from the FTPA decided state.");
+        assertTrue(callbackResponse.getConfirmationBody().get().contains("The appeal can now be progressed from the FTPA decided state."));
     }
 
     @Test

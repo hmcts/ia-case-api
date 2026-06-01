@@ -57,9 +57,11 @@ class RecordRemissionDecisionConfirmationTest {
 
         assertThat(callbackResponse.getConfirmationHeader()).contains("# You have approved this remission application");
         assertThat(callbackResponse.getConfirmationBody())
-            .contains("#### What happens next\n\n"
-                      + "The appellant will be notified that you have approved this remission application. "
-                      + "The appeal will progress as usual.<br>");
+            .contains("""
+                      #### What happens next
+                      
+                      The appellant will be notified that you have approved this remission application. \
+                      The appeal will progress as usual.<br>""");
     }
 
     @Test
@@ -76,9 +78,11 @@ class RecordRemissionDecisionConfirmationTest {
 
         assertThat(callbackResponse.getConfirmationHeader()).contains("# You have partially approved this remission application");
         assertThat(callbackResponse.getConfirmationBody())
-            .contains("#### What happens next\n\n"
-                      + "The appellant will be notified that they need to pay the outstanding fee. "
-                      + "Once payment is made you will need to mark the appeal as paid.<br>");
+            .contains("""
+                      #### What happens next
+                      
+                      The appellant will be notified that they need to pay the outstanding fee. \
+                      Once payment is made you will need to mark the appeal as paid.<br>""");
     }
 
     @Test
@@ -95,8 +99,10 @@ class RecordRemissionDecisionConfirmationTest {
 
         assertThat(callbackResponse.getConfirmationHeader()).contains("# You have rejected this remission application");
         assertThat(callbackResponse.getConfirmationBody())
-            .contains("#### What happens next\n\n"
-                      + "The appellant will be notified that they must pay the full fee for this appeal.<br>");
+            .contains("""
+                      #### What happens next
+                      
+                      The appellant will be notified that they must pay the full fee for this appeal.<br>""");
     }
 
     @Test

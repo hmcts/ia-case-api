@@ -2,10 +2,15 @@ package uk.gov.hmcts.reform.iacaseapi.infrastructure.clients;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
+import java.util.Map;
+import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,12 +24,10 @@ import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
-
-import java.util.Map;
-import java.util.UUID;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -83,7 +86,7 @@ class CcdCaseAssignmentTest {
             )
         ).thenReturn(responseEntity);
 
-        when(responseEntity.getStatusCodeValue()).thenReturn(HttpStatus.CREATED.value());
+        when(responseEntity.getStatusCode()).thenReturn(HttpStatus.CREATED);
 
         ccdCaseAssignment.assignAccessToCase(callback);
 
@@ -142,7 +145,7 @@ class CcdCaseAssignmentTest {
             )
         ).thenReturn(responseEntity);
 
-        when(responseEntity.getStatusCodeValue()).thenReturn(HttpStatus.NO_CONTENT.value());
+        when(responseEntity.getStatusCode()).thenReturn(HttpStatus.NO_CONTENT);
     }
 
     @Test
@@ -163,7 +166,7 @@ class CcdCaseAssignmentTest {
             )
         ).thenReturn(responseEntity);
 
-        when(responseEntity.getStatusCodeValue()).thenReturn(HttpStatus.CREATED.value());
+        when(responseEntity.getStatusCode()).thenReturn(HttpStatus.CREATED);
 
         ccdCaseAssignment.applyNoc(callback);
 

@@ -10,18 +10,21 @@ import au.com.dius.pact.consumer.dsl.DslPart;
 import au.com.dius.pact.consumer.dsl.PactDslWithProvider;
 import au.com.dius.pact.consumer.junit5.PactConsumerTestExt;
 import au.com.dius.pact.consumer.junit5.PactTestFor;
-import au.com.dius.pact.core.model.RequestResponsePact;
+import au.com.dius.pact.core.model.V4Pact;
 import au.com.dius.pact.core.model.annotations.Pact;
 import au.com.dius.pact.core.model.annotations.PactFolder;
-import org.apache.http.HttpStatus;
+import org.apache.hc.core5.http.HttpStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
@@ -32,10 +35,12 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.ProfessionalUsersRet
 
 @ExtendWith(SpringExtension.class)
 @ExtendWith(PactConsumerTestExt.class)
+@ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @PactFolder("pacts")
 @TestPropertySource(locations = {"classpath:application.properties"})
 @PactTestFor(providerName = "referenceData_professionalExternalUsers", port = "8991")
+@MockitoSettings(strictness = Strictness.LENIENT)
 public class ProfessionalUsersConsumerTest {
 
     static final String AUTHORIZATION_HEADER = "Authorization";
@@ -44,9 +49,9 @@ public class ProfessionalUsersConsumerTest {
     static final String SERVICE_AUTH_TOKEN = "someServiceAuthToken";
     static final String IDAM_ID_OF_USER_CREATING_CASE = "0a5874a4-3f38-4bbd-ba4c";
 
-    @MockBean
+    @MockitoBean
     AuthTokenGenerator serviceAuthTokenGenerator;
-    @MockBean
+    @MockitoBean
     UserDetailsProvider userDetailsProvider;
     @Mock
     UserDetails userDetails;
@@ -70,7 +75,7 @@ public class ProfessionalUsersConsumerTest {
     }
 
     @Pact(provider = "referenceData_professionalExternalUsers", consumer = "ia_caseApi")
-    public RequestResponsePact generatePactFragmentForGetUserOrganisation(PactDslWithProvider builder) {
+    public V4Pact generatePactFragmentForGetUserOrganisation(PactDslWithProvider builder) {
         // @formatter:off
         return builder
             .given("Professional users exist for an Active organisation")
@@ -83,7 +88,7 @@ public class ProfessionalUsersConsumerTest {
             .willRespondWith()
             .body(buildOrganisationsResponsePactDsl())
             .status(HttpStatus.SC_OK)
-            .toPact();
+            .toPact(V4Pact.class);
     }
 
     @Test
@@ -91,7 +96,7 @@ public class ProfessionalUsersConsumerTest {
     public void verifyUserOrganisation() {
         ProfessionalUsersResponse usersResponse = professionalUsersRetriever.retrieve();
         assertThat(usersResponse, is(notNullValue()));
-        assertThat(usersResponse.getUsers().get(0).getUserIdentifier(), is("userId"));
+        assertThat(usersResponse.getUsers().getFirst().getUserIdentifier(), is("userId"));
     }
 
     protected DslPart buildOrganisationsResponsePactDsl() {

@@ -31,7 +31,7 @@
           ],
           "directionEditExplanation": "A notice of appeal has been lodged against this decision.",
           "directionEditDateDue": "{$TODAY+28}",
-          "directionEditParties" : "respondent"
+          "directionEditParties": "respondent"
         }
       }
     }
