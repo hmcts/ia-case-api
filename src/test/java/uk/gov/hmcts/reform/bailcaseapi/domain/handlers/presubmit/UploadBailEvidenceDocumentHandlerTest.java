@@ -167,7 +167,7 @@ class UploadBailEvidenceDocumentHandlerTest {
         List<IdValue<DocumentWithMetadata>> actualexistingEvidenceDocuments =
             existingEvidenceDocumentsCaptor
                 .getAllValues()
-                .get(0);
+                .getFirst();
 
         assertEquals(0, actualexistingEvidenceDocuments.size());
 

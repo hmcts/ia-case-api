@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.bailcaseapi.domain.utils;
 
 import static org.mockito.Mockito.*;
-import static org.mockito.MockitoAnnotations.openMocks;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.*;
 
 import java.util.List;
@@ -9,8 +8,11 @@ import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCase;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.CaseManagementLocation;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.CaseManagementLocationRefData;
@@ -21,6 +23,8 @@ import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.bailcaseapi.domain.handlers.presubmit.CaseManagementLocationService;
 import uk.gov.hmcts.reform.bailcaseapi.domain.service.LocationRefDataService;
 
+@MockitoSettings(strictness = Strictness.LENIENT)
+@ExtendWith(MockitoExtension.class)
 class HearingCentreUtilsTest {
 
     @Mock
@@ -37,7 +41,6 @@ class HearingCentreUtilsTest {
 
     @BeforeEach
     void setUp() {
-        openMocks(this);
         hearingCentre = HearingCentre.GLASGOW;
     }
 
@@ -123,7 +126,6 @@ class HearingCentreUtilsTest {
     void should_handle_null_epims_id_in_hearing_centre() {
         HearingCentre mockHearingCentre = mock(HearingCentre.class);
         when(mockHearingCentre.getEpimsId()).thenReturn(null);
-        when(mockHearingCentre.getValue()).thenReturn(HearingCentre.GLASGOW.getValue());
         when(bailCase.read(IS_BAILS_LOCATION_REFERENCE_DATA_ENABLED_FT, YesOrNo.class))
             .thenReturn(Optional.of(YesOrNo.YES));
         when(locationRefDataService.getCaseManagementLocationDynamicList())

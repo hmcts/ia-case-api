@@ -105,12 +105,12 @@ class ChangeDirectionDueMidEventTest {
 
         verify(bailCase, times(4)).write(bailExtractorCaptor.capture(), editableDirectionsCaptor.capture());
 
-        assertEquals(BAIL_DIRECTION_EDIT_EXPLANATION, bailExtractorCaptor.getAllValues().get(0));
+        assertEquals(BAIL_DIRECTION_EDIT_EXPLANATION, bailExtractorCaptor.getAllValues().getFirst());
         assertEquals(BAIL_DIRECTION_EDIT_PARTIES, bailExtractorCaptor.getAllValues().get(1));
         assertEquals(BAIL_DIRECTION_EDIT_DATE_DUE, bailExtractorCaptor.getAllValues().get(2));
         assertEquals(BAIL_DIRECTION_EDIT_DATE_SENT, bailExtractorCaptor.getAllValues().get(3));
 
-        assertEquals("explanation-2", editableDirectionsCaptor.getAllValues().get(0));
+        assertEquals("explanation-2", editableDirectionsCaptor.getAllValues().getFirst());
         assertEquals("Home Office", editableDirectionsCaptor.getAllValues().get(1));
         assertEquals("2020-11-01", editableDirectionsCaptor.getAllValues().get(2));
         assertEquals("2019-11-01", editableDirectionsCaptor.getAllValues().get(3));

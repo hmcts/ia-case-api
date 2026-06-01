@@ -12,17 +12,16 @@
         "replacements": {
           "currentUser": "Admin Officer",
           "uploadDocumentsSuppliedBy": "applicant",
-          "uploadDocuments":
-          [
+          "uploadDocuments": [
             {
-              "id":"1",
-              "value":{
-                "document":{
+              "id": "1",
+              "value": {
+                "document": {
                   "document_url": "http:\/\/dm-store:8080\/documents\/aaaaaaaa-bbbb-1ccc-8ddd-eeeeeeeeeeee",
                   "document_binary_url": "http://dm-store:8080/documents/aaaaaaaa-bbbb-1ccc-8ddd-eeeeeeeeeeee\/binary",
                   "document_filename": "Upload-document-test.pdf"
                 },
-                "description":"Upload document event"
+                "description": "Upload document event"
               }
             }
           ]
@@ -41,26 +40,26 @@
         "currentCaseStateVisibleToHomeOffice": "applicationSubmitted",
         "currentCaseStateVisibleToAdminOfficer": "applicationSubmitted",
         "currentCaseStateVisibleToLegalRepresentative": "applicationSubmitted",
-        "applicantDocumentsWithMetadata":
-        [
+        "applicantDocumentsWithMetadata": [
           {
-            "id":"1",
-            "value":{
-              "document":{
+            "id": "1",
+            "value": {
+              "document": {
                 "document_url": "$/http:\/\/dm-store:8080\/documents\/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/",
                 "document_filename": "Upload-document-test.pdf",
                 "document_binary_url": "$/http://dm-store:8080/documents/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\/binary/"
               },
-              "description":"Upload document event",
+              "description": "Upload document event",
               "dateUploaded": "{$TODAY}",
-              "tag":"uploadDocument",
+              "tag": "uploadDocument",
               "suppliedBy": null
             }
           }
         ],
         "notificationsSent": [
-          { "id": "1111_BAIL_UPLOADED_DOCUMENTS_HOME_OFFICE",
-            "value":"$/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/"
+          {
+            "id": "1111_BAIL_UPLOADED_DOCUMENTS_HOME_OFFICE",
+            "value": "$/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/"
           }
         ]
       }

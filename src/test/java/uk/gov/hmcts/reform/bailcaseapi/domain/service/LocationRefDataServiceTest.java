@@ -83,8 +83,8 @@ class LocationRefDataServiceTest {
         DynamicList dynamicList = locationRefDataService.getHearingLocationsDynamicList();
 
         assertEquals(1, dynamicList.getListItems().size());
-        assertEquals("Manchester", dynamicList.getListItems().get(0).getLabel());
-        assertEquals("1234", dynamicList.getListItems().get(0).getCode());
+        assertEquals("Manchester", dynamicList.getListItems().getFirst().getLabel());
+        assertEquals("1234", dynamicList.getListItems().getFirst().getCode());
     }
 
     @Test
@@ -93,8 +93,8 @@ class LocationRefDataServiceTest {
         DynamicList dynamicList = locationRefDataService.getCaseManagementLocationsDynamicList();
 
         assertEquals(1, dynamicList.getListItems().size());
-        assertEquals("Birmingham", dynamicList.getListItems().get(0).getLabel());
-        assertEquals("3344", dynamicList.getListItems().get(0).getCode());
+        assertEquals("Birmingham", dynamicList.getListItems().getFirst().getLabel());
+        assertEquals("3344", dynamicList.getListItems().getFirst().getCode());
     }
 
     @Test
@@ -152,8 +152,8 @@ class LocationRefDataServiceTest {
         DynamicList result = locationRefDataService.getCaseManagementLocationDynamicList();
 
         assertEquals(1, result.getListItems().size());
-        assertEquals("London", result.getListItems().get(0).getLabel());
-        assertEquals("1111", result.getListItems().get(0).getCode());
+        assertEquals("London", result.getListItems().getFirst().getLabel());
+        assertEquals("1111", result.getListItems().getFirst().getCode());
     }
 
     @Test

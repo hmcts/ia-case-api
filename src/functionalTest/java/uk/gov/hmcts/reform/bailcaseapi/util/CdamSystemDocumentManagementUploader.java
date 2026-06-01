@@ -50,7 +50,7 @@ public class CdamSystemDocumentManagementUploader {
                 Collections.singletonList(file)
             );
 
-        uk.gov.hmcts.reform.ccd.document.am.model.Document uploadedDocument = uploadResponse.getDocuments().get(0);
+        uk.gov.hmcts.reform.ccd.document.am.model.Document uploadedDocument = uploadResponse.getDocuments().getFirst();
 
         return new Document(
             uploadedDocument.links.self.href,

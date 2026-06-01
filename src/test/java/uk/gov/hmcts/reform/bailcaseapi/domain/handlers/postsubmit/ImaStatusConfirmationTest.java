@@ -2,9 +2,7 @@ package uk.gov.hmcts.reform.bailcaseapi.domain.handlers.postsubmit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 
@@ -47,8 +45,12 @@ class ImaStatusConfirmationTest {
         assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains(
-                "## What happens next\n\n"
-                + "No further action is required.\n\n");
+                """
+                ## What happens next
+                
+                No further action is required.
+                
+                """);
 
     }
 

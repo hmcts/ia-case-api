@@ -42,10 +42,12 @@ public class UpdateInterpreterBookingStatusConfirmationTest {
         assertEquals("# Booking statuses have been updated",
             callbackResponse.getConfirmationHeader().get());
 
-        String body = "#### What happens next\n\n"
-                      + "Ensure the "
-                      + "[interpreter details](/case/IA/Bail/1234/trigger/updateInterpreterDetails)"
-                      + " are updated.";
+        String body = """
+                      #### What happens next
+                      
+                      Ensure the \
+                      [interpreter details](/case/IA/Bail/1234/trigger/updateInterpreterDetails)\
+                       are updated.""";
 
         assertEquals(body, callbackResponse.getConfirmationBody().get());
     }

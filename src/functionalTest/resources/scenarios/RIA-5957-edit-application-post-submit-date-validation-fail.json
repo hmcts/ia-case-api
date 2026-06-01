@@ -17,7 +17,9 @@
   },
   "expectation": {
     "status": 200,
-    "errors": ["The date must not be a future date."],
+    "errors": [
+      "The date must not be a future date."
+    ],
     "caseData": {
       "template": "minimal-application-submitted.json",
       "replacements": {

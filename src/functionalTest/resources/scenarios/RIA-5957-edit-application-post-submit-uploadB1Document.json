@@ -10,8 +10,7 @@
       "caseData": {
         "template": "minimal-application-submitted.json",
         "replacements": {
-          "uploadB1FormDocs":
-          [
+          "uploadB1FormDocs": [
             {
               "id": "2",
               "value": {
@@ -20,7 +19,7 @@
                   "document_binary_url": "http://dm-store:8080/documents/aaaaaaaa-bbbb-1ccc-8ddd-eeeeeeeeeeee\/binary",
                   "document_filename": "B1.PDF"
                 },
-                "description":"test b1 description"
+                "description": "test b1 description"
               }
             }
           ]
@@ -35,8 +34,7 @@
       "template": "minimal-application-submitted.json",
       "replacements": {
         "interpreterLanguages": null,
-        "uploadB1FormDocs":
-        [
+        "uploadB1FormDocs": [
           {
             "id": "2",
             "value": {
@@ -45,7 +43,7 @@
                 "document_binary_url": "$/http://dm-store:8080/documents/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\/binary/",
                 "document_filename": "B1.PDF"
               },
-              "description":"test b1 description"
+              "description": "test b1 description"
             }
           }
         ],
@@ -82,8 +80,10 @@
           }
         ],
         "notificationsSent": [
-          {"id": "1111_BAIL_APPLICATION_EDITED_AND_SUBMITTED_HOME_OFFICE",
-            "value":"$/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/"}
+          {
+            "id": "1111_BAIL_APPLICATION_EDITED_AND_SUBMITTED_HOME_OFFICE",
+            "value": "$/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/"
+          }
         ]
       }
     }

@@ -20,7 +20,7 @@ public class ResourceLoader {
             io = ResourceLoader.class.getClassLoader().getResourceAsStream(filePath);
 
             if (io == null) {
-                throw new IllegalArgumentException(String.format("Could not find resource in path %s", filePath));
+                throw new IllegalArgumentException("Could not find resource in path %s".formatted(filePath));
             } else {
                 allBytes = io.readAllBytes();
             }

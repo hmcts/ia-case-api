@@ -25,9 +25,11 @@ public class EditBailApplicationAfterSubmitConfirmation implements PostSubmitCal
             new PostSubmitCallbackResponse();
 
         postSubmitResponse.setConfirmationBody(
-            "### What happens next\n\n"
-            + "Both parties have been notified. The new details will be used on all future correspondence and"
-            + " documents."
+            """
+            ### What happens next
+            
+            Both parties have been notified. The new details will be used on all future correspondence and\
+             documents."""
         );
 
         postSubmitResponse.setConfirmationHeader("# Your application details have been updated");

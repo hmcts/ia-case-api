@@ -26,8 +26,8 @@
       "template": "minimal-application-make-new-application.json",
       "replacements": {
         "applicationSubmittedBy": "Legal Representative",
-        "legalRepEmail":"ialegalreporgcreator12@mailnesia.com",
-        "legalRepCompany":"ia-legal-rep-org777",
+        "legalRepEmail": "ialegalreporgcreator12@mailnesia.com",
+        "legalRepCompany": "ia-legal-rep-org777",
         "isAdmin": "No",
         "isLegalRep": "Yes",
         "isLegallyRepresentedForFlag": "Yes"

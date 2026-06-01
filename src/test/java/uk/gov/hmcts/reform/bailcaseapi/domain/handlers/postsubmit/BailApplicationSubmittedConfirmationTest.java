@@ -3,7 +3,8 @@ package uk.gov.hmcts.reform.bailcaseapi.domain.handlers.postsubmit;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -13,7 +14,9 @@ import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.bailcaseapi.domain.UserDetailsHelper;
@@ -30,6 +33,7 @@ import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ref.OrganisationEntityRes
 import uk.gov.hmcts.reform.bailcaseapi.infrastructure.clients.CcdCaseAssignment;
 import uk.gov.hmcts.reform.bailcaseapi.infrastructure.clients.ProfessionalOrganisationRetriever;
 
+@ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 public class BailApplicationSubmittedConfirmationTest {
 
@@ -133,8 +137,10 @@ public class BailApplicationSubmittedConfirmationTest {
         assertThat(response.getConfirmationHeader().isPresent());
 
         assertThat(response.getConfirmationBody().get()).contains(
-            "### What happens next\n\n"
-                + "All parties will be notified that the application has been submitted.");
+            """
+            ### What happens next
+            
+            All parties will be notified that the application has been submitted.""");
     }
 
     @Test

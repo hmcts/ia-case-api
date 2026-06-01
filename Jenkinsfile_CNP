@@ -99,9 +99,16 @@ withPipeline(type, product, component) {
   disableLegacyDeployment()
   loadVaultSecrets(secrets)
 
-  afterSuccess('functionalTest:preview') {
+  afterAlways('functionalTest:preview') {
+    publishHTML([
+      allowMissing         : true,
+      alwaysLinkToLastBuild: true,
+      keepAll              : true,
+      reportDir            : "build/reports/tests/functional",
+      reportFiles          : 'index.html',
+      reportName           : 'Functional Test Report'
+    ])
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
-    steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/**/*'
   }
 
   afterSuccess('functionalTest:aat') {

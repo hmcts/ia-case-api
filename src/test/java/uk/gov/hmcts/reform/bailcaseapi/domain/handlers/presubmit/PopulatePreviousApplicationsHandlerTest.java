@@ -99,7 +99,7 @@ public class PopulatePreviousApplicationsHandlerTest {
         verify(bailCase, times(1))
             .write(eq(BailCaseFieldDefinition.PREVIOUS_APPLICATION_LIST), previousApplicationListCaptor.capture());
 
-        DynamicList previousApplications = previousApplicationListCaptor.getAllValues().get(0);
+        DynamicList previousApplications = previousApplicationListCaptor.getAllValues().getFirst();
         assertTrue(previousApplications.getValue().getLabel().contains("Ended 20-06-2022"));
     }
 
@@ -116,7 +116,7 @@ public class PopulatePreviousApplicationsHandlerTest {
         verify(bailCase, times(1))
             .write(eq(BailCaseFieldDefinition.PREVIOUS_APPLICATION_LIST), previousApplicationListCaptor.capture());
 
-        DynamicList previousApplications = previousApplicationListCaptor.getAllValues().get(0);
+        DynamicList previousApplications = previousApplicationListCaptor.getAllValues().getFirst();
         assertTrue(previousApplications.getValue().getLabel().contains("Decided 20-06-2022"));
     }
 

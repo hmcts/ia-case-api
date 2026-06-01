@@ -2,12 +2,12 @@ package uk.gov.hmcts.reform.bailcaseapi.consumer.ccd;
 
 import au.com.dius.pact.consumer.dsl.PactDslWithProvider;
 import au.com.dius.pact.consumer.junit5.PactTestFor;
-import au.com.dius.pact.core.model.RequestResponsePact;
+import au.com.dius.pact.core.model.V4Pact;
 import au.com.dius.pact.core.model.annotations.Pact;
 import java.io.IOException;
 
 import com.google.common.collect.ImmutableMap;
-import org.apache.http.HttpStatus;
+import org.apache.hc.core5.http.HttpStatus;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.TestPropertySource;
@@ -18,7 +18,7 @@ import org.springframework.test.context.TestPropertySource;
 public class CcdCaseAssignmentConsumerTest extends CcdCaseAssignmentProviderBaseTest {
 
     @Pact(provider = "ccdDataStoreAPI_caseAssignedUserRoles", consumer = "bail_caseApi")
-    public RequestResponsePact generatePactFragmentForRemove(PactDslWithProvider builder) throws IOException {
+    public V4Pact generatePactFragmentForRemove(PactDslWithProvider builder) throws IOException {
         // @formatter:off
         return builder
             .given("A User Role exists for a Case")
@@ -31,7 +31,7 @@ public class CcdCaseAssignmentConsumerTest extends CcdCaseAssignmentProviderBase
             .willRespondWith()
             .headers(ImmutableMap.<String, String>builder().put(HttpHeaders.CONNECTION, "close").build())
             .status(HttpStatus.SC_OK)
-            .toPact();
+            .toPact(V4Pact.class);
     }
 
     @Test

@@ -10,9 +10,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -26,14 +27,15 @@ import uk.gov.hmcts.reform.bailcaseapi.infrastructure.clients.CcdSupplementaryUp
 
 @ExtendWith(SpringExtension.class)
 @ExtendWith(PactConsumerTestExt.class)
+@ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @PactFolder("pacts")
 @TestPropertySource(locations = {"classpath:application.properties"})
 public class CcdSupplementaryProviderBaseTest {
 
-    @MockBean
+    @MockitoBean
     AuthTokenGenerator serviceAuthTokenGenerator;
-    @MockBean
+    @MockitoBean
     UserDetailsProvider userDetailsProvider;
     @Value("${core_case_data_supplementary_api_url}")
     String ccdUrl;

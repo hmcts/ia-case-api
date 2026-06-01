@@ -14,7 +14,9 @@
   },
   "expectation": {
     "status": 200,
-    "errors": ["Bail Summary has already been uploaded to this case."],
+    "errors": [
+      "Bail Summary has already been uploaded to this case."
+    ],
     "caseData": {
       "template": "minimal-application-started.json"
     }

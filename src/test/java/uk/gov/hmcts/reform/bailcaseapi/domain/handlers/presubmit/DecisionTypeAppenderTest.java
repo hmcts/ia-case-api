@@ -493,7 +493,7 @@ class DecisionTypeAppenderTest {
                 "some-old-type",
                 previousOldSignedDecisionDocument));
         List<IdValue<PreviousDecisionDetails>> idValueStoredPrevDecisionDetails = new ArrayList<>();
-        idValueStoredPrevDecisionDetails.add(new IdValue<>("1", storedPrevDecisionDetails.get(0)));
+        idValueStoredPrevDecisionDetails.add(new IdValue<>("1", storedPrevDecisionDetails.getFirst()));
         when(bailCase.read(PREVIOUS_DECISION_DETAILS)).thenReturn(Optional.of(idValueStoredPrevDecisionDetails));
 
         decisionTypeAppender.handle(ABOUT_TO_SUBMIT, callback);

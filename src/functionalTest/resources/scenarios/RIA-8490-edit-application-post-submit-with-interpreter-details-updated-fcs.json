@@ -47,7 +47,8 @@
           "fcsInterpreterYesNo": "Yes",
           "hasFinancialCondSupporter": "Yes",
           "fcs1InterpreterLanguageCategory": [
-            "signLanguageInterpreter","spokenLanguageInterpreter"
+            "signLanguageInterpreter",
+            "spokenLanguageInterpreter"
           ]
         }
       }
@@ -64,7 +65,8 @@
         "fcsInterpreterYesNo": "Yes",
         "hasFinancialCondSupporter": "Yes",
         "fcs1InterpreterLanguageCategory": [
-          "signLanguageInterpreter","spokenLanguageInterpreter"
+          "signLanguageInterpreter",
+          "spokenLanguageInterpreter"
         ],
         "fcs1InterpreterSignLanguage": {
           "languageRefData": {

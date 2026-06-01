@@ -9,7 +9,6 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import uk.gov.hmcts.reform.bailcaseapi.infrastructure.clients.IdamApi;
 import uk.gov.hmcts.reform.bailcaseapi.infrastructure.clients.model.idam.Token;
-import uk.gov.hmcts.reform.bailcaseapi.infrastructure.clients.model.idam.UserInfo;
 import uk.gov.hmcts.reform.bailcaseapi.infrastructure.security.idam.IdentityManagerResponseException;
 
 @Service

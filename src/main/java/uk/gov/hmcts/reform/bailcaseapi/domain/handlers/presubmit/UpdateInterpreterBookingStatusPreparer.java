@@ -254,8 +254,7 @@ public class UpdateInterpreterBookingStatusPreparer implements PreSubmitCallback
     }
 
     private String formatBookingDetails(String fullName, String party, String language) {
-        return String.format(
-            "%s - %s - %s",
+        return "%s - %s - %s".formatted(
             fullName,
             party,
             language

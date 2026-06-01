@@ -156,7 +156,7 @@ class UploadB1DocumentHandlerTest {
         List<IdValue<DocumentWithMetadata>> actualExistingApplicantDocuments =
             existingApplicantDocumentsCaptor
                 .getAllValues()
-                .get(0);
+                .getFirst();
 
         assertEquals(0, actualExistingApplicantDocuments.size());
 

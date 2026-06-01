@@ -9,19 +9,18 @@
       "caseData": {
         "template": "minimal-application-started.json",
         "replacements": {
-          "applicantDocumentsWithMetadata":
-          [
+          "applicantDocumentsWithMetadata": [
             {
-              "id":"1",
-              "value":{
-                "document":{
+              "id": "1",
+              "value": {
+                "document": {
                   "document_url": "http://dm-store:8080/documents/1488f4de-c9fe-4f3e-a6b6-ee032ca759c1",
                   "document_binary_url": "http://dm-store:8080/documents/1488f4de-c9fe-4f3e-a6b6-ee032ca759c1/binary",
                   "document_filename": "application-submission.pdf"
                 },
-                "description":"updated description for applicant doc",
+                "description": "updated description for applicant doc",
                 "dateUploaded": "{$TODAY}",
-                "tag":"applicationSubmission",
+                "tag": "applicationSubmission",
                 "suppliedBy": null
               }
             }
@@ -36,19 +35,18 @@
     "caseData": {
       "template": "minimal-application-started.json",
       "replacements": {
-        "applicantDocumentsWithMetadata":
-        [
+        "applicantDocumentsWithMetadata": [
           {
-            "id":"1",
-            "value":{
-              "document":{
+            "id": "1",
+            "value": {
+              "document": {
                 "document_url": "http://dm-store:8080/documents/1488f4de-c9fe-4f3e-a6b6-ee032ca759c1",
                 "document_binary_url": "http://dm-store:8080/documents/1488f4de-c9fe-4f3e-a6b6-ee032ca759c1/binary",
                 "document_filename": "application-submission.pdf"
               },
-              "description":"updated description for applicant doc",
+              "description": "updated description for applicant doc",
               "dateUploaded": "{$TODAY}",
-              "tag":"applicationSubmission",
+              "tag": "applicationSubmission",
               "suppliedBy": null
             }
           }

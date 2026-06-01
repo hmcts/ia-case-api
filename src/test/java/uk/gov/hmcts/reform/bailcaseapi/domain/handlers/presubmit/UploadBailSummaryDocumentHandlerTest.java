@@ -175,7 +175,7 @@ public class UploadBailSummaryDocumentHandlerTest {
         List<IdValue<DocumentWithMetadata>> actualExistingSummaryDocuments =
             existingBailSummaryDocumentsCaptor
                 .getAllValues()
-                .get(0);
+                .getFirst();
 
         assertEquals(0, actualExistingSummaryDocuments.size());
 

@@ -103,7 +103,7 @@ class ChangeDirectionDueDatePreparerTest {
 
         assertEquals(
             BAIL_DIRECTION_LIST,
-            bailExtractorCaptor.getAllValues().get(0)
+            bailExtractorCaptor.getAllValues().getFirst()
         );
 
         DynamicList expectedDynamicList = new DynamicList(new Value("Direction 2", "Direction 2"),

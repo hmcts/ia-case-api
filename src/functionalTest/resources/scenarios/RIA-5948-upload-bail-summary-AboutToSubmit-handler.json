@@ -10,8 +10,7 @@
       "caseData": {
         "template": "minimal-application-started.json",
         "replacements": {
-          "uploadBailSummaryDocs":
-          [
+          "uploadBailSummaryDocs": [
             {
               "id": "1",
               "value": {
@@ -20,7 +19,7 @@
                   "document_binary_url": "http://dm-store:8080/documents/aaaaaaaa-bbbb-1ccc-8ddd-eeeeeeeeeeee\/binary",
                   "document_filename": "bail-summary.PDF"
                 },
-                "description":"test bail summary description"
+                "description": "test bail summary description"
               }
             }
           ]
@@ -39,8 +38,7 @@
         "currentCaseStateVisibleToHomeOffice": "applicationSubmitted",
         "currentCaseStateVisibleToAdminOfficer": "applicationSubmitted",
         "currentCaseStateVisibleToLegalRepresentative": "applicationSubmitted",
-        "homeOfficeDocumentsWithMetadata":
-        [
+        "homeOfficeDocumentsWithMetadata": [
           {
             "id": "1",
             "value": {
@@ -49,16 +47,17 @@
                 "document_binary_url": "$/http://dm-store:8080/documents/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\/binary/",
                 "document_filename": "bail-summary.PDF"
               },
-              "description":"test bail summary description",
+              "description": "test bail summary description",
               "dateUploaded": "{$TODAY}",
-              "tag":"uploadBailSummary",
+              "tag": "uploadBailSummary",
               "suppliedBy": null
             }
           }
         ],
         "notificationsSent": [
-          { "id": "1111_BAIL_SUMMARY_UPLOADED_ADMIN_OFFICER",
-            "value":"$/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/"
+          {
+            "id": "1111_BAIL_SUMMARY_UPLOADED_ADMIN_OFFICER",
+            "value": "$/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/"
           }
         ]
       }

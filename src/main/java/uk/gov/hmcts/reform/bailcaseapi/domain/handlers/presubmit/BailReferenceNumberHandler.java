@@ -49,7 +49,7 @@ public class BailReferenceNumberHandler implements PreSubmitCallbackHandler<Bail
 
         Optional<String> existingBailReferenceNumber = bailCase.read(BAIL_REFERENCE_NUMBER);
 
-        if (!existingBailReferenceNumber.isPresent() || existingBailReferenceNumber.get().equals("DRAFT")) {
+        if (existingBailReferenceNumber.isEmpty() || existingBailReferenceNumber.get().equals("DRAFT")) {
 
             long caseId = callback.getCaseDetails().getId();
 

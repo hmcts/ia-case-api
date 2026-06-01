@@ -1,17 +1,17 @@
 package uk.gov.hmcts.reform.bailcaseapi.consumer.ccd;
 
-import static io.pactfoundation.consumer.dsl.LambdaDsl.newJsonBody;
+import static au.com.dius.pact.consumer.dsl.LambdaDsl.newJsonBody;
 import static java.util.Collections.singletonMap;
 
 import au.com.dius.pact.consumer.dsl.DslPart;
 import au.com.dius.pact.consumer.dsl.PactDslWithProvider;
 import au.com.dius.pact.consumer.junit5.PactTestFor;
-import au.com.dius.pact.core.model.RequestResponsePact;
+import au.com.dius.pact.core.model.V4Pact;
 import au.com.dius.pact.core.model.annotations.Pact;
 import com.google.common.collect.Maps;
 import java.io.IOException;
 import java.util.Map;
-import org.apache.http.HttpStatus;
+import org.apache.hc.core5.http.HttpStatus;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.TestPropertySource;
 
@@ -21,7 +21,7 @@ import org.springframework.test.context.TestPropertySource;
 public class CcdSupplementaryConsumerTest extends CcdSupplementaryProviderBaseTest {
 
     @Pact(provider = "ccdDataStoreAPI_supplementaryUpdate", consumer = "bail_caseApi")
-    public RequestResponsePact generatePactFragmentForSupplementaryUpdate(PactDslWithProvider builder)
+    public V4Pact generatePactFragmentForSupplementaryUpdate(PactDslWithProvider builder)
         throws IOException {
 
         Map<String, Map<String, Object>> payloadData = Maps.newHashMap();
@@ -41,7 +41,7 @@ public class CcdSupplementaryConsumerTest extends CcdSupplementaryProviderBaseTe
             .willRespondWith()
             .body(buildSupplementaryDataResponseDsl())
             .status(HttpStatus.SC_OK)
-            .toPact();
+            .toPact(V4Pact.class);
     }
 
     @Test

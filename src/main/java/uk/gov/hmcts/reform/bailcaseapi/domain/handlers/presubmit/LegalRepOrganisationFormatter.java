@@ -105,7 +105,7 @@ public class LegalRepOrganisationFormatter implements PreSubmitCallbackHandler<B
             ? Collections.emptyList() : organisationEntityResponse.getContactInformation();
 
         if (!addresses.isEmpty()) {
-            LegRepAddressUk legRepAddressUk = addresses.get(0);
+            LegRepAddressUk legRepAddressUk = addresses.getFirst();
             addressUk = new AddressUK(
                 legRepAddressUk.getAddressLine1() == null ? "" : legRepAddressUk.getAddressLine1(),
                 legRepAddressUk.getAddressLine2() == null ? "" : legRepAddressUk.getAddressLine2(),

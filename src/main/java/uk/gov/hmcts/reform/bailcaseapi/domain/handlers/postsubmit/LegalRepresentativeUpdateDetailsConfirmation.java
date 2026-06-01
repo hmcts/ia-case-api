@@ -32,8 +32,11 @@ public class LegalRepresentativeUpdateDetailsConfirmation implements PostSubmitC
 
         postSubmitResponse.setConfirmationHeader("# You've updated the legal representative's details");
         postSubmitResponse.setConfirmationBody(
-            "#### What happens next\n\nThe service will be updated. The new details will be used on all "
-                + "future correspondence and documents.<br />"
+            """
+            #### What happens next
+            
+            The service will be updated. The new details will be used on all \
+            future correspondence and documents.<br />"""
         );
 
         return postSubmitResponse;

@@ -10,53 +10,50 @@
       "caseData": {
         "template": "minimal-application-started.json",
         "replacements": {
-          "applicantDocumentsWithMetadata":
-          [
+          "applicantDocumentsWithMetadata": [
             {
-              "id":"1",
-              "value":{
-                "document":{
+              "id": "1",
+              "value": {
+                "document": {
                   "document_url": "http://dm-store:8080/documents/1488f4de-c9fe-4f3e-a6b6-ee032ca759c1",
                   "document_binary_url": "http://dm-store:8080/documents/1488f4de-c9fe-4f3e-a6b6-ee032ca759c1/binary",
                   "document_filename": "application-submission.pdf"
                 },
-                "description":"updated description for applicant doc",
+                "description": "updated description for applicant doc",
                 "dateUploaded": "{$TODAY}",
-                "tag":"applicationSubmission",
+                "tag": "applicationSubmission",
                 "suppliedBy": null
               }
             }
           ],
-          "homeOfficeDocumentsWithMetadata":
-          [
+          "homeOfficeDocumentsWithMetadata": [
             {
-              "id":"1",
-              "value":{
-                "document":{
+              "id": "1",
+              "value": {
+                "document": {
                   "document_url": "http://dm-store:8080/documents/1488f4de-c9fe-4f3e-a6b6-ee032ca759c2",
                   "document_binary_url": "http://dm-store:8080/documents/1488f4de-c9fe-4f3e-a6b6-ee032ca759c2/binary",
                   "document_filename": "Upload-bail-summary.pdf"
                 },
-                "description":"updated description for home office doc",
+                "description": "updated description for home office doc",
                 "dateUploaded": "{$TODAY}",
-                "tag":"uploadBailSummary",
+                "tag": "uploadBailSummary",
                 "suppliedBy": null
               }
             }
           ],
-          "tribunalDocumentsWithMetadata":
-          [
+          "tribunalDocumentsWithMetadata": [
             {
-              "id":"1",
-              "value":{
-                "document":{
+              "id": "1",
+              "value": {
+                "document": {
                   "document_url": "http://dm-store:8080/documents/1488f4de-c9fe-4f3e-a6b6-ee032ca759c3",
                   "document_binary_url": "http://dm-store:8080/documents/1488f4de-c9fe-4f3e-a6b6-ee032ca759c3/binary",
                   "document_filename": "Upload-signed-decision-notice.pdf"
                 },
-                "description":"updated description for tribunal doc",
+                "description": "updated description for tribunal doc",
                 "dateUploaded": "{$TODAY}",
-                "tag":"signedDecisionNotice",
+                "tag": "signedDecisionNotice",
                 "suppliedBy": null
               }
             }
@@ -66,53 +63,50 @@
       "caseDataBefore": {
         "template": "minimal-application-started.json",
         "replacements": {
-          "applicantDocumentsWithMetadata":
-          [
+          "applicantDocumentsWithMetadata": [
             {
-              "id":"1",
-              "value":{
-                "document":{
+              "id": "1",
+              "value": {
+                "document": {
                   "document_url": "http://dm-store:8080/documents/1488f4de-c9fe-4f3e-a6b6-ee032ca759c1",
                   "document_binary_url": "http://dm-store:8080/documents/1488f4de-c9fe-4f3e-a6b6-ee032ca759c1/binary",
                   "document_filename": "application-submission.pdf"
                 },
-                "description":"",
+                "description": "",
                 "dateUploaded": "{$TODAY}",
-                "tag":"applicationSubmission",
+                "tag": "applicationSubmission",
                 "suppliedBy": null
               }
             }
           ],
-          "homeOfficeDocumentsWithMetadata":
-          [
+          "homeOfficeDocumentsWithMetadata": [
             {
-              "id":"1",
-              "value":{
-                "document":{
+              "id": "1",
+              "value": {
+                "document": {
                   "document_url": "http://dm-store:8080/documents/1488f4de-c9fe-4f3e-a6b6-ee032ca759c2",
                   "document_binary_url": "http://dm-store:8080/documents/1488f4de-c9fe-4f3e-a6b6-ee032ca759c2/binary",
                   "document_filename": "Upload-bail-summary.pdf"
                 },
-                "description":"",
+                "description": "",
                 "dateUploaded": "{$TODAY}",
-                "tag":"uploadBailSummary",
+                "tag": "uploadBailSummary",
                 "suppliedBy": null
               }
             }
           ],
-          "tribunalDocumentsWithMetadata":
-          [
+          "tribunalDocumentsWithMetadata": [
             {
-              "id":"1",
-              "value":{
-                "document":{
+              "id": "1",
+              "value": {
+                "document": {
                   "document_url": "http://dm-store:8080/documents/1488f4de-c9fe-4f3e-a6b6-ee032ca759c3",
                   "document_binary_url": "http://dm-store:8080/documents/1488f4de-c9fe-4f3e-a6b6-ee032ca759c3/binary",
                   "document_filename": "Upload-signed-decision-notice.pdf"
                 },
-                "description":"",
+                "description": "",
                 "dateUploaded": "{$TODAY}",
-                "tag":"signedDecisionNotice",
+                "tag": "signedDecisionNotice",
                 "suppliedBy": null
               }
             }
@@ -132,53 +126,50 @@
         "currentCaseStateVisibleToHomeOffice": "applicationSubmitted",
         "currentCaseStateVisibleToAdminOfficer": "applicationSubmitted",
         "currentCaseStateVisibleToLegalRepresentative": "applicationSubmitted",
-        "applicantDocumentsWithMetadata":
-        [
+        "applicantDocumentsWithMetadata": [
           {
-            "id":"1",
-            "value":{
-              "document":{
+            "id": "1",
+            "value": {
+              "document": {
                 "document_url": "http://dm-store:8080/documents/1488f4de-c9fe-4f3e-a6b6-ee032ca759c1",
                 "document_binary_url": "http://dm-store:8080/documents/1488f4de-c9fe-4f3e-a6b6-ee032ca759c1/binary",
                 "document_filename": "application-submission.pdf"
               },
-              "description":"updated description for applicant doc",
+              "description": "updated description for applicant doc",
               "dateUploaded": "{$TODAY}",
-              "tag":"applicationSubmission",
+              "tag": "applicationSubmission",
               "suppliedBy": null
             }
           }
         ],
-        "homeOfficeDocumentsWithMetadata":
-        [
+        "homeOfficeDocumentsWithMetadata": [
           {
-            "id":"1",
-            "value":{
-              "document":{
+            "id": "1",
+            "value": {
+              "document": {
                 "document_url": "http://dm-store:8080/documents/1488f4de-c9fe-4f3e-a6b6-ee032ca759c2",
                 "document_binary_url": "http://dm-store:8080/documents/1488f4de-c9fe-4f3e-a6b6-ee032ca759c2/binary",
                 "document_filename": "Upload-bail-summary.pdf"
               },
-              "description":"updated description for home office doc",
+              "description": "updated description for home office doc",
               "dateUploaded": "{$TODAY}",
-              "tag":"uploadBailSummary",
+              "tag": "uploadBailSummary",
               "suppliedBy": null
             }
           }
         ],
-        "tribunalDocumentsWithMetadata":
-        [
+        "tribunalDocumentsWithMetadata": [
           {
-            "id":"1",
-            "value":{
-              "document":{
+            "id": "1",
+            "value": {
+              "document": {
                 "document_url": "http://dm-store:8080/documents/1488f4de-c9fe-4f3e-a6b6-ee032ca759c3",
                 "document_binary_url": "http://dm-store:8080/documents/1488f4de-c9fe-4f3e-a6b6-ee032ca759c3/binary",
                 "document_filename": "Upload-signed-decision-notice.pdf"
               },
-              "description":"updated description for tribunal doc",
+              "description": "updated description for tribunal doc",
               "dateUploaded": "{$TODAY}",
-              "tag":"signedDecisionNotice",
+              "tag": "signedDecisionNotice",
               "suppliedBy": null
             }
           }

@@ -14,7 +14,9 @@
   },
   "expectation": {
     "status": 200,
-    "errors": ["There is no direction to edit"],
+    "errors": [
+      "There is no direction to edit"
+    ],
     "caseData": {
       "template": "minimal-application-started.json"
     }

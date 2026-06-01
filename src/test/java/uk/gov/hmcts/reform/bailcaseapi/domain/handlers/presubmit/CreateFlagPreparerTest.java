@@ -66,7 +66,7 @@ class CreateFlagPreparerTest {
         when(caseDetails.getCaseData()).thenReturn(bailCase);
         when(bailCase.read(APPLICANT_FULL_NAME, String.class)).thenReturn(Optional.of(appellantNameForDisplay));
         when(bailCase.read(FCS_LEVEL_FLAGS)).thenReturn(Optional.of(Collections.emptyList()));
-        when(bailCase.read(FCS_N_PARTY_ID_FIELD.get(0), String.class)).thenReturn(Optional.of(partyId));
+        when(bailCase.read(FCS_N_PARTY_ID_FIELD.getFirst(), String.class)).thenReturn(Optional.of(partyId));
 
         createFlagHandler = new CreateFlagPreparer();
     }
@@ -85,9 +85,9 @@ class CreateFlagPreparerTest {
 
     @Test
     void should_write_to_fcs_case_flag_fields_if_has_fcs_field_yes() {
-        when(bailCase.read(HAS_FINANCIAL_CONDITION_SUPPORTER_N.get(0), YesOrNo.class)).thenReturn(Optional.of(YES));
-        when(bailCase.read(FCS_N_GIVEN_NAME_FIELD.get(0), String.class)).thenReturn(Optional.of(fcsGivenName));
-        when(bailCase.read(FCS_N_FAMILY_NAME_FIELD.get(0), String.class)).thenReturn(Optional.of(fcsFamilyName));
+        when(bailCase.read(HAS_FINANCIAL_CONDITION_SUPPORTER_N.getFirst(), YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(bailCase.read(FCS_N_GIVEN_NAME_FIELD.getFirst(), String.class)).thenReturn(Optional.of(fcsGivenName));
+        when(bailCase.read(FCS_N_FAMILY_NAME_FIELD.getFirst(), String.class)).thenReturn(Optional.of(fcsFamilyName));
 
         createFlagHandler.handle(ABOUT_TO_START, callback);
 
@@ -96,9 +96,9 @@ class CreateFlagPreparerTest {
 
     @Test
     void should_write_empty_list_to_fcs_case_flag_fields_if_has_fcs_field_is_no() {
-        when(bailCase.read(HAS_FINANCIAL_CONDITION_SUPPORTER_N.get(0), YesOrNo.class)).thenReturn(Optional.of(NO));
-        when(bailCase.read(FCS_N_GIVEN_NAME_FIELD.get(0), String.class)).thenReturn(Optional.of(fcsGivenName));
-        when(bailCase.read(FCS_N_FAMILY_NAME_FIELD.get(0), String.class)).thenReturn(Optional.of(fcsFamilyName));
+        when(bailCase.read(HAS_FINANCIAL_CONDITION_SUPPORTER_N.getFirst(), YesOrNo.class)).thenReturn(Optional.of(NO));
+        when(bailCase.read(FCS_N_GIVEN_NAME_FIELD.getFirst(), String.class)).thenReturn(Optional.of(fcsGivenName));
+        when(bailCase.read(FCS_N_FAMILY_NAME_FIELD.getFirst(), String.class)).thenReturn(Optional.of(fcsFamilyName));
 
         createFlagHandler.handle(ABOUT_TO_START, callback);
 
@@ -107,9 +107,9 @@ class CreateFlagPreparerTest {
 
     @Test
     void should_write_empty_list_to_fcs_case_flag_fields_if_has_fcs_field_is_not_set() {
-        when(bailCase.read(HAS_FINANCIAL_CONDITION_SUPPORTER_N.get(0), YesOrNo.class)).thenReturn(Optional.empty());
-        when(bailCase.read(FCS_N_GIVEN_NAME_FIELD.get(0), String.class)).thenReturn(Optional.of(fcsGivenName));
-        when(bailCase.read(FCS_N_FAMILY_NAME_FIELD.get(0), String.class)).thenReturn(Optional.of(fcsFamilyName));
+        when(bailCase.read(HAS_FINANCIAL_CONDITION_SUPPORTER_N.getFirst(), YesOrNo.class)).thenReturn(Optional.empty());
+        when(bailCase.read(FCS_N_GIVEN_NAME_FIELD.getFirst(), String.class)).thenReturn(Optional.of(fcsGivenName));
+        when(bailCase.read(FCS_N_FAMILY_NAME_FIELD.getFirst(), String.class)).thenReturn(Optional.of(fcsFamilyName));
 
         createFlagHandler.handle(ABOUT_TO_START, callback);
 
@@ -118,10 +118,10 @@ class CreateFlagPreparerTest {
 
     @Test
     void should_write_empty_list_to_fcs_case_flag_fields_if_party_id_is_not_present() {
-        when(bailCase.read(HAS_FINANCIAL_CONDITION_SUPPORTER_N.get(0), YesOrNo.class)).thenReturn(Optional.of(YES));
-        when(bailCase.read(FCS_N_GIVEN_NAME_FIELD.get(0), String.class)).thenReturn(Optional.of(fcsGivenName));
-        when(bailCase.read(FCS_N_FAMILY_NAME_FIELD.get(0), String.class)).thenReturn(Optional.of(fcsFamilyName));
-        when(bailCase.read(FCS_N_PARTY_ID_FIELD.get(0), String.class)).thenReturn(Optional.empty());
+        when(bailCase.read(HAS_FINANCIAL_CONDITION_SUPPORTER_N.getFirst(), YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(bailCase.read(FCS_N_GIVEN_NAME_FIELD.getFirst(), String.class)).thenReturn(Optional.of(fcsGivenName));
+        when(bailCase.read(FCS_N_FAMILY_NAME_FIELD.getFirst(), String.class)).thenReturn(Optional.of(fcsFamilyName));
+        when(bailCase.read(FCS_N_PARTY_ID_FIELD.getFirst(), String.class)).thenReturn(Optional.empty());
 
         createFlagHandler.handle(ABOUT_TO_START, callback);
 
@@ -134,10 +134,10 @@ class CreateFlagPreparerTest {
             new PartyFlagIdValue("party-id-existing", fcsCaseFlag));
 
         when(bailCase.read(FCS_LEVEL_FLAGS)).thenReturn(Optional.of(existLevelFlags));
-        when(bailCase.read(HAS_FINANCIAL_CONDITION_SUPPORTER_N.get(0), YesOrNo.class)).thenReturn(Optional.of(YES));
-        when(bailCase.read(FCS_N_GIVEN_NAME_FIELD.get(0), String.class)).thenReturn(Optional.of(fcsGivenName));
-        when(bailCase.read(FCS_N_FAMILY_NAME_FIELD.get(0), String.class)).thenReturn(Optional.of(fcsFamilyName));
-        when(bailCase.read(FCS_N_PARTY_ID_FIELD.get(0), String.class)).thenReturn(Optional.of("party-id-existing"));
+        when(bailCase.read(HAS_FINANCIAL_CONDITION_SUPPORTER_N.getFirst(), YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(bailCase.read(FCS_N_GIVEN_NAME_FIELD.getFirst(), String.class)).thenReturn(Optional.of(fcsGivenName));
+        when(bailCase.read(FCS_N_FAMILY_NAME_FIELD.getFirst(), String.class)).thenReturn(Optional.of(fcsFamilyName));
+        when(bailCase.read(FCS_N_PARTY_ID_FIELD.getFirst(), String.class)).thenReturn(Optional.of("party-id-existing"));
 
         createFlagHandler.handle(ABOUT_TO_START, callback);
 
@@ -195,8 +195,8 @@ class CreateFlagPreparerTest {
 
     @Test
     void should_throw_when_fcs_given_name_is_not_present() {
-        when(bailCase.read(HAS_FINANCIAL_CONDITION_SUPPORTER_N.get(0), YesOrNo.class)).thenReturn(Optional.of(YES));
-        when(bailCase.read(FCS_N_GIVEN_NAME_FIELD.get(0), String.class)).thenReturn(Optional.empty());
+        when(bailCase.read(HAS_FINANCIAL_CONDITION_SUPPORTER_N.getFirst(), YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(bailCase.read(FCS_N_GIVEN_NAME_FIELD.getFirst(), String.class)).thenReturn(Optional.empty());
 
         assertThatThrownBy(
             () -> createFlagHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
@@ -206,9 +206,9 @@ class CreateFlagPreparerTest {
 
     @Test
     void should_throw_when_fcs_family_name_is_not_present() {
-        when(bailCase.read(HAS_FINANCIAL_CONDITION_SUPPORTER_N.get(0), YesOrNo.class)).thenReturn(Optional.of(YES));
-        when(bailCase.read(FCS_N_GIVEN_NAME_FIELD.get(0), String.class)).thenReturn(Optional.of(fcsGivenName));
-        when(bailCase.read(FCS_N_FAMILY_NAME_FIELD.get(0), String.class)).thenReturn(Optional.empty());
+        when(bailCase.read(HAS_FINANCIAL_CONDITION_SUPPORTER_N.getFirst(), YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(bailCase.read(FCS_N_GIVEN_NAME_FIELD.getFirst(), String.class)).thenReturn(Optional.of(fcsGivenName));
+        when(bailCase.read(FCS_N_FAMILY_NAME_FIELD.getFirst(), String.class)).thenReturn(Optional.empty());
 
         assertThatThrownBy(
             () -> createFlagHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))

@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.bailcaseapi.domain.handlers.postsubmit;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -11,11 +10,11 @@ import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
 
-import static junit.framework.TestCase.assertTrue;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 
@@ -43,8 +42,8 @@ public class ChangeTribunalCentreConfirmationTest {
             changeTribunalCentreConfirmation.handle(callback);
 
         assertNotNull(callbackResponse);
-        Assertions.assertTrue(callbackResponse.getConfirmationHeader().isPresent());
-        Assertions.assertTrue(callbackResponse.getConfirmationBody().isPresent());
+        assertTrue(callbackResponse.getConfirmationHeader().isPresent());
+        assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
         assertThat(
             callbackResponse.getConfirmationHeader().get())

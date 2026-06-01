@@ -1,9 +1,10 @@
 package uk.gov.hmcts.reform.bailcaseapi.domain.entities;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import org.junit.Test;
 
-public class LegRepAddressUkTest {
+import org.junit.jupiter.api.Test;
+
+class LegRepAddressUkTest {
 
     private final String addressLine1 = "A";
     private final String addressLine2 = "B";
@@ -24,7 +25,7 @@ public class LegRepAddressUkTest {
     );
 
     @Test
-    public void should_hold_onto_values() {
+    void should_hold_onto_values() {
 
         assertEquals(addressLine1, legRepAddressUk.getAddressLine1());
         assertEquals(addressLine2, legRepAddressUk.getAddressLine2());

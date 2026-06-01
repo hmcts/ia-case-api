@@ -5,7 +5,7 @@ import au.com.dius.pact.consumer.dsl.PactDslJsonRootValue;
 import au.com.dius.pact.consumer.dsl.PactDslWithProvider;
 import au.com.dius.pact.consumer.junit5.PactConsumerTestExt;
 import au.com.dius.pact.consumer.junit5.PactTestFor;
-import au.com.dius.pact.core.model.RequestResponsePact;
+import au.com.dius.pact.core.model.V4Pact;
 import au.com.dius.pact.core.model.annotations.Pact;
 import au.com.dius.pact.core.model.annotations.PactFolder;
 import com.google.common.collect.ImmutableMap;
@@ -19,9 +19,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import uk.gov.hmcts.reform.bailcaseapi.infrastructure.clients.IdamApi;
 import uk.gov.hmcts.reform.bailcaseapi.infrastructure.clients.model.idam.Token;
 import uk.gov.hmcts.reform.bailcaseapi.infrastructure.clients.model.idam.UserInfo;
@@ -31,12 +30,11 @@ import java.util.Map;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 
 
-@ExtendWith(SpringExtension.class)
 @ExtendWith(PactConsumerTestExt.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @PactFolder("pacts")
 @PactTestFor(providerName = "bail_caseApi", port = "8892")
-@ContextConfiguration(classes = {IdamConsumerApplication.class})
+@SpringJUnitConfig(classes = {IdamConsumerApplication.class})
 @TestPropertySource(locations = {"classpath:application.properties"}, properties = {"idam.baseUrl=http://localhost:8892"})
 public class IdamApiConsumerTest {
 
@@ -45,7 +43,7 @@ public class IdamApiConsumerTest {
     private static final String AUTH_TOKEN = "Bearer someAuthorizationToken";
 
     @Pact(provider = "idamApi_oidc", consumer = "bail_caseApi")
-    public RequestResponsePact generatePactFragmentUserInfo(PactDslWithProvider builder) throws JSONException {
+    public V4Pact generatePactFragmentUserInfo(PactDslWithProvider builder) throws JSONException {
 
         return builder
             .given("userinfo is requested")
@@ -58,11 +56,11 @@ public class IdamApiConsumerTest {
             .status(200)
             .headers(ImmutableMap.<String, String>builder().put(HttpHeaders.CONNECTION, "close").build())
             .body(createUserDetailsResponse())
-            .toPact();
+            .toPact(V4Pact.class);
     }
 
     @Pact(provider = "idamApi_oidc", consumer = "bail_caseApi")
-    public RequestResponsePact generatePactFragmentToken(PactDslWithProvider builder) throws JSONException {
+    public V4Pact generatePactFragmentToken(PactDslWithProvider builder) throws JSONException {
 
         Map<String, String> responseheaders = ImmutableMap.<String, String>builder()
             .put("Content-Type", "application/json")
@@ -84,7 +82,7 @@ public class IdamApiConsumerTest {
             .status(HttpStatus.OK.value())
             .headers(responseheaders)
             .body(createAuthResponse())
-            .toPact();
+            .toPact(V4Pact.class);
     }
 
     @Test

@@ -36,11 +36,14 @@ public class BailApplicationSavedConfirmation implements PostSubmitCallbackHandl
 
         postSubmitResponse.setConfirmationHeader("# You have saved this application");
         postSubmitResponse.setConfirmationBody(
-            "### Do this next\n\n"
-                + "If you're ready to submit your application, select 'Submit your application' in "
-                + "the 'Next step' dropdown list from your case details page.\n\n"
-                + "#### Not ready to submit your application yet?\n"
-                + "You can return to the case details page to make changes from the ‘Next step’ dropdown list."
+            """
+            ### Do this next
+            
+            If you're ready to submit your application, select 'Submit your application' in \
+            the 'Next step' dropdown list from your case details page.
+            
+            #### Not ready to submit your application yet?
+            You can return to the case details page to make changes from the ‘Next step’ dropdown list."""
         );
 
         return postSubmitResponse;

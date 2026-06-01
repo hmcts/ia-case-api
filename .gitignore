@@ -22,3 +22,4 @@ bin/main/application.yaml
 
 .DS_Store
 .mirrord
+/pacts/

@@ -10,8 +10,7 @@
       "caseData": {
         "template": "minimal-application-started.json",
         "replacements": {
-          "priorApplications1":
-          [
+          "priorApplications1": [
             {
               "id": "1",
               "value": {
@@ -42,14 +41,14 @@
             "code": "2",
             "label": "Bail Application 2 - Ended 05-07-2022"
           },
-          "list_items":[
+          "list_items": [
             {
-              "code":"2",
-              "label":"Bail Application 2 - Ended 05-07-2022"
+              "code": "2",
+              "label": "Bail Application 2 - Ended 05-07-2022"
             },
             {
-              "code":"1",
-              "label":"Bail Application 1 - Ended 05-06-2022"
+              "code": "1",
+              "label": "Bail Application 1 - Ended 05-06-2022"
             }
           ]
         }

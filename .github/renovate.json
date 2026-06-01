@@ -20,8 +20,8 @@
       "automerge": true
     },
     {
-      "packagePatterns": [
-        "^ccd-case-document-am-client$"
+      "matchPackageNames": [
+        "org.owasp.dependencycheck"
       ],
       "enabled": false
     },

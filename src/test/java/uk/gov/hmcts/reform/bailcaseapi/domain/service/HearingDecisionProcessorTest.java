@@ -52,9 +52,9 @@ class HearingDecisionProcessorTest {
         verify(bailCase).write(eq(HEARING_DECISION_LIST), newHearingDecisionListArgumentCaptor.capture());
         List<IdValue<HearingDecision>> hearingDecisionList = newHearingDecisionListArgumentCaptor.getValue();
         assertEquals(1, hearingDecisionList.size());
-        assertEquals("1", hearingDecisionList.get(0).getId());
-        assertEquals("12345", hearingDecisionList.get(0).getValue().getHearingId());
-        assertEquals("granted", hearingDecisionList.get(0).getValue().getDecision());
+        assertEquals("1", hearingDecisionList.getFirst().getId());
+        assertEquals("12345", hearingDecisionList.getFirst().getValue().getHearingId());
+        assertEquals("granted", hearingDecisionList.getFirst().getValue().getDecision());
     }
 
     @Test
@@ -78,9 +78,9 @@ class HearingDecisionProcessorTest {
         verify(bailCase).write(eq(HEARING_DECISION_LIST), newHearingDecisionListArgumentCaptor.capture());
         List<IdValue<HearingDecision>> hearingDecisionList = newHearingDecisionListArgumentCaptor.getValue();
         assertEquals(3, hearingDecisionList.size());
-        assertEquals("1", hearingDecisionList.get(0).getId());
-        assertEquals("23456", hearingDecisionList.get(0).getValue().getHearingId());
-        assertEquals("refused", hearingDecisionList.get(0).getValue().getDecision());
+        assertEquals("1", hearingDecisionList.getFirst().getId());
+        assertEquals("23456", hearingDecisionList.getFirst().getValue().getHearingId());
+        assertEquals("refused", hearingDecisionList.getFirst().getValue().getDecision());
         assertEquals("2", hearingDecisionList.get(1).getId());
         assertEquals("34567", hearingDecisionList.get(1).getValue().getHearingId());
         assertEquals("refused", hearingDecisionList.get(1).getValue().getDecision());
@@ -110,9 +110,9 @@ class HearingDecisionProcessorTest {
         verify(bailCase).write(eq(HEARING_DECISION_LIST), newHearingDecisionListArgumentCaptor.capture());
         List<IdValue<HearingDecision>> hearingDecisionList = newHearingDecisionListArgumentCaptor.getValue();
         assertEquals(2, hearingDecisionList.size());
-        assertEquals("1", hearingDecisionList.get(0).getId());
-        assertEquals("12345", hearingDecisionList.get(0).getValue().getHearingId());
-        assertEquals("conditionalGrant", hearingDecisionList.get(0).getValue().getDecision());
+        assertEquals("1", hearingDecisionList.getFirst().getId());
+        assertEquals("12345", hearingDecisionList.getFirst().getValue().getHearingId());
+        assertEquals("conditionalGrant", hearingDecisionList.getFirst().getValue().getDecision());
         assertEquals("2", hearingDecisionList.get(1).getId());
         assertEquals("34567", hearingDecisionList.get(1).getValue().getHearingId());
         assertEquals("dismissed", hearingDecisionList.get(1).getValue().getDecision());
@@ -132,9 +132,9 @@ class HearingDecisionProcessorTest {
         verify(bailCase).write(eq(HEARING_DECISION_LIST), newHearingDecisionListArgumentCaptor.capture());
         List<IdValue<HearingDecision>> hearingDecisionList = newHearingDecisionListArgumentCaptor.getValue();
         assertEquals(1, hearingDecisionList.size());
-        assertEquals("1", hearingDecisionList.get(0).getId());
-        assertEquals("12345", hearingDecisionList.get(0).getValue().getHearingId());
-        assertEquals("decided", hearingDecisionList.get(0).getValue().getDecision());
+        assertEquals("1", hearingDecisionList.getFirst().getId());
+        assertEquals("12345", hearingDecisionList.getFirst().getValue().getHearingId());
+        assertEquals("decided", hearingDecisionList.getFirst().getValue().getDecision());
     }
 
     @Test

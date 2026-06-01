@@ -123,17 +123,17 @@ class ChangeDirectionDueDateHandlerTest {
         verify(bailCase).clear(BAIL_DIRECTION_LIST);
         verify(bailCase, times(1)).write(eq(DIRECTIONS), bailValueCaptor.capture());
 
-        List<IdValue<Direction>> editedDirectionsCollection = bailValueCaptor.getAllValues().get(0);
+        List<IdValue<Direction>> editedDirectionsCollection = bailValueCaptor.getAllValues().getFirst();
         assertEquals(existingDirections.size(), editedDirectionsCollection.size());
 
         // "Direction 2" in UI is equivalent of Direction with IdValue "1" in backend
         // This direction's date has NOT been edited
-        assertEquals("1", editedDirectionsCollection.get(0).getId());
-        assertEquals("explanation-1", editedDirectionsCollection.get(0).getValue().getSendDirectionDescription());
-        assertEquals("Applicant", editedDirectionsCollection.get(0).getValue().getSendDirectionList());
-        assertEquals("2020-12-01", editedDirectionsCollection.get(0).getValue().getDateOfCompliance());
-        assertEquals("2019-12-01", editedDirectionsCollection.get(0).getValue().getDateSent());
-        assertEquals(0, editedDirectionsCollection.get(0).getValue().getPreviousDates().size());
+        assertEquals("1", editedDirectionsCollection.getFirst().getId());
+        assertEquals("explanation-1", editedDirectionsCollection.getFirst().getValue().getSendDirectionDescription());
+        assertEquals("Applicant", editedDirectionsCollection.getFirst().getValue().getSendDirectionList());
+        assertEquals("2020-12-01", editedDirectionsCollection.getFirst().getValue().getDateOfCompliance());
+        assertEquals("2019-12-01", editedDirectionsCollection.getFirst().getValue().getDateSent());
+        assertEquals(0, editedDirectionsCollection.getFirst().getValue().getPreviousDates().size());
 
         // "Direction 1" in UI is equivalent of Direction with IdValue "2" in backend
         // This direction's date has been edited
@@ -143,7 +143,7 @@ class ChangeDirectionDueDateHandlerTest {
         assertEquals("2022-12-01", editedDirectionsCollection.get(1).getValue().getDateOfCompliance()); // edited
         assertEquals(dateSent.toString(), editedDirectionsCollection.get(1).getValue().getDateSent());
         assertEquals(1, editedDirectionsCollection.get(1).getValue().getPreviousDates().size());
-        assertEquals("2020-11-01", editedDirectionsCollection.get(1).getValue().getPreviousDates().get(0)
+        assertEquals("2020-11-01", editedDirectionsCollection.get(1).getValue().getPreviousDates().getFirst()
             .getValue().getDateDue());
     }
 
@@ -197,17 +197,17 @@ class ChangeDirectionDueDateHandlerTest {
         verify(bailCase).clear(BAIL_DIRECTION_LIST);
         verify(bailCase, times(1)).write(eq(DIRECTIONS), bailValueCaptor.capture());
 
-        List<IdValue<Direction>> editedDirectionsCollection = bailValueCaptor.getAllValues().get(0);
+        List<IdValue<Direction>> editedDirectionsCollection = bailValueCaptor.getAllValues().getFirst();
         assertEquals(existingDirections.size(), editedDirectionsCollection.size());
 
         // "Direction 2" in UI is equivalent of Direction with IdValue "1" in backend
         // This direction's date has NOT been edited
-        assertEquals("1", editedDirectionsCollection.get(0).getId());
-        assertEquals("explanation-1", editedDirectionsCollection.get(0).getValue().getSendDirectionDescription());
-        assertEquals("Applicant", editedDirectionsCollection.get(0).getValue().getSendDirectionList());
-        assertEquals("2020-12-01", editedDirectionsCollection.get(0).getValue().getDateOfCompliance());
-        assertEquals("2019-12-01", editedDirectionsCollection.get(0).getValue().getDateSent());
-        assertEquals(0, editedDirectionsCollection.get(0).getValue().getPreviousDates().size());
+        assertEquals("1", editedDirectionsCollection.getFirst().getId());
+        assertEquals("explanation-1", editedDirectionsCollection.getFirst().getValue().getSendDirectionDescription());
+        assertEquals("Applicant", editedDirectionsCollection.getFirst().getValue().getSendDirectionList());
+        assertEquals("2020-12-01", editedDirectionsCollection.getFirst().getValue().getDateOfCompliance());
+        assertEquals("2019-12-01", editedDirectionsCollection.getFirst().getValue().getDateSent());
+        assertEquals(0, editedDirectionsCollection.getFirst().getValue().getPreviousDates().size());
 
         // "Direction 1" in UI is equivalent of Direction with IdValue "2" in backend
         // This direction's date has been edited
@@ -217,7 +217,7 @@ class ChangeDirectionDueDateHandlerTest {
         assertEquals("2023-12-01", editedDirectionsCollection.get(1).getValue().getDateOfCompliance()); // edited
         assertEquals(dateSent.toString(), editedDirectionsCollection.get(1).getValue().getDateSent());
         assertEquals(2, editedDirectionsCollection.get(1).getValue().getPreviousDates().size());
-        assertEquals("2022-11-01", editedDirectionsCollection.get(1).getValue().getPreviousDates().get(0)
+        assertEquals("2022-11-01", editedDirectionsCollection.get(1).getValue().getPreviousDates().getFirst()
             .getValue().getDateDue());
     }
 

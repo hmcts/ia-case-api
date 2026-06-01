@@ -87,7 +87,7 @@ public class InterpreterLanguagesUtils {
                                                      refDataUserService.mapCategoryValuesToDynamicListValues(languages));
 
         } catch (Exception e) {
-            throw new BailCaseServiceResponseException(String.format("Could not read response by RefData service for %s(s)", languageCategory), e);
+            throw new BailCaseServiceResponseException("Could not read response by RefData service for %s(s)".formatted(languageCategory), e);
         }
 
         return new InterpreterLanguageRefData(

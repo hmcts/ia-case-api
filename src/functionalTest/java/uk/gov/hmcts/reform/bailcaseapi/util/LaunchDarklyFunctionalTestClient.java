@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.bailcaseapi.util;
 
-import com.launchdarkly.sdk.LDUser;
+import com.launchdarkly.sdk.LDContext;
 import com.launchdarkly.sdk.server.interfaces.LDClientInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -20,14 +20,12 @@ public class LaunchDarklyFunctionalTestClient {
     public boolean getKey(String key, String accessToken) {
 
         UserDetails userDetails = getUserDetails(accessToken);
-
-        LDUser ldUser =  new LDUser.Builder(userDetails.getId())
-            .firstName(userDetails.getForename())
-            .lastName(userDetails.getSurname())
-            .email(userDetails.getEmailAddress())
+        LDContext ldContext = LDContext.builder(userDetails.getId())
+            .set("firstName", userDetails.getForename())
+            .set("lastName", userDetails.getSurname())
+            .set("email", userDetails.getEmailAddress())
             .build();
-
-        return ldClient.boolVariation(key, ldUser, false);
+        return ldClient.boolVariation(key, ldContext, false);
     }
 
     private IdamUserDetails getUserDetails(String accessToken) {

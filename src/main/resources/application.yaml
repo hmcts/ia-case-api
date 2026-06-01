@@ -16,9 +16,7 @@ management:
         include: health, info, ping
   health:
     redis:
-      enabled: false  # don't let Redis affect pod health
-    probes:
-      enabled: true
+      enabled: false
     group:
       readiness:
         include: ping
@@ -29,14 +27,15 @@ management:
       uri: ${IDAM_URL:http://127.0.0.1:4501}/health
       response: '"status":"UP"'
     documentsApi:
-       uri: ${IA_CASE_DOCUMENTS_API_URL:http://127.0.0.1:8092}/health
-       response: '"status":"UP"'
+      uri: ${IA_CASE_DOCUMENTS_API_URL:http://127.0.0.1:8092}/health
+      response: '"status":"UP"'
     notificationApi:
       uri: ${IA_CASE_NOTIFICATIONS_API_URL:http://127.0.0.1:8093}/health
       response: '"status":"UP"'
     serviceAuth:
       uri: ${S2S_URL:http://127.0.0.1:4502}/health
       response: '"status":"UP"'
+  endpoint.health.probes.enabled: true
 
 #If you use a database then uncomment below lines and update db properties accordingly
 spring:

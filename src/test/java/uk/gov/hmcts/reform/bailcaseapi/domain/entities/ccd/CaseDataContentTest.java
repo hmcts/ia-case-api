@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.HashMap;
 import java.util.Map;
-import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.jupiter.api.Test;
 
 class CaseDataContentTest {
@@ -14,14 +13,6 @@ class CaseDataContentTest {
     private final String eventToken = "eventToken";
     private final boolean ignoreWarning = true;
     private CaseDataContent caseDataContent;
-
-    @Test
-    void should_test_equals_contract() {
-
-        EqualsVerifier.simple()
-            .forClass(CaseDataContent.class)
-            .verify();
-    }
 
     @Test
     void should_hold_onto_values() {

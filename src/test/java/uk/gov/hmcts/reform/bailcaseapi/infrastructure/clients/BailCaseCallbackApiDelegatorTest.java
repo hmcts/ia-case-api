@@ -105,7 +105,7 @@ public class BailCaseCallbackApiDelegatorTest {
                                                 any(ParameterizedTypeReference.class)
         );
 
-        HttpEntity actualEntity = requestEntityCaptor.getAllValues().get(0);
+        HttpEntity actualEntity = requestEntityCaptor.getAllValues().getFirst();
         final String actualContentTypeHeader = actualEntity.getHeaders().getFirst(HttpHeaders.CONTENT_TYPE);
         final String actualAcceptHeader = actualEntity.getHeaders().getFirst(HttpHeaders.ACCEPT);
         final String actualAuthorizationHeader = actualEntity.getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
@@ -147,7 +147,7 @@ public class BailCaseCallbackApiDelegatorTest {
                                                 any(ParameterizedTypeReference.class)
         );
 
-        HttpEntity actualRequestEntity = requestEntityCaptor.getAllValues().get(0);
+        HttpEntity actualRequestEntity = requestEntityCaptor.getAllValues().getFirst();
 
         final String actualContentTypeHeader = actualRequestEntity.getHeaders().getFirst(HttpHeaders.CONTENT_TYPE);
         final String actualAcceptHeader = actualRequestEntity.getHeaders().getFirst(HttpHeaders.ACCEPT);

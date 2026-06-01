@@ -95,7 +95,7 @@ public class PopulatePreviousApplicationsHandler implements PreSubmitCallbackHan
             })
             .collect(Collectors.toList());
         Collections.reverse(previousApplicationsElements);
-        DynamicList previousApplications = new DynamicList(previousApplicationsElements.get(0),
+        DynamicList previousApplications = new DynamicList(previousApplicationsElements.getFirst(),
                                                            previousApplicationsElements);
 
         bailCase.write(PREVIOUS_APPLICATION_LIST, previousApplications);

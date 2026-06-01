@@ -83,8 +83,7 @@ public class UploadDocumentsHandler implements PreSubmitCallbackHandler<BailCase
                     .stream()
                     .map(IdValue::getValue)
                     .map(doc -> documentReceiver.tryReceive(doc, DocumentTag.UPLOAD_DOCUMENT))
-                    .filter(Optional::isPresent)
-                    .map(Optional::get)
+                    .flatMap(Optional::stream)
                     .collect(Collectors.toList());
 
             BailCaseFieldDefinition appropriateCollectionForUserRole =

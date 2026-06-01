@@ -1,16 +1,16 @@
 package uk.gov.hmcts.reform.bailcaseapi.consumer.ccd;
 
-import static io.pactfoundation.consumer.dsl.LambdaDsl.newJsonBody;
+import static au.com.dius.pact.consumer.dsl.LambdaDsl.newJsonBody;
 
 import au.com.dius.pact.consumer.dsl.DslPart;
 import au.com.dius.pact.consumer.dsl.PactDslWithProvider;
 import au.com.dius.pact.consumer.junit5.PactTestFor;
-import au.com.dius.pact.core.model.RequestResponsePact;
+import au.com.dius.pact.core.model.V4Pact;
 import au.com.dius.pact.core.model.annotations.Pact;
 import java.io.IOException;
 
 import com.google.common.collect.ImmutableMap;
-import org.apache.http.HttpStatus;
+import org.apache.hc.core5.http.HttpStatus;
 import org.json.JSONException;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
@@ -22,7 +22,7 @@ import org.springframework.test.context.TestPropertySource;
 public class AssignCaseAccessConsumerTest extends CcdCaseAssignmentProviderBaseTest {
 
     @Pact(provider = "acc_manageCaseAssignment", consumer = "bail_caseApi")
-    public RequestResponsePact generatePactFragmentForAssign(PactDslWithProvider builder)
+    public V4Pact generatePactFragmentForAssign(PactDslWithProvider builder)
         throws JSONException, IOException {
 
         return builder
@@ -39,7 +39,7 @@ public class AssignCaseAccessConsumerTest extends CcdCaseAssignmentProviderBaseT
             .body(buildAssignCasesResponseDsl())
             .headers(ImmutableMap.<String, String>builder().put(HttpHeaders.CONNECTION, "close").build())
             .status(HttpStatus.SC_CREATED)
-            .toPact();
+            .toPact(V4Pact.class);
     }
 
     @Test

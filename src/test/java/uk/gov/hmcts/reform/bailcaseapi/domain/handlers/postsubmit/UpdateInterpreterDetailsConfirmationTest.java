@@ -9,7 +9,9 @@ import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCase;
@@ -18,6 +20,7 @@ import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
 
+@ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 class UpdateInterpreterDetailsConfirmationTest {
 
@@ -47,10 +50,12 @@ class UpdateInterpreterDetailsConfirmationTest {
         assertEquals("# Interpreter details have been updated",
                 callbackResponse.getConfirmationHeader().get());
 
-        String body = "#### What happens next\n\n"
-                      + "Ensure the "
-                      + "[interpreter booking status](/case/IA/Bail/1234/trigger/updateInterpreterBookingStatus)"
-                      + " is updated.";
+        String body = """
+                      #### What happens next
+                      
+                      Ensure the \
+                      [interpreter booking status](/case/IA/Bail/1234/trigger/updateInterpreterBookingStatus)\
+                       is updated.""";
 
         assertEquals(body, callbackResponse.getConfirmationBody().get());
     }

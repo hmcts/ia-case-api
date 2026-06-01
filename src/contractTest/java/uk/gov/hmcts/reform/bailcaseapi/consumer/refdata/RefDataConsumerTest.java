@@ -3,7 +3,7 @@ package uk.gov.hmcts.reform.bailcaseapi.consumer.refdata;
 import au.com.dius.pact.consumer.dsl.PactDslWithProvider;
 import au.com.dius.pact.consumer.junit5.PactConsumerTestExt;
 import au.com.dius.pact.consumer.junit5.PactTestFor;
-import au.com.dius.pact.core.model.RequestResponsePact;
+import au.com.dius.pact.core.model.V4Pact;
 import au.com.dius.pact.core.model.annotations.Pact;
 import au.com.dius.pact.core.model.annotations.PactFolder;
 import com.google.common.collect.ImmutableMap;
@@ -12,8 +12,8 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import uk.gov.hmcts.reform.bailcaseapi.infrastructure.clients.model.dto.hearingdetails.CommonDataResponse;
 import uk.gov.hmcts.reform.bailcaseapi.infrastructure.clients.refdata.CommonDataRefApi;
 import uk.gov.hmcts.reform.bailcaseapi.util.ResourceLoader;
@@ -21,12 +21,12 @@ import uk.gov.hmcts.reform.bailcaseapi.util.ResourceLoader;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
-@ExtendWith(SpringExtension.class)
 @ExtendWith(PactConsumerTestExt.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @PactFolder("pacts")
+@TestPropertySource(locations = {"classpath:application.properties"}, properties = {"location.ref.data.url=http://localhost:8991"})
 @PactTestFor(providerName = "referenceData_listOfValues", port = "8991")
-@ContextConfiguration(classes = {RefDataConsumerApplication.class})
+@SpringJUnitConfig(classes = {RefDataConsumerApplication.class})
 public class RefDataConsumerTest {
 
     private static final String SERVICE_AUTHORIZATION = "ServiceAuthorization";
@@ -40,7 +40,7 @@ public class RefDataConsumerTest {
     CommonDataRefApi commonDataRefApi;
 
     @Pact(provider = "referenceDataCategoryApi", consumer = "bail_caseApi")
-    public RequestResponsePact generateInterpreterLanguageCategoryApiConsumerTest(PactDslWithProvider builder) throws Exception {
+    public V4Pact generateInterpreterLanguageCategoryApiConsumerTest(PactDslWithProvider builder) throws Exception {
 
         return builder
             .given("A list_of_values InterpreterLanguage for CRD request")
@@ -53,11 +53,11 @@ public class RefDataConsumerTest {
             .willRespondWith()
             .status(200)
             .body(ResourceLoader.loadJson(interpreterLanguageResponse), "application/json")
-            .toPact();
+            .toPact(V4Pact.class);
     }
 
     @Pact(provider = "referenceDataCategoryApi", consumer = "bail_caseApi")
-    public RequestResponsePact generateSignLanguageCategoryApiConsumerTest(PactDslWithProvider builder) throws Exception {
+    public V4Pact generateSignLanguageCategoryApiConsumerTest(PactDslWithProvider builder) throws Exception {
 
         return builder
             .given("A list_of_values InterpreterLanguage for CRD request")
@@ -71,7 +71,7 @@ public class RefDataConsumerTest {
             .status(200)
             .headers(ImmutableMap.<String, String>builder().put(HttpHeaders.CONNECTION, "close").build())
             .body(ResourceLoader.loadJson(signLanguageResponse), "application/json")
-            .toPact();
+            .toPact(V4Pact.class);
     }
 
     @Test

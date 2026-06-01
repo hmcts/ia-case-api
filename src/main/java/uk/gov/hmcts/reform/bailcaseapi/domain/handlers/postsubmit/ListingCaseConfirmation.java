@@ -43,8 +43,10 @@ public class ListingCaseConfirmation implements PostSubmitCallbackHandler<BailCa
         }
 
         postSubmitResponse.setConfirmationBody(
-            "### What happens next\n\n"
-                + "The hearing notice will be sent to all parties and is available in the documents tab."
+            """
+            ### What happens next
+            
+            The hearing notice will be sent to all parties and is available in the documents tab."""
         );
 
         return postSubmitResponse;

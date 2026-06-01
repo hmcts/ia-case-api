@@ -77,8 +77,7 @@ public class UploadB1DocumentHandler implements PreSubmitCallbackHandler<BailCas
                     .stream()
                     .map(IdValue::getValue)
                     .map(document -> documentReceiver.tryReceive(document, DocumentTag.B1_DOCUMENT))
-                    .filter(Optional::isPresent)
-                    .map(Optional::get)
+                    .flatMap(Optional::stream)
                     .collect(Collectors.toList());
 
             Optional<List<IdValue<DocumentWithMetadata>>> maybeExistingApplicantDocuments =

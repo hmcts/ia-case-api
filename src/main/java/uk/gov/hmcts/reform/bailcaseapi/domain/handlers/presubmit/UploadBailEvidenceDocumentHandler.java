@@ -77,8 +77,7 @@ public class UploadBailEvidenceDocumentHandler implements PreSubmitCallbackHandl
                     .stream()
                     .map(IdValue::getValue)
                     .map(document -> documentReceiver.tryReceive(document, DocumentTag.BAIL_EVIDENCE))
-                    .filter(Optional::isPresent)
-                    .map(Optional::get)
+                    .flatMap(Optional::stream)
                     .collect(Collectors.toList());
 
             Optional<List<IdValue<DocumentWithMetadata>>> maybeExistingGroundsForBailDocuments =

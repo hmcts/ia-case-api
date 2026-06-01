@@ -2,13 +2,12 @@ package uk.gov.hmcts.reform.bailcaseapi.domain.entities;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.Test;
-
-public class ProfessionalUserTest {
+class ProfessionalUserTest {
 
     private final String userIdentifier = "someUserId1";
     private final String firstName = "someFirstName";
@@ -33,14 +32,14 @@ public class ProfessionalUserTest {
     );
 
     @Test
-    public void should_hold_onto_values() {
+    void should_hold_onto_values() {
 
         assertEquals(userIdentifier, professionalUser.getUserIdentifier());
         assertEquals(firstName, professionalUser.getFirstName());
         assertEquals(lastName, professionalUser.getLastName());
         assertEquals(email, professionalUser.getEmail());
         assertThat(professionalUser.getRoles()).hasSize(1);
-        assertThat(professionalUser.getRoles().get(0)).isEqualTo(userRole);
+        assertThat(professionalUser.getRoles().getFirst()).isEqualTo(userRole);
         assertEquals(idamStatus, professionalUser.getIdamStatus());
         assertEquals(idamStatusCode, professionalUser.getIdamStatusCode());
         assertEquals(idamMessage, professionalUser.getIdamMessage());

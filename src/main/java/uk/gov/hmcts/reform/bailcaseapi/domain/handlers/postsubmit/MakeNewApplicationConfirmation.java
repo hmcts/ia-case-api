@@ -25,8 +25,10 @@ public class MakeNewApplicationConfirmation implements PostSubmitCallbackHandler
             new PostSubmitCallbackResponse();
 
         postSubmitResponse.setConfirmationBody(
-            "### What happens next\n\n"
-                + "All parties will be notified that the application has been submitted."
+            """
+            ### What happens next
+            
+            All parties will be notified that the application has been submitted."""
         );
 
         postSubmitResponse.setConfirmationHeader("# You have submitted this application");

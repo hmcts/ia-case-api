@@ -1,13 +1,12 @@
 package uk.gov.hmcts.reform.bailcaseapi.config;
 
-import com.microsoft.applicationinsights.web.internal.WebRequestTrackingFilter;
+import java.nio.file.Path;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.mock.web.MockFilterConfig;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import org.springframework.test.web.servlet.MockMvc;
@@ -15,7 +14,6 @@ import org.springframework.web.context.WebApplicationContext;
 
 import java.io.OutputStream;
 import java.nio.file.Files;
-import java.nio.file.Paths;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -35,10 +33,7 @@ class OpenAPIPublisher {
 
     @BeforeEach
     void setUp() {
-        WebRequestTrackingFilter filter;
-        filter = new WebRequestTrackingFilter();
-        filter.init(new MockFilterConfig());
-        mvc = webAppContextSetup(wac).addFilter(filter).build();
+        mvc = webAppContextSetup(wac).build();
     }
 
     @DisplayName("Generate swagger documentation")
@@ -50,7 +45,7 @@ class OpenAPIPublisher {
             .getResponse()
             .getContentAsByteArray();
 
-        try (OutputStream outputStream = Files.newOutputStream(Paths.get(
+        try (OutputStream outputStream = Files.newOutputStream(Path.of(
             System.getProperty("java.io.tmpdir"),
             "/swagger-specs.json"
         ))) {

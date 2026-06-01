@@ -73,8 +73,8 @@ class EditDocsAuditServiceTest {
     }
 
     private static Object[] generateNewFileAddedForNameScenarios() {
-        idValue1 = buildIdValue("1", "1111-2222", "desc1", "someDocName1").get(0);
-        idValue2 = buildIdValue("2", "2222-3333", "desc2", "someDocName2").get(0);
+        idValue1 = buildIdValue("1", "1111-2222", "desc1", "someDocName1").getFirst();
+        idValue2 = buildIdValue("2", "2222-3333", "desc2", "someDocName2").getFirst();
         idValuesAfter = Arrays.asList(idValue1, idValue2);
         idValuesBefore = Collections.singletonList(idValue1);
 
@@ -87,10 +87,10 @@ class EditDocsAuditServiceTest {
     }
 
     private static Object[] generateFileUpdatedForNameScenarios() {
-        idValue1 = buildIdValue("1", "1111-2222", "desc1", "someDocName1").get(0);
-        idValue2 = buildIdValue("2", "2222-3333", "desc2", "someDocName2").get(0);
+        idValue1 = buildIdValue("1", "1111-2222", "desc1", "someDocName1").getFirst();
+        idValue2 = buildIdValue("2", "2222-3333", "desc2", "someDocName2").getFirst();
         IdValue<HasDocument> idValue2Updated = buildIdValue("2", "3333-4444", "desc3",
-                                                            "someDocNameUpdated").get(0);
+                                                            "someDocNameUpdated").getFirst();
         idValuesAfter = Arrays.asList(idValue1, idValue2Updated);
         idValuesBefore = Arrays.asList(idValue1, idValue2);
 
@@ -103,8 +103,8 @@ class EditDocsAuditServiceTest {
     }
 
     private static Object[] generateDeleteFileForNameScenarios() {
-        idValue1 = buildIdValue("1", "1111-2222", "desc1", "someDocNameDeleted").get(0);
-        idValue2 = buildIdValue("2", "2222-3333", "desc2", "someDocName2").get(0);
+        idValue1 = buildIdValue("1", "1111-2222", "desc1", "someDocNameDeleted").getFirst();
+        idValue2 = buildIdValue("2", "2222-3333", "desc2", "someDocName2").getFirst();
         idValuesAfter = Collections.singletonList(idValue2);
         idValuesBefore = Arrays.asList(idValue1, idValue2);
 
@@ -157,8 +157,8 @@ class EditDocsAuditServiceTest {
     }
 
     private static Object[] generateNewFileAddedScenarios() {
-        idValue1 = buildIdValue("1", "1111-2222", "desc1", "someDocName").get(0);
-        idValue2 = buildIdValue("2", "2222-3333", "desc2", "someDocName").get(0);
+        idValue1 = buildIdValue("1", "1111-2222", "desc1", "someDocName").getFirst();
+        idValue2 = buildIdValue("2", "2222-3333", "desc2", "someDocName").getFirst();
         idValuesAfter = Arrays.asList(idValue1, idValue2);
         idValuesBefore = Collections.singletonList(idValue1);
 
@@ -170,10 +170,10 @@ class EditDocsAuditServiceTest {
     }
 
     private static Object[] generateFileUpdatedScenarios() {
-        idValue1 = buildIdValue("1", "1111-2222", "desc1", "someDocName").get(0);
-        idValue2 = buildIdValue("2", "2222-3333", "desc2", "someDocName").get(0);
+        idValue1 = buildIdValue("1", "1111-2222", "desc1", "someDocName").getFirst();
+        idValue2 = buildIdValue("2", "2222-3333", "desc2", "someDocName").getFirst();
         IdValue<HasDocument> idValue2Updated = buildIdValue("2", "3333-4444", "desc3",
-                                                            "someDocName").get(0);
+                                                            "someDocName").getFirst();
         idValuesAfter = Arrays.asList(idValue1, idValue2Updated);
         idValuesBefore = Arrays.asList(idValue1, idValue2);
 
@@ -186,8 +186,8 @@ class EditDocsAuditServiceTest {
     }
 
     private static Object[] generateDeleteFileScenarios() {
-        idValue1 = buildIdValue("1", "1111-2222", "desc1", "someDocName").get(0);
-        idValue2 = buildIdValue("2", "2222-3333", "desc2", "someDocName").get(0);
+        idValue1 = buildIdValue("1", "1111-2222", "desc1", "someDocName").getFirst();
+        idValue2 = buildIdValue("2", "2222-3333", "desc2", "someDocName").getFirst();
         idValuesAfter = Collections.singletonList(idValue2);
         idValuesBefore = Arrays.asList(idValue1, idValue2);
 

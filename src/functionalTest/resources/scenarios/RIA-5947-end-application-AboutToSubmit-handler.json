@@ -38,8 +38,7 @@
         "currentCaseStateVisibleToLegalRepresentative": "applicationSubmitted",
         "isLegallyRepresentedForFlag": "Yes",
         "applicantHasMobile": "Yes",
-        "tribunalDocumentsWithMetadata":
-        [
+        "tribunalDocumentsWithMetadata": [
           {
             "id": "1",
             "value": {
@@ -48,22 +47,26 @@
                 "document_binary_url": "$/http.+\/documents/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\/binary/",
                 "document_filename": "LastName-ended-application-notice.PDF"
               },
-              "description":"",
+              "description": "",
               "dateUploaded": "{$TODAY}",
-              "tag":"bailEndApplication",
-              "suppliedBy":""
+              "tag": "bailEndApplication",
+              "suppliedBy": ""
             }
           }
         ],
         "notificationsSent": [
-          { "id": "1111_BAIL_APPLICATION_ENDED_APPLICANT_SMS",
-            "value":"$/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/"
+          {
+            "id": "1111_BAIL_APPLICATION_ENDED_APPLICANT_SMS",
+            "value": "$/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/"
           },
-          { "id": "1111_BAIL_APPLICATION_ENDED_HOME_OFFICE",
-            "value":"$/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/"
+          {
+            "id": "1111_BAIL_APPLICATION_ENDED_HOME_OFFICE",
+            "value": "$/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/"
           },
-          {"id": "1111_BAIL_APPLICATION_ENDED_LEGAL_REPRESENTATIVE",
-            "value":"$/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/"}
+          {
+            "id": "1111_BAIL_APPLICATION_ENDED_LEGAL_REPRESENTATIVE",
+            "value": "$/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/"
+          }
         ]
       }
     }

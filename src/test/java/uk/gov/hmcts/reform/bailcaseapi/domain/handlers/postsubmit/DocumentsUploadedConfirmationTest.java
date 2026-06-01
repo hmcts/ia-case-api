@@ -7,7 +7,9 @@ import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCase;
@@ -16,6 +18,7 @@ import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
 
+@ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 public class DocumentsUploadedConfirmationTest {
 
@@ -52,10 +55,12 @@ public class DocumentsUploadedConfirmationTest {
         PostSubmitCallbackResponse response = documentsUploadedConfirmation.handle(callback);
 
         assertNotNull(response.getConfirmationBody(), "Confirmation Body is null");
-        assertThat(response.getConfirmationBody().get()).contains("#### What happens next\n\n"
-                                                                  + "The document(s) you uploaded are available to view"
-                                                                  + " in the [documents tab](/cases/case-details/"
-                                                                  + "1000#Documents).");
+        assertThat(response.getConfirmationBody().get()).contains("""
+                                                                  #### What happens next
+                                                                  
+                                                                  The document(s) you uploaded are available to view\
+                                                                   in the [documents tab](/cases/case-details/\
+                                                                  1000#Documents).""");
 
         assertNotNull(response.getConfirmationHeader(), "Confirmation Header is null");
         assertThat(response.getConfirmationHeader().get()).isEqualTo("# Your upload is complete");

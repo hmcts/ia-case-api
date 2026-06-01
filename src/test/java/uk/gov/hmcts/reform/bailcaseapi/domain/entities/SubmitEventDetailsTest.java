@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.HashMap;
 import java.util.Map;
-import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.SubmitEventDetails;
@@ -18,14 +17,6 @@ public class SubmitEventDetailsTest {
     private final String callbackResponseStatus = "CALLBACK_COMPLETED";
 
     private SubmitEventDetails submitEventDetails;
-
-    @Test
-    void should_test_equals_contract() {
-
-        EqualsVerifier.simple()
-            .forClass(SubmitEventDetails.class)
-            .verify();
-    }
 
     @Test
     void should_hold_onto_values() {

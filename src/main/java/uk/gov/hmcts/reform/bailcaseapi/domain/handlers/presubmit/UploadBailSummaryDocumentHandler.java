@@ -70,8 +70,7 @@ public class UploadBailSummaryDocumentHandler implements PreSubmitCallbackHandle
                     .stream()
                     .map(IdValue::getValue)
                     .map(document -> documentReceiver.tryReceive(document, DocumentTag.BAIL_SUMMARY))
-                    .filter(Optional::isPresent)
-                    .map(Optional::get)
+                    .flatMap(Optional::stream)
                     .collect(Collectors.toList());
 
             Optional<List<IdValue<DocumentWithMetadata>>> maybeExistingHomeOfficeDocuments =

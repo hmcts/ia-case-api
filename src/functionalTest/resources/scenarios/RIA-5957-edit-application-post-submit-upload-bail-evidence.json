@@ -11,8 +11,7 @@
         "template": "minimal-application-submitted.json",
         "replacements": {
           "groundsForBailProvideEvidenceOption": "Yes",
-          "uploadTheBailEvidenceDocs":
-          [
+          "uploadTheBailEvidenceDocs": [
             {
               "id": "2",
               "value": {
@@ -21,7 +20,7 @@
                   "document_binary_url": "http://dm-store:8080/documents/1488f4de-c9fe-4f3e-a6b6-ee032ca759c0/binary",
                   "document_filename": "evidence.PDF"
                 },
-                "description":"test evidence description"
+                "description": "test evidence description"
               }
             }
           ]
@@ -70,8 +69,9 @@
           }
         ],
         "notificationsSent": [
-          {"id": "1111_BAIL_APPLICATION_EDITED_AND_SUBMITTED_HOME_OFFICE",
-            "value":"$/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/"
+          {
+            "id": "1111_BAIL_APPLICATION_EDITED_AND_SUBMITTED_HOME_OFFICE",
+            "value": "$/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/"
           }
         ]
       }

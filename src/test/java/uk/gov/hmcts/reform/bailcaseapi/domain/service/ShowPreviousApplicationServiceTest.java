@@ -480,8 +480,10 @@ public class ShowPreviousApplicationServiceTest {
     void check_hearing_details_labels() {
         String label = showPreviousApplicationService.getHearingDetails(bailCase);
         assertTrue(label.contains(
-            "|Location|Birmingham|\n"
-                + "|Date and time|04 Apr 2024, 08:00|\n"), "Label mismatch, expected label: " + label);
+            """
+            |Location|Birmingham|
+            |Date and time|04 Apr 2024, 08:00|
+            """), "Label mismatch, expected label: " + label);
     }
 
     @Test
@@ -492,21 +494,24 @@ public class ShowPreviousApplicationServiceTest {
 
         String label = showPreviousApplicationService.getHearingDetails(bailCase);
         assertTrue(label.contains(
-            "|Location|Birmingham Civil And Family Justice Centre|\n"
-            + "|Date and time|04 Apr 2024, 08:00|\n"), "Label mismatch, expected label: " + label);
+            """
+            |Location|Birmingham Civil And Family Justice Centre|
+            |Date and time|04 Apr 2024, 08:00|
+            """), "Label mismatch, expected label: " + label);
     }
 
     @Test
     void check_hearing_info_labels() {
         String label = showPreviousApplicationService.getHearingReqDetails(bailCase);
         assertTrue(label.contains(
-            "|Interpreter|Yes|\n"
-                + "|Language|English (NA)<br>African (NA)|\n"
-                + "|Disability|Yes|\n"
-                + "|Explain any special <br>arrangements needed for the <br>hearing|Disability details|\n"
-                + "|Video hearing|No|\n"
-                + "|Explain why the applicant <br>would not be able to join the <br>hearing by video link"
-                + "|Video hearing details|"));
+            """
+            |Interpreter|Yes|
+            |Language|English (NA)<br>African (NA)|
+            |Disability|Yes|
+            |Explain any special <br>arrangements needed for the <br>hearing|Disability details|
+            |Video hearing|No|
+            |Explain why the applicant <br>would not be able to join the <br>hearing by video link\
+            |Video hearing details|"""));
     }
 
     @Test
@@ -529,16 +534,18 @@ public class ShowPreviousApplicationServiceTest {
 
         String label = showPreviousApplicationService.getApplicantInfo(bailCase);
         assertTrue(label.contains(
-            "|Prison|Yes|\n"
-                + "|NOMS number|11112222|\n"
-                + "|Name of prison|HM PrisonMilton Keynes|\n"
-                + "|Arrival date into the UK|2 Mar 2020|\n"
-                + "|Pending appeal hearing|Yes|\n"
-                + "|Pending appeal reference|REF12345|\n"
-                + "|Pending appeal hearing in UT|Yes|\n"
-                + "|Pending appeal reference number in UT|REF12345|\n"
-                + "|Address if bail granted|Yes|\n"
-                + "|Address|Line 1<br>Line 2<br>PostCode<br>County<br>Country<br>|\n"
+            """
+            |Prison|Yes|
+            |NOMS number|11112222|
+            |Name of prison|HM PrisonMilton Keynes|
+            |Arrival date into the UK|2 Mar 2020|
+            |Pending appeal hearing|Yes|
+            |Pending appeal reference|REF12345|
+            |Pending appeal hearing in UT|Yes|
+            |Pending appeal reference number in UT|REF12345|
+            |Address if bail granted|Yes|
+            |Address|Line 1<br>Line 2<br>PostCode<br>County<br>Country<br>|
+            """
         ));
     }
 
@@ -572,21 +579,22 @@ public class ShowPreviousApplicationServiceTest {
             FCS1_INTERPRETER_SIGN_LANGUAGE
         );
         assertTrue(label.contains(
-            "|Financial condition supporter|Yes|\n"
-                + "|Given names|Jane|\n"
-                + "|Family name|Smith|\n"
-                + "|Telephone number|7799885544|\n"
-                + "|Mobile number|1122336655|\n"
-                + "|Email address|jane.smith@test.com|\n"
-                + "|Date of birth|5 Apr 1988|\n"
-                + "|Relationship to the applicant|Wife|\n"
-                + "|Occupation|Doctor|\n"
-                + "|Immigration status|Resident|\n"
-                + "|Nationalities|American|\n"
-                + "|Passport number|Yes|\n"
-                + "|Passport number|P12345|\n"
-                + "|Spoken language Interpreter|lang 1|\n"
-                + "|Financial condition amount (£)|3000|"
+            """
+            |Financial condition supporter|Yes|
+            |Given names|Jane|
+            |Family name|Smith|
+            |Telephone number|7799885544|
+            |Mobile number|1122336655|
+            |Email address|jane.smith@test.com|
+            |Date of birth|5 Apr 1988|
+            |Relationship to the applicant|Wife|
+            |Occupation|Doctor|
+            |Immigration status|Resident|
+            |Nationalities|American|
+            |Passport number|Yes|
+            |Passport number|P12345|
+            |Spoken language Interpreter|lang 1|
+            |Financial condition amount (£)|3000|"""
         ));
     }
 
@@ -596,12 +604,13 @@ public class ShowPreviousApplicationServiceTest {
             bailCase
         );
         assertTrue(label.contains(
-            "|Probation offender manager|Yes|\n"
-                + "|Given names|Jane|\n"
-                + "|Family name|Smith|\n"
-                + "|Telephone number|7799885544|\n"
-                + "|Mobile number|1122336655|\n"
-                + "|Email address|jane.smith@test.com|"
+            """
+            |Probation offender manager|Yes|
+            |Given names|Jane|
+            |Family name|Smith|
+            |Telephone number|7799885544|
+            |Mobile number|1122336655|
+            |Email address|jane.smith@test.com|"""
         ));
     }
 
@@ -610,9 +619,10 @@ public class ShowPreviousApplicationServiceTest {
     void check_grounds_for_bails_label_when_transfer_not_acceptable() {
         String label = showPreviousApplicationService.getGroundsForBail(bailCase);
         assertTrue(label.contains(
-            "|Bail Grounds|Grounds for bail reasons|\n"
-                + "|Transfer bail management|No|\n"
-                + "|Reasons applicant does not consent to bail transfer|Transfer bail management reasons|"
+            """
+            |Bail Grounds|Grounds for bail reasons|
+            |Transfer bail management|No|
+            |Reasons applicant does not consent to bail transfer|Transfer bail management reasons|"""
         ));
     }
 
@@ -621,8 +631,10 @@ public class ShowPreviousApplicationServiceTest {
         when(bailCase.read(TRANSFER_BAIL_MANAGEMENT_OPTION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         String label = showPreviousApplicationService.getGroundsForBail(bailCase);
         assertTrue(label.contains(
-            "|Bail Grounds|Grounds for bail reasons|\n"
-                + "|Transfer bail management|Yes|\n"
+            """
+            |Bail Grounds|Grounds for bail reasons|
+            |Transfer bail management|Yes|
+            """
         ));
     }
 
@@ -631,9 +643,11 @@ public class ShowPreviousApplicationServiceTest {
         when(bailCase.read(TRANSFER_BAIL_MANAGEMENT_OPTION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         String label = showPreviousApplicationService.getGroundsForBail(bailCase);
         assertTrue(label.contains(
-            "|Bail Grounds|Grounds for bail reasons|\n"
-                + "|Transfer bail management|No|\n"
-                + "|Reasons applicant does not consent to bail transfer|Transfer bail management reasons|\n"
+            """
+            |Bail Grounds|Grounds for bail reasons|
+            |Transfer bail management|No|
+            |Reasons applicant does not consent to bail transfer|Transfer bail management reasons|
+            """
         ));
     }
 
@@ -643,8 +657,10 @@ public class ShowPreviousApplicationServiceTest {
         when(bailCase.read(TRANSFER_BAIL_MANAGEMENT_OBJECTION_OPTION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         String label = showPreviousApplicationService.getGroundsForBail(bailCase);
         assertTrue(label.contains(
-            "|Bail Grounds|Grounds for bail reasons|\n"
-                + "|Transfer of management to the Home Office|The applicant consents to the management being transferred|\n"
+            """
+            |Bail Grounds|Grounds for bail reasons|
+            |Transfer of management to the Home Office|The applicant consents to the management being transferred|
+            """
         ));
     }
 
@@ -654,9 +670,11 @@ public class ShowPreviousApplicationServiceTest {
         when(bailCase.read(TRANSFER_BAIL_MANAGEMENT_OBJECTION_OPTION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         String label = showPreviousApplicationService.getGroundsForBail(bailCase);
         assertTrue(label.contains(
-            "|Bail Grounds|Grounds for bail reasons|\n"
-                + "|Transfer of management to the Home Office|The applicant objects to the management being transferred|\n"
-                + "|Reasons why the applicant objects to the management of bail being transferred to the Home Office|Objected transfer bail management reasons|\n"
+            """
+            |Bail Grounds|Grounds for bail reasons|
+            |Transfer of management to the Home Office|The applicant objects to the management being transferred|
+            |Reasons why the applicant objects to the management of bail being transferred to the Home Office|Objected transfer bail management reasons|
+            """
         ));
     }
 
@@ -664,12 +682,13 @@ public class ShowPreviousApplicationServiceTest {
     void check_legal_rep_label() {
         String label = showPreviousApplicationService.getLegalRepDetails(bailCase);
         assertTrue(label.contains(
-            "|Company|Legal Rep Company|\n"
-                + "|Name|LR ABC|\n"
-                + "|Family name|Jones|\n"
-                + "|Email address|lr_abc@test.com|\n"
-                + "|Phone number|1122334455|\n"
-                + "|Reference|Ref78965|"
+            """
+            |Company|Legal Rep Company|
+            |Name|LR ABC|
+            |Family name|Jones|
+            |Email address|lr_abc@test.com|
+            |Phone number|1122334455|
+            |Reference|Ref78965|"""
         ));
     }
 
@@ -678,12 +697,14 @@ public class ShowPreviousApplicationServiceTest {
         when(bailCase.read(INTERPRETER_LANGUAGES)).thenReturn(Optional.empty());
         String label = showPreviousApplicationService.getHearingReqDetails(bailCase);
         assertTrue(label.contains(
-            "|Interpreter|Yes|\n"
-                + "|Spoken language Interpreter|lang 1|\n|Sign language Interpreter|lang sign 1|\n"
-                + "|Disability|Yes|\n"
-                + "|Explain any special <br>arrangements needed for the <br>hearing|Disability details|\n"
-                + "|Video hearing|No|\n"
-                + "|Explain why the applicant <br>would not be able to join the <br>hearing by video link"
-                + "|Video hearing details|"));
+            """
+            |Interpreter|Yes|
+            |Spoken language Interpreter|lang 1|
+            |Sign language Interpreter|lang sign 1|
+            |Disability|Yes|
+            |Explain any special <br>arrangements needed for the <br>hearing|Disability details|
+            |Video hearing|No|
+            |Explain why the applicant <br>would not be able to join the <br>hearing by video link\
+            |Video hearing details|"""));
     }
 }

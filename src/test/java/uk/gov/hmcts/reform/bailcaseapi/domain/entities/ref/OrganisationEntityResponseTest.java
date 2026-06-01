@@ -15,22 +15,24 @@ class OrganisationEntityResponseTest {
     @BeforeEach
     public void setUp() throws Exception {
 
-        String jsonResult = "{\n"
-                            + "    \"organisationIdentifier\": \"0UFUG4Z123\",\n"
-                            + "    \"name\": \"TestOrg1\",\n"
-                            + "    \"status\": \"ACTIVE\",\n"
-                            + "    \"sraRegulated\": true,\n"
-                            + "    \"superUser\": {\n"
-                            + "      \"firstName\": \"John\",\n"
-                            + "      \"lastName\": \"Doe\",\n"
-                            + "      \"email\": \"john.doe@example.com\"\n"
-                            + "    },\n"
-                            + "    \"paymentAccount\": [\n"
-                            + "      \"NUM1\",\n"
-                            + "      \"NUM2\"\n"
-                            + "    ],\n"
-                            + "\"contactInformation\" : []"
-                            + "}";
+        String jsonResult = """
+                            {
+                                "organisationIdentifier": "0UFUG4Z123",
+                                "name": "TestOrg1",
+                                "status": "ACTIVE",
+                                "sraRegulated": true,
+                                "superUser": {
+                                  "firstName": "John",
+                                  "lastName": "Doe",
+                                  "email": "john.doe@example.com"
+                                },
+                                "paymentAccount": [
+                                  "NUM1",
+                                  "NUM2"
+                                ],
+                            "contactInformation" : []\
+                            }\
+                            """;
 
         ObjectMapper mapper = new ObjectMapper();
         testOrganisationEntityResponse = mapper.readValue(jsonResult, OrganisationEntityResponse.class);
@@ -48,7 +50,7 @@ class OrganisationEntityResponseTest {
         assertEquals("John", organisationEntityResponse.getSuperUser().getFirstName());
         assertEquals("Doe", organisationEntityResponse.getSuperUser().getLastName());
         assertEquals("john.doe@example.com", organisationEntityResponse.getSuperUser().getEmail());
-        assertEquals("NUM1", organisationEntityResponse.getPaymentAccount().get(0));
+        assertEquals("NUM1", organisationEntityResponse.getPaymentAccount().getFirst());
         assertEquals("NUM2", organisationEntityResponse.getPaymentAccount().get(1));
     }
 

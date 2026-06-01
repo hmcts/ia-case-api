@@ -33,8 +33,12 @@ public class ImaStatusConfirmation implements PostSubmitCallbackHandler<BailCase
 
         String confirmationHeader = "# IMA status updated";
         String confirmationBody =
-            "## What happens next\n\n"
-            + "No further action is required.\n\n";
+            """
+            ## What happens next
+            
+            No further action is required.
+            
+            """;
 
 
         postSubmitResponse.setConfirmationHeader(confirmationHeader);

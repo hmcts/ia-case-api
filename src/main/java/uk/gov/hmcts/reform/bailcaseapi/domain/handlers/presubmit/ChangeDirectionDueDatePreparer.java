@@ -62,7 +62,7 @@ public class ChangeDirectionDueDatePreparer implements PreSubmitCallbackHandler<
         }
 
         Collections.reverse(directionListElements);
-        DynamicList bailDirectionList = new DynamicList(directionListElements.get(0), directionListElements);
+        DynamicList bailDirectionList = new DynamicList(directionListElements.getFirst(), directionListElements);
         bailCase.write(BAIL_DIRECTION_LIST, bailDirectionList);
 
         return new PreSubmitCallbackResponse<>(bailCase);
