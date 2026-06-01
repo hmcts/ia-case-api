@@ -744,6 +744,6 @@ public class HandlerUtils {
         String homeOfficeSearchStatus = asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class).orElse("");
         String homeOfficeSearchNoMatch = asylumCase.read(HOME_OFFICE_SEARCH_NO_MATCH, String.class).orElse("");
 
-        return validationDone || (homeOfficeSearchStatus == "SUCCESS" && homeOfficeSearchNoMatch != "NO_MATCH");
+        return validationDone || (homeOfficeSearchStatus.equals("SUCCESS") && !homeOfficeSearchNoMatch.equals("NO_MATCH"));
     }
 }
