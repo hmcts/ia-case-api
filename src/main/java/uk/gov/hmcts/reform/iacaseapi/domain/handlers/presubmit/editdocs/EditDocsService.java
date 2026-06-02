@@ -115,11 +115,8 @@ public class EditDocsService {
                 boolean noGrounds = isEmpty(ftpaApplication.getFtpaGroundsDocuments());
                 boolean noEvidence = isEmpty(ftpaApplication.getFtpaEvidenceDocuments());
                 if (noOutOfTime && noGrounds && noEvidence) {
-                    log.info("Removing FTPA application as all document lists are empty");
                     return true;
                 }
-                ftpaApplication.setFtpaApplicationDate(null);
-                ftpaApplication.setFtpaApplicant(null);
                 return false;
             });
             asylumCase.write(FTPA_LIST, ftpaList);
