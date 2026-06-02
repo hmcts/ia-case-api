@@ -180,12 +180,12 @@ public class EditDocsService {
         Optional<List<IdValue<DocumentWithMetadata>>> optionalFtpaDecisionDocs = asylumCase.read(documentList);
         optionalFtpaDecisionDocs.ifPresent(ftpaDecisionDocs -> {
             List<IdValue<DocumentWithDescription>> newDecisionDocuments = ftpaDecisionDocs.stream()
-                    .filter(idValue -> idValue.getValue().getTag().equals(DocumentTag.FTPA_DECISION_AND_REASONS))
-                    .map(idValue -> new IdValue<>(
-                            idValue.getId(),
-                            new DocumentWithDescription(idValue.getValue().getDocument(), idValue.getValue().getDescription())
-                    ))
-                    .toList();
+                .filter(idValue -> idValue.getValue().getTag().equals(DocumentTag.FTPA_DECISION_AND_REASONS))
+                .map(idValue -> new IdValue<>(
+                    idValue.getId(),
+                    new DocumentWithDescription(idValue.getValue().getDocument(), idValue.getValue().getDescription())
+                ))
+                .toList();
             asylumCase.write(document, newDecisionDocuments);
         });
     }
