@@ -1,6 +1,5 @@
 {
   "description": "RIA-8922 set next hearing date during edit case listing event",
-  "disabled": false,
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "AdminOfficer",

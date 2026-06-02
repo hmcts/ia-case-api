@@ -1,6 +1,6 @@
 {
   "description": "RIA-385 Request hearing requirements",
-  "enabled": "false",
+  "disabled": "true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",

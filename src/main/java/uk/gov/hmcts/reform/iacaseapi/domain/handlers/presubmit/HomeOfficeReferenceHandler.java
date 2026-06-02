@@ -78,28 +78,18 @@ public class HomeOfficeReferenceHandler implements PreSubmitCallbackHandler<Asyl
 
         String pageId = callback.getPageId();
 
-        PreSubmitCallbackResponse<AsylumCase> response;
-
-        switch (pageId) {
-            case "homeOfficeReferenceNumber", "oocHomeOfficeReferenceNumber", "cuiHomeOfficeReferenceNumber", "cuiGwfReferenceNumber":
-                response = validateHomeOfficeReference(callback, asylumCase, homeOfficeReferenceNumber);
-                break;
+        return switch (pageId) {
+            case "homeOfficeReferenceNumber", "oocHomeOfficeReferenceNumber", "cuiHomeOfficeReferenceNumber", "cuiGwfReferenceNumber" -> validateHomeOfficeReference(callback, asylumCase, homeOfficeReferenceNumber);
         
-            case "appellantBasicDetails", "cuiAppellantDob":
+            case "appellantBasicDetails", "cuiAppellantDob" -> {
                 boolean isCUICallback = pageId.contains("cui");
-                response = validateNameAndDateOfBirth(callback, asylumCase, homeOfficeReferenceNumber, isCUICallback);
-                break;
+                yield validateNameAndDateOfBirth(callback, asylumCase, homeOfficeReferenceNumber, isCUICallback);
+            }
 
-            case "cuiAppellantName":
-                response = validateName(callback, asylumCase, homeOfficeReferenceNumber);
-                break;
+            case "cuiAppellantName" -> validateName(callback, asylumCase, homeOfficeReferenceNumber);
 
-            default:
-                response = new PreSubmitCallbackResponse<>(asylumCase);
-                break;
-        }
-
-        return response;
+            default -> new PreSubmitCallbackResponse<>(asylumCase);
+        };
     }
 
     private PreSubmitCallbackResponse<AsylumCase> validateHomeOfficeReference(
@@ -279,9 +269,7 @@ public class HomeOfficeReferenceHandler implements PreSubmitCallbackHandler<Asyl
         normalised = Normalizer.normalize(normalised, Normalizer.Form.NFD);
 
         // Step 3: Remove diacritical marks (accents, etc.)
-        normalised = normalised.replaceAll("\\p{M}", "");
-
-        return normalised;
+        return normalised.replaceAll("\\p{M}", "");
     }
 
     private boolean matchesDateOfBirth(String homeOfficeDob, String appellantDob) {

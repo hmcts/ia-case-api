@@ -32,8 +32,10 @@ public class ForceCaseToSubmitHearingRequirementsConfirmation  implements PostSu
 
         postSubmitResponse.setConfirmationHeader("# You've forced the case progression to submit hearing requirements");
         postSubmitResponse.setConfirmationBody(
-            "#### What happens next\n\n"
-                + "Respondent will be notified by email."
+            """
+            #### What happens next
+            
+            Respondent will be notified by email."""
         );
 
         return postSubmitResponse;

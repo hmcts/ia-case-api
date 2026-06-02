@@ -1,15 +1,13 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.clients;
 
-import static java.util.Collections.singletonMap;
-import static java.util.Objects.requireNonNull;
-
 import com.google.common.collect.Maps;
-import java.net.URI;
-import java.util.List;
-import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
@@ -19,6 +17,13 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
+
+import java.net.URI;
+import java.util.List;
+import java.util.Map;
+
+import static java.util.Collections.singletonMap;
+import static java.util.Objects.requireNonNull;
 
 @Service
 @Slf4j
@@ -90,11 +95,10 @@ public class CcdSupplementaryUpdater {
                             Object.class
                     );
 
-            log.info("Http status received from CCD supplementary update API [{}]", response.getStatusCodeValue());
+            log.info("Http status received from CCD supplementary update API [{}]", response.getStatusCode().value());
         } catch (RestClientResponseException e) {
             log.warn("Couldn't update CCD case supplementary data using API: [{}]", url);
         }
-
     }
 
     private boolean hasCitizenRole(List<String> roles) {

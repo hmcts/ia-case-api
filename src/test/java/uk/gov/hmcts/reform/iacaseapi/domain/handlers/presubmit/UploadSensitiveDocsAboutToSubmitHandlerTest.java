@@ -7,11 +7,12 @@ import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.powermock.api.mockito.PowerMockito.when;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPLOAD_SENSITIVE_DOCS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPLOAD_SENSITIVE_DOCS_FILE_UPLOADS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPLOAD_SENSITIVE_DOCS_IS_APPELLANT_RESPONDENT;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -19,7 +20,6 @@ import java.util.Optional;
 import lombok.Value;
 import org.assertj.core.api.Assertions;
 import org.jetbrains.annotations.NotNull;
-import org.joda.time.LocalDate;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -100,7 +100,7 @@ class UploadSensitiveDocsAboutToSubmitHandlerTest {
             actualResponse.getData().read(UPLOAD_SENSITIVE_DOCS);
 
         if (actualUploadSensitiveDocsOptional.isPresent()) {
-            assertEquals(someDocWithMetadata, actualUploadSensitiveDocsOptional.get().get(0).getValue());
+            assertEquals(someDocWithMetadata, actualUploadSensitiveDocsOptional.get().getFirst().getValue());
         } else {
             fail("expected sensitive document not found");
         }
@@ -110,7 +110,7 @@ class UploadSensitiveDocsAboutToSubmitHandlerTest {
 
         verify(documentReceiver, times(1))
             .tryReceiveAll(docWithDescListCaptor.capture(), eq(DocumentTag.SENSITIVE_DOCUMENT), eq(suppliedBy));
-        assertEquals(uploadedSensitiveDoc, docWithDescListCaptor.getValue().get(0).getValue());
+        assertEquals(uploadedSensitiveDoc, docWithDescListCaptor.getValue().getFirst().getValue());
 
     }
 

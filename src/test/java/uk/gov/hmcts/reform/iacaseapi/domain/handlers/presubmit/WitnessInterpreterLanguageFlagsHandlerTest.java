@@ -125,7 +125,7 @@ public class WitnessInterpreterLanguageFlagsHandlerTest {
         List<PartyFlagIdValue> actualWitnessFlags = partyFlagsCaptor.getValue();
 
         assertEquals(1, actualWitnessFlags.size());
-        assertEquals("1234", actualWitnessFlags.get(0).getPartyId());
+        assertEquals("1234", actualWitnessFlags.getFirst().getPartyId());
     }
 
     @ParameterizedTest
@@ -185,7 +185,7 @@ public class WitnessInterpreterLanguageFlagsHandlerTest {
         List<PartyFlagIdValue> actualWitnessFlags = partyFlagsCaptor.getValue();
 
         assertEquals(1, actualWitnessFlags.size());
-        assertEquals("1234", actualWitnessFlags.get(0).getPartyId());
+        assertEquals("1234", actualWitnessFlags.getFirst().getPartyId());
     }
 
     @ParameterizedTest

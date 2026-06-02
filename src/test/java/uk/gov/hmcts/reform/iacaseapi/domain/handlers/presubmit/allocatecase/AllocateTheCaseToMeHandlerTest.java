@@ -149,7 +149,7 @@ class AllocateTheCaseToMeHandlerTest {
         handler.handle(ABOUT_TO_SUBMIT, callback);
 
         verify(roleAssignmentService).assignRole(1L, SOME_USER_ID);
-        verify(asylumCase).write(CASE_WORKER_NAME, String.format("%s %s", SOME_USER_FIRSTNAME, SOME_USER_SURNAME));
+        verify(asylumCase).write(CASE_WORKER_NAME, "%s %s".formatted(SOME_USER_FIRSTNAME, SOME_USER_SURNAME));
     }
 
     @Test
