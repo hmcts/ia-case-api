@@ -32,9 +32,11 @@ public class RequestHomeOfficeDataConfirmation implements PostSubmitCallbackHand
 
         postSubmitResponse.setConfirmationHeader("# You have matched the appellant details");
         postSubmitResponse.setConfirmationBody(
-                "#### Do this next\n\n"
-                        + "You must review the appeal data and cross reference it with Home Office data in the validation tab. If the appeal "
-                        + "looks valid, you must tell the respondent to supply their evidence.<br>"
+                """
+                #### Do this next
+                
+                You must review the appeal data and cross reference it with Home Office data in the validation tab. If the appeal \
+                looks valid, you must tell the respondent to supply their evidence.<br>"""
         );
 
         return postSubmitResponse;

@@ -1,6 +1,5 @@
 {
   "description": "RIA-8839 Make decision without hearing when listing location is from ref data",
-  "enabled": true,
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",

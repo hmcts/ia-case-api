@@ -68,8 +68,7 @@ public class LegalRepOrganisationFormatter implements PreSubmitCallbackHandler<A
             }
 
             if (organisationEntityResponse != null
-                    && StringUtils.isNotBlank(organisationEntityResponse.getOrganisationIdentifier())
-                    && featureToggler.getValue("share-case-feature", false)) {
+                    && StringUtils.isNotBlank(organisationEntityResponse.getOrganisationIdentifier())) {
 
                 log.info("PRD endpoint called for caseId [{}] orgId[{}]",
                         callback.getCaseDetails().getId(), organisationEntityResponse.getOrganisationIdentifier());
@@ -98,7 +97,7 @@ public class LegalRepOrganisationFormatter implements PreSubmitCallbackHandler<A
             List<LegRepAddressUk> addresses = organisationEntityResponse.getContactInformation() == null
                 ? Collections.emptyList() : organisationEntityResponse.getContactInformation();
             if (!addresses.isEmpty()) {
-                LegRepAddressUk legRepAddressUk = addresses.get(0);
+                LegRepAddressUk legRepAddressUk = addresses.getFirst();
                 addressUk = new AddressUk(
                     legRepAddressUk.getAddressLine1() == null ? "" : legRepAddressUk.getAddressLine1(),
                     legRepAddressUk.getAddressLine2() == null ? "" : legRepAddressUk.getAddressLine2(),

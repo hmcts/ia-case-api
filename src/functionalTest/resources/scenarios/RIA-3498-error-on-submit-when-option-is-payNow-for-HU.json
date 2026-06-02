@@ -1,6 +1,6 @@
 {
   "description": "RIA-3498 Error on submit when option is payNow for HU AppealType.json",
-  "enabled": "false",
+  "disabled": "true",
   "request": {
     "uri": "/asylum/ccdAboutToStart",
     "credentials": "LegalRepresentative",
@@ -14,9 +14,9 @@
           "appealReferenceNumber": "PA/12345/2018",
           "appealType": "refusalOfHumanRights",
           "eaHuAppealTypePaymentOption": "payNow"
-          }
         }
       }
+    }
   },
   "expectation": {
     "status": 200,

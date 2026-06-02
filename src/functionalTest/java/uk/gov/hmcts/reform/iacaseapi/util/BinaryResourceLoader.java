@@ -30,7 +30,7 @@ public final class BinaryResourceLoader {
                     Resource::getFilename,
                     Function.identity(),
                     (u, v) -> {
-                        throw new IllegalStateException(String.format("Duplicate key %s", u));
+                        throw new IllegalStateException("Duplicate key %s".formatted(u));
                     },
                     TreeMap::new
                 ));
