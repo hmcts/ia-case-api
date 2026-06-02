@@ -1109,6 +1109,14 @@ class HandlerUtilsTest {
     }
 
     @Test
+    void hasAppellantDataBeenValidated_returns_true_3() {
+        when(asylumCase.read(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, String.class)).thenReturn(Optional.of(""));
+        when(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class)).thenReturn(Optional.of("SUCCESS"));
+        when(asylumCase.read(HOME_OFFICE_SEARCH_NO_MATCH, String.class)).thenReturn(Optional.of("NO_MATCH"));
+        assertTrue(HandlerUtils.hasAppellantDataBeenValidated(asylumCase));
+    }
+
+    @Test
     void hasAppellantDataBeenValidated_returns_false_1() {
         when(asylumCase.read(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, String.class)).thenReturn(Optional.of(""));
         when(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class)).thenReturn(Optional.of(""));
@@ -1126,14 +1134,6 @@ class HandlerUtilsTest {
     void hasAppellantDataBeenValidated_returns_false_3() {
         when(asylumCase.read(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, String.class)).thenReturn(Optional.of(""));
         when(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class)).thenReturn(Optional.of("MULTIPLE"));
-        assertFalse(HandlerUtils.hasAppellantDataBeenValidated(asylumCase));
-    }
-
-    @Test
-    void hasAppellantDataBeenValidated_returns_false_4() {
-        when(asylumCase.read(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, String.class)).thenReturn(Optional.of(""));
-        when(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class)).thenReturn(Optional.of("SUCCESS"));
-        when(asylumCase.read(HOME_OFFICE_SEARCH_NO_MATCH, String.class)).thenReturn(Optional.of("NO_MATCH"));
         assertFalse(HandlerUtils.hasAppellantDataBeenValidated(asylumCase));
     }
 

@@ -742,8 +742,9 @@ public class HandlerUtils {
         boolean validationDone = !asylumCase.read(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, String.class).orElse("").equals("");
         // Evidence from old validation endpoint
         String homeOfficeSearchStatus = asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class).orElse("");
-        String homeOfficeSearchNoMatch = asylumCase.read(HOME_OFFICE_SEARCH_NO_MATCH, String.class).orElse("");
-
-        return validationDone || (homeOfficeSearchStatus.equals("SUCCESS") && !homeOfficeSearchNoMatch.equals("NO_MATCH"));
+        // DON'T DO THIS!  Apparently we must allow the case to proceed even if it says "NO_MATCH"
+        // String homeOfficeSearchNoMatch = asylumCase.read(HOME_OFFICE_SEARCH_NO_MATCH, String.class).orElse("");
+        // return validationDone || (homeOfficeSearchStatus.equals("SUCCESS") && !homeOfficeSearchNoMatch.equals("NO_MATCH"));
+        return validationDone || homeOfficeSearchStatus.equals("SUCCESS");
     }
 }
