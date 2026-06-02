@@ -74,11 +74,7 @@ public class MarkPaymentPaidStateHandler implements PreSubmitCallbackStateHandle
         AppealType appealType = asylumCase.read(APPEAL_TYPE, AppealType.class)
             .orElseThrow(() -> new IllegalStateException("AppealType is not present"));
 
-        if (List.of(EA, HU, EU, AG).contains(appealType) && State.PENDING_PAYMENT == currentState) {
-            return new PreSubmitCallbackResponse<>(asylumCase, State.APPEAL_SUBMITTED);
-        }
-
-        if (appealType == AppealType.PA && State.PENDING_PAYMENT == currentState) {
+        if (List.of(EA, HU, EU, AG, AppealType.PA).contains(appealType) && State.PENDING_PAYMENT == currentState) {
             return new PreSubmitCallbackResponse<>(asylumCase, State.APPEAL_SUBMITTED);
         }
 

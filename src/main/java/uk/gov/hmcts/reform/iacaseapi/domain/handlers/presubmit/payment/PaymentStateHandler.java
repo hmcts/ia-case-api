@@ -138,20 +138,20 @@ public class PaymentStateHandler implements PreSubmitCallbackStateHandler<Asylum
             case EU:
             case AG:
                 if (isPaymentStatusPendingOrFailed) {
-                    // For PAYMENT_APPEAL, if payment failed, remain in current state
+                    // For PAYMENT_APPEAL event, if payment failed, remain in current state
                     if (isPaymentAppealEvent) {
                         return new PreSubmitCallbackResponse<>(asylumCase, currentState);
                     }
-                    // For SUBMIT_APPEAL, go to PENDING_PAYMENT
+                    // For SUBMIT_APPEAL event, set state to PENDING_PAYMENT
                     return new PreSubmitCallbackResponse<>(asylumCase, PENDING_PAYMENT);
                 }
-                // For PAYMENT_APPEAL, only transition to APPEAL_SUBMITTED from PENDING_PAYMENT
+                // For PAYMENT_APPEAL event, change state to APPEAL_SUBMITTED when current state is PENDING_PAYMENT
                 if (isPaymentAppealEvent && currentState != PENDING_PAYMENT) {
                     return new PreSubmitCallbackResponse<>(asylumCase, currentState);
                 }
                 return new PreSubmitCallbackResponse<>(asylumCase, APPEAL_SUBMITTED);
             default:
-                // For PAYMENT_APPEAL, only transition to APPEAL_SUBMITTED from PENDING_PAYMENT
+                // For PAYMENT_APPEAL event, change state to APPEAL_SUBMITTED when current state is PENDING_PAYMENT
                 if (isPaymentAppealEvent && currentState != PENDING_PAYMENT) {
                     return new PreSubmitCallbackResponse<>(asylumCase, currentState);
                 }
@@ -167,7 +167,7 @@ public class PaymentStateHandler implements PreSubmitCallbackStateHandler<Asylum
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
         boolean isPaymentAppealEvent = callback.getEvent() == Event.PAYMENT_APPEAL;
 
-        // For PAYMENT_APPEAL, only transition to APPEAL_SUBMITTED from PENDING_PAYMENT
+        // For PAYMENT_APPEAL event, change state to APPEAL_SUBMITTED when current state is PENDING_PAYMENT
         if (isPaymentAppealEvent && currentState != PENDING_PAYMENT) {
             return new PreSubmitCallbackResponse<>(asylumCase, currentState);
         }
