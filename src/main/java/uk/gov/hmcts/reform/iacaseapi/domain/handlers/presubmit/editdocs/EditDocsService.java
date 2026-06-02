@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
@@ -20,7 +19,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit.editdocs.EditDoc
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class EditDocsService {
 
     private final EditDocsAuditService docsAuditService;
@@ -35,34 +33,15 @@ public class EditDocsService {
                     FTPA_RESPONDENT_EVIDENCE_DOCUMENTS
             );
 
-    public void cleanUpOverviewTabDocs(
-            AsylumCase asylumCase,
-            AsylumCase asylumCaseBefore
-    ) {
+    public EditDocsService(EditDocsAuditService docsAuditService) {
+        this.docsAuditService = docsAuditService;
+    }
 
-        List<String> deletedFinalDecisionDocIds =
-                getDeletedDocIds(
-                        asylumCase,
-                        asylumCaseBefore
-                );
-
-        List<String> deletedFtpaDocIds =
-                getDeletedFtpaDocIds(
-                        asylumCase,
-                        asylumCaseBefore
-                );
-
-        updateFtpaNonDecisionDocDescriptions(
-                asylumCase,
-                asylumCaseBefore,
-                deletedFtpaDocIds
-        );
-
-        cleanUpDocumentList(
-                asylumCase,
-                FINAL_DECISION_AND_REASONS_PDF,
-                deletedFinalDecisionDocIds
-        );
+    public void cleanUpOverviewTabDocs(AsylumCase asylumCase, AsylumCase asylumCaseBefore) {
+        List<String> deletedFinalDecisionDocIds = getDeletedDocIds(asylumCase, asylumCaseBefore);
+        List<String> deletedFtpaDocIds = getDeletedFtpaDocIds(asylumCase, asylumCaseBefore);
+        updateFtpaNonDecisionDocDescriptions(asylumCase, asylumCaseBefore, deletedFtpaDocIds);
+        cleanUpDocumentList(asylumCase, FINAL_DECISION_AND_REASONS_PDF, deletedFinalDecisionDocIds);
 
         FTPA_DOCUMENT_FIELDS.forEach(field ->
                 cleanUpFTPADocumentList(
@@ -96,34 +75,14 @@ public class EditDocsService {
         );
     }
 
-    public void cleanUpAppealTabDocs(
-            AsylumCase asylumCase,
-            AsylumCase asylumCaseBefore
-    ) {
-
-        List<String> deletedLRDocIds =
-                getDeletedAppealDocIds(
-                        asylumCase,
-                        asylumCaseBefore
-                );
-
-        cleanUpAppealDocumentList(
-                asylumCase,
-                REASONS_FOR_APPEAL_DOCUMENTS,
-                deletedLRDocIds
-        );
+    public void cleanUpAppealTabDocs(AsylumCase asylumCase, AsylumCase asylumCaseBefore) {
+        List<String> deletedLRDocIds = getDeletedAppealDocIds(asylumCase, asylumCaseBefore);
+        cleanUpAppealDocumentList(asylumCase, REASONS_FOR_APPEAL_DOCUMENTS, deletedLRDocIds);
     }
 
-    private void cleanUpDocumentList(
-            AsylumCase asylumCase,
-            AsylumCaseFieldDefinition documentType,
-            List<String> deletedDocIds
+    private void cleanUpDocumentList(AsylumCase asylumCase, AsylumCaseFieldDefinition documentType, List<String> deletedDocIds
     ) {
-
-        Document currentDocument =
-                asylumCase.read(documentType, Document.class)
-                        .orElse(null);
-
+        Document currentDocument = asylumCase.read(documentType, Document.class).orElse(null);
         if (currentDocument == null) {
             return;
         }
@@ -136,17 +95,11 @@ public class EditDocsService {
         }
     }
 
-    private void cleanUpFTPADocumentList(
-            AsylumCase asylumCase,
-            AsylumCaseFieldDefinition documentType,
-            List<String> deletedDocIds
+    private void cleanUpFTPADocumentList(AsylumCase asylumCase, AsylumCaseFieldDefinition documentType, List<String> deletedDocIds
     ) {
+        Set<String> deletedDocIdSet = new HashSet<>(deletedDocIds);
 
-        Set<String> deletedDocIdSet =
-                new HashSet<>(deletedDocIds);
-
-        Optional<List<IdValue<DocumentWithDescription>>> optionalDocuments =
-                asylumCase.read(documentType);
+        Optional<List<IdValue<DocumentWithDescription>>> optionalDocuments = asylumCase.read(documentType);
 
         optionalDocuments.ifPresent(documents -> {
 
@@ -515,23 +468,11 @@ public class EditDocsService {
         );
     }
 
-    private void updateFtpaDocDescriptions(
-            AsylumCase asylumCase,
-            List<String> updatedAndDeletedDocIds,
-            List<String> deletedFtpaDocIds,
-            AsylumCaseFieldDefinition docTabDocuments,
-            AsylumCaseFieldDefinition ftpaTabDocuments
-    ) {
-
-        Set<String> deletedDocIdSet =
-                new HashSet<>(deletedFtpaDocIds);
-
-        Optional<List<IdValue<DocumentWithMetadata>>> optionalFtpaDocuments =
-                asylumCase.read(docTabDocuments);
-
-        Optional<List<IdValue<DocumentWithDescription>>> optionalFtpaDocumentsDescription =
-                asylumCase.read(ftpaTabDocuments);
-
+    private void updateFtpaDocDescriptions(AsylumCase asylumCase, List<String> updatedAndDeletedDocIds,
+            List<String> deletedFtpaDocIds, AsylumCaseFieldDefinition docTabDocuments, AsylumCaseFieldDefinition ftpaTabDocuments) {
+        Set<String> deletedDocIdSet = new HashSet<>(deletedFtpaDocIds);
+        Optional<List<IdValue<DocumentWithMetadata>>> optionalFtpaDocuments = asylumCase.read(docTabDocuments);
+        Optional<List<IdValue<DocumentWithDescription>>> optionalFtpaDocumentsDescription = asylumCase.read(ftpaTabDocuments);
         optionalFtpaDocuments.ifPresent(ftpaDocuments ->
                 optionalFtpaDocumentsDescription.ifPresent(ftpaDocumentsDescription -> {
 
@@ -568,38 +509,18 @@ public class EditDocsService {
                                         )
                                         .findFirst();
 
-                        if (optionalOldIdValue.isEmpty()
-                                || optionalUpdatedDoc.isEmpty()) {
+                        if (optionalOldIdValue.isEmpty() || optionalUpdatedDoc.isEmpty()) {
                             return;
                         }
 
-                        IdValue<DocumentWithDescription> oldIdValue =
-                                optionalOldIdValue.get();
-
-                        String newDescription =
-                                optionalUpdatedDoc.get()
-                                        .getValue()
-                                        .getDescription();
-
-                        IdValue<DocumentWithDescription> newIdValue =
-                                new IdValue<>(
-                                        oldIdValue.getId(),
-                                        new DocumentWithDescription(
-                                                oldIdValue.getValue()
-                                                        .getDocument()
-                                                        .orElse(null),
-                                                newDescription
-                                        )
-                                );
-
+                        IdValue<DocumentWithDescription> oldIdValue = optionalOldIdValue.get();
+                        String newDescription = optionalUpdatedDoc.get().getValue().getDescription();
+                        IdValue<DocumentWithDescription> newIdValue = new IdValue<>(oldIdValue.getId(), new DocumentWithDescription(oldIdValue.getValue().getDocument().orElse(null), newDescription));
                         ftpaDocumentsDescription.remove(oldIdValue);
                         ftpaDocumentsDescription.add(newIdValue);
                     });
 
-                    asylumCase.write(
-                            ftpaTabDocuments,
-                            ftpaDocumentsDescription
-                    );
+                    asylumCase.write(ftpaTabDocuments, ftpaDocumentsDescription);
                 })
         );
     }
