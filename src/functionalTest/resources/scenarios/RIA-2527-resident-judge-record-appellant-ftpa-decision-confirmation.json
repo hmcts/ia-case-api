@@ -1,6 +1,6 @@
 {
   "description": "RIA-2527 Resident judge record FTPA appellant decision confirmation",
-  "disabled": true,
+  "disabled": "true",
   "request": {
     "uri": "/asylum/ccdSubmitted",
     "credentials": "Judge",
@@ -17,7 +17,6 @@
           "ariaListingReference": "987654321",
           "listCaseHearingCentre": "taylorHouse"
         }
-
       }
     }
   },

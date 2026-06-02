@@ -74,12 +74,12 @@ class TimeExtensionAppenderTest {
         assertNotNull(allTimeExtensions);
         assertEquals(3, allTimeExtensions.size());
 
-        assertEquals("3", allTimeExtensions.get(0).getId());
-        assertEquals(newTimeExtensionReason, allTimeExtensions.get(0).getValue().getReason());
-        assertEquals(newTimeExtensionEvidence, allTimeExtensions.get(0).getValue().getEvidence());
-        assertEquals(expectedDateRequested, allTimeExtensions.get(0).getValue().getRequestDate());
-        assertEquals(caseState, allTimeExtensions.get(0).getValue().getState());
-        assertEquals(TimeExtensionStatus.SUBMITTED, allTimeExtensions.get(0).getValue().getStatus());
+        assertEquals("3", allTimeExtensions.getFirst().getId());
+        assertEquals(newTimeExtensionReason, allTimeExtensions.getFirst().getValue().getReason());
+        assertEquals(newTimeExtensionEvidence, allTimeExtensions.getFirst().getValue().getEvidence());
+        assertEquals(expectedDateRequested, allTimeExtensions.getFirst().getValue().getRequestDate());
+        assertEquals(caseState, allTimeExtensions.getFirst().getValue().getState());
+        assertEquals(TimeExtensionStatus.SUBMITTED, allTimeExtensions.getFirst().getValue().getStatus());
 
         assertEquals("2", allTimeExtensions.get(1).getId());
         assertEquals(existingTimeExtension1, allTimeExtensions.get(1).getValue());
@@ -107,12 +107,12 @@ class TimeExtensionAppenderTest {
         assertNotNull(allTimeExtensions);
         assertEquals(1, allTimeExtensions.size());
 
-        assertEquals("1", allTimeExtensions.get(0).getId());
-        assertEquals(newTimeExtensionReason, allTimeExtensions.get(0).getValue().getReason());
-        assertEquals(newTimeExtensionEvidence, allTimeExtensions.get(0).getValue().getEvidence());
-        assertEquals(expectedDateRequested, allTimeExtensions.get(0).getValue().getRequestDate());
-        assertEquals(caseState, allTimeExtensions.get(0).getValue().getState());
-        assertEquals(TimeExtensionStatus.SUBMITTED, allTimeExtensions.get(0).getValue().getStatus());
+        assertEquals("1", allTimeExtensions.getFirst().getId());
+        assertEquals(newTimeExtensionReason, allTimeExtensions.getFirst().getValue().getReason());
+        assertEquals(newTimeExtensionEvidence, allTimeExtensions.getFirst().getValue().getEvidence());
+        assertEquals(expectedDateRequested, allTimeExtensions.getFirst().getValue().getRequestDate());
+        assertEquals(caseState, allTimeExtensions.getFirst().getValue().getState());
+        assertEquals(TimeExtensionStatus.SUBMITTED, allTimeExtensions.getFirst().getValue().getStatus());
     }
 
     @Test

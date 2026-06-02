@@ -1,10 +1,10 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
-import static junit.framework.TestCase.assertTrue;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SUITABILITY_REVIEW_DECISION;
@@ -51,13 +51,9 @@ class AdaSuitabilityReviewConfirmationTest {
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
-        assertThat(
-                callbackResponse.getConfirmationHeader().get())
-                .contains("# Appeal determined suitable to continue as ADA");
+        assertTrue(callbackResponse.getConfirmationHeader().get().contains("# Appeal determined suitable to continue as ADA"));
 
-        assertThat(
-                callbackResponse.getConfirmationBody().get())
-                .contains("All parties have been notified. The Accelerated Detained Appeal Suitability Decision is available to view in the documents tab.<br>");
+        assertTrue(callbackResponse.getConfirmationBody().get().contains("All parties have been notified. The Accelerated Detained Appeal Suitability Decision is available to view in the documents tab.<br>"));
     }
 
     @Test
@@ -78,13 +74,9 @@ class AdaSuitabilityReviewConfirmationTest {
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
-        assertThat(
-                callbackResponse.getConfirmationHeader().get())
-                .contains("# Appeal determined unsuitable to continue as ADA");
+        assertTrue(callbackResponse.getConfirmationHeader().get().contains("# Appeal determined unsuitable to continue as ADA"));
 
-        assertThat(
-                callbackResponse.getConfirmationBody().get())
-                .contains("All parties have been notified. The Accelerated Detained Appeal Suitability Decision is available to view in the documents tab.<br>");
+        assertTrue(callbackResponse.getConfirmationBody().get().contains("All parties have been notified. The Accelerated Detained Appeal Suitability Decision is available to view in the documents tab.<br>"));
 
         assertThat(
                 callbackResponse.getConfirmationBody().get())

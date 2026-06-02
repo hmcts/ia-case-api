@@ -24,12 +24,11 @@ public class CcdEventAuthorizor {
 
         List<String> requiredRoles = getRequiredRolesForEvent(event);
         Set<String> userRoles = authorizedRolesProvider.getRoles();
-
         if (requiredRoles.isEmpty()
             || userRoles.isEmpty()
             || Collections.disjoint(requiredRoles, userRoles)) {
 
-            log.info("Event '" + event.toString() + "' not allowed for ia-case-api micro service");
+            log.info("Event '{}' not allowed for ia-case-api micro service", event.toString());
             throw new AccessDeniedException("Event '" + event.toString() + "' not allowed");
         }
     }

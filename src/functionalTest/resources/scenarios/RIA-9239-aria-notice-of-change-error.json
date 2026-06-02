@@ -17,7 +17,9 @@
   },
   "expectation": {
     "status": 200,
-    "errors": ["Can't take over ARIA migrated case."],
+    "errors": [
+      "Can't take over ARIA migrated case."
+    ],
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {
