@@ -102,7 +102,7 @@ public class IdamService {
             idamAuthDetails.put("scope", "search-user");
             idamClientToken = idamApi.token(idamAuthDetails).getAccessToken();
         } catch (final Exception exception) {
-            String msg = String.format("Unable to generate IDAM token due to error - %s", exception.getMessage());
+            String msg = "Unable to generate IDAM token due to error - %s".formatted(exception.getMessage());
             log.error(msg, exception);
             throw new IdentityManagerResponseException(msg, exception);
         }
@@ -122,7 +122,7 @@ public class IdamService {
             log.error("No user found for userId: {}", userId);
             return null;
         }
-        return response.getBody().get(0);
+        return response.getBody().getFirst();
     }
 
     public User getUserFromEmail(String email) {

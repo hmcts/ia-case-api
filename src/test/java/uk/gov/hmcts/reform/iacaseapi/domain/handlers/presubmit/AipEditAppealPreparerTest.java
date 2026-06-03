@@ -4,8 +4,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.powermock.api.mockito.PowerMockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_REFERENCE_NUMBER;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_REFERENCE_NUMBER_BEFORE_EDIT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOURNEY_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.EDIT_APPEAL_AFTER_SUBMIT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 
@@ -13,8 +15,6 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -27,7 +27,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -40,8 +39,6 @@ class AipEditAppealPreparerTest {
     private CaseDetails<AsylumCase> caseDetails;
     @Mock
     private AsylumCase asylumCase;
-    @Mock
-    private FeatureToggler featureToggler;
 
     private String homeOfficeReferenceNumber = "someHomeOfficeReference";
 
@@ -49,7 +46,7 @@ class AipEditAppealPreparerTest {
 
     @BeforeEach
     public void setUp() {
-        aipEditAppealPreparer = new AipEditAppealPreparer(featureToggler);
+        aipEditAppealPreparer = new AipEditAppealPreparer();
     }
 
     @Test
@@ -69,11 +66,9 @@ class AipEditAppealPreparerTest {
 
     }
 
-    @ParameterizedTest
-    @ValueSource(booleans = { true, false })
-    void handler_should_write_home_office_reference_number_before_edit(boolean hoUanFeatureFlag) {
+    @Test
+    void handler_should_write_home_office_reference_number_before_edit() {
 
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(hoUanFeatureFlag);
         when(callback.getEvent()).thenReturn(EDIT_APPEAL_AFTER_SUBMIT);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -87,13 +82,9 @@ class AipEditAppealPreparerTest {
         assertThat(response.getData()).isNotEmpty();
         assertThat(response.getData()).isEqualTo(asylumCase);
 
-        if (hoUanFeatureFlag) {
-            Mockito.verify(asylumCase, Mockito.times(1))
-                    .write(HOME_OFFICE_REFERENCE_NUMBER_BEFORE_EDIT, homeOfficeReferenceNumber);
-        } else {
-            Mockito.verify(asylumCase, Mockito.times(0))
-                    .write(HOME_OFFICE_REFERENCE_NUMBER_BEFORE_EDIT, homeOfficeReferenceNumber);
-        }
+        Mockito.verify(asylumCase, Mockito.times(1))
+                .write(HOME_OFFICE_REFERENCE_NUMBER_BEFORE_EDIT, homeOfficeReferenceNumber);
+
     }
 
     @Test

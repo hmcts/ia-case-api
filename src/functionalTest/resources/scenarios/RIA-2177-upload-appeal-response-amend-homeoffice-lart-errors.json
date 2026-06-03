@@ -1,7 +1,6 @@
 {
   "description": "RIA-2034 Amend respondent evidence when action not available (HO - APC) - return error message",
-  "disabled": false,
-  "request": {
+    "request": {
     "uri": "/asylum/ccdAboutToStart",
     "credentials": "HomeOfficeLart",
     "input": {
@@ -35,7 +34,9 @@
   },
   "expectation": {
     "status": 200,
-    "errors": ["You cannot upload more documents until your response has been reviewed"],
+    "errors": [
+      "You cannot upload more documents until your response has been reviewed"
+    ],
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {

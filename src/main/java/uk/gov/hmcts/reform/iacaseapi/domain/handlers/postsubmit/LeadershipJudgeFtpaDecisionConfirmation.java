@@ -52,22 +52,28 @@ public class LeadershipJudgeFtpaDecisionConfirmation implements PostSubmitCallba
             case "granted":
             case "partiallyGranted":
                 postSubmitResponse.setConfirmationBody(
-                    "#### What happens next\n\n"
-                    + "Both parties have been notified of the decision. The Upper Tribunal has also been notified, and will now proceed with the case.<br>"
+                    """
+                    #### What happens next
+                    
+                    Both parties have been notified of the decision. The Upper Tribunal has also been notified, and will now proceed with the case.<br>"""
                 );
                 break;
 
             case "refused":
                 postSubmitResponse.setConfirmationBody(
-                    "#### What happens next\n\n"
-                    + "Both parties have been notified that permission was refused. They'll also be able to access this information in the FTPA tab.<br>"
+                    """
+                    #### What happens next
+                    
+                    Both parties have been notified that permission was refused. They'll also be able to access this information in the FTPA tab.<br>"""
                 );
                 break;
 
             case "notAdmitted":
                 postSubmitResponse.setConfirmationBody(
-                    "#### What happens next\n\n"
-                    + "The applicant has been notified that the application was not admitted. They'll also be able to access this information in the FTPA tab.<br>"
+                    """
+                    #### What happens next
+                    
+                    The applicant has been notified that the application was not admitted. They'll also be able to access this information in the FTPA tab.<br>"""
                 );
                 break;
 

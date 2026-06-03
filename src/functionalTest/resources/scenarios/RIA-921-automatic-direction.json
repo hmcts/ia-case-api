@@ -1,6 +1,6 @@
 {
   "description": "RIA-921 Automatic direction for requesting hearing requirements",
-  "enabled": "{$featureFlag.timedEventServiceEnabled}",
+  "disabled": "!{$featureFlag.timedEventServiceEnabled}",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",

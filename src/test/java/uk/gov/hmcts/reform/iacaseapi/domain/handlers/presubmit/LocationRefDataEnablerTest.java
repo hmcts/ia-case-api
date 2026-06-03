@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -15,8 +14,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YE
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -33,8 +30,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
 public class LocationRefDataEnablerTest {
-
-    private static final String APPEALS_LOCATION_REFERENCE_DATA = "appeals-location-reference-data";
 
     @Mock
     private FeatureToggler featureToggler;
@@ -58,15 +53,12 @@ public class LocationRefDataEnablerTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
     }
 
-    @ParameterizedTest
-    @CsvSource({ "true", "false" })
-    void should_write_field_based_on_toggle_value(boolean isEnabled) {
-        when(featureToggler.getValue(APPEALS_LOCATION_REFERENCE_DATA, false))
-            .thenReturn(isEnabled);
+    @Test
+    void should_write_field_based_on_toggle_value() {
 
         locationRefDataEnabler.handle(ABOUT_TO_SUBMIT, callback);
 
-        VerificationMode verificationMode = isEnabled ? times(1) : never();
+        VerificationMode verificationMode = times(1);
         verify(asylumCase, verificationMode).write(IS_CASE_USING_LOCATION_REF_DATA, YES);
     }
 

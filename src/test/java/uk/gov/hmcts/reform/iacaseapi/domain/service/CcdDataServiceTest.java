@@ -59,7 +59,7 @@ class CcdDataServiceTest {
     private final String userId = "userId";
     private final String eventToken = "eventToken";
     private final long caseId = 1234123412341234L;
-    private final String caseReference = "1234123412341234";
+    private final String caseReference = String.valueOf(caseId);
     private final String jurisdiction = "IA";
     private final String caseType = "Asylum";
     private final String eventId = Event.RE_TRIGGER_WA_TASKS.toString();

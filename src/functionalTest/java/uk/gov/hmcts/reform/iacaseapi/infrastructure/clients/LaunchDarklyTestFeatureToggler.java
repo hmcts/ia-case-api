@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.clients;
 
 import com.launchdarkly.sdk.LDContext;
-import com.launchdarkly.sdk.LDUser;
 import com.launchdarkly.sdk.LDValue;
 import com.launchdarkly.sdk.server.interfaces.LDClientInterface;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,35 +33,23 @@ public class LaunchDarklyTestFeatureToggler implements FeatureToggler {
     public boolean getValue(String key, Boolean defaultValue) {
 
         UserDetails userDetails = userDetailsProvider.getUserDetails();
-
-        return ldClient.boolVariation(
-            key,
-            LDContext.fromUser(
-                new LDUser.Builder(userDetails.getId())
-                .firstName(userDetails.getForename())
-                .lastName(userDetails.getSurname())
-                .email(userDetails.getEmailAddress())
-                .build()
-            ),
-            defaultValue
-        );
+        LDContext ldContext = LDContext.builder(userDetails.getId())
+            .set("firstName", userDetails.getForename())
+            .set("lastName", userDetails.getSurname())
+            .set("email", userDetails.getEmailAddress())
+            .build();
+        return ldClient.boolVariation(key, ldContext, defaultValue);
     }
 
     public LDValue getJsonValue(String key, LDValue defaultValue) {
 
         UserDetails userDetails = userDetailsProvider.getUserDetails();
-
-        return ldClient.jsonValueVariation(
-            key,
-            LDContext.fromUser(
-                new LDUser.Builder(userDetails.getId())
-                .firstName(userDetails.getForename())
-                .lastName(userDetails.getSurname())
-                .email(userDetails.getEmailAddress())
-                .build()
-            ),
-            defaultValue
-        );
+        LDContext ldContext = LDContext.builder(userDetails.getId())
+            .set("firstName", userDetails.getForename())
+            .set("lastName", userDetails.getSurname())
+            .set("email", userDetails.getEmailAddress())
+            .build();
+        return ldClient.jsonValueVariation(key, ldContext, defaultValue);
     }
 
 }

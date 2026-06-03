@@ -234,7 +234,7 @@ class EditAppealAfterSubmitHandlerTest {
 
         verify(asylumCase).clear(NEW_MATTERS);
 
-        assertEquals("Completed", applicationsCaptor.getValue().get(0).getValue().getApplicationStatus());
+        assertEquals("Completed", applicationsCaptor.getValue().getFirst().getValue().getApplicationStatus());
     }
 
 
@@ -265,7 +265,7 @@ class EditAppealAfterSubmitHandlerTest {
         verify(asylumCase).clear(NEW_MATTERS);
         verify(asylumCase, never()).write(HAS_ADDED_LEGAL_REP_DETAILS, YesOrNo.YES);
 
-        assertEquals("Completed", applicationsCaptor.getValue().get(0).getValue().getApplicationStatus());
+        assertEquals("Completed", applicationsCaptor.getValue().getFirst().getValue().getApplicationStatus());
     }
 
     @Test
@@ -293,7 +293,7 @@ class EditAppealAfterSubmitHandlerTest {
 
         verify(asylumCase).clear(NEW_MATTERS);
 
-        assertEquals("Completed", applicationsCaptor.getValue().get(0).getValue().getApplicationStatus());
+        assertEquals("Completed", applicationsCaptor.getValue().getFirst().getValue().getApplicationStatus());
     }
 
     @Test
@@ -355,7 +355,7 @@ class EditAppealAfterSubmitHandlerTest {
 
         verify(asylumCase).clear(NEW_MATTERS);
 
-        assertEquals("Completed", applicationsCaptor.getValue().get(0).getValue().getApplicationStatus());
+        assertEquals("Completed", applicationsCaptor.getValue().getFirst().getValue().getApplicationStatus());
     }
 
     @Test
@@ -380,7 +380,7 @@ class EditAppealAfterSubmitHandlerTest {
 
         verify(asylumCase).clear(NEW_MATTERS);
 
-        assertEquals("Completed", applicationsCaptor.getValue().get(0).getValue().getApplicationStatus());
+        assertEquals("Completed", applicationsCaptor.getValue().getFirst().getValue().getApplicationStatus());
     }
 
     @Test
@@ -405,7 +405,7 @@ class EditAppealAfterSubmitHandlerTest {
 
         verify(asylumCase).clear(NEW_MATTERS);
 
-        assertEquals("Completed", applicationsCaptor.getValue().get(0).getValue().getApplicationStatus());
+        assertEquals("Completed", applicationsCaptor.getValue().getFirst().getValue().getApplicationStatus());
     }
 
     @Test
@@ -430,7 +430,7 @@ class EditAppealAfterSubmitHandlerTest {
 
         verify(asylumCase).clear(NEW_MATTERS);
 
-        assertEquals("Completed", applicationsCaptor.getValue().get(0).getValue().getApplicationStatus());
+        assertEquals("Completed", applicationsCaptor.getValue().getFirst().getValue().getApplicationStatus());
     }
 
     @Test

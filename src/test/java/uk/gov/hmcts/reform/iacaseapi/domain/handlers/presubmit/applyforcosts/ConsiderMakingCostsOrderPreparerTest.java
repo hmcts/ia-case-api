@@ -1,10 +1,17 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.applyforcosts;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JUDGE_APPLIED_COSTS_TYPES;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.TypesOfAppliedCosts.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.TypesOfAppliedCosts.TRIBUNAL_COSTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.TypesOfAppliedCosts.UNREASONABLE_COSTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.TypesOfAppliedCosts.WASTED_COSTS;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +26,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsHelper;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserRole;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.Value;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -74,8 +86,8 @@ class ConsiderMakingCostsOrderPreparerTest {
         considerMakingCostsOrderPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
         verify(asylumCase, times(1)).write(asylumExtractorCaptor.capture(), appliesForCostsTypesCaptor.capture());
-        DynamicList exactAppliesForCostsTypes = (DynamicList) appliesForCostsTypesCaptor.getAllValues().get(0);
-        assertEquals(applyForCostsType1, exactAppliesForCostsTypes.getListItems().get(0).getCode());
+        DynamicList exactAppliesForCostsTypes = (DynamicList) appliesForCostsTypesCaptor.getAllValues().getFirst();
+        assertEquals(applyForCostsType1, exactAppliesForCostsTypes.getListItems().getFirst().getCode());
         assertEquals(applyForCostsType2, exactAppliesForCostsTypes.getListItems().get(1).getCode());
         assertEquals(applyForCostsType3, exactAppliesForCostsTypes.getListItems().get(2).getCode());
     }
