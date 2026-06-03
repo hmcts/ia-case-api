@@ -739,12 +739,9 @@ public class HandlerUtils {
     // Home Office endpoint or the old  applicationStatus/getBySearchParameters  Home Office endpoint
     public static boolean hasAppellantDataBeenValidated(AsylumCase asylumCase) {
         // Evidence from new validation endpoint
-        boolean validationDone = !asylumCase.read(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, String.class).orElse("").equals("");
+        boolean validationDone = asylumCase.read(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, String.class).isPresent();
         // Evidence from old validation endpoint
-        String homeOfficeSearchStatus = asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class).orElse("");
-        // DON'T DO THIS!  Apparently we must allow the case to proceed even if it says "NO_MATCH"
-        // String homeOfficeSearchNoMatch = asylumCase.read(HOME_OFFICE_SEARCH_NO_MATCH, String.class).orElse("");
-        // return validationDone || (homeOfficeSearchStatus.equals("SUCCESS") && !homeOfficeSearchNoMatch.equals("NO_MATCH"));
-        return validationDone || homeOfficeSearchStatus.equals("SUCCESS");
+        boolean homeOfficeSearchStatusSuccess = asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class).map(status -> status.equals("Success")).orElse(false);
+        return validationDone || homeOfficeSearchStatusSuccess;
     }
 }
