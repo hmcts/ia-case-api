@@ -74,6 +74,7 @@ public class HomeOfficeReferenceService {
             homeOfficeAppellants = homeOfficeAppellantsOpt.orElse(emptyList());
             // asylumCase.write(HOME_OFFICE_APPELLANTS, homeOfficeAppellants); -- this DOES NOT WORK due to a bug in CCD when altering collections during the mid-event.
             // Instead, we need to serialise the list and write it to a scalar (string) field; then later we will reconstitute the list from this field and store it.
+            // See  HomeOfficeReferenceHandlerOnSubmit.java  for more details.
             try {
                 homeOfficeAppellantsSerialised = mapper.writerWithDefaultPrettyPrinter()
                                                        .writeValueAsString(homeOfficeAppellants);
