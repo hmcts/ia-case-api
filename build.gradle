@@ -122,10 +122,10 @@ checkstyle {
 }
 
 pmd {
-  toolVersion = '6.55.0'
+  toolVersion = '7.25.0'
   ignoreFailures = true
   sourceSets = [sourceSets.main, sourceSets.test, sourceSets.integrationTest, sourceSets.functionalTest, sourceSets.smokeTest]
-  reportsDir = file("${project.getLayout().getBuildDirectory()}/reports/pmd")
+  reportsDir = file("./reports/pmd")
   ruleSets = [
     'category/java/bestpractices.xml'
   ]
