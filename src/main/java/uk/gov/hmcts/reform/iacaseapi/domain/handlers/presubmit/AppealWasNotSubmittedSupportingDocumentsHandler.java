@@ -90,8 +90,7 @@ public class AppealWasNotSubmittedSupportingDocumentsHandler implements PreSubmi
                     .stream()
                     .map(IdValue::getValue)
                     .map(document -> documentReceiver.tryReceive(document, DocumentTag.APPEAL_WAS_NOT_SUBMITTED_SUPPORTING_DOCUMENT))
-                    .filter(Optional::isPresent)
-                    .map(Optional::get)
+                    .flatMap(Optional::stream)
                     .collect(Collectors.toList());
 
             if (!appealWasNotSubmittedReasons.isEmpty()) {

@@ -43,13 +43,14 @@
               }
             }
           ],
-          "caseBundles": [{
-            "id": "1",
-            "value": {
-              "stitchStatus": "DONE"
+          "caseBundles": [
+            {
+              "id": "1",
+              "value": {
+                "stitchStatus": "DONE"
+              }
             }
-          }]
-
+          ]
         }
       }
     }
