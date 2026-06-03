@@ -741,7 +741,7 @@ public class HandlerUtils {
         // Evidence from new validation endpoint
         boolean validationDone = asylumCase.read(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, String.class).isPresent();
         // Evidence from old validation endpoint
-        boolean homeOfficeSearchStatusSuccess = asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class).map(status -> status.equals("Success")).orElse(false);
+        boolean homeOfficeSearchStatusSuccess = asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class).map(status -> status.equals("SUCCESS")).orElse(false);
         return validationDone || homeOfficeSearchStatusSuccess;
     }
 }
