@@ -1,6 +1,5 @@
 {
   "description": "RIA-7771 Record adjournment details event changes appeal status to Adjourned",
-  "enabled": true,
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",
@@ -15,7 +14,7 @@
           "listCaseHearingDate": "2023-11-01T10:30:00.000",
           "relistCaseImmediately": "No",
           "hearingAdjournmentWhen": "onHearingDate",
-          "adjournmentDetailsHearing" : {
+          "adjournmentDetailsHearing": {
             "value": {
               "code": "hearing1",
               "label": "Substantive - 31 October 2023"
@@ -56,7 +55,7 @@
         "listCaseHearingDate": "2023-11-01T10:30:00.000",
         "relistCaseImmediately": "No",
         "hearingAdjournmentWhen": "onHearingDate",
-        "adjournmentDetailsHearing" : {
+        "adjournmentDetailsHearing": {
           "value": {
             "code": "hearing1",
             "label": "Substantive - 31 October 2023"

@@ -117,7 +117,7 @@ class UpdateStatutoryTimeframe24WeeksServiceTest {
                 .thenReturn(Optional.of(currentStatus));
         StatutoryTimeframe24WeeksHistory statutoryTimeframe24WeeksHistory = new StatutoryTimeframe24WeeksHistory(currentStatus, newStatutoryTimeframe24WeeksReason, forename + " " + surname, nowWithTime.toString());
         List<IdValue<StatutoryTimeframe24WeeksHistory>> existingStatutoryTimeframe24WeeksHistory = Arrays.asList(new IdValue<>("1", statutoryTimeframe24WeeksHistory));
-        HomeOfficeStatutoryTimeframe.Stf24WeekCohort cohort = 
+        HomeOfficeStatutoryTimeframe.Stf24WeekCohort cohort =
             HomeOfficeStatutoryTimeframe.Stf24WeekCohort.builder()
                 .name("HU")
                 .included("true")
@@ -133,7 +133,7 @@ class UpdateStatutoryTimeframe24WeeksServiceTest {
             .timeStamp(timeStamp)
             .build();
         StatutoryTimeframe24Weeks existingStatutoryTimeframe24Weeks = new StatutoryTimeframe24Weeks(
-                                    existingStatutoryTimeframe24WeeksHistory, 
+                                    existingStatutoryTimeframe24WeeksHistory,
                                     homeOfficeStatutoryTimeframeDto);
 
         when(asylumCase.read(STATUTORY_TIMEFRAME_24_WEEKS)).thenReturn(Optional.of(existingStatutoryTimeframe24Weeks));
@@ -186,7 +186,7 @@ class UpdateStatutoryTimeframe24WeeksServiceTest {
                 .thenReturn(Optional.of(currentStatus));
         StatutoryTimeframe24WeeksHistory statutoryTimeframe24WeeksHistory = new StatutoryTimeframe24WeeksHistory(currentStatus, newStatutoryTimeframe24WeeksReason, forename + " " + surname, nowWithTime.toString());
         List<IdValue<StatutoryTimeframe24WeeksHistory>> existingStatutoryTimeframe24WeeksHistory = Arrays.asList(new IdValue<>("1", statutoryTimeframe24WeeksHistory));
-        HomeOfficeStatutoryTimeframe.Stf24WeekCohort cohort = 
+        HomeOfficeStatutoryTimeframe.Stf24WeekCohort cohort =
             HomeOfficeStatutoryTimeframe.Stf24WeekCohort.builder()
                 .name("HU")
                 .included("true")

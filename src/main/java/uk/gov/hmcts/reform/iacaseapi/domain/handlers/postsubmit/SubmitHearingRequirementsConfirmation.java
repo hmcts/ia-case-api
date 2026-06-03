@@ -42,15 +42,19 @@ public class SubmitHearingRequirementsConfirmation implements PostSubmitCallback
 
         if (isAcceleratedDetainedAppeal) {
             postSubmitResponse.setConfirmationBody(
-                "#### What happens next\n\n"
-                + "The Tribunal will review your hearing requirements and any additional requests for adjustments.<br><br>"
-                + "You’ll be able to see any agreed adjustments in the hearing and appointment tab."
+                """
+                #### What happens next
+                
+                The Tribunal will review your hearing requirements and any additional requests for adjustments.<br><br>\
+                You’ll be able to see any agreed adjustments in the hearing and appointment tab."""
             );
         } else {
             postSubmitResponse.setConfirmationBody(
-                "#### What happens next\n\n"
-                + "The Tribunal will review your hearing requirements and any additional requests for adjustments.<br><br>"
-                + "We'll notify you when the hearing is listed. You'll then be able to review the hearing requirements."
+                """
+                #### What happens next
+                
+                The Tribunal will review your hearing requirements and any additional requests for adjustments.<br><br>\
+                We'll notify you when the hearing is listed. You'll then be able to review the hearing requirements."""
             );
         }
 

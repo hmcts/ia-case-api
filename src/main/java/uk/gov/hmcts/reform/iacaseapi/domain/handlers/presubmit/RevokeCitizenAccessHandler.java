@@ -65,7 +65,7 @@ public class RevokeCitizenAccessHandler implements PreSubmitCallbackHandler<Asyl
                 + " caseId: " + caseId);
         }
 
-        deleteRoleAssignment(roleAssignmentResource.getRoleAssignmentResponse().get(0).getId());
+        deleteRoleAssignment(roleAssignmentResource.getRoleAssignmentResponse().getFirst().getId());
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
