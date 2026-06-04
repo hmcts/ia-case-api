@@ -1,10 +1,5 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
-import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAS_NON_LEGAL_REP;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NLR_DETAILS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.clearNlrFields;
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -16,21 +11,21 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleAssignmentResource;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.IdamService;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.RoleAssignmentService;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.CcdDataService;
+
+import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAS_NON_LEGAL_REP;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NLR_DETAILS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.clearNlrFields;
 
 @Component
 @Slf4j
 public class RevokeCitizenAccessHandler implements PreSubmitCallbackHandler<AsylumCase> {
-    private final RoleAssignmentService roleAssignmentService;
-    private final IdamService idamService;
+    private final CcdDataService ccdDataService;
 
-    public RevokeCitizenAccessHandler(RoleAssignmentService roleAssignmentService,
-                                      IdamService idamService) {
-        this.roleAssignmentService = roleAssignmentService;
-        this.idamService = idamService;
+    public RevokeCitizenAccessHandler(CcdDataService ccdDataService) {
+        this.ccdDataService = ccdDataService;
     }
 
     @Override
@@ -61,16 +56,7 @@ public class RevokeCitizenAccessHandler implements PreSubmitCallbackHandler<Asyl
 
         long caseId = callback.getCaseDetails().getId();
 
-        RoleAssignmentResource roleAssignmentResource = roleAssignmentService.getCaseRoleAssignmentsForUser(
-            caseId, idamId);
-
-        if (roleAssignmentResource.getRoleAssignmentResponse().isEmpty()) {
-            return new PreSubmitCallbackResponse<>(asylumCase)
-            .withError("User doesn't have access to case idamId: " + idamId
-                + " caseId: " + caseId);
-        }
-
-        deleteRoleAssignment(roleAssignmentResource.getRoleAssignmentResponse().getFirst().getId());
+        ccdDataService.revokeUserAccessToCase(caseId, idamId);
         asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class)
             .ifPresent(nlrDetails -> {
                 if (nlrDetails.getIdamId().equals(idamId)) {
@@ -81,11 +67,4 @@ public class RevokeCitizenAccessHandler implements PreSubmitCallbackHandler<Asyl
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
-
-    private void deleteRoleAssignment(String roleAssignmentId) {
-        log.info("Revoking appellant's access to appeal with role assignment ID {}", roleAssignmentId);
-        roleAssignmentService.deleteRoleAssignment(roleAssignmentId, idamService.getServiceUserToken());
-        log.info("Successfully revoked appellant's access to appeal with role assignment ID {}", roleAssignmentId);
-    }
-
 }

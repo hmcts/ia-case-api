@@ -1,13 +1,8 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.service;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
-import org.springframework.stereotype.Service;
-
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.model.UserId;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDataContent;
@@ -16,6 +11,10 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.StartEventDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.SubmitEventDetails;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CcdDataApi;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.idam.IdentityManagerResponseException;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 @Slf4j
@@ -103,6 +102,14 @@ public class CcdDataService {
         String systemUid = idamService.getUserInfo(userToken).getUid();
         ccdDataApi.grantAccessToCase(userToken, s2sToken, systemUid, JURISDICTION, CASE_TYPE,
             String.valueOf(caseId), new UserId(userId));
+    }
+
+    public void revokeUserAccessToCase(long caseId, String userId) {
+        String userToken = idamService.getServiceUserToken();
+        String s2sToken = serviceAuthorization.generate();
+        String systemUid = idamService.getUserInfo(userToken).getUid();
+        ccdDataApi.revokeAccessToCase(userToken, s2sToken, systemUid, JURISDICTION, CASE_TYPE,
+            String.valueOf(caseId), userId);
     }
 
     @Data

@@ -1,26 +1,5 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOIN_APPEAL_PIN;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NLR_DETAILS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.JOIN_APPEAL_CONFIRMATION;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -41,11 +20,26 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.Assignment;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleAssignmentResource;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.CcdDataService;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.IdamService;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.RoleAssignmentService;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.idam.UserInfo;
+
+import java.util.List;
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOIN_APPEAL_PIN;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NLR_DETAILS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.JOIN_APPEAL_CONFIRMATION;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -64,15 +58,7 @@ class NonLegalRepJoinAppealHandlerTest {
     @Mock
     private PinInPostDetails pinInPostDetails;
     @Mock
-    private RoleAssignmentService roleAssignmentService;
-    @Mock
-    private IdamService idamService;
-    @Mock
     private CcdDataService ccdDataService;
-    @Mock
-    private RoleAssignmentResource roleAssignmentResource;
-    @Mock
-    private UserInfo userInfo;
 
     private final NonLegalRepDetails oldNlrDetails = NonLegalRepDetails.builder()
         .emailAddress("someEmail")
@@ -99,7 +85,7 @@ class NonLegalRepJoinAppealHandlerTest {
 
     @BeforeEach
     public void setUp() {
-        nonLegalRepJoinAppealHandler = new NonLegalRepJoinAppealHandler(roleAssignmentService, idamService, ccdDataService);
+        nonLegalRepJoinAppealHandler = new NonLegalRepJoinAppealHandler(ccdDataService);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getCaseDetailsBefore()).thenReturn(Optional.of(caseDetailsBefore));
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -111,8 +97,6 @@ class NonLegalRepJoinAppealHandlerTest {
         when(callback.getEvent()).thenReturn(JOIN_APPEAL_CONFIRMATION);
         when(asylumCase.read(JOIN_APPEAL_PIN, PinInPostDetails.class)).thenReturn(Optional.of(pinInPostDetails));
         when(asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class)).thenReturn(Optional.of(newNlrDetails));
-        when(roleAssignmentService.getCaseRoleAssignmentsForUser(anyLong(), anyString())).thenReturn(roleAssignmentResource);
-        when(roleAssignmentResource.getRoleAssignmentResponse()).thenReturn(List.of(Assignment.builder().build()));
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             nonLegalRepJoinAppealHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
@@ -127,12 +111,7 @@ class NonLegalRepJoinAppealHandlerTest {
         when(callback.getEvent()).thenReturn(JOIN_APPEAL_CONFIRMATION);
         when(asylumCase.read(JOIN_APPEAL_PIN, PinInPostDetails.class)).thenReturn(Optional.of(pinInPostDetails));
         when(asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class)).thenReturn(Optional.of(newNlrDetails));
-        when(roleAssignmentService.getCaseRoleAssignmentsForUser(anyLong(), anyString())).thenReturn(roleAssignmentResource);
-        when(roleAssignmentResource.getRoleAssignmentResponse()).thenReturn(Collections.emptyList());
         when(callback.getCaseDetails().getId()).thenReturn(12345L);
-        when(idamService.getServiceUserToken()).thenReturn("token");
-        when(idamService.getUserInfo("token")).thenReturn(userInfo);
-        when(userInfo.getUid()).thenReturn("someSystemIdamId");
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             nonLegalRepJoinAppealHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
@@ -148,8 +127,6 @@ class NonLegalRepJoinAppealHandlerTest {
         when(callback.getEvent()).thenReturn(JOIN_APPEAL_CONFIRMATION);
         when(asylumCase.read(JOIN_APPEAL_PIN, PinInPostDetails.class)).thenReturn(Optional.of(pinInPostDetails));
         when(asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class)).thenReturn(Optional.empty());
-        when(roleAssignmentService.getCaseRoleAssignmentsForUser(anyLong(), anyString())).thenReturn(roleAssignmentResource);
-        when(roleAssignmentResource.getRoleAssignmentResponse()).thenReturn(Collections.emptyList());
         when(callback.getCaseDetails().getId()).thenReturn(12345L);
         IllegalStateException exception = assertThrows(IllegalStateException.class,
             () -> nonLegalRepJoinAppealHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback));
@@ -162,12 +139,7 @@ class NonLegalRepJoinAppealHandlerTest {
         when(callback.getEvent()).thenReturn(JOIN_APPEAL_CONFIRMATION);
         when(asylumCase.read(JOIN_APPEAL_PIN, PinInPostDetails.class)).thenReturn(Optional.of(pinInPostDetails));
         when(asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class)).thenReturn(Optional.of(newNlrDetails));
-        when(roleAssignmentService.getCaseRoleAssignmentsForUser(anyLong(), anyString())).thenReturn(roleAssignmentResource);
-        when(roleAssignmentResource.getRoleAssignmentResponse()).thenReturn(Collections.emptyList());
         when(callback.getCaseDetails().getId()).thenReturn(12345L);
-        when(idamService.getServiceUserToken()).thenReturn("token");
-        when(idamService.getUserInfo("token")).thenReturn(userInfo);
-        when(userInfo.getUid()).thenReturn("someSystemIdamId");
         RuntimeException someError = new RuntimeException("some error");
         doThrow(someError)
             .when(ccdDataService).giveUserAccessToCase(anyLong(), anyString());
@@ -184,15 +156,10 @@ class NonLegalRepJoinAppealHandlerTest {
         when(asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class)).thenReturn(Optional.of(newNlrDetails));
         when(callback.getCaseDetails().getId()).thenReturn(12345L);
         when(asylumCaseBefore.read(NLR_DETAILS, NonLegalRepDetails.class)).thenReturn(Optional.of(oldNlrDetails));
-        when(roleAssignmentService.getCaseRoleAssignmentsForUser(anyLong(), anyString())).thenReturn(roleAssignmentResource);
-        when(roleAssignmentService.getCaseRoleAssignmentsForUser(12345L, "someIdamId"))
-            .thenReturn(roleAssignmentResource);
         List<Assignment> assignments = List.of(
             Assignment.builder().id("assignmentId1").build(),
             Assignment.builder().id("assignmentId2").build()
         );
-        when(roleAssignmentResource.getRoleAssignmentResponse()).thenReturn(assignments);
-        when(idamService.getServiceUserToken()).thenReturn("token");
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             nonLegalRepJoinAppealHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
@@ -200,10 +167,7 @@ class NonLegalRepJoinAppealHandlerTest {
         assertEquals(asylumCase, callbackResponse.getData());
         verify(pinInPostDetails).setPinUsed(YesOrNo.YES);
         verify(asylumCase).write(JOIN_APPEAL_PIN, pinInPostDetails);
-        verify(roleAssignmentService).getCaseRoleAssignmentsForUser(12345L, "someIdamId");
-        verify(roleAssignmentService, times(2)).deleteRoleAssignment(anyString(), eq("token"));
-        verify(roleAssignmentService).deleteRoleAssignment("assignmentId1", "token");
-        verify(roleAssignmentService).deleteRoleAssignment("assignmentId2", "token");
+        verify(ccdDataService).revokeUserAccessToCase(12345L, "someIdamId");
     }
 
     @Test
@@ -213,15 +177,10 @@ class NonLegalRepJoinAppealHandlerTest {
         when(asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class)).thenReturn(Optional.of(newNlrDetails));
         when(callback.getCaseDetails().getId()).thenReturn(12345L);
         when(asylumCaseBefore.read(NLR_DETAILS, NonLegalRepDetails.class)).thenReturn(Optional.of(oldNlrWithoutIdamIdDetails));
-        when(roleAssignmentService.getCaseRoleAssignmentsForUser(anyLong(), anyString())).thenReturn(roleAssignmentResource);
-        when(roleAssignmentService.getCaseRoleAssignmentsForUser(12345L, "someIdamId"))
-            .thenReturn(roleAssignmentResource);
         List<Assignment> assignments = List.of(
             Assignment.builder().id("assignmentId1").build(),
             Assignment.builder().id("assignmentId2").build()
         );
-        when(roleAssignmentResource.getRoleAssignmentResponse()).thenReturn(assignments);
-        when(idamService.getServiceUserToken()).thenReturn("token");
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             nonLegalRepJoinAppealHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
@@ -229,8 +188,7 @@ class NonLegalRepJoinAppealHandlerTest {
         assertEquals(asylumCase, callbackResponse.getData());
         verify(pinInPostDetails).setPinUsed(YesOrNo.YES);
         verify(asylumCase).write(JOIN_APPEAL_PIN, pinInPostDetails);
-        verify(roleAssignmentService, never()).getCaseRoleAssignmentsForUser(anyLong(), anyString());
-        verify(roleAssignmentService, never()).deleteRoleAssignment(anyString(), anyString());
+        verify(ccdDataService, never()).revokeUserAccessToCase(anyLong(), anyString());
     }
 
 

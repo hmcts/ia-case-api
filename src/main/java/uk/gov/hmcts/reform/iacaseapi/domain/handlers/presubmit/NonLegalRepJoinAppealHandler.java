@@ -1,14 +1,5 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
-import static java.util.Objects.isNull;
-import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAS_NON_LEGAL_REP_JOINED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOIN_APPEAL_PIN;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NLR_DETAILS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.JOIN_APPEAL_CONFIRMATION;
-
-import java.util.List;
-import java.util.Optional;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.NonLegalRepDetails;
@@ -19,26 +10,23 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.DispatchPriori
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.Assignment;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleAssignmentResource;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.CcdDataService;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.IdamService;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.RoleAssignmentService;
+
+import static java.util.Objects.isNull;
+import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAS_NON_LEGAL_REP_JOINED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOIN_APPEAL_PIN;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NLR_DETAILS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.JOIN_APPEAL_CONFIRMATION;
 
 @Component
 public class NonLegalRepJoinAppealHandler implements PreSubmitCallbackHandler<AsylumCase> {
-    private final RoleAssignmentService roleAssignmentService;
-    private final IdamService idamService;
     private final CcdDataService ccdDataService;
 
     public NonLegalRepJoinAppealHandler(
-        RoleAssignmentService roleAssignmentService,
-        IdamService idamService,
         CcdDataService ccdDataService
     ) {
-        this.roleAssignmentService = roleAssignmentService;
-        this.idamService = idamService;
         this.ccdDataService = ccdDataService;
     }
 
@@ -76,20 +64,14 @@ public class NonLegalRepJoinAppealHandler implements PreSubmitCallbackHandler<As
         pinInPostDetails.setPinUsed(YesOrNo.YES);
         asylumCase.write(JOIN_APPEAL_PIN, pinInPostDetails);
 
-        AsylumCase asylumCaseBefore = caseDetailsBefore.getCaseData();
-
-        Optional<NonLegalRepDetails> previousNlrDetails = asylumCaseBefore.read(NLR_DETAILS, NonLegalRepDetails.class);
         long caseId = callback.getCaseDetails().getId();
-        previousNlrDetails.ifPresent(existingNlrDetails -> {
-            if (!isNull(existingNlrDetails.getIdamId())) {
-                RoleAssignmentResource roleAssignmentResource = roleAssignmentService.getCaseRoleAssignmentsForUser(
-                    caseId, existingNlrDetails.getIdamId());
-                List<Assignment> assignments = roleAssignmentResource.getRoleAssignmentResponse();
-                assignments.forEach(assignment ->
-                    roleAssignmentService.deleteRoleAssignment(assignment.getId(), idamService.getServiceUserToken())
-                );
-            }
-        });
+
+        caseDetailsBefore.getCaseData().read(NLR_DETAILS, NonLegalRepDetails.class)
+            .ifPresent(existingNlrDetails -> {
+                if (!isNull(existingNlrDetails.getIdamId())) {
+                    ccdDataService.revokeUserAccessToCase(caseId, existingNlrDetails.getIdamId());
+                }
+            });
         NonLegalRepDetails newNlrDetails = asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class)
             .orElseThrow(() -> new IllegalStateException("Non legal rep details are not present"));
         String newNlrIdamId = newNlrDetails.getIdamId();
