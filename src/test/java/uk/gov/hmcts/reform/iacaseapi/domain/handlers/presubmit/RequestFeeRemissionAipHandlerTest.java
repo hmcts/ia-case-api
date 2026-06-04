@@ -418,7 +418,7 @@ class RequestFeeRemissionAipHandlerTest {
     void assertRemissionAppended(RemissionDetails remissionDetails) {
         List<IdValue<RemissionDetails>> remissionDetailsList = captureWrittenRemissionDetails();
         assertEquals(1, remissionDetailsList.size());
-        RemissionDetails appendedRemissionDetails = remissionDetailsList.get(0).getValue();
+        RemissionDetails appendedRemissionDetails = remissionDetailsList.getFirst().getValue();
         assertEquals(remissionDetails.getFeeRemissionType(), appendedRemissionDetails.getFeeRemissionType());
         assertEquals(remissionDetails.getAsylumSupportReference(), appendedRemissionDetails.getAsylumSupportReference());
         assertEquals(remissionDetails.getAsylumSupportDocument(), appendedRemissionDetails.getAsylumSupportDocument());

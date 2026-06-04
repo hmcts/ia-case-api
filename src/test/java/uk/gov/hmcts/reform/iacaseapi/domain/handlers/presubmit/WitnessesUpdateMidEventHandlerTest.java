@@ -232,8 +232,8 @@ public class WitnessesUpdateMidEventHandlerTest {
         verify(asylumCase).write(eq(WITNESS_1), witnessDetailsCaptor.capture());
         verify(asylumCase).write(eq(WITNESS_2), witnessDetailsCaptor.capture());
         verify(asylumCase).write(eq(WITNESS_3), witnessDetailsCaptor.capture());
-        assertEquals("1 1", witnessDetailsCaptor.getAllValues().get(0).buildWitnessFullName());
-        assertEquals(NO, witnessDetailsCaptor.getAllValues().get(0).getIsWitnessDeleted());
+        assertEquals("1 1", witnessDetailsCaptor.getAllValues().getFirst().buildWitnessFullName());
+        assertEquals(NO, witnessDetailsCaptor.getAllValues().getFirst().getIsWitnessDeleted());
         assertEquals("2 2", witnessDetailsCaptor.getAllValues().get(1).buildWitnessFullName());
         assertEquals(NO, witnessDetailsCaptor.getAllValues().get(1).getIsWitnessDeleted());
         assertEquals("3 3", witnessDetailsCaptor.getAllValues().get(2).buildWitnessFullName());

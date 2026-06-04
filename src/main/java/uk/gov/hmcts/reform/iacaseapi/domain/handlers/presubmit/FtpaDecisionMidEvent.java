@@ -70,12 +70,12 @@ public class FtpaDecisionMidEvent implements PreSubmitCallbackHandler<AsylumCase
 
         if (callback.getCaseDetails().getState() == State.FTPA_SUBMITTED || callback.getCaseDetails().getState() == State.FTPA_DECIDED) {
             if ((callback.getEvent() == Event.LEADERSHIP_JUDGE_FTPA_DECISION || callback.getEvent() == Event.RESIDENT_JUDGE_FTPA_DECISION)
-                && ftpaApplicantType.equals(APPELLANT.toString()) && !ftpaSubmitted.isPresent()) {
+                && ftpaApplicantType.equals(APPELLANT.toString()) && ftpaSubmitted.isEmpty()) {
 
                 asylumCasePreSubmitCallbackResponse.addError("You've made an invalid request. There is no appellant FTPA application to record the decision.");
                 return asylumCasePreSubmitCallbackResponse;
             } else if ((callback.getEvent() == Event.LEADERSHIP_JUDGE_FTPA_DECISION || callback.getEvent() == Event.RESIDENT_JUDGE_FTPA_DECISION)
-                && ftpaApplicantType.equals(RESPONDENT.toString()) && !ftpaSubmitted.isPresent()) {
+                && ftpaApplicantType.equals(RESPONDENT.toString()) && ftpaSubmitted.isEmpty()) {
 
                 asylumCasePreSubmitCallbackResponse.addError("You've made an invalid request. There is no respondent FTPA application to record the decision.");
                 return asylumCasePreSubmitCallbackResponse;

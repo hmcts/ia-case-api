@@ -17,7 +17,9 @@
   },
   "expectation": {
     "status": 200,
-    "errors": ["You must list the case before you can move this appeal to case building."],
+    "errors": [
+      "You must list the case before you can move this appeal to case building."
+    ],
     "caseData": {
       "template": "minimal-ada-appeal-submitted.json"
     }

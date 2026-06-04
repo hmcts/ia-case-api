@@ -52,7 +52,7 @@ public class PreviousRequirementsAndRequestsAppender {
         if (!existingRequirementsAndRequests.isEmpty()) {
 
             final DocumentWithMetadata currentRequirementAndRequest =
-                existingRequirementsAndRequests.get(existingRequirementsAndRequests.size() - 1).getValue();
+                existingRequirementsAndRequests.getLast().getValue();
 
             List<IdValue<DocumentWithMetadata>> allPreviousRequirementsAndRequests =
                 append(

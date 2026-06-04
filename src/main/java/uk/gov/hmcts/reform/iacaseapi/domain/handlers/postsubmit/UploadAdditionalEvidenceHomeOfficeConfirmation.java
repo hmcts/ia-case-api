@@ -32,8 +32,10 @@ public class UploadAdditionalEvidenceHomeOfficeConfirmation implements PostSubmi
 
         postSubmitResponse.setConfirmationHeader("# You have uploaded\n# additional evidence");
         postSubmitResponse.setConfirmationBody(
-            "#### What happens next\n\n"
-            + "The evidence is now available in the documents tab."
+            """
+            #### What happens next
+            
+            The evidence is now available in the documents tab."""
         );
 
         return postSubmitResponse;

@@ -734,4 +734,17 @@ public class HandlerUtils {
             .orElseThrow(() -> new IllegalStateException("Fee without hearing is not present"));
 
     }
+
+    // This method checks to see whether the appellant's personal details have been validated, using either the new  applications/v1/{id}
+    // Home Office endpoint or the old  applicationStatus/getBySearchParameters  Home Office endpoint
+    public static boolean hasAppellantDataBeenValidated(AsylumCase asylumCase) {
+        // Evidence from new validation endpoint
+        boolean validationDone = !asylumCase.read(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, String.class).orElse("").equals("");
+        // Evidence from old validation endpoint
+        String homeOfficeSearchStatus = asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class).orElse("");
+        // DON'T DO THIS!  Apparently we must allow the case to proceed even if it says "NO_MATCH"
+        // String homeOfficeSearchNoMatch = asylumCase.read(HOME_OFFICE_SEARCH_NO_MATCH, String.class).orElse("");
+        // return validationDone || (homeOfficeSearchStatus.equals("SUCCESS") && !homeOfficeSearchNoMatch.equals("NO_MATCH"));
+        return validationDone || homeOfficeSearchStatus.equals("SUCCESS");
+    }
 }

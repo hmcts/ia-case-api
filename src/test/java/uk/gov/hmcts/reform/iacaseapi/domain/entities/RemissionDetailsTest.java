@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.mock;
 
 import java.util.Collections;
 import java.util.List;
