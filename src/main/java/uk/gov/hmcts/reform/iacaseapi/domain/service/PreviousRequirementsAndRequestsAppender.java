@@ -49,7 +49,7 @@ public class PreviousRequirementsAndRequestsAppender {
         final List<IdValue<DocumentWithMetadata>> existingRequirementsAndRequests =
             maybeRequirementsAndRequests.orElse(Collections.emptyList());
 
-        if ((long) existingRequirementsAndRequests.size() >= 1) {
+        if (!existingRequirementsAndRequests.isEmpty()) {
 
             final DocumentWithMetadata currentRequirementAndRequest =
                 existingRequirementsAndRequests.get(existingRequirementsAndRequests.size() - 1).getValue();
@@ -61,9 +61,7 @@ public class PreviousRequirementsAndRequestsAppender {
 
             asylumCase.write(PREVIOUS_HEARING_REQUIREMENTS, allPreviousRequirementsAndRequests);
 
-            existingRequirementsAndRequests.subList(0, existingRequirementsAndRequests.size()).clear();
-
-            asylumCase.write(HEARING_REQUIREMENTS, existingRequirementsAndRequests);
+            asylumCase.write(HEARING_REQUIREMENTS, Collections.emptyList());
         }
     }
 }
