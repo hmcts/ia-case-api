@@ -21,11 +21,15 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HelpWithFeesOption.W
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import javax.crypto.SecretKey;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.io.ClassPathResource;
@@ -59,6 +63,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfCountryCircumstances;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfCountryDecisionType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.SourceOfAppeal;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.CryptoUtils;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.OrganisationPolicy;
 
 
@@ -743,5 +748,19 @@ public class HandlerUtils {
         // Evidence from old validation endpoint
         boolean homeOfficeSearchStatusSuccess = asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class).map(status -> status.equals("SUCCESS")).orElse(false);
         return validationDone || homeOfficeSearchStatusSuccess;
+    }
+
+    // String encryption (for sensitive data)
+    public static String encrypt(String textString) {
+        String base64TextString = Base64.getEncoder().encodeToString(textString.getBytes(StandardCharsets.UTF_8));
+        SecretKey key = CryptoUtils.createKey("MDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNkZWY="); // TODO: retrieve Base64-encoded 32-byte key from Azure Vault
+        return CryptoUtils.encrypt(base64TextString, key);
+    }
+
+    // String decryption (for sensitive data)
+    public static String decrypt(String encryptedString) {
+        SecretKey key = CryptoUtils.createKey("MDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNkZWY="); // TODO: retrieve Base64-encoded 32-byte key from Azure Vault
+        String base64TextString = CryptoUtils.decrypt(encryptedString, key);
+        return new String(Base64.getDecoder().decode(base64TextString), StandardCharsets.UTF_8);
     }
 }

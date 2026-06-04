@@ -151,7 +151,6 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.Organisati
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-@SuppressWarnings("unchecked")
 class HandlerUtilsTest {
     private static final String ON_THE_PAPERS = "ONPPRS";
 
@@ -1135,6 +1134,18 @@ class HandlerUtilsTest {
         when(asylumCase.read(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, String.class)).thenReturn(Optional.empty());
         when(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class)).thenReturn(Optional.of("MULTIPLE"));
         assertFalse(HandlerUtils.hasAppellantDataBeenValidated(asylumCase));
+    }
+
+    @Test
+    void encryptThenDecrypt_match() {
+        String plainText = "plain text string";
+        assertTrue(HandlerUtils.decrypt(HandlerUtils.encrypt(plainText)).equals(plainText));
+    }
+
+    @Test
+    void encryptThenDecrypt_noMatch() {
+        String plainText = "plain text string";
+        assertFalse(HandlerUtils.decrypt(HandlerUtils.encrypt(plainText)).equals("something else"));
     }
 
 }
