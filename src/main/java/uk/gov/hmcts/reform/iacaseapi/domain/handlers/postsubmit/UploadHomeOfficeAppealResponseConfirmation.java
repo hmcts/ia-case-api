@@ -45,6 +45,7 @@ public class UploadHomeOfficeAppealResponseConfirmation implements PostSubmitCal
 
         PostSubmitCallbackResponse postSubmitResponse = new PostSubmitCallbackResponse();
         postSubmitResponse.setConfirmationHeader("# You've uploaded the appeal response");
+<<<<<<< HEAD
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
         boolean is24WeekCase = asylumCase.read(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class)
@@ -82,9 +83,16 @@ public class UploadHomeOfficeAppealResponseConfirmation implements PostSubmitCal
             }
         } else {
             postSubmitResponse.setConfirmationBody(
-                "#### Do this next\n\n"
-                    + "The Tribunal will: \n* check that the Home Office response complies with the Procedure Rules and Practice Directions\n* inform you of any issues\n\n"
-                    + "Providing there are no issues, the response will be shared with the appellant."
+                """
+            #### What happens next
+            
+            The Tribunal will:\s
+            * check that the Home Office response complies with the Procedure Rules and Practice Directions
+            * inform you of any issues
+            
+            Providing there are no issues, the response will be shared with the appellant.
+            
+            All parties will be notified when the Hearing Notice is ready."""
             );
         }
 

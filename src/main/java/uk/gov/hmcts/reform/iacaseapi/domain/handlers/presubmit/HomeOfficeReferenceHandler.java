@@ -4,6 +4,7 @@ import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_DATE_OF_BIRTH;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_FAMILY_NAME;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_GIVEN_NAMES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.GWF_REFERENCE_NUMBER;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_REFERENCE_NUMBER;
 import java.text.Normalizer;
@@ -71,34 +72,28 @@ public class HomeOfficeReferenceHandler implements PreSubmitCallbackHandler<Asyl
         }
 
         final AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
-
+        // Retrieve the UAN or GWF from the case record
         String homeOfficeReferenceNumber = asylumCase
                 .read(HOME_OFFICE_REFERENCE_NUMBER, String.class)
-                .orElseThrow(() -> new IllegalStateException("homeOfficeReferenceNumber is missing"));
+                .orElse("");
+        if (homeOfficeReferenceNumber.isEmpty()) {
+            homeOfficeReferenceNumber = asylumCase
+                        .read(GWF_REFERENCE_NUMBER, String.class)
+                        .orElseThrow(() -> new IllegalStateException(
+                            "homeOfficeReferenceNumber and gwfReferenceNumber are both missing - one or other is needed"));
+        }
 
         String pageId = callback.getPageId();
 
-        PreSubmitCallbackResponse<AsylumCase> response;
-
-        switch (pageId) {
-            case "homeOfficeReferenceNumber", "oocHomeOfficeReferenceNumber", "cuiHomeOfficeReferenceNumber":
-                response = validateHomeOfficeReference(callback, asylumCase, homeOfficeReferenceNumber);
-                break;
+        return switch (pageId) {
+            case "homeOfficeReferenceNumber", "oocHomeOfficeReferenceNumber", "cuiHomeOfficeReferenceNumber" -> validateHomeOfficeReference(callback, asylumCase, homeOfficeReferenceNumber);
         
-            case "appellantBasicDetails", "cuiAppellantDob":
-                response = validateNameAndDateOfBirth(callback, asylumCase, homeOfficeReferenceNumber);
-                break;
+            case "appellantBasicDetails", "cuiAppellantDob" -> validateNameAndDateOfBirth(callback, asylumCase, homeOfficeReferenceNumber);
 
-            case "cuiAppellantName":
-                response = validateName(callback, asylumCase, homeOfficeReferenceNumber);
-                break;
+            case "cuiAppellantName" -> validateName(callback, asylumCase, homeOfficeReferenceNumber);
 
-            default:
-                response = new PreSubmitCallbackResponse<>(asylumCase);
-                break;
-        }
-
-        return response;
+            default -> new PreSubmitCallbackResponse<>(asylumCase);
+        };
     }
 
     private PreSubmitCallbackResponse<AsylumCase> validateHomeOfficeReference(
@@ -277,9 +272,7 @@ public class HomeOfficeReferenceHandler implements PreSubmitCallbackHandler<Asyl
         normalised = Normalizer.normalize(normalised, Normalizer.Form.NFD);
 
         // Step 3: Remove diacritical marks (accents, etc.)
-        normalised = normalised.replaceAll("\\p{M}", "");
-
-        return normalised;
+        return normalised.replaceAll("\\p{M}", "");
     }
 
     private boolean matchesDateOfBirth(String homeOfficeDob, String appellantDob) {

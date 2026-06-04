@@ -23,7 +23,14 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ContactPreference;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithMetadata;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.Subscriber;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.SubscriberType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
@@ -99,7 +106,7 @@ public class PinInPostActivatedTest {
 
         assertTrue(expectedSubscriptions.isPresent());
         assertEquals(1, expectedSubscriptions.get().size());
-        assertEquals(USER_ID, expectedSubscriptions.get().get(0).getId());
+        assertEquals(USER_ID, expectedSubscriptions.get().getFirst().getId());
 
         Subscriber expectedSubscriber = new Subscriber(
             SubscriberType.APPELLANT,
@@ -107,7 +114,7 @@ public class PinInPostActivatedTest {
             YesOrNo.YES,
             APPELLANT_MOBILE_NUMBER,
             YesOrNo.NO);
-        assertThat(expectedSubscriptions.get().get(0).getValue()).usingRecursiveComparison().isEqualTo(expectedSubscriber);
+        assertThat(expectedSubscriptions.get().getFirst().getValue()).usingRecursiveComparison().isEqualTo(expectedSubscriber);
     }
 
     @Test
@@ -128,7 +135,7 @@ public class PinInPostActivatedTest {
 
         assertTrue(expectedSubscriptions.isPresent());
         assertEquals(1, expectedSubscriptions.get().size());
-        assertEquals(USER_ID, expectedSubscriptions.get().get(0).getId());
+        assertEquals(USER_ID, expectedSubscriptions.get().getFirst().getId());
 
         Subscriber expectedSubscriber = new Subscriber(
             SubscriberType.APPELLANT,
@@ -136,7 +143,7 @@ public class PinInPostActivatedTest {
             YesOrNo.NO,
             APPELLANT_MOBILE_NUMBER,
             YesOrNo.YES);
-        assertThat(expectedSubscriptions.get().get(0).getValue()).usingRecursiveComparison().isEqualTo(expectedSubscriber);
+        assertThat(expectedSubscriptions.get().getFirst().getValue()).usingRecursiveComparison().isEqualTo(expectedSubscriber);
     }
 
     @Test
@@ -165,7 +172,7 @@ public class PinInPostActivatedTest {
 
         assertTrue(expectedSubscriptions.isPresent());
         assertEquals(1, expectedSubscriptions.get().size());
-        assertEquals(USER_ID, expectedSubscriptions.get().get(0).getId());
+        assertEquals(USER_ID, expectedSubscriptions.get().getFirst().getId());
 
         Subscriber expectedSubscriber = new Subscriber(
             SubscriberType.APPELLANT,
@@ -173,7 +180,7 @@ public class PinInPostActivatedTest {
             YesOrNo.YES,
             APPELLANT_MOBILE_NUMBER,
             YesOrNo.NO);
-        assertThat(expectedSubscriptions.get().get(0).getValue()).usingRecursiveComparison().isEqualTo(expectedSubscriber);
+        assertThat(expectedSubscriptions.get().getFirst().getValue()).usingRecursiveComparison().isEqualTo(expectedSubscriber);
     }
 
     @Test

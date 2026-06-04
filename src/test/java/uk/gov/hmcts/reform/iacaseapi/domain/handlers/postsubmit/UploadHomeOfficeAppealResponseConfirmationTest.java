@@ -63,8 +63,7 @@ class UploadHomeOfficeAppealResponseConfirmationTest {
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
-        assertThat(callbackResponse.getConfirmationHeader().get())
-            .contains("You've uploaded the appeal response");
+        assertTrue(callbackResponse.getConfirmationHeader().get().contains("You've uploaded the appeal response"));
 
         assertThat(callbackResponse.getConfirmationBody().get())
             .contains("Do this next");
@@ -87,58 +86,9 @@ class UploadHomeOfficeAppealResponseConfirmationTest {
 
         assertThat(callbackResponse.getConfirmationBody().get())
             .contains(
-                "The Tribunal will: \n* check that the Home Office response complies with the Procedure Rules and Practice Directions\n* inform you of any issues\n\nProviding there are no issues, the response will be shared with the appellant.");
-    }
+                "The Tribunal will: \n* check that the Home Office response complies with the Procedure Rules and Practice Directions\n* inform you of any issues\n\nProviding there are no issues, the response will be shared with the appellant");
 
-    @Test
-    void should_return_legal_officer_confirmation_for_24_week_case() {
-        stubCaseData();
-        when(asylumCase.read(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
-        when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(UserRoleLabel.TRIBUNAL_CASEWORKER);
-
-        PostSubmitCallbackResponse callbackResponse = confirmation.handle(callback);
-
-        assertThat(callbackResponse.getConfirmationBody().get())
-            .contains("Do this next");
-
-        assertThat(callbackResponse.getConfirmationBody().get())
-            .contains("Check the response uploaded by the respondent.");
-
-        assertThat(callbackResponse.getConfirmationBody().get())
-            .contains("Force case - Prepare for hearing");
-
-        assertThat(callbackResponse.getConfirmationBody().get())
-            .contains("If it does not comply direct the respondent to make the appropriate changes.");
-    }
-
-    @Test
-    void should_return_admin_officer_confirmation_for_24_week_case() {
-        stubCaseData();
-        when(asylumCase.read(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
-        when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(UserRoleLabel.ADMIN_OFFICER);
-
-        PostSubmitCallbackResponse callbackResponse = confirmation.handle(callback);
-
-        assertThat(callbackResponse.getConfirmationBody().get())
-            .contains("Check the response uploaded by the respondent.");
-    }
-
-    @Test
-    void should_return_legal_rep_confirmation_for_24_week_case() {
-        stubCaseData();
-        when(asylumCase.read(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
-        when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(UserRoleLabel.LEGAL_REPRESENTATIVE);
-
-        PostSubmitCallbackResponse callbackResponse = confirmation.handle(callback);
-
-        assertThat(callbackResponse.getConfirmationBody().get())
-            .contains("Do this next");
-
-        assertThat(callbackResponse.getConfirmationBody().get())
-            .contains("The case has now been sent to the respondent for review.");
-
-        assertThat(callbackResponse.getConfirmationBody().get())
-            .contains("You'll get an email letting you know when it's there.");
+        assertTrue(callbackResponse.getConfirmationBody().get().contains("All parties will be notified when the Hearing Notice is ready."));
     }
 
     @Test

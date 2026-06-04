@@ -18,9 +18,9 @@
             "PostCode": "NE 2AB"
           },
           "deportationOrderOptions": "Yes",
-          "dateEntryClearanceDecision":"{$TODAY-7}",
+          "dateEntryClearanceDecision": "{$TODAY-7}",
           "gwfReferenceNumber": "GWF1234566",
-          "outOfCountryDecisionType":"refusalOfHumanRights",
+          "outOfCountryDecisionType": "refusalOfHumanRights",
           "hasSponsor": "Yes",
           "sponsorGivenNames": "test",
           "sponsorFamilyName": "some-name",

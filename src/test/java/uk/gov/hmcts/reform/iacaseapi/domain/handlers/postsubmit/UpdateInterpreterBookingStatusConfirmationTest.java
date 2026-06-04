@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -65,13 +64,9 @@ class UpdateInterpreterBookingStatusConfirmationTest {
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
-        assertThat(
-            callbackResponse.getConfirmationHeader().get())
-            .contains("# Booking statuses have been updated");
+        assertTrue(callbackResponse.getConfirmationHeader().get().contains("# Booking statuses have been updated"));
 
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains(confirmationText);
+        assertTrue(callbackResponse.getConfirmationBody().get().contains(confirmationText));
     }
 
     @Test
