@@ -45,7 +45,6 @@ public class UploadHomeOfficeAppealResponseConfirmation implements PostSubmitCal
 
         PostSubmitCallbackResponse postSubmitResponse = new PostSubmitCallbackResponse();
         postSubmitResponse.setConfirmationHeader("# You've uploaded the appeal response");
-<<<<<<< HEAD
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
         boolean is24WeekCase = asylumCase.read(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class)
