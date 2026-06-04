@@ -93,6 +93,71 @@ class UploadHomeOfficeAppealResponseConfirmationTest {
     }
 
     @Test
+    void should_return_home_office_confirmation_for_24_week_case_tribunal_caseworker() {
+        stubCaseData();
+        when(callback.getCaseDetails().getId()).thenReturn(12345L);
+        when(asylumCase.read(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(UserRoleLabel.TRIBUNAL_CASEWORKER);
+
+        PostSubmitCallbackResponse callbackResponse = confirmation.handle(callback);
+
+        assertThat(callbackResponse.getConfirmationBody().get())
+            .contains("Do this next");
+
+        assertThat(callbackResponse.getConfirmationBody().get())
+            .contains("Check the response uploaded by the respondent.");
+
+        assertThat(callbackResponse.getConfirmationBody().get())
+            .contains("forceCaseToPrepareForHearing");
+
+        assertThat(callbackResponse.getConfirmationBody().get())
+            .contains("decisionWithoutHearing");
+
+        assertThat(callbackResponse.getConfirmationBody().get())
+            .contains("If it does not comply direct the respondent to make the appropriate changes.");
+    }
+
+    @Test
+    void should_return_home_office_confirmation_for_24_week_case_admin_officer() {
+        stubCaseData();
+        when(callback.getCaseDetails().getId()).thenReturn(12345L);
+        when(asylumCase.read(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(UserRoleLabel.ADMIN_OFFICER);
+
+        PostSubmitCallbackResponse callbackResponse = confirmation.handle(callback);
+
+        assertThat(callbackResponse.getConfirmationBody().get())
+            .contains("Do this next");
+
+        assertThat(callbackResponse.getConfirmationBody().get())
+            .contains("Check the response uploaded by the respondent.");
+
+        assertThat(callbackResponse.getConfirmationBody().get())
+            .contains("forceCaseToPrepareForHearing");
+
+        assertThat(callbackResponse.getConfirmationBody().get())
+            .contains("decisionWithoutHearing");
+    }
+
+    @Test
+    void should_return_home_office_confirmation_for_24_week_case_legal_representative() {
+        stubCaseData();
+        when(asylumCase.read(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(UserRoleLabel.LEGAL_REPRESENTATIVE);
+
+        PostSubmitCallbackResponse callbackResponse = confirmation.handle(callback);
+
+        assertThat(callbackResponse.getConfirmationBody().get())
+            .contains("Do this next");
+
+        assertThat(callbackResponse.getConfirmationBody().get())
+            .contains("The case has now been sent to the respondent for review.");
+
+        assertThat(callbackResponse.getConfirmationBody().get())
+            .contains("You'll get an email letting you know when it's there.");
+    }
+
+    @Test
     void handling_should_throw_if_cannot_actually_handle() {
         reset(callback);
         assertThatThrownBy(() -> confirmation.handle(callback))
