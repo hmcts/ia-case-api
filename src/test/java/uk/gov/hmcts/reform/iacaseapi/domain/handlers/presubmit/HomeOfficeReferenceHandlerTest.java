@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_DATE_OF_BIRTH;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_FAMILY_NAME;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_GIVEN_NAMES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.GWF_REFERENCE_NUMBER;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_REFERENCE_NUMBER;
 
@@ -497,4 +498,170 @@ class HomeOfficeReferenceHandlerTest {
 
         assertFalse(result);
     }
+
+    @Test
+    void handle_should_use_gwf_reference_when_home_office_reference_missing() {
+
+        Mockito.when(callback.getEvent()).thenReturn(Event.START_APPEAL);
+        Mockito.when(callback.getPageId()).thenReturn("homeOfficeReferenceNumber");
+
+        Mockito.when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class))
+            .thenReturn(Optional.empty());
+
+        Mockito.when(asylumCase.read(GWF_REFERENCE_NUMBER, String.class))
+            .thenReturn(Optional.of(VALID_GWF));
+
+        Mockito.when(referenceService.getHomeOfficeReferenceData(VALID_GWF, callback))
+            .thenReturn(Collections.singletonList(idValue));
+
+        PreSubmitCallbackResponse<AsylumCase> response =
+            handler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+
+        assertTrue(response.getErrors().isEmpty());
+    }
+
+    @Test
+    void handle_should_throw_when_home_office_and_gwf_references_missing() {
+
+        Mockito.when(callback.getEvent()).thenReturn(Event.START_APPEAL);
+        Mockito.when(callback.getPageId()).thenReturn("homeOfficeReferenceNumber");
+
+        Mockito.when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class))
+            .thenReturn(Optional.empty());
+
+        Mockito.when(asylumCase.read(GWF_REFERENCE_NUMBER, String.class))
+            .thenReturn(Optional.empty());
+
+        IllegalStateException ex = assertThrows(
+            IllegalStateException.class,
+            () -> handler.handle(PreSubmitCallbackStage.MID_EVENT, callback)
+        );
+
+        assertEquals(
+            "homeOfficeReferenceNumber and gwfReferenceNumber are both missing - one or other is needed",
+            ex.getMessage()
+        );
+    }
+
+    @Test
+    void handle_should_return_mismatch_error_when_details_do_not_match_and_status_is_ok() {
+
+        Mockito.when(callback.getEvent()).thenReturn(Event.START_APPEAL);
+        Mockito.when(callback.getPageId()).thenReturn("cuiAppellantName");
+
+        Mockito.when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class))
+            .thenReturn(Optional.of(VALID_GWF));
+
+        Mockito.when(referenceService.getHomeOfficeReferenceData(VALID_GWF, callback))
+            .thenReturn(Collections.singletonList(idValue));
+
+        Mockito.when(idValue.getValue()).thenReturn(appellant);
+
+        Mockito.when(appellant.getFamilyName()).thenReturn("Smith");
+        Mockito.when(appellant.getGivenNames()).thenReturn("John");
+
+        Mockito.when(asylumCase.read(APPELLANT_FAMILY_NAME, String.class))
+            .thenReturn(Optional.of("Jones"));
+
+        Mockito.when(asylumCase.read(APPELLANT_GIVEN_NAMES, String.class))
+            .thenReturn(Optional.of("Fred"));
+
+        Mockito.when(asylumCase.read(
+            HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS,
+            HomeOfficeApiResponseStatusType.class))
+            .thenReturn(Optional.of(HomeOfficeApiResponseStatusType.OK));
+
+        PreSubmitCallbackResponse<AsylumCase> response =
+            handler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+
+        assertEquals(1, response.getErrors().size());
+
+        assertTrue(
+            response.getErrors()
+            .stream()
+            .anyMatch(error -> error.contains("does not match the details held by the Home Office"))
+        );
+    }
+
+    @Test
+    void handle_should_return_api_error_when_details_do_not_match_and_status_not_ok() {
+
+        Mockito.when(callback.getEvent()).thenReturn(Event.START_APPEAL);
+        Mockito.when(callback.getPageId()).thenReturn("cuiAppellantName");
+
+        Mockito.when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class))
+            .thenReturn(Optional.of(VALID_GWF));
+
+        Mockito.when(referenceService.getHomeOfficeReferenceData(VALID_GWF, callback))
+            .thenReturn(Collections.singletonList(idValue));
+
+        Mockito.when(idValue.getValue()).thenReturn(appellant);
+
+        Mockito.when(appellant.getFamilyName()).thenReturn("Smith");
+        Mockito.when(appellant.getGivenNames()).thenReturn("John");
+
+        Mockito.when(asylumCase.read(APPELLANT_FAMILY_NAME, String.class))
+            .thenReturn(Optional.of("Jones"));
+
+        Mockito.when(asylumCase.read(APPELLANT_GIVEN_NAMES, String.class))
+            .thenReturn(Optional.of("Fred"));
+
+        Mockito.when(asylumCase.read(
+            HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS,
+            HomeOfficeApiResponseStatusType.class))
+            .thenReturn(Optional.of(HomeOfficeApiResponseStatusType.NOT_FOUND));
+
+        PreSubmitCallbackResponse<AsylumCase> response =
+            handler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+
+        assertEquals(1, response.getErrors().size());
+
+        assertTrue(
+            response.getErrors()
+            .stream()
+            .anyMatch(error -> error.contains(HomeOfficeApiResponseStatusType.NOT_FOUND.getUserFacingErrorText(VALID_GWF)))
+        );
+    }
+
+    @Test
+    void handle_should_use_unknown_status_when_response_status_missing() {
+
+        Mockito.when(callback.getEvent()).thenReturn(Event.START_APPEAL);
+        Mockito.when(callback.getPageId()).thenReturn("cuiAppellantName");
+
+        Mockito.when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class))
+            .thenReturn(Optional.of(VALID_GWF));
+
+        Mockito.when(referenceService.getHomeOfficeReferenceData(VALID_GWF, callback))
+            .thenReturn(Collections.singletonList(idValue));
+
+        Mockito.when(idValue.getValue()).thenReturn(appellant);
+
+        Mockito.when(appellant.getFamilyName()).thenReturn("Smith");
+        Mockito.when(appellant.getGivenNames()).thenReturn("John");
+
+        Mockito.when(asylumCase.read(APPELLANT_FAMILY_NAME, String.class))
+            .thenReturn(Optional.of("Jones"));
+
+        Mockito.when(asylumCase.read(APPELLANT_GIVEN_NAMES, String.class))
+            .thenReturn(Optional.of("Fred"));
+
+        Mockito.when(asylumCase.read(
+            HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS,
+            HomeOfficeApiResponseStatusType.class))
+            .thenReturn(Optional.empty());
+
+        PreSubmitCallbackResponse<AsylumCase> response =
+            handler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+
+        assertEquals(1, response.getErrors().size());
+
+        assertTrue(
+            response.getErrors()
+            .stream()
+            .anyMatch(error -> error.contains(HomeOfficeApiResponseStatusType.UNKNOWN.getUserFacingErrorText(VALID_GWF)))
+        );
+    }
+
+
 }
