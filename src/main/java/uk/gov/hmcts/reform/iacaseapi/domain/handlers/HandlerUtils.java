@@ -753,14 +753,14 @@ public class HandlerUtils {
     // String encryption (for sensitive data)
     public static String encrypt(String textString) {
         String base64TextString = Base64.getEncoder().encodeToString(textString.getBytes(StandardCharsets.UTF_8));
-        SecretKey key = CryptoUtils.createKey("MDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNkZWY="); // TODO: retrieve Base64-encoded 32-byte key from Azure Vault
-        return CryptoUtils.encrypt(base64TextString, key);
+        SecretKey key = CryptoUtils.createKey("MDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNkZWY="); // TODO: retrieve Base64-encoded secret from Azure Vault
+        return CryptoUtils.encrypt(base64TextString, key); // Can use  aY2VhQzjJj7r8f7V9g7D0P5qkM4vL0Q5n3Yx4t8bW2s=  as the secret (produces a 32-byte key)
     }
 
     // String decryption (for sensitive data)
     public static String decrypt(String encryptedString) {
-        SecretKey key = CryptoUtils.createKey("MDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNkZWY="); // TODO: retrieve Base64-encoded 32-byte key from Azure Vault
-        String base64TextString = CryptoUtils.decrypt(encryptedString, key);
+        SecretKey key = CryptoUtils.createKey("MDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNkZWY="); // TODO: retrieve Base64-encoded secret from Azure Vault
+        String base64TextString = CryptoUtils.decrypt(encryptedString, key); // Can use  aY2VhQzjJj7r8f7V9g7D0P5qkM4vL0Q5n3Yx4t8bW2s=  as the secret (produces a 32-byte key)
         return new String(Base64.getDecoder().decode(base64TextString), StandardCharsets.UTF_8);
     }
 }
