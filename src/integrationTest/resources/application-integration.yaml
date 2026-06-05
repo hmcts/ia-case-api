@@ -9,6 +9,11 @@ spring:
     password:
   flyway.enabled: true
   sql.init.platform: h2
+  autoconfigure:
+    exclude:
+          - org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration
+          - org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
+          - org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration
 
 appealReferenceSequenceSeed: 50000
 
@@ -19,3 +24,7 @@ idam:
     services: ia
 ccdGatewayUrl: ${CCD_GW_URL:http://localhost:3453}
 document_management.url: ${DM_URL:http://127.0.0.1:4506}
+
+app:
+  cache:
+    enabled: false
