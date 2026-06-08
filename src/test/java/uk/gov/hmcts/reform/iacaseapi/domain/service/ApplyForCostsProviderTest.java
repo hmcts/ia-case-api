@@ -1,7 +1,8 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -17,7 +18,12 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsHelper;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ApplyForCosts;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserRoleLabel;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.Value;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
@@ -31,33 +37,34 @@ class ApplyForCostsProviderTest {
     private UserDetailsHelper userDetailsHelper;
     private ApplyForCostsProvider applyForCostsProvider;
     private static List<IdValue<Document>> evidence =
-            List.of(new IdValue<>("1",
-                    new Document("http://localhost/documents/123456",
-                            "http://localhost/documents/123456",
-                            "DocumentName.pdf")));
+        List.of(new IdValue<>("1",
+            new Document("http://localhost/documents/123456",
+                "http://localhost/documents/123456",
+                "DocumentName.pdf")));
     private YesOrNo isApplyForCostsOot = YesOrNo.YES;
     private ApplyForCosts applyForCosts;
-    @Mock private AsylumCase asylumCase;
+    @Mock
+    private AsylumCase asylumCase;
 
     @BeforeEach
     public void setUp() {
         applyForCostsProvider =
-                new ApplyForCostsProvider(userDetails, userDetailsHelper);
+            new ApplyForCostsProvider(userDetails, userDetailsHelper);
         applyForCosts = new ApplyForCosts(
-                "Wasted Costs",
-                "Evidence Details",
-                evidence,
-                evidence,
-                YesOrNo.YES,
-                "Hearing explanation",
-                "Pending",
-                "Home Office",
-                "2023-11-10",
-                "Legal Rep Name",
-                "OOT explanation",
-                evidence,
-                YesOrNo.NO,
-                "Legal representative");
+            "Wasted Costs",
+            "Evidence Details",
+            evidence,
+            evidence,
+            YesOrNo.YES,
+            "Hearing explanation",
+            "Pending",
+            "Home Office",
+            "2023-11-10",
+            "Legal Rep Name",
+            "OOT explanation",
+            evidence,
+            YesOrNo.NO,
+            "Legal representative");
         List<IdValue<ApplyForCosts>> existingAppliesForCosts = new ArrayList<>();
         existingAppliesForCosts.add(new IdValue<>("1", applyForCosts));
 
@@ -70,8 +77,8 @@ class ApplyForCostsProviderTest {
 
         List<Value> applyForCostsForRespondent = applyForCostsProvider.getApplyForCostsForRespondent(asylumCase);
         assertNotNull(applyForCostsForRespondent);
-        assertThat(applyForCostsForRespondent.size()).isEqualTo(1);
-        assertThat(applyForCostsForRespondent.get(0).getLabel().equals("Costs 1, Wasted Costs, 10 Nov 2023"));
+        assertEquals(1, applyForCostsForRespondent.size());
+        assertEquals("Costs 1, Wasted Costs, 10 Nov 2023", applyForCostsForRespondent.getFirst().getLabel());
     }
 
     @ParameterizedTest
@@ -85,16 +92,16 @@ class ApplyForCostsProviderTest {
 
         List<Value> applyForCostsList = applyForCostsProvider.getApplyForCostsForAdditionalEvidence(asylumCase);
         assertNotNull(applyForCostsList);
-        assertThat(applyForCostsList.size()).isEqualTo(1);
-        assertThat(applyForCostsList.get(0).getLabel().equals("Costs 1, Wasted Costs, 10 Nov 2023"));
+        assertEquals(1, applyForCostsList.size());
+        assertEquals("Costs 1, Wasted Costs, 10 Nov 2023", applyForCostsList.getFirst().getLabel());
     }
 
     @Test
     void should_return_apply_costs_in_list_for_judge_to_decide() {
         List<Value> applyForCostsForJudgeDecision = applyForCostsProvider.getApplyForCostsForJudgeDecision(asylumCase);
         assertNotNull(applyForCostsForJudgeDecision);
-        assertThat(applyForCostsForJudgeDecision.size()).isEqualTo(1);
-        assertThat(applyForCostsForJudgeDecision.get(0).getLabel().equals("Costs 1, Wasted Costs, 10 Nov 2023"));
+        assertEquals(1, applyForCostsForJudgeDecision.size());
+        assertEquals("Costs 1, Wasted Costs, 10 Nov 2023", applyForCostsForJudgeDecision.getFirst().getLabel());
     }
 
     @Test
@@ -103,7 +110,7 @@ class ApplyForCostsProviderTest {
 
         List<Value> applyForCostsForRespondent = applyForCostsProvider.getApplyForCostsForRespondent(asylumCase);
         assertNotNull(applyForCostsForRespondent);
-        assertThat(applyForCostsForRespondent.size()).isEqualTo(0);
+        assertTrue(applyForCostsForRespondent.isEmpty());
     }
 
     static Stream<Arguments> generateApplyForCostsTestScenarios() {
@@ -121,7 +128,8 @@ class ApplyForCostsProviderTest {
             "OOT explanation",
             evidence,
             YesOrNo.NO,
-            "Legal representative");
+            "Legal representative"
+        );
 
         ApplyForCosts applyForCosts2 = new ApplyForCosts(
             "Wasted Costs",
@@ -131,13 +139,14 @@ class ApplyForCostsProviderTest {
             YesOrNo.YES,
             "Hearing explanation",
             "Pending",
-            "Legal representative",
+            "Home office",
             "2023-11-10",
             "Legal Rep Name",
             "OOT explanation",
             evidence,
-            YesOrNo.YES,
-            "Home office");
+            YesOrNo.NO,
+            "Legal representative"
+        );
         applyForCosts2.setResponseToApplication("Response to application");
 
         return Stream.of(

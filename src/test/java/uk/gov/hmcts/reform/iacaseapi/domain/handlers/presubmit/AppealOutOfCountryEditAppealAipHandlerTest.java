@@ -1,9 +1,56 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.AIP_SPONSOR_EMAIL_FOR_DISPLAY;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.AIP_SPONSOR_MOBILE_NUMBER_FOR_DISPLAY;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_OUT_OF_COUNTRY;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE_PREVIOUS_SELECTION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_ADDRESS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_DATE_OF_BIRTH;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_FAMILY_NAME;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_GIVEN_NAMES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_HAS_FIXED_ADDRESS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_IN_UK;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_IN_UK_PREVIOUS_SELECTION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_NATIONALITIES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_NATIONALITIES_DESCRIPTION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_OUT_OF_COUNTRY_ADDRESS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_STATELESS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DATE_CLIENT_LEAVE_UK;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DECISION_HEARING_FEE_OPTION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DECISION_LETTER_RECEIVED_DATE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.GWF_REFERENCE_NUMBER;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAS_CORRESPONDENCE_ADDRESS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAS_SPONSOR;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_DECISION_DATE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_REFERENCE_NUMBER;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOURNEY_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.OUTSIDE_UK_WHEN_APPLICATION_MADE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.OUTSIDE_UK_WHEN_APPLICATION_MADE_PREVIOUS_SELECTION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.RP_DC_APPEAL_HEARING_OPTION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SEARCH_POSTCODE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SPONSOR_ADDRESS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SPONSOR_ADDRESS_FOR_DISPLAY;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SPONSOR_AUTHORISATION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SPONSOR_CONTACT_PREFERENCE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SPONSOR_EMAIL;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SPONSOR_FAMILY_NAME;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SPONSOR_GIVEN_NAMES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SPONSOR_MOBILE_NUMBER;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SPONSOR_NAME_FOR_DISPLAY;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SPONSOR_PARTY_ID;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SPONSOR_SUBSCRIPTIONS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SUBSCRIPTIONS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPLOAD_THE_NOTICE_OF_DECISION_DOCS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPLOAD_THE_NOTICE_OF_DECISION_EXPLANATION;
 
 import java.util.Collections;
 import java.util.Optional;
@@ -63,7 +110,6 @@ class AppealOutOfCountryEditAppealAipHandlerTest {
         when(callback.getEvent()).thenReturn(event);
         when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         when(asylumCase.read(APPELLANT_IN_UK_PREVIOUS_SELECTION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
-        when(featureToggler.getValue("aip-ooc-feature", false)).thenReturn(true);
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -89,7 +135,6 @@ class AppealOutOfCountryEditAppealAipHandlerTest {
         when(callback.getEvent()).thenReturn(event);
         when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(asylumCase.read(APPELLANT_IN_UK_PREVIOUS_SELECTION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
-        when(featureToggler.getValue("aip-ooc-feature", false)).thenReturn(true);
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -115,7 +160,6 @@ class AppealOutOfCountryEditAppealAipHandlerTest {
         when(callback.getEvent()).thenReturn(event);
         when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(asylumCase.read(APPELLANT_IN_UK_PREVIOUS_SELECTION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
-        when(featureToggler.getValue("aip-ooc-feature", false)).thenReturn(true);
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -142,7 +186,6 @@ class AppealOutOfCountryEditAppealAipHandlerTest {
         when(asylumCase.read(APPELLANT_IN_UK_PREVIOUS_SELECTION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.DC));
         when(asylumCase.read(APPEAL_TYPE_PREVIOUS_SELECTION, AppealType.class)).thenReturn(Optional.of(AppealType.RP));
-        when(featureToggler.getValue("aip-ooc-feature", false)).thenReturn(true);
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -171,7 +214,6 @@ class AppealOutOfCountryEditAppealAipHandlerTest {
         when(asylumCase.read(APPELLANT_IN_UK_PREVIOUS_SELECTION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.DC));
         when(asylumCase.read(APPEAL_TYPE_PREVIOUS_SELECTION, AppealType.class)).thenReturn(Optional.of(AppealType.DC));
-        when(featureToggler.getValue("aip-ooc-feature", false)).thenReturn(true);
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -202,7 +244,6 @@ class AppealOutOfCountryEditAppealAipHandlerTest {
         when(asylumCase.read(OUTSIDE_UK_WHEN_APPLICATION_MADE, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(asylumCase.read(OUTSIDE_UK_WHEN_APPLICATION_MADE_PREVIOUS_SELECTION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
 
-        when(featureToggler.getValue("aip-ooc-feature", false)).thenReturn(true);
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -233,7 +274,6 @@ class AppealOutOfCountryEditAppealAipHandlerTest {
         when(asylumCase.read(APPEAL_TYPE_PREVIOUS_SELECTION, AppealType.class)).thenReturn(Optional.of(AppealType.DC));
         when(asylumCase.read(OUTSIDE_UK_WHEN_APPLICATION_MADE, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(asylumCase.read(OUTSIDE_UK_WHEN_APPLICATION_MADE_PREVIOUS_SELECTION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
-        when(featureToggler.getValue("aip-ooc-feature", false)).thenReturn(true);
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -258,7 +298,6 @@ class AppealOutOfCountryEditAppealAipHandlerTest {
         when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.DC));
         when(asylumCase.read(HAS_SPONSOR, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
-        when(featureToggler.getValue("aip-ooc-feature", false)).thenReturn(true);
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -315,7 +354,6 @@ class AppealOutOfCountryEditAppealAipHandlerTest {
         when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.DC));
         when(asylumCase.read(SPONSOR_SUBSCRIPTIONS)).thenReturn(Optional.of(Collections.singletonList(new IdValue<>("foo", subscriber))));
-        when(featureToggler.getValue("aip-ooc-feature", false)).thenReturn(true);
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -352,7 +390,6 @@ class AppealOutOfCountryEditAppealAipHandlerTest {
         when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.DC));
         when(asylumCase.read(SPONSOR_SUBSCRIPTIONS)).thenReturn(Optional.of(Collections.singletonList(new IdValue<>("foo", subscriber))));
-        when(featureToggler.getValue("aip-ooc-feature", false)).thenReturn(true);
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -389,7 +426,6 @@ class AppealOutOfCountryEditAppealAipHandlerTest {
         when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.DC));
         when(asylumCase.read(SPONSOR_SUBSCRIPTIONS)).thenReturn(Optional.of(Collections.singletonList(new IdValue<>("foo", subscriber))));
-        when(featureToggler.getValue("aip-ooc-feature", false)).thenReturn(true);
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -411,7 +447,6 @@ class AppealOutOfCountryEditAppealAipHandlerTest {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(featureToggler.getValue("aip-ooc-feature", false)).thenReturn(true);
 
         assertThatThrownBy(
             () -> appealOutOfCountryEditAppealAipHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
@@ -428,7 +463,6 @@ class AppealOutOfCountryEditAppealAipHandlerTest {
             for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
                 when(callback.getCaseDetails()).thenReturn(caseDetails);
                 when(caseDetails.getCaseData()).thenReturn(asylumCase);
-                when(featureToggler.getValue("aip-ooc-feature", false)).thenReturn(true);
                 when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
 
                 boolean canHandle = appealOutOfCountryEditAppealAipHandler.canHandle(callbackStage, callback);

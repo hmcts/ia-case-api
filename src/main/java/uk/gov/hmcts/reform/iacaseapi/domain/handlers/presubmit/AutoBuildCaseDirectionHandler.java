@@ -84,15 +84,22 @@ public class AutoBuildCaseDirectionHandler implements PreSubmitCallbackHandler<A
                 directionAppender.append(
                         asylumCase,
                     existingDirections,
-                    "You must now build your case to enable the respondent to conduct a thorough review of their decision.\n\n"
-                    + "You have until the date indicated below to upload your Appeal Skeleton Argument and evidence.\n\n"
-                    + "Your Appeal Skeleton Argument must be set out in three distinct parts to include:\n\n"
-                    + "- a concise summary of the appellant’s case\n"
-                    + "- a schedule of issues\n"
-                    + "- why those issues should be resolved in the appellant’s favour, by reference to the evidence you have (or plan to have) and any legal authorities you rely upon\n\n"
-                    + "# Next steps\n\n"
-                    + "Once you've uploaded your Appeal Skeleton Argument and evidence, you should submit your case. The Legal Officer will review everything you've added.\n\n"
-                    + "If your case looks ready, the Tribunal will send it to the respondent to review.",
+                    """
+                    You must now build your case to enable the respondent to conduct a thorough review of their decision.
+                    
+                    You have until the date indicated below to upload your Appeal Skeleton Argument and evidence.
+                    
+                    Your Appeal Skeleton Argument must be set out in three distinct parts to include:
+                    
+                    - a concise summary of the appellant’s case
+                    - a schedule of issues
+                    - why those issues should be resolved in the appellant’s favour, by reference to the evidence you have (or plan to have) and any legal authorities you rely upon
+                    
+                    # Next steps
+                    
+                    Once you've uploaded your Appeal Skeleton Argument and evidence, you should submit your case. The Legal Officer will review everything you've added.
+                    
+                    If your case looks ready, the Tribunal will send it to the respondent to review.""",
                     Parties.LEGAL_REPRESENTATIVE,
                     getBuildCaseDirectionDueDate(asylumCase, dateProvider, legalRepresentativeBuildCaseDueFromSubmissionDate, buildCaseDueInDays).toString(),
                     DirectionTag.BUILD_CASE

@@ -10,9 +10,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -22,21 +23,19 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CcdSupplementaryUpdater;
 
 @ExtendWith(SpringExtension.class)
 @ExtendWith(PactConsumerTestExt.class)
+@ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @PactFolder("pacts")
 @TestPropertySource(locations = {"classpath:application.properties"})
 public class CcdSupplementaryProviderBaseTest {
 
-    @MockBean
-    FeatureToggler featureToggler;
-    @MockBean
+    @MockitoBean
     AuthTokenGenerator serviceAuthTokenGenerator;
-    @MockBean
+    @MockitoBean
     UserDetailsProvider userDetailsProvider;
     @Value("${core_case_data_supplementary_api_url}")
     String ccdUrl;
@@ -65,7 +64,7 @@ public class CcdSupplementaryProviderBaseTest {
         String urlPath = UriComponentsBuilder.fromPath(supplementaryUrl).build(CASE_ID).toString();
 
         ccdSupplementaryUpdater =
-            new CcdSupplementaryUpdater(featureToggler, new RestTemplate(), serviceAuthTokenGenerator, userDetails, ccdUrl,
+            new CcdSupplementaryUpdater(new RestTemplate(), serviceAuthTokenGenerator, userDetails, ccdUrl,
                     urlPath, hmctsServiceId);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getId()).thenReturn(CASE_ID);

@@ -1,6 +1,5 @@
 {
   "description": "RIA-4938: Case officer decide an application",
-  "launchDarklyKey": "wa-R2-feature:true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",
