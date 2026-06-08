@@ -346,8 +346,10 @@ class HomeOfficeReferenceHandlerTest {
 
         assertTrue(HomeOfficeReferenceHandler.isWellFormedHomeOfficeReference("1234-1234-1234-1234"));
         assertTrue(HomeOfficeReferenceHandler.isWellFormedHomeOfficeReference("GWF123456789"));
+        assertTrue(HomeOfficeReferenceHandler.isWellFormedHomeOfficeReference("123456789"));
 
         assertFalse(HomeOfficeReferenceHandler.isWellFormedHomeOfficeReference("BADREF"));
+        assertFalse(HomeOfficeReferenceHandler.isWellFormedHomeOfficeReference("G123456789"));
         assertFalse(HomeOfficeReferenceHandler.isWellFormedHomeOfficeReference(null));
     }
 
