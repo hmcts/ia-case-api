@@ -135,8 +135,8 @@ public class CcdSupplementaryDetailsSearchService implements SupplementaryDetail
             String.valueOf(caseDetails.getCaseData().get(APPEAL_REFERENCE_NUMBER))
         );
 
-        log.info("Supplementary details for caseId {} - surname: {}, caseReferenceNumber: {}",
-                 caseDetails.getId(), supplementaryDetails.getSurname(), supplementaryDetails.getCaseReferenceNumber());
+        log.info("Supplementary details for caseId {} - caseReferenceNumber: {}",
+                 caseDetails.getId(), supplementaryDetails.getCaseReferenceNumber());
         return new SupplementaryInfo(
             String.valueOf(caseDetails.getId()),
             supplementaryDetails
