@@ -246,7 +246,7 @@ ia-case-notifications-api:
   enabled: true #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
-    image: hmctsprod.azurecr.io/ia/case-notifications-api:pr-1675
+    image: hmctsprod.azurecr.io/ia/case-notifications-api:latest
     releaseNameOverride: ${SERVICE_NAME}-case-notifications-api
     ingressHost: ${SERVICE_NAME}-notifications-api.preview.platform.hmcts.net
     devcpuRequests: 500m
@@ -1273,7 +1273,6 @@ em-stitching:
       APPINSIGHTS_INSTRUMENTATIONKEY: '00000000-0000-0000-0000-000000000000'
       IDAM_SECURITY_ALLOWED_ISSUERS_0: https://idam-web-public.aat.platform.hmcts.net/o
       IDAM_SECURITY_ALLOWED_ISSUERS_1: https://hmcts-access.aat.platform.hmcts.net/o
-      IDAM_SECURITY_ALLOWED_ISSUERS_2: https://forgerock-am.service.core-compute-idam-aat2.internal:8443/openam/oauth2/realms/root/realms/hmcts
     keyVaults:
       em-stitching:
         resourceGroup: em-stitching
