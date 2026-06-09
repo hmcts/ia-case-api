@@ -60,6 +60,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -143,6 +144,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SPONSOR_MOBILE_NUMBER;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SPONSOR_NAME_FOR_DISPLAY;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SPONSOR_SUBSCRIPTIONS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SUBSCRIPTIONS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingAdjournmentDay.BEFORE_HEARING_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingAdjournmentDay.ON_HEARING_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre.GLASGOW;
@@ -173,6 +175,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isPanel
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.outOfCountryDecisionTypeIsRefusalOfHumanRightsOrPermit;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.relistCaseImmediately;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.setSponsorDetailsFromNlrIfSame;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.updateSubscriptionsForNlr;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -1272,5 +1275,77 @@ class HandlerUtilsTest {
             assertEquals(YES, subscriber.getWantsEmail());
             assertEquals(NO, subscriber.getWantsSms());
         }
+    }
+
+    @Test
+    void updateSubscriptionsForNlr_does_nothing_for_if_nlr() {
+        updateSubscriptionsForNlr(asylumCase);
+        verify(asylumCase, never()).write(any(), any());
+    }
+
+    @Test
+    void updateSubscriptionsForNlr_updates_subs_for_nlr_none_existing() {
+        when(asylumCase.read(HAS_NON_LEGAL_REP, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class)).thenReturn(Optional.of(NonLegalRepDetails.builder()
+            .emailAddress("some-email")
+            .phoneNumber("some-phoneNumber")
+            .idamId("some-idamId")
+            .build()
+        ));
+
+        updateSubscriptionsForNlr(asylumCase);
+
+        verify(asylumCase, times(1)).write(eq(SUBSCRIPTIONS), subscribersCaptor.capture());
+        List<IdValue<Subscriber>> capturedSubscribers = subscribersCaptor.getValue();
+        assertFalse(capturedSubscribers.isEmpty());
+        assertEquals(1, capturedSubscribers.size());
+        Subscriber subscriber = capturedSubscribers.getFirst().getValue();
+        assertEquals(SubscriberType.SUPPORTER, subscriber.getSubscriber());
+        assertEquals("some-email", subscriber.getEmail());
+        assertEquals("some-phoneNumber", subscriber.getMobileNumber());
+        assertEquals(YES, subscriber.getWantsEmail());
+        assertEquals(NO, subscriber.getWantsSms());
+    }
+
+    @Test
+    void updateSubscriptionsForNlr_updates_subs_for_nlr_supporters_existing() {
+        when(asylumCase.read(HAS_NON_LEGAL_REP, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class)).thenReturn(Optional.of(NonLegalRepDetails.builder()
+            .emailAddress("some-email")
+            .phoneNumber("some-phoneNumber")
+            .idamId("some-idamId")
+            .build()
+        ));
+        Subscriber sub1 = mock(Subscriber.class);
+        when(sub1.getSubscriber()).thenReturn(SubscriberType.APPELLANT);
+        IdValue<Subscriber> sub1IdValue = new IdValue<>("1", sub1);
+        Subscriber sub2 = mock(Subscriber.class);
+        when(sub2.getSubscriber()).thenReturn(SubscriberType.SUPPORTER);
+        IdValue<Subscriber> sub2IdValue = new IdValue<>("2", sub2);
+        Subscriber sub3 = mock(Subscriber.class);
+        when(sub3.getSubscriber()).thenReturn(SubscriberType.APPELLANT);
+        IdValue<Subscriber> sub3IdValue = new IdValue<>("3", sub3);
+        Subscriber sub4 = mock(Subscriber.class);
+        when(sub4.getSubscriber()).thenReturn(SubscriberType.SUPPORTER);
+        IdValue<Subscriber> sub4IdValue = new IdValue<>("4", sub4);
+        when(asylumCase.read(SUBSCRIPTIONS))
+            .thenReturn(Optional.of(List.of(sub1IdValue, sub2IdValue, sub3IdValue, sub4IdValue)));
+
+        updateSubscriptionsForNlr(asylumCase);
+
+        verify(asylumCase, times(1)).write(eq(SUBSCRIPTIONS), subscribersCaptor.capture());
+        List<IdValue<Subscriber>> capturedSubscribers = subscribersCaptor.getValue();
+        assertFalse(capturedSubscribers.isEmpty());
+        assertEquals(3, capturedSubscribers.size());
+        assertTrue(capturedSubscribers.contains(sub1IdValue));
+        assertFalse(capturedSubscribers.contains(sub2IdValue));
+        assertTrue(capturedSubscribers.contains(sub3IdValue));
+        assertFalse(capturedSubscribers.contains(sub4IdValue));
+        Subscriber subscriber = capturedSubscribers.getLast().getValue();
+        assertEquals(SubscriberType.SUPPORTER, subscriber.getSubscriber());
+        assertEquals("some-email", subscriber.getEmail());
+        assertEquals("some-phoneNumber", subscriber.getMobileNumber());
+        assertEquals(YES, subscriber.getWantsEmail());
+        assertEquals(NO, subscriber.getWantsSms());
     }
 }
