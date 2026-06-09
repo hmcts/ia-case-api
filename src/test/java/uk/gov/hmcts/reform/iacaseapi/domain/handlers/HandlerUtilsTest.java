@@ -1,5 +1,57 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers;
 
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.Mock;
+import org.mockito.MockedStatic;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseFlagDetail;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseFlagValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ContactPreference;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.FeeRemissionType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingAdjournmentDay;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.HelpWithFeesOption;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.NonLegalRepDetails;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfCountryCircumstances;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfCountryDecisionType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionOption;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.SourceOfAppeal;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlag;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.Subscriber;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.SubscriberType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.Value;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.AddressUk;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationBasedFeatureToggler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.PartyIdService;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.Organisation;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.OrganisationPolicy;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Stream;
+
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -121,55 +173,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isPanel
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.outOfCountryDecisionTypeIsRefusalOfHumanRightsOrPermit;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.relistCaseImmediately;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.setSponsorDetailsFromNlrIfSame;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Stream;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.CsvSource;
-import org.junit.jupiter.params.provider.EnumSource;
-import org.junit.jupiter.params.provider.MethodSource;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.mockito.Mock;
-import org.mockito.MockedStatic;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseFlagDetail;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseFlagValue;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.FeeRemissionType;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingAdjournmentDay;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.HelpWithFeesOption;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.NonLegalRepDetails;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfCountryCircumstances;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfCountryDecisionType;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionOption;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.SourceOfAppeal;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlag;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.Subscriber;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.SubscriberType;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.Value;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationBasedFeatureToggler;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.PartyIdService;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.Organisation;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.OrganisationPolicy;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -1129,71 +1132,37 @@ class HandlerUtilsTest {
     }
 
     @Test
-    void setSponsorDetailsFromNlrIfSame_does_nothing_if_no_and_has_nlr() {
-        partyIdService = mockStatic(PartyIdService.class);
-        when(asylumCase.read(IS_SPONSOR_SAME_AS_NLR, YesOrNo.class)).thenReturn(Optional.of(NO));
-        when(asylumCase.read(HAS_NON_LEGAL_REP, YesOrNo.class)).thenReturn(Optional.of(YES));
-        setSponsorDetailsFromNlrIfSame(asylumCase);
+    void setSponsorDetailsFromNlrIfSame_does_nothing_if_not_same_and_has_nlr() {
+        try (MockedStatic<PartyIdService> partyIdService = mockStatic(PartyIdService.class)) {
+            when(asylumCase.read(IS_SPONSOR_SAME_AS_NLR, YesOrNo.class)).thenReturn(Optional.empty());
+            when(asylumCase.read(HAS_NON_LEGAL_REP, YesOrNo.class)).thenReturn(Optional.of(YES));
 
-        partyIdService.verify(
-            () -> PartyIdService.setSponsorPartyId(asylumCase),
-            times(1)
-        );
-        verify(asylumCase, never()).write(any(), any());
-        partyIdService.close();
+            setSponsorDetailsFromNlrIfSame(asylumCase);
+            partyIdService.verify(
+                () -> PartyIdService.setSponsorPartyId(asylumCase),
+                times(1)
+            );
+            verify(asylumCase, never()).write(any(), any());
+        }
     }
 
     @Test
-    void setSponsorDetailsFromNlrIfSame_does_nothing_if_empty_and_has_nlr() {
-        partyIdService = mockStatic(PartyIdService.class);
-        when(asylumCase.read(IS_SPONSOR_SAME_AS_NLR, YesOrNo.class)).thenReturn(Optional.empty());
-        when(asylumCase.read(HAS_NON_LEGAL_REP, YesOrNo.class)).thenReturn(Optional.of(YES));
+    void setSponsorDetailsFromNlrIfSame_clear_nlr_fields_if_not_same_and_has_no_nlr() {
+        try (MockedStatic<PartyIdService> partyIdService = mockStatic(PartyIdService.class)) {
+            when(asylumCase.read(IS_SPONSOR_SAME_AS_NLR, YesOrNo.class)).thenReturn(Optional.empty());
+            when(asylumCase.read(HAS_NON_LEGAL_REP, YesOrNo.class)).thenReturn(Optional.empty());
 
-        setSponsorDetailsFromNlrIfSame(asylumCase);
-        partyIdService.verify(
-            () -> PartyIdService.setSponsorPartyId(asylumCase),
-            times(1)
-        );
-        verify(asylumCase, never()).write(any(), any());
-        partyIdService.close();
-    }
-
-    @Test
-    void setSponsorDetailsFromNlrIfSame_clear_nlr_fields_if_not_same_and_has_nlr_empty() {
-        partyIdService = mockStatic(PartyIdService.class);
-        when(asylumCase.read(IS_SPONSOR_SAME_AS_NLR, YesOrNo.class)).thenReturn(Optional.empty());
-        when(asylumCase.read(HAS_NON_LEGAL_REP, YesOrNo.class)).thenReturn(Optional.empty());
-
-        setSponsorDetailsFromNlrIfSame(asylumCase);
-        partyIdService.verify(
-            () -> PartyIdService.setSponsorPartyId(asylumCase),
-            times(1)
-        );
-        verify(asylumCase, never()).write(any(), any());
-        verify(asylumCase).clear(NLR_DETAILS);
-        verify(asylumCase).clear(JOIN_APPEAL_PIN);
-        verify(asylumCase).clear(IS_SPONSOR_SAME_AS_NLR);
-        verify(asylumCase).clear(HAS_NON_LEGAL_REP_JOINED);
-        partyIdService.close();
-    }
-
-    @Test
-    void setSponsorDetailsFromNlrIfSame_clear_nlr_fields_if_not_same_and_has_nlnoNO() {
-        partyIdService = mockStatic(PartyIdService.class);
-        when(asylumCase.read(IS_SPONSOR_SAME_AS_NLR, YesOrNo.class)).thenReturn(Optional.empty());
-        when(asylumCase.read(HAS_NON_LEGAL_REP, YesOrNo.class)).thenReturn(Optional.of(NO));
-
-        setSponsorDetailsFromNlrIfSame(asylumCase);
-        partyIdService.verify(
-            () -> PartyIdService.setSponsorPartyId(asylumCase),
-            times(1)
-        );
-        verify(asylumCase, never()).write(any(), any());
-        verify(asylumCase).clear(NLR_DETAILS);
-        verify(asylumCase).clear(JOIN_APPEAL_PIN);
-        verify(asylumCase).clear(IS_SPONSOR_SAME_AS_NLR);
-        verify(asylumCase).clear(HAS_NON_LEGAL_REP_JOINED);
-        partyIdService.close();
+            setSponsorDetailsFromNlrIfSame(asylumCase);
+            partyIdService.verify(
+                () -> PartyIdService.setSponsorPartyId(asylumCase),
+                times(1)
+            );
+            verify(asylumCase, never()).write(any(), any());
+            verify(asylumCase).clear(NLR_DETAILS);
+            verify(asylumCase).clear(JOIN_APPEAL_PIN);
+            verify(asylumCase).clear(IS_SPONSOR_SAME_AS_NLR);
+            verify(asylumCase).clear(HAS_NON_LEGAL_REP_JOINED);
+        }
     }
 
     @Test
@@ -1206,60 +1175,102 @@ class HandlerUtilsTest {
     }
 
     @Test
-    void setSponsorDetailsFromNlrIfSame_sets_correctly_if_yes_empty_nlr_details() {
-        partyIdService = mockStatic(PartyIdService.class);
-        when(asylumCase.read(IS_SPONSOR_SAME_AS_NLR, YesOrNo.class)).thenReturn(Optional.of(YES));
-        when(asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class))
-            .thenReturn(Optional.of(NonLegalRepDetails.builder().build()));
+    void setSponsorDetailsFromNlrIfSame_sets_correctly_if_yes() {
+        try (MockedStatic<PartyIdService> partyIdService = mockStatic(PartyIdService.class)) {
+            String expectedEmailAddress = "someEmailAddress";
+            String expectedIdamId = "someIdamId";
+            String expectedFamilyName = "someFamilyName";
+            String expectedAddress = "someAddress";
+            AddressUk expectedAddressUk = new AddressUk("someLine1", null, null,
+                "someTown", null, "somePostcode", null);
+            String expectedPhoneNumber = "somePhoneNumber";
+            String expectedGivenNames = "someGivenNames";
+            when(asylumCase.read(IS_SPONSOR_SAME_AS_NLR, YesOrNo.class)).thenReturn(Optional.of(YES));
+            when(asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class))
+                .thenReturn(Optional.of(NonLegalRepDetails.builder()
+                    .emailAddress(expectedEmailAddress)
+                    .idamId(expectedIdamId)
+                    .familyName(expectedFamilyName)
+                    .address(expectedAddress)
+                    .addressUk(expectedAddressUk)
+                    .phoneNumber(expectedPhoneNumber)
+                    .givenNames(expectedGivenNames)
+                    .build()));
 
-        setSponsorDetailsFromNlrIfSame(asylumCase);
-        partyIdService.verify(
-            () -> PartyIdService.setSponsorPartyId(asylumCase),
-            times(1)
-        );
-        verify(asylumCase).write(SPONSOR_GIVEN_NAMES, null);
-        verify(asylumCase).write(SPONSOR_FAMILY_NAME, null);
-        verify(asylumCase).write(SPONSOR_ADDRESS, null);
-        verify(asylumCase).write(SPONSOR_ADDRESS_FOR_DISPLAY, null);
-        verify(asylumCase).write(SPONSOR_NAME_FOR_DISPLAY, null);
-        verify(asylumCase).write(SPONSOR_CONTACT_PREFERENCE, null);
-        verify(asylumCase).write(SPONSOR_EMAIL, null);
-        verify(asylumCase).write(SPONSOR_MOBILE_NUMBER, null);
-        verify(asylumCase).write(SPONSOR_AUTHORISATION, YES);
-        verify(asylumCase).write(eq(SPONSOR_SUBSCRIPTIONS), anyList());
-        partyIdService.close();
+            setSponsorDetailsFromNlrIfSame(asylumCase);
+            partyIdService.verify(
+                () -> PartyIdService.setSponsorPartyId(asylumCase),
+                times(1)
+            );
+            verify(asylumCase).write(SPONSOR_GIVEN_NAMES, expectedGivenNames);
+            verify(asylumCase).write(SPONSOR_FAMILY_NAME, expectedFamilyName);
+            verify(asylumCase).write(SPONSOR_ADDRESS, expectedAddressUk);
+            verify(asylumCase).write(SPONSOR_ADDRESS_FOR_DISPLAY, expectedAddressUk.toDisplay());
+            verify(asylumCase).write(SPONSOR_NAME_FOR_DISPLAY, expectedGivenNames + " " + expectedFamilyName);
+            verify(asylumCase).write(SPONSOR_CONTACT_PREFERENCE, ContactPreference.WANTS_EMAIL);
+            verify(asylumCase).write(SPONSOR_EMAIL, expectedEmailAddress);
+            verify(asylumCase).write(SPONSOR_MOBILE_NUMBER, expectedPhoneNumber);
+            verify(asylumCase).write(SPONSOR_AUTHORISATION, YES);
+            verify(asylumCase).write(eq(SPONSOR_SUBSCRIPTIONS), anyList());
+        }
+    }
+
+    @Test
+    void setSponsorDetailsFromNlrIfSame_sets_correctly_if_yes_empty_nlr_details() {
+        try (MockedStatic<PartyIdService> partyIdService = mockStatic(PartyIdService.class)) {
+            when(asylumCase.read(IS_SPONSOR_SAME_AS_NLR, YesOrNo.class)).thenReturn(Optional.of(YES));
+            when(asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class))
+                .thenReturn(Optional.of(NonLegalRepDetails.builder().build()));
+
+            setSponsorDetailsFromNlrIfSame(asylumCase);
+            partyIdService.verify(
+                () -> PartyIdService.setSponsorPartyId(asylumCase),
+                times(1)
+            );
+            verify(asylumCase).write(SPONSOR_GIVEN_NAMES, null);
+            verify(asylumCase).write(SPONSOR_FAMILY_NAME, null);
+            verify(asylumCase).write(SPONSOR_ADDRESS, null);
+            verify(asylumCase).write(SPONSOR_ADDRESS_FOR_DISPLAY, null);
+            verify(asylumCase).write(SPONSOR_NAME_FOR_DISPLAY, null);
+            verify(asylumCase).write(SPONSOR_CONTACT_PREFERENCE, ContactPreference.WANTS_EMAIL);
+            verify(asylumCase).write(SPONSOR_EMAIL, null);
+            verify(asylumCase).write(SPONSOR_MOBILE_NUMBER, null);
+            verify(asylumCase).write(SPONSOR_AUTHORISATION, YES);
+            verify(asylumCase).write(eq(SPONSOR_SUBSCRIPTIONS), anyList());
+        }
     }
 
     @Test
     void setSponsorDetailsFromNlrIfSame_sets_sponsor_subscription_correctly() {
-        partyIdService = mockStatic(PartyIdService.class);
-        String email = "some-email";
-        String phoneNumber = "some-phoneNumber";
-        String idamId = "some-idamId";
-        when(asylumCase.read(IS_SPONSOR_SAME_AS_NLR, YesOrNo.class)).thenReturn(Optional.of(YES));
-        when(asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class))
-            .thenReturn(Optional.of(NonLegalRepDetails.builder()
-                .emailAddress(email)
-                .phoneNumber(phoneNumber)
-                .idamId(idamId)
-                .build()
-            ));
-        when(asylumCase.read(SPONSOR_SUBSCRIPTIONS)).thenReturn(Optional.of(mockSubscribers));
-        when(mockSubscribers.isEmpty()).thenReturn(false);
-        setSponsorDetailsFromNlrIfSame(asylumCase);
-        partyIdService.verify(
-            () -> PartyIdService.setSponsorPartyId(asylumCase),
-            times(1)
-        );
-        verify(asylumCase).write(eq(SPONSOR_SUBSCRIPTIONS), subscribersCaptor.capture());
-        List<IdValue<Subscriber>> capturedSubscribers = subscribersCaptor.getValue();
-        assertFalse(capturedSubscribers.isEmpty());
-        assertEquals(1, capturedSubscribers.size());
-        assertEquals(SubscriberType.SUPPORTER, capturedSubscribers.get(0).getValue().getSubscriber());
-        assertEquals(email, capturedSubscribers.get(0).getValue().getEmail());
-        assertEquals(phoneNumber, capturedSubscribers.get(0).getValue().getMobileNumber());
-        assertEquals(YES, capturedSubscribers.get(0).getValue().getWantsEmail());
-        assertEquals(NO, capturedSubscribers.get(0).getValue().getWantsSms());
-        partyIdService.close();
+        try (MockedStatic<PartyIdService> partyIdService = mockStatic(PartyIdService.class)) {
+            String email = "some-email";
+            String phoneNumber = "some-phoneNumber";
+            String idamId = "some-idamId";
+            when(asylumCase.read(IS_SPONSOR_SAME_AS_NLR, YesOrNo.class)).thenReturn(Optional.of(YES));
+            when(asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class))
+                .thenReturn(Optional.of(NonLegalRepDetails.builder()
+                    .emailAddress(email)
+                    .phoneNumber(phoneNumber)
+                    .idamId(idamId)
+                    .build()
+                ));
+            when(asylumCase.read(SPONSOR_SUBSCRIPTIONS)).thenReturn(Optional.of(mockSubscribers));
+            when(mockSubscribers.isEmpty()).thenReturn(false);
+            setSponsorDetailsFromNlrIfSame(asylumCase);
+            partyIdService.verify(
+                () -> PartyIdService.setSponsorPartyId(asylumCase),
+                times(1)
+            );
+            verify(asylumCase).write(eq(SPONSOR_SUBSCRIPTIONS), subscribersCaptor.capture());
+            List<IdValue<Subscriber>> capturedSubscribers = subscribersCaptor.getValue();
+            assertFalse(capturedSubscribers.isEmpty());
+            assertEquals(1, capturedSubscribers.size());
+            Subscriber subscriber = capturedSubscribers.getFirst().getValue();
+            assertEquals(SubscriberType.SUPPORTER, subscriber.getSubscriber());
+            assertEquals(email, subscriber.getEmail());
+            assertEquals(phoneNumber, subscriber.getMobileNumber());
+            assertEquals(YES, subscriber.getWantsEmail());
+            assertEquals(NO, subscriber.getWantsSms());
+        }
     }
 }

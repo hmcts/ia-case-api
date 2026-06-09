@@ -17,6 +17,7 @@ public class NonLegalRepDetails {
     private String emailAddress;
     private String givenNames;
     private String familyName;
-    private AddressUk address;
+    private AddressUk addressUk;
+    private String address;
     private String phoneNumber;
 }

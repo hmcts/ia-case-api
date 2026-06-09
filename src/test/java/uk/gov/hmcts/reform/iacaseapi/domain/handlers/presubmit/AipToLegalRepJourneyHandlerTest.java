@@ -1,37 +1,5 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CONTACT_PREFERENCE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CONTACT_PREFERENCE_DESCRIPTION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.EMAIL;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAS_NON_LEGAL_REP;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAS_NON_LEGAL_REP_JOINED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_SPONSOR_SAME_AS_NLR;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOIN_APPEAL_PIN;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOURNEY_TYPE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MOBILE_NUMBER;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NLR_DETAILS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PA_APPEAL_TYPE_AIP_PAYMENT_OPTION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PA_APPEAL_TYPE_PAYMENT_OPTION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PRE_CLARIFYING_STATE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SUBSCRIPTIONS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.NOC_REQUEST;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -63,9 +31,41 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.Assignment;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleAssignmentResource;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.CcdDataService;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.IdamService;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.RoleAssignmentService;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Stream;
+
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CONTACT_PREFERENCE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CONTACT_PREFERENCE_DESCRIPTION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.EMAIL;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAS_NON_LEGAL_REP;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAS_NON_LEGAL_REP_JOINED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_SPONSOR_SAME_AS_NLR;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOIN_APPEAL_PIN;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOURNEY_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MOBILE_NUMBER;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NLR_DETAILS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PA_APPEAL_TYPE_AIP_PAYMENT_OPTION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PA_APPEAL_TYPE_PAYMENT_OPTION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PRE_CLARIFYING_STATE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SUBSCRIPTIONS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.NOC_REQUEST;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -85,7 +85,7 @@ public class AipToLegalRepJourneyHandlerTest {
     @Mock
     private PreSubmitCallbackResponse<AsylumCase> callbackResponse;
     @Mock
-    private RoleAssignmentService roleAssignmentService;
+    private CcdDataService ccdDataService;
     @Mock
     private IdamService idamService;
     @Mock
@@ -95,7 +95,7 @@ public class AipToLegalRepJourneyHandlerTest {
 
     @BeforeEach
     public void setUp() throws Exception {
-        aipToLegalRepJourneyHandler = new AipToLegalRepJourneyHandler(roleAssignmentService, idamService);
+        aipToLegalRepJourneyHandler = new AipToLegalRepJourneyHandler(ccdDataService, idamService);
         Subscriber subscriber = new Subscriber(
             SubscriberType.APPELLANT, APPELLANT_EMAIL, YesOrNo.YES, APPELLANT_MOBILE_NUMBER, YesOrNo.NO);
         subscriptions = List.of(new IdValue<>(USER_ID, subscriber));
@@ -173,7 +173,7 @@ public class AipToLegalRepJourneyHandlerTest {
         aipToLegalRepJourneyHandler.handle(ABOUT_TO_SUBMIT, callback, callbackResponse);
 
         verify(asylumCase, times(1)).clear(JOURNEY_TYPE);
-        verify(roleAssignmentService, never()).getCaseRoleAssignmentsForUser(anyLong(), anyString());
+        verify(ccdDataService, never()).revokeUserAccessToCase(anyLong(), anyString());
     }
 
     @Test
@@ -341,23 +341,19 @@ public class AipToLegalRepJourneyHandlerTest {
     }
 
     @Test
-    void should_clear_nlr_details_and_remove_role_assignment_if_nlr_details_present() {
+    void should_clear_nlr_details_and_revoke_access_if_nlr_details_present() {
         long caseId = 123L;
         when(caseDetails.getId()).thenReturn(caseId);
         when(asylumCase.read(AsylumCaseFieldDefinition.NLR_DETAILS, NonLegalRepDetails.class))
             .thenReturn(Optional.of(nonLegalRepDetails));
         String idamId = "idamId";
         when(nonLegalRepDetails.getIdamId()).thenReturn(idamId);
-        when(roleAssignmentService.getCaseRoleAssignmentsForUser(anyLong(), anyString()))
-            .thenReturn(new RoleAssignmentResource(List.of(assignment)));
         when(assignment.getId()).thenReturn("roleAssignmentId");
         when(idamService.getServiceUserToken()).thenReturn("serviceUserToken");
 
         aipToLegalRepJourneyHandler.handle(ABOUT_TO_SUBMIT, callback, callbackResponse);
 
-        verify(roleAssignmentService, times(1)).getCaseRoleAssignmentsForUser(caseId, idamId);
-        verify(idamService, times(1)).getServiceUserToken();
-        verify(roleAssignmentService, times(1)).deleteRoleAssignment("roleAssignmentId", "serviceUserToken");
+        verify(ccdDataService, times(1)).revokeUserAccessToCase(caseId, idamId);
         verify(asylumCase, times(1)).clear(NLR_DETAILS);
         verify(asylumCase, times(1)).clear(HAS_NON_LEGAL_REP);
         verify(asylumCase, times(1)).clear(JOIN_APPEAL_PIN);
@@ -365,23 +361,13 @@ public class AipToLegalRepJourneyHandlerTest {
         verify(asylumCase, times(1)).clear(HAS_NON_LEGAL_REP_JOINED);
     }
 
-
     @Test
-    void should_clear_nlr_details_and_do_nothing_if_nlr_details_present_but_no_role_assignment() {
-        long caseId = 123L;
-        when(caseDetails.getId()).thenReturn(caseId);
-        when(asylumCase.read(AsylumCaseFieldDefinition.NLR_DETAILS, NonLegalRepDetails.class))
-            .thenReturn(Optional.of(nonLegalRepDetails));
-        String idamId = "idamId";
-        when(nonLegalRepDetails.getIdamId()).thenReturn(idamId);
-        when(roleAssignmentService.getCaseRoleAssignmentsForUser(anyLong(), anyString()))
-            .thenReturn(new RoleAssignmentResource(Collections.emptyList()));
+    void throws_if_cannot_handle() {
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.REP));
 
-        aipToLegalRepJourneyHandler.handle(ABOUT_TO_SUBMIT, callback, callbackResponse);
+        IllegalStateException exception = assertThrows(IllegalStateException.class,
+            () -> aipToLegalRepJourneyHandler.handle(ABOUT_TO_SUBMIT, callback, callbackResponse));
 
-        verify(roleAssignmentService, times(1)).getCaseRoleAssignmentsForUser(caseId, idamId);
-        verify(idamService, never()).getServiceUserToken();
-        verify(roleAssignmentService, never()).deleteRoleAssignment(anyString(), anyString());
-        verify(asylumCase, times(1)).clear(NLR_DETAILS);
+        assertEquals("Cannot handle callback", exception.getMessage());
     }
 }

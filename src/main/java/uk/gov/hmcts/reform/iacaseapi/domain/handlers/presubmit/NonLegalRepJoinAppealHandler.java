@@ -13,7 +13,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.CcdDataService;
 
-import static java.util.Objects.isNull;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAS_NON_LEGAL_REP_JOINED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOIN_APPEAL_PIN;
@@ -67,11 +66,11 @@ public class NonLegalRepJoinAppealHandler implements PreSubmitCallbackHandler<As
         long caseId = callback.getCaseDetails().getId();
 
         caseDetailsBefore.getCaseData().read(NLR_DETAILS, NonLegalRepDetails.class)
-            .ifPresent(existingNlrDetails -> {
-                if (!isNull(existingNlrDetails.getIdamId())) {
-                    ccdDataService.revokeUserAccessToCase(caseId, existingNlrDetails.getIdamId());
-                }
+            .map(NonLegalRepDetails::getIdamId)
+            .ifPresent(existingNlrIdamId -> {
+                ccdDataService.revokeUserAccessToCase(callback.getCaseDetails().getId(), existingNlrIdamId);
             });
+
         NonLegalRepDetails newNlrDetails = asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class)
             .orElseThrow(() -> new IllegalStateException("Non legal rep details are not present"));
         String newNlrIdamId = newNlrDetails.getIdamId();

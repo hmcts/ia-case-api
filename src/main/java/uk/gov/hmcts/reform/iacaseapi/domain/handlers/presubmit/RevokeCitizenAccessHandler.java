@@ -58,11 +58,11 @@ public class RevokeCitizenAccessHandler implements PreSubmitCallbackHandler<Asyl
 
         ccdDataService.revokeUserAccessToCase(caseId, idamId);
         asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class)
-            .ifPresent(nlrDetails -> {
-                if (nlrDetails.getIdamId().equals(idamId)) {
-                    asylumCase.write(HAS_NON_LEGAL_REP, YesOrNo.NO);
-                    clearNlrFields(asylumCase);
-                }
+            .map(NonLegalRepDetails::getIdamId)
+            .filter(nlrIdamId -> nlrIdamId.equals(idamId))
+            .ifPresent(nlrIdamId -> {
+                asylumCase.write(HAS_NON_LEGAL_REP, YesOrNo.NO);
+                clearNlrFields(asylumCase);
             });
 
         return new PreSubmitCallbackResponse<>(asylumCase);
