@@ -40,9 +40,7 @@ class RequestReasonsForAppealConfirmationTest {
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
-        assertThat(
-            callbackResponse.getConfirmationHeader().get())
-            .contains("You have sent a direction");
+        assertTrue(callbackResponse.getConfirmationHeader().get().contains("You have sent a direction"));
 
         assertThat(
             callbackResponse.getConfirmationBody().get())

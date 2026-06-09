@@ -34,13 +34,17 @@ public class MarkAppealPaidConfirmation implements PostSubmitCallbackHandler<Asy
         postSubmitResponse.setConfirmationHeader("# Your have marked the appeal as paid");
         if (isInternalCase(callback.getCaseDetails().getCaseData())) {
             postSubmitResponse.setConfirmationBody(
-                "#### What happens next\n\n"
-                + "The appellant has been notified that the fee has been paid. The appeal will progress as usual."
+                """
+                #### What happens next
+                
+                The appellant has been notified that the fee has been paid. The appeal will progress as usual."""
             );
         } else {
             postSubmitResponse.setConfirmationBody(
-                    "#### What happens next\n\n"
-                            + "The Tribunal will be notified that the fee has been paid. The appeal will progress as usual."
+                    """
+                    #### What happens next
+                    
+                    The Tribunal will be notified that the fee has been paid. The appeal will progress as usual."""
             );
         }
 

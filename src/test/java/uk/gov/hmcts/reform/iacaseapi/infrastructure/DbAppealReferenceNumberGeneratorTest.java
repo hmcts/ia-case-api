@@ -29,7 +29,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
-@SuppressWarnings("unchecked")
 class DbAppealReferenceNumberGeneratorTest {
 
     private static final int SEQUENCE_SEED = 50000;
@@ -107,7 +106,7 @@ class DbAppealReferenceNumberGeneratorTest {
         MapSqlParameterSource actualInsertParameters =
             insertParametersCaptor
                 .getAllValues()
-                .get(0);
+                .getFirst();
 
         assertEquals(caseId, actualInsertParameters.getValue("caseId"));
         assertEquals(appealType.name(), actualInsertParameters.getValue("appealType"));
@@ -117,7 +116,7 @@ class DbAppealReferenceNumberGeneratorTest {
         MapSqlParameterSource actualSelectParameters =
             selectParametersCaptor
                 .getAllValues()
-                .get(0);
+                .getFirst();
 
         assertEquals(caseId, actualSelectParameters.getValue("caseId"));
     }
