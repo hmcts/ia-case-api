@@ -43,7 +43,7 @@ public class SecurityConfiguration {
     }
 
     public List<String> getAnonymousPaths() {
-        return Collections.unmodifiableList(anonymousPaths);
+        return anonymousPaths;
     }
 
     @Bean
@@ -93,7 +93,7 @@ public class SecurityConfiguration {
     }
 
     public Map<String, List<Event>> getRoleEventAccess() {
-        return Collections.unmodifiableMap(roleEventAccess);
+        return roleEventAccess;
     }
 
 }

@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.iacaseapi.infrastructure.config;
 import com.google.common.collect.ImmutableSet;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
@@ -20,11 +19,11 @@ public class AuthCheckerConfiguration {
     private final List<String> authorisedRoles = new ArrayList<>();
 
     public List<String> getAuthorisedServices() {
-        return Collections.unmodifiableList(authorisedServices);
+        return authorisedServices;
     }
 
     public List<String> getAuthorisedRoles() {
-        return Collections.unmodifiableList(authorisedRoles);
+        return authorisedRoles;
     }
 
     @Bean
