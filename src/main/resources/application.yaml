@@ -1414,6 +1414,7 @@ security:
       - "createCaseLink"
       - "maintainCaseLinks"
       - "revokeCitizenAccess"
+      - "generatePinInPost"
       - "sendInviteToNonLegalRep"
       - "sendPipToNonLegalRep"
       - "joinAppealConfirmation"
@@ -1424,6 +1425,7 @@ security:
       - "reTriggerWaTasks"
       - "reTriggerWaBulkTasks"
       - "revokeCitizenAccess"
+      - "generatePinInPost"
     caseworker-ia-rparobot:
       - "addCaseNote"
     next-hearing-date-admin:

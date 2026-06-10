@@ -498,6 +498,7 @@ class SendNotificationHandlerTest {
         Event.JOIN_APPEAL_CONFIRMATION,
         Event.NLR_DETAILS_UPDATED,
         Event.REMOVE_STATUTORY_TIMEFRAME_24_WEEKS,
+        Event.GENERATE_PIN_IN_POST,
         Event.COMPLETE_CASE_REVIEW
     );
 

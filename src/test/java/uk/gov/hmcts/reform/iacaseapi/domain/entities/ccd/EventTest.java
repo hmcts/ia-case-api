@@ -200,6 +200,7 @@ class EventTest {
             Arguments.of("joinAppealConfirmation", Event.JOIN_APPEAL_CONFIRMATION.toString()),
             Arguments.of("nlrDetailsUpdated", Event.NLR_DETAILS_UPDATED.toString()),
             Arguments.of("completeCaseReview", Event.COMPLETE_CASE_REVIEW.toString()),
+            Arguments.of("generatePinInPost", Event.GENERATE_PIN_IN_POST.toString()),
             Arguments.of("unknown", Event.UNKNOWN.toString())
         );
     }
