@@ -1384,12 +1384,14 @@ security:
       - "createCaseLink"
       - "maintainCaseLinks"
       - "revokeCitizenAccess"
+      - "generatePinInPost"
     caseworker-ia-internal:
       - "revokeCaseAccess"
       - "removeCaseManagerBulk"
       - "reTriggerWaTasks"
       - "reTriggerWaBulkTasks"
       - "revokeCitizenAccess"
+      - "generatePinInPost"
     caseworker-ia-rparobot:
       - "addCaseNote"
     next-hearing-date-admin:

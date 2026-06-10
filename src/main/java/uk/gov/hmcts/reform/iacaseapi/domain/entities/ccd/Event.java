@@ -171,6 +171,7 @@ public enum Event {
     FORCE_FTPA_DECIDED_STATE("forceFtpaDecidedState"),
     ROLLBACK_MIGRATION("rollbackMigration"),
     COMPLETE_CASE_REVIEW("completeCaseReview"),
+    GENERATE_PIN_IN_POST("generatePinInPost"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");
