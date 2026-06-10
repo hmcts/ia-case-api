@@ -170,6 +170,7 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
             Event.HEARING_CANCELLED,
             Event.REMOVE_STATUTORY_TIMEFRAME_24_WEEKS,
             Event.REVOKE_CITIZEN_ACCESS,
+            Event.GENERATE_PIN_IN_POST,
             Event.COMPLETE_CASE_REVIEW
         );
         if (!isSaveAndContinueEnabled) {
