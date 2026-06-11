@@ -10,6 +10,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.GWF_REFERENCE_NUMBER;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_APPELLANTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_REFERENCE_NUMBER;
@@ -163,41 +164,13 @@ class HomeOfficeReferenceHandlerOnSubmitTest {
     }
 
     @Test
-    void should_throw_if_home_office_reference_missing() {
-
-        when(callback.getEvent())
-            .thenReturn(Event.START_APPEAL);
-
-        when(asylumCase.read(
-            HOME_OFFICE_REFERENCE_NUMBER,
-            String.class))
-            .thenReturn(Optional.empty());
-
-        when(callback.getCaseDetails())
-            .thenReturn(caseDetails);
-
-        when(caseDetails.getCaseData())
-            .thenReturn(asylumCase);
-
-        assertThrows(
-            IllegalStateException.class,
-            () -> handler.handle(
-                PreSubmitCallbackStage.ABOUT_TO_SUBMIT,
-                callback
-            )
-        );
-    }
-
-    @Test
     void should_return_response_without_writing_appellants_when_serialised_data_missing() {
 
         when(callback.getEvent())
             .thenReturn(Event.START_APPEAL);
 
-        when(asylumCase.read(
-            HOME_OFFICE_REFERENCE_NUMBER,
-            String.class))
-            .thenReturn(Optional.of(HO_REFERENCE));
+        when(asylumCase.read(HOME_OFFICE_APPELLANTS))
+            .thenReturn(Optional.empty());
 
         when(asylumCase.read(
             HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY,
@@ -227,6 +200,9 @@ class HomeOfficeReferenceHandlerOnSubmitTest {
 
         when(callback.getEvent())
             .thenReturn(Event.START_APPEAL);
+
+        when(asylumCase.read(HOME_OFFICE_APPELLANTS))
+            .thenReturn(Optional.empty());
 
         when(asylumCase.read(
             HOME_OFFICE_REFERENCE_NUMBER,
@@ -268,6 +244,9 @@ class HomeOfficeReferenceHandlerOnSubmitTest {
         when(callback.getEvent())
             .thenReturn(Event.START_APPEAL);
 
+        when(asylumCase.read(HOME_OFFICE_APPELLANTS))
+            .thenReturn(Optional.empty());
+
         when(asylumCase.read(
             HOME_OFFICE_REFERENCE_NUMBER,
             String.class))
@@ -300,6 +279,9 @@ class HomeOfficeReferenceHandlerOnSubmitTest {
 
         when(callback.getEvent())
             .thenReturn(Event.START_APPEAL);
+
+        when(asylumCase.read(HOME_OFFICE_APPELLANTS))
+            .thenReturn(Optional.empty());
 
         when(asylumCase.read(
             HOME_OFFICE_REFERENCE_NUMBER,
@@ -356,16 +338,14 @@ class HomeOfficeReferenceHandlerOnSubmitTest {
         when(callback.getEvent())
             .thenReturn(Event.START_APPEAL);
 
+        when(asylumCase.read(HOME_OFFICE_APPELLANTS))
+            .thenReturn(Optional.empty());
+
         when(callback.getCaseDetails())
             .thenReturn(caseDetails);
 
         when(caseDetails.getCaseData())
             .thenReturn(asylumCase);
-
-        when(asylumCase.read(
-            HOME_OFFICE_REFERENCE_NUMBER,
-            String.class))
-            .thenReturn(Optional.of(HO_REFERENCE));
 
         when(asylumCase.read(
             HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY,
@@ -389,6 +369,9 @@ class HomeOfficeReferenceHandlerOnSubmitTest {
 
         when(callback.getEvent())
             .thenReturn(Event.START_APPEAL);
+
+        when(asylumCase.read(HOME_OFFICE_APPELLANTS))
+            .thenReturn(Optional.empty());
 
         when(callback.getCaseDetails())
             .thenReturn(caseDetails);
@@ -421,13 +404,13 @@ class HomeOfficeReferenceHandlerOnSubmitTest {
                     (List<IdValue<HomeOfficeAppellant>> appellants) ->
                         appellants.size() == 1
                             && "ABC123".equals(
-                                appellants.get(0).getId())
+                                appellants.getFirst().getId())
                             && "Smith".equals(
-                                appellants.get(0)
+                                appellants.getFirst()
                                         .getValue()
                                         .getFamilyName())
                             && "John".equals(
-                                appellants.get(0)
+                                appellants.getFirst()
                                         .getValue()
                                         .getGivenNames())
                 )
@@ -439,6 +422,9 @@ class HomeOfficeReferenceHandlerOnSubmitTest {
 
         when(callback.getEvent())
             .thenReturn(Event.START_APPEAL);
+
+        when(asylumCase.read(HOME_OFFICE_APPELLANTS))
+            .thenReturn(Optional.empty());
 
         when(callback.getCaseDetails())
             .thenReturn(caseDetails);
@@ -466,5 +452,170 @@ class HomeOfficeReferenceHandlerOnSubmitTest {
         verify(asylumCase, never())
             .write(eq(HOME_OFFICE_APPELLANTS), any());
     }
+
+    @Test
+    void should_not_deserialise_when_home_office_appellants_already_present() {
+
+        when(callback.getEvent())
+            .thenReturn(Event.START_APPEAL);
+
+        when(callback.getCaseDetails())
+            .thenReturn(caseDetails);
+
+        when(caseDetails.getCaseData())
+            .thenReturn(asylumCase);
+
+        List<IdValue<HomeOfficeAppellant>> existingAppellants =
+            List.of(new IdValue<>("1", new HomeOfficeAppellant()));
+
+        when(asylumCase.read(HOME_OFFICE_APPELLANTS))
+            .thenReturn(Optional.of(existingAppellants));
+
+        when(asylumCase.read(
+            HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY,
+            String.class))
+            .thenReturn(Optional.of(
+                "[{\"id\":\"2\",\"value\":{\"familyName\":\"Jones\"}}]"
+            ));
+
+        PreSubmitCallbackResponse<AsylumCase> response =
+            handler.handle(
+                PreSubmitCallbackStage.ABOUT_TO_SUBMIT,
+                callback
+            );
+
+        assertEquals(asylumCase, response.getData());
+
+        verify(asylumCase, never())
+            .write(eq(HOME_OFFICE_APPELLANTS), any());
+    }
+
+    @Test
+    void should_deserialise_using_gwf_reference_when_home_office_reference_missing() {
+
+        when(callback.getEvent())
+            .thenReturn(Event.START_APPEAL);
+
+        when(callback.getCaseDetails())
+            .thenReturn(caseDetails);
+
+        when(caseDetails.getCaseData())
+            .thenReturn(asylumCase);
+
+        when(asylumCase.read(HOME_OFFICE_APPELLANTS))
+            .thenReturn(Optional.empty());
+
+        when(asylumCase.read(
+            HOME_OFFICE_REFERENCE_NUMBER,
+            String.class))
+            .thenReturn(Optional.empty());
+
+        when(asylumCase.read(
+            GWF_REFERENCE_NUMBER,
+            String.class))
+            .thenReturn(Optional.of("GWF-12345"));
+
+        when(asylumCase.read(
+            HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY,
+            String.class))
+            .thenReturn(Optional.of(
+                "[{\"id\":\"1\",\"value\":{\"familyName\":\"Smith\"}}]"
+            ));
+
+        handler.handle(
+            PreSubmitCallbackStage.ABOUT_TO_SUBMIT,
+            callback
+        );
+
+        verify(asylumCase)
+            .write(
+                eq(HOME_OFFICE_APPELLANTS),
+                any(List.class)
+            );
+    }
+
+    @Test
+    void should_throw_when_home_office_and_gwf_references_both_missing() {
+
+        when(callback.getEvent())
+            .thenReturn(Event.START_APPEAL);
+
+        when(callback.getCaseDetails())
+            .thenReturn(caseDetails);
+
+        when(caseDetails.getCaseData())
+            .thenReturn(asylumCase);
+
+        when(asylumCase.read(HOME_OFFICE_APPELLANTS))
+            .thenReturn(Optional.empty());
+
+        when(asylumCase.read(
+            HOME_OFFICE_REFERENCE_NUMBER,
+            String.class))
+            .thenReturn(Optional.empty());
+
+        when(asylumCase.read(
+            GWF_REFERENCE_NUMBER,
+            String.class))
+            .thenReturn(Optional.empty());
+
+        when(asylumCase.read(
+            HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY,
+            String.class))
+            .thenReturn(Optional.of(
+                "[{\"id\":\"1\",\"value\":{\"familyName\":\"Smith\"}}]"
+            ));
+
+        IllegalStateException exception =
+            assertThrows(
+                IllegalStateException.class,
+                () -> handler.handle(
+                    PreSubmitCallbackStage.ABOUT_TO_SUBMIT,
+                    callback
+                )
+            );
+
+        assertEquals(
+            "homeOfficeReferenceNumber and gwfReferenceNumber are both missing - one or other is needed",
+            exception.getMessage()
+        );
+    }
+
+    @Test
+    void should_not_require_reference_numbers_when_appellants_already_exist() {
+
+        when(callback.getEvent())
+            .thenReturn(Event.START_APPEAL);
+
+        when(callback.getCaseDetails())
+            .thenReturn(caseDetails);
+
+        when(caseDetails.getCaseData())
+            .thenReturn(asylumCase);
+
+        List<IdValue<HomeOfficeAppellant>> existingAppellants =
+            List.of(new IdValue<>("1", new HomeOfficeAppellant()));
+
+        when(asylumCase.read(HOME_OFFICE_APPELLANTS))
+            .thenReturn(Optional.of(existingAppellants));
+
+        when(asylumCase.read(
+            HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY,
+            String.class))
+            .thenReturn(Optional.of(
+                "[{\"id\":\"2\",\"value\":{\"familyName\":\"Jones\"}}]"
+            ));
+
+        assertDoesNotThrow(
+            () -> handler.handle(
+                PreSubmitCallbackStage.ABOUT_TO_SUBMIT,
+                callback
+            )
+        );
+
+        verify(asylumCase, never())
+            .write(eq(HOME_OFFICE_APPELLANTS), any());
+    }
+
 
 }

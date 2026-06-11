@@ -55,4 +55,4 @@ bin/utils/python_scripts/__pycache__/
 
 ### Fortify Scan ###
 Fortify Scan/
-lib/FodUpload.jar
+lib/FodUpload.jar/reports/pmd/*
