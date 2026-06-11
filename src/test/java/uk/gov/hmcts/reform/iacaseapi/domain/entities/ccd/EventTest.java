@@ -196,6 +196,7 @@ class EventTest {
             Arguments.of("rollbackMigration", Event.ROLLBACK_MIGRATION.toString()),
             Arguments.of("revokeCitizenAccess", Event.REVOKE_CITIZEN_ACCESS.toString()),
             Arguments.of("completeCaseReview", Event.COMPLETE_CASE_REVIEW.toString()),
+            Arguments.of("generatePinInPost", Event.GENERATE_PIN_IN_POST.toString()),
             Arguments.of("unknown", Event.UNKNOWN.toString())
         );
     }
