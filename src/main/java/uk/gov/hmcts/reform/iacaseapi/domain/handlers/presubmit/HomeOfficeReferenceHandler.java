@@ -38,7 +38,7 @@ public class HomeOfficeReferenceHandler implements PreSubmitCallbackHandler<Asyl
 
     public static final int REQUIRED_CID_REF_LENGTH = 9;
     public static final Pattern HOME_OFFICE_REF_PATTERN = Pattern
-            .compile("^(([0-9]{4}\\-[0-9]{4}\\-[0-9]{4}\\-[0-9]{4})|(GWF[0-9]{9})|([0-9]{9}))$");
+            .compile("^(([0-9]{4}\\-[0-9]{4}\\-[0-9]{4}\\-[0-9]{4})|(GWF[0-9]{9}))$");
     private final HomeOfficeReferenceService homeOfficeReferenceService;
     private static final String USER_ERROR_HELP_TEXT = "  If you need help, please use the Home Office help form in the bullet points on this page.";
     private static final String INVALID_HOME_OFFICE_REFERENCE = "You should enter the UAN or GWF reference exactly as it appears on the decision letter.  " + 
