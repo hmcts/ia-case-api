@@ -199,10 +199,10 @@ class HandlerUtilsTest {
     private LocationBasedFeatureToggler locationBasedFeatureToggler;
     @Mock
     private List<IdValue<Subscriber>> mockSubscribers;
+    @Mock
+    private NonLegalRepDetails mockNlrDetails;
     @Captor
     private ArgumentCaptor<List<IdValue<Subscriber>>> subscribersCaptor;
-
-    private MockedStatic<PartyIdService> partyIdService;
 
     @Test
     void given_journey_type_aip_returns_true() {
@@ -1183,25 +1183,32 @@ class HandlerUtilsTest {
     }
 
     @Test
-    void setSponsorDetailsFromNlrIfSame_does_nothing_if_not_same_and_has_nlr() {
+    void setSponsorDetailsFromNlrIfSame_clears_addressUk_if_not_same_and_has_nlr() {
         try (MockedStatic<PartyIdService> partyIdService = mockStatic(PartyIdService.class)) {
-            when(asylumCase.read(IS_SPONSOR_SAME_AS_NLR, YesOrNo.class)).thenReturn(Optional.empty());
             when(asylumCase.read(HAS_NON_LEGAL_REP, YesOrNo.class)).thenReturn(Optional.of(YES));
+            when(asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class)).thenReturn(Optional.of(mockNlrDetails));
 
             setSponsorDetailsFromNlrIfSame(asylumCase);
             partyIdService.verify(
                 () -> PartyIdService.setSponsorPartyId(asylumCase),
                 times(1)
             );
-            verify(asylumCase, never()).write(any(), any());
+            verify(mockNlrDetails).setAddressUk(null);
+            verify(asylumCase).write(NLR_DETAILS, mockNlrDetails);
         }
+    }
+
+    @Test
+    void setSponsorDetailsFromNlrIfSame_throws_if_if_not_same_and_has_nlr_without_nlr_details() {
+        when(asylumCase.read(HAS_NON_LEGAL_REP, YesOrNo.class)).thenReturn(Optional.of(YES));
+        IllegalStateException exception =
+            assertThrows(IllegalStateException.class, () -> setSponsorDetailsFromNlrIfSame(asylumCase));
+        assertEquals("Non-legal representative details are not present", exception.getMessage());
     }
 
     @Test
     void setSponsorDetailsFromNlrIfSame_clear_nlr_fields_if_not_same_and_has_no_nlr() {
         try (MockedStatic<PartyIdService> partyIdService = mockStatic(PartyIdService.class)) {
-            when(asylumCase.read(IS_SPONSOR_SAME_AS_NLR, YesOrNo.class)).thenReturn(Optional.empty());
-            when(asylumCase.read(HAS_NON_LEGAL_REP, YesOrNo.class)).thenReturn(Optional.empty());
 
             setSponsorDetailsFromNlrIfSame(asylumCase);
             partyIdService.verify(
