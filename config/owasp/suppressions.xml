@@ -10,4 +10,13 @@
         <cve>CVE-2026-41851</cve>
         <cve>CVE-2026-41850</cve>
     </suppress>
+    <suppress until="2026-06-17">
+        <notes>Spring related, should be fixed in springboot 3.5.15 release</notes>
+        <cve>CVE-2026-41842</cve>
+        <cve>CVE-2026-41850</cve>
+        <cve>CVE-2026-41851</cve>
+        <cve>CVE-2026-41840</cve>
+        <cve>CVE-2026-41841</cve>
+        <cve>CVE-2026-41843</cve>
+    </suppress>
 </suppressions>
