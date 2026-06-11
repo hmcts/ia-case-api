@@ -1067,6 +1067,7 @@ security:
       - "sendPipToNonLegalRep"
       - "joinAppealConfirmation"
       - "nlrDetailsUpdated"
+      - "removeNonLegalRep"
     caseworker-ia-iacjudge:
       - "generateDecisionAndReasons"
       - "endAppeal"
@@ -1419,6 +1420,7 @@ security:
       - "sendPipToNonLegalRep"
       - "joinAppealConfirmation"
       - "nlrDetailsUpdated"
+      - "removeNonLegalRep"
     caseworker-ia-internal:
       - "revokeCaseAccess"
       - "removeCaseManagerBulk"

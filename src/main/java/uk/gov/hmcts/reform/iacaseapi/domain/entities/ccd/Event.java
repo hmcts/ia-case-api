@@ -119,6 +119,7 @@ public enum Event {
     SEND_PIP_TO_NON_LEGAL_REP("sendPipToNonLegalRep"),
     JOIN_APPEAL_CONFIRMATION("joinAppealConfirmation"),
     NLR_DETAILS_UPDATED("nlrDetailsUpdated"),
+    REMOVE_NON_LEGAL_REP("removeNonLegalRep"),
     REQUEST_FEE_REMISSION("requestFeeRemission"),
     RECORD_OUT_OF_TIME_DECISION("recordOutOfTimeDecision"),
     GENERATE_UPPER_TRIBUNAL_BUNDLE("generateUpperTribunalBundle"),
