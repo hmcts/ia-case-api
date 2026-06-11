@@ -16,15 +16,23 @@ import org.springframework.context.annotation.Configuration;
 @ConfigurationProperties(prefix = "security")
 public class AuthCheckerConfiguration {
 
-    private final List<String> authorisedServices = new ArrayList<>();
-    private final List<String> authorisedRoles = new ArrayList<>();
+    private List<String> authorisedServices = new ArrayList<>();
+    private List<String> authorisedRoles = new ArrayList<>();
 
     public List<String> getAuthorisedServices() {
         return Collections.unmodifiableList(authorisedServices);
     }
 
+    public void setAuthorisedServices(List<String> authorisedServices) {
+        this.authorisedServices = authorisedServices;
+    }
+
     public List<String> getAuthorisedRoles() {
         return Collections.unmodifiableList(authorisedRoles);
+    }
+
+    public void setAuthorisedRoles(List<String> authorisedRoles) {
+        this.authorisedRoles = authorisedRoles;
     }
 
     @Bean
