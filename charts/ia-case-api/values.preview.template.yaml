@@ -41,7 +41,7 @@ java:
     SAVE_NOTIFICATIONS_DATA_SCHEDULE_MAX_MINUTES: 5
     # Set HOME_OFFICE_VALIDATION_ENABLED: "true" if you want to run the validation against the mock HO validation API in Preview; otherwise leave at "false".
     # The mock HO validation API lives at http://ia-home-office-mock-api-aat.service.core-compute-aat.internal/ichallenge/applications/v1/1111-2222-3333-4444
-    # (you can use any valid UAN at the end; but in the application you must enter the expected UAN, name and DOB in order to proceed past validation)
+    # (you can use any valid UAN at the end; but in ExUI you must enter the expected UAN, name and DOB in order to proceed past validation)
     HOME_OFFICE_VALIDATION_ENABLED: "false" # Do not remove this this environment variable!
     STATUTORY_TIMEFRAME_LIVE_DATE: "2026-05-01"
   keyVaults:
@@ -167,7 +167,7 @@ ia-case-documents-api:
   enabled: true #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
-    image: hmctsprod.azurecr.io/ia/case-documents-api:pr-1167
+    image: hmctsprod.azurecr.io/ia/case-documents-api:latest
     releaseNameOverride: ${SERVICE_NAME}-case-documents-api
     ingressHost: ${SERVICE_NAME}-documents-api.preview.platform.hmcts.net
     devcpuRequests: 500m
@@ -666,7 +666,7 @@ ia-aip-frontend:
   enabled: true
   nodejs:
     imagePullPolicy: Always
-    image: hmctsprod.azurecr.io/ia/aip-frontend:pr-1431
+    image: hmctsprod.azurecr.io/ia/aip-frontend:latest
     ingressHost: ${SERVICE_NAME}-aip-frontend.preview.platform.hmcts.net # override in public facing environments
     applicationPort: 3000
     devcpuRequests: 500m
