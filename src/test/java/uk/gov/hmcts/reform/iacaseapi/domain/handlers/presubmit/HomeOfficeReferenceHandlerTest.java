@@ -688,10 +688,10 @@ class HomeOfficeReferenceHandlerTest {
     }
 
     @Test
-    void handle_should_process_cui_gwf_reference_number_page() {
+    void handle_should_remove_validation_fields_before_validating_home_office_reference() {
 
         Mockito.when(callback.getEvent()).thenReturn(Event.START_APPEAL);
-        Mockito.when(callback.getPageId()).thenReturn("cuiGwfReferenceNumber");
+        Mockito.when(callback.getPageId()).thenReturn("homeOfficeReferenceNumber");
 
         Mockito.when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class))
             .thenReturn(Optional.of(VALID_GWF));
@@ -699,10 +699,14 @@ class HomeOfficeReferenceHandlerTest {
         Mockito.when(referenceService.getHomeOfficeReferenceData(VALID_GWF, callback))
             .thenReturn(Collections.singletonList(idValue));
 
-        PreSubmitCallbackResponse<AsylumCase> response =
-            handler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+        try (MockedStatic<HandlerUtils> mockedStatic = Mockito.mockStatic(HandlerUtils.class)) {
 
-        assertTrue(response.getErrors().isEmpty());
+            PreSubmitCallbackResponse<AsylumCase> response =
+                handler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+
+            mockedStatic.verify(() -> HandlerUtils.removeValidationFields(asylumCase));
+
+            assertTrue(response.getErrors().isEmpty());
+        }
     }
-
 }
