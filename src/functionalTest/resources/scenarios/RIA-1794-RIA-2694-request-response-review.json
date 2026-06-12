@@ -1,6 +1,5 @@
 {
   "description": "RIA-1794-RIA-2694 Request response review direction to legal representative",
-  "enabled": true,
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",

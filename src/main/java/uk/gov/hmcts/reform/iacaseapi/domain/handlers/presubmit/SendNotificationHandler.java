@@ -172,6 +172,7 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
             Event.QUERY_MANAGEMENT_RESPOND_QUERY,
             Event.REMOVE_STATUTORY_TIMEFRAME_24_WEEKS,
             Event.REVOKE_CITIZEN_ACCESS,
+            Event.GENERATE_PIN_IN_POST,
             Event.COMPLETE_CASE_REVIEW
         );
         if (!isSaveAndContinueEnabled) {
@@ -184,12 +185,6 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
             eventsToHandle.add(Event.PAYMENT_APPEAL);
         }
 
-        if (isAipJourney(callback.getCaseDetails().getCaseData())
-            && !featureToggler.getValue("aip-ftpa-feature", false)) {
-
-            eventsToHandle.remove(Event.APPLY_FOR_FTPA_RESPONDENT);
-            eventsToHandle.remove(Event.APPLY_FOR_FTPA_APPELLANT);
-        }
         if (!isExAdaCaseWithHearingRequirementsSubmitted(callback)) {
             eventsToHandle.add(Event.REQUEST_RESPONSE_REVIEW);
         }

@@ -47,7 +47,7 @@ public class MakeAnApplicationTypesProvider {
                 }
 
                 if (hasRole(ROLE_LEGAL_REP) || hasHomeOfficeRole || isInternalAndAdminRole) {
-                    values.remove(0); // remove JUDGE_REVIEW
+                    values.removeFirst(); // remove JUDGE_REVIEW
                     addValue(values, JUDGE_REVIEW_LO);
                 }
 
@@ -254,7 +254,7 @@ public class MakeAnApplicationTypesProvider {
         }
 
         if (!values.isEmpty()) {
-            dynamicList = new DynamicList(values.get(0), values);
+            dynamicList = new DynamicList(values.getFirst(), values);
         } else {
             dynamicList = new DynamicList("");
         }

@@ -197,6 +197,7 @@ class EventTest {
             Arguments.of("completeCaseReview", Event.COMPLETE_CASE_REVIEW.toString()),
             Arguments.of("queryManagementRaiseQuery", Event.QUERY_MANAGEMENT_RAISE_QUERY.toString()),
             Arguments.of("queryManagementRespondQuery", Event.QUERY_MANAGEMENT_RESPOND_QUERY.toString()),
+            Arguments.of("generatePinInPost", Event.GENERATE_PIN_IN_POST.toString()),
             Arguments.of("unknown", Event.UNKNOWN.toString())
         );
     }

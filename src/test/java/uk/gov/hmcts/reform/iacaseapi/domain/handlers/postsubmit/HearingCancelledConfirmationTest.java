@@ -1,7 +1,15 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.when;
+
+import java.util.ArrayList;
+import java.util.List;
 import lombok.Value;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -12,15 +20,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class HearingCancelledConfirmationTest {
@@ -61,17 +60,17 @@ class HearingCancelledConfirmationTest {
         PostSubmitCallbackResponse callbackResponse = handler.handle(callback);
 
         assertNotNull(callbackResponse);
-        Assertions.assertTrue(callbackResponse.getConfirmationHeader().isPresent());
-        Assertions.assertTrue(callbackResponse.getConfirmationBody().isPresent());
+        assertTrue(callbackResponse.getConfirmationHeader().isPresent());
+        assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
-        assertThat(
-                callbackResponse.getConfirmationHeader().get())
-                .contains("# Hearing details updated");
+        assertTrue(callbackResponse.getConfirmationHeader().get().contains("# Hearing details updated"));
 
         assertThat(
                 callbackResponse.getConfirmationBody().get())
-                .contains("#### What happens next\n\n"
-                    + "Add new hearing information as required."
+                .contains("""
+                    #### What happens next
+                    
+                    Add new hearing information as required."""
             );
     }
 

@@ -71,8 +71,8 @@ class CaseFlagAppenderTest {
         assertEquals("2", allCaseFlags.get(1).getId());
         assertEquals(caseFlag2, allCaseFlags.get(1).getValue());
 
-        assertEquals("3", allCaseFlags.get(0).getId());
-        assertEquals(caseFlag1, allCaseFlags.get(0).getValue());
+        assertEquals("3", allCaseFlags.getFirst().getId());
+        assertEquals(caseFlag1, allCaseFlags.getFirst().getValue());
     }
 
     @Test
@@ -88,10 +88,10 @@ class CaseFlagAppenderTest {
         assertNotNull(allCaseFlags);
         assertEquals(1, allCaseFlags.size());
 
-        assertEquals("1", allCaseFlags.get(0).getId());
-        assertEquals(newCaseFlagType, allCaseFlags.get(0).getValue().getLegacyCaseFlagType());
+        assertEquals("1", allCaseFlags.getFirst().getId());
+        assertEquals(newCaseFlagType, allCaseFlags.getFirst().getValue().getLegacyCaseFlagType());
         assertEquals(newCaseFlagAdditionalInformation,
-            allCaseFlags.get(0).getValue().getLegacyCaseFlagAdditionalInformation());
+            allCaseFlags.getFirst().getValue().getLegacyCaseFlagAdditionalInformation());
     }
 
     @Test
