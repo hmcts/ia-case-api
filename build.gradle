@@ -13,7 +13,7 @@ plugins {
   id 'org.flywaydb.flyway' version '9.22.3'
   id 'au.com.dius.pact' version '4.6.20'
   id 'uk.gov.hmcts.java' version '0.12.70'
-  id 'org.gradle.test-retry' version '1.6.4'
+  id 'org.gradle.test-retry' version '1.6.5'
   id 'net.serenity-bdd.serenity-gradle-plugin' version '5.3.9'
 }
 
@@ -182,7 +182,7 @@ project.ext {
 }
 
 jacoco {
-  toolVersion = "0.8.13"
+  toolVersion = "0.8.15"
 }
 
 jacocoTestReport {
@@ -261,7 +261,7 @@ dependencyManagement {
     // CVE-2026-33870
     // CVE-2026-33871
     // CVE-2025-67735 - from spring-boot-starter-data-redis@3.5.14
-    mavenBom "io.netty:netty-bom:4.2.13.Final"
+    mavenBom "io.netty:netty-bom:4.2.15.Final"
   }
 
   dependencies {
@@ -323,7 +323,7 @@ dependencies {
 
   implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.20.0'
 
-  implementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '5.3.3'
+  implementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '5.3.4'
 
   implementation group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '6.0.0-RELEASE'
 
