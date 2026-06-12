@@ -60,8 +60,8 @@ class HomeOfficeStatutoryTimeframeTest {
         assertEquals(givenNames, homeOfficeStatutoryTimeframe.getGivenNames());
         assertEquals(dateOfBirth, homeOfficeStatutoryTimeframe.getDateOfBirth());
         assertEquals(1, homeOfficeStatutoryTimeframe.getStf24weekCohorts().size());
-        assertEquals("HU", homeOfficeStatutoryTimeframe.getStf24weekCohorts().get(0).getValue().getName());
-        assertTrue(Boolean.parseBoolean(homeOfficeStatutoryTimeframe.getStf24weekCohorts().get(0).getValue().getIncluded()));
+        assertEquals("HU", homeOfficeStatutoryTimeframe.getStf24weekCohorts().getFirst().getValue().getName());
+        assertTrue(Boolean.parseBoolean(homeOfficeStatutoryTimeframe.getStf24weekCohorts().getFirst().getValue().getIncluded()));
         assertEquals(timeStamp, homeOfficeStatutoryTimeframe.getTimeStamp());
     }
 
@@ -93,8 +93,8 @@ class HomeOfficeStatutoryTimeframeTest {
 
         assertEquals(2, homeOfficeStatutoryTimeframe.getStf24weekCohorts().size());
 
-        assertEquals("HU", homeOfficeStatutoryTimeframe.getStf24weekCohorts().get(0).getValue().getName());
-        assertTrue(Boolean.parseBoolean(homeOfficeStatutoryTimeframe.getStf24weekCohorts().get(0).getValue().getIncluded()));
+        assertEquals("HU", homeOfficeStatutoryTimeframe.getStf24weekCohorts().getFirst().getValue().getName());
+        assertTrue(Boolean.parseBoolean(homeOfficeStatutoryTimeframe.getStf24weekCohorts().getFirst().getValue().getIncluded()));
 
         assertEquals("PA", homeOfficeStatutoryTimeframe.getStf24weekCohorts().get(1).getValue().getName());
         assertFalse(Boolean.parseBoolean(homeOfficeStatutoryTimeframe.getStf24weekCohorts().get(1).getValue().getIncluded()));
