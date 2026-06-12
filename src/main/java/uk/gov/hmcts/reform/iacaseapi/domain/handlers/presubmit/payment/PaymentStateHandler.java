@@ -39,7 +39,7 @@ public class PaymentStateHandler implements PreSubmitCallbackStateHandler<Asylum
 
     private final boolean isfeePaymentEnabled;
     protected static final String PAY_LATER = "payLater";
-    private FeatureToggler featureToggler;
+    private final FeatureToggler featureToggler;
 
     public PaymentStateHandler(
         @Value("${featureFlag.isfeePaymentEnabled}") boolean isfeePaymentEnabled,
@@ -141,17 +141,10 @@ public class PaymentStateHandler implements PreSubmitCallbackStateHandler<Asylum
                 if (isPaymentStatusPendingOrFailed) {
                     return new PreSubmitCallbackResponse<>(asylumCase, PENDING_PAYMENT);
                 }
-                if (currentState == PENDING_PAYMENT || currentState == APPEAL_STARTED || currentState == APPEAL_STARTED_BY_ADMIN) {
-                    return new PreSubmitCallbackResponse<>(asylumCase, APPEAL_SUBMITTED);
-                } else {
-                    return new PreSubmitCallbackResponse<>(asylumCase, currentState);
-                }
+
+                return new PreSubmitCallbackResponse<>(asylumCase, APPEAL_SUBMITTED);
             default:
-                if (currentState == PENDING_PAYMENT || currentState == APPEAL_STARTED || currentState == APPEAL_STARTED_BY_ADMIN) {
-                    return new PreSubmitCallbackResponse<>(asylumCase, APPEAL_SUBMITTED);
-                } else {
-                    return new PreSubmitCallbackResponse<>(asylumCase, currentState);
-                }
+                return getAsylumCasePreSubmitCallbackResponse(asylumCase, currentState);
         }
     }
 
@@ -170,11 +163,7 @@ public class PaymentStateHandler implements PreSubmitCallbackStateHandler<Asylum
         if (!isPayLaterAppeal && !isPaymentStatusPaid && appealType != AppealType.PA) {
             return new PreSubmitCallbackResponse<>(asylumCase, PENDING_PAYMENT);
         } else {
-            if (currentState == PENDING_PAYMENT || currentState == APPEAL_STARTED || currentState == APPEAL_STARTED_BY_ADMIN) {
-                return new PreSubmitCallbackResponse<>(asylumCase, APPEAL_SUBMITTED);
-            } else {
-                return new PreSubmitCallbackResponse<>(asylumCase, currentState);
-            }
+            return getAsylumCasePreSubmitCallbackResponse(asylumCase,currentState);
         }
     }
 
@@ -185,4 +174,11 @@ public class PaymentStateHandler implements PreSubmitCallbackStateHandler<Asylum
         return isPayLaterAppeal && isPaymentEvent && isValidState;
     }
 
+    private PreSubmitCallbackResponse<AsylumCase> getAsylumCasePreSubmitCallbackResponse(AsylumCase asylumCase, State currentState) {
+        if (currentState == PENDING_PAYMENT || currentState == APPEAL_STARTED || currentState == APPEAL_STARTED_BY_ADMIN) {
+            return new PreSubmitCallbackResponse<>(asylumCase, APPEAL_SUBMITTED);
+        } else {
+            return new PreSubmitCallbackResponse<>(asylumCase, currentState);
+        }
+    }
 }
