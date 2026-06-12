@@ -33,7 +33,7 @@ class IdValueMixinTest {
         assertEquals(1, result.size());
 
         IdValue<HomeOfficeAppellant> idValue =
-            result.get(0);
+            result.getFirst();
 
         assertEquals("123", idValue.getId());
 
@@ -80,12 +80,12 @@ class IdValueMixinTest {
 
         assertEquals(
             "123",
-            result.get(0).getId()
+            result.getFirst().getId()
         );
 
         assertEquals(
             "Smith",
-            result.get(0).getValue().getFamilyName()
+            result.getFirst().getValue().getFamilyName()
         );
     }
 }

@@ -24,6 +24,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValueMixin;
 
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
+
 @Slf4j
 @Service
 public class HomeOfficeReferenceService {
@@ -41,20 +43,21 @@ public class HomeOfficeReferenceService {
         mapper.addMixIn(IdValue.class, IdValueMixin.class);        
         // Check case for existing data.
         final AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
-        String homeOfficeAppellantsSerialised = asylumCase.read(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, String.class).orElse("");
+        String homeOfficeAppellantsSerialisedEncrypted = asylumCase.read(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, String.class).orElse("");
         List<IdValue<HomeOfficeAppellant>> homeOfficeAppellants = emptyList();
         // If we have a list of appellants already (in serialised form - see comments below), don't call the API again.
-        if (!homeOfficeAppellantsSerialised.isEmpty()) {
+        if (!homeOfficeAppellantsSerialisedEncrypted.isEmpty()) {
             log.info("Deserialising and returning previously retrieved Home Office appellant data for case with Home Office reference {}.", hoReference);
             try {
+                String homeOfficeAppellantsSerialised = HandlerUtils.decrypt(homeOfficeAppellantsSerialisedEncrypted);
                 homeOfficeAppellants = mapper.readValue(
                                                             homeOfficeAppellantsSerialised,
                                                             new TypeReference<List<IdValue<HomeOfficeAppellant>>>() {}
                                                        );
                 return homeOfficeAppellants;
             } catch (Exception ex) {
-                log.error("Could not deserialise list of Home Office appellants from serialised string {} for case with Home Office reference {}:\n\n{}",
-                          homeOfficeAppellantsSerialised, hoReference, ex.getMessage());
+                log.error("Could not deserialise list of Home Office appellants from encrypted serialised string {} for case with Home Office reference {}:\n\n{}",
+                          homeOfficeAppellantsSerialisedEncrypted, hoReference, ex.getMessage());
             }
         }
 
@@ -76,9 +79,10 @@ public class HomeOfficeReferenceService {
             // Instead, we need to serialise the list and write it to a scalar (string) field; then later we will reconstitute the list from this field and store it.
             // See  HomeOfficeReferenceHandlerOnSubmit.java  for more details.
             try {
-                homeOfficeAppellantsSerialised = mapper.writerWithDefaultPrettyPrinter()
+                String homeOfficeAppellantsSerialised = mapper.writerWithDefaultPrettyPrinter()
                                                        .writeValueAsString(homeOfficeAppellants);
-                asylumCase.write(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, homeOfficeAppellantsSerialised);
+                // Encrypt this string before storing, as it contains sensitive data.
+                asylumCase.write(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, HandlerUtils.encrypt(homeOfficeAppellantsSerialised));
             } catch (Exception ex) {
                 log.error("Could not serialise list of Home Office appellants: {}", ex.getMessage());
             }

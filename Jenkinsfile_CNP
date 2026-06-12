@@ -149,13 +149,11 @@ static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
 
 withPipeline(type, product, component) {
     def githubApi = new GithubAPI(this)
-    for (label in githubApi.getLabelsbyPattern(env.BRANCH_NAME, "enable_") ) {
-        if (label == "enable_wa") {
-            env.ENABLE_WA = "true"
-            env.SERVICES_WORK_ALLOCATION_TASK_API = "http://ia-case-api-pr-${CHANGE_ID}-wa-task-management-api"
-            env.SERVICES_WA_WORKFLOW_API_URL = "http://ia-case-api-pr-${CHANGE_ID}-wa-workflow-api"
-            env.WA_SUPPORTED_JURISDICTIONS = "IA"
-        }
+    for (label in githubApi.getLabelsbyPattern(env.BRANCH_NAME, "pr-values:wa") ) {
+        env.ENABLE_WA = "true"
+        env.SERVICES_WORK_ALLOCATION_TASK_API = "http://ia-case-api-pr-${CHANGE_ID}-wa-task-management-api"
+        env.SERVICES_WA_WORKFLOW_API_URL = "http://ia-case-api-pr-${CHANGE_ID}-wa-workflow-api"
+        env.WA_SUPPORTED_JURISDICTIONS = "IA"
     }
     env.IA_CASE_DOCUMENTS_API_URL = "http://ia-case-documents-api-aat.service.core-compute-aat.internal/"
     env.IA_CASE_NOTIFICATIONS_API_URL = "http://ia-case-notifications-api-aat.service.core-compute-aat.internal/"

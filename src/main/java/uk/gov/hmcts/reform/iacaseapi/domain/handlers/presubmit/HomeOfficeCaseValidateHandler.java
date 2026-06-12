@@ -88,7 +88,7 @@ public class HomeOfficeCaseValidateHandler implements PreSubmitCallbackHandler<A
             asylumCase.write(IS_HOME_OFFICE_INTEGRATION_ENABLED, YesOrNo.YES);
             // Don't invoke the old  applicationStatus/getBySearchParameters  Home Office endpoint if the new  applications/v1/{id}  endpoint
             // has already been called
-            boolean validationDone = !asylumCase.read(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, String.class).orElse("").equals("");
+            boolean validationDone = asylumCase.read(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, String.class).isPresent();
 
             if (HandlerUtils.isAgeAssessmentAppeal(asylumCase) || 
                 HandlerUtils.isEjpCase(asylumCase) || 
