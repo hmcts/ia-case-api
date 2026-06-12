@@ -32,6 +32,11 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_CHANNEL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HELP_WITH_FEES_REFERENCE_NUMBER;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HELP_WITH_FEES_REF_NUMBER;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_APPELLANT_CLAIM_DATE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_APPELLANT_DECISION_DATE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_APPELLANT_DECISION_LETTER_DATE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_APPELLANTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_SEARCH_NO_MATCH;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_SEARCH_STATUS;
@@ -1146,6 +1151,21 @@ class HandlerUtilsTest {
     void encryptThenDecrypt_noMatch() {
         String plainText = "plain text string";
         assertFalse(HandlerUtils.decrypt(HandlerUtils.encrypt(plainText)).equals("something else"));
+    }
+
+    @Test
+    void shouldRemoveAllValidationFields() {
+
+        HandlerUtils.removeValidationFields(asylumCase);
+
+        verify(asylumCase).remove(HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS);
+        verify(asylumCase).remove(HOME_OFFICE_APPELLANT_CLAIM_DATE);
+        verify(asylumCase).remove(HOME_OFFICE_APPELLANT_DECISION_DATE);
+        verify(asylumCase).remove(HOME_OFFICE_APPELLANT_DECISION_LETTER_DATE);
+        verify(asylumCase).remove(HOME_OFFICE_APPELLANTS);
+        verify(asylumCase).remove(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY);
+
+        verify(asylumCase, times(6)).remove(any());
     }
 
 }

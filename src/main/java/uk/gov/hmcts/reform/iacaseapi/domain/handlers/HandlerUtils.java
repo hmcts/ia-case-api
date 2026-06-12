@@ -763,4 +763,15 @@ public class HandlerUtils {
         String base64TextString = CryptoUtils.decrypt(encryptedString, key); // Can use  aY2VhQzjJj7r8f7V9g7D0P5qkM4vL0Q5n3Yx4t8bW2s=  as the secret (produces a 32-byte key)
         return new String(Base64.getDecoder().decode(base64TextString), StandardCharsets.UTF_8);
     }
+
+    // Remove validation fields to force another request to the Home Office validation API
+    public static void removeValidationFields(AsylumCase asylumCase) {
+        asylumCase.remove(HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS);
+        asylumCase.remove(HOME_OFFICE_APPELLANT_CLAIM_DATE);
+        asylumCase.remove(HOME_OFFICE_APPELLANT_DECISION_DATE);
+        asylumCase.remove(HOME_OFFICE_APPELLANT_DECISION_LETTER_DATE);
+        asylumCase.remove(HOME_OFFICE_APPELLANTS);
+        asylumCase.remove(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY);
+    }
+
 }

@@ -21,6 +21,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -34,6 +35,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.HomeOfficeReferenceService;
 
 @ExtendWith(MockitoExtension.class)
@@ -176,9 +178,12 @@ class HomeOfficeReferenceHandlerTest {
 
     @ParameterizedTest
     @ValueSource(strings = {
-        "homeOfficeReferenceNumber", "oocHomeOfficeReferenceNumber", "cuiHomeOfficeReferenceNumber"
+        "homeOfficeReferenceNumber",
+        "oocHomeOfficeReferenceNumber",
+        "cuiHomeOfficeReferenceNumber",
+        "cuiGwfReferenceNumber"
     })
-    void handle_should_succeed_when_reference_is_real(String pageId) {
+    void handle_should_remove_validation_fields_and_succeed_when_reference_is_real(String pageId) {
 
         Mockito.when(callback.getEvent()).thenReturn(Event.START_APPEAL);
         Mockito.when(callback.getPageId()).thenReturn(pageId);
@@ -189,10 +194,15 @@ class HomeOfficeReferenceHandlerTest {
         Mockito.when(referenceService.getHomeOfficeReferenceData(VALID_GWF, callback))
             .thenReturn(Collections.singletonList(idValue));
 
-        PreSubmitCallbackResponse<AsylumCase> response =
-            handler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+        try (MockedStatic<HandlerUtils> mockedStatic = Mockito.mockStatic(HandlerUtils.class)) {
 
-        assertTrue(response.getErrors().isEmpty());
+            PreSubmitCallbackResponse<AsylumCase> response =
+                handler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+
+            mockedStatic.verify(() -> HandlerUtils.removeValidationFields(asylumCase));
+
+            assertTrue(response.getErrors().isEmpty());
+        }
     }
 
     @Test
@@ -677,5 +687,22 @@ class HomeOfficeReferenceHandlerTest {
         );
     }
 
+    @Test
+    void handle_should_process_cui_gwf_reference_number_page() {
+
+        Mockito.when(callback.getEvent()).thenReturn(Event.START_APPEAL);
+        Mockito.when(callback.getPageId()).thenReturn("cuiGwfReferenceNumber");
+
+        Mockito.when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class))
+            .thenReturn(Optional.of(VALID_GWF));
+
+        Mockito.when(referenceService.getHomeOfficeReferenceData(VALID_GWF, callback))
+            .thenReturn(Collections.singletonList(idValue));
+
+        PreSubmitCallbackResponse<AsylumCase> response =
+            handler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+
+        assertTrue(response.getErrors().isEmpty());
+    }
 
 }
