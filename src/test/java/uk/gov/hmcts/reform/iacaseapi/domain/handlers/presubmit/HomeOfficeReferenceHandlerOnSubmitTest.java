@@ -404,13 +404,13 @@ class HomeOfficeReferenceHandlerOnSubmitTest {
                     (List<IdValue<HomeOfficeAppellant>> appellants) ->
                         appellants.size() == 1
                             && "ABC123".equals(
-                                appellants.get(0).getId())
+                                appellants.getFirst().getId())
                             && "Smith".equals(
-                                appellants.get(0)
+                                appellants.getFirst()
                                         .getValue()
                                         .getFamilyName())
                             && "John".equals(
-                                appellants.get(0)
+                                appellants.getFirst()
                                         .getValue()
                                         .getGivenNames())
                 )
