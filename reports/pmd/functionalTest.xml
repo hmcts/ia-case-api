@@ -1,0 +1,384 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pmd xmlns="http://pmd.sourceforge.net/report/2.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pmd.sourceforge.net/report/2.0.0 https://pmd.github.io/schema/report_2_0_0.xsd" version="7.25.0" timestamp="2026-06-12T11:36:48.273">
+<file name="/Users/rajeshthuraiyurmoorthy/hmcts/git/ia-case-api/src/functionalTest/java/uk/gov/hmcts/reform/iacaseapi/CaseAccessFunctionalTest.java">
+<violation beginline="12" endline="12" begincolumn="14" endcolumn="38" rule="TestClassWithoutTestCases" ruleset="Error Prone" package="uk.gov.hmcts.reform.iacaseapi" class="CaseAccessFunctionalTest" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_errorprone.html#testclasswithouttestcases" priority="3">
+The class 'CaseAccessFunctionalTest' might be a test class, but it contains no test cases.
+</violation>
+</file>
+<file name="/Users/rajeshthuraiyurmoorthy/hmcts/git/ia-case-api/src/functionalTest/java/uk/gov/hmcts/reform/iacaseapi/CcdCaseCreationTest.java">
+<violation beginline="45" endline="45" begincolumn="14" endcolumn="33" rule="TestClassWithoutTestCases" ruleset="Error Prone" package="uk.gov.hmcts.reform.iacaseapi" class="CcdCaseCreationTest" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_errorprone.html#testclasswithouttestcases" priority="3">
+The class 'CcdCaseCreationTest' might be a test class, but it contains no test cases.
+</violation>
+<violation beginline="116" endline="116" begincolumn="9" endcolumn="55" rule="GuardLogStatement" ruleset="Best Practices" package="uk.gov.hmcts.reform.iacaseapi" class="CcdCaseCreationTest" method="fetchTokensAndUserIds" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_bestpractices.html#guardlogstatement" priority="2">
+Logger calls should be surrounded by log level guards.
+</violation>
+<violation beginline="265" endline="265" begincolumn="13" endcolumn="32" rule="AvoidPrintStackTrace" ruleset="Best Practices" package="uk.gov.hmcts.reform.iacaseapi" class="CcdCaseCreationTest" method="getStartAppealData" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_bestpractices.html#avoidprintstacktrace" priority="3">
+Avoid printStackTrace(); use a logger call instead.
+</violation>
+<violation beginline="287" endline="287" begincolumn="13" endcolumn="23" rule="LooseCoupling" ruleset="Best Practices" package="uk.gov.hmcts.reform.iacaseapi" class="CcdCaseCreationTest" method="getLegalRepCase" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_bestpractices.html#loosecoupling" priority="3">
+Avoid using implementation types like 'AsylumCase'; use the interface instead
+</violation>
+<violation beginline="288" endline="288" begincolumn="9" endcolumn="19" rule="LooseCoupling" ruleset="Best Practices" package="uk.gov.hmcts.reform.iacaseapi" class="CcdCaseCreationTest" method="getLegalRepCase" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_bestpractices.html#loosecoupling" priority="3">
+Avoid using implementation types like 'AsylumCase'; use the interface instead
+</violation>
+<violation beginline="297" endline="297" begincolumn="13" endcolumn="23" rule="LooseCoupling" ruleset="Best Practices" package="uk.gov.hmcts.reform.iacaseapi" class="CcdCaseCreationTest" method="getAipCase" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_bestpractices.html#loosecoupling" priority="3">
+Avoid using implementation types like 'AsylumCase'; use the interface instead
+</violation>
+<violation beginline="298" endline="298" begincolumn="9" endcolumn="19" rule="LooseCoupling" ruleset="Best Practices" package="uk.gov.hmcts.reform.iacaseapi" class="CcdCaseCreationTest" method="getAipCase" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_bestpractices.html#loosecoupling" priority="3">
+Avoid using implementation types like 'AsylumCase'; use the interface instead
+</violation>
+<violation beginline="307" endline="307" begincolumn="40" endcolumn="50" rule="LooseCoupling" ruleset="Best Practices" package="uk.gov.hmcts.reform.iacaseapi" class="CcdCaseCreationTest.Case" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_bestpractices.html#loosecoupling" priority="3">
+Avoid using implementation types like 'AsylumCase'; use the interface instead
+</violation>
+<violation beginline="312" endline="312" begincolumn="19" endcolumn="29" rule="LooseCoupling" ruleset="Best Practices" package="uk.gov.hmcts.reform.iacaseapi" class="CcdCaseCreationTest.Case" method="getCaseData" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_bestpractices.html#loosecoupling" priority="3">
+Avoid using implementation types like 'AsylumCase'; use the interface instead
+</violation>
+<violation beginline="321" endline="321" begincolumn="9" endcolumn="19" rule="LooseCoupling" ruleset="Best Practices" package="uk.gov.hmcts.reform.iacaseapi" class="CcdCaseCreationTest" method="createAndGetCase" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_bestpractices.html#loosecoupling" priority="3">
+Avoid using implementation types like 'AsylumCase'; use the interface instead
+</violation>
+</file>
+<file name="/Users/rajeshthuraiyurmoorthy/hmcts/git/ia-case-api/src/functionalTest/java/uk/gov/hmcts/reform/iacaseapi/CcdScenarioRunnerTest.java">
+<violation beginline="65" endline="65" begincolumn="14" endcolumn="35" rule="JUnitJupiterTestShouldBePackagePrivate" ruleset="Best Practices" package="uk.gov.hmcts.reform.iacaseapi" class="CcdScenarioRunnerTest" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_bestpractices.html#junitjupitertestshouldbepackageprivate" priority="3">
+JUnit 5 tests should be package-private.
+</violation>
+<violation beginline="67" endline="67" begincolumn="39" endcolumn="54" rule="AvoidFieldNameMatchingMethodName" ruleset="Error Prone" package="uk.gov.hmcts.reform.iacaseapi" class="CcdScenarioRunnerTest" variable="scenarioSources" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_errorprone.html#avoidfieldnamematchingmethodname" priority="3">
+Field scenarioSources has the same name as a method
+</violation>
+<violation beginline="102" endline="102" begincolumn="17" endcolumn="37" rule="UnitTestAssertionsShouldIncludeMessage" ruleset="Best Practices" package="uk.gov.hmcts.reform.iacaseapi" class="CcdScenarioRunnerTest" method="beforeAll" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_bestpractices.html#unittestassertionsshouldincludemessage" priority="3">
+Unit test assertions should include a message
+</violation>
+<violation beginline="104" endline="104" begincolumn="22" endcolumn="31" rule="AvoidCatchingGenericException" ruleset="Error Prone" package="uk.gov.hmcts.reform.iacaseapi" class="CcdScenarioRunnerTest" method="beforeAll" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_errorprone.html#avoidcatchinggenericexception" priority="3">
+Avoid catching Exception in try-catch block
+</violation>
+<violation beginline="106" endline="106" begincolumn="21" endcolumn="27" rule="SystemPrintln" ruleset="Best Practices" package="uk.gov.hmcts.reform.iacaseapi" class="CcdScenarioRunnerTest" method="beforeAll" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_bestpractices.html#systemprintln" priority="2">
+Usage of System.out/err
+</violation>
+<violation beginline="109" endline="109" begincolumn="17" endcolumn="23" rule="SystemPrintln" ruleset="Best Practices" package="uk.gov.hmcts.reform.iacaseapi" class="CcdScenarioRunnerTest" method="beforeAll" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_bestpractices.html#systemprintln" priority="2">
+Usage of System.out/err
+</violation>
+<violation beginline="135" endline="135" begincolumn="9" endcolumn="85" rule="GuardLogStatement" ruleset="Best Practices" package="uk.gov.hmcts.reform.iacaseapi" class="CcdScenarioRunnerTest" method="beforeAll" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_bestpractices.html#guardlogstatement" priority="2">
+Logger calls should be surrounded by log level guards.
+</violation>
+<violation beginline="136" endline="136" begincolumn="9" endcolumn="128" rule="GuardLogStatement" ruleset="Best Practices" package="uk.gov.hmcts.reform.iacaseapi" class="CcdScenarioRunnerTest" method="beforeAll" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_bestpractices.html#guardlogstatement" priority="2">
+Logger calls should be surrounded by log level guards.
+</violation>
+<violation beginline="137" endline="137" begincolumn="9" endcolumn="85" rule="GuardLogStatement" ruleset="Best Practices" package="uk.gov.hmcts.reform.iacaseapi" class="CcdScenarioRunnerTest" method="beforeAll" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_bestpractices.html#guardlogstatement" priority="2">
+Logger calls should be surrounded by log level guards.
+</violation>
+<violation beginline="202" endline="202" begincolumn="17" endcolumn="23" rule="SystemPrintln" ruleset="Best Practices" package="uk.gov.hmcts.reform.iacaseapi" class="CcdScenarioRunnerTest" method="scenarioSources" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_bestpractices.html#systemprintln" priority="2">
+Usage of System.out/err
+</violation>
+<violation beginline="211" endline="211" begincolumn="17" endcolumn="53" rule="JUnitJupiterTestShouldBePackagePrivate" ruleset="Best Practices" package="uk.gov.hmcts.reform.iacaseapi" class="CcdScenarioRunnerTest" method="scenarios_should_behave_as_specified" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_bestpractices.html#junitjupitertestshouldbepackageprivate" priority="3">
+JUnit 5 tests should be package-private.
+</violation>
+<violation beginline="253" endline="253" begincolumn="22" endcolumn="27" rule="AvoidCatchingGenericException" ruleset="Error Prone" package="uk.gov.hmcts.reform.iacaseapi" class="CcdScenarioRunnerTest" method="scenarios_should_behave_as_specified" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_errorprone.html#avoidcatchinggenericexception" priority="3">
+Avoid catching Error in try-catch block
+</violation>
+<violation beginline="253" endline="253" begincolumn="51" endcolumn="71" rule="AvoidCatchingGenericException" ruleset="Error Prone" package="uk.gov.hmcts.reform.iacaseapi" class="CcdScenarioRunnerTest" method="scenarios_should_behave_as_specified" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_errorprone.html#avoidcatchinggenericexception" priority="3">
+Avoid catching NullPointerException in try-catch block
+</violation>
+<violation beginline="254" endline="254" begincolumn="17" endcolumn="79" rule="GuardLogStatement" ruleset="Best Practices" package="uk.gov.hmcts.reform.iacaseapi" class="CcdScenarioRunnerTest" method="scenarios_should_behave_as_specified" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_bestpractices.html#guardlogstatement" priority="2">
+Logger calls should be surrounded by log level guards.
+</violation>
+<violation beginline="256" endline="256" begincolumn="21" endcolumn="103" rule="GuardLogStatement" ruleset="Best Practices" package="uk.gov.hmcts.reform.iacaseapi" class="CcdScenarioRunnerTest" method="scenarios_should_behave_as_specified" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_bestpractices.html#guardlogstatement" priority="2">
+Logger calls should be surrounded by log level guards.
+</violation>
+<violation beginline="257" endline="257" begincolumn="21" endcolumn="105" rule="GuardLogStatement" ruleset="Best Practices" package="uk.gov.hmcts.reform.iacaseapi" class="CcdScenarioRunnerTest" method="scenarios_should_behave_as_specified" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_bestpractices.html#guardlogstatement" priority="2">
+Logger calls should be surrounded by log level guards.
+</violation>
+<violation beginline="320" endline="320" begincolumn="25" endcolumn="39" rule="AvoidDuplicateLiterals" ruleset="Error Prone" package="uk.gov.hmcts.reform.iacaseapi" class="CcdScenarioRunnerTest" method="buildCallbackBody" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_errorprone.html#avoidduplicateliterals" priority="3">
+The String literal "jurisdiction" appears 4 times in this file; the first occurrence is on line 320
+</violation>
+<violation beginline="321" endline="321" begincolumn="25" endcolumn="32" rule="AvoidDuplicateLiterals" ruleset="Error Prone" package="uk.gov.hmcts.reform.iacaseapi" class="CcdScenarioRunnerTest" method="buildCallbackBody" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_errorprone.html#avoidduplicateliterals" priority="3">
+The String literal "state" appears 4 times in this file; the first occurrence is on line 321
+</violation>
+<violation beginline="373" endline="373" begincolumn="39" endcolumn="49" rule="LooseCoupling" ruleset="Best Practices" package="uk.gov.hmcts.reform.iacaseapi" class="CcdScenarioRunnerTest" method="buildCallbackResponseBody" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_bestpractices.html#loosecoupling" priority="3">
+Avoid using implementation types like 'AsylumCase'; use the interface instead
+</violation>
+<violation beginline="377" endline="377" begincolumn="43" endcolumn="53" rule="LooseCoupling" ruleset="Best Practices" package="uk.gov.hmcts.reform.iacaseapi" class="CcdScenarioRunnerTest" method="buildCallbackResponseBody" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_bestpractices.html#loosecoupling" priority="3">
+Avoid using implementation types like 'AsylumCase'; use the interface instead
+</violation>
+<violation beginline="389" endline="389" begincolumn="24" endcolumn="49" rule="UseLocaleWithCaseConversions" ruleset="Error Prone" package="uk.gov.hmcts.reform.iacaseapi" class="CcdScenarioRunnerTest" method="getAuthorizationHeaders" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_errorprone.html#uselocalewithcaseconversions" priority="3">
+When doing a String.toLowerCase()/toUpperCase() call, use a Locale
+</violation>
+</file>
+<file name="/Users/rajeshthuraiyurmoorthy/hmcts/git/ia-case-api/src/functionalTest/java/uk/gov/hmcts/reform/iacaseapi/ConfigValidationTest.java">
+<violation beginline="35" endline="35" begincolumn="18" endcolumn="27" rule="AvoidCatchingGenericException" ruleset="Error Prone" package="uk.gov.hmcts.reform.iacaseapi" class="ConfigValidationTest" method="authenticateMe" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_errorprone.html#avoidcatchinggenericexception" priority="3">
+Avoid catching Exception in try-catch block
+</violation>
+<violation beginline="36" endline="36" begincolumn="13" endcolumn="32" rule="AvoidPrintStackTrace" ruleset="Best Practices" package="uk.gov.hmcts.reform.iacaseapi" class="ConfigValidationTest" method="authenticateMe" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_bestpractices.html#avoidprintstacktrace" priority="3">
+Avoid printStackTrace(); use a logger call instead.
+</violation>
+<violation beginline="38" endline="38" begincolumn="9" endcolumn="35" rule="UnitTestAssertionsShouldIncludeMessage" ruleset="Best Practices" package="uk.gov.hmcts.reform.iacaseapi" class="ConfigValidationTest" method="authenticateMe" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_bestpractices.html#unittestassertionsshouldincludemessage" priority="3">
+Unit test assertions should include a message
+</violation>
+</file>
+<file name="/Users/rajeshthuraiyurmoorthy/hmcts/git/ia-case-api/src/functionalTest/java/uk/gov/hmcts/reform/iacaseapi/DataFixingTest.java">
+<violation beginline="32" endline="32" begincolumn="14" endcolumn="28" rule="JUnitJupiterTestShouldBePackagePrivate" ruleset="Best Practices" package="uk.gov.hmcts.reform.iacaseapi" class="DataFixingTest" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_bestpractices.html#junitjupitertestshouldbepackageprivate" priority="3">
+JUnit 5 tests should be package-private.
+</violation>
+<violation beginline="53" endline="53" begincolumn="17" endcolumn="37" rule="JUnitJupiterTestShouldBePackagePrivate" ruleset="Best Practices" package="uk.gov.hmcts.reform.iacaseapi" class="DataFixingTest" method="corrects_field_names" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_bestpractices.html#junitjupitertestshouldbepackageprivate" priority="3">
+JUnit 5 tests should be package-private.
+</violation>
+</file>
+<file name="/Users/rajeshthuraiyurmoorthy/hmcts/git/ia-case-api/src/functionalTest/java/uk/gov/hmcts/reform/iacaseapi/EndpointSecurityTest.java">
+<violation beginline="22" endline="22" begincolumn="14" endcolumn="34" rule="JUnitJupiterTestShouldBePackagePrivate" ruleset="Best Practices" package="uk.gov.hmcts.reform.iacaseapi" class="EndpointSecurityTest" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_bestpractices.html#junitjupitertestshouldbepackageprivate" priority="3">
+JUnit 5 tests should be package-private.
+</violation>
+<violation beginline="42" endline="42" begincolumn="17" endcolumn="102" rule="JUnitJupiterTestShouldBePackagePrivate" ruleset="Best Practices" package="uk.gov.hmcts.reform.iacaseapi" class="EndpointSecurityTest" method="should_allow_unauthenticated_requests_to_welcome_message_and_return_200_response_code" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_bestpractices.html#junitjupitertestshouldbepackageprivate" priority="3">
+JUnit 5 tests should be package-private.
+</violation>
+<violation beginline="59" endline="59" begincolumn="17" endcolumn="99" rule="JUnitJupiterTestShouldBePackagePrivate" ruleset="Best Practices" package="uk.gov.hmcts.reform.iacaseapi" class="EndpointSecurityTest" method="should_allow_unauthenticated_requests_to_health_check_and_return_200_response_code" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_bestpractices.html#junitjupitertestshouldbepackageprivate" priority="3">
+JUnit 5 tests should be package-private.
+</violation>
+<violation beginline="76" endline="76" begincolumn="17" endcolumn="87" rule="JUnitJupiterTestShouldBePackagePrivate" ruleset="Best Practices" package="uk.gov.hmcts.reform.iacaseapi" class="EndpointSecurityTest" method="should_not_allow_unauthenticated_requests_and_return_401_response_code" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_bestpractices.html#junitjupitertestshouldbepackageprivate" priority="3">
+JUnit 5 tests should be package-private.
+</violation>
+<violation beginline="76" endline="76" begincolumn="17" endcolumn="87" rule="UnitTestShouldIncludeAssert" ruleset="Best Practices" package="uk.gov.hmcts.reform.iacaseapi" class="EndpointSecurityTest" method="should_not_allow_unauthenticated_requests_and_return_401_response_code" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_bestpractices.html#unittestshouldincludeassert" priority="3">
+This unit test should include assert() or fail()
+</violation>
+<violation beginline="90" endline="90" begincolumn="17" endcolumn="107" rule="JUnitJupiterTestShouldBePackagePrivate" ruleset="Best Practices" package="uk.gov.hmcts.reform.iacaseapi" class="EndpointSecurityTest" method="should_not_allow_requests_without_valid_service_authorisation_and_return_401_response_code" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_bestpractices.html#junitjupitertestshouldbepackageprivate" priority="3">
+JUnit 5 tests should be package-private.
+</violation>
+<violation beginline="90" endline="90" begincolumn="17" endcolumn="107" rule="UnitTestShouldIncludeAssert" ruleset="Best Practices" package="uk.gov.hmcts.reform.iacaseapi" class="EndpointSecurityTest" method="should_not_allow_requests_without_valid_service_authorisation_and_return_401_response_code" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_bestpractices.html#unittestshouldincludeassert" priority="3">
+This unit test should include assert() or fail()
+</violation>
+<violation beginline="113" endline="113" begincolumn="17" endcolumn="104" rule="JUnitJupiterTestShouldBePackagePrivate" ruleset="Best Practices" package="uk.gov.hmcts.reform.iacaseapi" class="EndpointSecurityTest" method="should_not_allow_requests_without_valid_user_authorisation_and_return_401_response_code" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_bestpractices.html#junitjupitertestshouldbepackageprivate" priority="3">
+JUnit 5 tests should be package-private.
+</violation>
+<violation beginline="113" endline="113" begincolumn="17" endcolumn="104" rule="UnitTestShouldIncludeAssert" ruleset="Best Practices" package="uk.gov.hmcts.reform.iacaseapi" class="EndpointSecurityTest" method="should_not_allow_requests_without_valid_user_authorisation_and_return_401_response_code" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_bestpractices.html#unittestshouldincludeassert" priority="3">
+This unit test should include assert() or fail()
+</violation>
+</file>
+<file name="/Users/rajeshthuraiyurmoorthy/hmcts/git/ia-case-api/src/functionalTest/java/uk/gov/hmcts/reform/iacaseapi/HearingsUpdateHearingRequestFunctionalTest.java">
+<violation beginline="33" endline="33" begincolumn="14" endcolumn="56" rule="JUnitJupiterTestShouldBePackagePrivate" ruleset="Best Practices" package="uk.gov.hmcts.reform.iacaseapi" class="HearingsUpdateHearingRequestFunctionalTest" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_bestpractices.html#junitjupitertestshouldbepackageprivate" priority="3">
+JUnit 5 tests should be package-private.
+</violation>
+<violation beginline="42" endline="42" begincolumn="18" endcolumn="24" rule="AvoidDuplicateLiterals" ruleset="Error Prone" package="uk.gov.hmcts.reform.iacaseapi" class="HearingsUpdateHearingRequestFunctionalTest" method="should_handle_update_hearing_request_about_to_start_successfully" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_errorprone.html#avoidduplicateliterals" priority="3">
+The String literal "true" appears 6 times in this file; the first occurrence is on line 42
+</violation>
+<violation beginline="42" endline="42" begincolumn="26" endcolumn="33" rule="AvoidDuplicateLiterals" ruleset="Error Prone" package="uk.gov.hmcts.reform.iacaseapi" class="HearingsUpdateHearingRequestFunctionalTest" method="should_handle_update_hearing_request_about_to_start_successfully" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_errorprone.html#avoidduplicateliterals" priority="3">
+The String literal "false" appears 6 times in this file; the first occurrence is on line 42
+</violation>
+<violation beginline="46" endline="46" begincolumn="9" endcolumn="59" rule="GuardLogStatement" ruleset="Best Practices" package="uk.gov.hmcts.reform.iacaseapi" class="HearingsUpdateHearingRequestFunctionalTest" method="should_handle_update_hearing_request_about_to_start_successfully" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_bestpractices.html#guardlogstatement" priority="2">
+Logger calls should be surrounded by log level guards.
+</violation>
+<violation beginline="47" endline="47" begincolumn="9" endcolumn="43" rule="GuardLogStatement" ruleset="Best Practices" package="uk.gov.hmcts.reform.iacaseapi" class="HearingsUpdateHearingRequestFunctionalTest" method="should_handle_update_hearing_request_about_to_start_successfully" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_bestpractices.html#guardlogstatement" priority="2">
+Logger calls should be surrounded by log level guards.
+</violation>
+<violation beginline="55" endline="55" begincolumn="13" endcolumn="37" rule="AvoidDuplicateLiterals" ruleset="Error Prone" package="uk.gov.hmcts.reform.iacaseapi" class="HearingsUpdateHearingRequestFunctionalTest" method="should_handle_update_hearing_request_about_to_start_successfully" variable="caseDetails" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_errorprone.html#avoidduplicateliterals" priority="3">
+The String literal "securityClassification" appears 6 times in this file; the first occurrence is on line 55
+</violation>
+<violation beginline="63" endline="63" begincolumn="26" endcolumn="44" rule="AvoidDuplicateLiterals" ruleset="Error Prone" package="uk.gov.hmcts.reform.iacaseapi" class="HearingsUpdateHearingRequestFunctionalTest" method="should_handle_update_hearing_request_about_to_start_successfully" variable="response" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_errorprone.html#avoidduplicateliterals" priority="3">
+The String literal "application/json" appears 6 times in this file; the first occurrence is on line 63
+</violation>
+<violation beginline="72" endline="72" begincolumn="9" endcolumn="52" rule="UnitTestAssertionsShouldIncludeMessage" ruleset="Best Practices" package="uk.gov.hmcts.reform.iacaseapi" class="HearingsUpdateHearingRequestFunctionalTest" method="should_handle_update_hearing_request_about_to_start_successfully" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_bestpractices.html#unittestassertionsshouldincludemessage" priority="3">
+Unit test assertions should include a message
+</violation>
+<violation beginline="103" endline="103" begincolumn="9" endcolumn="52" rule="UnitTestAssertionsShouldIncludeMessage" ruleset="Best Practices" package="uk.gov.hmcts.reform.iacaseapi" class="HearingsUpdateHearingRequestFunctionalTest" method="should_fail_to_handle_update_hearing_request_about_to_start_due_to_invalid_authentication" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_bestpractices.html#unittestassertionsshouldincludemessage" priority="3">
+Unit test assertions should include a message
+</violation>
+<violation beginline="134" endline="134" begincolumn="9" endcolumn="52" rule="UnitTestAssertionsShouldIncludeMessage" ruleset="Best Practices" package="uk.gov.hmcts.reform.iacaseapi" class="HearingsUpdateHearingRequestFunctionalTest" method="should_handle_update_hearing_request_mid_event_successfully" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_bestpractices.html#unittestassertionsshouldincludemessage" priority="3">
+Unit test assertions should include a message
+</violation>
+<violation beginline="165" endline="165" begincolumn="9" endcolumn="52" rule="UnitTestAssertionsShouldIncludeMessage" ruleset="Best Practices" package="uk.gov.hmcts.reform.iacaseapi" class="HearingsUpdateHearingRequestFunctionalTest" method="should_fail_to_handle_update_hearing_request_mid_event_due_to_invalid_authentication" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_bestpractices.html#unittestassertionsshouldincludemessage" priority="3">
+Unit test assertions should include a message
+</violation>
+<violation beginline="196" endline="196" begincolumn="9" endcolumn="52" rule="UnitTestAssertionsShouldIncludeMessage" ruleset="Best Practices" package="uk.gov.hmcts.reform.iacaseapi" class="HearingsUpdateHearingRequestFunctionalTest" method="should_handle_update_hearing_request_about_to_submit_successfully" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_bestpractices.html#unittestassertionsshouldincludemessage" priority="3">
+Unit test assertions should include a message
+</violation>
+<violation beginline="227" endline="227" begincolumn="9" endcolumn="52" rule="UnitTestAssertionsShouldIncludeMessage" ruleset="Best Practices" package="uk.gov.hmcts.reform.iacaseapi" class="HearingsUpdateHearingRequestFunctionalTest" method="should_fail_to_handle_update_hearing_request_about_to_submit_due_to_invalid_authentication" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_bestpractices.html#unittestassertionsshouldincludemessage" priority="3">
+Unit test assertions should include a message
+</violation>
+</file>
+<file name="/Users/rajeshthuraiyurmoorthy/hmcts/git/ia-case-api/src/functionalTest/java/uk/gov/hmcts/reform/iacaseapi/ReconcileCaseDataFunctionalTest.java">
+<violation beginline="30" endline="30" begincolumn="14" endcolumn="45" rule="JUnitJupiterTestShouldBePackagePrivate" ruleset="Best Practices" package="uk.gov.hmcts.reform.iacaseapi" class="ReconcileCaseDataFunctionalTest" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_bestpractices.html#junitjupitertestshouldbepackageprivate" priority="3">
+JUnit 5 tests should be package-private.
+</violation>
+<violation beginline="43" endline="43" begincolumn="9" endcolumn="35" rule="UnitTestAssertionsShouldIncludeMessage" ruleset="Best Practices" package="uk.gov.hmcts.reform.iacaseapi" class="ReconcileCaseDataFunctionalTest" method="setUp" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_bestpractices.html#unittestassertionsshouldincludemessage" priority="3">
+Unit test assertions should include a message
+</violation>
+<violation beginline="54" endline="54" begincolumn="17" endcolumn="64" rule="JUnitJupiterTestShouldBePackagePrivate" ruleset="Best Practices" package="uk.gov.hmcts.reform.iacaseapi" class="ReconcileCaseDataFunctionalTest" method="should_return_400_status_code_for_a_bad_request" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_bestpractices.html#junitjupitertestshouldbepackageprivate" priority="3">
+JUnit 5 tests should be package-private.
+</violation>
+<violation beginline="54" endline="54" begincolumn="17" endcolumn="64" rule="UnitTestContainsTooManyAsserts" ruleset="Best Practices" package="uk.gov.hmcts.reform.iacaseapi" class="ReconcileCaseDataFunctionalTest" method="should_return_400_status_code_for_a_bad_request" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_bestpractices.html#unittestcontainstoomanyasserts" priority="3">
+Unit tests should not contain more than 1 assert(s).
+</violation>
+<violation beginline="68" endline="68" begincolumn="59" endcolumn="76" rule="AvoidDuplicateLiterals" ruleset="Error Prone" package="uk.gov.hmcts.reform.iacaseapi" class="ReconcileCaseDataFunctionalTest" method="should_return_400_status_code_for_a_bad_request" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_errorprone.html#avoidduplicateliterals" priority="3">
+The String literal "appealSubmitted" appears 7 times in this file; the first occurrence is on line 68
+</violation>
+<violation beginline="72" endline="72" begincolumn="17" endcolumn="69" rule="JUnitJupiterTestShouldBePackagePrivate" ruleset="Best Practices" package="uk.gov.hmcts.reform.iacaseapi" class="ReconcileCaseDataFunctionalTest" method="should_return_401_status_code_when_missing_s2s_token" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_bestpractices.html#junitjupitertestshouldbepackageprivate" priority="3">
+JUnit 5 tests should be package-private.
+</violation>
+<violation beginline="72" endline="72" begincolumn="17" endcolumn="69" rule="UnitTestContainsTooManyAsserts" ruleset="Best Practices" package="uk.gov.hmcts.reform.iacaseapi" class="ReconcileCaseDataFunctionalTest" method="should_return_401_status_code_when_missing_s2s_token" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_bestpractices.html#unittestcontainstoomanyasserts" priority="3">
+Unit tests should not contain more than 1 assert(s).
+</violation>
+<violation beginline="88" endline="88" begincolumn="17" endcolumn="69" rule="JUnitJupiterTestShouldBePackagePrivate" ruleset="Best Practices" package="uk.gov.hmcts.reform.iacaseapi" class="ReconcileCaseDataFunctionalTest" method="should_return_401_status_code_when_invalid_s2s_token" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_bestpractices.html#junitjupitertestshouldbepackageprivate" priority="3">
+JUnit 5 tests should be package-private.
+</violation>
+<violation beginline="88" endline="88" begincolumn="17" endcolumn="69" rule="UnitTestContainsTooManyAsserts" ruleset="Best Practices" package="uk.gov.hmcts.reform.iacaseapi" class="ReconcileCaseDataFunctionalTest" method="should_return_401_status_code_when_invalid_s2s_token" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_bestpractices.html#unittestcontainstoomanyasserts" priority="3">
+Unit tests should not contain more than 1 assert(s).
+</violation>
+<violation beginline="104" endline="104" begincolumn="17" endcolumn="106" rule="JUnitJupiterTestShouldBePackagePrivate" ruleset="Best Practices" package="uk.gov.hmcts.reform.iacaseapi" class="ReconcileCaseDataFunctionalTest" method="should_return_404_status_code_when_supplementary_details_not_found_for_given_case_numbers" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_bestpractices.html#junitjupitertestshouldbepackageprivate" priority="3">
+JUnit 5 tests should be package-private.
+</violation>
+<violation beginline="104" endline="104" begincolumn="17" endcolumn="106" rule="UnitTestContainsTooManyAsserts" ruleset="Best Practices" package="uk.gov.hmcts.reform.iacaseapi" class="ReconcileCaseDataFunctionalTest" method="should_return_404_status_code_when_supplementary_details_not_found_for_given_case_numbers" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_bestpractices.html#unittestcontainstoomanyasserts" priority="3">
+Unit tests should not contain more than 1 assert(s).
+</violation>
+<violation beginline="121" endline="121" begincolumn="17" endcolumn="91" rule="JUnitJupiterTestShouldBePackagePrivate" ruleset="Best Practices" package="uk.gov.hmcts.reform.iacaseapi" class="ReconcileCaseDataFunctionalTest" method="should_return_200_status_code_when_surname_retrieved_for_given_case_number" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_bestpractices.html#junitjupitertestshouldbepackageprivate" priority="3">
+JUnit 5 tests should be package-private.
+</violation>
+<violation beginline="121" endline="121" begincolumn="17" endcolumn="91" rule="UnitTestContainsTooManyAsserts" ruleset="Best Practices" package="uk.gov.hmcts.reform.iacaseapi" class="ReconcileCaseDataFunctionalTest" method="should_return_200_status_code_when_surname_retrieved_for_given_case_number" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_bestpractices.html#unittestcontainstoomanyasserts" priority="3">
+Unit tests should not contain more than 1 assert(s).
+</violation>
+<violation beginline="137" endline="137" begincolumn="17" endcolumn="110" rule="JUnitJupiterTestShouldBePackagePrivate" ruleset="Best Practices" package="uk.gov.hmcts.reform.iacaseapi" class="ReconcileCaseDataFunctionalTest" method="should_return_200_status_code_when_surname_retrieved_for_given_case_number_duplicated_ccd_ids" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_bestpractices.html#junitjupitertestshouldbepackageprivate" priority="3">
+JUnit 5 tests should be package-private.
+</violation>
+<violation beginline="137" endline="137" begincolumn="17" endcolumn="110" rule="UnitTestContainsTooManyAsserts" ruleset="Best Practices" package="uk.gov.hmcts.reform.iacaseapi" class="ReconcileCaseDataFunctionalTest" method="should_return_200_status_code_when_surname_retrieved_for_given_case_number_duplicated_ccd_ids" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_bestpractices.html#unittestcontainstoomanyasserts" priority="3">
+Unit tests should not contain more than 1 assert(s).
+</violation>
+<violation beginline="156" endline="156" begincolumn="17" endcolumn="94" rule="JUnitJupiterTestShouldBePackagePrivate" ruleset="Best Practices" package="uk.gov.hmcts.reform.iacaseapi" class="ReconcileCaseDataFunctionalTest" method="should_return_206_status_code_when_partial_match_found_for_given_case_numbers" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_bestpractices.html#junitjupitertestshouldbepackageprivate" priority="3">
+JUnit 5 tests should be package-private.
+</violation>
+<violation beginline="156" endline="156" begincolumn="17" endcolumn="94" rule="UnitTestContainsTooManyAsserts" ruleset="Best Practices" package="uk.gov.hmcts.reform.iacaseapi" class="ReconcileCaseDataFunctionalTest" method="should_return_206_status_code_when_partial_match_found_for_given_case_numbers" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_bestpractices.html#unittestcontainstoomanyasserts" priority="3">
+Unit tests should not contain more than 1 assert(s).
+</violation>
+</file>
+<file name="/Users/rajeshthuraiyurmoorthy/hmcts/git/ia-case-api/src/functionalTest/java/uk/gov/hmcts/reform/iacaseapi/RecordAdjournmentDetailsPreparerFunctionalTest.java">
+<violation beginline="27" endline="27" begincolumn="14" endcolumn="60" rule="JUnitJupiterTestShouldBePackagePrivate" ruleset="Best Practices" package="uk.gov.hmcts.reform.iacaseapi" class="RecordAdjournmentDetailsPreparerFunctionalTest" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_bestpractices.html#junitjupitertestshouldbepackageprivate" priority="3">
+JUnit 5 tests should be package-private.
+</violation>
+<violation beginline="36" endline="36" begincolumn="10" endcolumn="71" rule="UnitTestShouldIncludeAssert" ruleset="Best Practices" package="uk.gov.hmcts.reform.iacaseapi" class="RecordAdjournmentDetailsPreparerFunctionalTest" method="should_handle_prepare_record_adjournment_details_successfully" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_bestpractices.html#unittestshouldincludeassert" priority="3">
+This unit test should include assert() or fail()
+</violation>
+<violation beginline="39" endline="39" begincolumn="9" endcolumn="59" rule="GuardLogStatement" ruleset="Best Practices" package="uk.gov.hmcts.reform.iacaseapi" class="RecordAdjournmentDetailsPreparerFunctionalTest" method="should_handle_prepare_record_adjournment_details_successfully" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_bestpractices.html#guardlogstatement" priority="2">
+Logger calls should be surrounded by log level guards.
+</violation>
+<violation beginline="40" endline="40" begincolumn="9" endcolumn="43" rule="GuardLogStatement" ruleset="Best Practices" package="uk.gov.hmcts.reform.iacaseapi" class="RecordAdjournmentDetailsPreparerFunctionalTest" method="should_handle_prepare_record_adjournment_details_successfully" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_bestpractices.html#guardlogstatement" priority="2">
+Logger calls should be surrounded by log level guards.
+</violation>
+<violation beginline="70" endline="70" begincolumn="9" endcolumn="59" rule="GuardLogStatement" ruleset="Best Practices" package="uk.gov.hmcts.reform.iacaseapi" class="RecordAdjournmentDetailsPreparerFunctionalTest" method="should_fail_prepare_record_adjournment_details_due_to_invalid_authentication" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_bestpractices.html#guardlogstatement" priority="2">
+Logger calls should be surrounded by log level guards.
+</violation>
+<violation beginline="71" endline="71" begincolumn="9" endcolumn="43" rule="GuardLogStatement" ruleset="Best Practices" package="uk.gov.hmcts.reform.iacaseapi" class="RecordAdjournmentDetailsPreparerFunctionalTest" method="should_fail_prepare_record_adjournment_details_due_to_invalid_authentication" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_bestpractices.html#guardlogstatement" priority="2">
+Logger calls should be surrounded by log level guards.
+</violation>
+<violation beginline="95" endline="95" begincolumn="9" endcolumn="52" rule="UnitTestAssertionsShouldIncludeMessage" ruleset="Best Practices" package="uk.gov.hmcts.reform.iacaseapi" class="RecordAdjournmentDetailsPreparerFunctionalTest" method="should_fail_prepare_record_adjournment_details_due_to_invalid_authentication" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_bestpractices.html#unittestassertionsshouldincludemessage" priority="3">
+Unit test assertions should include a message
+</violation>
+</file>
+<file name="/Users/rajeshthuraiyurmoorthy/hmcts/git/ia-case-api/src/functionalTest/java/uk/gov/hmcts/reform/iacaseapi/RecordAdjournmentDetailsStateHandlerFunctionalTest.java">
+<violation beginline="31" endline="31" begincolumn="14" endcolumn="64" rule="JUnitJupiterTestShouldBePackagePrivate" ruleset="Best Practices" package="uk.gov.hmcts.reform.iacaseapi" class="RecordAdjournmentDetailsStateHandlerFunctionalTest" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_bestpractices.html#junitjupitertestshouldbepackageprivate" priority="3">
+JUnit 5 tests should be package-private.
+</violation>
+<violation beginline="43" endline="43" begincolumn="9" endcolumn="19" rule="LooseCoupling" ruleset="Best Practices" package="uk.gov.hmcts.reform.iacaseapi" class="RecordAdjournmentDetailsStateHandlerFunctionalTest" method="should_handle_record_adjournment_details_update_successfully" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_bestpractices.html#loosecoupling" priority="3">
+Avoid using implementation types like 'AsylumCase'; use the interface instead
+</violation>
+<violation beginline="54" endline="54" begincolumn="9" endcolumn="59" rule="GuardLogStatement" ruleset="Best Practices" package="uk.gov.hmcts.reform.iacaseapi" class="RecordAdjournmentDetailsStateHandlerFunctionalTest" method="should_handle_record_adjournment_details_update_successfully" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_bestpractices.html#guardlogstatement" priority="2">
+Logger calls should be surrounded by log level guards.
+</violation>
+<violation beginline="55" endline="55" begincolumn="9" endcolumn="43" rule="GuardLogStatement" ruleset="Best Practices" package="uk.gov.hmcts.reform.iacaseapi" class="RecordAdjournmentDetailsStateHandlerFunctionalTest" method="should_handle_record_adjournment_details_update_successfully" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_bestpractices.html#guardlogstatement" priority="2">
+Logger calls should be surrounded by log level guards.
+</violation>
+<violation beginline="86" endline="86" begincolumn="9" endcolumn="19" rule="LooseCoupling" ruleset="Best Practices" package="uk.gov.hmcts.reform.iacaseapi" class="RecordAdjournmentDetailsStateHandlerFunctionalTest" method="should_handle_record_adjournment_details_cancel_successfully" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_bestpractices.html#loosecoupling" priority="3">
+Avoid using implementation types like 'AsylumCase'; use the interface instead
+</violation>
+<violation beginline="100" endline="100" begincolumn="9" endcolumn="59" rule="GuardLogStatement" ruleset="Best Practices" package="uk.gov.hmcts.reform.iacaseapi" class="RecordAdjournmentDetailsStateHandlerFunctionalTest" method="should_handle_record_adjournment_details_cancel_successfully" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_bestpractices.html#guardlogstatement" priority="2">
+Logger calls should be surrounded by log level guards.
+</violation>
+<violation beginline="101" endline="101" begincolumn="9" endcolumn="43" rule="GuardLogStatement" ruleset="Best Practices" package="uk.gov.hmcts.reform.iacaseapi" class="RecordAdjournmentDetailsStateHandlerFunctionalTest" method="should_handle_record_adjournment_details_cancel_successfully" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_bestpractices.html#guardlogstatement" priority="2">
+Logger calls should be surrounded by log level guards.
+</violation>
+<violation beginline="132" endline="132" begincolumn="9" endcolumn="59" rule="GuardLogStatement" ruleset="Best Practices" package="uk.gov.hmcts.reform.iacaseapi" class="RecordAdjournmentDetailsStateHandlerFunctionalTest" method="should_fail_handle_record_adjournment_details_state_due_to_missing_fields" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_bestpractices.html#guardlogstatement" priority="2">
+Logger calls should be surrounded by log level guards.
+</violation>
+<violation beginline="133" endline="133" begincolumn="9" endcolumn="43" rule="GuardLogStatement" ruleset="Best Practices" package="uk.gov.hmcts.reform.iacaseapi" class="RecordAdjournmentDetailsStateHandlerFunctionalTest" method="should_fail_handle_record_adjournment_details_state_due_to_missing_fields" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_bestpractices.html#guardlogstatement" priority="2">
+Logger calls should be surrounded by log level guards.
+</violation>
+<violation beginline="157" endline="157" begincolumn="9" endcolumn="52" rule="UnitTestAssertionsShouldIncludeMessage" ruleset="Best Practices" package="uk.gov.hmcts.reform.iacaseapi" class="RecordAdjournmentDetailsStateHandlerFunctionalTest" method="should_fail_handle_record_adjournment_details_state_due_to_missing_fields" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_bestpractices.html#unittestassertionsshouldincludemessage" priority="3">
+Unit test assertions should include a message
+</violation>
+</file>
+<file name="/Users/rajeshthuraiyurmoorthy/hmcts/git/ia-case-api/src/functionalTest/java/uk/gov/hmcts/reform/iacaseapi/SupplementaryDetailsResponseFunctionTest.java">
+<violation beginline="10" endline="10" begincolumn="14" endcolumn="54" rule="JUnitJupiterTestShouldBePackagePrivate" ruleset="Best Practices" package="uk.gov.hmcts.reform.iacaseapi" class="SupplementaryDetailsResponseFunctionTest" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_bestpractices.html#junitjupitertestshouldbepackageprivate" priority="3">
+JUnit 5 tests should be package-private.
+</violation>
+<violation beginline="13" endline="13" begincolumn="17" endcolumn="80" rule="JUnitJupiterTestShouldBePackagePrivate" ruleset="Best Practices" package="uk.gov.hmcts.reform.iacaseapi" class="SupplementaryDetailsResponseFunctionTest" method="should_allow_unauthorized_requests_and_return_401_response_code" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_bestpractices.html#junitjupitertestshouldbepackageprivate" priority="3">
+JUnit 5 tests should be package-private.
+</violation>
+<violation beginline="13" endline="13" begincolumn="17" endcolumn="80" rule="UnitTestShouldIncludeAssert" ruleset="Best Practices" package="uk.gov.hmcts.reform.iacaseapi" class="SupplementaryDetailsResponseFunctionTest" method="should_allow_unauthorized_requests_and_return_401_response_code" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_bestpractices.html#unittestshouldincludeassert" priority="3">
+This unit test should include assert() or fail()
+</violation>
+</file>
+<file name="/Users/rajeshthuraiyurmoorthy/hmcts/git/ia-case-api/src/functionalTest/java/uk/gov/hmcts/reform/iacaseapi/WelcomeTest.java">
+<violation beginline="20" endline="20" begincolumn="14" endcolumn="25" rule="JUnitJupiterTestShouldBePackagePrivate" ruleset="Best Practices" package="uk.gov.hmcts.reform.iacaseapi" class="WelcomeTest" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_bestpractices.html#junitjupitertestshouldbepackageprivate" priority="3">
+JUnit 5 tests should be package-private.
+</violation>
+<violation beginline="27" endline="27" begincolumn="17" endcolumn="54" rule="JUnitJupiterTestShouldBePackagePrivate" ruleset="Best Practices" package="uk.gov.hmcts.reform.iacaseapi" class="WelcomeTest" method="should_welcome_with_200_response_code" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_bestpractices.html#junitjupitertestshouldbepackageprivate" priority="3">
+JUnit 5 tests should be package-private.
+</violation>
+</file>
+<file name="/Users/rajeshthuraiyurmoorthy/hmcts/git/ia-case-api/src/functionalTest/java/uk/gov/hmcts/reform/iacaseapi/fixtures/DocumentManagementFilesFixture.java">
+<violation beginline="22" endline="22" begincolumn="17" endcolumn="24" rule="MissingOverride" ruleset="Best Practices" package="uk.gov.hmcts.reform.iacaseapi.fixtures" class="DocumentManagementFilesFixture" method="prepare" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_bestpractices.html#missingoverride" priority="3">
+The method 'prepare()' is missing an @Override annotation.
+</violation>
+<violation beginline="33" endline="35" begincolumn="21" endcolumn="39" rule="UseLocaleWithCaseConversions" ruleset="Error Prone" package="uk.gov.hmcts.reform.iacaseapi.fixtures" class="DocumentManagementFilesFixture" method="prepare" variable="filename" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_errorprone.html#uselocalewithcaseconversions" priority="3">
+When doing a String.toLowerCase()/toUpperCase() call, use a Locale
+</violation>
+<violation beginline="66" endline="66" begincolumn="32" endcolumn="45" rule="MissingOverride" ruleset="Best Practices" package="uk.gov.hmcts.reform.iacaseapi.fixtures" class="DocumentManagementFilesFixture" method="getProperties" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_bestpractices.html#missingoverride" priority="3">
+The method 'getProperties()' is missing an @Override annotation.
+</violation>
+</file>
+<file name="/Users/rajeshthuraiyurmoorthy/hmcts/git/ia-case-api/src/functionalTest/java/uk/gov/hmcts/reform/iacaseapi/fixtures/Fixture.java">
+<violation beginline="7" endline="7" begincolumn="18" endcolumn="25" rule="ImplicitFunctionalInterface" ruleset="Best Practices" package="uk.gov.hmcts.reform.iacaseapi.fixtures" class="Fixture" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_bestpractices.html#implicitfunctionalinterface" priority="2">
+Annotate this interface with @FunctionalInterface or with @SuppressWarnings("PMD.ImplicitFunctionalInterface") to clarify your intent.
+</violation>
+</file>
+<file name="/Users/rajeshthuraiyurmoorthy/hmcts/git/ia-case-api/src/functionalTest/java/uk/gov/hmcts/reform/iacaseapi/fixtures/documents/DocumentUploader.java">
+<violation beginline="6" endline="6" begincolumn="18" endcolumn="34" rule="ImplicitFunctionalInterface" ruleset="Best Practices" package="uk.gov.hmcts.reform.iacaseapi.fixtures.documents" class="DocumentUploader" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_bestpractices.html#implicitfunctionalinterface" priority="2">
+Annotate this interface with @FunctionalInterface or with @SuppressWarnings("PMD.ImplicitFunctionalInterface") to clarify your intent.
+</violation>
+</file>
+<file name="/Users/rajeshthuraiyurmoorthy/hmcts/git/ia-case-api/src/functionalTest/java/uk/gov/hmcts/reform/iacaseapi/infrastructure/clients/LaunchDarklyTestFeatureToggler.java">
+<violation beginline="33" endline="33" begincolumn="20" endcolumn="28" rule="MissingOverride" ruleset="Best Practices" package="uk.gov.hmcts.reform.iacaseapi.infrastructure.clients" class="LaunchDarklyTestFeatureToggler" method="getValue" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_bestpractices.html#missingoverride" priority="3">
+The method 'getValue(String, Boolean)' is missing an @Override annotation.
+</violation>
+<violation beginline="44" endline="44" begincolumn="20" endcolumn="32" rule="MissingOverride" ruleset="Best Practices" package="uk.gov.hmcts.reform.iacaseapi.infrastructure.clients" class="LaunchDarklyTestFeatureToggler" method="getJsonValue" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_bestpractices.html#missingoverride" priority="3">
+The method 'getJsonValue(String, LDValue)' is missing an @Override annotation.
+</violation>
+</file>
+<file name="/Users/rajeshthuraiyurmoorthy/hmcts/git/ia-case-api/src/functionalTest/java/uk/gov/hmcts/reform/iacaseapi/util/AuthorizationHeadersProvider.java">
+<violation beginline="22" endline="22" begincolumn="54" endcolumn="67" rule="AvoidDuplicateLiterals" ruleset="Error Prone" package="uk.gov.hmcts.reform.iacaseapi.util" class="AuthorizationHeadersProvider" method="getLegalRepresentativeAuthorization" variable="serviceToken" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_errorprone.html#avoidduplicateliterals" priority="3">
+The String literal "ServiceAuth" appears 13 times in this file; the first occurrence is on line 22
+</violation>
+<violation beginline="26" endline="26" begincolumn="24" endcolumn="46" rule="AvoidDuplicateLiterals" ruleset="Error Prone" package="uk.gov.hmcts.reform.iacaseapi.util" class="AuthorizationHeadersProvider" method="getLegalRepresentativeAuthorization" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_errorprone.html#avoidduplicateliterals" priority="3">
+The String literal "ServiceAuthorization" appears 13 times in this file; the first occurrence is on line 26
+</violation>
+<violation beginline="27" endline="27" begincolumn="24" endcolumn="39" rule="AvoidDuplicateLiterals" ruleset="Error Prone" package="uk.gov.hmcts.reform.iacaseapi.util" class="AuthorizationHeadersProvider" method="getLegalRepresentativeAuthorization" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_errorprone.html#avoidduplicateliterals" priority="3">
+The String literal "Authorization" appears 13 times in this file; the first occurrence is on line 27
+</violation>
+</file>
+<file name="/Users/rajeshthuraiyurmoorthy/hmcts/git/ia-case-api/src/functionalTest/java/uk/gov/hmcts/reform/iacaseapi/util/BinaryResourceLoader.java">
+<violation beginline="39" endline="39" begincolumn="27" endcolumn="47" rule="UnusedPrivateMethod" ruleset="Best Practices" package="uk.gov.hmcts.reform.iacaseapi.util" class="BinaryResourceLoader" method="loadResourceToString" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_bestpractices.html#unusedprivatemethod" priority="3">
+Avoid unused private methods such as 'loadResourceToString(Resource)'.
+</violation>
+</file>
+<file name="/Users/rajeshthuraiyurmoorthy/hmcts/git/ia-case-api/src/functionalTest/java/uk/gov/hmcts/reform/iacaseapi/util/MapValueExpander.java">
+<violation beginline="104" endline="104" begincolumn="32" endcolumn="35" rule="AvoidLiteralsInIfCondition" ruleset="Error Prone" package="uk.gov.hmcts.reform.iacaseapi.util" class="MapValueExpander" method="expandToday" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_errorprone.html#avoidliteralsinifcondition" priority="3">
+Avoid using literals such as '+' in if statements
+</violation>
+<violation beginline="138" endline="138" begincolumn="32" endcolumn="35" rule="AvoidLiteralsInIfCondition" ruleset="Error Prone" package="uk.gov.hmcts.reform.iacaseapi.util" class="MapValueExpander" method="expandTodayFullDate" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_errorprone.html#avoidliteralsinifcondition" priority="3">
+Avoid using literals such as '+' in if statements
+</violation>
+</file>
+<file name="/Users/rajeshthuraiyurmoorthy/hmcts/git/ia-case-api/src/functionalTest/java/uk/gov/hmcts/reform/iacaseapi/verifiers/CaseDataVerifier.java">
+<violation beginline="12" endline="12" begincolumn="17" endcolumn="23" rule="MissingOverride" ruleset="Best Practices" package="uk.gov.hmcts.reform.iacaseapi.verifiers" class="CaseDataVerifier" method="verify" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_bestpractices.html#missingoverride" priority="3">
+The method 'verify(long, Map&lt;String, Object&gt;, Map&lt;String, Object&gt;, Map&lt;String, Object&gt;)' is missing an @Override annotation.
+</violation>
+</file>
+<file name="/Users/rajeshthuraiyurmoorthy/hmcts/git/ia-case-api/src/functionalTest/java/uk/gov/hmcts/reform/iacaseapi/verifiers/Verifier.java">
+<violation beginline="5" endline="5" begincolumn="18" endcolumn="26" rule="ImplicitFunctionalInterface" ruleset="Best Practices" package="uk.gov.hmcts.reform.iacaseapi.verifiers" class="Verifier" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.25.0/pmd_rules_java_bestpractices.html#implicitfunctionalinterface" priority="2">
+Annotate this interface with @FunctionalInterface or with @SuppressWarnings("PMD.ImplicitFunctionalInterface") to clarify your intent.
+</violation>
+</file>
+</pmd>
