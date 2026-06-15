@@ -1,0 +1,26 @@
+.gradle
+/build/
+!gradle/wrapper/gradle-wrapper.jar
+*.class
+bin/main/application.yaml
+/target
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+
+### IntelliJ IDEA ###
+.idea
+/out
+*.iws
+*.iml
+*.ipr
+
+.DS_Store
+.mirrord
+/pacts/
+/reports/pmd/*

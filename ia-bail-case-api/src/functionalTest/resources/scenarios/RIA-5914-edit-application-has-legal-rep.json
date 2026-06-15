@@ -1,0 +1,31 @@
+{
+  "description": "Edit the application to change the legal representation (pre-submit REST call)",
+  "request": {
+    "uri": "/bail/ccdAboutToSubmit",
+    "credentials": "AdminOfficer",
+    "input": {
+      "id": 1111,
+      "eventId": "editBailApplication",
+      "state": "applicationStarted",
+      "caseData": {
+        "template": "minimal-application-started.json",
+        "replacements": {
+          "hasLegalRep": "Yes"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-application-started.json",
+      "replacements": {
+        "hasLegalRep": "Yes",
+        "isLegallyRepresentedForFlag": "Yes",
+        "interpreterLanguages": null,
+        "hasFinancialCondSupporter": null
+      }
+    }
+  }
+}

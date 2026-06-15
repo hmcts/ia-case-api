@@ -1,0 +1,60 @@
+{
+  "description": "Case Listing when listingEvent is initialListing with enabled ref data feature toggle",
+  "request": {
+    "uri": "/bail/ccdAboutToSubmit",
+    "credentials": "AdminOfficer",
+    "input": {
+      "id": 87920,
+      "eventId": "caseListing",
+      "state": "applicationSubmitted",
+      "caseData": {
+        "template": "minimal-application-started.json",
+        "replacements": {
+          "listingEvent": "initialListing",
+          "listingHearingDate": "{$TODAY+5}T10:00:00.000",
+          "isBailsLocationReferenceDataEnabled": "Yes",
+          "currentHearingId": "12345",
+          "refDataListingLocation": {
+            "value": {
+              "code": "366796",
+              "label": "Newcastle Civil And Family Courts And Tribunals Centre"
+            }
+          }
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-application-started.json",
+      "replacements": {
+        "listingEvent": "initialListing",
+        "isBailsLocationReferenceDataEnabled": "Yes",
+        "currentCaseStateVisibleToJudge": "applicationSubmitted",
+        "currentCaseStateVisibleToAllUsers": "applicationSubmitted",
+        "currentCaseStateVisibleToHomeOffice": "applicationSubmitted",
+        "currentCaseStateVisibleToAdminOfficer": "applicationSubmitted",
+        "currentCaseStateVisibleToLegalRepresentative": "applicationSubmitted",
+        "currentHearingId": "12345",
+        "hearingIdList": [
+          {
+            "id": "1",
+            "value": "12345"
+          }
+        ],
+        "refDataListingLocationDetail": {
+          "postcode": "NE1 8QF",
+          "epimms_id": "366796",
+          "site_name": "Newcastle Civil & Family Courts and Tribunals Centre",
+          "court_name": "Newcastle Civil And Family Courts And Tribunals Centre",
+          "court_status": "Open",
+          "court_address": "Barras Bridge, Newcastle-Upon-Tyne",
+          "is_hearing_location": "Y",
+          "is_case_management_location": "Y"
+        }
+      }
+    }
+  }
+}

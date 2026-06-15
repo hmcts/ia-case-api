@@ -1,0 +1,25 @@
+{
+  "description": "Upload documents with Legal Representative user - append LR user role",
+  "request": {
+    "uri": "/bail/ccdAboutToStart",
+    "credentials": "Judge",
+    "input": {
+      "id": 1111,
+      "eventId": "uploadDocuments",
+      "state": "applicationSubmitted",
+      "caseData": {
+        "template": "minimal-application-started.json"
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-application-started.json",
+      "replacements": {
+        "currentUser": "Judge"
+      }
+    }
+  }
+}

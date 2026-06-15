@@ -1,0 +1,44 @@
+{
+  "description": "RIA-8355 Case listing event by Admin",
+  "request": {
+    "uri": "/bail/ccdAboutToSubmit",
+    "credentials": "AdminOfficer",
+    "input": {
+      "id": 8355,
+      "eventId": "caseListing",
+      "state": "applicationSubmitted",
+      "caseData": {
+        "template": "minimal-application-started.json",
+        "replacements": {
+          "listingEvent": "initialListing",
+          "listingLocation": "newcastleCfctc",
+          "listingHearingLength": "90",
+          "listingHearingDate": "{$TODAY+5}T10:00:00.000",
+          "currentHearingId": "12345"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-application-started.json",
+      "replacements": {
+        "uploadBailSummaryActionAvailable": "Yes",
+        "currentCaseStateVisibleToJudge": "applicationSubmitted",
+        "currentCaseStateVisibleToAllUsers": "applicationSubmitted",
+        "currentCaseStateVisibleToHomeOffice": "applicationSubmitted",
+        "currentCaseStateVisibleToAdminOfficer": "applicationSubmitted",
+        "currentCaseStateVisibleToLegalRepresentative": "applicationSubmitted",
+        "currentHearingId": "12345",
+        "hearingIdList": [
+          {
+            "id": "1",
+            "value": "12345"
+          }
+        ]
+      }
+    }
+  }
+}

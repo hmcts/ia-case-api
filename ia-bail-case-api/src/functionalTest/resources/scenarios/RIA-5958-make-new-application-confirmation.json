@@ -1,0 +1,23 @@
+{
+  "description": "Make new application confirmation (post-submit REST call)",
+  "request": {
+    "uri": "/bail/ccdSubmitted",
+    "credentials": "AdminOfficer",
+    "input": {
+      "id": 1111,
+      "eventId": "makeNewApplication",
+      "state": "decisionDecided",
+      "caseData": {
+        "template": "minimal-application-started.json"
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "confirmation": {
+      "header": "# You have submitted this application",
+      "body": "### What happens next\n\nAll parties will be notified that the application has been submitted."
+    }
+  }
+}

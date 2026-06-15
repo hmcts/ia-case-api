@@ -1,0 +1,31 @@
+{
+  "description": "Start the application by Home Office - append HO user role",
+  "request": {
+    "uri": "/bail/ccdAboutToStart",
+    "credentials": "HomeOfficeBail",
+    "input": {
+      "id": 1111,
+      "eventId": "startApplication",
+      "state": "applicationStarted",
+      "caseData": {
+        "template": "minimal-application-started.json",
+        "replacements": {
+          "applicationSubmittedBy": "Home Office"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-application-started.json",
+      "replacements": {
+        "applicationSubmittedBy": "Home Office",
+        "isAdmin": "No",
+        "isLegalRep": "No",
+        "isHomeOffice": "Yes"
+      }
+    }
+  }
+}
