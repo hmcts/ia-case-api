@@ -61,7 +61,7 @@ public class AipNlrEventSubmissionHandler implements PreSubmitCallbackHandler<As
         asylumCase.clear(HAS_NLR_SUBMITTED);
 
         String nlrFullName = asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class)
-                .map(NonLegalRepDetails::getFullName)
+                .map(nlr -> nlr.getGivenNames() + " " + nlr.getFamilyName())
                 .orElseThrow(() -> new IllegalStateException("Non-legal representative details are not present"));
         Optional<List<IdValue<CaseNote>>> maybeExistingCaseNotes = asylumCase.read(CASE_NOTES);
         List<IdValue<CaseNote>> allCaseNotes = appender.append(
