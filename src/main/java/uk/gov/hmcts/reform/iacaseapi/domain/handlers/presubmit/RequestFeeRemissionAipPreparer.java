@@ -75,7 +75,6 @@ public class RequestFeeRemissionAipPreparer implements PreSubmitCallbackHandler<
         Optional<RemissionType> previousLateRemissionType = asylumCase.read(LATE_REMISSION_TYPE, RemissionType.class);
         Optional<RemissionDecision> remissionDecision = asylumCase.read(REMISSION_DECISION, RemissionDecision.class);
 
-        log.info("----------------RequestFeeRemissionAipPreparer 111");
         if (appealHasRemissionOptionOrType(
             previousRemissionOption,
             previousHelpWithFeesOptionAip,
