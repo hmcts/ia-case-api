@@ -24,6 +24,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.HomeOfficeReferenceService;
 
@@ -55,7 +56,6 @@ public class HomeOfficeReferenceHandler implements PreSubmitCallbackHandler<Asyl
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
-        // TODO - check logic for oocHomeOfficeReferenceNumber (and do any other screens that display the UAN)
         return callbackStage == PreSubmitCallbackStage.MID_EVENT
                 && List.of(Event.START_APPEAL, Event.EDIT_APPEAL, Event.EDIT_APPEAL_AFTER_SUBMIT).contains(callback.getEvent())
                 && List.of(
@@ -86,8 +86,13 @@ public class HomeOfficeReferenceHandler implements PreSubmitCallbackHandler<Asyl
         String pageId = callback.getPageId();
 
         return switch (pageId) {
-            case "homeOfficeReferenceNumber", "oocHomeOfficeReferenceNumber", "cuiHomeOfficeReferenceNumber", "cuiGwfReferenceNumber" -> validateHomeOfficeReference(callback, asylumCase, homeOfficeReferenceNumber);
-        
+            case "homeOfficeReferenceNumber", "oocHomeOfficeReferenceNumber", "cuiHomeOfficeReferenceNumber", "cuiGwfReferenceNumber" -> {
+                // First of all, remove any trace of a previous call to the Home Office validation API,
+                // in order to force a fresh request (in the event that we have changed the HO reference number, say)
+                HandlerUtils.removeValidationFields(asylumCase);
+                yield validateHomeOfficeReference(callback, asylumCase, homeOfficeReferenceNumber);
+            }
+
             case "appellantBasicDetails", "cuiAppellantDob" -> {
                 boolean isCUICallback = pageId.contains("cui");
                 yield validateNameAndDateOfBirth(callback, asylumCase, homeOfficeReferenceNumber, isCUICallback);
