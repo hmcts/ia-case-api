@@ -192,7 +192,7 @@ class AipNlrEventSubmissionHandlerTest {
         verify(appender, times(1)).append(caseNoteCaptor.capture(), eq(List.of(idValue)));
         verify(asylumCase, times(1)).write(AsylumCaseFieldDefinition.CASE_NOTES, mockList);
         CaseNote capturedCaseNote = caseNoteCaptor.getValue();
-        assertEquals("NLR event submission - submitAppeal" , capturedCaseNote.getCaseNoteSubject());
+        assertEquals("NLR event submission - submitAppeal", capturedCaseNote.getCaseNoteSubject());
         assertTrue(capturedCaseNote.getCaseNoteDescription()
             .contains("Non-legal representative submitted the event on behalf of the appellant."));
         assertTrue(capturedCaseNote.getCaseNoteDescription()
