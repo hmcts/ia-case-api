@@ -11,7 +11,7 @@
         "template": "minimal-appeal-submitted.json",
         "replacements": {
           "isAdmin": "Yes",
-          "appellantsRepresentation": "No",
+          "appellantsRepresentation": "Yes",
           "sendDirectionExplanation": "Some direction.",
           "sendDirectionDateDue": "{$TODAY+28}",
           "sendDirectionParties": "legalRepresentative",
