@@ -1,0 +1,28 @@
+{
+  "description": "Update legal representative details by legal rep role - append pre-populated data",
+  "request": {
+    "uri": "/bail/ccdAboutToStart",
+    "credentials": "LegalRepresentativeOrgSuccess",
+    "input": {
+      "id": 1111,
+      "eventId": "updateBailLegalRepDetails",
+      "state": "applicationSubmitted",
+      "caseData": {
+        "template": "minimal-application-started.json",
+        "replacements": {
+          "legalRepEmail": "example@test.com"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-application-started.json",
+      "replacements": {
+        "updateLegalRepEmail1": "example@test.com"
+      }
+    }
+  }
+}

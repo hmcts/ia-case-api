@@ -1,0 +1,36 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "local>hmcts/.github:renovate-config"
+  ],
+  "labels": [
+    "dependencies"
+  ],
+  "ignoreDeps": [
+    "org.owasp.dependencycheck"
+  ],
+  "packageRules": [
+    {
+      "matchPackagePatterns": [
+        "*"
+      ],
+      "matchUpdateTypes": [
+        "patch"
+      ],
+      "groupName": "all patch dependencies",
+      "groupSlug": "all-patch",
+      "automerge": true
+    },
+    {
+      "matchUpdateTypes": [
+        "major",
+        "minor"
+      ],
+      "enabled": false
+    }
+  ],
+  "timezone": "Europe/London",
+  "schedule": [
+    "before 3am every weekday"
+  ]
+}

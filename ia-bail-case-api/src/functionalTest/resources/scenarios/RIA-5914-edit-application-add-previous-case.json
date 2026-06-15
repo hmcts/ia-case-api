@@ -1,0 +1,32 @@
+{
+  "description": "Edit the application to add a previous bail application (pre-submit REST call)",
+  "request": {
+    "uri": "/bail/ccdAboutToSubmit",
+    "credentials": "AdminOfficer",
+    "input": {
+      "id": 1111,
+      "eventId": "editBailApplication",
+      "state": "applicationStarted",
+      "caseData": {
+        "template": "minimal-application-started.json",
+        "replacements": {
+          "hasPreviousBailApplication": "Yes",
+          "previousBailApplicationNumber": "1111222233334444"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-application-started.json",
+      "replacements": {
+        "hasPreviousBailApplication": "Yes",
+        "previousBailApplicationNumber": "1111222233334444",
+        "hasFinancialCondSupporter": null,
+        "interpreterLanguages": null
+      }
+    }
+  }
+}

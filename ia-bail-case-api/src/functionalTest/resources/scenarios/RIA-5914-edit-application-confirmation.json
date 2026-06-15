@@ -1,0 +1,23 @@
+{
+  "description": "Edit the application (post-submit REST call)",
+  "request": {
+    "uri": "/bail/ccdSubmitted",
+    "credentials": "AdminOfficer",
+    "input": {
+      "id": 1111,
+      "eventId": "editBailApplication",
+      "state": "applicationStarted",
+      "caseData": {
+        "template": "minimal-application-started.json"
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "confirmation": {
+      "header": "# Your application details have been updated",
+      "body": "contains(### Do this next\n\nYou still need to [submit the application](/case/IA/Bail/1111/trigger/submitApplication). If you need to make further changes you can [edit the application](/case/IA/Bail/1111/trigger/editBailApplication).)"
+    }
+  }
+}

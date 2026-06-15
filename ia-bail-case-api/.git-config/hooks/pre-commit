@@ -1,0 +1,92 @@
+#!/usr/bin/env bash
+LOCAL_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
+
+RENOVATE_PREFIX="^renovate/"
+GITHUB_REVERT_PREFIX="^revert-[0-9]{1,5}.*"
+
+VALID_PREFIXES="^(feat|spike|fix|test|refactor)\/(.*)"
+VALID_TICKET_1='RIA-[0-9]{1,5}$'
+VALID_TICKET_2='RIA-[0-9]{1,5}[-_][a-z0-9]+.*'
+VALID_TICKET_3='SNI-[0-9]{1,5}$'
+VALID_TICKET_4='SNI-[0-9]{1,5}[-_][a-z0-9]+.*'
+VALID_TASK_1='RIA-TASK$'
+VALID_TASK_2='RIA-TASK[-_][a-z0-9]+.*'
+
+
+
+if [[ $LOCAL_BRANCH =~ $RENOVATE_PREFIX ]]; then
+  # This is a renovate branch. We don't check anything else.
+  exit 0
+fi
+
+if [[ $LOCAL_BRANCH =~ $GITHUB_REVERT_PREFIX ]]; then
+  # This is a revert branch created from GitHub. We don't check anything else.
+  exit 0
+fi
+
+
+if [[ ! $LOCAL_BRANCH =~ $VALID_PREFIXES ]]; then
+  # No valid prefix, we need to fail the script
+  echo "The provided branch prefix is missing or invalid. All branches not created automatically must start with one of:"
+  echo "  feat/"
+  echo "  spike/"
+  echo "  fix/"
+  echo "  test/"
+  echo "  refactor/"
+  echo ""
+  echo "Please rename your branch. To rename your branch you can use the following command:"
+  echo "  git branch -m <newname>"
+  exit 1
+fi
+
+BRANCH_PREFIX=${BASH_REMATCH[1]}
+BRANCH_NAME=${BASH_REMATCH[2]}
+
+if [[ $BRANCH_NAME =~ $VALID_TICKET_1 ]]; then
+  exit 0
+fi
+
+if [[ $BRANCH_NAME =~ $VALID_TICKET_2 ]]; then
+  exit 0
+fi
+
+if [[ $BRANCH_NAME =~ $VALID_TICKET_3 ]]; then
+  exit 0
+fi
+
+if [[ $BRANCH_NAME =~ $VALID_TICKET_4 ]]; then
+  exit 0
+fi
+
+if [[ $BRANCH_NAME =~ $VALID_TASK_1 ]]; then
+  exit 0
+fi
+
+if [[ $BRANCH_NAME =~ $VALID_TASK_2 ]]; then
+  exit 0
+fi
+
+echo "The provided branch name is invalid. Branches names (minus the prefix) must start with CIV-nnnn or CIV-TASK."
+echo "Optionally, they can be followed by a dash symbol and a description, rigorously lowercase."
+echo ""
+echo "Please rename your branch. To rename your branch you can use the following command:"
+echo "  git branch -m <newname>"
+echo ""
+echo "Examples of valid branch names (with prefix):"
+echo "  ${BRANCH_PREFIX}/RIA-1234"
+echo "  ${BRANCH_PREFIX}/RIA-1234-updating-something"
+echo "  ${BRANCH_PREFIX}/SNI-1234"
+echo "  ${BRANCH_PREFIX}/SNI-1234-updating-something"
+echo "  ${BRANCH_PREFIX}/RIA-TASK-det-3456-some-external-change"
+echo "  renovate/something"
+echo ""
+echo "Examples of invalid branch names (with prefix):"
+echo "  ${BRANCH_PREFIX}/RIA-1234-"
+echo "  ${BRANCH_PREFIX}/ria-1234"
+echo "  ${BRANCH_PREFIX}/DET-3456-some-external-change"
+echo "  ${BRANCH_PREFIX}/RIA-1234-Some-Change-WIth-Uppercase-Letters-In-Branch-Name"
+echo "  $LOCAL_BRANCH"
+
+
+exit 1
+

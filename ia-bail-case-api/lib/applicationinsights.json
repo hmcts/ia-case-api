@@ -1,0 +1,6 @@
+{
+  "connectionString": "${file:/mnt/secrets/ia/app-insights-connection-string}",
+  "role": {
+    "name": "ia-bail-case-api"
+  }
+}

@@ -1,0 +1,51 @@
+{
+  "description": "Case Listing when listingEvent is relisting with enabled ref data feature toggle",
+  "request": {
+    "uri": "/bail/ccdAboutToSubmit",
+    "credentials": "AdminOfficer",
+    "input": {
+      "id": 87926,
+      "eventId": "caseListing",
+      "state": "applicationSubmitted",
+      "caseData": {
+        "template": "minimal-application-started.json",
+        "replacements": {
+          "listingEvent": "relisting",
+          "isBailsLocationReferenceDataEnabled": "Yes",
+          "refDataListingLocation": {
+            "value": {
+              "code": "386417",
+              "label": "Hatton Cross Tribunal Hearing Centre"
+            }
+          }
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-application-started.json",
+      "replacements": {
+        "listingEvent": "relisting",
+        "isBailsLocationReferenceDataEnabled": "Yes",
+        "currentCaseStateVisibleToJudge": "applicationSubmitted",
+        "currentCaseStateVisibleToAllUsers": "applicationSubmitted",
+        "currentCaseStateVisibleToHomeOffice": "applicationSubmitted",
+        "currentCaseStateVisibleToAdminOfficer": "applicationSubmitted",
+        "currentCaseStateVisibleToLegalRepresentative": "applicationSubmitted",
+        "refDataListingLocationDetail": {
+          "postcode": "TW14 0LS",
+          "epimms_id": "386417",
+          "site_name": "Hatton Cross Tribunal Hearing Centre",
+          "court_name": "Hatton Cross Tribunal Hearing Centre",
+          "court_status": "Open",
+          "court_address": "York House And Wellington House, 2-3 Dukes Green, Feltham, Middlesex",
+          "is_hearing_location": "Y",
+          "is_case_management_location": "Y"
+        }
+      }
+    }
+  }
+}

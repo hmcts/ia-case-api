@@ -1,0 +1,31 @@
+{
+  "description": "Create case flag should display Applicant party role for appellantLevelFlags",
+  "request": {
+    "uri": "/bail/ccdAboutToStart",
+    "credentials": "AdminOfficer",
+    "input": {
+      "id": 1111,
+      "eventId": "createFlag",
+      "state": "applicationSubmitted",
+      "caseData": {
+        "template": "minimal-application-started.json"
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-application-started.json",
+      "replacements": {
+        "appellantLevelFlags": {
+          "details": [],
+          "groupId": null,
+          "partyName": "FirstName LastName",
+          "roleOnCase": "Applicant",
+          "visibility": null
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "description": "Start the application by admin - append hearing centre from reference data",
+  "request": {
+    "uri": "/bail/ccdAboutToSubmit",
+    "credentials": "AdminOfficer",
+    "input": {
+      "id": 87921,
+      "eventId": "startApplication",
+      "state": "applicationStarted",
+      "caseData": {
+        "template": "minimal-application-started.json",
+        "replacements": {
+          "ircName": "Larne House",
+          "isBailsLocationReferenceDataEnabledFt": "Yes"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-application-started.json",
+      "replacements": {
+        "ircName": "Larne House",
+        "detentionFacility": "Larne House",
+        "hearingCentre": "glasgow",
+        "isBailsLocationReferenceDataEnabled": "Yes",
+        "hearingCentreRefData": {
+          "value": {
+            "code": "366559",
+            "label": "Atlantic Quay - Glasgow"
+          }
+        }
+      }
+    }
+  }
+}

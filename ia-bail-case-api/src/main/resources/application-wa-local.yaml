@@ -1,0 +1,15 @@
+logging.level:
+  root: info
+  org.springframework.web: debug
+  uk.gov.hmcts: debug
+
+prof.ref.data.url: http://wiremock
+prof.ref.data.path.org.users: /refdata/external/v1/organisations/users
+prof.ref.data.path.org.organisation: /refdata/external/v1/organisations
+
+idam:
+  ia_system_user:
+    scope: "openid profile authorities"
+
+launchDarkly:
+  sdkKey: ${IA_LAUNCH_DARKLY_SDK_KEY:sdk-key}

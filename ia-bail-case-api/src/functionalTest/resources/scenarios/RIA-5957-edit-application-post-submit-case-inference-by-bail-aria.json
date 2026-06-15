@@ -1,0 +1,30 @@
+{
+  "description": "Edit the application append previous application done by type ARIA",
+  "request": {
+    "uri": "/bail/ccdMidEvent?pageId=hasPreviousBailApplication",
+    "credentials": "AdminOfficer",
+    "input": {
+      "id": 1111,
+      "eventId": "editBailApplicationAfterSubmit",
+      "state": "applicationSubmitted",
+      "caseData": {
+        "template": "minimal-application-submitted.json",
+        "replacements": {
+          "hasPreviousBailApplication": "Yes",
+          "previousBailApplicationNumber": "HW/12345"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-application-submitted.json",
+      "replacements": {
+        "hasPreviousBailApplication": "Yes",
+        "previousApplicationDoneViaAria": "Yes"
+      }
+    }
+  }
+}
