@@ -960,19 +960,3 @@ public class HandlerUtils {
         asylumCase.write(SUBSCRIPTIONS, mutableSubscribers);
     }
 }
-
-    public static void updateSubscriptionsForNlr(AsylumCase asylumCase) {
-        if (asylumCase.read(HAS_NON_LEGAL_REP, YesOrNo.class).orElse(YesOrNo.NO).equals(NO)) {
-            return;
-        }
-        Optional<List<IdValue<Subscriber>>> subscribers = asylumCase.read(SUBSCRIPTIONS);
-        List<IdValue<Subscriber>> mutableSubscribers = new ArrayList<>(subscribers.orElse(emptyList()).stream()
-            .filter(subscriber -> subscriber.getValue().getSubscriber() != SubscriberType.SUPPORTER)
-            .toList());
-        NonLegalRepDetails nlrDetails = asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class)
-            .orElseThrow(() -> new IllegalStateException("Non-legal representative details are not present"));
-        mutableSubscribers.add(new IdValue<>(UUID.randomUUID().toString(), new Subscriber(SubscriberType.SUPPORTER,
-            nlrDetails.getEmailAddress(), YES, nlrDetails.getPhoneNumber(), NO)));
-        asylumCase.write(SUBSCRIPTIONS, mutableSubscribers);
-    }
-}

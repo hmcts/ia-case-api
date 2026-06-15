@@ -23,4 +23,9 @@ public class NonLegalRepDetails {
     @Setter
     private String address;
     private String phoneNumber;
+
+    public String getFullName() {
+        return givenNames + " " + familyName;
+    }
 }
+
