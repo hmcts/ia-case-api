@@ -1,0 +1,33 @@
+{
+  "description": "Edit the application to change the hearing centre (pre-submit REST call)",
+  "request": {
+    "uri": "/bail/ccdAboutToSubmit",
+    "credentials": "AdminOfficer",
+    "input": {
+      "id": 1111,
+      "eventId": "editBailApplication",
+      "state": "applicationStarted",
+      "caseData": {
+        "template": "minimal-application-started.json",
+        "replacements": {
+          "ircName": "Brookhouse",
+          "hearingCentre": "taylorHouse"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-application-started.json",
+      "replacements": {
+        "detentionFacility": "Brookhouse",
+        "ircName": "Brookhouse",
+        "hearingCentre": "taylorHouse",
+        "interpreterLanguages": null,
+        "hasFinancialCondSupporter": null
+      }
+    }
+  }
+}

@@ -1,0 +1,68 @@
+{
+  "description": "Change bail direction due date event - about to start with existing directions",
+  "request": {
+    "uri": "/bail/ccdAboutToStart",
+    "credentials": "AdminOfficer",
+    "input": {
+      "id": 1111,
+      "eventId": "changeBailDirectionDueDate",
+      "state": "applicationSubmitted",
+      "caseData": {
+        "template": "minimal-application-started.json",
+        "replacements": {
+          "directions": [
+            {
+              "id": "1",
+              "value": {
+                "sendDirectionDescription": "Second direction",
+                "sendDirectionList": "Applicant",
+                "dateOfCompliance": "2100-01-01",
+                "dateSent": "2022-01-01",
+                "dateTimeDirectionCreated": "2022-02-01T00:00:00",
+                "dateTimeDirectionModified": "2022-02-01T00:00:00",
+                "previousDates": []
+              }
+            },
+            {
+              "id": "2",
+              "value": {
+                "sendDirectionDescription": "First direction",
+                "sendDirectionList": "Applicant",
+                "dateOfCompliance": "2100-01-01",
+                "dateSent": "2022-01-01",
+                "dateTimeDirectionCreated": "2022-02-01T00:00:00",
+                "dateTimeDirectionModified": "2022-02-01T00:00:00",
+                "previousDates": []
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-application-started.json",
+      "replacements": {
+        "bailDirectionList": {
+          "value": {
+            "code": "Direction 2",
+            "label": "Direction 2"
+          },
+          "list_items": [
+            {
+              "code": "Direction 2",
+              "label": "Direction 2"
+            },
+            {
+              "code": "Direction 1",
+              "label": "Direction 1"
+            }
+          ]
+        }
+      }
+    }
+  }
+}

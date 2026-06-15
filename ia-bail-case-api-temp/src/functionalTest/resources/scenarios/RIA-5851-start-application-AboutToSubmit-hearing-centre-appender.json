@@ -1,0 +1,30 @@
+{
+  "description": "Start the application by admin - hearing centre appender",
+  "request": {
+    "uri": "/bail/ccdAboutToSubmit",
+    "credentials": "AdminOfficer",
+    "input": {
+      "id": 1111,
+      "eventId": "startApplication",
+      "state": "applicationStarted",
+      "caseData": {
+        "template": "minimal-application-started.json",
+        "replacements": {
+          "ircName": "Larne House"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-application-started.json",
+      "replacements": {
+        "ircName": "Larne House",
+        "detentionFacility": "Larne House",
+        "hearingCentre": "glasgow"
+      }
+    }
+  }
+}

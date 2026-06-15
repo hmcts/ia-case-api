@@ -1,0 +1,25 @@
+{
+  "description": "Edit the application confirmation (post-submit REST call)",
+  "request": {
+    "uri": "/bail/ccdAboutToSubmit",
+    "credentials": "AdminOfficer",
+    "input": {
+      "id": 1111,
+      "eventId": "editBailApplicationAfterSubmit",
+      "state": "applicationSubmitted",
+      "caseData": {
+        "template": "minimal-application-submitted.json"
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-application-submitted.json",
+      "replacements": {
+        "interpreterLanguages": null
+      }
+    }
+  }
+}

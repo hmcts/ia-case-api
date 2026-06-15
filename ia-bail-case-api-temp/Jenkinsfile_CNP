@@ -1,0 +1,127 @@
+#!groovy
+
+properties([
+  [$class: 'GithubProjectProperty', projectUrlStr: 'https://github.com/hmcts/ia-bail-case-api.git'],
+  pipelineTriggers([[$class: 'GitHubPushTrigger']])
+])
+
+@Library("Infrastructure")
+
+import uk.gov.hmcts.contino.AppPipelineDsl
+
+def type = "java"
+def product = "ia"
+def component = "bail-case-api"
+
+def secrets = [
+  'ia-${env}': [
+    secret('idam-client-id', 'IA_IDAM_CLIENT_ID'),
+    secret('idam-secret', 'IA_IDAM_SECRET'),
+    secret('s2s-secret', 'IA_S2S_SECRET'),
+    secret('s2s-microservice', 'IA_S2S_MICROSERVICE'),
+    secret('prof-ref-data-url', 'PROF_REF_DATA_URL'),
+    secret('docmosis-enabled', 'IA_DOCMOSIS_ENABLED'),
+    secret('em-stitching-enabled', 'IA_EM_STITCHING_ENABLED'),
+    secret('launch-darkly-sdk-key', 'LAUNCH_DARKLY_SDK_KEY'),
+    secret('app-insights-connection-string', 'app-insights-connection-string'),
+    secret('ia-config-validator-secret', 'IA_CONFIG_VALIDATOR_SECRET'),
+    secret('generic-docker-pact-broker-password', 'GENERIC_DOCKER_PACT_BROKER_YAML_PASS'),
+    secret('system-username', 'IA_SYSTEM_USERNAME'),
+    secret('system-password', 'IA_SYSTEM_PASSWORD'),
+
+    secret('test-caseofficer-username', 'TEST_CASEOFFICER_USERNAME'),
+    secret('test-caseofficer-password', 'TEST_CASEOFFICER_PASSWORD'),
+    secret('test-law-firm-a-username', 'TEST_LAW_FIRM_A_USERNAME'),
+    secret('test-law-firm-a-password', 'TEST_LAW_FIRM_A_PASSWORD'),
+    secret('test-adminofficer-username', 'TEST_ADMINOFFICER_USERNAME'),
+    secret('test-adminofficer-password', 'TEST_ADMINOFFICER_PASSWORD'),
+    secret('ia-redis-access-key', 'IA_REDIS_ACCESS_KEY'),
+    secret('ia-redis-connection-string', 'IA_REDIS_CONNECTION_STRING'),
+    secret('ia-redis-encryption-key', 'IA_REDIS_ENCRYPTION_KEY'),
+
+    secret('test-homeoffice-apc-username', 'TEST_HOMEOFFICE_APC_USERNAME'),
+    secret('test-homeoffice-apc-password', 'TEST_HOMEOFFICE_APC_PASSWORD'),
+    secret('test-homeoffice-lart-username', 'TEST_HOMEOFFICE_LART_USERNAME'),
+    secret('test-homeoffice-lart-password', 'TEST_HOMEOFFICE_LART_PASSWORD'),
+    secret('test-homeoffice-pou-username', 'TEST_HOMEOFFICE_POU_USERNAME'),
+    secret('test-homeoffice-pou-password', 'TEST_HOMEOFFICE_POU_PASSWORD'),
+    secret('test-homeoffice-generic-username', 'TEST_HOMEOFFICE_GENERIC_USERNAME'),
+    secret('test-homeoffice-generic-password', 'TEST_HOMEOFFICE_GENERIC_PASSWORD'),
+    secret('test-judge-x-username', 'TEST_JUDGE_X_USERNAME'),
+    secret('test-judge-x-password', 'TEST_JUDGE_X_PASSWORD'),
+    secret('test-citizen-username', 'TEST_CITIZEN_USERNAME'),
+    secret('test-citizen-password', 'TEST_CITIZEN_PASSWORD'),
+
+    secret('test-law-firm-share-case-a-username', 'TEST_LAW_FIRM_SHARE_CASE_A_USERNAME'),
+    secret('test-law-firm-share-case-a-password', 'TEST_LAW_FIRM_SHARE_CASE_A_PASSWORD'),
+
+    secret('test-law-firm-org-success-username', 'TEST_LAW_FIRM_ORG_SUCCESS_USERNAME'),
+    secret('test-law-firm-org-success-password', 'TEST_LAW_FIRM_ORG_SUCCESS_PASSWORD'),
+
+    secret('test-law-firm-org-deleted-username', 'TEST_LAW_FIRM_ORG_DELETED_USERNAME'),
+    secret('test-law-firm-org-deleted-password', 'TEST_LAW_FIRM_ORG_DELETED_PASSWORD'),
+
+    secret('test-homeoffice-bail-username', 'TEST_HOMEOFFICE_BAIL_USERNAME'),
+    secret('test-homeoffice-bail-password', 'TEST_HOMEOFFICE_BAIL_PASSWORD'),
+
+    secret('ia-bail-gov-notify-key', 'IA_BAIL_GOV_NOTIFY_KEY'),
+  ]
+]
+
+static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
+  [$class     : 'AzureKeyVaultSecret',
+   secretType : 'Secret',
+   name       : secretName,
+   version    : '',
+   envVariable: envVar
+  ]
+}
+
+withPipeline(type, product, component) {
+
+  env.IA_CASE_DOCUMENTS_API_URL = "http://ia-case-documents-api-aat.service.core-compute-aat.internal/"
+  env.IA_CASE_NOTIFICATIONS_API_URL = "http://ia-case-notifications-api-aat.service.core-compute-aat.internal/"
+  env.IA_TIMED_EVENT_SERVICE_URL = "http://ia-timed-event-service-aat.service.core-compute-aat.internal/"
+  env.IA_CASE_PAYMENTS_API_URL = "http://ia-case-payments-api-aat.service.core-compute-aat.internal/"
+  env.IA_HOME_OFFICE_INTEGRATION_API_URL = "http://ia-home-office-integration-api-aat.service.core-compute-aat.internal/"
+  env.IA_IDAM_REDIRECT_URI = "https://ia-bail-case-api-aat.service.core-compute-aat.internal/oauth2/callback"
+  env.CCD_URL = "http://ccd-data-store-api-aat.service.core-compute-aat.internal"
+  env.CCD_GW_URL = "http://dm-store-aat.service.core-compute-aat.internal"
+  env.DM_URL = "http://dm-store-aat.service.core-compute-aat.internal"
+  env.IDAM_URL = "https://idam-api.aat.platform.hmcts.net"
+  env.OPEN_ID_IDAM_URL = "https://idam-web-public.aat.platform.hmcts.net"
+  env.S2S_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
+  env.PACT_BROKER_FULL_URL = "https://pact-broker.platform.hmcts.net"
+  env.CASE_DOCUMENT_AM_URL = "http://ccd-case-document-am-api-aat.service.core-compute-aat.internal"
+  env.LOCATION_REF_DATA_URL = "http://rd-location-ref-api-aat.service.core-compute-aat.internal"
+
+  enableAksStagingDeployment()
+  disableLegacyDeployment()
+  loadVaultSecrets(secrets)
+
+  afterAlways('functionalTest:preview') {
+    publishHTML([
+      allowMissing         : true,
+      alwaysLinkToLastBuild: true,
+      keepAll              : true,
+      reportDir            : "build/reports/tests/functional",
+      reportFiles          : 'index.html',
+      reportName           : 'Functional Test Report'
+    ])
+    steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
+  }
+
+  afterSuccess('functionalTest:aat') {
+    steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
+    steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/**/*'
+  }
+
+  enableSlackNotifications('#ia-tech')
+
+  onMaster() {
+    enablePactAs([AppPipelineDsl.PactRoles.CONSUMER])
+  }
+  onPR() {
+    enablePactAs([AppPipelineDsl.PactRoles.CONSUMER])
+  }
+}

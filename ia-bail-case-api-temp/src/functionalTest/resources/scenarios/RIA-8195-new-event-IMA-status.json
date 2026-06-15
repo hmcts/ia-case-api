@@ -1,0 +1,24 @@
+{
+  "description": "RIA-8195 Admin submits IMA status update event",
+  "request": {
+    "uri": "/bail/ccdSubmitted",
+    "credentials": "AdminOfficer",
+    "input": {
+      "eventId": "imaStatus",
+      "state": "applicationSubmitted",
+      "id": 8195,
+      "caseData": {
+        "template": "minimal-application-submitted.json",
+        "replacements": {
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "confirmation": {
+      "header": "# IMA status updated",
+      "body": "## What happens next\n\nNo further action is required.\n\n"
+    }
+  }
+}

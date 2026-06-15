@@ -1,0 +1,23 @@
+{
+  "description": "RIA-5948 Upload bail summary confirmation by Home Office (post-submit REST call)",
+  "request": {
+    "uri": "/bail/ccdSubmitted",
+    "credentials": "HomeOfficeBail",
+    "input": {
+      "id": 1111,
+      "eventId": "uploadBailSummary",
+      "state": "applicationSubmitted",
+      "caseData": {
+        "template": "minimal-application-started.json"
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "confirmation": {
+      "header": "# You have uploaded the Bail Summary",
+      "body": "### What happens next\n\nThe bail summary is now available in the [documents tab](/cases/case-details/1111#Documents). The application will be decided at the hearing."
+    }
+  }
+}

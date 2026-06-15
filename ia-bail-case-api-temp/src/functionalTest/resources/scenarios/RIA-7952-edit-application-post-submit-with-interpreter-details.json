@@ -1,0 +1,68 @@
+{
+  "description": "Edit the application by admin - application submitted by LR appender(post-submit)",
+  "request": {
+    "uri": "/bail/ccdAboutToSubmit",
+    "credentials": "AdminOfficer",
+    "input": {
+      "id": 1111,
+      "eventId": "editBailApplicationAfterSubmit",
+      "state": "applicationSubmitted",
+      "caseData": {
+        "template": "minimal-application-submitted.json",
+        "replacements": {
+          "interpreterYesNo": "Yes",
+          "applicantInterpreterLanguageCategory": [
+            "signLanguageInterpreter"
+          ],
+          "applicantInterpreterSignLanguage": {
+            "languageRefData": {
+              "value": {
+                "code": "igbo",
+                "label": "igbo"
+              },
+              "list_items": [
+                {
+                  "code": "igbo",
+                  "label": "igbo"
+                }
+              ]
+            },
+            "languageManualEntry": "No",
+            "languageManualEntryDescription": ""
+          }
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-application-submitted.json",
+      "replacements": {
+        "isAdmin": "Yes",
+        "interpreterYesNo": "Yes",
+        "applicantInterpreterLanguageCategory": [
+          "signLanguageInterpreter"
+        ],
+        "applicantInterpreterSignLanguage": {
+          "languageRefData": {
+            "value": {
+              "code": "igbo",
+              "label": "igbo"
+            },
+            "list_items": [
+              {
+                "code": "igbo",
+                "label": "igbo"
+              }
+            ]
+          },
+          "languageManualEntry": "No",
+          "languageManualEntryDescription": null
+        },
+        "hasFinancialCondSupporter": null
+      }
+    }
+  }
+}

@@ -1,0 +1,290 @@
+server:
+  port: ${PORT:8686}
+
+management:
+  endpoint:
+    health:
+      show-details: "always"
+      status:
+        http-mapping:
+          UP: 200
+          DOWN: 503
+  endpoints:
+    web:
+      base-path: "/"
+      exposure:
+        include: health, info, ping
+  health:
+    redis:
+      enabled: false
+    group:
+      readiness:
+        include: ping
+      liveness:
+        include: ping
+  services:
+    idam:
+      uri: ${IDAM_URL:http://127.0.0.1:4501}/health
+      response: '"status":"UP"'
+    documentsApi:
+      uri: ${IA_CASE_DOCUMENTS_API_URL:http://127.0.0.1:8092}/health
+      response: '"status":"UP"'
+    notificationApi:
+      uri: ${IA_CASE_NOTIFICATIONS_API_URL:http://127.0.0.1:8093}/health
+      response: '"status":"UP"'
+    serviceAuth:
+      uri: ${S2S_URL:http://127.0.0.1:4502}/health
+      response: '"status":"UP"'
+  endpoint.health.probes.enabled: true
+
+#If you use a database then uncomment below lines and update db properties accordingly
+spring:
+  application:
+    name: Immigration & Asylum bail case API
+  main:
+    allow-bean-definition-overriding: true
+  config:
+    import: "optional:configtree:/mnt/secrets/ia/"
+  security:
+    oauth2:
+      client:
+        provider:
+          oidc:
+            issuer-uri: ${OPEN_ID_IDAM_URL:http://127.0.0.1:5000}/o
+        registration:
+          oidc:
+            client-id: ${IA_IDAM_CLIENT_ID:ia}
+            client-secret: ${IA_IDAM_SECRET:something}
+      resourceserver:
+        jwt:
+          jwk-set-uri: ${OPEN_ID_IDAM_URL:http://127.0.0.1:5000}/o/jwks
+  profiles:
+    include:
+      - hearingcentre-mapping
+  data:
+    redis:
+      url: ${IA_REDIS_CONNECTION_STRING:}
+      secret: ${IA_REDIS_ACCESS_KEY:}
+      encryption:
+        key: ${IA_REDIS_ENCRYPTION_KEY:}
+      ssl:
+        enabled: true
+
+security:
+  anonymousPaths:
+    - "/"
+    - "/health"
+    - "/health/liveness"
+    - "/health/readiness"
+    - "/loggers/**"
+    - "/swagger-ui/**"
+    - "/swagger-resources/**"
+    - "/v3/api-docs/**"
+    - "/favicon.ico"
+  authorisedRoles:
+    - "caseworker-ia"
+  roleEventAccess:
+    caseworker-ia-system:
+      - "clearLegalRepresentativeDetails"
+      - "caseListing"
+      - "saveNotificationsToDataBail"
+      - "migrateWaBailApplication"
+      - "updateInterpreterWaTask"
+      - "rollbackMigration"
+    caseworker-caa:
+      - "nocRequest"
+      - "clearLegalRepresentativeDetails"
+      - "saveNotificationsToDataBail"
+    caseworker-approver:
+      - "applyNocDecision"
+      - "saveNotificationsToDataBail"
+    caseworker-ia-rparobot:
+      - "addCaseNote"
+    caseworker-ia-legalrep-solicitor:
+      - "startApplication"
+      - "submitApplication"
+      - "uploadDocuments"
+      - "editBailApplication"
+      - "makeNewApplication"
+      - "viewPreviousApplications"
+      - "stopLegalRepresenting"
+      - "updateBailLegalRepDetails"
+      - "nocRequest"
+      - "nocRequestBail"
+      - "saveNotificationsToDataBail"
+    caseworker-ia-admofficer:
+      - "startApplication"
+      - "submitApplication"
+      - "recordTheDecision"
+      - "addCaseNote"
+      - "sendBailDirection"
+      - "changeBailDirectionDueDate"
+      - "uploadSignedDecisionNotice"
+      - "uploadSignedDecisionNoticeConditionalGrant"
+      - "moveApplicationToDecided"
+      - "endApplication"
+      - "uploadDocuments"
+      - "editBailDocuments"
+      - "editBailApplication"
+      - "makeNewApplication"
+      - "editBailApplicationAfterSubmit"
+      - "viewPreviousApplications"
+      - "removeBailLegalRepresentative"
+      - "createBailCaseLink"
+      - "maintainBailCaseLinks"
+      - "createFlag"
+      - "manageFlags"
+      - "confirmDetentionLocation"
+      - "updateInterpreterDetails"
+      - "updateInterpreterBookingStatus"
+      - "caseListing"
+      - "imaStatus"
+      - "forceCaseToHearing"
+      - "changeTribunalCentre"
+      - "saveNotificationsToDataBail"
+      - "uploadHearingRecording"
+      - "migrateWaBailApplication"
+    caseworker-ia-homeofficebail:
+      - "startApplication"
+      - "uploadBailSummary"
+      - "submitApplication"
+      - "uploadDocuments"
+      - "editBailApplication"
+      - "makeNewApplication"
+      - "viewPreviousApplications"
+      - "saveNotificationsToDataBail"
+    caseworker-ia-homeofficepou:
+      - "startApplication"
+      - "uploadBailSummary"
+      - "submitApplication"
+      - "uploadDocuments"
+      - "editBailApplication"
+      - "makeNewApplication"
+      - "viewPreviousApplications"
+      - "saveNotificationsToDataBail"
+    caseworker-ia-iacjudge:
+      - "recordTheDecision"
+      - "addCaseNote"
+      - "sendBailDirection"
+      - "changeBailDirectionDueDate"
+      - "uploadSignedDecisionNotice"
+      - "uploadSignedDecisionNoticeConditionalGrant"
+      - "moveApplicationToDecided"
+      - "endApplication"
+      - "uploadDocuments"
+      - "editBailDocuments"
+      - "viewPreviousApplications"
+      - "createBailCaseLink"
+      - "maintainBailCaseLinks"
+      - "createFlag"
+      - "manageFlags"
+      - "forceCaseToHearing"
+      - "uploadHearingRecording"
+      - "saveNotificationsToDataBail"
+    caseworker-ia-internal:
+      - "regenerateBailSubmissionDocument"
+
+### dependency configuration
+ccdGatewayUrl: ${CCD_GW_URL:http://localhost:3453}
+core_case_data_api_url: ${CCD_URL:http://127.0.0.1:4452}
+document_management.url: ${DM_URL:http://127.0.0.1:4506}
+case_document_am.url: ${CASE_DOCUMENT_AM_URL:http://127.0.0.1:4455}
+
+documentsApi:
+  endpoint: ${IA_CASE_DOCUMENTS_API_URL:http://127.0.0.1:8092}
+  aboutToSubmitPath: "/bail/ccdAboutToSubmit"
+  aboutToStartPath: "/bail/ccdAboutToStart"
+
+notificationsApi:
+  endpoint: ${IA_CASE_NOTIFICATIONS_API_URL:http://127.0.0.1:8093}
+  aboutToSubmitPath: "/bail/ccdAboutToSubmit"
+  ccdSubmittedPath: "/bail/ccdSubmitted"
+
+
+feign:
+  hystrix:
+    enabled: true
+  client:
+    config:
+      default:
+        connectTimeout: 5000
+        readTimeout: 5000
+        loggerLevel: full
+
+
+hystrix:
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 5000
+
+
+#OpenID
+idam:
+  baseUrl: ${OPEN_ID_IDAM_URL:http://127.0.0.1:5000}
+  redirectUrl: ${IA_IDAM_REDIRECT_URI:http://localhost:3002/oauth2/callback}
+  system:
+    username: ${IA_SYSTEM_USERNAME:ia-system-user@fake.hmcts.net}
+    password: ${IA_SYSTEM_PASSWORD:something}
+  scope: "openid profile authorities acr roles create-user manage-user search-user"
+  s2s-auth:
+    totp_secret: ${IA_S2S_SECRET:AAAAAAAAAAAAAAAC}
+    microservice: ${IA_S2S_MICROSERVICE:ia}
+    url: ${S2S_URL:http://127.0.0.1:4502}
+  s2s-authorised:
+    services: ${IA_S2S_AUTHORIZED_SERVICES:ccd,ccd_data,ccd_gw,ccd_ps,iac}
+  ia_system_user:
+    username: ${IA_SYSTEM_USERNAME:system-user}
+    password: ${IA_SYSTEM_PASSWORD:system-password}
+    scope: "openid profile authorities acr roles create-user manage-user search-user"
+
+prof.ref.data.url: ${PROF_REF_DATA_URL:http://localhost:8991}
+prof.ref.data.path.org.users: ${PROF_REF_DATA_ORG_USERS_PATH:/refdata/external/v1/organisations/users}
+prof.ref.data.path.org.organisation: ${PROF_REF_DATA_ORG_ORGANISATION_PATH:/refdata/external/v1/organisations}
+location.ref.data.url: ${LOCATION_REF_DATA_URL:http://localhost:8991}
+
+timed-event-service:
+  url: ${IA_TIMED_EVENT_SERVICE_URL:http://127.0.0.1:8095}
+
+featureFlag:
+  isDocumentGenerationEnabled: ${IA_DOCUMENT_GENERATION_ENABLED:true}
+  timedEventServiceEnabled: ${IA_TIMED_EVENT_SERVICE_ENABLED:false}
+
+saveNotificationsDataJob:
+  scheduleAtHour: ${SAVE_NOTIFICATIONS_DATA_SCHEDULE_HOUR:23}
+  scheduleMaxMinutes: ${SAVE_NOTIFICATIONS_DATA_SCHEDULE_MAX_MINUTES:50}
+launchDarkly:
+  sdkKey: ${LAUNCH_DARKLY_SDK_KEY:sdk-key}
+  connectionTimeout: 5000
+  socketTimeout: 5000
+
+bailRefusalWithInDays: 28
+
+core_case_data_api_supplementary_data_path: "/cases/{caseId}/supplementary-data"
+hmcts_service_id: "BFA1"
+
+core_case_data_api_assignments_url: ${CCD_URL:http://127.0.0.1:4452}
+assign_case_access_api_url: ${AAC_URL:http://127.0.0.1:4454}
+core_case_data_api_assignments_path: "/case-users"
+assign_case_access_api_assignments_path: "/case-assignments"
+apply_noc_access_api_assignments_path: "/noc/check-noc-approval"
+
+ia:
+  config:
+    validator:
+      secret: ${IA_CONFIG_VALIDATOR_SECRET:}
+
+
+commonData:
+  api:
+    url: ${COMMON_DATA_API:http://localhost:8991}
+
+govUkHolidays:
+  url: https://www.gov.uk/
+
+govnotify:
+  baseUrl: "https://api.notifications.service.gov.uk"
+  bail:
+    key: ${IA_BAIL_GOV_NOTIFY_KEY:gov-bail-key}

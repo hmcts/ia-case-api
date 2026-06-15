@@ -1,0 +1,35 @@
+{
+  "description": "Make new application by Home Office about to submit - append HO user role",
+  "request": {
+    "uri": "/bail/ccdAboutToSubmit",
+    "credentials": "HomeOfficeGeneric",
+    "input": {
+      "id": 1111,
+      "eventId": "makeNewApplication",
+      "state": "decisionDecided",
+      "caseData": {
+        "template": "minimal-application-started.json",
+        "replacements": {
+          "applicationSubmittedBy": "Home Office"
+        }
+      },
+      "caseDataBefore": {
+        "template": "minimal-application-started.json"
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "state": "APPLICATION_SUBMITTED",
+    "caseData": {
+      "template": "minimal-application-make-new-application.json",
+      "replacements": {
+        "applicationSubmittedBy": "Home Office",
+        "isAdmin": "No",
+        "isLegalRep": "No",
+        "isHomeOffice": "Yes"
+      }
+    }
+  }
+}

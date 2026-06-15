@@ -1,0 +1,23 @@
+{
+  "description": "Start the application (post-submit REST call)",
+  "request": {
+    "uri": "/bail/ccdSubmitted",
+    "credentials": "AdminOfficer",
+    "input": {
+      "id": 1111,
+      "eventId": "startApplication",
+      "state": "applicationStarted",
+      "caseData": {
+        "template": "minimal-application-started.json"
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "confirmation": {
+      "header": "# You have saved this application",
+      "body": "contains(### Do this next\n\nIf you're ready to submit your application, select 'Submit your application' in the 'Next step' dropdown list from your case details page.\n\n#### Not ready to submit your application yet?\nYou can return to the case details page to make changes from the ‘Next step’ dropdown list.)"
+    }
+  }
+}

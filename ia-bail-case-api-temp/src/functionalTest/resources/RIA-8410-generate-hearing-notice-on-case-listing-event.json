@@ -1,0 +1,46 @@
+{
+  "description": "RIA-8410 Generate hearing notice on case listing event",
+  "disabled": "false",
+  "request": {
+    "uri": "/bail/ccdAboutToSubmit",
+    "credentials": "AdminOfficer",
+    "input": {
+      "id": 8410,
+      "eventId": "caseListing",
+      "state": "bailSummaryUploaded",
+      "caseData": {
+        "template": "minimal-application-submitted.json",
+        "replacements": {
+          "listingEvent": "relisting"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-application-submitted.json",
+      "replacements": {
+        "listingEvent": "relisting",
+        "hearingDocuments":
+        [
+          {
+            "id": "1",
+            "value": {
+              "document": {
+                "document_url": "$/http:\/\/dm-store:8080\/documents\/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/",
+                "document_binary_url": "$/http://dm-store:8080/documents/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\/binary/",
+                "document_filename": "8410-LastName-hearing-notice.PDF"
+              },
+              "description":"",
+              "dateUploaded": "{$TODAY}",
+              "tag":"bailCaseListing",
+              "suppliedBy":""
+            }
+          }
+        ]
+      }
+    }
+  }
+}
