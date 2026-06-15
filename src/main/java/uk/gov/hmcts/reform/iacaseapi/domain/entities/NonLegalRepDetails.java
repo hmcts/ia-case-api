@@ -1,11 +1,13 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import net.minidev.json.annotate.JsonIgnore;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.AddressUk;
 
 @EqualsAndHashCode
@@ -13,6 +15,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.AddressUk;
 @Getter
 @Builder
 @AllArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class NonLegalRepDetails {
     private String idamId;
     private String emailAddress;
@@ -24,6 +27,7 @@ public class NonLegalRepDetails {
     private String address;
     private String phoneNumber;
 
+    @JsonIgnore
     public String getFullName() {
         return givenNames + " " + familyName;
     }
