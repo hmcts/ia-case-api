@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import javax.crypto.SecretKey;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.io.ClassPathResource;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
@@ -37,11 +38,14 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DirectionAppender;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationBasedFeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.PartyIdService;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.CryptoUtils;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.OrganisationPolicy;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
@@ -83,7 +87,12 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HELP_WITH_FEES_OPTION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HELP_WITH_FEES_REFERENCE_NUMBER;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HELP_WITH_FEES_REF_NUMBER;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_APPELLANTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_APPELLANT_CLAIM_DATE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_APPELLANT_DECISION_DATE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_APPELLANT_DECISION_LETTER_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_SEARCH_STATUS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_WAIVER_DOCUMENT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IN_CAMERA_COURT_DECISION_FOR_DISPLAY;
@@ -863,13 +872,34 @@ public class HandlerUtils {
     // Home Office endpoint or the old  applicationStatus/getBySearchParameters  Home Office endpoint
     public static boolean hasAppellantDataBeenValidated(AsylumCase asylumCase) {
         // Evidence from new validation endpoint
-        boolean validationDone = !asylumCase.read(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, String.class).orElse("").equals("");
+        boolean validationDone = asylumCase.read(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, String.class).isPresent();
         // Evidence from old validation endpoint
-        String homeOfficeSearchStatus = asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class).orElse("");
-        // DON'T DO THIS!  Apparently we must allow the case to proceed even if it says "NO_MATCH"
-        // String homeOfficeSearchNoMatch = asylumCase.read(HOME_OFFICE_SEARCH_NO_MATCH, String.class).orElse("");
-        // return validationDone || (homeOfficeSearchStatus.equals("SUCCESS") && !homeOfficeSearchNoMatch.equals("NO_MATCH"));
-        return validationDone || homeOfficeSearchStatus.equals("SUCCESS");
+        boolean homeOfficeSearchStatusSuccess = asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class).map(status -> status.equals("SUCCESS")).orElse(false);
+        return validationDone || homeOfficeSearchStatusSuccess;
+    }
+
+    // String encryption (for sensitive data)
+    public static String encrypt(String textString) {
+        String base64TextString = Base64.getEncoder().encodeToString(textString.getBytes(StandardCharsets.UTF_8));
+        SecretKey key = CryptoUtils.createKey("MDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNkZWY="); // TODO: retrieve Base64-encoded secret from Azure Vault
+        return CryptoUtils.encrypt(base64TextString, key);
+    }
+
+    // String decryption (for sensitive data)
+    public static String decrypt(String encryptedString) {
+        SecretKey key = CryptoUtils.createKey("MDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNkZWY="); // TODO: retrieve Base64-encoded secret from Azure Vault
+        String base64TextString = CryptoUtils.decrypt(encryptedString, key);
+        return new String(Base64.getDecoder().decode(base64TextString), StandardCharsets.UTF_8);
+    }
+
+    // Remove validation fields to force another request to the Home Office validation API
+    public static void removeValidationFields(AsylumCase asylumCase) {
+        asylumCase.remove(HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS);
+        asylumCase.remove(HOME_OFFICE_APPELLANT_CLAIM_DATE);
+        asylumCase.remove(HOME_OFFICE_APPELLANT_DECISION_DATE);
+        asylumCase.remove(HOME_OFFICE_APPELLANT_DECISION_LETTER_DATE);
+        asylumCase.remove(HOME_OFFICE_APPELLANTS);
+        asylumCase.remove(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY);
     }
 
     public static void setSponsorDetailsFromNlrIfSame(AsylumCase asylumCase) {
@@ -914,6 +944,22 @@ public class HandlerUtils {
         asylumCase.clear(IS_SPONSOR_SAME_AS_NLR);
         asylumCase.clear(HAS_NON_LEGAL_REP_JOINED);
     }
+
+    public static void updateSubscriptionsForNlr(AsylumCase asylumCase) {
+        if (asylumCase.read(HAS_NON_LEGAL_REP, YesOrNo.class).orElse(YesOrNo.NO).equals(NO)) {
+            return;
+        }
+        Optional<List<IdValue<Subscriber>>> subscribers = asylumCase.read(SUBSCRIPTIONS);
+        List<IdValue<Subscriber>> mutableSubscribers = new ArrayList<>(subscribers.orElse(emptyList()).stream()
+            .filter(subscriber -> subscriber.getValue().getSubscriber() != SubscriberType.SUPPORTER)
+            .toList());
+        NonLegalRepDetails nlrDetails = asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class)
+            .orElseThrow(() -> new IllegalStateException("Non-legal representative details are not present"));
+        mutableSubscribers.add(new IdValue<>(UUID.randomUUID().toString(), new Subscriber(SubscriberType.SUPPORTER,
+            nlrDetails.getEmailAddress(), YES, nlrDetails.getPhoneNumber(), NO)));
+        asylumCase.write(SUBSCRIPTIONS, mutableSubscribers);
+    }
+}
 
     public static void updateSubscriptionsForNlr(AsylumCase asylumCase) {
         if (asylumCase.read(HAS_NON_LEGAL_REP, YesOrNo.class).orElse(YesOrNo.NO).equals(NO)) {
