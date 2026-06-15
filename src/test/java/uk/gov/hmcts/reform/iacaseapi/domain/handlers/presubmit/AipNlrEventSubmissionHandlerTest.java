@@ -67,6 +67,7 @@ class AipNlrEventSubmissionHandlerTest {
     private AipNlrEventSubmissionHandler handler;
 
     private final String forenameAndSurname = "John Doe";
+
     @BeforeEach
     void setUp() {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
