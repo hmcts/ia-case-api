@@ -22,7 +22,7 @@
   "expectation": {
     "status": 200,
     "errors": [
-      "This is an appellant in person case. You cannot select legal representative as the recipient."
+      "This is an Appellant in Person (AiP) manual appeal. You cannot select 'Legal Representative' or 'Both' as a recipient."
     ],
     "caseData": {
       "template": "minimal-appeal-submitted.json"
