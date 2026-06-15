@@ -75,7 +75,7 @@ public class AipNlrEventSubmissionHandler implements PreSubmitCallbackHandler<As
         List<String> docList = editDocsAuditLogService.getUploadedOrGeneratedDocumentNames(callback);
         String caseNoteDescription = "Non-legal representative submitted the event on behalf of the appellant.";
         if (!docList.isEmpty()) {
-            caseNoteDescription += "\nThe following documents were uploaded or generated as a result of this event: "
+            caseNoteDescription += "\nThe following documents were uploaded or generated as a result of this event:\n"
                 + String.join(",\n", docList);
         }
         return new CaseNote(
