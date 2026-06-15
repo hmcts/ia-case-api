@@ -114,7 +114,6 @@ class RecordRemissionDecisionStateHandlerTest {
 
     @ParameterizedTest
     @MethodSource("typeRemissionOptionAndHelpWithFees")
-//    @EnumSource(value = AppealType.class, names = { "EA", "HU", "EU", "AG" })
     void should_return_appeal_submitted_state_on_remission_approved_for_ea_hu_eu_ag(AppealType type, State state, State newState) {
         // and service-request tab should be hidden (no payment to take care of)
         // and markAppealAsPaid should be hidden (no payment to take care of, case state already sorted)
@@ -314,6 +313,7 @@ class RecordRemissionDecisionStateHandlerTest {
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
     }
+
     private static Stream<Arguments> typeRemissionOptionAndHelpWithFees() {
         return Stream.of(
                 Arguments.of(EA, PENDING_PAYMENT, APPEAL_SUBMITTED),
