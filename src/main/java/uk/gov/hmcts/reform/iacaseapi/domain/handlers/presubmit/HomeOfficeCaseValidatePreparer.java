@@ -88,8 +88,7 @@ public class HomeOfficeCaseValidatePreparer implements PreSubmitCallbackHandler<
             boolean isNotificationTurnedOff = HandlerUtils.isNotificationTurnedOff(asylumCase);
             // Don't invoke the old  applicationStatus/getBySearchParameters  Home Office endpoint if the new  applications/v1/{id}  endpoint
             // has already been called
-            boolean validationDone = !asylumCase.read(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, String.class).orElse("").equals("");
-
+            boolean validationDone = asylumCase.read(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, String.class).isPresent();
             if (appealTypeEnabled && !isAgeAssessmentAppeal && !isEjpCase && !isNotificationTurnedOff && !validationDone) {
                 asylumCase = homeOfficeApi.aboutToStart(callback);
             }
