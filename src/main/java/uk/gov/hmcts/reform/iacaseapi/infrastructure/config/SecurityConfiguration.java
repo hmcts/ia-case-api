@@ -8,6 +8,7 @@ import java.util.*;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -56,6 +57,7 @@ public class SecurityConfiguration {
     }
 
     @Bean
+    @Order(2)
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
         JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
@@ -81,6 +83,24 @@ public class SecurityConfiguration {
 
         return http.build();
     }
+
+    @Bean
+    @Order(1)
+    public SecurityFilterChain supplementaryDetailsFilterChain(HttpSecurity http) throws Exception {
+        http
+            .securityMatcher("/supplementary-details")
+            .addFilterBefore(serviceAuthFiler, AbstractPreAuthenticatedProcessingFilter.class)
+            .sessionManagement(management -> management.sessionCreationPolicy(STATELESS))
+            .csrf(csrf -> csrf.disable())
+            .formLogin(login -> login.disable())
+            .logout(logout -> logout.disable())
+            .authorizeHttpRequests(requests -> requests
+                .anyRequest().permitAll()
+            );
+
+        return http.build();
+    }
+
 
     @Bean
     public AuthorizedRolesProvider authorizedRolesProvider() {
