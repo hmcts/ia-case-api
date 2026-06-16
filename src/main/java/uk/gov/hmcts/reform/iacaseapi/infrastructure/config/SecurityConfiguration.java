@@ -9,6 +9,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -72,7 +73,9 @@ public class SecurityConfiguration {
             .csrf(csrf -> csrf.disable())
             .formLogin(login -> login.disable())
             .logout(logout -> logout.disable())
-            .authorizeHttpRequests(requests -> requests.anyRequest().authenticated())
+            .authorizeHttpRequests(requests -> requests
+                .requestMatchers(HttpMethod.POST, "/supplementary-details").permitAll()
+                .anyRequest().authenticated())
             .oauth2ResourceServer(server -> server
                 .jwt(jwt -> jwt
                     .jwtAuthenticationConverter(jwtAuthenticationConverter)
