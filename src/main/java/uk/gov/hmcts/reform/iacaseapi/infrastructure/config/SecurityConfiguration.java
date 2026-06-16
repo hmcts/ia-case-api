@@ -31,8 +31,8 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.SpringAuthorizedRol
 @EnableMethodSecurity(securedEnabled = true)
 public class SecurityConfiguration {
 
-    private final List<String> anonymousPaths = new ArrayList<>();
-    private final Map<String, List<Event>> roleEventAccess = new HashMap<>();
+    private List<String> anonymousPaths = new ArrayList<>();
+    private Map<String, List<Event>> roleEventAccess = new HashMap<>();
 
     private final Converter<Jwt, Collection<GrantedAuthority>> idamAuthoritiesConverter;
     private final ServiceAuthFilter serviceAuthFiler;
@@ -44,7 +44,11 @@ public class SecurityConfiguration {
     }
 
     public List<String> getAnonymousPaths() {
-        return anonymousPaths;
+        return Collections.unmodifiableList(anonymousPaths);
+    }
+
+    public void setAnonymousPaths(List<String> anonymousPaths) {
+        this.anonymousPaths = anonymousPaths;
     }
 
     @Bean
@@ -96,7 +100,11 @@ public class SecurityConfiguration {
     }
 
     public Map<String, List<Event>> getRoleEventAccess() {
-        return roleEventAccess;
+        return Collections.unmodifiableMap(roleEventAccess);
+    }
+
+    public void setRoleEventAccess(Map<String, List<Event>> roleEventAccess) {
+        this.roleEventAccess = roleEventAccess;
     }
 
 }
