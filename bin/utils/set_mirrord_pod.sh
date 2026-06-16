@@ -23,6 +23,7 @@ get_latest_pod() {
 }
 
 POD_NAME=$(get_latest_pod)
+FULL_MESSAGE=1
 
 if [[ -z "$POD_NAME" ]]; then
   echo "No pods found for prefix $PREFIX"
@@ -49,10 +50,16 @@ while true; do
   READY=$(kubectl get pod "$POD_NAME" -n ia -o jsonpath='{.status.containerStatuses[0].ready}')
 
   if [[ "$PHASE" != "Running" || "$READY" != "true" ]]; then
-    echo "Pod $POD_NAME not ready (phase=$PHASE, ready=$READY)"
+    if (( FULL_MESSAGE )); then
+      echo -n "Pod $POD_NAME not ready (phase=$PHASE, ready=$READY)"
+      FULL_MESSAGE=0
+    else
+      echo -n "  ."
+    fi
     sleep 3
     continue
   fi
+  echo
 
   NODE=$(kubectl get pod "$POD_NAME" -n ia -o jsonpath='{.spec.nodeName}')
 
@@ -73,6 +80,7 @@ while true; do
       if [[ -n "$NEW_POD" && "$NEW_POD" != "$POD_NAME" ]]; then
         POD_NAME="$NEW_POD"
         echo "Switched to new pod: $POD_NAME"
+        FULL_MESSAGE=1
         break
       fi
 
