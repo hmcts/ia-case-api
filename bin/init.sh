@@ -18,8 +18,8 @@ pushd $(dirname "$0")/.. > /dev/null
 
 slug="$product_name-$component_name"
 
-declare -a files_with_port=(.env Dockerfile README.md src/main/resources/application.yaml charts/ia-bail-case-api/values.yaml)
-declare -a files_with_slug=(build.gradle docker-compose.yml Dockerfile README.md ./infrastructure/main.tf ./src/main/java/uk/gov/hmcts/reform/demo/controllers/RootController.java charts/ia-bail-case-api/Chart.yaml)
+declare -a files_with_port=(.env Dockerfile README.md src/main/resources/application.yaml charts/ia-case-api/values.yaml)
+declare -a files_with_slug=(build.gradle docker-compose.yml Dockerfile README.md ./infrastructure/main.tf ./src/main/java/uk/gov/hmcts/reform/demo/controllers/RootController.java charts/ia-case-api/Chart.yaml)
 
 # Replace image repo
 for i in "charts/ia-bail-case-api/values.yaml"
