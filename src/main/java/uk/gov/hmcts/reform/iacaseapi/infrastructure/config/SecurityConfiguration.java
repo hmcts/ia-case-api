@@ -71,9 +71,7 @@ public class SecurityConfiguration {
             .csrf(csrf -> csrf.disable())
             .formLogin(login -> login.disable())
             .logout(logout -> logout.disable())
-            .authorizeHttpRequests(requests -> requests
-                .requestMatchers(HttpMethod.POST, "/supplementary-details").permitAll()
-                .anyRequest().authenticated())
+            .authorizeHttpRequests(requests -> requests.anyRequest().authenticated())
             .oauth2ResourceServer(server -> server
                 .jwt(jwt -> jwt
                     .jwtAuthenticationConverter(jwtAuthenticationConverter)
