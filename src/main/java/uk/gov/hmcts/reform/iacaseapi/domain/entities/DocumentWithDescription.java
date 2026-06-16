@@ -4,6 +4,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.Optional;
 import lombok.EqualsAndHashCode;
+import lombok.Setter;
 import lombok.ToString;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 
@@ -12,6 +13,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 public class DocumentWithDescription {
 
     private Optional<Document> document = Optional.empty();
+    @Setter
     private Optional<String> description = Optional.empty();
 
     private DocumentWithDescription() {
