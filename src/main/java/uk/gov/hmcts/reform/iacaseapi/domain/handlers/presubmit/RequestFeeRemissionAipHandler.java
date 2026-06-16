@@ -9,7 +9,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.EXCEPTIONAL_CIRCUMSTANCES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FEE_AMOUNT_GBP;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FEE_REMISSION_TYPE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAS_PREVIOUS_REMISSION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HELP_WITH_FEES_OPTION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HELP_WITH_FEES_REFERENCE_NUMBER;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HELP_WITH_FEES_REF_NUMBER;
@@ -120,12 +119,11 @@ public class RequestFeeRemissionAipHandler implements PreSubmitCallbackHandler<A
         AsylumCase asylumCaseBefore = callback.getCaseDetailsBefore().map(CaseDetails::getCaseData).orElse(asylumCase);
         final PreSubmitCallbackResponse<AsylumCase> callbackResponse = new PreSubmitCallbackResponse<>(asylumCase);
 
-        boolean hasPreviousRemission = asylumCase.read(HAS_PREVIOUS_REMISSION, YesOrNo.class).orElse(YesOrNo.NO).equals(YesOrNo.YES);
         RemissionDecision remissionDecision = asylumCase.read(REMISSION_DECISION, RemissionDecision.class).orElse(null);
 
-        if (hasPreviousRemission && remissionDecision != null) {
-            List<IdValue<RemissionDetails>> remissions = appendPreviousRemissionDetails(asylumCaseBefore);
-            asylumCase.write(PREVIOUS_REMISSION_DETAILS, remissions);
+        if (remissionDecision != null) {
+            List<IdValue<RemissionDetails>> previousRemissionDetails = appendPreviousRemissionDetails(asylumCaseBefore);
+            asylumCase.write(PREVIOUS_REMISSION_DETAILS, previousRemissionDetails);
         }
         asylumCase.write(IS_LATE_REMISSION_REQUEST, YesOrNo.YES);
         UserRoleLabel currentUser = userDetailsHelper.getLoggedInUserRoleLabel(userDetails);
@@ -209,17 +207,27 @@ public class RequestFeeRemissionAipHandler implements PreSubmitCallbackHandler<A
             .orElse(null);
 
         if (UserRoleLabel.CITIZEN.equals(previousRemissionRequestedBy)) {
-            previousRemissionDetails = appendPreviousRemissionDetailsAppellant(asylumCase, previousRemissionDetails, existingRemissionDetails);
+            previousRemissionDetails = appendPreviousRemissionDetailsAppellant(
+                asylumCase,
+                previousRemissionDetails,
+                existingRemissionDetails
+            );
         } else {
-            previousRemissionDetails = appendPreviousRemissionDetailsNonAppellant(asylumCase, previousRemissionDetails, existingRemissionDetails);
+            previousRemissionDetails = appendPreviousRemissionDetailsNonAppellant(
+                asylumCase,
+                previousRemissionDetails,
+                existingRemissionDetails
+            );
         }
         appendPreviousRemissionDecisionDetails(previousRemissionDetails, asylumCase);
         return previousRemissionDetails;
     }
 
-    private List<IdValue<RemissionDetails>> appendPreviousRemissionDetailsAppellant(AsylumCase asylumCase,
-                                                                                    List<IdValue<RemissionDetails>> previousRemissionDetails,
-                                                                                    List<IdValue<RemissionDetails>> existingRemissionDetails) {
+    private List<IdValue<RemissionDetails>> appendPreviousRemissionDetailsAppellant(
+        AsylumCase asylumCase,
+        List<IdValue<RemissionDetails>> previousRemissionDetails,
+        List<IdValue<RemissionDetails>> existingRemissionDetails
+    ) {
         RemissionOption remissionOption = asylumCase.read(REMISSION_OPTION, RemissionOption.class)
             .orElseThrow(() -> new IllegalStateException("Previous fee remission type is not present"));
         switch (remissionOption) {
@@ -260,13 +268,14 @@ public class RequestFeeRemissionAipHandler implements PreSubmitCallbackHandler<A
         return previousRemissionDetails;
     }
 
-    private List<IdValue<RemissionDetails>> appendPreviousRemissionDetailsNonAppellant(AsylumCase asylumCase,
-                                                                                       List<IdValue<RemissionDetails>> previousRemissionDetails,
-                                                                                       List<IdValue<RemissionDetails>> existingRemissionDetails) {
-        RemissionType remissionType = asylumCase.read(REMISSION_TYPE, RemissionType.class)
-            .orElse(null);
-        String remissionClaim = asylumCase.read(REMISSION_CLAIM, String.class)
-            .orElse("");
+    private List<IdValue<RemissionDetails>> appendPreviousRemissionDetailsNonAppellant(
+        AsylumCase asylumCase,
+        List<IdValue<RemissionDetails>> previousRemissionDetails,
+        List<IdValue<RemissionDetails>> existingRemissionDetails
+    ) {
+        RemissionType remissionType = asylumCase.read(REMISSION_TYPE, RemissionType.class).orElse(null);
+        String remissionClaim = asylumCase.read(REMISSION_CLAIM, String.class).orElse("");
+
         if (remissionType == null) {
             return appendPreviousRemissionDetailsAppellant(asylumCase, previousRemissionDetails, existingRemissionDetails);
         }
@@ -326,7 +335,10 @@ public class RequestFeeRemissionAipHandler implements PreSubmitCallbackHandler<A
     }
 
 
-    private void appendPreviousRemissionDecisionDetails(List<IdValue<RemissionDetails>> previousRemissionDetails, AsylumCase asylumCase) {
+    private void appendPreviousRemissionDecisionDetails(
+        List<IdValue<RemissionDetails>> previousRemissionDetails,
+        AsylumCase asylumCase
+    ) {
         RemissionDecision remissionDecision = asylumCase.read(REMISSION_DECISION, RemissionDecision.class)
             .orElseThrow(() -> new IllegalStateException("Remission decision is not present"));
         String feeAmount = asylumCase.read(FEE_AMOUNT_GBP, String.class).orElse("");

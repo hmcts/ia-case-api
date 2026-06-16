@@ -41,7 +41,7 @@ java:
     SAVE_NOTIFICATIONS_DATA_SCHEDULE_MAX_MINUTES: 5
     # Set HOME_OFFICE_VALIDATION_ENABLED: "true" if you want to run the validation against the mock HO validation API in Preview; otherwise leave at "false".
     # The mock HO validation API lives at http://ia-home-office-mock-api-aat.service.core-compute-aat.internal/ichallenge/applications/v1/1111-2222-3333-4444
-    # (you can use any valid UAN at the end; but in the application you must enter the expected UAN, name and DOB in order to proceed past validation)
+    # (you can use any valid UAN at the end; but in ExUI you must enter the expected UAN, name and DOB in order to proceed past validation)
     HOME_OFFICE_VALIDATION_ENABLED: "false" # Do not remove this this environment variable!
     STATUTORY_TIMEFRAME_LIVE_DATE: "2026-05-01"
   keyVaults:
@@ -167,7 +167,7 @@ ia-case-documents-api:
   enabled: true #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
-    image: hmctsprod.azurecr.io/ia/case-documents-api:pr-1176
+    image: hmctsprod.azurecr.io/ia/case-documents-api:latest
     releaseNameOverride: ${SERVICE_NAME}-case-documents-api
     ingressHost: ${SERVICE_NAME}-documents-api.preview.platform.hmcts.net
     devcpuRequests: 500m
@@ -246,7 +246,7 @@ ia-case-notifications-api:
   enabled: true #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
-    image: hmctsprod.azurecr.io/ia/case-notifications-api:pr-1672
+    image: hmctsprod.azurecr.io/ia/case-notifications-api:latest
     releaseNameOverride: ${SERVICE_NAME}-case-notifications-api
     ingressHost: ${SERVICE_NAME}-notifications-api.preview.platform.hmcts.net
     devcpuRequests: 500m
@@ -666,7 +666,7 @@ ia-aip-frontend:
   enabled: true
   nodejs:
     imagePullPolicy: Always
-    image: hmctsprod.azurecr.io/ia/aip-frontend:pr-1431
+    image: hmctsprod.azurecr.io/ia/aip-frontend:latest
     ingressHost: ${SERVICE_NAME}-aip-frontend.preview.platform.hmcts.net # override in public facing environments
     applicationPort: 3000
     devcpuRequests: 500m
@@ -802,8 +802,8 @@ xui-webapp:
       SERVICES_PRD_API: http://rd-professional-api-aat.service.core-compute-aat.internal
       SERVICES_CCD_CASE_ASSIGNMENT_API: https://aac-${SERVICE_FQDN}
       SERVICES_DOCUMENTS_API_V2: http://${SERVICE_NAME}-ccd-case-document-am-api
-      SERVICES_WORK_ALLOCATION_TASK_API: ${SERVICES_WORK_ALLOCATION_TASK_API:}
-      SERVICES_WA_WORKFLOW_API_URL: ${SERVICES_WA_WORKFLOW_API_URL:}
+      SERVICES_WORK_ALLOCATION_TASK_API: https://wa-task-management-api-ia-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net
+      SERVICES_WA_WORKFLOW_API_URL: https://wa-task-monitor-ia-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net
       SERVICES_IDAM_ISS_URL: https://forgerock-am.service.core-compute-idam-aat2.internal:8443/openam/oauth2/realms/root/realms/hmcts
       SERVICES_ROLE_ASSIGNMENT_API: https://am-role-assignment-ia-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net
       SERVICES_ROLE_ASSIGNMENT_MAPPING_API: https://am-org-role-mapping-service-${SERVICE_FQDN}
@@ -1346,109 +1346,7 @@ aac-manage-case-assignment:
 # https://github.com/hmcts/wa-chart/blob/master/wa/values.yaml
 # 1.0.4
 wa:
-  enabled: ${ENABLE_WA:false}
-  taskManagement:
-    enabled: ${ENABLE_WA:false}
-  taskMonitor:
-    enabled: ${ENABLE_WA:false}
-  eventHandler:
-    enabled: ${ENABLE_WA:false}
-  workflow:
-    enabled: ${ENABLE_WA:false}
-  taskBatchCron:
-    enabled: ${ENABLE_WA:false}
-  messageCron:
-    enabled: ${ENABLE_WA:false}
-  camunda:
-    enabled: ${ENABLE_WA:false}
-  postgresql:
-    enabled: ${ENABLE_WA:false}
-  reconfigurationBatchCron:
-    enabled: ${ENABLE_WA:false}
-  terminationBatchCron:
-    enabled: ${ENABLE_WA:false}
-  global:
-    postgresUsername: hmcts
-    postgresSecret: postgres
-    postgresHost: ia-preview.postgres.database.azure.com
-    databaseNamePrefix: "pr-${CHANGE_ID}-"
-  wa-initiation-batch:
-    job:
-      releaseNameOverride: "{{ .Release.Name }}-wa-task-batch"
-  wa-reconfiguration-batch:
-    job:
-      releaseNameOverride: "{{ .Release.Name }}-reconfiguration"
-  wa-termination-batch:
-    job:
-      releaseNameOverride: "{{ .Release.Name }}-termination-batch"
-  wa-message-cron-service:
-    job:
-      releaseNameOverride: "{{ .Release.Name }}-wa-message-cron"
-
-  camunda-bpm:
-    java:
-      devcpuRequests: 500m
-      devmemoryRequests: 1Gi
-      devcpuLimits: 2
-      devmemoryLimits: 4Gi
-      environment:
-        CAMUNDA_DB_CONN_OPTIONS: "?stringtype=unspecified&reWriteBatchedInserts=true&sslmode=require"
-
-  wa-task-management-api:
-    java:
-      ingressHost: wa-task-management-api-${SERVICE_FQDN}
-      devcpuRequests: 500m
-      devmemoryRequests: 1Gi
-      devcpuLimits: 2
-      devmemoryLimits: 4Gi
-      environment:
-        CAMUNDA_URL: "http://{{ .Release.Name }}-camunda/engine-rest"
-        IDAM_URL: "https://idam-api.{{ .Values.global.environment }}.platform.hmcts.net"
-        S2S_URL: "http://rpe-service-auth-provider-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
-        OPEN_ID_IDAM_URL: "https://idam-web-public.{{ .Values.global.environment }}.platform.hmcts.net"
-        ROLE_ASSIGNMENT_URL: https://am-role-assignment-${SERVICE_FQDN}
-        ALLOWED_JURISDICTIONS: ia
-        ALLOWED_CASE_TYPES: asylum
-
-  wa-case-event-handler:
-    java:
-      ingressHost: wa-case-event-handler-${SERVICE_FQDN}
-      releaseNameOverride: ${SERVICE_NAME}-wa-case-event-handler
-      secrets:
-        AZURE_SERVICE_BUS_CONNECTION_STRING:
-          secretRef: ia-sb-preview
-          key: connectionString
-      devcpuRequests: 500m
-      devmemoryRequests: 1Gi
-      devcpuLimits: 2
-      devmemoryLimits: 4Gi
-      environment:
-        CAMUNDA_URL: "http://{{ .Release.Name }}-camunda/engine-rest"
-        CCD_URL: "http://{{ .Release.Name }}-ccd-data-store-api"
-        CCD_SEARCH_URL: "http://{{ .Release.Name }}-ccd-data-store-api"
-        ROLE_ASSIGNMENT_URL: https://am-role-assignment-${SERVICE_FQDN}
-        WA_WORKFLOW_API_URL: "http://{{ .Release.Name }}-wa-workflow-api"
-        WA_TASK_MANAGEMENT_API_URL: "http://{{ .Release.Name }}-wa-task-management-api"
-        AZURE_SERVICE_BUS_TOPIC_NAME: ${SERVICE_NAME}-ccd-case-events
-        AZURE_SERVICE_BUS_SUBSCRIPTION_NAME: ${SERVICE_NAME}-ccd-case-events
-        AZURE_SERVICE_BUS_CCD_CASE_EVENTS_SUBSCRIPTION_NAME: ${SERVICE_NAME}-ccd-case-events
-  wa-task-monitor:
-    java:
-      ingressHost: wa-task-monitor-${SERVICE_FQDN}
-      environment:
-        WA_TASK_MANAGEMENT_API_URL: http://{{ .Release.Name }}-wa-task-management-api
-  wa-workflow-api:
-    java:
-      devcpuRequests: 500m
-      devmemoryRequests: 1Gi
-      devcpuLimits: 2
-      devmemoryLimits: 4Gi
-      environment:
-        DB_READER_USERNAME: "hmcts"
-  wa:
-    postgresql:
-      enabled: false
-
+  enabled: false
 
 servicebus:
   enabled: true
@@ -1740,11 +1638,6 @@ postgresql:
       - name: "pr-${CHANGE_ID}-role_assignment"
       - name: "pr-${CHANGE_ID}-ia-case-api"
       - name: "pr-${CHANGE_ID}-emstitch"
-      - name: "pr-${CHANGE_ID}-wa-case-event-handler"
-      - name: "pr-${CHANGE_ID}-wa_workflow_api"
-      - name: "pr-${CHANGE_ID}-camunda"
-      - name: "pr-${CHANGE_ID}-cft_task_db"
-      - name: "pr-${CHANGE_ID}-cft_task_db_replica"
       - name: "pr-${CHANGE_ID}-org_role_mapping"
       - name: "pr-${CHANGE_ID}-ia_timed_event_service"
       - name: "pr-${CHANGE_ID}-hmc-cft-hearing-service"

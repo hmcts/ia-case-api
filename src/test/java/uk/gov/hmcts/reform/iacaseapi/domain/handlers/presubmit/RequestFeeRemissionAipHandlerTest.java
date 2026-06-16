@@ -136,7 +136,13 @@ class RequestFeeRemissionAipHandlerTest {
         when(featureToggler.getValue("dlrm-refund-feature-flag", false)).thenReturn(true);
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
         remissionDetailsAppender = new RemissionDetailsAppender();
-        requestFeeRemissionAipHandler = new RequestFeeRemissionAipHandler(featureToggler, remissionDetailsAppender, dateProvider, userDetails, userDetailsHelper);
+        requestFeeRemissionAipHandler = new RequestFeeRemissionAipHandler(
+            featureToggler,
+            remissionDetailsAppender,
+            dateProvider,
+            userDetails,
+            userDetailsHelper
+        );
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getCaseDetailsBefore()).thenReturn(Optional.of(caseDetails));
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -415,10 +421,11 @@ class RequestFeeRemissionAipHandlerTest {
         return captor.getValue();
     }
 
-    void assertRemissionAppended(RemissionDetails remissionDetails) {
+    @SuppressWarnings("unchecked")
+    List<IdValue<RemissionDetails>> assertRemissionAppended(RemissionDetails remissionDetails) {
         List<IdValue<RemissionDetails>> remissionDetailsList = captureWrittenRemissionDetails();
         assertEquals(1, remissionDetailsList.size());
-        RemissionDetails appendedRemissionDetails = remissionDetailsList.getFirst().getValue();
+        RemissionDetails appendedRemissionDetails = remissionDetailsList.get(0).getValue();
         assertEquals(remissionDetails.getFeeRemissionType(), appendedRemissionDetails.getFeeRemissionType());
         assertEquals(remissionDetails.getAsylumSupportReference(), appendedRemissionDetails.getAsylumSupportReference());
         assertEquals(remissionDetails.getAsylumSupportDocument(), appendedRemissionDetails.getAsylumSupportDocument());
@@ -431,6 +438,7 @@ class RequestFeeRemissionAipHandlerTest {
         assertEquals(remissionDetails.getExceptionalCircumstances(), appendedRemissionDetails.getExceptionalCircumstances());
         assertEquals(remissionDetails.getRemissionEcEvidenceDocuments(), appendedRemissionDetails.getRemissionEcEvidenceDocuments());
         assertEquals(remissionDetails.getLocalAuthorityLetters(), appendedRemissionDetails.getLocalAuthorityLetters());
+        return remissionDetailsList;
     }
 
     @ParameterizedTest
@@ -659,12 +667,20 @@ class RequestFeeRemissionAipHandlerTest {
     }
 
     @Test
-    void handle_should_not_append_previous_remission_details_if_no_previous_remission() {
+    void handle_should_append_previous_remission_details_even_when_no_previous_remission_flag() {
         when(asylumCase.read(HAS_PREVIOUS_REMISSION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(asylumCase.read(REMISSION_REQUESTED_BY, UserRoleLabel.class)).thenReturn(Optional.of(UserRoleLabel.CITIZEN));
+        when(asylumCase.read(REMISSION_OPTION, RemissionOption.class)).thenReturn(Optional.of(ASYLUM_SUPPORT_FROM_HOME_OFFICE));
+        when(asylumCase.read(PREVIOUS_REMISSION_DETAILS)).thenReturn(Optional.of(Collections.emptyList()));
+        when(asylumCase.read(REMISSION_DECISION, RemissionDecision.class)).thenReturn(Optional.of(APPROVED));
+        when(asylumCase.read(FEE_AMOUNT_GBP, String.class)).thenReturn(Optional.of("8000"));
+        when(asylumCase.read(AMOUNT_REMITTED, String.class)).thenReturn(Optional.of("8000"));
+        when(asylumCase.read(AMOUNT_LEFT_TO_PAY, String.class)).thenReturn(Optional.of("0"));
+
         PreSubmitCallbackResponse<AsylumCase> response = requestFeeRemissionAipHandler.handle(ABOUT_TO_SUBMIT, callback);
 
-        verify(asylumCase, never()).write(eq(PREVIOUS_REMISSION_DETAILS), any());
         assertEquals(response.getData(), asylumCase);
+        verify(asylumCase, times(1)).write(eq(PREVIOUS_REMISSION_DETAILS), any());
     }
 
     @Test
