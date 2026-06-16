@@ -134,7 +134,7 @@ class AipNlrEventSubmissionHandlerTest {
         when(editDocsAuditLogService.getUploadedOrGeneratedDocumentNames(callback)).thenReturn(emptyList());
         IllegalStateException exception = assertThrows(IllegalStateException.class,
             () -> handler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback));
-        assertEquals("Non-legal representative details are not present", exception.getMessage());
+        assertEquals("Non-legal representative name is not present", exception.getMessage());
     }
 
     @Test

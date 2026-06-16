@@ -2087,6 +2087,9 @@ public enum AsylumCaseFieldDefinition {
     CASE_LEVEL_FLAGS(
         "caseFlags", new TypeReference<StrategicCaseFlag>(){}),
 
+    NLR_LEVEL_FLAGS(
+        "nlrLevelFlags", new TypeReference<List<PartyFlagIdValue>>() {}),
+
     IS_HEARING_ROOM_NEEDED(
             "isHearingRoomNeeded", new TypeReference<YesOrNo>(){}),
 

@@ -1435,4 +1435,43 @@ class HandlerUtilsTest {
         assertEquals(YES, subscriber.getWantsEmail());
         assertEquals(NO, subscriber.getWantsSms());
     }
+
+    @Test
+    void get_nlr_full_name_should_return_nlr_given_plus_family_name() {
+        String givenName = "FirstName";
+        String familyName = "FamilyName";
+
+        when(asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class)).thenReturn(Optional.of(NonLegalRepDetails.builder()
+            .givenNames(givenName)
+            .familyName(familyName)
+            .build())
+        );
+
+        assertEquals("FirstName FamilyName", HandlerUtils.getNlrFullName(asylumCase));
+    }
+
+    @Test
+    void get_nlr_full_name_should_throw_if_empty_fields_or_empty_details() {
+        String expectedErrorMessage = "Non-legal representative name is not present";
+        IllegalStateException exception = assertThrows(IllegalStateException.class,
+            () -> HandlerUtils.getNlrFullName(asylumCase));
+        assertEquals(expectedErrorMessage, exception.getMessage());
+
+        when(asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class)).thenReturn(Optional.of(NonLegalRepDetails.builder().build()));
+        exception = assertThrows(IllegalStateException.class,
+            () -> HandlerUtils.getNlrFullName(asylumCase));
+        assertEquals(expectedErrorMessage, exception.getMessage());
+
+        when(asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class)).thenReturn(Optional.of(NonLegalRepDetails.builder()
+            .givenNames("something").build()));
+        exception = assertThrows(IllegalStateException.class,
+            () -> HandlerUtils.getNlrFullName(asylumCase));
+        assertEquals(expectedErrorMessage, exception.getMessage());
+
+        when(asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class)).thenReturn(Optional.of(NonLegalRepDetails.builder()
+            .familyName("something").build()));
+        exception = assertThrows(IllegalStateException.class,
+            () -> HandlerUtils.getNlrFullName(asylumCase));
+        assertEquals(expectedErrorMessage, exception.getMessage());
+    }
 }

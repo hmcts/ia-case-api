@@ -959,4 +959,17 @@ public class HandlerUtils {
             nlrDetails.getEmailAddress(), YES, nlrDetails.getPhoneNumber(), NO)));
         asylumCase.write(SUBSCRIPTIONS, mutableSubscribers);
     }
+
+    public static boolean hasActiveNlr(AsylumCase asylumCase) {
+        return asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class)
+            .map(NonLegalRepDetails::getIdamId)
+            .isPresent();
+    }
+
+    public static String getNlrFullName(AsylumCase asylumCase) {
+        return asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class)
+            .filter(nlr -> nlr.getGivenNames() != null && nlr.getFamilyName() != null)
+            .map(nlr -> nlr.getGivenNames() + " " + nlr.getFamilyName())
+            .orElseThrow(() -> new IllegalStateException("Non-legal representative name is not present"));
+    }
 }

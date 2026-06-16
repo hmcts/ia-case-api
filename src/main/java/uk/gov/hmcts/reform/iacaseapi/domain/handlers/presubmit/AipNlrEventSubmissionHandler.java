@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseNote;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.NonLegalRepDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.DispatchPriority;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
@@ -23,8 +22,8 @@ import java.util.Optional;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_NOTES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAS_NLR_SUBMITTED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NLR_DETAILS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.getNlrFullName;
 
 @Component
 public class AipNlrEventSubmissionHandler implements PreSubmitCallbackHandler<AsylumCase> {
@@ -60,9 +59,7 @@ public class AipNlrEventSubmissionHandler implements PreSubmitCallbackHandler<As
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
         asylumCase.clear(HAS_NLR_SUBMITTED);
 
-        String nlrFullName = asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class)
-                .map(nlr -> nlr.getGivenNames() + " " + nlr.getFamilyName())
-                .orElseThrow(() -> new IllegalStateException("Non-legal representative details are not present"));
+        String nlrFullName = getNlrFullName(asylumCase);
         Optional<List<IdValue<CaseNote>>> maybeExistingCaseNotes = asylumCase.read(CASE_NOTES);
         List<IdValue<CaseNote>> allCaseNotes = appender.append(
             buildNewCaseNote(callback, nlrFullName), maybeExistingCaseNotes.orElse(Collections.emptyList()));
