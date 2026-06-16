@@ -105,28 +105,24 @@ class ErrorResponseBuilderTest {
         RequestContextHolder.setRequestAttributes(attrs);
 
         // This test verifies the method runs without exceptions
-        // The actual logging is verified through log inspection in integration tests
         errorResponseBuilder.logError(
             new RuntimeException("Test exception"),
             ErrorCode.INTERNAL_ERROR,
             request
         );
 
-        // No assertion needed - we're just verifying no exceptions are thrown
     }
 
     @Test
     void should_log_error_with_unknown_ccd_case_id_when_not_available() {
         RequestContextHolder.resetRequestAttributes();
 
-        // This test verifies the method handles missing request attributes gracefully
+        // verifies the method handles missing request attributes gracefully
         errorResponseBuilder.logError(
             new RuntimeException("Test exception"),
             ErrorCode.INTERNAL_ERROR,
             request
         );
-
-        // No assertion needed - we're just verifying no exceptions are thrown
     }
 
     @Test
