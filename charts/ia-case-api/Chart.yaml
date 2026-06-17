@@ -68,7 +68,7 @@ dependencies:
     repository: 'oci://hmctsprod.azurecr.io/helm'
     condition: em-stitching.enabled
   - name: aac-manage-case-assignment
-    version: 0.2.26 # this version is fixed: do not include the ~
+    version: 0.2.22 # this version is fixed: do not include the ~
     repository: 'oci://hmctsprod.azurecr.io/helm'
     condition: aac-manage-case-assignment.enabled
   - name: wa
@@ -100,4 +100,4 @@ dependencies:
     version: 1.1.1
     repository: 'oci://hmctsprod.azurecr.io/helm'
     condition: postgresql.enabled
-  
+
