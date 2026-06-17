@@ -1779,6 +1779,18 @@ public enum AsylumCaseFieldDefinition {
     NLR_INTERPRETER_SIGN_LANGUAGE(
         "nlrInterpreterSignLanguage", new TypeReference<InterpreterLanguageRefData>() {}),
 
+    NLR_INTERPRETER_SPOKEN_LANGUAGE_BOOKING(
+        "nlrInterpreterSpokenLanguageBooking", new TypeReference<String>() {}),
+
+    NLR_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_STATUS(
+        "nlrInterpreterSpokenLanguageBookingStatus", new TypeReference<InterpreterBookingStatus>() {}),
+
+    NLR_INTERPRETER_SIGN_LANGUAGE_BOOKING(
+        "nlrInterpreterSignLanguageBooking", new TypeReference<String>() {}),
+
+    NLR_INTERPRETER_SIGN_LANGUAGE_BOOKING_STATUS(
+        "nlrInterpreterSignLanguageBookingStatus", new TypeReference<InterpreterBookingStatus>() {}),
+
     NLR_NEEDS_STEP_FREE_ACCESS(
         "nlrNeedsStepFreeAccess", new TypeReference<YesOrNo>(){}),
 
