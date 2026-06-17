@@ -2,7 +2,9 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit.applyforcosts;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_APPLY_FOR_COSTS_OOT;
@@ -53,15 +55,16 @@ class ApplyForCostsConfirmationTest {
         if (isApplyForCostsOot.equals(YesOrNo.YES)) {
             assertThat(
                     callbackResponse.getConfirmationBody().get())
-                    .contains("![Out of time confirmation](https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/outOfTimeApplyForCostsConfirmation.svg)\n\n"
-                            +
-                            "## What happens next\n\n"
-                            + "The Tribunal will consider the reason it has been submitted out of time.\n\n"
-                            + "If the Tribunal accepts your reason, it will consider your application and make a decision shortly.");
+                    .contains("""
+                            ![Out of time confirmation](https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/outOfTimeApplyForCostsConfirmation.svg)
+                            
+                            ## What happens next
+                            
+                            The Tribunal will consider the reason it has been submitted out of time.
+                            
+                            If the Tribunal accepts your reason, it will consider your application and make a decision shortly.""");
         } else {
-            assertThat(
-                    callbackResponse.getConfirmationHeader().get())
-                    .contains("You've made a costs application");
+            assertTrue(callbackResponse.getConfirmationHeader().get().contains("You've made a costs application"));
 
             assertThat(
                     callbackResponse.getConfirmationBody().get())

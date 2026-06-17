@@ -1,5 +1,46 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.contains;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ACTUAL_CASE_HEARING_LENGTH;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_DECISION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ARIA_LISTING_REFERENCE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ATTENDING_APPELLANT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ATTENDING_HOME_OFFICE_LEGAL_REPRESENTATIVE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ATTENDING_JUDGE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DIRECTIONS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FINAL_DECISION_AND_REASONS_DOCUMENTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_DECISION_WITHOUT_HEARING;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_INTEGRATED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LISTING_LENGTH;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LIST_CASE_HEARING_CENTRE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LIST_CASE_HEARING_DATE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LIST_CASE_HEARING_LENGTH;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PREVIOUS_HEARINGS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REHEARD_CASE_LISTED_WITHOUT_HEARING_REQUIREMENTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SEND_DIRECTION_DATE_DUE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SEND_DIRECTION_EXPLANATION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SEND_DIRECTION_PARTIES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre.DECISION_WITHOUT_HEARING;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre.NEWPORT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isIntegrated;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -11,7 +52,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.Direction;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DirectionTag;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithMetadata;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.Parties;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.HoursAndMinutes;
@@ -22,27 +68,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DirectionAppender;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.PreviousHearingAppender;
-
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Stream;
-
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.contains;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre.DECISION_WITHOUT_HEARING;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre.NEWPORT;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isIntegrated;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -63,8 +89,6 @@ class RequestNewHearingRequirementsDirectionHandlerTest {
     @Mock
     private AsylumCase asylumCase;
     @Mock
-    private FeatureToggler featureToggler;
-    @Mock
     private DocumentWithMetadata hearingRequirements1;
     private RequestNewHearingRequirementsDirectionHandler requestNewHearingRequirementsDirectionHandler;
 
@@ -75,8 +99,7 @@ class RequestNewHearingRequirementsDirectionHandlerTest {
                         HEARING_REQUIREMENTS_DUE_IN_DAYS,
                         dateProvider,
                         directionAppender,
-                        previousHearingAppender,
-                        featureToggler
+                        previousHearingAppender
                 );
     }
 
@@ -84,15 +107,13 @@ class RequestNewHearingRequirementsDirectionHandlerTest {
     void can_handle_request_new_hearing_requirements() {
 
         when(callback.getEvent()).thenReturn(Event.REQUEST_NEW_HEARING_REQUIREMENTS);
-        when(featureToggler.getValue("reheard-feature", false)).thenReturn(true);
 
         requestNewHearingRequirementsDirectionHandler =
                 new RequestNewHearingRequirementsDirectionHandler(
                         HEARING_REQUIREMENTS_DUE_IN_DAYS,
                         dateProvider,
                         directionAppender,
-                        previousHearingAppender,
-                        featureToggler
+                        previousHearingAppender
                 );
 
         boolean canHandle =
@@ -122,7 +143,6 @@ class RequestNewHearingRequirementsDirectionHandlerTest {
         final String listCaseHearingLength = "6 hours";
         final String appealDecision = "Dismissed";
 
-        when(featureToggler.getValue("reheard-feature", false)).thenReturn(true);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(event);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -215,7 +235,9 @@ class RequestNewHearingRequirementsDirectionHandlerTest {
                 Arguments.of(YES, NEWPORT, NO),
                 Arguments.of(NO, DECISION_WITHOUT_HEARING, YES),
                 Arguments.of(NO, DECISION_WITHOUT_HEARING, NO),
-                Arguments.of(NO, null, NO)
+                Arguments.of(NO, null, NO),
+                Arguments.of(NO, null, YES),
+                Arguments.of(YES, null, YES)
         );
     }
 
@@ -239,7 +261,6 @@ class RequestNewHearingRequirementsDirectionHandlerTest {
         for (Event event : Event.values()) {
 
             when(callback.getEvent()).thenReturn(event);
-            when(featureToggler.getValue("reheard-feature", false)).thenReturn(true);
 
             for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
 
@@ -250,23 +271,6 @@ class RequestNewHearingRequirementsDirectionHandlerTest {
 
                     assertTrue(canHandle);
                 } else {
-                    assertFalse(canHandle);
-                }
-            }
-        }
-
-        for (Event event : Event.values()) {
-
-            when(callback.getEvent()).thenReturn(event);
-            when(featureToggler.getValue("reheard-feature", false)).thenReturn(false);
-
-            for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
-
-                boolean canHandle = requestNewHearingRequirementsDirectionHandler.canHandle(callbackStage, callback);
-
-                if (event == Event.REQUEST_NEW_HEARING_REQUIREMENTS
-                        && callbackStage == PreSubmitCallbackStage.ABOUT_TO_START) {
-
                     assertFalse(canHandle);
                 }
             }

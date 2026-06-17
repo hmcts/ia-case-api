@@ -7,6 +7,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isEjpCase;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isInternalCase;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isRehydratedAppeal;
 
 import java.time.LocalDate;
 import java.time.ZoneOffset;
@@ -105,12 +106,15 @@ public class HomeOfficeDecisionDateChecker implements PreSubmitCallbackHandler<A
                     : handleInCountryAppeal(asylumCase, appealType);
             }
 
-            if (isDecisionDateBeforeAppealOutOfTimeDate(decisionDate, isOutOfCountry, isOutOfCountryCircumstances, tribunalReceivedDateString, isInternalCase)) {
-                asylumCase.write(SUBMISSION_OUT_OF_TIME, YES);
-                asylumCase.write(RECORDED_OUT_OF_TIME_DECISION, NO);
-            } else {
-                asylumCase.write(SUBMISSION_OUT_OF_TIME, NO);
+            if (!isRehydratedAppeal(asylumCase)) {
+                if (isDecisionDateBeforeAppealOutOfTimeDate(decisionDate, isOutOfCountry, isOutOfCountryCircumstances, tribunalReceivedDateString, isInternalCase)) {
+                    asylumCase.write(SUBMISSION_OUT_OF_TIME, YES);
+                    asylumCase.write(RECORDED_OUT_OF_TIME_DECISION, NO);
+                } else {
+                    asylumCase.write(SUBMISSION_OUT_OF_TIME, NO);
+                }
             }
+
             if ((isOutOfCountry) &&
                 (outOfCountryDecisionTypeOptional.get() == OutOfCountryDecisionType.REFUSAL_OF_HUMAN_RIGHTS
                  || outOfCountryDecisionTypeOptional.get() == OutOfCountryDecisionType.REFUSE_PERMIT)) {

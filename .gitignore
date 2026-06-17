@@ -10,6 +10,8 @@ bin/integrationTest/
 bin/main/
 bin/smokeTest/
 bin/test/
+Fortify Scan/
+lib/FodUpload.jar
 
 ### STS ###
 .apt_generated
@@ -50,3 +52,10 @@ bin/utils/python_scripts/__pycache__/
 
 ### VS Code ###
 .vscode/
+
+### Fortify Scan ###
+Fortify Scan/
+lib/FodUpload.jar/reports/pmd/*
+
+### pmd ###
+reports/pmd/

@@ -1,0 +1,12 @@
+{
+  "name": "ia-case-api",
+  "version": "0.1",
+  "scripts": {
+    "validate": "node validate_case_api"
+  },
+  "dependencies": {
+    "process": "0.11.10",
+    "request": "2.88.2",
+    "walk-sync": "2.2.0"
+  }
+}

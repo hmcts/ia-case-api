@@ -1,11 +1,32 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_IN_DETENTION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.BAIL_APPLICATION_NUMBER;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CUSTODIAL_SENTENCE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DATE_CUSTODIAL_SENTENCE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DETENTION_FACILITY;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DETENTION_REMOVAL_DATE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DETENTION_REMOVAL_REASON;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DETENTION_STATUS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.EMAIL;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.EMAIL_RETYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAS_PENDING_BAIL_APPLICATIONS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IRC_NAME;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MOBILE_NUMBER;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MOBILE_NUMBER_RETYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.OTHER_DETENTION_FACILITY_NAME;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PRISON_NAME;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PRISON_NOMS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMOVAL_ORDER_DATE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMOVAL_ORDER_OPTIONS;
 
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -144,5 +165,71 @@ class RemoveDetainedStatusHandlerTest {
             .isExactlyInstanceOf(NullPointerException.class);
     }
 
+    @Test
+    void mid_event_should_add_error_when_email_does_not_match() {
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getEvent()).thenReturn(Event.REMOVE_DETAINED_STATUS);
+        when(callback.getPageId()).thenReturn("detentionRemoval_appellantContactPreference");
+
+        when(asylumCase.read(EMAIL, String.class))
+                .thenReturn(Optional.of("test@email.com"));
+        when(asylumCase.read(EMAIL_RETYPE, String.class))
+                .thenReturn(Optional.of("different@email.com"));
+
+        PreSubmitCallbackResponse<AsylumCase> response =
+                removeDetainedStatusHandler.handle(
+                        PreSubmitCallbackStage.MID_EVENT, callback);
+
+        assertNotNull(response);
+        assertFalse(response.getErrors().isEmpty());
+        assertTrue(response.getErrors().contains("The details given do not match"));
+    }
+
+    @Test
+    void mid_event_should_add_error_when_mobile_number_does_not_match() {
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getEvent()).thenReturn(Event.REMOVE_DETAINED_STATUS);
+        when(callback.getPageId()).thenReturn("detentionRemoval_appellantContactPreference");
+
+        when(asylumCase.read(MOBILE_NUMBER, String.class))
+                .thenReturn(Optional.of("07123456789"));
+        when(asylumCase.read(MOBILE_NUMBER_RETYPE, String.class))
+                .thenReturn(Optional.of("07999999999"));
+
+        PreSubmitCallbackResponse<AsylumCase> response =
+                removeDetainedStatusHandler.handle(
+                        PreSubmitCallbackStage.MID_EVENT, callback);
+
+        assertNotNull(response);
+        assertFalse(response.getErrors().isEmpty());
+        assertTrue(response.getErrors().contains("The details given do not match"));
+    }
+
+    @Test
+    void mid_event_should_not_add_error_when_contact_details_match() {
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getEvent()).thenReturn(Event.REMOVE_DETAINED_STATUS);
+        when(callback.getPageId()).thenReturn("detentionRemoval_appellantContactPreference");
+
+        when(asylumCase.read(EMAIL, String.class))
+                .thenReturn(Optional.of("test@email.com"));
+        when(asylumCase.read(EMAIL_RETYPE, String.class))
+                .thenReturn(Optional.of("test@email.com"));
+
+        when(asylumCase.read(MOBILE_NUMBER, String.class))
+                .thenReturn(Optional.of("07123456789"));
+        when(asylumCase.read(MOBILE_NUMBER_RETYPE, String.class))
+                .thenReturn(Optional.of("07123456789"));
+
+        PreSubmitCallbackResponse<AsylumCase> response =
+                removeDetainedStatusHandler.handle(
+                        PreSubmitCallbackStage.MID_EVENT, callback);
+
+        assertNotNull(response);
+        assertTrue(response.getErrors().isEmpty());
+    }
 
 }

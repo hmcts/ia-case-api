@@ -2,7 +2,7 @@
   "description": "RIA-5727 end appeal automatically confirmation",
   "request": {
     "uri": "/asylum/ccdSubmitted",
-    "credentials": "CaseOfficer",
+    "credentials": "SystemUser",
     "input": {
       "eventId": "endAppealAutomatically",
       "state": "submitAppeal",

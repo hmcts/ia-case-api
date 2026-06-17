@@ -26,6 +26,7 @@ class HomeOfficeApiServiceTest {
     private static final String ENDPOINT = "some-endpoint";
     private static final String ABOUT_TO_START_PATH = "some-path";
     private static final String ABOUT_TO_SUBMIT_PATH = "some-path";
+    private static final String MID_EVENT_PATH = "some-path";
 
     @Mock
     private AsylumCaseCallbackApiDelegator asylumCaseCallbackApiDelegator;
@@ -42,14 +43,14 @@ class HomeOfficeApiServiceTest {
                 asylumCaseCallbackApiDelegator,
                 ENDPOINT,
                 ABOUT_TO_START_PATH,
-                ABOUT_TO_SUBMIT_PATH
+                ABOUT_TO_SUBMIT_PATH,
+                MID_EVENT_PATH
             );
     }
 
-    @ParameterizedTest
-    @ValueSource(strings = { ABOUT_TO_SUBMIT_PATH })
-    void should_delegate_callback_to_downstream_call_api_and_get_response(String path) {
+    void should_delegate_callback_to_downstream_call_api_and_get_response() {
 
+        final String path = ABOUT_TO_SUBMIT_PATH;
         final AsylumCase asylumCaseWithHomeOfficeData = mock(AsylumCase.class);
 
         when(asylumCaseCallbackApiDelegator.delegate(callback, ENDPOINT + path))
@@ -64,7 +65,7 @@ class HomeOfficeApiServiceTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = { ABOUT_TO_START_PATH, ABOUT_TO_SUBMIT_PATH })
+    @ValueSource(strings = { ABOUT_TO_START_PATH, ABOUT_TO_SUBMIT_PATH, MID_EVENT_PATH })
     void should_delegate_callback_to_downstream_api_and_get_response(String path) {
 
         final AsylumCase asylumCaseWithHomeOfficeData = mock(AsylumCase.class);
@@ -73,7 +74,10 @@ class HomeOfficeApiServiceTest {
             .thenReturn(asylumCaseWithHomeOfficeData);
 
         final AsylumCase actualAsylumCase = path.equals(ABOUT_TO_START_PATH)
-                ? homeOfficeApiService.aboutToStart(callback) : homeOfficeApiService.aboutToSubmit(callback);
+                ? homeOfficeApiService.aboutToStart(callback)
+                : path.equals(MID_EVENT_PATH)
+                ? homeOfficeApiService.midEvent(callback)
+                : homeOfficeApiService.aboutToSubmit(callback);
 
         verify(asylumCaseCallbackApiDelegator, times(1))
             .delegate(callback, ENDPOINT + path);
@@ -89,14 +93,28 @@ class HomeOfficeApiServiceTest {
             .isExactlyInstanceOf(NullPointerException.class);
     }
 
-    @ParameterizedTest
-    @ValueSource(strings = { ABOUT_TO_START_PATH, ABOUT_TO_SUBMIT_PATH })
-    void should_handle_error_from_downstream_api(String path) {
+    void should_handle_error_from_downstream_api() {
 
-        when(asylumCaseCallbackApiDelegator.delegate(callback, ENDPOINT + path))
+        when(asylumCaseCallbackApiDelegator.delegate(callback, ENDPOINT + ABOUT_TO_START_PATH))
+            .thenThrow(new RequiredFieldMissingException("Home office reference number is a required field"));
+        when(asylumCaseCallbackApiDelegator.delegate(callback, ENDPOINT + ABOUT_TO_SUBMIT_PATH))
+            .thenThrow(new RequiredFieldMissingException("Home office reference number is a required field"));
+        when(asylumCaseCallbackApiDelegator.delegate(callback, ENDPOINT + MID_EVENT_PATH))
             .thenThrow(new RequiredFieldMissingException("Home office reference number is a required field"));
 
+        assertThatThrownBy(() -> homeOfficeApiService.aboutToStart(callback))
+            .hasMessage("Home office reference number is a required field")
+            .isExactlyInstanceOf(RequiredFieldMissingException.class);
+
         assertThatThrownBy(() -> homeOfficeApiService.aboutToSubmit(callback))
+            .hasMessage("Home office reference number is a required field")
+            .isExactlyInstanceOf(RequiredFieldMissingException.class);
+
+        assertThatThrownBy(() -> homeOfficeApiService.midEvent(callback))
+            .hasMessage("Home office reference number is a required field")
+            .isExactlyInstanceOf(RequiredFieldMissingException.class);
+
+        assertThatThrownBy(() -> homeOfficeApiService.call(callback))
             .hasMessage("Home office reference number is a required field")
             .isExactlyInstanceOf(RequiredFieldMissingException.class);
     }

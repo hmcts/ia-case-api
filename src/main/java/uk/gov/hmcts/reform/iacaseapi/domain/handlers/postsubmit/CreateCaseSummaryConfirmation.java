@@ -32,8 +32,10 @@ public class CreateCaseSummaryConfirmation implements PostSubmitCallbackHandler<
 
         postSubmitResponse.setConfirmationHeader("# You have uploaded the case summary");
         postSubmitResponse.setConfirmationBody(
-            "#### What happens next?\n\n"
-            + "Generate the hearing ready bundle if you are ready to do so."
+            """
+            #### What happens next?
+            
+            Generate the hearing ready bundle if you are ready to do so."""
         );
 
         return postSubmitResponse;

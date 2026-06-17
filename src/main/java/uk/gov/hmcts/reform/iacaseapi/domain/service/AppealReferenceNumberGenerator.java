@@ -5,7 +5,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 public interface AppealReferenceNumberGenerator {
 
     String generate(
-        long caseId,
-        AppealType appealType
+            long caseId,
+            AppealType appealType
     );
 }

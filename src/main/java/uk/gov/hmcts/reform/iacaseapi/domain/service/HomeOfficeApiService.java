@@ -15,17 +15,20 @@ public class HomeOfficeApiService implements HomeOfficeApi<AsylumCase> {
     private final String homeOfficeApiEndpoint;
     private final String aboutToStartPath;
     private final String aboutToSubmitPath;
+    private final String midEventPath;
 
     public HomeOfficeApiService(
         AsylumCaseCallbackApiDelegator asylumCaseCallbackApiDelegator,
         @Value("${homeOfficeApi.endpoint}") String homeOfficeApiEndpoint,
         @Value("${homeOfficeApi.aboutToStartPath}") String aboutToStartPath,
-        @Value("${homeOfficeApi.aboutToSubmitPath}") String aboutToSubmitPath
+        @Value("${homeOfficeApi.aboutToSubmitPath}") String aboutToSubmitPath,
+        @Value("${homeOfficeApi.midEventPath}") String midEventPath
     ) {
         this.asylumCaseCallbackApiDelegator = asylumCaseCallbackApiDelegator;
         this.homeOfficeApiEndpoint = homeOfficeApiEndpoint;
         this.aboutToStartPath = aboutToStartPath;
         this.aboutToSubmitPath = aboutToSubmitPath;
+        this.midEventPath = midEventPath;
     }
 
     @Override
@@ -55,6 +58,15 @@ public class HomeOfficeApiService implements HomeOfficeApi<AsylumCase> {
         return asylumCaseCallbackApiDelegator.delegate(
             callback,
             homeOfficeApiEndpoint + aboutToSubmitPath
+        );
+    }
+
+    public AsylumCase midEvent(Callback<AsylumCase> callback) {
+        requireNonNull(callback, "callback must not be null");
+
+        return asylumCaseCallbackApiDelegator.delegate(
+            callback,
+            homeOfficeApiEndpoint + midEventPath
         );
     }
 }

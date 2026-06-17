@@ -113,6 +113,7 @@ public enum Event {
     REMOVE_REPRESENTATION("removeRepresentation"),
     REMOVE_LEGAL_REPRESENTATIVE("removeLegalRepresentative"),
     REVOKE_CASE_ACCESS("revokeCaseAccess"),
+    REVOKE_CITIZEN_ACCESS("revokeCitizenAccess"),
     REQUEST_FEE_REMISSION("requestFeeRemission"),
     RECORD_OUT_OF_TIME_DECISION("recordOutOfTimeDecision"),
     GENERATE_UPPER_TRIBUNAL_BUNDLE("generateUpperTribunalBundle"),
@@ -164,7 +165,12 @@ public enum Event {
     UPDATE_NEXT_HEARING_INFO("UpdateNextHearingInfo"),
     APPELLANT_IN_PERSON_MANUAL("appellantInPersonManual"),
     GENERATE_LIST_CMR_TASK("generateListCmrTask"),
+    TURN_ON_NOTIFICATIONS_WA_TASKS("turnOnNotificationsWATasks"),
+    FORCE_DECIDED_STATE("forceDecidedState"),
+    FORCE_FTPA_DECIDED_STATE("forceFtpaDecidedState"),
     ROLLBACK_MIGRATION("rollbackMigration"),
+    COMPLETE_CASE_REVIEW("completeCaseReview"),
+    GENERATE_PIN_IN_POST("generatePinInPost"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");

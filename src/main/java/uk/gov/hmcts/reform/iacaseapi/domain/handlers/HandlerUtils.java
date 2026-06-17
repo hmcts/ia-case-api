@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers;
 
+import static java.util.Collections.emptyList;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingAdjournmentDay.BEFORE_HEARING_DATE;
@@ -20,30 +21,39 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HelpWithFeesOption.W
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Base64;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javax.crypto.SecretKey;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.io.ClassPathResource;
+import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseFlagDetail;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.Direction;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DirectionTag;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.FeeRemissionType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingAdjournmentDay;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.HelpWithFeesOption;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.Parties;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionOption;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlag;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.DirectionAppender;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationBasedFeatureToggler;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -53,6 +63,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfCountryCircumstances;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfCountryDecisionType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.SourceOfAppeal;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.CryptoUtils;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.OrganisationPolicy;
 
 
@@ -145,10 +156,10 @@ public class HandlerUtils {
 
     private static boolean hasActiveFlags(AsylumCase asylumCase) {
         List<StrategicCaseFlag> appellantLevelFlags = asylumCase.read(APPELLANT_LEVEL_FLAGS, StrategicCaseFlag.class)
-            .map(List::of).orElse(Collections.emptyList());
+            .map(List::of).orElse(emptyList());
 
         List<StrategicCaseFlag> caseLevelFlag = asylumCase.read(CASE_LEVEL_FLAGS, StrategicCaseFlag.class)
-            .map(List::of).orElse(Collections.emptyList());
+            .map(List::of).orElse(emptyList());
 
         boolean hasActiveFlags = false;
 
@@ -224,6 +235,10 @@ public class HandlerUtils {
         return (asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).orElse(NO) == YesOrNo.YES;
     }
 
+    public static boolean isAppealOutOfCountry(AsylumCase asylumCase) {
+        return (asylumCase.read(APPEAL_OUT_OF_COUNTRY, YesOrNo.class)).orElse(NO) == YesOrNo.YES;
+    }
+
     public static boolean isAppellantsRepresentation(AsylumCase asylumCase) {
         return (asylumCase.read(APPELLANTS_REPRESENTATION, YesOrNo.class)).orElse(NO) == YesOrNo.YES;
     }
@@ -263,6 +278,16 @@ public class HandlerUtils {
     // This method uses the Source of Appeal value to check if it is EJP during Start Appeal event
     public static boolean sourceOfAppealEjp(AsylumCase asylumCase) {
         return (asylumCase.read(SOURCE_OF_APPEAL, SourceOfAppeal.class)).orElse(SourceOfAppeal.PAPER_FORM) == SourceOfAppeal.TRANSFERRED_FROM_UPPER_TRIBUNAL;
+    }
+
+    // This method uses the Source of Appeal value to check if it is a Rehydrated appeal during Start Appeal event
+    public static boolean sourceOfAppealRehydratedAppeal(AsylumCase asylumCase) {
+        return (asylumCase.read(SOURCE_OF_APPEAL, SourceOfAppeal.class)).orElse(SourceOfAppeal.PAPER_FORM) == SourceOfAppeal.REHYDRATED_APPEAL;
+    }
+
+    // This method uses the isRehydratedAppeal field which is set yes for Rehydrated appeals when a case is saved or no if paper form
+    public static boolean isRehydratedAppeal(AsylumCase asylumCase) {
+        return asylumCase.read(IS_REHYDRATED_APPEAL, YesOrNo.class).orElse(NO) == YesOrNo.YES;
     }
 
     // This method uses the isEjp field which is set yes for EJP when a case is saved or no if paper form
@@ -572,10 +597,12 @@ public class HandlerUtils {
         asylumCase.clear(REMISSION_EC_EVIDENCE_DOCUMENTS);
     }
 
-    public static boolean appealHasRemissionOptionOrType(Optional<RemissionOption> remissionOption,
-                                                         Optional<HelpWithFeesOption> helpWithFeesOption,
-                                                         Optional<RemissionType> remissionType,
-                                                         Optional<RemissionType> lateRemissionType) {
+    public static boolean appealHasRemissionOptionOrType(
+        Optional<RemissionOption> remissionOption,
+        Optional<HelpWithFeesOption> helpWithFeesOption,
+        Optional<RemissionType> remissionType,
+        Optional<RemissionType> lateRemissionType
+    ) {
         return (remissionOption.isPresent() && remissionOption.get() != RemissionOption.NO_REMISSION)
             || (helpWithFeesOption.isPresent() && helpWithFeesOption.get() != WILL_PAY_FOR_APPEAL)
             || (remissionType.isPresent() && remissionType.get() != RemissionType.NO_REMISSION)
@@ -665,6 +692,88 @@ public class HandlerUtils {
         asylumCase.clear(OOC_COUNTRY_LINE);
         asylumCase.clear(OOC_LR_COUNTRY_GOV_UK_ADMIN_J);
         asylumCase.clear(LEGAL_REP_HAS_ADDRESS);
+    }
+
+    public static boolean isPayLater(AsylumCase asylumCase) {
+        boolean isAipJourney = HandlerUtils.isAipJourney(asylumCase);
+        boolean isRepJourney = HandlerUtils.isRepJourney(asylumCase);
+        String paAppealTypePaymentOption = asylumCase.read(PA_APPEAL_TYPE_PAYMENT_OPTION, String.class).orElse("");
+        String paAppealTypeAipPaymentOption = asylumCase.read(PA_APPEAL_TYPE_AIP_PAYMENT_OPTION, String.class).orElse("");
+        boolean isAipPayLater = isAipJourney && "payLater".equals(paAppealTypeAipPaymentOption);
+        boolean isLRPayLater = isRepJourney && "payLater".equals(paAppealTypePaymentOption);
+        return isAipPayLater || isLRPayLater;
+    }
+
+    public static Parties getParty(AsylumCase asylumCase) {
+        return HandlerUtils.isAipJourney(asylumCase) ? Parties.APPELLANT : Parties.LEGAL_REPRESENTATIVE;
+    }
+
+    public static AsylumCase feeDirectionReminder(AsylumCase asylumCase, DirectionAppender directionAppender, DateProvider dateProvider, int paPayLaterDueDate, DirectionTag directionTag, String content) {
+        Optional<List<IdValue<Direction>>> maybeDirections = asylumCase.read(DIRECTIONS);
+
+        final List<IdValue<Direction>> existingDirections =
+            maybeDirections.orElse(emptyList());
+
+        List<IdValue<Direction>> allDirections =
+            directionAppender.append(
+                asylumCase,
+                existingDirections,
+                content,
+                getParty(asylumCase),
+                dateProvider
+                    .now()
+                    .plusDays(paPayLaterDueDate)
+                    .toString(),
+                directionTag
+            );
+
+        asylumCase.write(DIRECTIONS, allDirections);
+        return asylumCase;
+    }
+
+    public static String getFeeAmount(AsylumCase asylumCase) {
+        boolean decisionHearingFeeOption = asylumCase.read(DECISION_HEARING_FEE_OPTION, String.class).orElse("")
+            .equals("decisionWithHearing");
+        return decisionHearingFeeOption
+            ? asylumCase.read(FEE_WITH_HEARING, String.class)
+            .orElseThrow(() -> new IllegalStateException("Fee with hearing is not present"))
+            : asylumCase.read(FEE_WITHOUT_HEARING, String.class)
+            .orElseThrow(() -> new IllegalStateException("Fee without hearing is not present"));
+
+    }
+
+    // This method checks to see whether the appellant's personal details have been validated, using either the new  applications/v1/{id}
+    // Home Office endpoint or the old  applicationStatus/getBySearchParameters  Home Office endpoint
+    public static boolean hasAppellantDataBeenValidated(AsylumCase asylumCase) {
+        // Evidence from new validation endpoint
+        boolean validationDone = asylumCase.read(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, String.class).isPresent();
+        // Evidence from old validation endpoint
+        boolean homeOfficeSearchStatusSuccess = asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class).map(status -> status.equals("SUCCESS")).orElse(false);
+        return validationDone || homeOfficeSearchStatusSuccess;
+    }
+
+    // String encryption (for sensitive data)
+    public static String encrypt(String textString) {
+        String base64TextString = Base64.getEncoder().encodeToString(textString.getBytes(StandardCharsets.UTF_8));
+        SecretKey key = CryptoUtils.createKey("MDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNkZWY="); // TODO: retrieve Base64-encoded secret from Azure Vault
+        return CryptoUtils.encrypt(base64TextString, key);
+    }
+
+    // String decryption (for sensitive data)
+    public static String decrypt(String encryptedString) {
+        SecretKey key = CryptoUtils.createKey("MDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNkZWY="); // TODO: retrieve Base64-encoded secret from Azure Vault
+        String base64TextString = CryptoUtils.decrypt(encryptedString, key);
+        return new String(Base64.getDecoder().decode(base64TextString), StandardCharsets.UTF_8);
+    }
+
+    // Remove validation fields to force another request to the Home Office validation API
+    public static void removeValidationFields(AsylumCase asylumCase) {
+        asylumCase.remove(HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS);
+        asylumCase.remove(HOME_OFFICE_APPELLANT_CLAIM_DATE);
+        asylumCase.remove(HOME_OFFICE_APPELLANT_DECISION_DATE);
+        asylumCase.remove(HOME_OFFICE_APPELLANT_DECISION_LETTER_DATE);
+        asylumCase.remove(HOME_OFFICE_APPELLANTS);
+        asylumCase.remove(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY);
     }
 
 }

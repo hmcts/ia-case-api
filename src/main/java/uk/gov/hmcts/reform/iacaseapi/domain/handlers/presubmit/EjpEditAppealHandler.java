@@ -101,13 +101,6 @@ public class EjpEditAppealHandler implements PreSubmitCallbackHandler<AsylumCase
             Optional<String> optionalDateReceived = asylumCase.read(DECISION_LETTER_RECEIVED_DATE, String.class);
             Optional<String> optionalDateSent = asylumCase.read(HOME_OFFICE_DECISION_DATE, String.class);
 
-            if (optionalDateReceived.isPresent() && optionalDateSent.isPresent()) {
-                if (!isAcceleratedDetainedAppeal(asylumCase)) {
-                    asylumCase.clear(DECISION_LETTER_RECEIVED_DATE);
-                } else {
-                    asylumCase.clear(HOME_OFFICE_DECISION_DATE);
-                }
-            }
         }
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
