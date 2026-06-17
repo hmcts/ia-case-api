@@ -1,6 +1,23 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers;
 
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterLanguageRefData;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.Value;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.RefDataUserService;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.dto.hearingdetails.CategoryValues;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.dto.hearingdetails.CommonDataResponse;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.times;
@@ -8,6 +25,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_INTERPRETER_SIGN_LANGUAGE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_INTERPRETER_SPOKEN_LANGUAGE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NLR_INTERPRETER_LANGUAGE_CATEGORY;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NLR_INTERPRETER_SIGN_LANGUAGE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NLR_INTERPRETER_SPOKEN_LANGUAGE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_10_INTERPRETER_LANGUAGE_CATEGORY;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_1_INTERPRETER_LANGUAGE_CATEGORY;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_1_INTERPRETER_SIGN_LANGUAGE;
@@ -28,21 +48,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterLanguageC
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterLanguageCategory.SPOKEN_LANGUAGE_INTERPRETER;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_N_INTERPRETER_SIGN_LANGUAGE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_N_INTERPRETER_SPOKEN_LANGUAGE;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterLanguageRefData;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.Value;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.RefDataUserService;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.dto.hearingdetails.CategoryValues;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.dto.hearingdetails.CommonDataResponse;
 
 @ExtendWith(MockitoExtension.class)
 public class InterpreterLanguagesUtilsTest {
@@ -155,6 +160,73 @@ public class InterpreterLanguagesUtilsTest {
     }
 
     @Test
+    void should_clear_nlr_interpreter_language_category_no_interpreter() {
+        when(asylumCase.read(NLR_INTERPRETER_SPOKEN_LANGUAGE, InterpreterLanguageRefData.class))
+            .thenReturn(Optional.empty());
+        when(asylumCase.read(NLR_INTERPRETER_SIGN_LANGUAGE, InterpreterLanguageRefData.class))
+            .thenReturn(Optional.empty());
+
+        InterpreterLanguagesUtils.persistNlrInterpreterCategoryField(asylumCase);
+
+        verify(asylumCase, times(1)).clear(NLR_INTERPRETER_LANGUAGE_CATEGORY);
+    }
+
+    @Test
+    void should_populate_nlr_interpreter_language_category_sign() {
+        when(asylumCase.read(NLR_INTERPRETER_SIGN_LANGUAGE, InterpreterLanguageRefData.class))
+            .thenReturn(Optional.of(interpreterLanguageRefDataSign1));
+        when(asylumCase.read(NLR_INTERPRETER_SPOKEN_LANGUAGE, InterpreterLanguageRefData.class))
+            .thenReturn(Optional.empty());
+
+        when(interpreterLanguageRefDataSign1.getLanguageRefData()).thenReturn(dynamicListSign1);
+        when(dynamicListSign1.getValue()).thenReturn(valueSign1);
+        when(valueSign1.getLabel()).thenReturn("lang sign 1");
+
+        InterpreterLanguagesUtils.persistNlrInterpreterCategoryField(asylumCase);
+
+        verify(asylumCase, times(1))
+            .write(NLR_INTERPRETER_LANGUAGE_CATEGORY, List.of(SIGN_LANGUAGE_INTERPRETER.getValue()));
+    }
+
+    @Test
+    void should_populate_nlr_interpreter_language_category_spoken() {
+        when(asylumCase.read(NLR_INTERPRETER_SPOKEN_LANGUAGE, InterpreterLanguageRefData.class))
+            .thenReturn(Optional.of(interpreterLanguageRefDataSpoken1));
+        when(asylumCase.read(NLR_INTERPRETER_SIGN_LANGUAGE, InterpreterLanguageRefData.class))
+            .thenReturn(Optional.empty());
+
+        when(interpreterLanguageRefDataSpoken1.getLanguageRefData()).thenReturn(dynamicListSpoken1);
+        when(dynamicListSpoken1.getValue()).thenReturn(valueSpoken1);
+        when(valueSpoken1.getLabel()).thenReturn("lang 1");
+
+        InterpreterLanguagesUtils.persistNlrInterpreterCategoryField(asylumCase);
+
+        verify(asylumCase, times(1))
+            .write(NLR_INTERPRETER_LANGUAGE_CATEGORY, List.of(SPOKEN_LANGUAGE_INTERPRETER.getValue()));
+    }
+
+    @Test
+    void should_populate_nlr_interpreter_language_category_both() {
+        when(asylumCase.read(NLR_INTERPRETER_SPOKEN_LANGUAGE, InterpreterLanguageRefData.class))
+            .thenReturn(Optional.of(interpreterLanguageRefDataSpoken1));
+        when(asylumCase.read(NLR_INTERPRETER_SIGN_LANGUAGE, InterpreterLanguageRefData.class))
+            .thenReturn(Optional.of(interpreterLanguageRefDataSign1));
+
+        when(interpreterLanguageRefDataSpoken1.getLanguageRefData()).thenReturn(dynamicListSpoken1);
+        when(interpreterLanguageRefDataSign1.getLanguageRefData()).thenReturn(dynamicListSign1);
+        when(dynamicListSpoken1.getValue()).thenReturn(valueSpoken1);
+        when(dynamicListSign1.getValue()).thenReturn(valueSign1);
+        when(valueSpoken1.getLabel()).thenReturn("lang 1");
+        when(valueSign1.getLabel()).thenReturn("lang sign 1");
+
+        InterpreterLanguagesUtils.persistNlrInterpreterCategoryField(asylumCase);
+
+        verify(asylumCase, times(1))
+            .write(NLR_INTERPRETER_LANGUAGE_CATEGORY, List.of(
+                SPOKEN_LANGUAGE_INTERPRETER.getValue(), SIGN_LANGUAGE_INTERPRETER.getValue()));
+    }
+
+    @Test
     void sanitizeAppellantLanguageComplexType() {
         InterpreterLanguageRefData spokenInterpreterLanguage = new InterpreterLanguageRefData(
             new DynamicList(new Value("scl", "Shina"), Collections.emptyList()),
@@ -173,6 +245,33 @@ public class InterpreterLanguagesUtilsTest {
         assertNull(asylumCase.read(APPELLANT_INTERPRETER_SPOKEN_LANGUAGE, InterpreterLanguageRefData.class)
             .get().getLanguageRefData());
         assertNull(asylumCase.read(APPELLANT_INTERPRETER_SIGN_LANGUAGE, InterpreterLanguageRefData.class)
+            .get().getLanguageManualEntryDescription());
+    }
+
+    @Test
+    void sanitizeNlrLanguageComplexType() {
+        InterpreterLanguageRefData spokenInterpreterLanguage = new InterpreterLanguageRefData(
+            new DynamicList(new Value("scl", "Shina"), Collections.emptyList()),
+            List.of("Yes"), "language");
+        InterpreterLanguageRefData signInterpreterLanguage = new InterpreterLanguageRefData(
+            new DynamicList(new Value("jpn", "Japanese"), Collections.emptyList()),
+            Collections.emptyList(), "language");
+
+        when(asylumCase.read(NLR_INTERPRETER_SPOKEN_LANGUAGE, InterpreterLanguageRefData.class))
+            .thenReturn(Optional.of(spokenInterpreterLanguage));
+        when(asylumCase.read(NLR_INTERPRETER_SIGN_LANGUAGE, InterpreterLanguageRefData.class))
+            .thenReturn(Optional.of(signInterpreterLanguage));
+
+        assertNotNull(asylumCase.read(NLR_INTERPRETER_SPOKEN_LANGUAGE, InterpreterLanguageRefData.class)
+            .get().getLanguageRefData());
+        assertNotNull(asylumCase.read(NLR_INTERPRETER_SIGN_LANGUAGE, InterpreterLanguageRefData.class)
+            .get().getLanguageManualEntryDescription());
+
+        InterpreterLanguagesUtils.sanitizeNlrLanguageComplexType(asylumCase);
+
+        assertNull(asylumCase.read(NLR_INTERPRETER_SPOKEN_LANGUAGE, InterpreterLanguageRefData.class)
+            .get().getLanguageRefData());
+        assertNull(asylumCase.read(NLR_INTERPRETER_SIGN_LANGUAGE, InterpreterLanguageRefData.class)
             .get().getLanguageManualEntryDescription());
     }
 

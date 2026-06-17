@@ -39,6 +39,11 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_INTERPRETER_SERVICES_NEEDED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LIST_CASE_HEARING_LENGTH_VISIBLE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MULTIMEDIA_TRIBUNAL_RESPONSE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NLR_INTERPRETER_LANGUAGE_CATEGORY;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NLR_INTERPRETER_SIGN_LANGUAGE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NLR_INTERPRETER_SPOKEN_LANGUAGE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NLR_NEEDS_HEARING_LOOP;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NLR_NEEDS_STEP_FREE_ACCESS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PREVIOUS_HEARING_RECORDING_DOCUMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PREVIOUS_HEARING_REQUIREMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMOTE_VIDEO_CALL_TRIBUNAL_RESPONSE;
@@ -175,8 +180,14 @@ public class DraftHearingRequirementsHandler implements PreSubmitCallbackHandler
         clearAllWitnessListElementFields(asylumCase);
 
         if (HandlerUtils.hasActiveNlr(asylumCase) && HandlerUtils.nlrAttendingHearing(asylumCase)) {
-            asylumCase.write(HandlerUtils.NLR_SUBMISSION_AVAILABLE, YES);
-
+            InterpreterLanguagesUtils.persistNlrInterpreterCategoryField(asylumCase);
+            InterpreterLanguagesUtils.sanitizeNlrLanguageComplexType(asylumCase);
+        } else {
+            asylumCase.clear(NLR_INTERPRETER_LANGUAGE_CATEGORY);
+            asylumCase.clear(NLR_INTERPRETER_SPOKEN_LANGUAGE);
+            asylumCase.clear(NLR_INTERPRETER_SIGN_LANGUAGE);
+            asylumCase.clear(NLR_NEEDS_HEARING_LOOP);
+            asylumCase.clear(NLR_NEEDS_STEP_FREE_ACCESS);
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);

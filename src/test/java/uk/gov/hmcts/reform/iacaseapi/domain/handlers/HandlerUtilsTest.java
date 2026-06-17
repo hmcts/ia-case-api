@@ -123,6 +123,8 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LIST_CASE_HEARING_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LOCAL_AUTHORITY_LETTERS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LOCAL_AUTHORITY_POLICY;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NLR_ATTENDING;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NLR_ATTENDING_OUTSIDE_UK;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NLR_DETAILS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.OOC_ADDRESS_LINE_1;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.OOC_ADDRESS_LINE_2;
@@ -1473,5 +1475,33 @@ class HandlerUtilsTest {
         exception = assertThrows(IllegalStateException.class,
             () -> HandlerUtils.getNlrFullName(asylumCase));
         assertEquals(expectedErrorMessage, exception.getMessage());
+    }
+
+
+    @ParameterizedTest
+    @CsvSource(nullValues = {"null"}, value = {
+        "NO,NO",
+        "null,NO",
+        "NO,null",
+        "null,null"
+    })
+    void nlrAttendingHearing_should_return_false_correctly(YesOrNo isNlrAttending, YesOrNo isOutsideUk) {
+        when(asylumCase.read(NLR_ATTENDING, YesOrNo.class)).thenReturn(Optional.ofNullable(isNlrAttending));
+        when(asylumCase.read(NLR_ATTENDING_OUTSIDE_UK, YesOrNo.class)).thenReturn(Optional.ofNullable(isOutsideUk));
+        assertFalse(HandlerUtils.nlrAttendingHearing(asylumCase));
+    }
+
+    @ParameterizedTest
+    @CsvSource(nullValues = {"null"}, value = {
+        "YES,YES",
+        "null,YES",
+        "YES,null",
+        "null,YES",
+        "YES,null"
+    })
+    void nlrAttendingHearing_should_return_true_correctly(YesOrNo isNlrAttending, YesOrNo isOutsideUk) {
+        when(asylumCase.read(NLR_ATTENDING, YesOrNo.class)).thenReturn(Optional.ofNullable(isNlrAttending));
+        when(asylumCase.read(NLR_ATTENDING_OUTSIDE_UK, YesOrNo.class)).thenReturn(Optional.ofNullable(isOutsideUk));
+        assertTrue(HandlerUtils.nlrAttendingHearing(asylumCase));
     }
 }

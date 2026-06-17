@@ -1,5 +1,30 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.NonLegalRepDetails;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.WitnessDetails;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils;
+
+import java.util.Arrays;
+import java.util.Optional;
+
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -7,6 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -25,6 +51,12 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_INTERPRETER_SERVICES_NEEDED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LIST_CASE_HEARING_LENGTH_VISIBLE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MULTIMEDIA_TRIBUNAL_RESPONSE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NLR_DETAILS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NLR_INTERPRETER_LANGUAGE_CATEGORY;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NLR_INTERPRETER_SIGN_LANGUAGE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NLR_INTERPRETER_SPOKEN_LANGUAGE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NLR_NEEDS_HEARING_LOOP;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NLR_NEEDS_STEP_FREE_ACCESS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMOTE_VIDEO_CALL_TRIBUNAL_RESPONSE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SINGLE_SEX_COURT_TRIBUNAL_RESPONSE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.VULNERABILITIES_TRIBUNAL_RESPONSE;
@@ -34,29 +66,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguages
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_N_INTERPRETER_CATEGORY_FIELD;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_N_INTERPRETER_SIGN_LANGUAGE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_N_INTERPRETER_SPOKEN_LANGUAGE;
-
-import java.util.Arrays;
-import java.util.Optional;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.MockedStatic;
-import org.mockito.Mockito;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.WitnessDetails;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
-import uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -250,7 +259,7 @@ class DraftHearingRequirementsHandlerTest {
         when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                draftHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+            draftHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
@@ -342,5 +351,76 @@ class DraftHearingRequirementsHandlerTest {
                 () -> InterpreterLanguagesUtils.sanitizeWitnessLanguageComplexType(any()),
                 times(1));
         }
+    }
+
+
+    @Test
+    void should_handle_correctly_if_has_active_nlr_and_nlr_attending_hearing() {
+        when(asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class)).thenReturn(Optional.of(NonLegalRepDetails.builder()
+            .idamId("someIdamId")
+            .build()
+        ));
+        when(asylumCase.read(AsylumCaseFieldDefinition.NLR_ATTENDING, YesOrNo.class))
+            .thenReturn(Optional.of(YesOrNo.YES));
+
+        try (MockedStatic<InterpreterLanguagesUtils> mockedStatic =
+                 Mockito.mockStatic(InterpreterLanguagesUtils.class)) {
+
+            draftHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+            mockedStatic.verify(
+                () -> InterpreterLanguagesUtils.persistNlrInterpreterCategoryField(asylumCase),
+                times(1));
+            mockedStatic.verify(
+                () -> InterpreterLanguagesUtils.sanitizeNlrLanguageComplexType(asylumCase),
+                times(1));
+        }
+        verify(asylumCase, never()).clear(NLR_INTERPRETER_LANGUAGE_CATEGORY);
+        verify(asylumCase, never()).clear(NLR_INTERPRETER_SPOKEN_LANGUAGE);
+        verify(asylumCase, never()).clear(NLR_INTERPRETER_SIGN_LANGUAGE);
+        verify(asylumCase, never()).clear(NLR_NEEDS_HEARING_LOOP);
+        verify(asylumCase, never()).clear(NLR_NEEDS_STEP_FREE_ACCESS);
+    }
+
+    @Test
+    void should_clear_if_has_no_active_nlr_and_nlr_attending_hearing() {
+        when(asylumCase.read(AsylumCaseFieldDefinition.NLR_ATTENDING, YesOrNo.class))
+            .thenReturn(Optional.of(YesOrNo.YES));
+
+        try (MockedStatic<InterpreterLanguagesUtils> mockedStatic =
+                 Mockito.mockStatic(InterpreterLanguagesUtils.class)) {
+            draftHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+            mockedStatic.verify(
+                () -> InterpreterLanguagesUtils.persistNlrInterpreterCategoryField(asylumCase), never());
+            mockedStatic.verify(
+                () -> InterpreterLanguagesUtils.sanitizeNlrLanguageComplexType(asylumCase), never());
+        }
+        verify(asylumCase).clear(NLR_INTERPRETER_LANGUAGE_CATEGORY);
+        verify(asylumCase).clear(NLR_INTERPRETER_SPOKEN_LANGUAGE);
+        verify(asylumCase).clear(NLR_INTERPRETER_SIGN_LANGUAGE);
+        verify(asylumCase).clear(NLR_NEEDS_HEARING_LOOP);
+        verify(asylumCase).clear(NLR_NEEDS_STEP_FREE_ACCESS);
+    }
+
+    @Test
+    void should_clear_if_has_active_nlr_and_no_nlr_attending_hearing() {
+        when(asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class)).thenReturn(Optional.of(NonLegalRepDetails.builder()
+            .idamId("someIdamId")
+            .build()
+        ));
+
+        try (MockedStatic<InterpreterLanguagesUtils> mockedStatic =
+                 Mockito.mockStatic(InterpreterLanguagesUtils.class)) {
+            draftHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+            mockedStatic.verify(
+                () -> InterpreterLanguagesUtils.persistNlrInterpreterCategoryField(asylumCase), never());
+            mockedStatic.verify(
+                () -> InterpreterLanguagesUtils.sanitizeNlrLanguageComplexType(asylumCase), never());
+        }
+        verify(asylumCase).clear(NLR_INTERPRETER_LANGUAGE_CATEGORY);
+        verify(asylumCase).clear(NLR_INTERPRETER_SPOKEN_LANGUAGE);
+        verify(asylumCase).clear(NLR_INTERPRETER_SIGN_LANGUAGE);
+        verify(asylumCase).clear(NLR_NEEDS_HEARING_LOOP);
+        verify(asylumCase).clear(NLR_NEEDS_STEP_FREE_ACCESS);
     }
 }
