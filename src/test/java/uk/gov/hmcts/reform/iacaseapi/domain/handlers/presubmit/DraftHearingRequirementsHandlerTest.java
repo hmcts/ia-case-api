@@ -55,8 +55,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NLR_INTERPRETER_LANGUAGE_CATEGORY;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NLR_INTERPRETER_SIGN_LANGUAGE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NLR_INTERPRETER_SPOKEN_LANGUAGE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NLR_NEEDS_HEARING_LOOP;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NLR_NEEDS_STEP_FREE_ACCESS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMOTE_VIDEO_CALL_TRIBUNAL_RESPONSE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SINGLE_SEX_COURT_TRIBUNAL_RESPONSE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.VULNERABILITIES_TRIBUNAL_RESPONSE;
@@ -355,7 +353,7 @@ class DraftHearingRequirementsHandlerTest {
 
 
     @Test
-    void should_handle_correctly_if_has_active_nlr_and_nlr_attending_hearing() {
+    void should_sanitizeNlrLanguageComplexType_if_has_active_nlr_and_nlr_attending_hearing() {
         when(asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class)).thenReturn(Optional.of(NonLegalRepDetails.builder()
             .idamId("someIdamId")
             .build()
@@ -369,17 +367,12 @@ class DraftHearingRequirementsHandlerTest {
             draftHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
             mockedStatic.verify(
-                () -> InterpreterLanguagesUtils.persistNlrInterpreterCategoryField(asylumCase),
-                times(1));
-            mockedStatic.verify(
                 () -> InterpreterLanguagesUtils.sanitizeNlrLanguageComplexType(asylumCase),
                 times(1));
         }
         verify(asylumCase, never()).clear(NLR_INTERPRETER_LANGUAGE_CATEGORY);
         verify(asylumCase, never()).clear(NLR_INTERPRETER_SPOKEN_LANGUAGE);
         verify(asylumCase, never()).clear(NLR_INTERPRETER_SIGN_LANGUAGE);
-        verify(asylumCase, never()).clear(NLR_NEEDS_HEARING_LOOP);
-        verify(asylumCase, never()).clear(NLR_NEEDS_STEP_FREE_ACCESS);
     }
 
     @Test
@@ -391,15 +384,11 @@ class DraftHearingRequirementsHandlerTest {
                  Mockito.mockStatic(InterpreterLanguagesUtils.class)) {
             draftHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
             mockedStatic.verify(
-                () -> InterpreterLanguagesUtils.persistNlrInterpreterCategoryField(asylumCase), never());
-            mockedStatic.verify(
                 () -> InterpreterLanguagesUtils.sanitizeNlrLanguageComplexType(asylumCase), never());
         }
         verify(asylumCase).clear(NLR_INTERPRETER_LANGUAGE_CATEGORY);
         verify(asylumCase).clear(NLR_INTERPRETER_SPOKEN_LANGUAGE);
         verify(asylumCase).clear(NLR_INTERPRETER_SIGN_LANGUAGE);
-        verify(asylumCase).clear(NLR_NEEDS_HEARING_LOOP);
-        verify(asylumCase).clear(NLR_NEEDS_STEP_FREE_ACCESS);
     }
 
     @Test
@@ -413,14 +402,10 @@ class DraftHearingRequirementsHandlerTest {
                  Mockito.mockStatic(InterpreterLanguagesUtils.class)) {
             draftHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
             mockedStatic.verify(
-                () -> InterpreterLanguagesUtils.persistNlrInterpreterCategoryField(asylumCase), never());
-            mockedStatic.verify(
                 () -> InterpreterLanguagesUtils.sanitizeNlrLanguageComplexType(asylumCase), never());
         }
         verify(asylumCase).clear(NLR_INTERPRETER_LANGUAGE_CATEGORY);
         verify(asylumCase).clear(NLR_INTERPRETER_SPOKEN_LANGUAGE);
         verify(asylumCase).clear(NLR_INTERPRETER_SIGN_LANGUAGE);
-        verify(asylumCase).clear(NLR_NEEDS_HEARING_LOOP);
-        verify(asylumCase).clear(NLR_NEEDS_STEP_FREE_ACCESS);
     }
 }

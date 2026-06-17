@@ -37,13 +37,12 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_REQUIREMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IN_CAMERA_COURT_TRIBUNAL_RESPONSE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_INTERPRETER_SERVICES_NEEDED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_NLR_INTERPRETER_REQUIRED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LIST_CASE_HEARING_LENGTH_VISIBLE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MULTIMEDIA_TRIBUNAL_RESPONSE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NLR_INTERPRETER_LANGUAGE_CATEGORY;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NLR_INTERPRETER_SIGN_LANGUAGE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NLR_INTERPRETER_SPOKEN_LANGUAGE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NLR_NEEDS_HEARING_LOOP;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NLR_NEEDS_STEP_FREE_ACCESS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PREVIOUS_HEARING_RECORDING_DOCUMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PREVIOUS_HEARING_REQUIREMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMOTE_VIDEO_CALL_TRIBUNAL_RESPONSE;
@@ -179,15 +178,17 @@ public class DraftHearingRequirementsHandler implements PreSubmitCallbackHandler
         // WitnessListElement(s) are only needed for the AIP screens, they do not need to be written
         clearAllWitnessListElementFields(asylumCase);
 
-        if (HandlerUtils.hasActiveNlr(asylumCase) && HandlerUtils.nlrAttendingHearing(asylumCase)) {
-            InterpreterLanguagesUtils.persistNlrInterpreterCategoryField(asylumCase);
+        boolean isNlrInterpreterRequired = asylumCase
+            .read(IS_NLR_INTERPRETER_REQUIRED, YesOrNo.class)
+            .map(yesOrNo -> yesOrNo.equals(YES))
+            .orElse(false);
+
+        if (HandlerUtils.hasActiveNlr(asylumCase) && isNlrInterpreterRequired) {
             InterpreterLanguagesUtils.sanitizeNlrLanguageComplexType(asylumCase);
         } else {
             asylumCase.clear(NLR_INTERPRETER_LANGUAGE_CATEGORY);
             asylumCase.clear(NLR_INTERPRETER_SPOKEN_LANGUAGE);
             asylumCase.clear(NLR_INTERPRETER_SIGN_LANGUAGE);
-            asylumCase.clear(NLR_NEEDS_HEARING_LOOP);
-            asylumCase.clear(NLR_NEEDS_STEP_FREE_ACCESS);
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);

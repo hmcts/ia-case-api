@@ -17,7 +17,6 @@ import java.util.Optional;
 
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_INTERPRETER_SIGN_LANGUAGE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_INTERPRETER_SPOKEN_LANGUAGE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NLR_INTERPRETER_LANGUAGE_CATEGORY;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NLR_INTERPRETER_SIGN_LANGUAGE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NLR_INTERPRETER_SPOKEN_LANGUAGE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_1;
@@ -315,29 +314,6 @@ public final class InterpreterLanguagesUtils {
             }
 
             i++;
-        }
-    }
-
-    public static void persistNlrInterpreterCategoryField(AsylumCase asylumCase) {
-        List<String> chosenLanguageType = new ArrayList<>();
-        asylumCase.read(NLR_INTERPRETER_SPOKEN_LANGUAGE, InterpreterLanguageRefData.class)
-            .ifPresent(spokenLanguage -> {
-                if (isInterpreterLanguagePopulated(spokenLanguage)) {
-                    chosenLanguageType.add(SPOKEN_LANGUAGE_INTERPRETER.getValue());
-                }
-            });
-
-        asylumCase.read(NLR_INTERPRETER_SIGN_LANGUAGE, InterpreterLanguageRefData.class)
-            .ifPresent(spokenLanguage -> {
-                if (isInterpreterLanguagePopulated(spokenLanguage)) {
-                    chosenLanguageType.add(SIGN_LANGUAGE_INTERPRETER.getValue());
-                }
-            });
-
-        if (chosenLanguageType.isEmpty()) {
-            asylumCase.clear(NLR_INTERPRETER_LANGUAGE_CATEGORY);
-        } else {
-            asylumCase.write(NLR_INTERPRETER_LANGUAGE_CATEGORY, chosenLanguageType);
         }
     }
 

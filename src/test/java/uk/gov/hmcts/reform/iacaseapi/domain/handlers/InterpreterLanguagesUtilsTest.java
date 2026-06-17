@@ -25,7 +25,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_INTERPRETER_SIGN_LANGUAGE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_INTERPRETER_SPOKEN_LANGUAGE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NLR_INTERPRETER_LANGUAGE_CATEGORY;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NLR_INTERPRETER_SIGN_LANGUAGE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NLR_INTERPRETER_SPOKEN_LANGUAGE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_10_INTERPRETER_LANGUAGE_CATEGORY;
@@ -157,73 +156,6 @@ public class InterpreterLanguagesUtilsTest {
             .clear(WITNESS_9_INTERPRETER_LANGUAGE_CATEGORY);
         verify(asylumCase, times(1))
             .clear(WITNESS_10_INTERPRETER_LANGUAGE_CATEGORY);
-    }
-
-    @Test
-    void should_clear_nlr_interpreter_language_category_no_interpreter() {
-        when(asylumCase.read(NLR_INTERPRETER_SPOKEN_LANGUAGE, InterpreterLanguageRefData.class))
-            .thenReturn(Optional.empty());
-        when(asylumCase.read(NLR_INTERPRETER_SIGN_LANGUAGE, InterpreterLanguageRefData.class))
-            .thenReturn(Optional.empty());
-
-        InterpreterLanguagesUtils.persistNlrInterpreterCategoryField(asylumCase);
-
-        verify(asylumCase, times(1)).clear(NLR_INTERPRETER_LANGUAGE_CATEGORY);
-    }
-
-    @Test
-    void should_populate_nlr_interpreter_language_category_sign() {
-        when(asylumCase.read(NLR_INTERPRETER_SIGN_LANGUAGE, InterpreterLanguageRefData.class))
-            .thenReturn(Optional.of(interpreterLanguageRefDataSign1));
-        when(asylumCase.read(NLR_INTERPRETER_SPOKEN_LANGUAGE, InterpreterLanguageRefData.class))
-            .thenReturn(Optional.empty());
-
-        when(interpreterLanguageRefDataSign1.getLanguageRefData()).thenReturn(dynamicListSign1);
-        when(dynamicListSign1.getValue()).thenReturn(valueSign1);
-        when(valueSign1.getLabel()).thenReturn("lang sign 1");
-
-        InterpreterLanguagesUtils.persistNlrInterpreterCategoryField(asylumCase);
-
-        verify(asylumCase, times(1))
-            .write(NLR_INTERPRETER_LANGUAGE_CATEGORY, List.of(SIGN_LANGUAGE_INTERPRETER.getValue()));
-    }
-
-    @Test
-    void should_populate_nlr_interpreter_language_category_spoken() {
-        when(asylumCase.read(NLR_INTERPRETER_SPOKEN_LANGUAGE, InterpreterLanguageRefData.class))
-            .thenReturn(Optional.of(interpreterLanguageRefDataSpoken1));
-        when(asylumCase.read(NLR_INTERPRETER_SIGN_LANGUAGE, InterpreterLanguageRefData.class))
-            .thenReturn(Optional.empty());
-
-        when(interpreterLanguageRefDataSpoken1.getLanguageRefData()).thenReturn(dynamicListSpoken1);
-        when(dynamicListSpoken1.getValue()).thenReturn(valueSpoken1);
-        when(valueSpoken1.getLabel()).thenReturn("lang 1");
-
-        InterpreterLanguagesUtils.persistNlrInterpreterCategoryField(asylumCase);
-
-        verify(asylumCase, times(1))
-            .write(NLR_INTERPRETER_LANGUAGE_CATEGORY, List.of(SPOKEN_LANGUAGE_INTERPRETER.getValue()));
-    }
-
-    @Test
-    void should_populate_nlr_interpreter_language_category_both() {
-        when(asylumCase.read(NLR_INTERPRETER_SPOKEN_LANGUAGE, InterpreterLanguageRefData.class))
-            .thenReturn(Optional.of(interpreterLanguageRefDataSpoken1));
-        when(asylumCase.read(NLR_INTERPRETER_SIGN_LANGUAGE, InterpreterLanguageRefData.class))
-            .thenReturn(Optional.of(interpreterLanguageRefDataSign1));
-
-        when(interpreterLanguageRefDataSpoken1.getLanguageRefData()).thenReturn(dynamicListSpoken1);
-        when(interpreterLanguageRefDataSign1.getLanguageRefData()).thenReturn(dynamicListSign1);
-        when(dynamicListSpoken1.getValue()).thenReturn(valueSpoken1);
-        when(dynamicListSign1.getValue()).thenReturn(valueSign1);
-        when(valueSpoken1.getLabel()).thenReturn("lang 1");
-        when(valueSign1.getLabel()).thenReturn("lang sign 1");
-
-        InterpreterLanguagesUtils.persistNlrInterpreterCategoryField(asylumCase);
-
-        verify(asylumCase, times(1))
-            .write(NLR_INTERPRETER_LANGUAGE_CATEGORY, List.of(
-                SPOKEN_LANGUAGE_INTERPRETER.getValue(), SIGN_LANGUAGE_INTERPRETER.getValue()));
     }
 
     @Test
