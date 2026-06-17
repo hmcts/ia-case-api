@@ -29,7 +29,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NLR_INTERPRETER_SPOKEN_LANGUAGE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NLR_NEEDS_HEARING_LOOP;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NLR_NEEDS_STEP_FREE_ACCESS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NLR_OUTSIDE_UK;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NLR_ATTENDING_OUTSIDE_UK;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.OTHER_DECISION_FOR_DISPLAY;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMOTE_HEARING_DECISION_FOR_DISPLAY;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMOTE_VIDEO_CALL_TRIBUNAL_RESPONSE;
@@ -377,7 +377,7 @@ public class UpdateHearingRequirementsHandler extends WitnessHandler
 
         boolean notAttending = asylumCase.read(NLR_ATTENDING, YesOrNo.class)
             .map(YesOrNo::isNo).orElse(true);
-        boolean notOutsideUK = asylumCase.read(NLR_OUTSIDE_UK, YesOrNo.class)
+        boolean notOutsideUK = asylumCase.read(NLR_ATTENDING_OUTSIDE_UK, YesOrNo.class)
             .map(YesOrNo::isNo).orElse(true);
 
         if (notAttending && notOutsideUK) {
@@ -406,7 +406,7 @@ public class UpdateHearingRequirementsHandler extends WitnessHandler
 
     private void clearAllNlrFields(AsylumCase asylumCase) {
         asylumCase.clear(NLR_ATTENDING);
-        asylumCase.clear(NLR_OUTSIDE_UK);
+        asylumCase.clear(NLR_ATTENDING_OUTSIDE_UK);
         clearNlrNeedsFields(asylumCase);
     }
 

@@ -11,7 +11,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MANUAL_CANCEL_HEARINGS_REQUIRED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MANUAL_CREATE_HEARING_REQUIRED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MANUAL_UPDATE_HEARING_REQUIRED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NLR_OUTSIDE_UK;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NLR_ATTENDING_OUTSIDE_UK;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PRISON_NOMS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PRISON_NOMS_AO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REASON_APPELLANT_WAS_DETAINED;
@@ -35,7 +35,7 @@ class AsylumCaseFieldDefinitionTest {
         DATE_CUSTODIAL_SENTENCE,
         REASON_APPELLANT_WAS_DETAINED,
         UPLOAD_THE_NOTICE_OF_DECISION_DOCS_REHYDRATED,
-        NLR_OUTSIDE_UK,
+        NLR_ATTENDING_OUTSIDE_UK,
         DETENTION_REMOVAL_APPELLANT_CONTACT_PREFERENCE
     );
 

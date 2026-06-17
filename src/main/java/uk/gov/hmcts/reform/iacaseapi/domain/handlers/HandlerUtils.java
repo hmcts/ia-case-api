@@ -136,7 +136,9 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LOCAL_AUTHORITY_LETTERS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MULTIMEDIA_DECISION_FOR_DISPLAY;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MULTIMEDIA_TRIBUNAL_RESPONSE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NLR_ATTENDING;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NLR_DETAILS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NLR_ATTENDING_OUTSIDE_UK;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.OOC_ADDRESS_LINE_1;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.OOC_ADDRESS_LINE_2;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.OOC_ADDRESS_LINE_3;
@@ -964,6 +966,11 @@ public class HandlerUtils {
         return asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class)
             .map(NonLegalRepDetails::getIdamId)
             .isPresent();
+    }
+
+    public static boolean nlrAttendingHearing(AsylumCase asylumCase) {
+        return asylumCase.read(NLR_ATTENDING, YesOrNo.class).orElse(NO).equals(YES)
+            || asylumCase.read(NLR_ATTENDING_OUTSIDE_UK, YesOrNo.class).orElse(NO).equals(YES);
     }
 
     public static String getNlrFullName(AsylumCase asylumCase) {

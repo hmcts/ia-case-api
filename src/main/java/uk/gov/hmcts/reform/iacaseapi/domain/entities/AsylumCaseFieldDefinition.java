@@ -1764,8 +1764,8 @@ public enum AsylumCaseFieldDefinition {
     NLR_ATTENDING(
         "nlrAttending", new TypeReference<YesOrNo>(){}),
 
-    NLR_OUTSIDE_UK(
-        "nlrOutsideUK", new TypeReference<YesOrNo>(){}),
+    NLR_ATTENDING_OUTSIDE_UK(
+        "nlrAttendingOutsideUK", new TypeReference<YesOrNo>(){}),
 
     IS_NLR_INTERPRETER_REQUIRED(
         "isNlrInterpreterRequired", new TypeReference<YesOrNo>(){}),
@@ -2088,7 +2088,7 @@ public enum AsylumCaseFieldDefinition {
         "caseFlags", new TypeReference<StrategicCaseFlag>(){}),
 
     NLR_LEVEL_FLAGS(
-        "nlrLevelFlags", new TypeReference<List<PartyFlagIdValue>>() {}),
+        "nlrLevelFlags", new TypeReference<StrategicCaseFlag>() {}),
 
     IS_HEARING_ROOM_NEEDED(
             "isHearingRoomNeeded", new TypeReference<YesOrNo>(){}),
