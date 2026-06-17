@@ -353,12 +353,12 @@ class DraftHearingRequirementsHandlerTest {
 
 
     @Test
-    void should_sanitizeNlrLanguageComplexType_if_has_active_nlr_and_nlr_attending_hearing() {
+    void should_sanitizeNlrLanguageComplexType_if_has_active_nlr_and_isNlrInterpreterRequired() {
         when(asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class)).thenReturn(Optional.of(NonLegalRepDetails.builder()
             .idamId("someIdamId")
             .build()
         ));
-        when(asylumCase.read(AsylumCaseFieldDefinition.NLR_ATTENDING, YesOrNo.class))
+        when(asylumCase.read(AsylumCaseFieldDefinition.IS_NLR_INTERPRETER_REQUIRED, YesOrNo.class))
             .thenReturn(Optional.of(YesOrNo.YES));
 
         try (MockedStatic<InterpreterLanguagesUtils> mockedStatic =
@@ -376,8 +376,8 @@ class DraftHearingRequirementsHandlerTest {
     }
 
     @Test
-    void should_clear_if_has_no_active_nlr_and_nlr_attending_hearing() {
-        when(asylumCase.read(AsylumCaseFieldDefinition.NLR_ATTENDING, YesOrNo.class))
+    void should_clear_if_has_no_active_nlr_and_isNlrInterpreterRequired() {
+        when(asylumCase.read(AsylumCaseFieldDefinition.IS_NLR_INTERPRETER_REQUIRED, YesOrNo.class))
             .thenReturn(Optional.of(YesOrNo.YES));
 
         try (MockedStatic<InterpreterLanguagesUtils> mockedStatic =
@@ -392,7 +392,7 @@ class DraftHearingRequirementsHandlerTest {
     }
 
     @Test
-    void should_clear_if_has_active_nlr_and_no_nlr_attending_hearing() {
+    void should_clear_if_has_active_nlr_and_no_isNlrInterpreterRequired() {
         when(asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class)).thenReturn(Optional.of(NonLegalRepDetails.builder()
             .idamId("someIdamId")
             .build()
