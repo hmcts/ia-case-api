@@ -85,23 +85,36 @@ public class HomeOfficeReferenceHandler implements PreSubmitCallbackHandler<Asyl
 
         String pageId = callback.getPageId();
 
-        return switch (pageId) {
-            case "homeOfficeReferenceNumber", "oocHomeOfficeReferenceNumber", "cuiHomeOfficeReferenceNumber", "cuiGwfReferenceNumber" -> {
-                // First of all, remove any trace of a previous call to the Home Office validation API,
-                // in order to force a fresh request (in the event that we have changed the HO reference number, say)
-                HandlerUtils.removeValidationFields(asylumCase);
-                yield validateHomeOfficeReference(callback, asylumCase, homeOfficeReferenceNumber);
-            }
+        try {
+            return switch (pageId) {
+                case "homeOfficeReferenceNumber", "oocHomeOfficeReferenceNumber", "cuiHomeOfficeReferenceNumber", "cuiGwfReferenceNumber" -> {
+                    // First of all, remove any trace of a previous call to the Home Office validation API,
+                    // in order to force a fresh request (in the event that we have changed the HO reference number, say)
+                    HandlerUtils.removeValidationFields(asylumCase);
+                    yield validateHomeOfficeReference(callback, asylumCase, homeOfficeReferenceNumber);
+                }
 
-            case "appellantBasicDetails", "cuiAppellantDob" -> {
-                boolean isCUICallback = pageId.contains("cui");
-                yield validateNameAndDateOfBirth(callback, asylumCase, homeOfficeReferenceNumber, isCUICallback);
-            }
+                case "appellantBasicDetails", "cuiAppellantDob" -> {
+                    boolean isCUICallback = pageId.contains("cui");
+                    yield validateNameAndDateOfBirth(callback, asylumCase, homeOfficeReferenceNumber, isCUICallback);
+                }
 
-            case "cuiAppellantName" -> validateName(callback, asylumCase, homeOfficeReferenceNumber);
+                case "cuiAppellantName" -> validateName(callback, asylumCase, homeOfficeReferenceNumber);
 
-            default -> new PreSubmitCallbackResponse<>(asylumCase);
-        };
+                default -> new PreSubmitCallbackResponse<>(asylumCase);
+            };
+        } catch (Exception ex) {
+            String logMessage = "Could not validate information from Home Office asylum (etc.) application with Home Office reference "
+                              + homeOfficeReferenceNumber + ".  The exception message was:\n\n{}"
+                              + "\n\nSee the corresponding logs in ia-home-office-integration-api for more details.";                    
+            log.error(logMessage, ex.getMessage());
+
+            PreSubmitCallbackResponse<AsylumCase> response =
+                new PreSubmitCallbackResponse<>(asylumCase);
+
+            response.addError(HomeOfficeApiResponseStatusType.UNKNOWN.getUserFacingErrorText(homeOfficeReferenceNumber));
+            return response;
+        }
     }
 
     private PreSubmitCallbackResponse<AsylumCase> validateHomeOfficeReference(
