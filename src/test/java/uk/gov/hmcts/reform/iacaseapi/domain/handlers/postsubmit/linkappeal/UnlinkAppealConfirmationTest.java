@@ -53,9 +53,7 @@ class UnlinkAppealConfirmationTest {
         assertTrue(actualResponse.getConfirmationHeader().isPresent());
         assertTrue(actualResponse.getConfirmationBody().isPresent());
 
-        assertThat(
-            actualResponse.getConfirmationHeader().get())
-            .contains("# You have unlinked this appeal");
+        assertTrue(actualResponse.getConfirmationHeader().get().contains("# You have unlinked this appeal"));
 
         assertThat(
             actualResponse.getConfirmationBody().get())

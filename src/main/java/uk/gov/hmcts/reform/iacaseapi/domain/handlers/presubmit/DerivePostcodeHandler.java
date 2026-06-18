@@ -42,7 +42,7 @@ public class DerivePostcodeHandler implements PreSubmitCallbackHandler<AsylumCas
                 .getCaseDetails()
                 .getCaseData();
 
-        if (!asylumCase.read(SEARCH_POSTCODE, String.class).isPresent()) {
+        if (asylumCase.read(SEARCH_POSTCODE, String.class).isEmpty()) {
             getAppellantPostcode(asylumCase).ifPresent(postcode -> asylumCase.write(SEARCH_POSTCODE, postcode));
         }
 

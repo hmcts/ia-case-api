@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Collections.emptyList;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LEGAL_REPRESENTATIVE_DOCUMENTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isRepJourney;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -30,7 +31,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackStateHandl
 @Component
 public class PinInPostActivated implements PreSubmitCallbackStateHandler<AsylumCase> {
 
-    private UserDetailsProvider userDetailsProvider;
+    private final UserDetailsProvider userDetailsProvider;
 
     public PinInPostActivated(UserDetailsProvider userDetailsProvider) {
         this.userDetailsProvider = userDetailsProvider;
@@ -52,11 +53,15 @@ public class PinInPostActivated implements PreSubmitCallbackStateHandler<AsylumC
         }
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
-        updateJourneyType(asylumCase);
-        removeLegalRepDetails(asylumCase);
+
+        if (isRepJourney(asylumCase)) {
+            updateJourneyType(asylumCase);
+            removeLegalRepDetails(asylumCase);
+            updateReasonForAppeal(asylumCase);
+            updatePaymentOption(asylumCase);
+        }
         updateSubscription(asylumCase);
-        updateReasonForAppeal(asylumCase);
-        updatePaymentOption(asylumCase);
+
         return new PreSubmitCallbackResponse<>(asylumCase, updatedState(callback.getCaseDetails().getState()));
     }
 
@@ -76,10 +81,10 @@ public class PinInPostActivated implements PreSubmitCallbackStateHandler<AsylumC
     }
 
     private void updatePaymentOption(AsylumCase asylumCase) {
-        Optional<String> paymentOption = asylumCase.read(AsylumCaseFieldDefinition.PA_APPEAL_TYPE_PAYMENT_OPTION);
+        Optional<String> paymentOption = asylumCase.read(AsylumCaseFieldDefinition.PA_APPEAL_TYPE_PAYMENT_OPTION, String.class);
         if (paymentOption.isPresent()) {
             asylumCase.write(AsylumCaseFieldDefinition.PA_APPEAL_TYPE_AIP_PAYMENT_OPTION,
-                    "payNow".equals(paymentOption.get()) ? "payNow" : "payLater");
+                "payNow".equals(paymentOption.get()) ? "payNow" : "payLater");
             asylumCase.clear(AsylumCaseFieldDefinition.PA_APPEAL_TYPE_PAYMENT_OPTION);
         }
     }
@@ -111,8 +116,8 @@ public class PinInPostActivated implements PreSubmitCallbackStateHandler<AsylumC
     }
 
     private void buildSubscriptions(AsylumCase asylumCase) {
-        Optional<ContactPreference> contactPreference = asylumCase.read(AsylumCaseFieldDefinition.CONTACT_PREFERENCE);
-        Optional<String> mobileNumber = asylumCase.read(AsylumCaseFieldDefinition.MOBILE_NUMBER);
+        Optional<ContactPreference> contactPreference = asylumCase.read(AsylumCaseFieldDefinition.CONTACT_PREFERENCE, ContactPreference.class);
+        Optional<String> mobileNumber = asylumCase.read(AsylumCaseFieldDefinition.MOBILE_NUMBER, String.class);
 
         Subscriber subscriber = new Subscriber(
             SubscriberType.APPELLANT,
@@ -131,7 +136,7 @@ public class PinInPostActivated implements PreSubmitCallbackStateHandler<AsylumC
     }
 
     private void updateExistingSubscriptions(AsylumCase asylumCase, List<IdValue<Subscriber>> existingSubscriptions) {
-        Subscriber existingSubscriber = existingSubscriptions.get(0).getValue();
+        Subscriber existingSubscriber = existingSubscriptions.getFirst().getValue();
         String existingSubscriberEmail = existingSubscriber.getEmail();
         String authUserEmail = userDetailsProvider.getUserDetails().getEmailAddress();
         if (existingSubscriber.getWantsEmail() == YesOrNo.YES && !existingSubscriberEmail.equals(authUserEmail)) {
@@ -152,7 +157,7 @@ public class PinInPostActivated implements PreSubmitCallbackStateHandler<AsylumC
     }
 
     private void updateReasonForAppeal(AsylumCase asylumCase) {
-        if (asylumCase.read(AsylumCaseFieldDefinition.REASONS_FOR_APPEAL_DECISION).isEmpty()) {
+        if (asylumCase.read(AsylumCaseFieldDefinition.REASONS_FOR_APPEAL_DECISION, String.class).isEmpty()) {
             Optional<List<IdValue<DocumentWithMetadata>>> legalRepDocumentsOptional =
                 asylumCase.read(LEGAL_REPRESENTATIVE_DOCUMENTS);
             List<IdValue<DocumentWithMetadata>> caseArgumentDocuments = legalRepDocumentsOptional.orElse(emptyList()).stream()
@@ -160,8 +165,8 @@ public class PinInPostActivated implements PreSubmitCallbackStateHandler<AsylumC
                 .collect(Collectors.toList());
 
             if (!caseArgumentDocuments.isEmpty()) {
-                asylumCase.write(AsylumCaseFieldDefinition.REASONS_FOR_APPEAL_DECISION, caseArgumentDocuments.get(0).getValue().getDescription());
-                asylumCase.write(AsylumCaseFieldDefinition.REASONS_FOR_APPEAL_DATE_UPLOADED, caseArgumentDocuments.get(0).getValue().getDateUploaded());
+                asylumCase.write(AsylumCaseFieldDefinition.REASONS_FOR_APPEAL_DECISION, caseArgumentDocuments.getFirst().getValue().getDescription());
+                asylumCase.write(AsylumCaseFieldDefinition.REASONS_FOR_APPEAL_DATE_UPLOADED, caseArgumentDocuments.getFirst().getValue().getDateUploaded());
                 asylumCase.write(AsylumCaseFieldDefinition.REASONS_FOR_APPEAL_DOCUMENTS, caseArgumentDocuments);
             }
         }

@@ -42,13 +42,9 @@ class FlagCaseConfirmationTest {
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
-        assertThat(
-            callbackResponse.getConfirmationHeader().get())
-            .contains("You've flagged this case");
+        assertTrue(callbackResponse.getConfirmationHeader().get().contains("You've flagged this case"));
 
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("What happens next");
+        assertTrue(callbackResponse.getConfirmationBody().get().contains("What happens next"));
 
         assertThat(
             callbackResponse.getConfirmationBody().get())

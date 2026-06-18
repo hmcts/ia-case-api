@@ -11,7 +11,6 @@ java:
     POSTGRES_USERNAME: hmcts
     POSTGRES_PASSWORD: ${GENERIC_VALUES_PREVIEW_YAML_PASS}
     POSTGRES_CONNECTION_OPTIONS: ""
-    #Un comment APIs if you need to test a local version.
     IA_CASE_DOCUMENTS_API_URL: https://${SERVICE_NAME}-documents-api.preview.platform.hmcts.net
     IA_CASE_NOTIFICATIONS_API_URL: https://${SERVICE_NAME}-notifications-api.preview.platform.hmcts.net
     IA_CASE_PAYMENTS_API_URL: https://${SERVICE_NAME}-payments-api.preview.platform.hmcts.net
@@ -39,7 +38,11 @@ java:
     SAVE_NOTIFICATIONS_TO_DATA_EVENT_ENABLED: true
     SAVE_NOTIFICATIONS_DATA_SCHEDULE_HOUR: 16
     SAVE_NOTIFICATIONS_DATA_SCHEDULE_MAX_MINUTES: 5
-    HOME_OFFICE_VALIDATION_ENABLED: "false"
+    # Set HOME_OFFICE_VALIDATION_ENABLED: "true" if you want to run the validation against the mock HO validation API in Preview; otherwise leave at "false".
+    # The mock HO validation API lives at http://ia-home-office-mock-api-aat.service.core-compute-aat.internal/ichallenge/applications/v1/1111-2222-3333-4444
+    # (you can use any valid UAN at the end; but in ExUI you must enter the expected UAN, name and DOB in order to proceed past validation)
+    HOME_OFFICE_VALIDATION_ENABLED: "false" # Do not remove this this environment variable!
+    STATUTORY_TIMEFRAME_LIVE_DATE: "2026-05-01"
   keyVaults:
     ia:
       resourceGroup: ia
@@ -470,7 +473,7 @@ ia-bail-case-api:
       S2S_URL: "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
       PROF_REF_DATA_URL: "http://rd-professional-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
       LOCATION_REF_DATA_URL: "http://rd-location-ref-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
-      COMMON_DATA_API: "http://rd-professional-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
+      COMMON_DATA_API: "http://rd-commondata-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
       IA_CASE_DOCUMENTS_API_URL: https://${SERVICE_NAME}-documents-api.preview.platform.hmcts.net
       IA_CASE_NOTIFICATIONS_API_URL: https://${SERVICE_NAME}-notifications-api.preview.platform.hmcts.net
       CASE_DOCUMENT_AM_URL: http://${SERVICE_NAME}-ccd-case-document-am-api
@@ -510,7 +513,7 @@ ia-bail-case-api:
             alias: IA_REDIS_ENCRYPTION_KEY
 
 ia-timed-event-service:
-  enabled: ${ENABLE_TES}
+  enabled: true
   java:
     imagePullPolicy: Always
     image: hmctsprod.azurecr.io/ia/timed-event-service:latest
@@ -584,6 +587,11 @@ ia-home-office-integration-api:
       ROLE_ASSIGNMENT_URL: https://am-role-assignment-${SERVICE_FQDN}
       IA_IDAM_REDIRECT_URI: https://${SERVICE_NAME}-home-office-integration-api.preview.platform.hmcts.net/oauth2/callback
       CCD_URL: http://{{ .Release.Name }}-ccd-data-store-api
+      POSTGRES_HOST: ia-preview.postgres.database.azure.com
+      POSTGRES_PORT: 5432
+      POSTGRES_NAME: "pr-${CHANGE_ID}-ia-case-api"
+      POSTGRES_USERNAME: hmcts
+      POSTGRES_PASSWORD: ${GENERIC_VALUES_PREVIEW_YAML_PASS}
     keyVaults:
       ia:
         resourceGroup: ia
@@ -686,6 +694,7 @@ ia-aip-frontend:
       SECURE_SESSION: false
       TRACKING_SCRIPTS: false
       TIMELINE_ENABLED: true
+      ASK_FOR_MORE_TIME_ENABLED: true
     keyVaults:
       ia:
         resourceGroup: ia
@@ -792,12 +801,12 @@ xui-webapp:
       SERVICES_PRD_API: http://rd-professional-api-aat.service.core-compute-aat.internal
       SERVICES_CCD_CASE_ASSIGNMENT_API: https://aac-${SERVICE_FQDN}
       SERVICES_DOCUMENTS_API_V2: http://${SERVICE_NAME}-ccd-case-document-am-api
-      SERVICES_WORK_ALLOCATION_TASK_API: ${SERVICES_WORK_ALLOCATION_TASK_API}
-      SERVICES_WA_WORKFLOW_API_URL: ${SERVICES_WA_WORKFLOW_API_URL}
+      SERVICES_WORK_ALLOCATION_TASK_API: https://wa-task-management-api-ia-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net
+      SERVICES_WA_WORKFLOW_API_URL: https://wa-task-monitor-ia-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net
       SERVICES_IDAM_ISS_URL: https://forgerock-am.service.core-compute-idam-aat2.internal:8443/openam/oauth2/realms/root/realms/hmcts
       SERVICES_ROLE_ASSIGNMENT_API: https://am-role-assignment-ia-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net
       SERVICES_ROLE_ASSIGNMENT_MAPPING_API: https://am-org-role-mapping-service-${SERVICE_FQDN}
-      WA_SUPPORTED_JURISDICTIONS: ${WA_SUPPORTED_JURISDICTIONS}
+      WA_SUPPORTED_JURISDICTIONS: ${WA_SUPPORTED_JURISDICTIONS:}
       JURISDICTIONS: IA
       GLOBAL_SEARCH_SERVICES: IA
       LAUNCH_DARKLY_CLIENT_ID: 5de6610b23ce5408280f2268
@@ -827,12 +836,15 @@ xui-webapp:
             alias: mc-s2s-client-secret
           - name: mc-idam-client-secret
             alias: mc-idam-client-secret
+          - name: mc-session-secret
+            alias: mc-session-secret
           - name: system-user-name
             alias: system-user-name
           - name: system-user-password
             alias: system-user-password
           - name: mc-session-secret
             alias: mc-session-secret
+
 ccd:
   enabled: true
   ccd:
@@ -917,7 +929,7 @@ ccd:
         DATA_STORE_DB_NAME: "pr-${CHANGE_ID}-data-store"
         DATA_STORE_DB_USERNAME: hmcts
         DATA_STORE_DB_PASSWORD: ${GENERIC_VALUES_PREVIEW_YAML_PASS}
-        DATA_STORE_IDAM_KEY: ${DATA_STORE_S2S_KEY}        
+        DATA_STORE_IDAM_KEY: ${DATA_STORE_S2S_KEY}
         DATA_STORE_CROSS_JURISDICTIONAL_ROLES: caseworker-caa,caseworker-approver
         DATA_STORE_S2S_AUTHORISED_SERVICES: ccd_gw,ccd_gateway,ccd_data,ccd_ps,aac_manage_case_assignment,xui_webapp,ccd_case_document_am_api,iac,em_ccd_orchestrator,wa_workflow_api,wa_task_configuration_api,wa_task_management_api,wa_task_monitor,wa_case_event_handler,am_role_assignment_service,ccpay_bubble,ctsc_work_allocation,pcq_consolidation_service,em_npa_app,hmc_cft_hearing_service,ccd_next_hearing_date_updater,em_annotation_app,bulk_scan_orchestrator
         IDAM_API_BASE_URL: https://idam-api.aat.platform.hmcts.net
@@ -931,6 +943,7 @@ ccd:
         DEFINITION_STORE_HOST: https://ccd-definition-store-${SERVICE_FQDN}
         ELASTIC_SEARCH_ENABLED: true
         ELASTIC_SEARCH_HOSTS: ${SERVICE_NAME}-es-master:9200
+        ELASTIC_SEARCH_SCHEME: http
         ELASTIC_SEARCH_DATA_NODES_HOSTS: http://${SERVICE_NAME}-es-master:9200
         ENABLE_ATTRIBUTE_BASED_ACCESS_CONTROL: true
         ENABLE_PSEUDO_ROLE_ASSIGNMENTS_GENERATION: true
@@ -1009,29 +1022,31 @@ ccd:
         OIDC_ISSUER: https://forgerock-am.service.core-compute-idam-aat2.internal:8443/openam/oauth2/hmcts
         ELASTIC_SEARCH_ENABLED: true
         ELASTIC_SEARCH_HOST: ${SERVICE_NAME}-es-master
+        ELASTIC_SEARCH_SCHEME: http
         ELASTIC_SEARCH_FAIL_ON_IMPORT: false
         USER_PROFILE_HOST: https://ccd-user-profile-api-${SERVICE_FQDN}
       keyVaults: [ ]
       ingressHost: ccd-definition-store-${SERVICE_FQDN}
 
   elasticsearch:
+    image: hmctsprod.azurecr.io/imported/elastic/elasticsearch
+    imageTag: 9.2.3
     nameOverride: ${SERVICE_NAME}-es
     clusterName: "es"
+    createCert: false
+    protocol: http
     replicas: 1
     minimumMasterNodes: 1
     antiAffinity: "soft"
     esJavaOpts: "-Xmx512m -Xms512m"
     # Their tests delete the pod after succeeding, we pass --logs to the test command which fail if the pod has already been deleted
     # The tests do pass, at least as of 2023-01-19
+    esConfig:
+      elasticsearch.yml: |
+        action.auto_create_index: .security*,.watches,.triggered_watches,.watcher-history-*,.logstash_dead_letter,.ml*,ccd-logstash-dead-letter
+        xpack.security.enabled: false
     tests:
       enabled: false
-    extraEnvs:
-      - name: discovery.type
-        value: single-node
-      - name: cluster.initial_master_nodes
-        value: ""
-      - name: action.auto_create_index
-        value: .security*,.watches,.triggered_watches,.watcher-history-*,.logstash_dead_letter,.ml*
     persistence:
       enabled: false
     ingress:
@@ -1042,14 +1057,14 @@ ccd:
       #     paths:
       #       - path: /
   logstash:
-    image: "hmctsprod.azurecr.io/imported/logstash/logstash"
-    imageTag: "7.16.1"
+    image: "hmctsprod.azurecr.io/imported/elastic/logstash"
+    imageTag: "9.2.4"
     imagePullPolicy: "IfNotPresent"
     logstashJavaOpts: "-Xmx1g -Xms512M"
     extraInitContainers: |
       - name: download-postgres-jdbc
         image: hmctsprod.azurecr.io/curl:7.70.0
-        command: ['curl', '-L', 'https://jdbc.postgresql.org/download/postgresql-42.2.18.jar', '-o', '/logstash-lib/postgresql.jar']
+        command: ['curl', '-L', 'https://jdbc.postgresql.org/download/postgresql-42.7.9.jar', '-o', '/logstash-lib/postgresql.jar']
         volumeMounts:
         - name: logstash-lib
           mountPath: /logstash-lib
@@ -1067,11 +1082,12 @@ ccd:
         readOnly: true
     logstashConfig:
       logstash.yml: |
-        http.host: 0.0.0.0
+        api.http.host: 0.0.0.0
         xpack.monitoring.enabled: false
         xpack.monitoring.elasticsearch.hosts: ["http://{{ .Release.Name }}-es-master:9200"]
         queue.type: persisted
         dead_letter_queue.enable: true
+        pipeline.ecs_compatibility: disabled
       pipelines.yml: |
         - pipeline.id: main
           path.config: "/usr/share/logstash/pipeline/{01_input,02_filter,03_output}.conf"
@@ -1219,6 +1235,9 @@ em-ccdorc:
       CCD_DATA_API_URL: https://ccd-data-store-api-${SERVICE_FQDN}
       CALLBACK_DOMAIN: em-ccdorc-${SERVICE_FQDN}
       CALLBACK_HTTP_SCHEME: https
+      IDAM_SECURITY_ALLOWED_ISSUERS_0: https://idam-web-public.aat.platform.hmcts.net/o
+      IDAM_SECURITY_ALLOWED_ISSUERS_1: https://hmcts-access.aat.platform.hmcts.net/o
+      IDAM_SECURITY_ALLOWED_ISSUERS_2: https://forgerock-am.service.core-compute-idam-aat2.internal:8443/openam/oauth2/realms/root/realms/hmcts
     keyVaults:
       em-ccdorc:
         resourceGroup: em-ccdorc
@@ -1246,6 +1265,10 @@ em-stitching:
       SPRING_DATASOURCE_PASSWORD: ${GENERIC_VALUES_PREVIEW_YAML_PASS}
       SPRING_DATASOURCE_OPTIONS: "?ssl=disable"
       ENABLE_DB_MIGRATE: true
+      CALLBACK_HTTP_SCHEME: https
+      CALLBACK_HTTP_HOST_PORT: 80
+      CALLBACK_DOMAINS: em-ccdorc-${SERVICE_FQDN}
+      CALLBACK_ENV: PR
       RUN_DB_MIGRATION_ON_STARTUP: true
       FLYWAY_POSTGRESQL_TRANSACTIONAL_LOCK: false
       IDAM_API_BASE_URI: https://idam-api.aat.platform.hmcts.net
@@ -1254,6 +1277,9 @@ em-stitching:
       DM_STORE_APP_URL: http://dm-store-aat.service.core-compute-aat.internal
       CDAM_URL: http://${SERVICE_NAME}-ccd-case-document-am-api
       APPINSIGHTS_INSTRUMENTATIONKEY: '00000000-0000-0000-0000-000000000000'
+      IDAM_SECURITY_ALLOWED_ISSUERS_0: https://idam-web-public.aat.platform.hmcts.net/o
+      IDAM_SECURITY_ALLOWED_ISSUERS_1: https://hmcts-access.aat.platform.hmcts.net/o
+      IDAM_SECURITY_ALLOWED_ISSUERS_2: https://forgerock-am.service.core-compute-idam-aat2.internal:8443/openam/oauth2/realms/root/realms/hmcts
     keyVaults:
       em-stitching:
         resourceGroup: em-stitching
@@ -1319,89 +1345,7 @@ aac-manage-case-assignment:
 # https://github.com/hmcts/wa-chart/blob/master/wa/values.yaml
 # 1.0.4
 wa:
-  enabled: ${ENABLE_WA}
-  global:
-    postgresUsername: hmcts
-    postgresSecret: postgres
-    postgresHost: ia-preview.postgres.database.azure.com
-    databaseNamePrefix: "pr-${CHANGE_ID}-"
-  wa-initiation-batch:
-    job:
-      releaseNameOverride: "{{ .Release.Name }}-wa-task-batch"
-  wa-reconfiguration-batch:
-    job:
-      releaseNameOverride: "{{ .Release.Name }}-reconfiguration"
-  wa-termination-batch:
-    job:
-      releaseNameOverride: "{{ .Release.Name }}-termination-batch"
-  wa-message-cron-service:
-    job:
-      releaseNameOverride: "{{ .Release.Name }}-wa-message-cron"
-
-  camunda-bpm:
-    java:
-      devcpuRequests: 500m
-      devmemoryRequests: 1Gi
-      devcpuLimits: 2
-      devmemoryLimits: 4Gi
-      environment:
-        CAMUNDA_DB_CONN_OPTIONS: "?stringtype=unspecified&reWriteBatchedInserts=true&sslmode=require"
-
-  wa-task-management-api:
-    java:
-      ingressHost: wa-task-management-api-${SERVICE_FQDN}
-      devcpuRequests: 500m
-      devmemoryRequests: 1Gi
-      devcpuLimits: 2
-      devmemoryLimits: 4Gi
-      environment:
-        CAMUNDA_URL: "http://{{ .Release.Name }}-camunda/engine-rest"
-        IDAM_URL: "https://idam-api.{{ .Values.global.environment }}.platform.hmcts.net"
-        S2S_URL: "http://rpe-service-auth-provider-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
-        OPEN_ID_IDAM_URL: "https://idam-web-public.{{ .Values.global.environment }}.platform.hmcts.net"
-        ROLE_ASSIGNMENT_URL: https://am-role-assignment-${SERVICE_FQDN}
-        ALLOWED_JURISDICTIONS: ia
-        ALLOWED_CASE_TYPES: asylum
-
-  wa-case-event-handler:
-    java:
-      ingressHost: wa-case-event-handler-${SERVICE_FQDN}
-      releaseNameOverride: ${SERVICE_NAME}-wa-case-event-handler
-      secrets:
-        AZURE_SERVICE_BUS_CONNECTION_STRING:
-          secretRef: ia-sb-preview
-          key: connectionString
-      devcpuRequests: 500m
-      devmemoryRequests: 1Gi
-      devcpuLimits: 2
-      devmemoryLimits: 4Gi
-      environment:
-        CAMUNDA_URL: "http://{{ .Release.Name }}-camunda/engine-rest"
-        CCD_URL: "http://{{ .Release.Name }}-ccd-data-store-api"
-        CCD_SEARCH_URL: "http://{{ .Release.Name }}-ccd-data-store-api"
-        ROLE_ASSIGNMENT_URL: https://am-role-assignment-${SERVICE_FQDN}
-        WA_WORKFLOW_API_URL: "http://{{ .Release.Name }}-wa-workflow-api"
-        WA_TASK_MANAGEMENT_API_URL: "http://{{ .Release.Name }}-wa-task-management-api"
-        AZURE_SERVICE_BUS_TOPIC_NAME: ${SERVICE_NAME}-ccd-case-events
-        AZURE_SERVICE_BUS_SUBSCRIPTION_NAME: ${SERVICE_NAME}-ccd-case-events
-        AZURE_SERVICE_BUS_CCD_CASE_EVENTS_SUBSCRIPTION_NAME: ${SERVICE_NAME}-ccd-case-events
-  wa-task-monitor:
-    java:
-      ingressHost: wa-task-monitor-${SERVICE_FQDN}
-      environment:
-        WA_TASK_MANAGEMENT_API_URL: http://{{ .Release.Name }}-wa-task-management-api
-  wa-workflow-api:
-    java:
-      devcpuRequests: 500m
-      devmemoryRequests: 1Gi
-      devcpuLimits: 2
-      devmemoryLimits: 4Gi
-      environment:
-        DB_READER_USERNAME: "hmcts"
-  wa:
-    postgresql:
-      enabled: false
-
+  enabled: false
 
 servicebus:
   enabled: true
@@ -1458,7 +1402,7 @@ ccd-message-publisher:
 am-org-role-mapping-service:
   enabled: true
   java:
-    image: 'hmctsprod.azurecr.io/am/org-role-mapping-service:latest'
+    image: hmctsprod.azurecr.io/am/org-role-mapping-service:latest
     ingressHost: am-org-role-mapping-service-${SERVICE_FQDN}
     releaseNameOverride: ${SERVICE_NAME}-am-org-role-mapping-service
     secrets:
@@ -1597,7 +1541,7 @@ ia-cron-hearings-processor:
   enabled: true
   job:
     kind: CronJob
-    image: 'hmctsprod.azurecr.io/ia/hearings-api:latest'
+    image: hmctsprod.azurecr.io/ia/hearings-api:latest
     releaseNameOverride: ${SERVICE_NAME}-ia-cron-hearings-processor
     name: ${SERVICE_NAME}-ia-cron-hearings-processor
     schedule: "*/5 * * * *"
@@ -1693,11 +1637,6 @@ postgresql:
       - name: "pr-${CHANGE_ID}-role_assignment"
       - name: "pr-${CHANGE_ID}-ia-case-api"
       - name: "pr-${CHANGE_ID}-emstitch"
-      - name: "pr-${CHANGE_ID}-wa-case-event-handler"
-      - name: "pr-${CHANGE_ID}-wa_workflow_api"
-      - name: "pr-${CHANGE_ID}-camunda"
-      - name: "pr-${CHANGE_ID}-cft_task_db"
-      - name: "pr-${CHANGE_ID}-cft_task_db_replica"
       - name: "pr-${CHANGE_ID}-org_role_mapping"
       - name: "pr-${CHANGE_ID}-ia_timed_event_service"
       - name: "pr-${CHANGE_ID}-hmc-cft-hearing-service"

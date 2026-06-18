@@ -109,7 +109,7 @@ public class InternalCaseToLegallyRepresentedHandler implements PreSubmitCallbac
             List<LegRepAddressUk> addresses = organisationEntityResponse.getContactInformation() == null
                     ? Collections.emptyList() : organisationEntityResponse.getContactInformation();
             if (!addresses.isEmpty()) {
-                LegRepAddressUk legRepAddressUk = addresses.get(0);
+                LegRepAddressUk legRepAddressUk = addresses.getFirst();
                 addressUk = new AddressUk(
                         legRepAddressUk.getAddressLine1() == null ? "" : legRepAddressUk.getAddressLine1(),
                         legRepAddressUk.getAddressLine2() == null ? "" : legRepAddressUk.getAddressLine2(),

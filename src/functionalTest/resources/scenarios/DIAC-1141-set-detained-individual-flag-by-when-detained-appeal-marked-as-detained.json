@@ -1,6 +1,5 @@
 {
   "description": "DIAC-1141-set-detained-individual-flag-by-when-detained-appeal-submitted",
-
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "AdminOfficer",

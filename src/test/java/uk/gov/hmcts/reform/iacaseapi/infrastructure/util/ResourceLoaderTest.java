@@ -1,18 +1,21 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.util;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static uk.gov.hmcts.reform.iacaseapi.infrastructure.utils.ResourceLoader.loadJson;
 import static uk.gov.hmcts.reform.iacaseapi.infrastructure.utils.ResourceLoader.loadResource;
 
 import java.nio.charset.Charset;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.utils.ResourceLoader;
 
-@RunWith(MockitoJUnitRunner.class)
+@MockitoSettings(strictness = Strictness.WARN)
+@ExtendWith(MockitoExtension.class)
 public class ResourceLoaderTest {
 
     private String filePath = "testFile.txt";

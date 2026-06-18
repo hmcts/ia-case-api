@@ -66,7 +66,7 @@ class StrategicCaseFlagServiceTest {
 
         assertTrue(activated);
         assertNotNull(strategicCaseFlag);
-        CaseFlagValue caseFlagValue = strategicCaseFlag.getDetails().get(0).getValue();
+        CaseFlagValue caseFlagValue = strategicCaseFlag.getDetails().getFirst().getValue();
         assertEquals(ACTIVE_STATUS, caseFlagValue.getStatus());
         assertEquals(HEARING_LOOP.getFlagCode(), caseFlagValue.getFlagCode());
         assertEquals(HEARING_LOOP.getName(), caseFlagValue.getName());
@@ -84,7 +84,7 @@ class StrategicCaseFlagServiceTest {
 
         assertTrue(activated);
         assertNotNull(strategicCaseFlag);
-        CaseFlagValue caseFlagValue = strategicCaseFlag.getDetails().get(0).getValue();
+        CaseFlagValue caseFlagValue = strategicCaseFlag.getDetails().getFirst().getValue();
         assertEquals(ACTIVE_STATUS, caseFlagValue.getStatus());
         assertEquals(INTERPRETER_LANGUAGE_FLAG.getFlagCode(), caseFlagValue.getFlagCode());
         assertEquals(INTERPRETER_LANGUAGE_FLAG.getName(), caseFlagValue.getName());
@@ -197,7 +197,7 @@ class StrategicCaseFlagServiceTest {
 
         assertTrue(strategicCaseFlagService.deactivateFlag(HEARING_LOOP, "dateTime"));
         strategicCaseFlag = strategicCaseFlagService.getStrategicCaseFlag();
-        CaseFlagValue caseFlagValue = strategicCaseFlag.getDetails().get(0).getValue();
+        CaseFlagValue caseFlagValue = strategicCaseFlag.getDetails().getFirst().getValue();
         assertEquals(INACTIVE_STATUS, caseFlagValue.getStatus());
         assertEquals(HEARING_LOOP.getFlagCode(), caseFlagValue.getFlagCode());
         assertEquals(HEARING_LOOP.getName(), caseFlagValue.getName());
@@ -221,7 +221,7 @@ class StrategicCaseFlagServiceTest {
 
         assertFalse(strategicCaseFlagService.deactivateFlag(STEP_FREE_WHEELCHAIR_ACCESS, "dateTime"));
         strategicCaseFlag = strategicCaseFlagService.getStrategicCaseFlag();
-        CaseFlagValue caseFlagValue = strategicCaseFlag.getDetails().get(0).getValue();
+        CaseFlagValue caseFlagValue = strategicCaseFlag.getDetails().getFirst().getValue();
         assertEquals("Active", caseFlagValue.getStatus());
         assertEquals(HEARING_LOOP.getFlagCode(), caseFlagValue.getFlagCode());
         assertEquals(HEARING_LOOP.getName(), caseFlagValue.getName());
