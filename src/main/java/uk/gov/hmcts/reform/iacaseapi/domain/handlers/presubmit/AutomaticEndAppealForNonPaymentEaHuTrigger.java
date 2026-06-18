@@ -34,19 +34,16 @@ public class AutomaticEndAppealForNonPaymentEaHuTrigger implements PreSubmitCall
     private final DateProvider dateProvider;
     private final Scheduler scheduler;
     int schedule14DaysInMinutes;
-    int schedule28DaysInMinutes;
 
     public AutomaticEndAppealForNonPaymentEaHuTrigger(
         DateProvider dateProvider,
         Scheduler scheduler,
-        @Value("${paymentEaHuNoRemission.dueInMinutes}") int schedule14DaysInMinutes,
-        @Value("${paymentEaHuNoRemission.dueInMinutesDetained}") int schedule28DaysInMinutes
+        @Value("${paymentEaHuNoRemission.dueInMinutes}") int schedule14DaysInMinutes
 
     ) {
         this.dateProvider = dateProvider;
         this.scheduler = scheduler;
         this.schedule14DaysInMinutes = schedule14DaysInMinutes;
-        this.schedule28DaysInMinutes = schedule28DaysInMinutes;
 
     }
 
