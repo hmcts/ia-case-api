@@ -8,9 +8,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REQUEST_HEARING_REQUIREMENTS_AVAILABLE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STF_24W_CURRENT_STATUS_AUTO_GENERATED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPLOAD_HOME_OFFICE_APPEAL_RESPONSE_ACTION_AVAILABLE;
 
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -57,6 +60,7 @@ class RequestRespondentReviewHandlerTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONDENT_REVIEW);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class)).thenReturn(Optional.empty());
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             requestRespondentReviewHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -64,12 +68,13 @@ class RequestRespondentReviewHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(asylumCase, times(1)).write(asylumExtractorCaptor.capture(), asylumCaseValuesArgumentCaptor.capture());
+        verify(asylumCase, times(2)).write(asylumExtractorCaptor.capture(), asylumCaseValuesArgumentCaptor.capture());
 
         List<AsylumCaseFieldDefinition> extractors = asylumExtractorCaptor.getAllValues();
         List<YesOrNo> asylumCaseValues = asylumCaseValuesArgumentCaptor.getAllValues();
 
         verify(asylumCase, times(1)).write(UPLOAD_HOME_OFFICE_APPEAL_RESPONSE_ACTION_AVAILABLE, YesOrNo.YES);
+        verify(asylumCase, times(1)).write(REQUEST_HEARING_REQUIREMENTS_AVAILABLE, YesOrNo.YES);
     }
 
     @Test
