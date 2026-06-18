@@ -34,6 +34,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 
 @ExtendWith(MockitoExtension.class)
 class HomeOfficeReferenceHandlerOnSubmitTest {
@@ -215,7 +216,7 @@ class HomeOfficeReferenceHandlerOnSubmitTest {
         when(asylumCase.read(
             HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY,
             String.class))
-            .thenReturn(Optional.of(json));
+            .thenReturn(Optional.of(HandlerUtils.encrypt(json)));
 
         when(callback.getCaseDetails())
             .thenReturn(caseDetails);
@@ -300,7 +301,7 @@ class HomeOfficeReferenceHandlerOnSubmitTest {
         when(asylumCase.read(
             HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY,
             String.class))
-            .thenReturn(Optional.of(json));
+            .thenReturn(Optional.of(HandlerUtils.encrypt(json)));
 
         handler.handle(
             PreSubmitCallbackStage.ABOUT_TO_SUBMIT,
@@ -390,7 +391,7 @@ class HomeOfficeReferenceHandlerOnSubmitTest {
         when(asylumCase.read(
             HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY,
             String.class))
-            .thenReturn(Optional.of(json));
+            .thenReturn(Optional.of(HandlerUtils.encrypt(json)));
 
         handler.handle(
             PreSubmitCallbackStage.ABOUT_TO_SUBMIT,
@@ -518,8 +519,7 @@ class HomeOfficeReferenceHandlerOnSubmitTest {
         when(asylumCase.read(
             HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY,
             String.class))
-            .thenReturn(Optional.of(
-                "[{\"id\":\"1\",\"value\":{\"familyName\":\"Smith\"}}]"
+            .thenReturn(Optional.of(HandlerUtils.encrypt("[{\"id\":\"1\",\"value\":{\"familyName\":\"Smith\"}}]")
             ));
 
         handler.handle(
