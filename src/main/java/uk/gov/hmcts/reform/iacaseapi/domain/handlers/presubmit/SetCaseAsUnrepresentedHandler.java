@@ -42,6 +42,7 @@ public class SetCaseAsUnrepresentedHandler implements PreSubmitCallbackHandler<A
                 .getCaseData();
 
         asylumCase.write(HAS_ADDED_LEGAL_REP_DETAILS, YesOrNo.NO);
+        asylumCase.write(APPELLANTS_REPRESENTATION, YesOrNo.NO);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
