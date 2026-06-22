@@ -83,7 +83,7 @@ wa:
         CCD_SEARCH_URL: "http://{{ .Release.Name }}-ccd-data-store-api"
         ROLE_ASSIGNMENT_URL: https://am-role-assignment-${SERVICE_FQDN}
         WA_WORKFLOW_API_URL: "http://{{ .Release.Name }}-wa-workflow-api"
-        WA_TASK_MANAGEMENT_API_URL: "http://{{ .Release.Name }}-wa-task-management-api"
+        WA_TASK_MANAGEMENT_API_URL: "https://github.com/hmcts/wa-task-management-api/pull/1644"
         AZURE_SERVICE_BUS_TOPIC_NAME: ${SERVICE_NAME}-ccd-case-events
         AZURE_SERVICE_BUS_SUBSCRIPTION_NAME: ${SERVICE_NAME}-ccd-case-events
         AZURE_SERVICE_BUS_CCD_CASE_EVENTS_SUBSCRIPTION_NAME: ${SERVICE_NAME}-ccd-case-events
