@@ -1,18 +1,17 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.service;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.config.DetentionFacilityAddressLoader;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.service.DetentionFacilityAddressProvider.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.service.DetentionFacilityAddressProvider.DetentionAddress;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.config.DetentionFacilityAddressLoader;
 
 class DetentionFacilityAddressProviderTest {
 

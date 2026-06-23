@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.config;
 
+import static org.springframework.security.config.Customizer.withDefaults;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
 import com.google.common.collect.ImmutableMap;
@@ -7,8 +8,9 @@ import java.util.*;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.convert.converter.Converter;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
@@ -26,7 +28,7 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.SpringAuthorizedRol
 @Configuration
 @ConfigurationProperties(prefix = "security")
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
+@EnableMethodSecurity(securedEnabled = true)
 public class SecurityConfiguration {
 
     private final List<String> anonymousPaths = new ArrayList<>();
@@ -47,14 +49,14 @@ public class SecurityConfiguration {
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
-        return (web) -> web.ignoring().mvcMatchers(
-            anonymousPaths
+        return (web) -> web.ignoring().requestMatchers(anonymousPaths
                 .stream()
                 .toArray(String[]::new)
         );
     }
 
     @Bean
+    @Order(2)
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
         JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
@@ -63,24 +65,39 @@ public class SecurityConfiguration {
 
         http
             .addFilterBefore(serviceAuthFiler, AbstractPreAuthenticatedProcessingFilter.class)
-            .sessionManagement().sessionCreationPolicy(STATELESS)
-            .and()
-            .exceptionHandling()
-            .and()
-            .csrf().disable()
-            .formLogin().disable()
-            .logout().disable()
-            .authorizeRequests().anyRequest().authenticated()
-            .and()
-            .oauth2ResourceServer()
-            .jwt()
-            .jwtAuthenticationConverter(jwtAuthenticationConverter)
-            .and()
-            .and()
-            .oauth2Client();
+            .sessionManagement(management -> management.sessionCreationPolicy(STATELESS))
+            .exceptionHandling(withDefaults())
+            .csrf(csrf -> csrf.disable())
+            .formLogin(login -> login.disable())
+            .logout(logout -> logout.disable())
+            .authorizeHttpRequests(requests -> requests.anyRequest().authenticated())
+            .oauth2ResourceServer(server -> server
+                .jwt(jwt -> jwt
+                    .jwtAuthenticationConverter(jwtAuthenticationConverter)
+                )
+            )
+            .oauth2Client(withDefaults());
 
         return http.build();
     }
+
+    @Bean
+    @Order(1)
+    public SecurityFilterChain supplementaryDetailsFilterChain(HttpSecurity http) throws Exception {
+        http
+            .securityMatcher("/supplementary-details")
+            .addFilterBefore(serviceAuthFiler, AbstractPreAuthenticatedProcessingFilter.class)
+            .sessionManagement(management -> management.sessionCreationPolicy(STATELESS))
+            .csrf(csrf -> csrf.disable())
+            .formLogin(login -> login.disable())
+            .logout(logout -> logout.disable())
+            .authorizeHttpRequests(requests -> requests
+                .anyRequest().permitAll()
+            );
+
+        return http.build();
+    }
+
 
     @Bean
     public AuthorizedRolesProvider authorizedRolesProvider() {
@@ -89,7 +106,6 @@ public class SecurityConfiguration {
 
     @Bean
     public CcdEventAuthorizor getCcdEventAuthorizor(AuthorizedRolesProvider authorizedRolesProvider) {
-
         return new CcdEventAuthorizor(
             ImmutableMap.copyOf(roleEventAccess),
             authorizedRolesProvider

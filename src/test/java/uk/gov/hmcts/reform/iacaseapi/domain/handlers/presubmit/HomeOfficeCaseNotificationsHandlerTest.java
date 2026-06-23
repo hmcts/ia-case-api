@@ -11,17 +11,47 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.DC;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.EA;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.EU;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.HU;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.PA;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.RP;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_IN_UK;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DIRECTION_EDIT_PARTIES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_NOTIFICATIONS_ELIGIBLE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_SEARCH_STATUS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_NOTIFICATION_TURNED_OFF;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_REMOTE_HEARING;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LIST_CASE_HEARING_CENTRE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LIST_CASE_HEARING_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre.GLASGOW;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.ADJOURN_HEARING_WITHOUT_DATE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.APPLY_FOR_FTPA_APPELLANT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.APPLY_FOR_FTPA_RESPONDENT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.CHANGE_DIRECTION_DUE_DATE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.DECIDE_FTPA_APPLICATION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.EDIT_CASE_LISTING;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.END_APPEAL;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.LEADERSHIP_JUDGE_FTPA_DECISION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.LIST_CASE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.REQUEST_RESPONDENT_EVIDENCE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.REQUEST_RESPONDENT_REVIEW;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.REQUEST_RESPONSE_AMEND;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.RESIDENT_JUDGE_FTPA_DECISION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SEND_DECISION_AND_REASONS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SEND_DIRECTION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.START_APPEAL;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.AWAITING_RESPONDENT_EVIDENCE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.RESPONDENT_REVIEW;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -34,7 +64,13 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.Direction;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DirectionTag;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.Parties;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
@@ -112,16 +148,12 @@ class HomeOfficeCaseNotificationsHandlerTest {
     void setUp() {
         homeOfficeCaseNotificationsHandler =
             new HomeOfficeCaseNotificationsHandler(featureToggler, homeOfficeApi);
-        when(featureToggler.getValue("home-office-notification-feature", false)).thenReturn(true);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
     }
 
     @Test
     void handle_should_error_if_appeal_type_is_not_present() {
-
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
-        when(featureToggler.getValue("home-office-uan-pa-rp-feature", false)).thenReturn(true);
 
         when(callback.getEvent()).thenReturn(LIST_CASE);
         when(homeOfficeApi.aboutToSubmit(callback)).thenReturn(asylumCase);
@@ -138,41 +170,14 @@ class HomeOfficeCaseNotificationsHandlerTest {
 
     @ParameterizedTest
     @MethodSource("eventAndAppealTypesData")
-    void should_call_home_office_api_and_update_the_case_for_pa_rp_appeal_types(Event event, AppealType appealType) {
+    void should_call_home_office_api_and_update_the_case_for_enabled_appeal_types(Event event, AppealType appealType) {
 
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
-        when(featureToggler.getValue("home-office-uan-pa-rp-feature", false)).thenReturn(true);
-
-        when(callback.getEvent()).thenReturn(event);
-        when(homeOfficeApi.aboutToSubmit(callback)).thenReturn(asylumCase);
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
-        when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.empty());
-        when(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class)).thenReturn(Optional.of("SUCCESS"));
-        when(asylumCase.read(HOME_OFFICE_NOTIFICATIONS_ELIGIBLE, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
-
-
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            homeOfficeCaseNotificationsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
-
-        assertNotNull(callbackResponse);
-        assertEquals(asylumCase, callbackResponse.getData());
-
-        if (Arrays.asList(PA, RP).contains(appealType)) {
-            verify(homeOfficeApi, times(1)).aboutToSubmit(callback);
-        } else {
-            verify(homeOfficeApi, times(0)).aboutToSubmit(callback);
-        }
-    }
-
-    @ParameterizedTest
-    @MethodSource("eventAndAppealTypesData")
-    void should_call_home_office_api_and_update_the_case_for_dc_ea_hu_appeal_types(Event event, AppealType appealType) {
-
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
-        when(featureToggler.getValue("home-office-uan-pa-rp-feature", false)).thenReturn(true);
-        when(featureToggler.getValue("home-office-uan-dc-ea-hu-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-pa-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-rp-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-ea-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-hu-feature", false)).thenReturn(false);
+        when(featureToggler.getValue("home-office-uan-dc-feature", false)).thenReturn(false);
+        when(featureToggler.getValue("home-office-uan-eu-feature", false)).thenReturn(false);
 
         when(callback.getEvent()).thenReturn(event);
         when(homeOfficeApi.aboutToSubmit(callback)).thenReturn(asylumCase);
@@ -190,33 +195,7 @@ class HomeOfficeCaseNotificationsHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(homeOfficeApi, times(1)).aboutToSubmit(callback);
-    }
-
-    @ParameterizedTest
-    @MethodSource("eventAndAppealTypesData")
-    void should_call_home_office_api_and_update_the_case_for_all_appeal_types(Event event, AppealType appealType) {
-
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
-        when(featureToggler.getValue("home-office-uan-dc-ea-hu-feature", false)).thenReturn(true);
-
-        when(callback.getEvent()).thenReturn(event);
-        when(homeOfficeApi.aboutToSubmit(callback)).thenReturn(asylumCase);
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
-        when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.empty());
-        when(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class)).thenReturn(Optional.of("SUCCESS"));
-        when(asylumCase.read(HOME_OFFICE_NOTIFICATIONS_ELIGIBLE, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
-
-
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            homeOfficeCaseNotificationsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
-
-        assertNotNull(callbackResponse);
-        assertEquals(asylumCase, callbackResponse.getData());
-
-        if (Arrays.asList(DC, EA, HU).contains(appealType)) {
+        if (Arrays.asList(PA, RP, EA).contains(appealType)) {
             verify(homeOfficeApi, times(1)).aboutToSubmit(callback);
         } else {
             verify(homeOfficeApi, times(0)).aboutToSubmit(callback);
@@ -269,67 +248,79 @@ class HomeOfficeCaseNotificationsHandlerTest {
 
     private static Stream<Arguments> eventAndAppealTypesData() {
 
-        return Stream.of(
+        return Stream.of(// Not AG
             Arguments.of(REQUEST_RESPONDENT_EVIDENCE, PA),
             Arguments.of(REQUEST_RESPONDENT_EVIDENCE, RP),
             Arguments.of(REQUEST_RESPONDENT_EVIDENCE, DC),
             Arguments.of(REQUEST_RESPONDENT_EVIDENCE, EA),
             Arguments.of(REQUEST_RESPONDENT_EVIDENCE, HU),
+            Arguments.of(REQUEST_RESPONDENT_EVIDENCE, EU),
             Arguments.of(REQUEST_RESPONDENT_REVIEW, PA),
             Arguments.of(REQUEST_RESPONDENT_REVIEW, RP),
             Arguments.of(REQUEST_RESPONDENT_REVIEW, DC),
             Arguments.of(REQUEST_RESPONDENT_REVIEW, EA),
             Arguments.of(REQUEST_RESPONDENT_REVIEW, HU),
+            Arguments.of(REQUEST_RESPONDENT_REVIEW, EU),
             Arguments.of(LIST_CASE, PA),
             Arguments.of(LIST_CASE, RP),
             Arguments.of(LIST_CASE, DC),
             Arguments.of(LIST_CASE, EA),
             Arguments.of(LIST_CASE, HU),
+            Arguments.of(LIST_CASE, EU),
             Arguments.of(EDIT_CASE_LISTING, PA),
             Arguments.of(EDIT_CASE_LISTING, RP),
             Arguments.of(EDIT_CASE_LISTING, DC),
             Arguments.of(EDIT_CASE_LISTING, EA),
             Arguments.of(EDIT_CASE_LISTING, HU),
+            Arguments.of(EDIT_CASE_LISTING, EU),
             Arguments.of(ADJOURN_HEARING_WITHOUT_DATE, PA),
             Arguments.of(ADJOURN_HEARING_WITHOUT_DATE, RP),
             Arguments.of(ADJOURN_HEARING_WITHOUT_DATE, DC),
             Arguments.of(ADJOURN_HEARING_WITHOUT_DATE, EA),
             Arguments.of(ADJOURN_HEARING_WITHOUT_DATE, HU),
+            Arguments.of(ADJOURN_HEARING_WITHOUT_DATE, EU),
             Arguments.of(SEND_DECISION_AND_REASONS, PA),
             Arguments.of(SEND_DECISION_AND_REASONS, RP),
             Arguments.of(SEND_DECISION_AND_REASONS, DC),
             Arguments.of(SEND_DECISION_AND_REASONS, EA),
             Arguments.of(SEND_DECISION_AND_REASONS, HU),
+            Arguments.of(SEND_DECISION_AND_REASONS, EU),
             Arguments.of(APPLY_FOR_FTPA_APPELLANT, PA),
             Arguments.of(APPLY_FOR_FTPA_APPELLANT, RP),
             Arguments.of(APPLY_FOR_FTPA_APPELLANT, DC),
             Arguments.of(APPLY_FOR_FTPA_APPELLANT, EA),
             Arguments.of(APPLY_FOR_FTPA_APPELLANT, HU),
+            Arguments.of(APPLY_FOR_FTPA_APPELLANT, EU),
             Arguments.of(APPLY_FOR_FTPA_RESPONDENT, PA),
             Arguments.of(APPLY_FOR_FTPA_RESPONDENT, RP),
             Arguments.of(APPLY_FOR_FTPA_RESPONDENT, DC),
             Arguments.of(APPLY_FOR_FTPA_RESPONDENT, EA),
             Arguments.of(APPLY_FOR_FTPA_RESPONDENT, HU),
+            Arguments.of(APPLY_FOR_FTPA_RESPONDENT, EU),
             Arguments.of(LEADERSHIP_JUDGE_FTPA_DECISION, PA),
             Arguments.of(LEADERSHIP_JUDGE_FTPA_DECISION, RP),
             Arguments.of(LEADERSHIP_JUDGE_FTPA_DECISION, DC),
             Arguments.of(LEADERSHIP_JUDGE_FTPA_DECISION, EA),
             Arguments.of(LEADERSHIP_JUDGE_FTPA_DECISION, HU),
+            Arguments.of(LEADERSHIP_JUDGE_FTPA_DECISION, EU),
             Arguments.of(RESIDENT_JUDGE_FTPA_DECISION, PA),
             Arguments.of(RESIDENT_JUDGE_FTPA_DECISION, RP),
             Arguments.of(RESIDENT_JUDGE_FTPA_DECISION, DC),
             Arguments.of(RESIDENT_JUDGE_FTPA_DECISION, EA),
             Arguments.of(RESIDENT_JUDGE_FTPA_DECISION, HU),
+            Arguments.of(RESIDENT_JUDGE_FTPA_DECISION, EU),
             Arguments.of(DECIDE_FTPA_APPLICATION, PA),
             Arguments.of(DECIDE_FTPA_APPLICATION, RP),
             Arguments.of(DECIDE_FTPA_APPLICATION, DC),
             Arguments.of(DECIDE_FTPA_APPLICATION, EA),
             Arguments.of(DECIDE_FTPA_APPLICATION, HU),
+            Arguments.of(DECIDE_FTPA_APPLICATION, EU),
             Arguments.of(END_APPEAL, PA),
             Arguments.of(END_APPEAL, RP),
             Arguments.of(END_APPEAL, DC),
             Arguments.of(END_APPEAL, EA),
-            Arguments.of(END_APPEAL, HU)
+            Arguments.of(END_APPEAL, HU),
+            Arguments.of(END_APPEAL, EU)
         );
     }
 
@@ -367,26 +358,33 @@ class HomeOfficeCaseNotificationsHandlerTest {
     }
 
     private static Stream<Arguments> hoFlagAndAppealTypesData() {
-        return Stream.of(
+        return Stream.of(// Not AG
             Arguments.of(true, PA),
             Arguments.of(true, RP),
             Arguments.of(true, DC),
             Arguments.of(true, EA),
             Arguments.of(true, HU),
+            Arguments.of(true, EU),
             Arguments.of(false, PA),
             Arguments.of(false, RP),
             Arguments.of(false, DC),
             Arguments.of(false, EA),
-            Arguments.of(false, HU)
+            Arguments.of(false, HU),
+            Arguments.of(false, EU)
         );
     }
 
     @ParameterizedTest
     @MethodSource("stateAndAppealTypesData")
-    void should_call_home_office_api_and_update_the_case_for_direction_due_date_pa_rp_appeal_types(State state, AppealType appealType) {
+    void should_call_home_office_api_and_update_the_case_for_direction_due_date_enabled_appeal_types(State state, AppealType appealType) {
 
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
-        when(featureToggler.getValue("home-office-uan-pa-rp-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-pa-feature", false)).thenReturn(false);
+        when(featureToggler.getValue("home-office-uan-rp-feature", false)).thenReturn(false);
+        when(featureToggler.getValue("home-office-uan-ea-feature", false)).thenReturn(false);
+        when(featureToggler.getValue("home-office-uan-hu-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-dc-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-eu-feature", false)).thenReturn(true);
+
         when(callback.getEvent()).thenReturn(CHANGE_DIRECTION_DUE_DATE);
         when(homeOfficeApi.aboutToSubmit(callback)).thenReturn(asylumCase);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -404,87 +402,30 @@ class HomeOfficeCaseNotificationsHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        if (Arrays.asList(PA, RP).contains(appealType)) {
+        if (Arrays.asList(HU, DC, EU).contains(appealType)) {
 
             verify(homeOfficeApi, times(1)).aboutToSubmit(callback);
         } else {
 
             verify(homeOfficeApi, times(0)).aboutToSubmit(callback);
         }
-    }
-
-    @ParameterizedTest
-    @MethodSource("stateAndAppealTypesData")
-    void should_call_home_office_api_and_update_the_case_for_direction_due_date_dc_ea_hu_appeal_types(State state, AppealType appealType) {
-
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
-        when(featureToggler.getValue("home-office-uan-dc-ea-hu-feature", false)).thenReturn(true);
-        when(callback.getEvent()).thenReturn(CHANGE_DIRECTION_DUE_DATE);
-        when(homeOfficeApi.aboutToSubmit(callback)).thenReturn(asylumCase);
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(callback.getCaseDetails().getState()).thenReturn(state);
-        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
-        when(asylumCase.read(DIRECTION_EDIT_PARTIES, Parties.class)).thenReturn(Optional.of(Parties.RESPONDENT));
-        when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
-        when(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class)).thenReturn(Optional.of("SUCCESS"));
-        when(asylumCase.read(HOME_OFFICE_NOTIFICATIONS_ELIGIBLE, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
-
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            homeOfficeCaseNotificationsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
-
-        assertNotNull(callbackResponse);
-        assertEquals(asylumCase, callbackResponse.getData());
-
-        if (Arrays.asList(DC, EA, HU).contains(appealType)) {
-
-            verify(homeOfficeApi, times(1)).aboutToSubmit(callback);
-        } else {
-
-            verify(homeOfficeApi, times(0)).aboutToSubmit(callback);
-        }
-    }
-
-    @ParameterizedTest
-    @MethodSource("stateAndAppealTypesData")
-    void should_call_home_office_api_and_update_the_case_for_direction_due_date(State state, AppealType appealType) {
-
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
-        when(featureToggler.getValue("home-office-uan-pa-rp-feature", false)).thenReturn(true);
-        when(featureToggler.getValue("home-office-uan-dc-ea-hu-feature", false)).thenReturn(true);
-        when(callback.getEvent()).thenReturn(CHANGE_DIRECTION_DUE_DATE);
-        when(homeOfficeApi.aboutToSubmit(callback)).thenReturn(asylumCase);
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(callback.getCaseDetails().getState()).thenReturn(state);
-        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
-        when(asylumCase.read(DIRECTION_EDIT_PARTIES, Parties.class)).thenReturn(Optional.of(Parties.RESPONDENT));
-        when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
-        when(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class)).thenReturn(Optional.of("SUCCESS"));
-        when(asylumCase.read(HOME_OFFICE_NOTIFICATIONS_ELIGIBLE, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
-
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            homeOfficeCaseNotificationsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
-
-        assertNotNull(callbackResponse);
-        assertEquals(asylumCase, callbackResponse.getData());
-
-        verify(homeOfficeApi, times(1)).aboutToSubmit(callback);
     }
 
     private static Stream<Arguments> stateAndAppealTypesData() {
 
-        return Stream.of(
+        return Stream.of(// Not AG
             Arguments.of(RESPONDENT_REVIEW, PA),
             Arguments.of(RESPONDENT_REVIEW, RP),
             Arguments.of(RESPONDENT_REVIEW, DC),
             Arguments.of(RESPONDENT_REVIEW, EA),
             Arguments.of(RESPONDENT_REVIEW, HU),
+            Arguments.of(RESPONDENT_REVIEW, EU),
             Arguments.of(AWAITING_RESPONDENT_EVIDENCE, PA),
             Arguments.of(AWAITING_RESPONDENT_EVIDENCE, RP),
             Arguments.of(AWAITING_RESPONDENT_EVIDENCE, DC),
             Arguments.of(AWAITING_RESPONDENT_EVIDENCE, EA),
-            Arguments.of(AWAITING_RESPONDENT_EVIDENCE, HU)
+            Arguments.of(AWAITING_RESPONDENT_EVIDENCE, HU),
+            Arguments.of(AWAITING_RESPONDENT_EVIDENCE, EU)
         );
     }
 

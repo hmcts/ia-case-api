@@ -56,7 +56,7 @@ public class AllocateTheCaseToMeHandler implements PreSubmitCallbackHandler<Asyl
 
         roleAssignmentService.assignRole(caseDetails.getId(), userDetails.getId());
 
-        caseData.write(CASE_WORKER_NAME, String.format("%s %s", userDetails.getForename(), userDetails.getSurname()));
+        caseData.write(CASE_WORKER_NAME, "%s %s".formatted(userDetails.getForename(), userDetails.getSurname()));
 
         return new PreSubmitCallbackResponse<>(caseData);
     }
