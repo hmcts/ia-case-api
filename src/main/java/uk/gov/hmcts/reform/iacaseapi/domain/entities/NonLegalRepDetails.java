@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.AddressUk;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
 @EqualsAndHashCode
 @ToString
@@ -22,6 +23,8 @@ public class NonLegalRepDetails {
     private AddressUk addressUk;
     @Setter
     private String address;
+    @Setter
+    private YesOrNo sameAsSponsor;
     private String phoneNumber;
 }
 
