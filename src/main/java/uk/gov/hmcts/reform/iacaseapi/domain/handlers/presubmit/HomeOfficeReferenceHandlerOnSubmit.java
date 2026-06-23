@@ -25,6 +25,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValueMixin;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 @Slf4j
@@ -59,9 +60,9 @@ public class HomeOfficeReferenceHandlerOnSubmit implements PreSubmitCallbackHand
         final AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
         Optional<List<IdValue<HomeOfficeAppellant>>> homeOfficeAppellantsOpt = asylumCase.read(HOME_OFFICE_APPELLANTS);
         List<IdValue<HomeOfficeAppellant>> homeOfficeAppellants = homeOfficeAppellantsOpt.orElse(emptyList());
-        String homeOfficeAppellantsSerialised = asylumCase.read(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, String.class).orElse("");
+        String homeOfficeAppellantsSerialisedEncrypted = asylumCase.read(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, String.class).orElse("");
         // If the array of Home Office appellants does not exist but the serialised version does, deserialise it now
-        if (homeOfficeAppellants.isEmpty() && !homeOfficeAppellantsSerialised.isEmpty()) {
+        if (homeOfficeAppellants.isEmpty() && !homeOfficeAppellantsSerialisedEncrypted.isEmpty()) {
             // Retrieve the UAN or GWF from the case record
             String homeOfficeReferenceNumber = asylumCase
                     .read(HOME_OFFICE_REFERENCE_NUMBER, String.class)
@@ -77,14 +78,15 @@ public class HomeOfficeReferenceHandlerOnSubmit implements PreSubmitCallbackHand
             ObjectMapper mapper = new ObjectMapper();
             mapper.addMixIn(IdValue.class, IdValueMixin.class); 
             try {
+                String homeOfficeAppellantsSerialised = HandlerUtils.decrypt(homeOfficeAppellantsSerialisedEncrypted);
                 homeOfficeAppellants = mapper.readValue(
                                                             homeOfficeAppellantsSerialised,
                                                             new TypeReference<List<IdValue<HomeOfficeAppellant>>>() {}
                                                        );
                 asylumCase.write(HOME_OFFICE_APPELLANTS, homeOfficeAppellants); // this will now work because we are no longer in the mid-event
             } catch (Exception ex) {
-                log.error("Could not deserialise list of Home Office appellants from serialised string {} for case with Home Office reference {}:\n\n{}",
-                          homeOfficeAppellantsSerialised, homeOfficeReferenceNumber, ex.getMessage());
+                log.error("Could not deserialise list of Home Office appellants from encrypted serialised string {} for case with Home Office reference {}:\n\n{}",
+                          homeOfficeAppellantsSerialisedEncrypted, homeOfficeReferenceNumber, ex.getMessage());
             }
         }
         return new PreSubmitCallbackResponse<>(asylumCase);

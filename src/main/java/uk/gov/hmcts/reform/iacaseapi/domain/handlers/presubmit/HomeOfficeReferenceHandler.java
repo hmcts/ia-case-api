@@ -24,6 +24,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.HomeOfficeReferenceService;
 
@@ -55,12 +56,11 @@ public class HomeOfficeReferenceHandler implements PreSubmitCallbackHandler<Asyl
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
-        // TODO - check logic for oocHomeOfficeReferenceNumber (and do any other screens that display the UAN)
         return callbackStage == PreSubmitCallbackStage.MID_EVENT
                 && List.of(Event.START_APPEAL, Event.EDIT_APPEAL, Event.EDIT_APPEAL_AFTER_SUBMIT).contains(callback.getEvent())
                 && List.of(
                     "homeOfficeReferenceNumber", "oocHomeOfficeReferenceNumber", "appellantBasicDetails", // ExUI pages
-                    "cuiHomeOfficeReferenceNumber", "cuiAppellantName", "cuiAppellantDob") // CUI pages
+                    "cuiHomeOfficeReferenceNumber", "cuiGwfReferenceNumber", "cuiAppellantName", "cuiAppellantDob") // CUI pages
                     .contains(callback.getPageId());
     }
 
@@ -85,15 +85,36 @@ public class HomeOfficeReferenceHandler implements PreSubmitCallbackHandler<Asyl
 
         String pageId = callback.getPageId();
 
-        return switch (pageId) {
-            case "homeOfficeReferenceNumber", "oocHomeOfficeReferenceNumber", "cuiHomeOfficeReferenceNumber" -> validateHomeOfficeReference(callback, asylumCase, homeOfficeReferenceNumber);
-        
-            case "appellantBasicDetails", "cuiAppellantDob" -> validateNameAndDateOfBirth(callback, asylumCase, homeOfficeReferenceNumber);
+        try {
+            return switch (pageId) {
+                case "homeOfficeReferenceNumber", "oocHomeOfficeReferenceNumber", "cuiHomeOfficeReferenceNumber", "cuiGwfReferenceNumber" -> {
+                    // First of all, remove any trace of a previous call to the Home Office validation API,
+                    // in order to force a fresh request (in the event that we have changed the HO reference number, say)
+                    HandlerUtils.removeValidationFields(asylumCase);
+                    yield validateHomeOfficeReference(callback, asylumCase, homeOfficeReferenceNumber);
+                }
 
-            case "cuiAppellantName" -> validateName(callback, asylumCase, homeOfficeReferenceNumber);
+                case "appellantBasicDetails", "cuiAppellantDob" -> {
+                    boolean isCUICallback = pageId.contains("cui");
+                    yield validateNameAndDateOfBirth(callback, asylumCase, homeOfficeReferenceNumber, isCUICallback);
+                }
 
-            default -> new PreSubmitCallbackResponse<>(asylumCase);
-        };
+                case "cuiAppellantName" -> validateName(callback, asylumCase, homeOfficeReferenceNumber);
+
+                default -> new PreSubmitCallbackResponse<>(asylumCase);
+            };
+        } catch (Exception ex) {
+            String logMessage = "Could not validate information from Home Office asylum (etc.) application with Home Office reference "
+                              + homeOfficeReferenceNumber + ".  The exception message was:\n\n{}"
+                              + "\n\nSee the corresponding logs in ia-home-office-integration-api for more details.";                    
+            log.error(logMessage, ex.getMessage());
+
+            PreSubmitCallbackResponse<AsylumCase> response =
+                new PreSubmitCallbackResponse<>(asylumCase);
+
+            response.addError(HomeOfficeApiResponseStatusType.UNKNOWN.getUserFacingErrorText(homeOfficeReferenceNumber));
+            return response;
+        }
     }
 
     private PreSubmitCallbackResponse<AsylumCase> validateHomeOfficeReference(
@@ -117,17 +138,17 @@ public class HomeOfficeReferenceHandler implements PreSubmitCallbackHandler<Asyl
     private PreSubmitCallbackResponse<AsylumCase> validateName(
         Callback<AsylumCase> callback, AsylumCase asylumCase, String homeOfficeReferenceNumber) {
 
-        return validateBiographicDetails(callback, asylumCase, homeOfficeReferenceNumber, true);
+        return validateBiographicDetails(callback, asylumCase, homeOfficeReferenceNumber, true, true);
     }
 
     private PreSubmitCallbackResponse<AsylumCase> validateNameAndDateOfBirth(
-        Callback<AsylumCase> callback, AsylumCase asylumCase, String homeOfficeReferenceNumber) {
+        Callback<AsylumCase> callback, AsylumCase asylumCase, String homeOfficeReferenceNumber, boolean isCUICallback) {
 
-        return validateBiographicDetails(callback, asylumCase, homeOfficeReferenceNumber, false);
+        return validateBiographicDetails(callback, asylumCase, homeOfficeReferenceNumber, false, isCUICallback);
     }
     
     private PreSubmitCallbackResponse<AsylumCase> validateBiographicDetails(
-        Callback<AsylumCase> callback, AsylumCase asylumCase, String homeOfficeReferenceNumber, boolean nameOnly) {
+        Callback<AsylumCase> callback, AsylumCase asylumCase, String homeOfficeReferenceNumber, boolean nameOnly, boolean isCUICallback) {
 
         PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
 
@@ -143,7 +164,8 @@ public class HomeOfficeReferenceHandler implements PreSubmitCallbackHandler<Asyl
             if (responseStatus.equals(HomeOfficeApiResponseStatusType.OK)) {
                 errorMessage = "The information entered does not match the details held by the Home Office for reference number " +
                                 homeOfficeReferenceNumber + 
-                                ".  You should enter the appellant's details exactly as they appear on the decision letter, so that we can verify them." +
+                                ".  You should enter the " + (isCUICallback ? "" : "appellant's ") +
+                                "details exactly as they appear on the decision letter, so that we can verify them." +
                                 "  These details can often be found in the 'How to appeal' section." + USER_ERROR_HELP_TEXT;
                 // Log this - if it happens repeatedly, that's suspicious
                 log.info("The details provided did not match the Home Office biographic data retrieved for case with reference ID {}.", homeOfficeReferenceNumber);
@@ -214,7 +236,7 @@ public class HomeOfficeReferenceHandler implements PreSubmitCallbackHandler<Asyl
                 // Check for matching first name(s), surname and date of birth.
                 if (matchesFamilyName(homeOfficeAppellant.getFamilyName(), appellantFamilyName) &&
                         matchesGivenNames(homeOfficeAppellant.getGivenNames(), appellantGivenNames) &&
-                        matchesDateOfBirth(homeOfficeAppellant.getDateOfBirth().toString(), appellantDateOfBirth)) {
+                        matchesDateOfBirth(homeOfficeAppellant.getDateOfBirth(), appellantDateOfBirth)) {
                     return true;
                 }
             }
