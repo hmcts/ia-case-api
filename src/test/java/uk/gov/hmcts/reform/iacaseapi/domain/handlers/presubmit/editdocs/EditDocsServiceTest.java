@@ -12,16 +12,23 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_APPELLANT_DOCUMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_APPELLANT_EVIDENCE_DOCUMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_APPELLANT_GROUNDS_DOCUMENTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_LIST;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_RESPONDENT_DECISION_DOCUMENT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_RESPONDENT_DOCUMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_RESPONDENT_EVIDENCE_DOCUMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_RESPONDENT_GROUNDS_DOCUMENTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LEGAL_REPRESENTATIVE_DOCUMENTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REASONS_FOR_APPEAL_DATE_UPLOADED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REASONS_FOR_APPEAL_DECISION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REASONS_FOR_APPEAL_DOCUMENTS;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -36,6 +43,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithDescription;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithMetadata;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.FtpaApplications;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit.editdocs.EditDocsAuditService;
@@ -355,6 +363,15 @@ class EditDocsServiceTest {
         };
     }
 
+    private static Object[] reasonsForAppealCleanupScenario() {
+        return new Object[]{
+            new Object[]{
+                LEGAL_REPRESENTATIVE_DOCUMENTS,
+                REASONS_FOR_APPEAL_DOCUMENTS
+            }
+        };
+    }
+
     private void assertDocumentWithDescriptionListEquality(List<IdValue<DocumentWithDescription>> expected, Optional<List<IdValue<DocumentWithDescription>>> actual) {
         assertThat(actual).isEqualTo(Optional.of(expected));
     }
@@ -369,6 +386,76 @@ class EditDocsServiceTest {
 
     private static IdValue<DocumentWithDescription> buildIdValueWithDescriptionFromParams(String idValue, String docId, String description) {
         return new IdValue<>(idValue, new DocumentWithDescription(new Document("https://dm-store/" + docId, "https://dm-store/" + docId + "/binary", DOCUMENT_FILENAME), description));
+    }
+
+    @ParameterizedTest
+    @MethodSource("reasonsForAppealCleanupScenario")
+    void shouldClearReasonsForAppealFieldsWhenDocumentsBecomeEmpty() {
+
+        given(editDocsAuditService.getUpdatedAndDeletedDocIdsForGivenField(
+                any(), any(), eq(LEGAL_REPRESENTATIVE_DOCUMENTS)))
+                .willReturn(DOC_ID_LIST);
+
+        asylumCase.write(
+                REASONS_FOR_APPEAL_DOCUMENTS,
+                Optional.of(DOC_ID_VALUE_LIST)
+        );
+
+        asylumCase.write(REASONS_FOR_APPEAL_DECISION, "");
+        asylumCase.write(REASONS_FOR_APPEAL_DATE_UPLOADED, "2026-05-20");
+
+        editDocsService.cleanUpAppealTabDocs(asylumCase, asylumCase);
+
+        assertDocumentWithMetadataListEquality(
+                new ArrayList<>(),
+                asylumCase.read(REASONS_FOR_APPEAL_DOCUMENTS)
+        );
+
+        assertThat(asylumCase.read(REASONS_FOR_APPEAL_DECISION)).isEmpty();
+        assertThat(asylumCase.read(REASONS_FOR_APPEAL_DATE_UPLOADED)).isEmpty();
+    }
+
+    @Test
+    void shouldClearFtpaApplicationDateAndApplicantWhenAllDocumentsBecomeEmpty() {
+
+        given(editDocsAuditService.getUpdatedAndDeletedDocIdsForGivenField(
+                any(), any(), eq(FTPA_APPELLANT_DOCUMENTS)))
+                .willReturn(DOC_ID_LIST);
+
+        given(editDocsAuditService.getUpdatedAndDeletedDocIdsForGivenField(
+                any(), any(), eq(FTPA_RESPONDENT_DOCUMENTS)))
+                .willReturn(new ArrayList<>());
+
+        FtpaApplications ftpaApplication =
+                FtpaApplications.builder()
+                        .ftpaApplicant("appellant")
+                        .ftpaDecisionDate("2024-02-02")
+                        .build();
+
+        ftpaApplication.setFtpaOutOfTimeDocuments(
+                new ArrayList<>(DOC_ID_VALUE_LIST));
+        ftpaApplication.setFtpaGroundsDocuments(
+                new ArrayList<>());
+        ftpaApplication.setFtpaEvidenceDocuments(
+                new ArrayList<>());
+
+        ftpaApplication.setFtpaApplicationDate("2026-05-20");
+        ftpaApplication.setFtpaApplicant("appellant");
+
+        asylumCase.write(
+                FTPA_LIST,
+                List.of(new IdValue<>("1", ftpaApplication))
+        );
+
+        editDocsService.cleanUpOverviewTabDocs(
+                asylumCase,
+                asylumCase
+        );
+
+        Optional<List<IdValue<FtpaApplications>>> updatedFtpaList =
+                asylumCase.read(FTPA_LIST);
+
+        assertThat(updatedFtpaList.orElseThrow()).isEmpty();
     }
 
 }
