@@ -24,7 +24,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.HomeOfficeApi;
 @Component
 public class AppealSubmittedNotifyHomeOfficeHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
-    private static final String SUPPRESSION_LOG_FIELDS = "event: {}, "
+    private static final String SUPPRESSION_LOG_FIELDS_NEW = "event: {}, "
                                                          + "CCD case ID: {}, "
                                                          + "HMCTS appeal ref: {}, "
                                                          + "Home Office reference no: {}, "
@@ -79,21 +79,20 @@ public class AppealSubmittedNotifyHomeOfficeHandler implements PreSubmitCallback
         if (homeOfficeReferenceNumber.isEmpty()) {
             throw new IllegalStateException("homeOfficeReferenceNumber and gwfReferenceNumber are both missing - one or other is needed");
         }
-
+        // Ensure this is present before calling the Home Office API (where it will be needed)
         final String appealReferenceNumber = asylumCase.read(APPEAL_REFERENCE_NUMBER, String.class)
             .orElseThrow(() -> new IllegalStateException("Case ID for the appeal is not present"));
-
-
+        // Details for logging purposes only
         final String homeOfficeAppellantApiResponseStatus = asylumCase.read(HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS, String.class)
             .orElse("");
         final long caseId = callback.getCaseDetails().getId();
 
-        log.info("Start: Sending Home Office notification - " + SUPPRESSION_LOG_FIELDS,
+        log.info("Start: Sending Home Office notification - " + SUPPRESSION_LOG_FIELDS_NEW,
             callback.getEvent(), caseId, appealReferenceNumber, homeOfficeReferenceNumber, homeOfficeAppellantApiResponseStatus);
 
         asylumCase = homeOfficeApi.aboutToSubmit(callback);
 
-        log.info("Finish: Sending Home Office notification - " + SUPPRESSION_LOG_FIELDS,
+        log.info("Finish: Sending Home Office notification - " + SUPPRESSION_LOG_FIELDS_NEW,
             callback.getEvent(), caseId, appealReferenceNumber, homeOfficeReferenceNumber, homeOfficeAppellantApiResponseStatus);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
