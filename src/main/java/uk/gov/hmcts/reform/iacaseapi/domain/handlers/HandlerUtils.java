@@ -727,10 +727,12 @@ public class HandlerUtils {
         asylumCase.clear(REMISSION_EC_EVIDENCE_DOCUMENTS);
     }
 
-    public static boolean appealHasRemissionOptionOrType(Optional<RemissionOption> remissionOption,
-                                                         Optional<HelpWithFeesOption> helpWithFeesOption,
-                                                         Optional<RemissionType> remissionType,
-                                                         Optional<RemissionType> lateRemissionType) {
+    public static boolean appealHasRemissionOptionOrType(
+        Optional<RemissionOption> remissionOption,
+        Optional<HelpWithFeesOption> helpWithFeesOption,
+        Optional<RemissionType> remissionType,
+        Optional<RemissionType> lateRemissionType
+    ) {
         return (remissionOption.isPresent() && remissionOption.get() != RemissionOption.NO_REMISSION)
             || (helpWithFeesOption.isPresent() && helpWithFeesOption.get() != WILL_PAY_FOR_APPEAL)
             || (remissionType.isPresent() && remissionType.get() != RemissionType.NO_REMISSION)
