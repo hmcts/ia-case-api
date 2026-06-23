@@ -39,12 +39,10 @@ public class AutomaticEndAppealForNonPaymentEaHuTrigger implements PreSubmitCall
         DateProvider dateProvider,
         Scheduler scheduler,
         @Value("${paymentEaHuNoRemission.dueInMinutes}") int schedule14DaysInMinutes
-
     ) {
         this.dateProvider = dateProvider;
         this.scheduler = scheduler;
         this.schedule14DaysInMinutes = schedule14DaysInMinutes;
-
     }
 
     public boolean canHandle(
@@ -89,11 +87,7 @@ public class AutomaticEndAppealForNonPaymentEaHuTrigger implements PreSubmitCall
             return new PreSubmitCallbackResponse<>(asylumCase);
         }
 
-        int scheduleInMinutes = isAppellantInDetention(asylumCase)
-            ? schedule14DaysInMinutes * 2
-            : schedule14DaysInMinutes;
-
-        ZonedDateTime scheduledDate = ZonedDateTime.of(dateProvider.nowWithTime(), ZoneId.systemDefault()).plusMinutes(scheduleInMinutes);
+        ZonedDateTime scheduledDate = ZonedDateTime.of(dateProvider.nowWithTime(), ZoneId.systemDefault()).plusMinutes(schedule14DaysInMinutes);
 
         TimedEvent timedEvent = scheduler.schedule(
             new TimedEvent(
