@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.HomeOfficeApiResponseStatusType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.DispatchPriority;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
@@ -51,11 +52,11 @@ public class AppealSubmittedNotifyHomeOfficeHandler implements PreSubmitCallback
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-               && (callback.getEvent() == SUBMIT_APPEAL)
+               && (callback.getEvent() == SUBMIT_APPEAL) // TODO: include logic to cover  callback.getEvent() == MARK_APPEAL_PAID
                // ensure this is only called when the appeal is first submitted (rather than when it is subsequently edited)
                && (Arrays.asList(
                     State.APPEAL_STARTED,
-                    State.APPEAL_STARTED_BY_ADMIN
+                    State.APPEAL_STARTED_BY_ADMIN // TODO: check to see if  State.PENDING_PAYMENT  matches  callback.getEvent() == MARK_APPEAL_PAID
                     ).contains(callback.getCaseDetails().getState()));
     }
 
@@ -83,17 +84,18 @@ public class AppealSubmittedNotifyHomeOfficeHandler implements PreSubmitCallback
         final String appealReferenceNumber = asylumCase.read(APPEAL_REFERENCE_NUMBER, String.class)
             .orElseThrow(() -> new IllegalStateException("Case ID for the appeal is not present"));
         // Details for logging purposes only
-        final String homeOfficeAppellantApiResponseStatus = asylumCase.read(HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS, String.class)
-            .orElse("");
+        final HomeOfficeApiResponseStatusType homeOfficeAppellantApiResponseStatus = asylumCase.read(
+                            HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS, HomeOfficeApiResponseStatusType.class)
+                            .orElse(HomeOfficeApiResponseStatusType.UNKNOWN);
         final long caseId = callback.getCaseDetails().getId();
 
         log.info("Start: Sending Home Office notification - " + SUPPRESSION_LOG_FIELDS_NEW,
-            callback.getEvent(), caseId, appealReferenceNumber, homeOfficeReferenceNumber, homeOfficeAppellantApiResponseStatus);
+            callback.getEvent(), caseId, appealReferenceNumber, homeOfficeReferenceNumber, homeOfficeAppellantApiResponseStatus.getStatusCode());
 
         asylumCase = homeOfficeApi.aboutToSubmit(callback);
 
         log.info("Finish: Sending Home Office notification - " + SUPPRESSION_LOG_FIELDS_NEW,
-            callback.getEvent(), caseId, appealReferenceNumber, homeOfficeReferenceNumber, homeOfficeAppellantApiResponseStatus);
+            callback.getEvent(), caseId, appealReferenceNumber, homeOfficeReferenceNumber, homeOfficeAppellantApiResponseStatus.getStatusCode());
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
