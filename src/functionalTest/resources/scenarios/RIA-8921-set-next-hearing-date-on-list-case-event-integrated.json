@@ -1,6 +1,5 @@
 {
   "description": "RIA-8921 Set next hearing date during case listing",
-  "disabled": false,
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "AdminOfficer",

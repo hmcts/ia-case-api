@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -40,13 +39,9 @@ class UploadHearingRecordingConfirmationTest {
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
-        assertThat(
-            callbackResponse.getConfirmationHeader().get())
-            .contains("You’ve uploaded the hearing recording");
+        assertTrue(callbackResponse.getConfirmationHeader().get().contains("You’ve uploaded the hearing recording"));
 
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("This file is now available in the Documents tab and the Hearing tab.");
+        assertTrue(callbackResponse.getConfirmationBody().get().contains("This file is now available in the Documents tab and the Hearing tab."));
 
     }
 

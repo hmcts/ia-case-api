@@ -7,7 +7,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
@@ -25,7 +24,6 @@ public class RequestCmaRequirementsHandler implements PreSubmitCallbackHandler<A
     private final DateProvider dateProvider;
     private final DirectionAppender directionAppender;
 
-    @Autowired
     public RequestCmaRequirementsHandler(DateProvider dateProvider, DirectionAppender directionAppender) {
         this.dateProvider = dateProvider;
         this.directionAppender = directionAppender;

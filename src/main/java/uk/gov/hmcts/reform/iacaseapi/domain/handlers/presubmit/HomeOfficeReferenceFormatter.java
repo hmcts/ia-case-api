@@ -65,10 +65,10 @@ public class HomeOfficeReferenceFormatter implements PreSubmitCallbackHandler<As
                 .read(HOME_OFFICE_REFERENCE_NUMBER, String.class)
                 .orElseThrow(() -> new IllegalStateException("homeOfficeReferenceNumber is missing"));
 
-            // TODO: check here that the Home Office reference number conforms to UAN or GWF format (and possibly CEPR if needed)
+            // TODO: this class can probably be removed as we now validate the HO ref number elsewhere
             if (isInteger.test(homeOfficeReferenceNumber) && homeOfficeReferenceNumber.length() < REQUIRED_CID_REF_LENGTH) {
                 asylumCase.write(HOME_OFFICE_REFERENCE_NUMBER,
-                    String.format("%09d", Integer.parseInt(homeOfficeReferenceNumber)));
+                    "%09d".formatted(Integer.parseInt(homeOfficeReferenceNumber)));
             }
         }
 

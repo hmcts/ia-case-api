@@ -20,7 +20,9 @@
   },
   "expectation": {
     "status": 200,
-    "errors": [ "You've made an invalid request. The hearing must be submitted by an appellant to make this request." ],
+    "errors": [
+      "You've made an invalid request. The hearing must be submitted by an appellant to make this request."
+    ],
     "caseData": {
       "template": "minimal-appeal-submitted.json"
     }
