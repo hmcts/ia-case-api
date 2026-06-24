@@ -28,13 +28,21 @@ public class AsylumCaseSendDirectionEventValidForJourneyTypeChecker implements E
                 log.error("Cannot send an appellant a direction for a repped case");
                 return new EventValid("This is a legally represented case. You cannot select appellant as the recipient.");
             }
+            if (!HandlerUtils.isRepJourney(asylumCase) && isInternalCase(asylumCase) && (directionTo == Parties.BOTH || directionTo == Parties.LEGAL_REPRESENTATIVE)) {
+                log.error("Cannot send legal representative a direction for an internal case");
+                return new EventValid("This is an appellant in person case. You cannot select legal representative as the recipient.");
+            }
             if (HandlerUtils.isAipJourney(asylumCase) && Arrays.asList(Parties.LEGAL_REPRESENTATIVE, Parties.BOTH).contains(directionTo)) {
                 log.error("Cannot send a legal representative a direction for an appellant in person case");
                 return new EventValid("This is an appellant in person case. You cannot select legal representative as the recipient.");
             }
-            if (isInternalCase(asylumCase) && (directionTo == Parties.BOTH || directionTo == Parties.LEGAL_REPRESENTATIVE)) {
-                log.error("Cannot send legal representative a direction for an internal case");
-                return new EventValid("This is an appellant in person case. You cannot select legal representative as the recipient.");
+            if (HandlerUtils.isRepJourney(asylumCase) && isInternalCase(asylumCase) && (directionTo == Parties.LEGAL_REPRESENTATIVE)) {
+                log.error("Cannot select Legal representative as a recipient on a manual appeal.");
+                return new EventValid("Due to a system error you cannot select Legal representative as a recipient on a manual appeal. The direction will need to be issued to the appellant.");
+            }
+            if (HandlerUtils.isRepJourney(asylumCase) && isInternalCase(asylumCase) && (directionTo == Parties.BOTH)) {
+                log.error("Cannot select Legal representative and respondent as joint recipients on a manual appeal.");
+                return new EventValid("You cannot select Legal representative and respondent as joint recipients on a manual appeal. The direction will need to be issued to the recipients individually.");
             }
             if (isInternalCase(asylumCase) && (directionTo == Parties.APPELLANT_AND_RESPONDENT)) {
                 log.error("You cannot select appellant and respondent as joint recipients on a manual appeal. The direction will need to be issued to the recipients individually.");
