@@ -250,6 +250,41 @@ Then run `zsh ./create-test-user.zsh <environment> <email (optional)>` where `<e
 NB. The token will expire every 8 hours, so if the create-test-user doesn't return an email address, it's likely that the first step will need to be re-run.
 NB2. Use aat env variable for preview environment user creation as it uses aat's IDAM instance.
 
+## mirrord issue with node out of space error
+If your mirrord agent is failing to spin up, run `kubectl get events -n ia | grep mirrord-agent` and look for your instance logs
+If it is failing with a node out of space error then you can use the following:
+
+### Mirrord Pod Auto-Fix Script
+
+Automates selection of a healthy mirrord pod when node saturation causes issues.
+
+The script:
+- Finds a pod using a prefix (e.g. `ia-case-api-pr-3042-java`)
+- Matches it to your repo path (e.g. `ia-case-api`)
+- Checks which node the pod is running on
+- If the node has **> 28 pods**, it deletes and retries until a suitable pod is found since the max is 30
+- Updates `.mirrord/mirrord.json → target.path` automatically once a valid pod is selected in the repo path provided in the args
+
+### Usage
+
+```bash
+chmod +x set_mirrord_pod.sh
+./set_mirrord_pod.sh <pod-prefix> <repo-path>
+````
+
+Examples:
+
+```bash
+./set_mirrord_pod.sh ia-case-api-pr-3042-java /Users/nilay/hmcts/iac/ia-case-api
+./set_mirrord_pod.sh ia-case-api-pr-3042-case-documents-api /Users/nilay/hmcts/iac/ia-case-documents-api
+./set_mirrord_pod.sh ia-case-notifications-api-pr-1654-java /Users/nilay/hmcts/iac/ia-case-notifications-api
+```
+
+### After running
+
+* Wait for the script to finish selecting a pod (may loop) and will beep when complete
+* Then run your bootrun application in IDE with the mirrord plugin enabled
+
 ## Development / Debugging Environment - Preview with Mirrord
 
 As an alternative for a development environment there is a procedure in place where after running the command below the required services are created in Preview under the developer's name, so these will be exclusively for the named developer use.
