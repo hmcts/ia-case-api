@@ -4,9 +4,7 @@ import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_DATE_OF_BIRTH;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_FAMILY_NAME;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_GIVEN_NAMES;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.GWF_REFERENCE_NUMBER;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_REFERENCE_NUMBER;
 import java.text.Normalizer;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -73,14 +71,9 @@ public class HomeOfficeReferenceHandler implements PreSubmitCallbackHandler<Asyl
 
         final AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
         // Retrieve the UAN or GWF from the case record
-        String homeOfficeReferenceNumber = asylumCase
-                .read(HOME_OFFICE_REFERENCE_NUMBER, String.class)
-                .orElse("");
+        String homeOfficeReferenceNumber = HandlerUtils.getUanOrGwf(asylumCase);
         if (homeOfficeReferenceNumber.isEmpty()) {
-            homeOfficeReferenceNumber = asylumCase
-                        .read(GWF_REFERENCE_NUMBER, String.class)
-                        .orElseThrow(() -> new IllegalStateException(
-                            "homeOfficeReferenceNumber and gwfReferenceNumber are both missing - one or other is needed"));
+            throw new IllegalStateException("homeOfficeReferenceNumber and gwfReferenceNumber are both missing - one or other is needed");
         }
 
         String pageId = callback.getPageId();
