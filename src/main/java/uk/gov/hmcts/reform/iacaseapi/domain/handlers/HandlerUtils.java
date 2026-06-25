@@ -776,4 +776,16 @@ public class HandlerUtils {
         asylumCase.remove(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY);
     }
 
+    public static String getUanOrGwf(AsylumCase asylumCase) {
+        // Retrieve the UAN or GWF from the case record
+        String homeOfficeReferenceNumber = asylumCase
+                .read(HOME_OFFICE_REFERENCE_NUMBER, String.class)
+                .orElse("");
+        if (homeOfficeReferenceNumber.isEmpty()) {
+            homeOfficeReferenceNumber = asylumCase
+                    .read(GWF_REFERENCE_NUMBER, String.class)
+                    .orElse("");
+        }
+        return homeOfficeReferenceNumber;
+    }
 }
