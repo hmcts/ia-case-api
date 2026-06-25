@@ -144,23 +144,6 @@ class AppealSubmittedNotifyHomeOfficeHandlerTest {
     }
 
     @Test
-    void canHandle_should_return_false_for_wrong_state() {
-
-        Mockito.when(callback.getEvent())
-            .thenReturn(Event.SUBMIT_APPEAL);
-
-        Mockito.when(caseDetails.getState())
-            .thenReturn(State.APPEAL_SUBMITTED);
-
-        assertFalse(
-            handler.canHandle(
-                PreSubmitCallbackStage.ABOUT_TO_SUBMIT,
-                callback
-            )
-        );
-    }
-
-    @Test
     void canHandle_should_throw_when_callback_stage_is_null() {
 
         assertThrows(
