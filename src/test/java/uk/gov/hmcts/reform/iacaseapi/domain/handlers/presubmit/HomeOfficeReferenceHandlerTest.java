@@ -194,7 +194,7 @@ class HomeOfficeReferenceHandlerTest {
         Mockito.when(referenceService.getHomeOfficeReferenceData(VALID_GWF, callback))
             .thenReturn(Collections.singletonList(idValue));
 
-        try (MockedStatic<HandlerUtils> mockedStatic = Mockito.mockStatic(HandlerUtils.class)) {
+        try (MockedStatic<HandlerUtils> mockedStatic = Mockito.mockStatic(HandlerUtils.class, Mockito.CALLS_REAL_METHODS)) {
 
             PreSubmitCallbackResponse<AsylumCase> response =
                 handler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
@@ -699,7 +699,7 @@ class HomeOfficeReferenceHandlerTest {
         Mockito.when(referenceService.getHomeOfficeReferenceData(VALID_GWF, callback))
             .thenReturn(Collections.singletonList(idValue));
 
-        try (MockedStatic<HandlerUtils> mockedStatic = Mockito.mockStatic(HandlerUtils.class)) {
+        try (MockedStatic<HandlerUtils> mockedStatic = Mockito.mockStatic(HandlerUtils.class, Mockito.CALLS_REAL_METHODS)) {
 
             PreSubmitCallbackResponse<AsylumCase> response =
                 handler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
@@ -709,4 +709,72 @@ class HomeOfficeReferenceHandlerTest {
             assertTrue(response.getErrors().isEmpty());
         }
     }
+
+    @Test
+    void handle_should_return_unknown_error_when_home_office_validation_throws_exception() {
+
+        Mockito.when(callback.getEvent()).thenReturn(Event.START_APPEAL);
+        Mockito.when(callback.getPageId()).thenReturn("homeOfficeReferenceNumber");
+
+        Mockito.when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class))
+            .thenReturn(Optional.of(VALID_GWF));
+
+        Mockito.when(referenceService.getHomeOfficeReferenceData(VALID_GWF, callback))
+            .thenThrow(new RuntimeException("Boom"));
+
+        PreSubmitCallbackResponse<AsylumCase> response =
+            handler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+
+        assertEquals(1, response.getErrors().size());
+        assertTrue(
+            response.getErrors().contains(
+                HomeOfficeApiResponseStatusType.UNKNOWN.getUserFacingErrorText(VALID_GWF)
+            )
+        );
+    }
+
+    @Test
+    void handle_should_return_unknown_error_when_name_validation_throws_exception() {
+
+        Mockito.when(callback.getEvent()).thenReturn(Event.START_APPEAL);
+        Mockito.when(callback.getPageId()).thenReturn("cuiAppellantName");
+
+        Mockito.when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class))
+            .thenReturn(Optional.of(VALID_GWF));
+
+        Mockito.when(referenceService.getHomeOfficeReferenceData(VALID_GWF, callback))
+            .thenThrow(new RuntimeException("Boom"));
+
+        PreSubmitCallbackResponse<AsylumCase> response =
+            handler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+
+        assertEquals(
+            HomeOfficeApiResponseStatusType.UNKNOWN.getUserFacingErrorText(VALID_GWF),
+            response.getErrors().iterator().next()
+        );
+    }
+
+    @Test
+    void handle_should_return_unknown_error_when_name_and_dob_validation_throws_exception() {
+
+        Mockito.when(callback.getEvent()).thenReturn(Event.START_APPEAL);
+        Mockito.when(callback.getPageId()).thenReturn("cuiAppellantDob");
+
+        Mockito.when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class))
+            .thenReturn(Optional.of(VALID_GWF));
+
+        Mockito.when(referenceService.getHomeOfficeReferenceData(VALID_GWF, callback))
+            .thenThrow(new RuntimeException("Boom"));
+
+        PreSubmitCallbackResponse<AsylumCase> response =
+            handler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+
+        assertEquals(1, response.getErrors().size());
+
+        assertTrue(
+            response.getErrors()
+                .contains(HomeOfficeApiResponseStatusType.UNKNOWN.getUserFacingErrorText(VALID_GWF))
+        );
+    }
+
 }

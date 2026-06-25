@@ -597,10 +597,12 @@ public class HandlerUtils {
         asylumCase.clear(REMISSION_EC_EVIDENCE_DOCUMENTS);
     }
 
-    public static boolean appealHasRemissionOptionOrType(Optional<RemissionOption> remissionOption,
-                                                         Optional<HelpWithFeesOption> helpWithFeesOption,
-                                                         Optional<RemissionType> remissionType,
-                                                         Optional<RemissionType> lateRemissionType) {
+    public static boolean appealHasRemissionOptionOrType(
+        Optional<RemissionOption> remissionOption,
+        Optional<HelpWithFeesOption> helpWithFeesOption,
+        Optional<RemissionType> remissionType,
+        Optional<RemissionType> lateRemissionType
+    ) {
         return (remissionOption.isPresent() && remissionOption.get() != RemissionOption.NO_REMISSION)
             || (helpWithFeesOption.isPresent() && helpWithFeesOption.get() != WILL_PAY_FOR_APPEAL)
             || (remissionType.isPresent() && remissionType.get() != RemissionType.NO_REMISSION)
@@ -774,4 +776,16 @@ public class HandlerUtils {
         asylumCase.remove(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY);
     }
 
+    public static String getUanOrGwf(AsylumCase asylumCase) {
+        // Retrieve the UAN or GWF from the case record
+        String homeOfficeReferenceNumber = asylumCase
+                .read(HOME_OFFICE_REFERENCE_NUMBER, String.class)
+                .orElse("");
+        if (homeOfficeReferenceNumber.isEmpty()) {
+            homeOfficeReferenceNumber = asylumCase
+                    .read(GWF_REFERENCE_NUMBER, String.class)
+                    .orElse("");
+        }
+        return homeOfficeReferenceNumber;
+    }
 }
