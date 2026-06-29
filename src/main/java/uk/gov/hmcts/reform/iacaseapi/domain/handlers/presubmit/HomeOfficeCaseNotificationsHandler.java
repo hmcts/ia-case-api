@@ -10,7 +10,14 @@ import java.util.List;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
+
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.Direction;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DirectionTag;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.HomeOfficeApiResponseStatusType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.Parties;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -123,17 +130,18 @@ public class HomeOfficeCaseNotificationsHandler implements PreSubmitCallbackHand
             final String appealReferenceNumber = asylumCaseWithHomeOfficeData.read(APPEAL_REFERENCE_NUMBER, String.class)
                 .orElseThrow(() -> new IllegalStateException("Case ID for the appeal is not present"));
             // Details for logging purposes only
-            final String homeOfficeAppellantApiResponseStatus = asylumCaseWithHomeOfficeData.read(HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS, String.class)
-                .orElse("");
+            final HomeOfficeApiResponseStatusType homeOfficeAppellantApiResponseStatus = asylumCaseWithHomeOfficeData.read(
+                            HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS, HomeOfficeApiResponseStatusType.class)
+                            .orElse(HomeOfficeApiResponseStatusType.UNKNOWN);
             final long caseId = callback.getCaseDetails().getId();
 
             log.info("Start: Sending Home Office notification - " + SUPPRESSION_LOG_FIELDS_NEW,
-                callback.getEvent(), caseId, appealReferenceNumber, homeOfficeReferenceNumber, homeOfficeAppellantApiResponseStatus);
+                callback.getEvent(), caseId, appealReferenceNumber, homeOfficeReferenceNumber, homeOfficeAppellantApiResponseStatus.getStatusCode());
 
             asylumCaseWithHomeOfficeData = homeOfficeApi.aboutToSubmit(callback);
 
             log.info("Finish: Sending Home Office notification - " + SUPPRESSION_LOG_FIELDS_NEW,
-                callback.getEvent(), caseId, appealReferenceNumber, homeOfficeReferenceNumber, homeOfficeAppellantApiResponseStatus);
+                callback.getEvent(), caseId, appealReferenceNumber, homeOfficeReferenceNumber, homeOfficeAppellantApiResponseStatus.getStatusCode());
 
         } else {
             // For older cases, only proceed if various restrictions on the case have been met
