@@ -137,8 +137,8 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MULTIMEDIA_DECISION_FOR_DISPLAY;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MULTIMEDIA_TRIBUNAL_RESPONSE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NLR_ATTENDING;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NLR_DETAILS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NLR_ATTENDING_OUTSIDE_UK;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NLR_DETAILS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.OOC_ADDRESS_LINE_1;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.OOC_ADDRESS_LINE_2;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.OOC_ADDRESS_LINE_3;
@@ -915,23 +915,39 @@ public class HandlerUtils {
                 .orElseThrow(() -> new IllegalStateException("Non-legal representative details are not present"));
             nlrDetails.setAddress(null);
             asylumCase.write(NLR_DETAILS, nlrDetails);
+            String idamId = nlrDetails.getIdamId();
             String givenNames = nlrDetails.getGivenNames();
             String familyName = nlrDetails.getFamilyName();
             AddressUk addressUk = nlrDetails.getAddressUk();
             String email = nlrDetails.getEmailAddress();
             String phoneNumber = nlrDetails.getPhoneNumber();
             String nameForDisplay = givenNames != null && familyName != null ? (givenNames + " " + familyName).replaceAll("\\s+", " ").trim() : null;
-            asylumCase.write(SPONSOR_GIVEN_NAMES, givenNames);
-            asylumCase.write(SPONSOR_FAMILY_NAME, familyName);
-            asylumCase.write(SPONSOR_ADDRESS, addressUk);
-            asylumCase.write(SPONSOR_ADDRESS_FOR_DISPLAY, addressUk != null ? addressUk.toDisplay() : null);
-            asylumCase.write(SPONSOR_NAME_FOR_DISPLAY, nameForDisplay);
-            asylumCase.write(SPONSOR_EMAIL, email);
-            asylumCase.write(SPONSOR_MOBILE_NUMBER, phoneNumber);
+            if (givenNames != null) {
+                asylumCase.write(SPONSOR_GIVEN_NAMES, givenNames);
+            }
+            if (familyName != null) {
+                asylumCase.write(SPONSOR_FAMILY_NAME, familyName);
+            }
+            if (addressUk != null) {
+                asylumCase.write(SPONSOR_ADDRESS, addressUk);
+                asylumCase.write(SPONSOR_ADDRESS_FOR_DISPLAY, addressUk.toDisplay());
+            }
+            if (nameForDisplay != null) {
+                asylumCase.write(SPONSOR_NAME_FOR_DISPLAY, nameForDisplay);
+            }
+            if (email != null) {
+                asylumCase.write(SPONSOR_EMAIL, email);
+                asylumCase.write(SPONSOR_CONTACT_PREFERENCE, ContactPreference.WANTS_EMAIL);
+            }
+            if (phoneNumber != null) {
+                asylumCase.write(SPONSOR_MOBILE_NUMBER, phoneNumber);
+            }
+            if (email != null && phoneNumber != null) {
+                Subscriber newSubscriber = new Subscriber(SubscriberType.SUPPORTER, email, YES, phoneNumber, NO);
+                asylumCase.write(SPONSOR_SUBSCRIPTIONS, List.of(new IdValue<>(idamId == null
+                    ? UUID.randomUUID().toString() : idamId, newSubscriber)));
+            }
             asylumCase.write(SPONSOR_AUTHORISATION, YesOrNo.YES);
-            asylumCase.write(SPONSOR_CONTACT_PREFERENCE, ContactPreference.WANTS_EMAIL);
-            Subscriber newSubscriber = new Subscriber(SubscriberType.SUPPORTER, email, YES, phoneNumber, NO);
-            asylumCase.write(SPONSOR_SUBSCRIPTIONS, List.of(new IdValue<>(UUID.randomUUID().toString(), newSubscriber)));
         } else if (asylumCase.read(HAS_NON_LEGAL_REP, YesOrNo.class).orElse(YesOrNo.NO).equals(YES)) {
             NonLegalRepDetails nlrDetails = asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class)
                 .orElseThrow(() -> new IllegalStateException("Non-legal representative details are not present"));
@@ -947,20 +963,23 @@ public class HandlerUtils {
         asylumCase.clear(JOIN_APPEAL_PIN);
         asylumCase.clear(IS_SPONSOR_SAME_AS_NLR);
         asylumCase.clear(HAS_NON_LEGAL_REP_JOINED);
+        updateSubscriptionsForNlr(asylumCase);
     }
 
     public static void updateSubscriptionsForNlr(AsylumCase asylumCase) {
-        if (asylumCase.read(HAS_NON_LEGAL_REP, YesOrNo.class).orElse(YesOrNo.NO).equals(NO)) {
-            return;
-        }
+        String nlrIdamId = asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class)
+            .map(NonLegalRepDetails::getIdamId)
+            .orElse(null);
         Optional<List<IdValue<Subscriber>>> subscribers = asylumCase.read(SUBSCRIPTIONS);
         List<IdValue<Subscriber>> mutableSubscribers = new ArrayList<>(subscribers.orElse(emptyList()).stream()
             .filter(subscriber -> subscriber.getValue().getSubscriber() != SubscriberType.SUPPORTER)
             .toList());
-        NonLegalRepDetails nlrDetails = asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class)
-            .orElseThrow(() -> new IllegalStateException("Non-legal representative details are not present"));
-        mutableSubscribers.add(new IdValue<>(UUID.randomUUID().toString(), new Subscriber(SubscriberType.SUPPORTER,
-            nlrDetails.getEmailAddress(), YES, nlrDetails.getPhoneNumber(), NO)));
+        if (nlrIdamId != null && asylumCase.read(HAS_NON_LEGAL_REP, YesOrNo.class).orElse(YesOrNo.NO).equals(YES)) {
+            NonLegalRepDetails nlrDetails = asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class)
+                .orElseThrow(() -> new IllegalStateException("Non-legal representative details are not present"));
+            mutableSubscribers.add(new IdValue<>(nlrIdamId, new Subscriber(SubscriberType.SUPPORTER,
+                nlrDetails.getEmailAddress(), YES, nlrDetails.getPhoneNumber(), NO)));
+        }
         asylumCase.write(SUBSCRIPTIONS, mutableSubscribers);
     }
 

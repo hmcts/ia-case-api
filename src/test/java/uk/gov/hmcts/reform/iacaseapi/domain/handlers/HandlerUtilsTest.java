@@ -52,6 +52,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -1249,7 +1250,6 @@ class HandlerUtilsTest {
                 () -> PartyIdService.setSponsorPartyId(asylumCase),
                 times(1)
             );
-            verify(asylumCase, never()).write(any(), any());
             verify(asylumCase).clear(NLR_DETAILS);
             verify(asylumCase).clear(JOIN_APPEAL_PIN);
             verify(asylumCase).clear(IS_SPONSOR_SAME_AS_NLR);
@@ -1319,16 +1319,16 @@ class HandlerUtilsTest {
                 () -> PartyIdService.setSponsorPartyId(asylumCase),
                 times(1)
             );
-            verify(asylumCase).write(SPONSOR_GIVEN_NAMES, null);
-            verify(asylumCase).write(SPONSOR_FAMILY_NAME, null);
-            verify(asylumCase).write(SPONSOR_ADDRESS, null);
-            verify(asylumCase).write(SPONSOR_ADDRESS_FOR_DISPLAY, null);
-            verify(asylumCase).write(SPONSOR_NAME_FOR_DISPLAY, null);
-            verify(asylumCase).write(SPONSOR_CONTACT_PREFERENCE, ContactPreference.WANTS_EMAIL);
-            verify(asylumCase).write(SPONSOR_EMAIL, null);
-            verify(asylumCase).write(SPONSOR_MOBILE_NUMBER, null);
+            verify(asylumCase, never()).write(SPONSOR_GIVEN_NAMES, null);
+            verify(asylumCase, never()).write(SPONSOR_FAMILY_NAME, null);
+            verify(asylumCase, never()).write(SPONSOR_ADDRESS, null);
+            verify(asylumCase, never()).write(SPONSOR_ADDRESS_FOR_DISPLAY, null);
+            verify(asylumCase, never()).write(SPONSOR_NAME_FOR_DISPLAY, null);
+            verify(asylumCase, never()).write(SPONSOR_CONTACT_PREFERENCE, ContactPreference.WANTS_EMAIL);
+            verify(asylumCase, never()).write(SPONSOR_EMAIL, null);
+            verify(asylumCase, never()).write(SPONSOR_MOBILE_NUMBER, null);
             verify(asylumCase).write(SPONSOR_AUTHORISATION, YES);
-            verify(asylumCase).write(eq(SPONSOR_SUBSCRIPTIONS), anyList());
+            verify(asylumCase, never()).write(eq(SPONSOR_SUBSCRIPTIONS), anyList());
         }
     }
 
@@ -1367,9 +1367,29 @@ class HandlerUtilsTest {
     }
 
     @Test
-    void updateSubscriptionsForNlr_does_nothing_for_if_nlr() {
+    void updateSubscriptionsForNlr_writes_empty_to_subscriptions_if_no_nlr_and_empty() {
         updateSubscriptionsForNlr(asylumCase);
-        verify(asylumCase, never()).write(any(), any());
+        verify(asylumCase).write(SUBSCRIPTIONS, emptyList());
+    }
+
+    @Test
+    void updateSubscriptionsForNlr_writes_non_supporters_to_subscriptions_if_no_nlr() {
+        Subscriber sub1 = mock(Subscriber.class);
+        when(sub1.getSubscriber()).thenReturn(SubscriberType.APPELLANT);
+        IdValue<Subscriber> sub1IdValue = new IdValue<>("1", sub1);
+        Subscriber sub2 = mock(Subscriber.class);
+        when(sub2.getSubscriber()).thenReturn(SubscriberType.SUPPORTER);
+        IdValue<Subscriber> sub2IdValue = new IdValue<>("2", sub2);
+        when(asylumCase.read(SUBSCRIPTIONS)).thenReturn(Optional.of(List.of(sub1IdValue, sub2IdValue)));
+
+        updateSubscriptionsForNlr(asylumCase);
+
+        verify(asylumCase, times(1)).write(eq(SUBSCRIPTIONS), subscribersCaptor.capture());
+        List<IdValue<Subscriber>> capturedSubscribers = subscribersCaptor.getValue();
+        assertFalse(capturedSubscribers.isEmpty());
+        assertEquals(1, capturedSubscribers.size());
+        Subscriber subscriber = capturedSubscribers.getFirst().getValue();
+        assertEquals(sub1, subscriber);
     }
 
     @Test
@@ -1503,5 +1523,27 @@ class HandlerUtilsTest {
         when(asylumCase.read(NLR_ATTENDING, YesOrNo.class)).thenReturn(Optional.ofNullable(isNlrAttending));
         when(asylumCase.read(NLR_ATTENDING_OUTSIDE_UK, YesOrNo.class)).thenReturn(Optional.ofNullable(isOutsideUk));
         assertTrue(HandlerUtils.nlrAttendingHearing(asylumCase));
+    }
+
+    @Test
+    void hasActiveNlr_should_return_true_if_nlr_details_present_with_idam_id() {
+        when(asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class)).thenReturn(Optional.of(NonLegalRepDetails.builder()
+            .idamId("some-idamId")
+            .build())
+        );
+        assertTrue(HandlerUtils.hasActiveNlr(asylumCase));
+    }
+
+    @Test
+    void hasActiveNlr_should_return_false_if_nlr_details_present_without_idam_id() {
+        when(asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class)).thenReturn(Optional.of(NonLegalRepDetails.builder()
+            .build())
+        );
+        assertFalse(HandlerUtils.hasActiveNlr(asylumCase));
+    }
+
+    @Test
+    void hasActiveNlr_should_return_false_if_nlr_details_not_present() {
+        assertFalse(HandlerUtils.hasActiveNlr(asylumCase));
     }
 }

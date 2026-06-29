@@ -1,21 +1,5 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOURNEY_TYPE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NLR_DETAILS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SHOULD_INVITE_NLR_TO_IDAM;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SEND_INVITE_TO_NON_LEGAL_REP;
-
-import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,8 +17,28 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.CcdDataService;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.IdamService;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.idam.User;
+
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOURNEY_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NLR_DETAILS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SHOULD_INVITE_NLR_TO_IDAM;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SEND_INVITE_TO_NON_LEGAL_REP;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -45,9 +49,15 @@ class SendInviteToNonLegalRepHandlerTest {
     @Mock
     private CaseDetails<AsylumCase> caseDetails;
     @Mock
+    private CaseDetails<AsylumCase> caseDetailsBefore;
+    @Mock
     private AsylumCase asylumCase;
     @Mock
+    private AsylumCase asylumCaseBefore;
+    @Mock
     private IdamService idamService;
+    @Mock
+    private CcdDataService ccdDataService;
     @Mock
     private User user;
 
@@ -55,17 +65,18 @@ class SendInviteToNonLegalRepHandlerTest {
 
     @BeforeEach
     public void setUp() {
-        sendInviteToNonLegalRepHandler = new SendInviteToNonLegalRepHandler(idamService);
+        sendInviteToNonLegalRepHandler = new SendInviteToNonLegalRepHandler(idamService, ccdDataService);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
     }
 
     @Test
-    void should_do_nothing_if_no_nlr_email() {
+    void should_throw_if_no_nlr_email() {
         when(callback.getEvent()).thenReturn(SEND_INVITE_TO_NON_LEGAL_REP);
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
-        sendInviteToNonLegalRepHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
-        verify(asylumCase, never()).write(eq(SHOULD_INVITE_NLR_TO_IDAM), any(YesOrNo.class));
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+            () -> sendInviteToNonLegalRepHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback));
+        assertEquals("NLR email address is not present in the case", exception.getMessage());
     }
 
     @Test
@@ -88,6 +99,51 @@ class SendInviteToNonLegalRepHandlerTest {
         when(idamService.getUserFromEmail("nlrEmail@test.com")).thenReturn(null);
         sendInviteToNonLegalRepHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
         verify(asylumCase).write(SHOULD_INVITE_NLR_TO_IDAM, YesOrNo.YES);
+    }
+
+    @Test
+    void should_revoke_existing_access_if_SEND_INVITE_TO_NON_LEGAL_REP_and_idam_id_exists() {
+        when(callback.getEvent()).thenReturn(SEND_INVITE_TO_NON_LEGAL_REP);
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
+        when(asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class)).thenReturn(Optional.of(
+            NonLegalRepDetails.builder().emailAddress("nlrEmail@test.com").build()));
+        when(callback.getCaseDetailsBefore()).thenReturn(Optional.of(caseDetailsBefore));
+        when(caseDetailsBefore.getCaseData()).thenReturn(asylumCaseBefore);
+        when(asylumCaseBefore.read(NLR_DETAILS, NonLegalRepDetails.class)).thenReturn(Optional.of(
+            NonLegalRepDetails.builder().idamId("someIdamId").build()));
+        when(caseDetails.getId()).thenReturn(1234L);
+
+        sendInviteToNonLegalRepHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+        verify(ccdDataService).revokeUserAccessToCase(1234L, "someIdamId");
+    }
+
+    @Test
+    void should_not_revoke_existing_access_if_SEND_INVITE_TO_NON_LEGAL_REP_and_idam_id_null() {
+        when(callback.getEvent()).thenReturn(SEND_INVITE_TO_NON_LEGAL_REP);
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
+        when(asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class)).thenReturn(Optional.of(
+            NonLegalRepDetails.builder().emailAddress("nlrEmail@test.com").build()));
+        when(callback.getCaseDetailsBefore()).thenReturn(Optional.of(caseDetailsBefore));
+        when(caseDetailsBefore.getCaseData()).thenReturn(asylumCaseBefore);
+        when(asylumCaseBefore.read(NLR_DETAILS, NonLegalRepDetails.class)).thenReturn(Optional.of(
+            NonLegalRepDetails.builder().build()));
+        when(caseDetails.getId()).thenReturn(1234L);
+
+        sendInviteToNonLegalRepHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+        verify(ccdDataService, never()).revokeUserAccessToCase(anyLong(), anyString());
+    }
+
+    @Test
+    void should_not_revoke_existing_access_if_SEND_INVITE_TO_NON_LEGAL_REP_and_caseDetailsBefore_null() {
+        when(callback.getEvent()).thenReturn(SEND_INVITE_TO_NON_LEGAL_REP);
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
+        when(asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class)).thenReturn(Optional.of(
+            NonLegalRepDetails.builder().emailAddress("nlrEmail@test.com").build()));
+        when(callback.getCaseDetailsBefore()).thenReturn(Optional.empty());
+        when(caseDetails.getId()).thenReturn(1234L);
+
+        sendInviteToNonLegalRepHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+        verify(ccdDataService, never()).revokeUserAccessToCase(anyLong(), anyString());
     }
 
 
