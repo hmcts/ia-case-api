@@ -24,7 +24,8 @@ public class PinInPostGenerator implements PreSubmitCallbackHandler<AsylumCase> 
     public boolean canHandle(PreSubmitCallbackStage callbackStage, Callback<AsylumCase> callback) {
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
                 && (callback.getEvent() == Event.REMOVE_REPRESENTATION
-                    || callback.getEvent() == Event.REMOVE_LEGAL_REPRESENTATIVE);
+                    || callback.getEvent() == Event.REMOVE_LEGAL_REPRESENTATIVE
+                    || callback.getEvent() == Event.GENERATE_PIN_IN_POST);
     }
 
     public PinInPostGenerator(

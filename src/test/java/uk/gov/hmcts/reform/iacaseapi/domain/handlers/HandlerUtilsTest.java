@@ -5,8 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.eq;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -32,6 +32,16 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_CHANNEL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HELP_WITH_FEES_REFERENCE_NUMBER;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HELP_WITH_FEES_REF_NUMBER;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_APPELLANT_CLAIM_DATE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_APPELLANT_DECISION_DATE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_APPELLANT_DECISION_LETTER_DATE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_APPELLANTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_REFERENCE_NUMBER;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.GWF_REFERENCE_NUMBER;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_SEARCH_NO_MATCH;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_SEARCH_STATUS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_WAIVER_DOCUMENT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ADMIN;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_CASE_USING_LOCATION_REF_DATA;
@@ -108,6 +118,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -119,6 +130,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
@@ -146,7 +158,6 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.Organisati
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-@SuppressWarnings("unchecked")
 class HandlerUtilsTest {
     private static final String ON_THE_PAPERS = "ONPPRS";
 
@@ -1087,4 +1098,118 @@ class HandlerUtilsTest {
         verify(asylumCase).clear(LEGAL_REP_HAS_ADDRESS);
     }
 
+    @Test
+    void hasAppellantDataBeenValidated_returns_true_1() {
+        when(asylumCase.read(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, String.class)).thenReturn(Optional.of("ABCDE"));
+        when(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class)).thenReturn(Optional.of(""));
+        when(asylumCase.read(HOME_OFFICE_SEARCH_NO_MATCH, String.class)).thenReturn(Optional.of("NO_MATCH"));
+        assertTrue(HandlerUtils.hasAppellantDataBeenValidated(asylumCase));
+    }
+
+    @Test
+    void hasAppellantDataBeenValidated_returns_true_2() {
+        when(asylumCase.read(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, String.class)).thenReturn(Optional.empty());
+        when(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class)).thenReturn(Optional.of("SUCCESS"));
+        when(asylumCase.read(HOME_OFFICE_SEARCH_NO_MATCH, String.class)).thenReturn(Optional.of(""));
+        assertTrue(HandlerUtils.hasAppellantDataBeenValidated(asylumCase));
+    }
+
+    @Test
+    void hasAppellantDataBeenValidated_returns_true_3() {
+        when(asylumCase.read(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, String.class)).thenReturn(Optional.empty());
+        when(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class)).thenReturn(Optional.of("SUCCESS"));
+        when(asylumCase.read(HOME_OFFICE_SEARCH_NO_MATCH, String.class)).thenReturn(Optional.of("NO_MATCH"));
+        assertTrue(HandlerUtils.hasAppellantDataBeenValidated(asylumCase));
+    }
+
+    @Test
+    void hasAppellantDataBeenValidated_returns_false_1() {
+        when(asylumCase.read(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, String.class)).thenReturn(Optional.empty());
+        when(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class)).thenReturn(Optional.of(""));
+        assertFalse(HandlerUtils.hasAppellantDataBeenValidated(asylumCase));
+    }
+
+    @Test
+    void hasAppellantDataBeenValidated_returns_false_2() {
+        when(asylumCase.read(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, String.class)).thenReturn(Optional.empty());
+        when(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class)).thenReturn(Optional.of("FAIL"));
+        assertFalse(HandlerUtils.hasAppellantDataBeenValidated(asylumCase));
+    }
+
+    @Test
+    void hasAppellantDataBeenValidated_returns_false_3() {
+        when(asylumCase.read(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, String.class)).thenReturn(Optional.empty());
+        when(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class)).thenReturn(Optional.of("MULTIPLE"));
+        assertFalse(HandlerUtils.hasAppellantDataBeenValidated(asylumCase));
+    }
+
+    @Test
+    void encryptThenDecrypt_match() {
+        String plainText = "plain text string";
+        assertTrue(HandlerUtils.decrypt(HandlerUtils.encrypt(plainText)).equals(plainText));
+    }
+
+    @Test
+    void encryptThenDecrypt_noMatch() {
+        String plainText = "plain text string";
+        assertFalse(HandlerUtils.decrypt(HandlerUtils.encrypt(plainText)).equals("something else"));
+    }
+
+    @Test
+    void shouldRemoveAllValidationFields() {
+
+        HandlerUtils.removeValidationFields(asylumCase);
+
+        verify(asylumCase).remove(HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS);
+        verify(asylumCase).remove(HOME_OFFICE_APPELLANT_CLAIM_DATE);
+        verify(asylumCase).remove(HOME_OFFICE_APPELLANT_DECISION_DATE);
+        verify(asylumCase).remove(HOME_OFFICE_APPELLANT_DECISION_LETTER_DATE);
+        verify(asylumCase).remove(HOME_OFFICE_APPELLANTS);
+        verify(asylumCase).remove(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY);
+
+        verify(asylumCase, times(6)).remove(any());
+    }
+
+    @Test
+    void should_return_home_office_reference_number_when_present() {
+
+        when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of("1234-2345-3456-4567"));
+
+        String result = HandlerUtils.getUanOrGwf(asylumCase);
+
+        assertEquals("1234-2345-3456-4567", result);
+    }
+
+    @Test
+    void should_return_gwf_reference_number_when_home_office_reference_is_empty() {
+
+        when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of(""));
+        when(asylumCase.read(GWF_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of("GWF123456789"));
+
+        String result = HandlerUtils.getUanOrGwf(asylumCase);
+
+        assertEquals("GWF123456789", result);
+    }
+
+    @Test
+    void should_return_gwf_reference_number_when_home_office_reference_is_absent() {
+
+        when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class)).thenReturn(Optional.empty());
+        when(asylumCase.read(GWF_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of("GWF123456789"));
+
+        String result = HandlerUtils.getUanOrGwf(asylumCase);
+
+        assertEquals("GWF123456789", result);
+    }
+
+    @Test
+    void should_return_empty_string_when_neither_reference_exists() {
+
+        when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class)).thenReturn(Optional.empty());
+        when(asylumCase.read(GWF_REFERENCE_NUMBER, String.class)).thenReturn(Optional.empty());
+
+        String result = HandlerUtils.getUanOrGwf(asylumCase);
+
+        assertEquals("", result);
+    }
 }

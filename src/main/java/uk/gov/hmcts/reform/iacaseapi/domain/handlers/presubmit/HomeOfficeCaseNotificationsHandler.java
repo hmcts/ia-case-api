@@ -10,7 +10,14 @@ import java.util.List;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
+
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.Direction;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DirectionTag;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.HomeOfficeApiResponseStatusType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.Parties;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -33,6 +40,12 @@ public class HomeOfficeCaseNotificationsHandler implements PreSubmitCallbackHand
                                                          + "homeOfficeReferenceNumber: {}, "
                                                          + "homeOfficeSearchStatus: {}, "
                                                          + "homeOfficeNotificationsEligible: {} ";
+
+    private static final String SUPPRESSION_LOG_FIELDS_NEW = "event: {}, "
+                                                         + "CCD case ID: {}, "
+                                                         + "HMCTS appeal ref: {}, "
+                                                         + "Home Office reference no: {}, "
+                                                         + "Home Office API response code: {}";
     private final FeatureToggler featureToggler;
     private final HomeOfficeApi<AsylumCase> homeOfficeApi;
 
@@ -99,58 +112,83 @@ public class HomeOfficeCaseNotificationsHandler implements PreSubmitCallbackHand
             throw new IllegalStateException("Cannot handle callback");
         }
 
-        AsylumCase asylumCaseWithHomeOfficeData =
-            callback
-                .getCaseDetails()
-                .getCaseData();
+        AsylumCase asylumCaseWithHomeOfficeData = callback.getCaseDetails().getCaseData();
 
         AppealType appealType = asylumCaseWithHomeOfficeData.read(APPEAL_TYPE, AppealType.class)
                 .orElseThrow(() -> new IllegalStateException("AppealType is not present."));
 
-        if (!HomeOfficeAppealTypeChecker.isAppealTypeEnabled(featureToggler, appealType)) {
+        // Check whether the new  applications/v1/{id}  Home Office endpoint has already been called
+        if (asylumCaseWithHomeOfficeData.read(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, String.class).isPresent()) {
+            // Always proceed if the new  applications/v1/{id}  Home Office endpoint has already been called
 
-            return new PreSubmitCallbackResponse<>(asylumCaseWithHomeOfficeData);
-        }
+            // Retrieve the UAN or GWF from the case record
+            final String homeOfficeReferenceNumber = HandlerUtils.getUanOrGwf(asylumCaseWithHomeOfficeData);
+            if (homeOfficeReferenceNumber.isEmpty()) {
+                throw new IllegalStateException("homeOfficeReferenceNumber and gwfReferenceNumber are both missing - one or other is needed");
+            }
+            // Ensure this is present before calling the Home Office API (where it will be needed)
+            final String appealReferenceNumber = asylumCaseWithHomeOfficeData.read(APPEAL_REFERENCE_NUMBER, String.class)
+                .orElseThrow(() -> new IllegalStateException("Case ID for the appeal is not present"));
+            // Details for logging purposes only
+            final HomeOfficeApiResponseStatusType homeOfficeAppellantApiResponseStatus = asylumCaseWithHomeOfficeData.read(
+                            HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS, HomeOfficeApiResponseStatusType.class)
+                            .orElse(HomeOfficeApiResponseStatusType.UNKNOWN);
+            final long caseId = callback.getCaseDetails().getId();
 
-        final String homeOfficeSearchStatus = asylumCaseWithHomeOfficeData.read(HOME_OFFICE_SEARCH_STATUS, String.class)
-            .orElse("");
-        final YesOrNo homeOfficeNotificationsEligible
-            = asylumCaseWithHomeOfficeData.read(HOME_OFFICE_NOTIFICATIONS_ELIGIBLE, YesOrNo.class)
-            .orElse(YesOrNo.NO);
-        final long caseId = callback.getCaseDetails().getId();
-        final String homeOfficeReferenceNumber
-            = asylumCaseWithHomeOfficeData.read(HOME_OFFICE_REFERENCE_NUMBER, String.class).orElse("");
+            log.info("Start: Sending Home Office notification - " + SUPPRESSION_LOG_FIELDS_NEW,
+                callback.getEvent(), caseId, appealReferenceNumber, homeOfficeReferenceNumber, homeOfficeAppellantApiResponseStatus.getStatusCode());
 
-        if (asylumCaseWithHomeOfficeData.read(APPELLANT_IN_UK, YesOrNo.class).map(
-            value -> value.equals(YesOrNo.YES)).orElse(true)) {
+            asylumCaseWithHomeOfficeData = homeOfficeApi.aboutToSubmit(callback);
 
+            log.info("Finish: Sending Home Office notification - " + SUPPRESSION_LOG_FIELDS_NEW,
+                callback.getEvent(), caseId, appealReferenceNumber, homeOfficeReferenceNumber, homeOfficeAppellantApiResponseStatus.getStatusCode());
 
-            if ("SUCCESS".equalsIgnoreCase(homeOfficeSearchStatus)
-                && homeOfficeNotificationsEligible == YesOrNo.YES) {
+        } else {
+            // For older cases, only proceed if various restrictions on the case have been met
+            // (feature-flags set, in-country, old validation API endpoint returned SUCCESS and so on)
+            if (!HomeOfficeAppealTypeChecker.isAppealTypeEnabled(featureToggler, appealType)) {
+                return new PreSubmitCallbackResponse<>(asylumCaseWithHomeOfficeData);
+            }
 
-                log.info("Start: Sending Home Office notification - " + SUPPRESSION_LOG_FIELDS,
-                    callback.getEvent(), caseId, homeOfficeReferenceNumber, homeOfficeSearchStatus,
-                    homeOfficeNotificationsEligible);
+            final String homeOfficeSearchStatus = asylumCaseWithHomeOfficeData.read(HOME_OFFICE_SEARCH_STATUS, String.class)
+                .orElse("");
+            final YesOrNo homeOfficeNotificationsEligible
+                = asylumCaseWithHomeOfficeData.read(HOME_OFFICE_NOTIFICATIONS_ELIGIBLE, YesOrNo.class)
+                .orElse(YesOrNo.NO);
+            final long caseId = callback.getCaseDetails().getId();
+            final String homeOfficeReferenceNumber
+                = asylumCaseWithHomeOfficeData.read(HOME_OFFICE_REFERENCE_NUMBER, String.class).orElse("");
 
-                asylumCaseWithHomeOfficeData = homeOfficeApi.aboutToSubmit(callback);
+            if (asylumCaseWithHomeOfficeData.read(APPELLANT_IN_UK, YesOrNo.class).map(
+                value -> value.equals(YesOrNo.YES)).orElse(true)) {
 
-                log.info("Finish: Sending Home Office notification - " + SUPPRESSION_LOG_FIELDS,
-                    callback.getEvent(), caseId, homeOfficeReferenceNumber, homeOfficeSearchStatus,
-                    homeOfficeNotificationsEligible);
+                if ("SUCCESS".equalsIgnoreCase(homeOfficeSearchStatus)
+                    && homeOfficeNotificationsEligible == YesOrNo.YES) {
+
+                    log.info("Start: Sending Home Office notification - " + SUPPRESSION_LOG_FIELDS,
+                        callback.getEvent(), caseId, homeOfficeReferenceNumber, homeOfficeSearchStatus,
+                        homeOfficeNotificationsEligible);
+
+                    asylumCaseWithHomeOfficeData = homeOfficeApi.aboutToSubmit(callback);
+
+                    log.info("Finish: Sending Home Office notification - " + SUPPRESSION_LOG_FIELDS,
+                        callback.getEvent(), caseId, homeOfficeReferenceNumber, homeOfficeSearchStatus,
+                        homeOfficeNotificationsEligible);
+                } else {
+
+                    log.info("Home Office notification was NOT invoked due to unsuccessful validation search - "
+                            + SUPPRESSION_LOG_FIELDS,
+                        callback.getEvent(), caseId, homeOfficeReferenceNumber, homeOfficeSearchStatus,
+                        homeOfficeNotificationsEligible);
+
+                }
             } else {
-
-                log.info("Home Office notification was NOT invoked due to unsuccessful validation search - "
-                         + SUPPRESSION_LOG_FIELDS,
+                log.info("Home Office notification was NOT invoked as Appellant is NOT in the UK - "
+                        + SUPPRESSION_LOG_FIELDS,
                     callback.getEvent(), caseId, homeOfficeReferenceNumber, homeOfficeSearchStatus,
                     homeOfficeNotificationsEligible);
 
             }
-        } else {
-            log.info("Home Office notification was NOT invoked as Appellant is NOT in the UK - "
-                     + SUPPRESSION_LOG_FIELDS,
-                callback.getEvent(), caseId, homeOfficeReferenceNumber, homeOfficeSearchStatus,
-                homeOfficeNotificationsEligible);
-
         }
 
         return new PreSubmitCallbackResponse<>(asylumCaseWithHomeOfficeData);

@@ -21,11 +21,15 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HelpWithFeesOption.W
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import javax.crypto.SecretKey;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.io.ClassPathResource;
@@ -59,6 +63,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfCountryCircumstances;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfCountryDecisionType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.SourceOfAppeal;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.CryptoUtils;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.OrganisationPolicy;
 
 
@@ -592,10 +597,12 @@ public class HandlerUtils {
         asylumCase.clear(REMISSION_EC_EVIDENCE_DOCUMENTS);
     }
 
-    public static boolean appealHasRemissionOptionOrType(Optional<RemissionOption> remissionOption,
-                                                         Optional<HelpWithFeesOption> helpWithFeesOption,
-                                                         Optional<RemissionType> remissionType,
-                                                         Optional<RemissionType> lateRemissionType) {
+    public static boolean appealHasRemissionOptionOrType(
+        Optional<RemissionOption> remissionOption,
+        Optional<HelpWithFeesOption> helpWithFeesOption,
+        Optional<RemissionType> remissionType,
+        Optional<RemissionType> lateRemissionType
+    ) {
         return (remissionOption.isPresent() && remissionOption.get() != RemissionOption.NO_REMISSION)
             || (helpWithFeesOption.isPresent() && helpWithFeesOption.get() != WILL_PAY_FOR_APPEAL)
             || (remissionType.isPresent() && remissionType.get() != RemissionType.NO_REMISSION)
@@ -733,5 +740,52 @@ public class HandlerUtils {
             : asylumCase.read(FEE_WITHOUT_HEARING, String.class)
             .orElseThrow(() -> new IllegalStateException("Fee without hearing is not present"));
 
+    }
+
+    // This method checks to see whether the appellant's personal details have been validated, using either the new  applications/v1/{id}
+    // Home Office endpoint or the old  applicationStatus/getBySearchParameters  Home Office endpoint
+    public static boolean hasAppellantDataBeenValidated(AsylumCase asylumCase) {
+        // Evidence from new validation endpoint
+        boolean validationDone = asylumCase.read(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, String.class).isPresent();
+        // Evidence from old validation endpoint
+        boolean homeOfficeSearchStatusSuccess = asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class).map(status -> status.equals("SUCCESS")).orElse(false);
+        return validationDone || homeOfficeSearchStatusSuccess;
+    }
+
+    // String encryption (for sensitive data)
+    public static String encrypt(String textString) {
+        String base64TextString = Base64.getEncoder().encodeToString(textString.getBytes(StandardCharsets.UTF_8));
+        SecretKey key = CryptoUtils.createKey("MDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNkZWY="); // TODO: retrieve Base64-encoded secret from Azure Vault
+        return CryptoUtils.encrypt(base64TextString, key);
+    }
+
+    // String decryption (for sensitive data)
+    public static String decrypt(String encryptedString) {
+        SecretKey key = CryptoUtils.createKey("MDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNkZWY="); // TODO: retrieve Base64-encoded secret from Azure Vault
+        String base64TextString = CryptoUtils.decrypt(encryptedString, key);
+        return new String(Base64.getDecoder().decode(base64TextString), StandardCharsets.UTF_8);
+    }
+
+    // Remove validation fields to force another request to the Home Office validation API
+    public static void removeValidationFields(AsylumCase asylumCase) {
+        asylumCase.remove(HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS);
+        asylumCase.remove(HOME_OFFICE_APPELLANT_CLAIM_DATE);
+        asylumCase.remove(HOME_OFFICE_APPELLANT_DECISION_DATE);
+        asylumCase.remove(HOME_OFFICE_APPELLANT_DECISION_LETTER_DATE);
+        asylumCase.remove(HOME_OFFICE_APPELLANTS);
+        asylumCase.remove(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY);
+    }
+
+    public static String getUanOrGwf(AsylumCase asylumCase) {
+        // Retrieve the UAN or GWF from the case record
+        String homeOfficeReferenceNumber = asylumCase
+                .read(HOME_OFFICE_REFERENCE_NUMBER, String.class)
+                .orElse("");
+        if (homeOfficeReferenceNumber.isEmpty()) {
+            homeOfficeReferenceNumber = asylumCase
+                    .read(GWF_REFERENCE_NUMBER, String.class)
+                    .orElse("");
+        }
+        return homeOfficeReferenceNumber;
     }
 }
