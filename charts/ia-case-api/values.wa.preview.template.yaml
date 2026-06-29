@@ -128,3 +128,5 @@ xui-webapp:
   nodejs:
     environment:
       WA_SUPPORTED_JURISDICTIONS: IA
+      SERVICES_WORK_ALLOCATION_TASK_API: https://wa-task-management-api-ia-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net
+      SERVICES_WA_WORKFLOW_API_URL: https://wa-task-monitor-ia-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net
