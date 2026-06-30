@@ -21,6 +21,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackStateHandler;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isAipJourney;
+
 
 @Component
 public class MarkPaymentPaidStateHandler implements PreSubmitCallbackStateHandler<AsylumCase> {
@@ -41,7 +43,8 @@ public class MarkPaymentPaidStateHandler implements PreSubmitCallbackStateHandle
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-               && callback.getEvent() == Event.MARK_APPEAL_PAID
+               && (callback.getEvent() == Event.MARK_APPEAL_PAID
+                || callback.getEvent() == Event.PAYMENT_APPEAL)
                && isfeePaymentEnabled;
     }
 
@@ -65,6 +68,21 @@ public class MarkPaymentPaidStateHandler implements PreSubmitCallbackStateHandle
                 .getState();
 
         asylumCase.write(PAYMENT_STATUS, PaymentStatus.PAID);
+
+        if (isAipJourney(asylumCase)) {
+            if (callback.getEvent() == Event.PAYMENT_APPEAL) {
+                asylumCase.read(PAYMENT_DATE, String.class).ifPresent(paymentDate ->
+                        asylumCase.write(PAYMENT_DATE,
+                                LocalDate.parse(paymentDate).format(DateTimeFormatter.ofPattern("d MMM yyyy")))
+                );
+            } else {
+                String paymentDate = asylumCase.read(PAID_DATE, String.class)
+                        .orElseThrow(() -> new IllegalStateException("Paid date is not present"));
+                asylumCase.write(PAYMENT_DATE,
+                        LocalDate.parse(paymentDate).format(DateTimeFormatter.ofPattern("d MMM yyyy")));
+            }
+            return new PreSubmitCallbackResponse<>(asylumCase, currentState);
+        }
 
         String paymentDate = asylumCase.read(PAID_DATE, String.class)
             .orElseThrow(() -> new IllegalStateException("Paid date is not present"));
