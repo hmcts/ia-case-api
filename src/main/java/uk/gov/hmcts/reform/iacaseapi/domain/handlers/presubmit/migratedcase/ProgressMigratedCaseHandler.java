@@ -95,7 +95,13 @@ public class ProgressMigratedCaseHandler implements PreSubmitCallbackStateHandle
             })
             .toList();
 
+        Optional<List<IdValue<CaseNote>>> ariaCaseNotes =
+                asylumCase.read(CASE_NOTES);
         List<IdValue<CaseNote>> appendedCaseNoteList = new ArrayList<>();
+
+        if (!ariaCaseNotes.isEmpty()) {
+            appendedCaseNoteList = ariaCaseNotes.get();
+        }
         for (CaseNote newCaseNote : newCaseNoteList) {
             appendedCaseNoteList = caseNoteAppender.append(newCaseNote, appendedCaseNoteList);
         }

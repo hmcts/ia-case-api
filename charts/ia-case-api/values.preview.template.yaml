@@ -42,7 +42,7 @@ java:
     # The mock HO validation API lives at http://ia-home-office-mock-api-aat.service.core-compute-aat.internal/ichallenge/applications/v1/1111-2222-3333-4444
     # (you can use any valid UAN at the end; but in ExUI you must enter the expected UAN, name and DOB in order to proceed past validation)
     HOME_OFFICE_VALIDATION_ENABLED: "false" # Do not remove this this environment variable!
-    STATUTORY_TIMEFRAME_LIVE_DATE: "2026-05-01"
+    STATUTORY_TIMEFRAME_LIVE_DATE: "2000-01-01" # This must be in the past in order to test the add/remove 24-week timeframe events in Preview
   keyVaults:
     ia:
       resourceGroup: ia
@@ -802,12 +802,9 @@ xui-webapp:
       SERVICES_PRD_API: http://rd-professional-api-aat.service.core-compute-aat.internal
       SERVICES_CCD_CASE_ASSIGNMENT_API: https://aac-${SERVICE_FQDN}
       SERVICES_DOCUMENTS_API_V2: http://${SERVICE_NAME}-ccd-case-document-am-api
-      SERVICES_WORK_ALLOCATION_TASK_API: https://wa-task-management-api-ia-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net
-      SERVICES_WA_WORKFLOW_API_URL: https://wa-task-monitor-ia-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net
       SERVICES_IDAM_ISS_URL: https://forgerock-am.service.core-compute-idam-aat2.internal:8443/openam/oauth2/realms/root/realms/hmcts
       SERVICES_ROLE_ASSIGNMENT_API: https://am-role-assignment-ia-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net
       SERVICES_ROLE_ASSIGNMENT_MAPPING_API: https://am-org-role-mapping-service-${SERVICE_FQDN}
-      WA_SUPPORTED_JURISDICTIONS: ${WA_SUPPORTED_JURISDICTIONS:}
       JURISDICTIONS: IA
       GLOBAL_SEARCH_SERVICES: IA
       LAUNCH_DARKLY_CLIENT_ID: 5de6610b23ce5408280f2268
