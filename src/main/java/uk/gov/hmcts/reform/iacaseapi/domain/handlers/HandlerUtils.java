@@ -917,34 +917,34 @@ public class HandlerUtils {
                 .orElseThrow(() -> new IllegalStateException("Non-legal representative details are not present"));
             nlrDetails.setAddress(null);
             asylumCase.write(NLR_DETAILS, nlrDetails);
-            String idamId = nlrDetails.getIdamId();
             String givenNames = nlrDetails.getGivenNames();
-            String familyName = nlrDetails.getFamilyName();
-            AddressUk addressUk = nlrDetails.getAddressUk();
-            String email = nlrDetails.getEmailAddress();
-            String phoneNumber = nlrDetails.getPhoneNumber();
-            String nameForDisplay = givenNames != null && familyName != null ? (givenNames + " " + familyName).replaceAll("\\s+", " ").trim() : null;
             if (givenNames != null) {
                 asylumCase.write(SPONSOR_GIVEN_NAMES, givenNames);
             }
+            String familyName = nlrDetails.getFamilyName();
             if (familyName != null) {
                 asylumCase.write(SPONSOR_FAMILY_NAME, familyName);
             }
+            AddressUk addressUk = nlrDetails.getAddressUk();
             if (addressUk != null) {
                 asylumCase.write(SPONSOR_ADDRESS, addressUk);
                 asylumCase.write(SPONSOR_ADDRESS_FOR_DISPLAY, addressUk.toDisplay());
             }
+            String nameForDisplay = givenNames != null && familyName != null ? (givenNames + " " + familyName).replaceAll("\\s+", " ").trim() : null;
             if (nameForDisplay != null) {
                 asylumCase.write(SPONSOR_NAME_FOR_DISPLAY, nameForDisplay);
             }
+            String email = nlrDetails.getEmailAddress();
             if (email != null) {
                 asylumCase.write(SPONSOR_EMAIL, email);
                 asylumCase.write(SPONSOR_CONTACT_PREFERENCE, ContactPreference.WANTS_EMAIL);
             }
+            String phoneNumber = nlrDetails.getPhoneNumber();
             if (phoneNumber != null) {
                 asylumCase.write(SPONSOR_MOBILE_NUMBER, phoneNumber);
             }
             if (email != null && phoneNumber != null) {
+                String idamId = nlrDetails.getIdamId();
                 Subscriber newSubscriber = new Subscriber(SubscriberType.SUPPORTER, email, YES, phoneNumber, NO);
                 asylumCase.write(SPONSOR_SUBSCRIPTIONS, List.of(new IdValue<>(idamId == null
                     ? UUID.randomUUID().toString() : idamId, newSubscriber)));
