@@ -421,6 +421,10 @@ dependencies {
 
     contractTestImplementation sourceSets.main.runtimeClasspath
     contractTestImplementation sourceSets.test.runtimeClasspath
+
+    runtimeOnly 'org.jetbrains.kotlin:kotlin-stdlib:1.9.25'
+    runtimeOnly 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3'
+    runtimeOnly 'org.jetbrains.kotlin:kotlin-reflect:1.9.25'
 }
 
 test {
