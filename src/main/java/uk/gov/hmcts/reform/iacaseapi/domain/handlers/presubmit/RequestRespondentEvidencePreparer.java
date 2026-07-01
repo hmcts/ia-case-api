@@ -3,11 +3,14 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_OUT_OF_COUNTRY;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.COMPLETE_CASE_REVIEW_DATE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LIST_CASE_HEARING_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.OUT_OF_TIME_DECISION_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.RECORDED_OUT_OF_TIME_DECISION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SEND_DIRECTION_DATE_DUE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SEND_DIRECTION_EXPLANATION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SEND_DIRECTION_PARTIES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STF_24W_CURRENT_STATUS_AUTO_GENERATED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPLOAD_HOME_OFFICE_BUNDLE_ACTION_AVAILABLE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
@@ -82,6 +85,29 @@ public class RequestRespondentEvidencePreparer implements PreSubmitCallbackHandl
                 .getCaseData();
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse = new PreSubmitCallbackResponse<>(asylumCase);
+
+        boolean completeCaseReviewDone = asylumCase.read(COMPLETE_CASE_REVIEW_DATE, String.class).isPresent();
+        if (!completeCaseReviewDone) {
+            boolean is24WeekStfCase = asylumCase.read(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class)
+                .map(status -> status == YES)
+                .orElse(false);
+            String errorMessage = is24WeekStfCase
+                ? "You must run the Complete case review and list the case before running the 'Request respondent evidence' event"
+                : "You must run the Complete case review before running the 'Request respondent evidence' event";
+            callbackResponse.addError(errorMessage);
+            return callbackResponse;
+        }
+
+        boolean is24WeekStfCase = asylumCase.read(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class)
+            .map(status -> status == YES)
+            .orElse(false);
+        if (is24WeekStfCase) {
+            boolean listCaseDone = asylumCase.read(LIST_CASE_HEARING_DATE, String.class).isPresent();
+            if (!listCaseDone) {
+                callbackResponse.addError("You must list the case before running the 'Request respondent evidence' event");
+                return callbackResponse;
+            }
+        }
 
         final AppealType appealType = asylumCase.read(APPEAL_TYPE, AppealType.class)
                 .orElseThrow(() -> new IllegalStateException("AppealType is not present."));
