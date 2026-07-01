@@ -329,14 +329,6 @@ dependencyManagement {
 
         // CVE-2020-13956 - transitive from service-auth-provider-java-client@5.3.3
         dependency group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.14'
-
-        // CVE-2026-53914 - from okhttp/okio transitive dependency
-        dependencySet(group: 'org.jetbrains.kotlin', version: '2.4.20') {
-            entry 'kotlin-stdlib'
-            entry 'kotlin-stdlib-common'
-            entry 'kotlin-stdlib-jdk7'
-            entry 'kotlin-stdlib-jdk8'
-        }
     }
 }
 
