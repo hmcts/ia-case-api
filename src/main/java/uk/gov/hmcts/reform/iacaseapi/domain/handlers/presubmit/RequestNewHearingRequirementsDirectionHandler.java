@@ -6,6 +6,8 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isIntegrated;
 
 import lombok.extern.slf4j.Slf4j;
+
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -93,6 +95,17 @@ public class RequestNewHearingRequirementsDirectionHandler implements PreSubmitC
                 .now()
                 .plusDays(hearingRequirementsDueInDays)
                 .toString()));
+        String directionDueDate = dueDate.orElse("");
+        boolean directionDueDateIsInFuture = LocalDate.parse(directionDueDate).isAfter(dateProvider.now());
+
+        if (!directionDueDateIsInFuture) {
+
+            PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
+
+            log.error("Direction due date must be in the future");
+            response.addError("Direction due date must be in the future");
+            return response;
+        }
 
         List<IdValue<Direction>> allDirections =
             directionAppender.append(
