@@ -12,5 +12,7 @@
         <cve>CVE-2026-41840</cve>
         <cve>CVE-2026-41841</cve>
         <cve>CVE-2026-41843</cve>
+        <notes>Should be fixed with jackson 2.21.5 release - see https://github.com/FasterXML/jackson/wiki/Jackson-Release-2.21.5</notes>
+        <cve>CVE-2026-54515</cve>
     </suppress>
 </suppressions>
