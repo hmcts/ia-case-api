@@ -7,6 +7,6 @@
     <suppress until="2026-07-17">
         <notes>Should be fixed with jackson 2.21.5 release - see https://github.com/FasterXML/jackson/wiki/Jackson-Release-2.21.5</notes>
         <cve>CVE-2026-54515</cve>
-        <cve>CVE-2026-53913</cve>
+        <cve>CVE-2026-53914</cve>
     </suppress>
 </suppressions>
