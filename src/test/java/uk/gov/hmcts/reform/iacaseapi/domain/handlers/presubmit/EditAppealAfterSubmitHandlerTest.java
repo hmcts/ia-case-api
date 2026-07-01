@@ -183,7 +183,7 @@ class EditAppealAfterSubmitHandlerTest {
 
     @BeforeEach
     public void setUp() {
-        editAppealAfterSubmitHandler = new EditAppealAfterSubmitHandler(dateProvider,dueDateService,APPEAL_OUT_OF_TIME_DAYS_UK,APPEAL_OUT_OF_TIME_DAYS_OOC,APPEAL_OUT_OF_TIME_ADA_WORKING_DAYS, documentReceiver, documentsAppender);
+        editAppealAfterSubmitHandler = new EditAppealAfterSubmitHandler(dateProvider, dueDateService, APPEAL_OUT_OF_TIME_DAYS_UK, APPEAL_OUT_OF_TIME_DAYS_OOC, APPEAL_OUT_OF_TIME_ADA_WORKING_DAYS, documentReceiver, documentsAppender);
 
         when(callback.getEvent()).thenReturn(Event.EDIT_APPEAL_AFTER_SUBMIT);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -206,8 +206,8 @@ class EditAppealAfterSubmitHandlerTest {
 
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.empty());
         when(asylumCase.read(LOCAL_AUTHORITY_POLICY))
-                .thenReturn(Optional.of(OrganisationPolicy.builder()
-                        .organisation(Organisation.builder().organisationID("Org1").build()).build()));
+            .thenReturn(Optional.of(OrganisationPolicy.builder()
+                .organisation(Organisation.builder().organisationID("Org1").build()).build()));
         when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(NO));
         when(callback.getCaseDetailsBefore()).thenReturn(Optional.of(caseDetailsBefore));
         when(caseDetailsBefore.getCaseData()).thenReturn(asylumCaseBefore);
@@ -302,22 +302,22 @@ class EditAppealAfterSubmitHandlerTest {
         DocumentWithDescription uploadedDoc = mock(DocumentWithDescription.class);
         DocumentWithMetadata receivedMetadata = mock(DocumentWithMetadata.class);
         List<IdValue<DocumentWithDescription>> uploadedNoticeOfDecisionDocs =
-                List.of(new IdValue<>("1", uploadedDoc));
+            List.of(new IdValue<>("1", uploadedDoc));
 
         when(asylumCase.read(UPLOAD_THE_NOTICE_OF_DECISION_DOCS)).thenReturn(Optional.of(uploadedNoticeOfDecisionDocs));
         when(documentReceiver.tryReceive(uploadedDoc, DocumentTag.HO_DECISION_LETTER))
-                .thenReturn(Optional.of(receivedMetadata));
+            .thenReturn(Optional.of(receivedMetadata));
 
         DocumentWithMetadata existingDoc = mock(DocumentWithMetadata.class);
         when(existingDoc.getTag()).thenReturn(DocumentTag.APPEAL_SUBMISSION);
 
         List<IdValue<DocumentWithMetadata>> existingLegalRepDocs =
-                List.of(new IdValue<>("2", existingDoc));
+            List.of(new IdValue<>("2", existingDoc));
         when(asylumCase.read(LEGAL_REPRESENTATIVE_DOCUMENTS)).thenReturn(Optional.of(existingLegalRepDocs));
 
         List<IdValue<DocumentWithMetadata>> finalLegalRepDocs = List.of(
-                new IdValue<>("3", receivedMetadata),
-                new IdValue<>("2", existingDoc)
+            new IdValue<>("3", receivedMetadata),
+            new IdValue<>("2", existingDoc)
         );
         when(documentsAppender.prepend(anyList(), anyList())).thenReturn(finalLegalRepDocs);
 
@@ -325,7 +325,7 @@ class EditAppealAfterSubmitHandlerTest {
         when(asylumCase.read(HOME_OFFICE_DECISION_DATE)).thenReturn(Optional.of("2020-04-08"));
 
         PreSubmitCallbackResponse<AsylumCase> response =
-                editAppealAfterSubmitHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+            editAppealAfterSubmitHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(response);
         assertEquals(asylumCase, response.getData());
@@ -623,7 +623,7 @@ class EditAppealAfterSubmitHandlerTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = { HOME_OFFICE_DECISION_PAGE_ID, "" })
+    @ValueSource(strings = {HOME_OFFICE_DECISION_PAGE_ID, ""})
     @SuppressWarnings("unchecked")
     void it_can_handle_callback(String pageId) {
 
@@ -808,7 +808,7 @@ class EditAppealAfterSubmitHandlerTest {
         when(dateProvider.now()).thenReturn(LocalDate.parse(nowDate));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                editAppealAfterSubmitHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+            editAppealAfterSubmitHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
 
@@ -830,7 +830,7 @@ class EditAppealAfterSubmitHandlerTest {
         when(asylumCase.read(DATE_ON_DECISION_LETTER, String.class)).thenReturn(Optional.of(dateOnDecisionLetterOptional));
         when(dateProvider.now()).thenReturn(LocalDate.parse(nowDate));
         when(asylumCase.read(AsylumCaseFieldDefinition.LITIGATION_FRIEND_CONTACT_PREFERENCE, ContactPreference.class))
-                .thenReturn(Optional.of(ContactPreference.WANTS_EMAIL));
+            .thenReturn(Optional.of(ContactPreference.WANTS_EMAIL));
         PreSubmitCallbackResponse<AsylumCase> response = editAppealAfterSubmitHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
         assertNotNull(response);
         verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.LITIGATION_FRIEND_PHONE_NUMBER);
@@ -846,7 +846,7 @@ class EditAppealAfterSubmitHandlerTest {
         when(asylumCase.read(DATE_ON_DECISION_LETTER, String.class)).thenReturn(Optional.of(dateOnDecisionLetterOptional));
         when(dateProvider.now()).thenReturn(LocalDate.parse(nowDate));
         when(asylumCase.read(AsylumCaseFieldDefinition.LITIGATION_FRIEND_CONTACT_PREFERENCE, ContactPreference.class))
-                .thenReturn(Optional.of(ContactPreference.WANTS_SMS));
+            .thenReturn(Optional.of(ContactPreference.WANTS_SMS));
         PreSubmitCallbackResponse<AsylumCase> response = editAppealAfterSubmitHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
         assertNotNull(response);
         verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.LITIGATION_FRIEND_EMAIL);

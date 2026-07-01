@@ -1740,6 +1740,63 @@ public enum AsylumCaseFieldDefinition {
     REVOKE_ACCESS_DL(
         "revokeAccessDl", new TypeReference<DynamicList>(){}),
 
+    JOIN_APPEAL_PIN(
+        "joinAppealPin", new TypeReference<PinInPostDetails>(){}),
+
+    HAS_NON_LEGAL_REP(
+        "hasNonLegalRep", new TypeReference<YesOrNo>(){}),
+
+    HAS_NON_LEGAL_REP_JOINED(
+        "hasNonLegalRepJoined", new TypeReference<YesOrNo>(){}),
+
+    HAS_NLR_SUBMITTED(
+        "hasNlrSubmitted", new TypeReference<YesOrNo>(){}),
+
+    NLR_DETAILS(
+        "nlrDetails", new TypeReference<NonLegalRepDetails>(){}),
+
+    SHOULD_INVITE_NLR_TO_IDAM(
+        "shouldInviteNlrToIdam", new TypeReference<YesOrNo>(){}),
+
+    IS_SPONSOR_SAME_AS_NLR(
+        "isSponsorSameAsNlr", new TypeReference<YesOrNo>(){}),
+
+    NLR_ATTENDING(
+        "nlrAttending", new TypeReference<YesOrNo>(){}),
+
+    NLR_ATTENDING_OUTSIDE_UK(
+        "nlrAttendingOutsideUK", new TypeReference<YesOrNo>(){}),
+
+    IS_NLR_INTERPRETER_REQUIRED(
+        "isNlrInterpreterRequired", new TypeReference<YesOrNo>(){}),
+
+    NLR_INTERPRETER_LANGUAGE_CATEGORY(
+        "nlrInterpreterLanguageCategory", new TypeReference<List<String>>() {}),
+
+    NLR_INTERPRETER_SPOKEN_LANGUAGE(
+        "nlrInterpreterSpokenLanguage", new TypeReference<InterpreterLanguageRefData>() {}),
+
+    NLR_INTERPRETER_SIGN_LANGUAGE(
+        "nlrInterpreterSignLanguage", new TypeReference<InterpreterLanguageRefData>() {}),
+
+    NLR_INTERPRETER_SPOKEN_LANGUAGE_BOOKING(
+        "nlrInterpreterSpokenLanguageBooking", new TypeReference<String>() {}),
+
+    NLR_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_STATUS(
+        "nlrInterpreterSpokenLanguageBookingStatus", new TypeReference<InterpreterBookingStatus>() {}),
+
+    NLR_INTERPRETER_SIGN_LANGUAGE_BOOKING(
+        "nlrInterpreterSignLanguageBooking", new TypeReference<String>() {}),
+
+    NLR_INTERPRETER_SIGN_LANGUAGE_BOOKING_STATUS(
+        "nlrInterpreterSignLanguageBookingStatus", new TypeReference<InterpreterBookingStatus>() {}),
+
+    NLR_NEEDS_STEP_FREE_ACCESS(
+        "nlrNeedsStepFreeAccess", new TypeReference<YesOrNo>(){}),
+
+    NLR_NEEDS_HEARING_LOOP(
+        "nlrNeedsHearingLoop", new TypeReference<YesOrNo>(){}),
+
     FEE_UPDATE_RECORDED(
         "feeUpdateRecorded", new TypeReference<CheckValues<String>>(){}),
 
@@ -2042,6 +2099,9 @@ public enum AsylumCaseFieldDefinition {
     CASE_LEVEL_FLAGS(
         "caseFlags", new TypeReference<StrategicCaseFlag>(){}),
 
+    NLR_LEVEL_FLAGS(
+        "nlrLevelFlags", new TypeReference<StrategicCaseFlag>() {}),
+
     IS_HEARING_ROOM_NEEDED(
             "isHearingRoomNeeded", new TypeReference<YesOrNo>(){}),
 
@@ -2198,6 +2258,9 @@ public enum AsylumCaseFieldDefinition {
 
     SPONSOR_PARTY_ID(
             "sponsorPartyId", new TypeReference<String>() {}),
+
+    NLR_PARTY_ID(
+        "nlrPartyId", new TypeReference<String>() {}),
 
     CHANGE_HEARINGS(
             "changeHearings", new TypeReference<DynamicList>(){}),
@@ -2881,7 +2944,7 @@ public enum AsylumCaseFieldDefinition {
 
     REMISSION_REQUESTED_BY(
         "remissionRequestedBy", new TypeReference<UserRoleLabel>(){}),
-  
+
     GENERATE_LIST_CMR_TASK_REQUESTED(
             "generateListCmrTaskRequested", new TypeReference<YesOrNo>(){}),
 
