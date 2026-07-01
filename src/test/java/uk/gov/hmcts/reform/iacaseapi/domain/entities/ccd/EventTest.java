@@ -110,6 +110,7 @@ class EventTest {
             Arguments.of("submitCmaRequirements", Event.SUBMIT_CMA_REQUIREMENTS.toString()),
             Arguments.of("reviewCmaRequirements", Event.REVIEW_CMA_REQUIREMENTS.toString()),
             Arguments.of("forceCaseToCaseUnderReview", Event.FORCE_CASE_TO_CASE_UNDER_REVIEW.toString()),
+            Arguments.of("forceCaseToPrepareForHearing", Event.FORCE_CASE_TO_PREPARE_FOR_HEARING.toString()),
             Arguments.of("updateDetailsAfterCma", Event.UPDATE_DETAILS_AFTER_CMA.toString()),
             Arguments.of("forceCaseToSubmitHearingRequirements", Event.FORCE_CASE_TO_SUBMIT_HEARING_REQUIREMENTS.toString()),
             Arguments.of("updateLegalRepDetails", Event.UPDATE_LEGAL_REPRESENTATIVES_DETAILS.toString()),

@@ -84,6 +84,7 @@ public enum Event {
     SUBMIT_CMA_REQUIREMENTS("submitCmaRequirements"),
     REVIEW_CMA_REQUIREMENTS("reviewCmaRequirements"),
     FORCE_CASE_TO_CASE_UNDER_REVIEW("forceCaseToCaseUnderReview"),
+    FORCE_CASE_TO_PREPARE_FOR_HEARING("forceCaseToPrepareForHearing"),
     UPDATE_DETAILS_AFTER_CMA("updateDetailsAfterCma"),
     FORCE_CASE_TO_SUBMIT_HEARING_REQUIREMENTS("forceCaseToSubmitHearingRequirements"),
     UPDATE_LEGAL_REPRESENTATIVES_DETAILS("updateLegalRepDetails"),

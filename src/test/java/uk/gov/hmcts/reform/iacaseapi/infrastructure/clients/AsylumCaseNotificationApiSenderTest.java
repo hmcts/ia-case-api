@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.iacaseapi.infrastructure.clients;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -15,7 +14,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
-import java.time.ZonedDateTime;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -187,7 +185,7 @@ class AsylumCaseNotificationApiSenderTest {
 
         when(asylumCaseCallbackApiDelegator.delegate(callback, ENDPOINT + CCD_SUBMITTED_PATH))
             .thenReturn(notifiedAsylumCase);
-        LocalDateTime localDateTime = LocalDateTime.now();
+        LocalDateTime localDateTime = LocalDateTime.now().withHour(10).withMinute(0).withSecond(0);
         when(dateProvider.nowWithTime()).thenReturn(localDateTime);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getId()).thenReturn(1L);
@@ -264,7 +262,7 @@ class AsylumCaseNotificationApiSenderTest {
 
         when(asylumCaseCallbackApiDelegator.delegate(callback, ENDPOINT + CCD_SUBMITTED_PATH))
             .thenReturn(notifiedAsylumCase);
-        LocalDateTime localDateTime = LocalDateTime.now();
+        LocalDateTime localDateTime = LocalDateTime.now().withHour(10).withMinute(0).withSecond(0);
         when(dateProvider.nowWithTime()).thenReturn(localDateTime);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getId()).thenReturn(1L);
@@ -317,7 +315,7 @@ class AsylumCaseNotificationApiSenderTest {
         verify(scheduler).schedule(timedEventCaptor.capture());
         TimedEvent timedEventCaptorValue = timedEventCaptor.getValue();
         verifyTimedEventSchedule(timedEventCaptorValue);
-        assertTrue(timedEventCaptorValue.getScheduledDateTime().isAfter(ZonedDateTime.now().plusDays(1)));
+        assertEquals(LocalDate.now().plusDays(1), timedEventCaptorValue.getScheduledDateTime().toLocalDate());
 
         verify(asylumCaseCallbackApiDelegator, times(1))
                 .delegate(callback, ENDPOINT + CCD_SUBMITTED_PATH);
@@ -358,7 +356,7 @@ class AsylumCaseNotificationApiSenderTest {
         verify(scheduler).schedule(timedEventCaptor.capture());
         TimedEvent timedEventCaptorValue = timedEventCaptor.getValue();
         verifyTimedEventSchedule(timedEventCaptorValue);
-        assertTrue(timedEventCaptorValue.getScheduledDateTime().isAfter(ZonedDateTime.now().plusDays(1)));
+        assertEquals(LocalDate.now().plusDays(1), timedEventCaptorValue.getScheduledDateTime().toLocalDate());
 
         verify(asylumCaseCallbackApiDelegator, times(1))
                 .delegate(callback, ENDPOINT + CCD_SUBMITTED_PATH);
@@ -457,3 +455,4 @@ class AsylumCaseNotificationApiSenderTest {
     }
 
 }
+  
