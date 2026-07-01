@@ -400,7 +400,7 @@ dependencies {
     testImplementation group: 'net.serenity-bdd', name: 'serenity-rest-assured', version: '5.3.10'
     testImplementation group: 'net.serenity-bdd', name: 'serenity-spring', version: '5.3.10'
 
-    functionalTestImplementation group: 'com.github.hmcts', name: 'core-case-data-store-client', version: '5.2.0'
+    functionalTestImplementation group: 'com.github.hmcts', name: 'core-case-data-store-client', version: '6.0.0'
 
     //pact contract testing
     contractTestImplementation group: 'au.com.dius.pact.consumer', name: 'junit5', version: '4.6.20'
