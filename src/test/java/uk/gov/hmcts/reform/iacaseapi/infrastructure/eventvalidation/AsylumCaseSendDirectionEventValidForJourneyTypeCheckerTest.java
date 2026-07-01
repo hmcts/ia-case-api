@@ -119,20 +119,65 @@ class AsylumCaseSendDirectionEventValidForJourneyTypeCheckerTest {
             .thenReturn(Optional.of(party));
     }
 
+    @Test
+    void cannotSendDirectionToLegalRepresentativeForRepInternalCase() {
+        setupInternalCaseCallback(Parties.LEGAL_REPRESENTATIVE);
+
+        EventValid eventValid =
+                new AsylumCaseSendDirectionEventValidForJourneyTypeChecker().check(callback);
+
+        assertThat(eventValid).isEqualTo(
+                new EventValid(
+                        "Due to a system error you cannot select Legal representative as a recipient on a manual appeal. "
+                                + "The direction will need to be issued to the appellant."));
+
+        Assertions.assertThat(loggingEventListAppender.list)
+                .extracting(ILoggingEvent::getMessage, ILoggingEvent::getLevel)
+                .contains(Tuple.tuple(
+                        "Cannot select Legal representative as a recipient on a manual appeal.",
+                        Level.ERROR));
+    }
+
+    @Test
+    void cannotSendDirectionToLegalRepresentativeAndRespondentForRepInternalCase() {
+        setupInternalCaseCallback(Parties.BOTH);
+
+        EventValid eventValid =
+                new AsylumCaseSendDirectionEventValidForJourneyTypeChecker().check(callback);
+
+        assertThat(eventValid).isEqualTo(
+                new EventValid(
+                        "You cannot select Legal representative and respondent as joint recipients on a manual appeal. "
+                                + "The direction will need to be issued to the recipients individually."));
+
+        Assertions.assertThat(loggingEventListAppender.list)
+                .extracting(ILoggingEvent::getMessage, ILoggingEvent::getLevel)
+                .contains(Tuple.tuple(
+                        "Cannot select Legal representative and respondent as joint recipients on a manual appeal.",
+                        Level.ERROR));
+    }
+
+
+
     @ParameterizedTest
     @EnumSource(value = Parties.class, names = {
         "LEGAL_REPRESENTATIVE", "BOTH"
     })
-    void cannotSendDirectionToLegalRepForInternalCase(Parties party) {
-        setupInternalCaseCallback(party);
-        EventValid eventValid = new AsylumCaseSendDirectionEventValidForJourneyTypeChecker().check(callback);
+    void cannotSendDirectionToLegalRepForAipInternalCase(Parties party) {
+        setupAipInternalCaseCallback(party);
+
+        EventValid eventValid =
+                new AsylumCaseSendDirectionEventValidForJourneyTypeChecker().check(callback);
 
         assertThat(eventValid).isEqualTo(
-                new EventValid("This is an appellant in person case. You cannot select legal representative as the recipient."));
+                new EventValid(
+                        "This is an appellant in person case. You cannot select legal representative as the recipient."));
 
         Assertions.assertThat(loggingEventListAppender.list)
                 .extracting(ILoggingEvent::getMessage, ILoggingEvent::getLevel)
-                .contains(Tuple.tuple("Cannot send legal representative a direction for an internal case", Level.ERROR));
+                .contains(Tuple.tuple(
+                        "Cannot send legal representative a direction for an internal case",
+                        Level.ERROR));
     }
 
     @Test
@@ -149,6 +194,21 @@ class AsylumCaseSendDirectionEventValidForJourneyTypeCheckerTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(AsylumCaseFieldDefinition.JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.empty());
         when(asylumCase.read(AsylumCaseFieldDefinition.IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(AsylumCaseFieldDefinition.SEND_DIRECTION_PARTIES, Parties.class))
+                .thenReturn(Optional.of(party));
+    }
+
+    private void setupAipInternalCaseCallback(Parties party) {
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.SEND_DIRECTION);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        when(asylumCase.read(AsylumCaseFieldDefinition.JOURNEY_TYPE, JourneyType.class))
+                .thenReturn(Optional.of(JourneyType.AIP));
+
+        when(asylumCase.read(AsylumCaseFieldDefinition.IS_ADMIN, YesOrNo.class))
+                .thenReturn(Optional.of(YesOrNo.YES));
+
         when(asylumCase.read(AsylumCaseFieldDefinition.SEND_DIRECTION_PARTIES, Parties.class))
                 .thenReturn(Optional.of(party));
     }
