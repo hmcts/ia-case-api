@@ -4,7 +4,7 @@
         <notes>False positive caused by incorrect change made seen in change history on NVD side - https://github.com/dependency-check/DependencyCheck/issues/8343</notes>
         <cve>CVE-2020-29582</cve>
     </suppress>
-    <suppress until="2026-06-17">
+    <suppress until="2026-07-31">
         <notes>Spring related, should be fixed in springboot 3.5.15 release</notes>
         <cve>CVE-2026-41842</cve>
         <cve>CVE-2026-41850</cve>
