@@ -2,6 +2,8 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.APPEAL_SUBMITTED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.PENDING_PAYMENT;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -85,7 +87,11 @@ public class RecordRemissionDecisionStateHandler implements PreSubmitCallbackSta
                 asylumCase.write(DISPLAY_MARK_AS_PAID_EVENT_FOR_PARTIAL_REMISSION, YesOrNo.NO);
 
                 if (Arrays.asList(AppealType.EA, AppealType.HU, AppealType.EU, AppealType.AG).contains(appealType)) {
-                    return new PreSubmitCallbackResponse<>(asylumCase, State.APPEAL_SUBMITTED);
+                    if (currentState == PENDING_PAYMENT) {
+                        return new PreSubmitCallbackResponse<>(asylumCase, APPEAL_SUBMITTED);
+                    } else {
+                        return new PreSubmitCallbackResponse<>(asylumCase, currentState);
+                    }
                 }
                 return new PreSubmitCallbackResponse<>(asylumCase, currentState);
 
