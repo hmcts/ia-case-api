@@ -274,7 +274,7 @@ ext["tomcat.version"] = "10.1.55"
 dependencyManagement {
     imports {
         mavenBom 'org.springframework.cloud:spring-cloud-dependencies:2025.0.2'
-        mavenBom 'com.fasterxml.jackson:jackson-bom:2.21.3'
+        mavenBom 'com.fasterxml.jackson:jackson-bom:2.21.4'
 
         // CVE-2026-34478
         // CVE-2026-34479
@@ -329,6 +329,12 @@ dependencyManagement {
 
         // CVE-2020-13956 - transitive from service-auth-provider-java-client@5.3.3
         dependency group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.14'
+
+        dependencySet(group: 'org.jetbrains.kotlin', version: '2.4.20-Beta1') {
+            entry 'kotlin-stdlib'
+            entry 'kotlin-stdlib-jdk7'
+            entry 'kotlin-stdlib-jdk8'
+        }
     }
 }
 
