@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
@@ -33,7 +32,6 @@ public class SendDirectionWithQuestionsHandler implements PreSubmitCallbackHandl
 
     private final DirectionAppender appender;
 
-    @Autowired
     public SendDirectionWithQuestionsHandler(DirectionAppender appender) {
         this.appender = appender;
     }

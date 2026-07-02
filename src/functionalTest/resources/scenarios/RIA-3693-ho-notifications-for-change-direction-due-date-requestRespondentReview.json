@@ -1,6 +1,5 @@
 {
   "description": "RIA-3693 sends ho notification change direction due date for requestRespondentReview",
-  "launchDarklyKey": "home-office-notification-feature:true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "Judge",
@@ -31,7 +30,7 @@
           ],
           "directionEditExplanation": "A notice of appeal has been lodged against this decision.",
           "directionEditDateDue": "{$TODAY+28}",
-          "directionEditParties" : "respondent"
+          "directionEditParties": "respondent"
         }
       }
     }

@@ -30,8 +30,10 @@ public class MarkPaymentRequestSentConfirmation implements PostSubmitCallbackHan
             new PostSubmitCallbackResponse();
         postSubmitResponse.setConfirmationHeader("# Payment request recorded");
         postSubmitResponse.setConfirmationBody(
-            "#### What happens next\n\n"
-            + "You can review this note in the case notes tab."
+            """
+            #### What happens next
+            
+            You can review this note in the case notes tab."""
         );
 
         return postSubmitResponse;

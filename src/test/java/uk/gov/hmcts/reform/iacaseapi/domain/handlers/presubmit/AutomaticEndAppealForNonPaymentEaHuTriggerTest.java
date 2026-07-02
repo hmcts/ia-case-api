@@ -1,11 +1,24 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.EA;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.EU;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.HU;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.AGE_ASSESSMENT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_IN_DETENTION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HELP_WITH_FEES_OPTION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ACCELERATED_DETAINED_APPEAL;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_NOTIFICATION_TURNED_OFF;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOURNEY_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMISSION_OPTION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMISSION_TYPE;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -26,7 +39,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.HelpWithFeesOption;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionOption;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -59,6 +76,8 @@ class AutomaticEndAppealForNonPaymentEaHuTriggerTest {
     private final String jurisdiction = "IA";
     private final String caseType = "Asylum";
 
+    private static final int SCHEDULE_MINUTES = 14;
+
     private AutomaticEndAppealForNonPaymentEaHuTrigger automaticEndAppealForNonPaymentEaHuTrigger;
 
     @BeforeEach
@@ -68,7 +87,7 @@ class AutomaticEndAppealForNonPaymentEaHuTriggerTest {
             new AutomaticEndAppealForNonPaymentEaHuTrigger(
                 dateProvider,
                 scheduler,
-                    10
+                    SCHEDULE_MINUTES
             );
     }
 
@@ -307,6 +326,44 @@ class AutomaticEndAppealForNonPaymentEaHuTriggerTest {
         assertEquals("", result.getId());
     }
     
+    @ParameterizedTest
+    @EnumSource(value = AppealType.class, names = {"EA", "HU", "EU", "AG"})
+    void should_schedule_end_appeal_at_14_days_for_non_detained(AppealType appealType) {
+        dataSetUp();
+        when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
+        when(scheduler.schedule(any(TimedEvent.class))).thenReturn(
+            new TimedEvent(id, Event.END_APPEAL_AUTOMATICALLY, ZonedDateTime.now(), jurisdiction, caseType, caseId));
+
+        automaticEndAppealForNonPaymentEaHuTrigger.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        verify(scheduler).schedule(timedEventArgumentCaptor.capture());
+        TimedEvent result = timedEventArgumentCaptor.getValue();
+
+        ZonedDateTime expectedScheduledDate =
+            ZonedDateTime.of(now, ZoneId.systemDefault()).plusMinutes(SCHEDULE_MINUTES);
+        assertEquals(expectedScheduledDate, result.getScheduledDateTime());
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = AppealType.class, names = {"EA", "HU", "EU", "AG"})
+    void should_schedule_end_appeal_at_28_days_for_detained(AppealType appealType) {
+        dataSetUp();
+        when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
+        when(scheduler.schedule(any(TimedEvent.class))).thenReturn(
+            new TimedEvent(id, Event.END_APPEAL_AUTOMATICALLY, ZonedDateTime.now(), jurisdiction, caseType, caseId));
+
+        automaticEndAppealForNonPaymentEaHuTrigger.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        verify(scheduler).schedule(timedEventArgumentCaptor.capture());
+        TimedEvent result = timedEventArgumentCaptor.getValue();
+
+        ZonedDateTime expectedScheduledDate =
+            ZonedDateTime.of(now, ZoneId.systemDefault()).plusMinutes(SCHEDULE_MINUTES * 2);
+        assertEquals(expectedScheduledDate, result.getScheduledDateTime());
+    }
+
     @Test
     void handling_should_throw_if_can_not_handle() {
         when(callback.getEvent()).thenReturn(Event.RECORD_REMISSION_DECISION); // unqualified event

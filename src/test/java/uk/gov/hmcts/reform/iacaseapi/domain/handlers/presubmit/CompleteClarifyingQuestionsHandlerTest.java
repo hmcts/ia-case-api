@@ -1,5 +1,24 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CLARIFYING_QUESTIONS_ANSWERS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOURNEY_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.COMPLETE_CLARIFY_QUESTIONS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.NOC_REQUEST;
+
+import jakarta.validation.constraints.NotNull;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,26 +45,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
-
-import javax.validation.constraints.NotNull;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CLARIFYING_QUESTIONS_ANSWERS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOURNEY_TYPE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.COMPLETE_CLARIFY_QUESTIONS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.NOC_REQUEST;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -99,7 +98,7 @@ class CompleteClarifyingQuestionsHandlerTest {
         List<IdValue<ClarifyingQuestionAnswer>> answers = answersCaptor.getValue();
         assertEquals(1, answers.size());
         assertEquals(expectedAnswer,
-            answers.get(0).getValue().getAnswer());
+            answers.getFirst().getValue().getAnswer());
     }
 
     @Test
@@ -147,7 +146,7 @@ class CompleteClarifyingQuestionsHandlerTest {
 
         List<IdValue<ClarifyingQuestionAnswer>> answers = answersCaptor.getValue();
         assertEquals(1, answers.size());
-        assertEquals(clarifyingQuestionAnswer.getAnswer(), answers.get(0).getValue().getAnswer());
+        assertEquals(clarifyingQuestionAnswer.getAnswer(), answers.getFirst().getValue().getAnswer());
     }
 
     @ParameterizedTest
@@ -202,12 +201,12 @@ class CompleteClarifyingQuestionsHandlerTest {
                 : "No answer submitted because the question was marked as complete by the Tribunal";
 
         // unanswered direction with clarifying question 2
-        assertEquals(clarifyingQuestions2.get(0).getValue().getQuestion(), answers.get(0).getValue().getQuestion());
-        assertEquals(defaultAnswer, answers.get(0).getValue().getAnswer());
+        assertEquals(clarifyingQuestions2.getFirst().getValue().getQuestion(), answers.getFirst().getValue().getQuestion());
+        assertEquals(defaultAnswer, answers.getFirst().getValue().getAnswer());
 
         // answered direction with clarifying question 1
         assertEquals(
-                answeredClarifyingQuestions1.get(0).getValue().getQuestion(), answers.get(1).getValue().getQuestion());
+                answeredClarifyingQuestions1.getFirst().getValue().getQuestion(), answers.get(1).getValue().getQuestion());
         assertEquals(clarifyingQuestionAnswer1.getAnswer(), answers.get(1).getValue().getAnswer());
     }
 
