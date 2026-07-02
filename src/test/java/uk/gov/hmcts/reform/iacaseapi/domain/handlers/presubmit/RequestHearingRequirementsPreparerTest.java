@@ -19,6 +19,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
@@ -84,6 +85,41 @@ class RequestHearingRequirementsPreparerTest {
     }
 
     @Test
+    void should_check_state_for_hearing_requirements_when_in_stf24w_and_not_case_under_review() {
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getCaseDetails().getState()).thenReturn(State.RESPONDENT_REVIEW);
+        when(callback.getEvent()).thenReturn(Event.REQUEST_HEARING_REQUIREMENTS_FEATURE);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            requestHearingRequirementsPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+        assertTrue(callbackResponse.getErrors().contains(
+            "This event cannot be run on this case at this time"));
+    }
+
+    @Test
+    void should_check_state_for_hearing_requirements_when_in_stf24w_and_case_under_review() {
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getCaseDetails().getState()).thenReturn(State.CASE_UNDER_REVIEW);
+        when(callback.getEvent()).thenReturn(Event.REQUEST_HEARING_REQUIREMENTS_FEATURE);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            requestHearingRequirementsPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+        assertTrue(callbackResponse.getErrors().isEmpty());
+    }
+
+    @Test
     void should_check_condition_for_hearing_requirements_is_yes() {
 
 
@@ -106,6 +142,7 @@ class RequestHearingRequirementsPreparerTest {
     void should_not_add_error_when_24_weeks_case() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getCaseDetails().getState()).thenReturn(State.CASE_UNDER_REVIEW);
         when(callback.getEvent()).thenReturn(Event.REQUEST_HEARING_REQUIREMENTS_FEATURE);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class))
