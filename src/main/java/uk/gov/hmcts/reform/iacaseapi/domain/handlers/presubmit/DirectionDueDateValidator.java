@@ -43,8 +43,7 @@ public class DirectionDueDateValidator implements PreSubmitCallbackHandler<Asylu
         log.info("Event: {}", event);
 
         return callbackStage == PreSubmitCallbackStage.MID_EVENT
-                && (event.equals(SEND_DIRECTION) || event.equals(SEND_DIRECTION_WITH_QUESTIONS))
-                && (pageId.equals(SEND_DIRECTION_PAGE_ID));
+                && (event.equals(SEND_DIRECTION) || event.equals(SEND_DIRECTION_WITH_QUESTIONS));
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
