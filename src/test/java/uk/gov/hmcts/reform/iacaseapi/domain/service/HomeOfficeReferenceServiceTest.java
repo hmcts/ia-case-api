@@ -56,7 +56,7 @@ class HomeOfficeReferenceServiceTest {
     private final String homeOfficeSerialisedEncryptionKey = "test-encryption-key";
     private final String encryptedData = "someData";
     private final String decryptedData =
-        "[{\"id\":\"1\",\"value\":{\"familyName\":\"Smith\"}}]";
+            "[{\"id\":\"1\",\"value\":{\"familyName\":\"Smith\"}}]";
 
     @Mock
     private HomeOfficeApi<AsylumCase> homeOfficeApi;
@@ -91,15 +91,15 @@ class HomeOfficeReferenceServiceTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
         when(asylumCase.read(
-            HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY,
-            String.class))
-            .thenReturn(Optional.empty());
+                HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY,
+                String.class))
+                .thenReturn(Optional.empty());
         handlerUtilsMock.when(
-                () -> HandlerUtils.encrypt(any(), eq(homeOfficeSerialisedEncryptionKey)))
-            .thenReturn(encryptedData);
+                        () -> HandlerUtils.encrypt(any(), eq(homeOfficeSerialisedEncryptionKey)))
+                .thenReturn(encryptedData);
         handlerUtilsMock.when(
-                () -> HandlerUtils.decrypt(any(), eq(homeOfficeSerialisedEncryptionKey)))
-            .thenReturn(decryptedData);
+                        () -> HandlerUtils.decrypt(any(), eq(homeOfficeSerialisedEncryptionKey)))
+                .thenReturn(decryptedData);
     }
 
     @AfterEach
@@ -109,27 +109,24 @@ class HomeOfficeReferenceServiceTest {
 
     @Test
     void should_return_existing_appellants_without_calling_api_if_serialised_not_empty() {
+        handlerUtilsMock
+                .when(() -> HandlerUtils.encrypt(any(), eq(homeOfficeSerialisedEncryptionKey)))
+                .thenReturn(encryptedData);
+
+        when(asylumCase.read(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, String.class))
+                .thenReturn(Optional.of(encryptedData));
+
+        List<IdValue<HomeOfficeAppellant>> result =
+                service.getHomeOfficeReferenceData(HO_REFERENCE, callback);
+
+        assertFalse(result.isEmpty());
 
         HomeOfficeAppellant hoAppellant = new HomeOfficeAppellant();
         hoAppellant.setFamilyName("Smith");
 
-        IdValue<HomeOfficeAppellant> idValue =
-            new IdValue<>("1", hoAppellant);
-
         List<IdValue<HomeOfficeAppellant>> expected =
-            Collections.singletonList(idValue);
+                Collections.singletonList(new IdValue<>("1", hoAppellant));
 
-        handlerUtilsMock.when(
-                () -> HandlerUtils.encrypt(any(), eq(homeOfficeSerialisedEncryptionKey)))
-            .thenReturn(encryptedData);
-
-        when(asylumCase.read(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, String.class))
-            .thenReturn(Optional.of(encryptedData));
-
-        List<IdValue<HomeOfficeAppellant>> result =
-            service.getHomeOfficeReferenceData(HO_REFERENCE, callback);
-
-        assertFalse(result.isEmpty());
         assertEquals(expected, result);
 
         verify(homeOfficeApi, never()).midEvent(any());
@@ -137,68 +134,67 @@ class HomeOfficeReferenceServiceTest {
 
     @Test
     void should_catch_exception_if_deserialisation_fails_and_continue_with_api_call() {
-        ListAppender<ILoggingEvent> listAppender = setupLogVerifier(HomeOfficeReferenceService.class);
-
         when(asylumCase.read(
-            HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY,
-            String.class))
-            .thenReturn(Optional.of(decryptedData));
+                HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY,
+                String.class))
+                .thenReturn(Optional.of(decryptedData));
 
         when(homeOfficeApi.midEvent(callback))
-            .thenReturn(asylumCaseWithApiData);
+                .thenReturn(asylumCaseWithApiData);
 
         when(asylumCaseWithApiData.read(
-            HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS,
-            HomeOfficeApiResponseStatusType.class))
-            .thenReturn(Optional.of(HomeOfficeApiResponseStatusType.OK));
+                HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS,
+                HomeOfficeApiResponseStatusType.class))
+                .thenReturn(Optional.of(HomeOfficeApiResponseStatusType.OK));
 
         when(asylumCaseWithApiData.read(HOME_OFFICE_APPELLANTS))
-            .thenReturn(Optional.of(appellants));
+                .thenReturn(Optional.of(appellants));
 
         handlerUtilsMock.when(
-                () -> HandlerUtils.decrypt(any(), eq(homeOfficeSerialisedEncryptionKey)))
-            .thenThrow(new RuntimeException("Decryption failed"));
+                        () -> HandlerUtils.decrypt(any(), eq(homeOfficeSerialisedEncryptionKey)))
+                .thenThrow(new RuntimeException("Decryption failed"));
 
+        ListAppender<ILoggingEvent> listAppender = setupLogVerifier(HomeOfficeReferenceService.class);
         List<IdValue<HomeOfficeAppellant>> result =
-            service.getHomeOfficeReferenceData(HO_REFERENCE, callback);
+                service.getHomeOfficeReferenceData(HO_REFERENCE, callback);
 
+        verifyLogsContainMessage(listAppender, "Could not deserialise list of Home Office appellants from encrypted serialised string");
         assertFalse(result.isEmpty());
 
         verify(homeOfficeApi, times(1)).midEvent(callback);
-        verifyLogsContainMessage(listAppender, "Could not deserialise list of Home Office appellants from encrypted serialised string");
     }
 
     @Test
     void should_call_api_and_store_data_when_status_ok() {
         when(asylumCase.read(
-            HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY,
-            String.class))
-            .thenReturn(Optional.empty());
+                HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY,
+                String.class))
+                .thenReturn(Optional.empty());
 
         when(homeOfficeApi.midEvent(callback))
-            .thenReturn(asylumCaseWithApiData);
+                .thenReturn(asylumCaseWithApiData);
 
         when(asylumCaseWithApiData.read(
-            HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS,
-            HomeOfficeApiResponseStatusType.class))
-            .thenReturn(Optional.of(HomeOfficeApiResponseStatusType.OK));
+                HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS,
+                HomeOfficeApiResponseStatusType.class))
+                .thenReturn(Optional.of(HomeOfficeApiResponseStatusType.OK));
 
         when(asylumCaseWithApiData.read(HOME_OFFICE_APPELLANTS))
-            .thenReturn(Optional.of(appellants));
+                .thenReturn(Optional.of(appellants));
 
         List<IdValue<HomeOfficeAppellant>> result =
-            service.getHomeOfficeReferenceData(HO_REFERENCE, callback);
+                service.getHomeOfficeReferenceData(HO_REFERENCE, callback);
 
         assertFalse(result.isEmpty());
         assertEquals(appellants, result);
 
         verify(homeOfficeApi).midEvent(callback);
         verify(asylumCaseWithApiData).read(HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS,
-            HomeOfficeApiResponseStatusType.class);
+                HomeOfficeApiResponseStatusType.class);
 
         verify(asylumCase).write(
-            HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS,
-            HomeOfficeApiResponseStatusType.OK);
+                HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS,
+                HomeOfficeApiResponseStatusType.OK);
 
         verify(asylumCaseWithApiData).read(HOME_OFFICE_APPELLANTS);
         verify(asylumCase).write(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, encryptedData);
@@ -210,153 +206,153 @@ class HomeOfficeReferenceServiceTest {
 
     @Test
     void should_call_api_and_not_store_data_when_serialisation_fails() {
-        ListAppender<ILoggingEvent> listAppender = setupLogVerifier(HomeOfficeReferenceService.class);
         when(asylumCase.read(
-            HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY,
-            String.class))
-            .thenReturn(Optional.empty());
+                HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY,
+                String.class))
+                .thenReturn(Optional.empty());
 
         when(homeOfficeApi.midEvent(callback))
-            .thenReturn(asylumCaseWithApiData);
+                .thenReturn(asylumCaseWithApiData);
 
         when(asylumCaseWithApiData.read(
-            HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS,
-            HomeOfficeApiResponseStatusType.class))
-            .thenReturn(Optional.of(HomeOfficeApiResponseStatusType.OK));
+                HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS,
+                HomeOfficeApiResponseStatusType.class))
+                .thenReturn(Optional.of(HomeOfficeApiResponseStatusType.OK));
 
         when(asylumCaseWithApiData.read(HOME_OFFICE_APPELLANTS))
-            .thenReturn(Optional.of(appellants));
+                .thenReturn(Optional.of(appellants));
         handlerUtilsMock.when(
-                () -> HandlerUtils.encrypt(any(), eq(homeOfficeSerialisedEncryptionKey)))
-            .thenThrow(new RuntimeException("Encryption failed"));
+                        () -> HandlerUtils.encrypt(any(), eq(homeOfficeSerialisedEncryptionKey)))
+                .thenThrow(new RuntimeException("Encryption failed"));
 
+        ListAppender<ILoggingEvent> listAppender = setupLogVerifier(HomeOfficeReferenceService.class);
         List<IdValue<HomeOfficeAppellant>> result =
-            service.getHomeOfficeReferenceData(HO_REFERENCE, callback);
+                service.getHomeOfficeReferenceData(HO_REFERENCE, callback);
 
+        verifyLogsContainMessage(listAppender, "Could not serialise list of Home Office appellants: ");
         assertFalse(result.isEmpty());
         assertEquals(appellants, result);
 
         verify(homeOfficeApi).midEvent(callback);
         verify(asylumCaseWithApiData).read(HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS,
-            HomeOfficeApiResponseStatusType.class);
+                HomeOfficeApiResponseStatusType.class);
 
         verify(asylumCase).write(
-            HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS,
-            HomeOfficeApiResponseStatusType.OK);
+                HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS,
+                HomeOfficeApiResponseStatusType.OK);
 
         verify(asylumCaseWithApiData).read(HOME_OFFICE_APPELLANTS);
         verify(asylumCase, never()).write(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, encryptedData);
         verify(asylumCase).write(eq(HOME_OFFICE_APPELLANT_CLAIM_DATE), any());
         verify(asylumCase).write(eq(HOME_OFFICE_APPELLANT_DECISION_DATE), any());
         verify(asylumCase).write(eq(HOME_OFFICE_APPELLANT_DECISION_LETTER_DATE), any());
-        verifyLogsContainMessage(listAppender, "Could not serialise list of Home Office appellants: ");
     }
 
     @Test
     void should_handle_404() {
-        ListAppender<ILoggingEvent> listAppender = setupLogVerifier(HomeOfficeReferenceService.class);
 
         when(homeOfficeApi.midEvent(callback))
-            .thenReturn(asylumCaseWithApiData);
+                .thenReturn(asylumCaseWithApiData);
 
         when(asylumCaseWithApiData.read(
-            HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS,
-            HomeOfficeApiResponseStatusType.class))
-            .thenReturn(Optional.of(HomeOfficeApiResponseStatusType.NOT_FOUND));
+                HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS,
+                HomeOfficeApiResponseStatusType.class))
+                .thenReturn(Optional.of(HomeOfficeApiResponseStatusType.NOT_FOUND));
 
+        ListAppender<ILoggingEvent> listAppender = setupLogVerifier(HomeOfficeReferenceService.class);
         List<IdValue<HomeOfficeAppellant>> result =
-            service.getHomeOfficeReferenceData(HO_REFERENCE, callback);
+                service.getHomeOfficeReferenceData(HO_REFERENCE, callback);
 
+        ILoggingEvent loggingEvent = verifyLogsContainMessage(listAppender,
+                service.buildLogMessage(HO_REFERENCE, HomeOfficeApiResponseStatusType.NOT_FOUND));
+        assertEquals(Level.INFO, loggingEvent.getLevel());
         assertTrue(result.isEmpty());
 
         verify(homeOfficeApi).midEvent(callback);
         verify(asylumCaseWithApiData).read(HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS,
-            HomeOfficeApiResponseStatusType.class);
+                HomeOfficeApiResponseStatusType.class);
 
         verify(asylumCase).write(
-            HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS,
-            HomeOfficeApiResponseStatusType.NOT_FOUND);
+                HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS,
+                HomeOfficeApiResponseStatusType.NOT_FOUND);
 
         verify(asylumCaseWithApiData, never()).read(HOME_OFFICE_APPELLANTS);
         verify(asylumCase, never()).write(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, encryptedData);
         verify(asylumCase, never()).write(eq(HOME_OFFICE_APPELLANT_CLAIM_DATE), any());
-        ILoggingEvent loggingEvent = verifyLogsContainMessage(listAppender,
-            service.buildLogMessage(HO_REFERENCE, HomeOfficeApiResponseStatusType.NOT_FOUND));
-        assertEquals(Level.INFO, loggingEvent.getLevel());
     }
 
     private static Stream<HomeOfficeApiResponseStatusType> getWarnStatusCodes() {
         return Arrays.stream(HomeOfficeApiResponseStatusType.values())
-            .filter(statusCode -> statusCode.getStatusCode() <= 0 || statusCode.getStatusCode() >= 500);
+                .filter(statusCode -> statusCode.getStatusCode() <= 0 || statusCode.getStatusCode() >= 500);
     }
 
     private static Stream<HomeOfficeApiResponseStatusType> getErrorStatusCodes() {
         return Arrays.stream(HomeOfficeApiResponseStatusType.values())
-            .filter(statusCode ->
-                statusCode.getStatusCode() > 0
-                    && statusCode.getStatusCode() < 500
-                    && statusCode != HomeOfficeApiResponseStatusType.NOT_FOUND
-                    && statusCode != HomeOfficeApiResponseStatusType.OK);
+                .filter(statusCode ->
+                        statusCode.getStatusCode() > 0
+                                && statusCode.getStatusCode() < 500
+                                && statusCode != HomeOfficeApiResponseStatusType.NOT_FOUND
+                                && statusCode != HomeOfficeApiResponseStatusType.OK);
     }
 
     @ParameterizedTest
     @MethodSource("getWarnStatusCodes")
     void should_log_warn_for_server_errors(HomeOfficeApiResponseStatusType statusCode) {
-        ListAppender<ILoggingEvent> listAppender = setupLogVerifier(HomeOfficeReferenceService.class);
-
         when(homeOfficeApi.midEvent(callback))
-            .thenReturn(asylumCaseWithApiData);
+                .thenReturn(asylumCaseWithApiData);
 
         when(asylumCaseWithApiData.read(
-            HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS,
-            HomeOfficeApiResponseStatusType.class))
-            .thenReturn(Optional.of(statusCode));
+                HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS,
+                HomeOfficeApiResponseStatusType.class))
+                .thenReturn(Optional.of(statusCode));
 
+        ListAppender<ILoggingEvent> listAppender = setupLogVerifier(HomeOfficeReferenceService.class);
         List<IdValue<HomeOfficeAppellant>> result =
-            service.getHomeOfficeReferenceData(HO_REFERENCE, callback);
+                service.getHomeOfficeReferenceData(HO_REFERENCE, callback);
 
+        ILoggingEvent loggingEvent = verifyLogsContainMessage(listAppender,
+                service.buildLogMessage(HO_REFERENCE, statusCode));
+        assertEquals(Level.WARN, loggingEvent.getLevel());
         assertTrue(result.isEmpty());
 
         verify(homeOfficeApi).midEvent(callback);
         verify(asylumCaseWithApiData).read(HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS,
-            HomeOfficeApiResponseStatusType.class);
+                HomeOfficeApiResponseStatusType.class);
         verify(asylumCase).write(HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS, statusCode);
         verify(asylumCaseWithApiData, never()).read(HOME_OFFICE_APPELLANTS);
         verify(asylumCase, never()).write(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, encryptedData);
         verify(asylumCase, never()).write(eq(HOME_OFFICE_APPELLANT_CLAIM_DATE), any());
-        ILoggingEvent loggingEvent = verifyLogsContainMessage(listAppender,
-            service.buildLogMessage(HO_REFERENCE, statusCode));
-        assertEquals(Level.WARN, loggingEvent.getLevel());
     }
 
     @ParameterizedTest
     @MethodSource("getErrorStatusCodes")
     void should_log_error_for_server_errors(HomeOfficeApiResponseStatusType statusCode) {
-        ListAppender<ILoggingEvent> listAppender = setupLogVerifier(HomeOfficeReferenceService.class);
 
         when(homeOfficeApi.midEvent(callback))
-            .thenReturn(asylumCaseWithApiData);
+                .thenReturn(asylumCaseWithApiData);
 
         when(asylumCaseWithApiData.read(
-            HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS,
-            HomeOfficeApiResponseStatusType.class))
-            .thenReturn(Optional.of(statusCode));
+                HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS,
+                HomeOfficeApiResponseStatusType.class))
+                .thenReturn(Optional.of(statusCode));
 
+        ListAppender<ILoggingEvent> listAppender = setupLogVerifier(HomeOfficeReferenceService.class);
         List<IdValue<HomeOfficeAppellant>> result =
-            service.getHomeOfficeReferenceData(HO_REFERENCE, callback);
+                service.getHomeOfficeReferenceData(HO_REFERENCE, callback);
 
+        ILoggingEvent loggingEvent = verifyLogsContainMessage(listAppender,
+                service.buildLogMessage(HO_REFERENCE, statusCode));
+        assertEquals(Level.ERROR, loggingEvent.getLevel());
         assertTrue(result.isEmpty());
 
         verify(homeOfficeApi).midEvent(callback);
         verify(asylumCaseWithApiData).read(HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS,
-            HomeOfficeApiResponseStatusType.class);
+                HomeOfficeApiResponseStatusType.class);
         verify(asylumCase).write(HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS, statusCode);
         verify(asylumCaseWithApiData, never()).read(HOME_OFFICE_APPELLANTS);
         verify(asylumCase, never()).write(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, encryptedData);
         verify(asylumCase, never()).write(eq(HOME_OFFICE_APPELLANT_CLAIM_DATE), any());
-        ILoggingEvent loggingEvent = verifyLogsContainMessage(listAppender,
-            service.buildLogMessage(HO_REFERENCE, statusCode));
-        assertEquals(Level.ERROR, loggingEvent.getLevel());
+
     }
 
     @ParameterizedTest
@@ -366,6 +362,4 @@ class HomeOfficeReferenceServiceTest {
         assertTrue(logMessage.contains(HO_REFERENCE));
         assertTrue(logMessage.contains(statusCode.getHoIntegrationErrorText(HO_REFERENCE)));
     }
-
-
 }

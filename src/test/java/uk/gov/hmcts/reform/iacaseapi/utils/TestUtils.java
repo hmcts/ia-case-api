@@ -14,6 +14,10 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 public class TestUtils {
+    private TestUtils() {
+        // noop
+    }
+
     private static Stream<Arguments> eventAndCallbackStages() {
         return Stream.of(
             Event.values()
