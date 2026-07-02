@@ -11,11 +11,14 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPLOAD_HOME_OFFICE_BUNDLE_ACTION_AVAILABLE;
 
 import com.google.common.collect.Sets;
+
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Direction;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DirectionTag;
@@ -37,15 +40,18 @@ public class DirectionHandler implements PreSubmitCallbackHandler<AsylumCase> {
     private final DirectionAppender directionAppender;
     private final DirectionPartiesResolver directionPartiesResolver;
     private final DirectionTagResolver directionTagResolver;
+    private final DateProvider dateProvider;
 
     public DirectionHandler(
         DirectionAppender directionAppender,
         DirectionPartiesResolver directionPartiesResolver,
-        DirectionTagResolver directionTagResolver
+        DirectionTagResolver directionTagResolver,
+        DateProvider dateProvider
     ) {
         this.directionAppender = directionAppender;
         this.directionPartiesResolver = directionPartiesResolver;
         this.directionTagResolver = directionTagResolver;
+        this.dateProvider = dateProvider;
     }
 
     public boolean canHandle(
@@ -92,9 +98,20 @@ public class DirectionHandler implements PreSubmitCallbackHandler<AsylumCase> {
                 .orElseThrow(() -> new IllegalStateException("sendDirectionExplanation is not present"));
 
         String sendDirectionDateDue =
-            asylumCase
-                .read(SEND_DIRECTION_DATE_DUE, String.class)
-                .orElseThrow(() -> new IllegalStateException("sendDirectionDateDue is not present"));
+                asylumCase
+                        .read(SEND_DIRECTION_DATE_DUE, String.class)
+                        .orElseThrow(() -> new IllegalStateException("sendDirectionDateDue is not present"));
+
+        LocalDate dueDate = LocalDate.parse(sendDirectionDateDue);
+
+        if (dueDate.isBefore(dateProvider.now())) {
+            PreSubmitCallbackResponse<AsylumCase> response =
+                    new PreSubmitCallbackResponse<>(asylumCase);
+
+            response.addError("Direction due date must be today or in the future.");
+
+            return response;
+        }
 
         Parties directionParties = directionPartiesResolver.resolve(callback);
         DirectionTag directionTag = directionTagResolver.resolve(callback.getEvent());

@@ -19,6 +19,8 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SEND_DIRECTION_PARTIES;
 
 import com.google.common.collect.Sets;
+
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -35,6 +37,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Direction;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DirectionTag;
@@ -61,6 +64,8 @@ class DirectionHandlerTest {
     @Mock
     private DirectionTagResolver directionTagResolver;
     @Mock
+    private DateProvider dateProvider;
+    @Mock
     private Callback<AsylumCase> callback;
     @Mock
     private CaseDetails<AsylumCase> caseDetails;
@@ -78,7 +83,8 @@ class DirectionHandlerTest {
             new DirectionHandler(
                 directionAppender,
                 directionPartiesResolver,
-                directionTagResolver
+                directionTagResolver,
+                dateProvider
             );
     }
 
@@ -100,6 +106,7 @@ class DirectionHandlerTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(event);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(dateProvider.now()).thenReturn(LocalDate.of(2018, 1, 1));
         when(asylumCase.read(HAS_TRANSFERRED_OUT_OF_ADA, YesOrNo.class)).thenReturn(Optional.empty());
         when(asylumCase.read(ADA_HEARING_REQUIREMENTS_SUBMITTED, YesOrNo.class)).thenReturn(Optional.empty());
         when(asylumCase.read(DIRECTIONS)).thenReturn(Optional.of(existingDirections));
@@ -163,11 +170,13 @@ class DirectionHandlerTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(event);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(dateProvider.now()).thenReturn(LocalDate.of(2018, 1, 1));
         when(asylumCase.read(HAS_TRANSFERRED_OUT_OF_ADA, YesOrNo.class)).thenReturn(Optional.empty());
         when(asylumCase.read(ADA_HEARING_REQUIREMENTS_SUBMITTED, YesOrNo.class)).thenReturn(Optional.empty());
         when(asylumCase.read(DIRECTIONS)).thenReturn(Optional.of(existingDirections));
         when(asylumCase.read(SEND_DIRECTION_EXPLANATION, String.class)).thenReturn(Optional.of(expectedExplanation));
         when(asylumCase.read(SEND_DIRECTION_DATE_DUE, String.class)).thenReturn(Optional.of(expectedDateDue));
+
 
         when(directionPartiesResolver.resolve(callback)).thenReturn(expectedParties);
         when(directionTagResolver.resolve(event)).thenReturn(expectedDirectionTag);
@@ -216,6 +225,7 @@ class DirectionHandlerTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(event);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(dateProvider.now()).thenReturn(LocalDate.of(2018, 1, 1));
         when(asylumCase.read(HAS_TRANSFERRED_OUT_OF_ADA, YesOrNo.class)).thenReturn(Optional.empty());
         when(asylumCase.read(ADA_HEARING_REQUIREMENTS_SUBMITTED, YesOrNo.class)).thenReturn(Optional.empty());
         when(asylumCase.read(DIRECTIONS)).thenReturn(Optional.empty());
@@ -273,6 +283,7 @@ class DirectionHandlerTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(event);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(dateProvider.now()).thenReturn(LocalDate.of(2018, 1, 1));
         when(asylumCase.read(HAS_TRANSFERRED_OUT_OF_ADA, YesOrNo.class)).thenReturn(Optional.empty());
         when(asylumCase.read(ADA_HEARING_REQUIREMENTS_SUBMITTED, YesOrNo.class)).thenReturn(Optional.empty());
         when(asylumCase.read(DIRECTIONS)).thenReturn(Optional.empty());
