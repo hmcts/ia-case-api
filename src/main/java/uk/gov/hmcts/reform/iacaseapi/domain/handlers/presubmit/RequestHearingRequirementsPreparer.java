@@ -50,6 +50,7 @@ public class RequestHearingRequirementsPreparer implements PreSubmitCallbackHand
         State currentState = callback.getCaseDetails().getState();
         if ((is24WeeksCase && currentState != State.CASE_UNDER_REVIEW) || (!is24WeeksCase && currentState == State.CASE_UNDER_REVIEW)) {
             response.addError("This event cannot be run on this case at this time");
+            return response;
         }
 
         if (!is24WeeksCase && asylumCase.read(REVIEW_HOME_OFFICE_RESPONSE_BY_LEGAL_REP, YesOrNo.class).map(flag -> flag.equals(YesOrNo.NO)).orElse(true)) {
