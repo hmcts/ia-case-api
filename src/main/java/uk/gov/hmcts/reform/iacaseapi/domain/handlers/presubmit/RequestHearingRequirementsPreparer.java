@@ -48,7 +48,7 @@ public class RequestHearingRequirementsPreparer implements PreSubmitCallbackHand
             .orElse(false);
 
         State currentState = callback.getCaseDetails().getState();
-        if (is24WeeksCase && currentState != State.CASE_UNDER_REVIEW) {
+        if ((is24WeeksCase && currentState != State.CASE_UNDER_REVIEW) || (!is24WeeksCase && currentState == State.CASE_UNDER_REVIEW)) {
             response.addError("This event cannot be run on this case at this time");
         }
 

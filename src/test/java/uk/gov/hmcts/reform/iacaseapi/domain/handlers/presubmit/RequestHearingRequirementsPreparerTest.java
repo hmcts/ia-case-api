@@ -103,6 +103,24 @@ class RequestHearingRequirementsPreparerTest {
     }
 
     @Test
+    void should_check_state_for_hearing_requirements_when_not_in_stf24w_and_case_under_review() {
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getCaseDetails().getState()).thenReturn(State.CASE_UNDER_REVIEW);
+        when(callback.getEvent()).thenReturn(Event.REQUEST_HEARING_REQUIREMENTS_FEATURE);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class)).thenReturn(Optional.empty());
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            requestHearingRequirementsPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+        assertTrue(callbackResponse.getErrors().contains(
+            "This event cannot be run on this case at this time"));
+    }
+
+    @Test
     void should_check_state_for_hearing_requirements_when_in_stf24w_and_case_under_review() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
