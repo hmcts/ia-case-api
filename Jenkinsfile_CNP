@@ -114,12 +114,14 @@ def secrets = [
                 secret('hearing-centre-activation-date-birmingham', 'IA_HEARING_CENTRE_ACTIVATION_DATE_BIRMINGHAM'),
                 secret('hearing-centre-activation-date-hatton-cross', 'IA_HEARING_CENTRE_ACTIVATION_DATE_HATTON_CROSS'),
                 secret('hearing-centre-activation-date-glasgow', 'IA_HEARING_CENTRE_ACTIVATION_DATE_GLASGOW'),
+
+                secret('home-office-serialised-encryption-key', 'IA_HOME_OFFICE_INTEGRATION_ENCRYPTION_KEY'),
+
                 secret('servicesatcdmiac-password', 'CCD_UPLOAD_PASSWORD'),
                 secret('ccd-client-secret', 'CCD_CLIENT_SECRET'),
                 secret('system-username', 'IA_SYSTEM_USERNAME'),
                 secret('system-password', 'IA_SYSTEM_PASSWORD'),
-                secret('ia-det-prison-email-mappings', 'IA_DET_PRISON_EMAIL_MAPPINGS')        
-          
+                secret('ia-det-prison-email-mappings', 'IA_DET_PRISON_EMAIL_MAPPINGS')
         ],
         's2s-${env}': [
                 secret('microservicekey-ccd-data', 'DATA_STORE_S2S_KEY'),
