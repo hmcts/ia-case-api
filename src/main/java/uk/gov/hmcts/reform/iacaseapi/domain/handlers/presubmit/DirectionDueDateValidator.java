@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
@@ -58,6 +59,8 @@ public class DirectionDueDateValidator implements PreSubmitCallbackHandler<Asylu
         PreSubmitCallbackResponse<AsylumCase> response =
                 new PreSubmitCallbackResponse<>(asylumCase);
 
+        log.info("SEND_DIRECTION_DATE_DUE = {}",
+                asylumCase.read(AsylumCaseFieldDefinition.SEND_DIRECTION_DATE_DUE));
         Optional<String> dueDate =
                 asylumCase.read(SEND_DIRECTION_DATE_DUE, String.class);
 
