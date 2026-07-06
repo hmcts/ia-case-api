@@ -269,7 +269,7 @@ repositories {
     }
 }
 
-ext["tomcat.version"] = "10.1.55"
+ext["tomcat.version"] = "10.1.56"
 
 dependencyManagement {
     imports {
@@ -380,7 +380,7 @@ dependencies {
 
     implementation group: 'org.javamoney.moneta', name: 'moneta-core', version: '1.4.5'
 
-    implementation group: 'org.elasticsearch', name: 'elasticsearch', version: '9.2.4'
+    implementation group: 'org.elasticsearch', name: 'elasticsearch', version: '9.4.3'
 
     implementation group: 'com.googlecode.libphonenumber', name: 'libphonenumber', version: '8.13.55'
 
