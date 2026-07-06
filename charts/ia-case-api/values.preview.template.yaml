@@ -91,6 +91,8 @@ java:
           alias: IA_REDIS_ACCESS_KEY
         - name: ia-redis-encryption-key
           alias: IA_REDIS_ENCRYPTION_KEY
+        - name: home-office-serialised-encryption-key
+          alias: IA_HOME_OFFICE_INTEGRATION_ENCRYPTION_KEY
   secrets:
     POSTGRES_PASSWORD:
       secretRef: postgres
