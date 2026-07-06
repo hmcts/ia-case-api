@@ -23,7 +23,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 @Component
 public class DirectionDueDateValidator implements PreSubmitCallbackHandler<AsylumCase> {
 
-    private static final String SEND_DIRECTION_PAGE_ID = "sendDirection";
     private final DateProvider dateProvider;
 
     public DirectionDueDateValidator(DateProvider dateProvider) {
@@ -38,9 +37,10 @@ public class DirectionDueDateValidator implements PreSubmitCallbackHandler<Asylu
         requireNonNull(callback, "callback must not be null");
 
         Event event = callback.getEvent();
-        String pageId = callback.getPageId();
-        log.info("Page Id: {}", pageId);
-        log.info("Event: {}", event);
+        log.info("Stage={}, Event={}, PageId={}",
+                callbackStage,
+                callback.getEvent(),
+                callback.getPageId());
 
         return callbackStage == PreSubmitCallbackStage.MID_EVENT
                 && (event.equals(SEND_DIRECTION) || event.equals(SEND_DIRECTION_WITH_QUESTIONS));
