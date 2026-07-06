@@ -108,7 +108,7 @@ java:
 global:
   postgresHostname: "ia-preview.postgres.database.azure.com"
   postgresSecret: postgres
-  databaseNamePrefix: "pr-${CHANGE_ID}-"
+  databaseNamePrefix: "${CHANGE_ID}-"
 
 ia-case-payments-api:
   enabled: true #set to true if testing against a local branch
@@ -247,7 +247,7 @@ ia-case-notifications-api:
   enabled: true #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
-    image: hmctsprod.azurecr.io/ia/case-notifications-api:pr-1684
+    image: hmctsprod.azurecr.io/ia/case-notifications-api:latest
     releaseNameOverride: ${SERVICE_NAME}-case-notifications-api
     ingressHost: ${SERVICE_NAME}-notifications-api.preview.platform.hmcts.net
     devcpuRequests: 500m
