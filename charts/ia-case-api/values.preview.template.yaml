@@ -108,7 +108,7 @@ java:
 global:
   postgresHostname: "ia-preview.postgres.database.azure.com"
   postgresSecret: postgres
-  databaseNamePrefix: "${CHANGE_ID}-"
+  databaseNamePrefix: "pr-${CHANGE_ID}-"
 
 ia-case-payments-api:
   enabled: true #set to true if testing against a local branch
