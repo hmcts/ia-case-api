@@ -59,10 +59,10 @@ public class DirectionDueDateValidator implements PreSubmitCallbackHandler<Asylu
         PreSubmitCallbackResponse<AsylumCase> response =
                 new PreSubmitCallbackResponse<>(asylumCase);
 
-        log.info("SEND_DIRECTION_DATE_DUE = {}",
-                asylumCase.read(SEND_DIRECTION_DATE_DUE), String.class);
         Optional<String> dueDate =
                 asylumCase.read(SEND_DIRECTION_DATE_DUE, String.class);
+
+        log.info("SEND_DIRECTION_DATE_DUE = {}", dueDate);
 
         if (dueDate.isPresent()) {
             LocalDate parsedDate = LocalDate.parse(dueDate.get());
