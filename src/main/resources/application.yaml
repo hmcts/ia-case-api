@@ -237,6 +237,9 @@ homeOfficeApi:
   aboutToStartPath: "/asylum/ccdAboutToStart"
   aboutToSubmitPath: "/asylum/ccdAboutToSubmit"
   midEventPath: "/asylum/ccdMidEvent"
+  serialisation:
+    encryption:
+      key: ${IA_HOME_OFFICE_INTEGRATION_ENCRYPTION_KEY:}
 
 security:
   anonymousPaths:
