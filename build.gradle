@@ -275,6 +275,7 @@ dependencyManagement {
     imports {
         mavenBom 'org.springframework.cloud:spring-cloud-dependencies:2025.0.2'
         mavenBom 'com.fasterxml.jackson:jackson-bom:2.21.4'
+        mavenBom "io.netty:netty-bom:4.2.15.Final"
 
         // CVE-2026-34478
         // CVE-2026-34479
@@ -293,6 +294,9 @@ dependencyManagement {
     }
 
     dependencies {
+        dependency "org.apache.httpcomponents.core5:httpcore5:5.4.3"
+        dependency "org.apache.httpcomponents.core5:httpcore5-h2:5.4.3"
+
         dependencySet(group: 'org.junit.jupiter', version: '5.14.4') {
             entry 'junit-jupiter'
             entry 'junit-jupiter-api'
