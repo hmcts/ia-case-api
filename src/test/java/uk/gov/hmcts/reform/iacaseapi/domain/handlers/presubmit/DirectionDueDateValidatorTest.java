@@ -88,7 +88,7 @@ class DirectionDueDateValidatorTest {
         assertEquals(1, response.getErrors().size());
 
         assertThat(response.getErrors())
-                .containsExactly("Direction due date must be today or in the future.");
+                .containsExactly("The date entered is not valid - this must be today or a date in the future");
     }
 
     @Test

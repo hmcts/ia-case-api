@@ -2,12 +2,12 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SEND_DIRECTION_DATE_DUE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SEND_DIRECTION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SEND_DIRECTION_WITH_QUESTIONS;
 
 import java.time.LocalDate;
 import java.util.Optional;
+import java.util.Set;
 
+import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -36,14 +36,17 @@ public class DirectionDueDateValidator implements PreSubmitCallbackHandler<Asylu
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
-        Event event = callback.getEvent();
-        log.info("Stage={}, Event={}, PageId={}",
-                callbackStage,
-                callback.getEvent(),
-                callback.getPageId());
+        Set<Event> eligibleEvents =  Sets.newHashSet(Event.SEND_DIRECTION,
+                Event.REQUEST_CASE_EDIT,
+                Event.REQUEST_RESPONDENT_EVIDENCE,
+                Event.REQUEST_RESPONDENT_REVIEW,
+                Event.REQUEST_CASE_BUILDING,
+                Event.FORCE_REQUEST_CASE_BUILDING,
+                Event.REQUEST_REASONS_FOR_APPEAL,
+                Event.REQUEST_RESPONSE_AMEND);
 
         return callbackStage == PreSubmitCallbackStage.MID_EVENT
-                && (event.equals(SEND_DIRECTION) || event.equals(SEND_DIRECTION_WITH_QUESTIONS));
+                && eligibleEvents.contains(callback.getEvent());
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
@@ -61,13 +64,11 @@ public class DirectionDueDateValidator implements PreSubmitCallbackHandler<Asylu
         Optional<String> dueDate =
                 asylumCase.read(SEND_DIRECTION_DATE_DUE, String.class);
 
-        log.info("SEND_DIRECTION_DATE_DUE = {}", dueDate);
-
         if (dueDate.isPresent()) {
             LocalDate parsedDate = LocalDate.parse(dueDate.get());
 
             if (parsedDate.isBefore(dateProvider.now())) {
-                response.addError("Direction due date must be today or in the future.");
+                response.addError("The date entered is not valid - this must be today or a date in the future");
             }
         }
 
