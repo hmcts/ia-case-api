@@ -4,8 +4,9 @@
         <notes>Should be fixed with jackson 2.21.5 release - see https://github.com/FasterXML/jackson/wiki/Jackson-Release-2.21.5</notes>
         <cve>CVE-2026-54515</cve>
     </suppress>
-    <suppress until="2026-08-01">
-        <notes>Kotlin 2.4.20 stable not yet released (only 2.4.20-Beta1 available). Transitive dependency from okhttp/okio via moneta-core. Low exploitability (requires local access, high privileges).</notes>
-        <cve>CVE-2026-53914</cve>
+    <suppress until="2026-07-30">
+        <notes>behind ES </notes>
+        <cve>CVE-2026-56149</cve>
+        <cve>CVE-2026-56148</cve>
     </suppress>
 </suppressions>

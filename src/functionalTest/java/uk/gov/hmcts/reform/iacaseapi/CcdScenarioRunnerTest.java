@@ -43,6 +43,7 @@ import uk.gov.hmcts.reform.iacaseapi.util.StringResourceLoader;
 import uk.gov.hmcts.reform.iacaseapi.verifiers.Verifier;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -71,6 +72,9 @@ public class CcdScenarioRunnerTest {
 
     @Value("${targetInstance}")
     private String targetInstance;
+    @Value("${app.statutory-timeframe.live-date}")
+    private String stf24wLiveDate;
+    private boolean is24wDateInPast;
     @Autowired
     private Environment environment;
     @Autowired
@@ -129,7 +133,7 @@ public class CcdScenarioRunnerTest {
         } else {
             scenarioPattern = "*" + scenarioPattern + "*.json";
         }
-
+        is24wDateInPast = LocalDate.parse(stf24wLiveDate).isEqual(LocalDate.now()) || LocalDate.parse(stf24wLiveDate).isBefore(LocalDate.now());
         scenarioSources.putAll(StringResourceLoader.load("/scenarios/" + scenarioPattern));
         String separator = "-------------------------------------------------------------------";
         log.info(AnsiOutput.toString(AnsiColor.CYAN, separator, AnsiColor.DEFAULT));
@@ -144,6 +148,12 @@ public class CcdScenarioRunnerTest {
             try {
                 Map<String, Object> scenario = deserializeWithExpandedValues(scenarioSource);
                 String description = MapValueExtractor.extract(scenario, "description");
+                String behind24wDate = MapValueExtractor.extractOrDefault(scenario, "behind24wDate", null);
+                boolean disabled24Date = false;
+                if (behind24wDate != null) {
+                    boolean behind24wDateValue = Boolean.parseBoolean(behind24wDate);
+                    disabled24Date = (behind24wDateValue && !is24wDateInPast) || (!behind24wDateValue && is24wDateInPast);
+                }
                 String scenarioDisabled = MapValueExtractor.extractOrDefault(scenario, "disabled", "false");
                 boolean isDisabled = scenarioDisabled.startsWith("!")
                     ? !Boolean.parseBoolean(scenarioDisabled.substring(1))
@@ -158,7 +168,7 @@ public class CcdScenarioRunnerTest {
                     boolean expectedLdFlagValue = Boolean.parseBoolean(keys[1]);
                     isDisabledByLaunchDarkly = actualLdFlagValue != expectedLdFlagValue;
                 }
-                if (isDisabled || isDisabledByLaunchDarkly) {
+                if (isDisabled || isDisabledByLaunchDarkly || disabled24Date) {
                     return Arguments.of("Disabled: " + fileName, description, null, null, null, null, 0, 0, null);
                 }
 
