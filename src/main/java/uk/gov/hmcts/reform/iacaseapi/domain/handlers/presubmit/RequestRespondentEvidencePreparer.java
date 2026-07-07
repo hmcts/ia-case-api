@@ -48,7 +48,9 @@ public class RequestRespondentEvidencePreparer implements PreSubmitCallbackHandl
             @Value("${app.statutory-timeframe.live-date}") String stf24wLiveDate,
             FeatureToggler featureToggler,
             DateProvider dateProvider,
-            DueDateService dueDateService
+            DueDateService dueDateService,
+            UserDetails userDetails,
+            UserDetailsHelper userDetailsHelper
     ) {
         this.requestRespondentEvidenceDueInDays = requestRespondentEvidenceDueInDays;
         this.requestRespondentEvidenceDueInDaysAda = requestRespondentEvidenceDueInDaysAda;
