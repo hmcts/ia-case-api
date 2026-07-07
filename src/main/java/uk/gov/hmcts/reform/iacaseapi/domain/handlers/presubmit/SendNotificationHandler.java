@@ -97,6 +97,8 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
             Event.DECISION_WITHOUT_HEARING,
             Event.LIST_CASE,
             Event.LIST_CASE_WITHOUT_HEARING_REQUIREMENTS,
+            Event.CMR_LISTING,
+            Event.CMR_RE_LISTING,
             Event.END_APPEAL,
             Event.UPLOAD_HOME_OFFICE_BUNDLE,
             Event.REQUEST_CASE_BUILDING,
