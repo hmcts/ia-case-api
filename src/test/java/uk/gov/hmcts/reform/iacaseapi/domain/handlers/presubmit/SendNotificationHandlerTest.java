@@ -555,6 +555,8 @@ class SendNotificationHandlerTest {
         Event.REQUEST_RESPONDENT_REVIEW,
         Event.MARK_APPEAL_PAID,
         Event.LIST_CASE,
+        Event.CMR_LISTING,
+        Event.CMR_RE_LISTING,
         Event.DECISION_WITHOUT_HEARING,
         Event.REQUEST_RESPONDENT_EVIDENCE,
         Event.REMOVE_STATUTORY_TIMEFRAME_24_WEEKS,

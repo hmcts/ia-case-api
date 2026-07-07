@@ -224,6 +224,8 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
             Event.RECORD_REMISSION_DECISION,
             Event.MARK_APPEAL_PAID,
             Event.LIST_CASE,
+            Event.CMR_LISTING,
+            Event.CMR_RE_LISTING,
             Event.REQUEST_HEARING_REQUIREMENTS_FEATURE,
             Event.REQUEST_RESPONSE_REVIEW,
             Event.MARK_APPEAL_AS_ADA,
