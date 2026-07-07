@@ -9,9 +9,4 @@
         <cve>CVE-2026-56149</cve>
         <cve>CVE-2026-56148</cve>
     </suppress>
-    <suppress>
-        <notes>Fix is dependent on gov notify client migrating to httpclient5 - https://github.com/alphagov/notifications-java-client/issues/267</notes>
-        <cve>CVE-2026-54399</cve>
-        <cve>CVE-2026-54428</cve>
-    </suppress>
 </suppressions>

@@ -371,7 +371,7 @@ dependencies {
     implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: '8.0.0'
     implementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '5.3.4'
     implementation group: 'com.github.hmcts', name: 'core-case-data-store-client', version: '5.2.0'
-    implementation group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '6.0.0-RELEASE'
+    implementation group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '6.0.1-RELEASE'
 
     implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.20.0'
 
