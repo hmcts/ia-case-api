@@ -30,6 +30,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SEND_DIRECTION_EXPLANATION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SEND_DIRECTION_PARTIES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SOURCE_OF_APPEAL;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STF_24W_CURRENT_STATUS_AUTO_GENERATED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPLOAD_HOME_OFFICE_BUNDLE_ACTION_AVAILABLE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfTimeDecisionType.REJECTED;
 
@@ -50,11 +51,14 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
+import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsHelper;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfTimeDecisionType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Parties;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.SourceOfAppeal;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserRole;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -80,6 +84,10 @@ class RequestRespondentEvidencePreparerTest {
     @Mock
     private DueDateService dueDateService;
     @Mock
+    private UserDetails userDetails;
+    @Mock
+    private UserDetailsHelper userDetailsHelper;
+    @Mock
     private Callback<AsylumCase> callback;
     @Mock
     private CaseDetails<AsylumCase> caseDetails;
@@ -94,7 +102,9 @@ class RequestRespondentEvidencePreparerTest {
     @BeforeEach
     public void setUp() {
         requestRespondentEvidencePreparer =
-            new RequestRespondentEvidencePreparer(DUE_IN_DAYS, DUE_IN_DAYS_ADA, DUE_IN_DAYS_DETAINED, featureToggler, dateProvider, dueDateService);
+            new RequestRespondentEvidencePreparer(DUE_IN_DAYS, DUE_IN_DAYS_ADA, DUE_IN_DAYS_DETAINED, featureToggler, dateProvider, dueDateService, userDetails, userDetailsHelper);
+        // Default: non-admin role so existing tests are unaffected
+        when(userDetailsHelper.getLoggedInUserRole(userDetails)).thenReturn(UserRole.CASE_OFFICER);
     }
 
     @Test
@@ -632,6 +642,45 @@ class RequestRespondentEvidencePreparerTest {
             .doesNotContain("directed to supply the documents")
             .doesNotContain("Rule 23 or Rule 24 of the Tribunal Procedure Rules 2014")
             .doesNotContain("any record of interview with the appellant");
+    }
+
+    @Test
+    void should_return_error_for_admin_officer_when_stf24w_flag_not_set() {
+
+        when(userDetailsHelper.getLoggedInUserRole(userDetails)).thenReturn(UserRole.ADMIN_OFFICER);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONDENT_EVIDENCE);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class)).thenReturn(Optional.empty());
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            requestRespondentEvidencePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        assertNotNull(callbackResponse);
+        assertFalse(callbackResponse.getErrors().isEmpty());
+        assertThat(callbackResponse.getErrors())
+            .contains("You can only request respondent evidence on a 24 week case.");
+    }
+
+    @Test
+    void should_allow_admin_officer_when_stf24w_flag_is_yes() {
+
+        when(userDetailsHelper.getLoggedInUserRole(userDetails)).thenReturn(UserRole.ADMIN_OFFICER);
+        when(dateProvider.now()).thenReturn(LocalDate.parse("2018-11-23"));
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONDENT_EVIDENCE);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(PA));
+        when(asylumCase.read(APPEAL_OUT_OF_COUNTRY, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class)).thenReturn(Optional.of("SUCCESS"));
+        when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            requestRespondentEvidencePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        assertNotNull(callbackResponse);
+        assertThat(callbackResponse.getErrors()).isEmpty();
     }
 
     @Test

@@ -8,6 +8,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SEND_DIRECTION_DATE_DUE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SEND_DIRECTION_EXPLANATION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SEND_DIRECTION_PARTIES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STF_24W_CURRENT_STATUS_AUTO_GENERATED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPLOAD_HOME_OFFICE_BUNDLE_ACTION_AVAILABLE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
@@ -17,10 +18,13 @@ import java.time.ZoneOffset;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
+import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsHelper;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfTimeDecisionType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Parties;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserRole;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
@@ -40,6 +44,8 @@ public class RequestRespondentEvidencePreparer implements PreSubmitCallbackHandl
     private final FeatureToggler featureToggler;
     private final DateProvider dateProvider;
     private final DueDateService dueDateService;
+    private final UserDetails userDetails;
+    private final UserDetailsHelper userDetailsHelper;
 
     public RequestRespondentEvidencePreparer(
         @Value("${requestRespondentEvidence.dueInDays}") int requestRespondentEvidenceDueInDays,
@@ -47,7 +53,9 @@ public class RequestRespondentEvidencePreparer implements PreSubmitCallbackHandl
         @Value("${requestRespondentEvidence.dueInDaysDetained}") int requestRespondentEvidenceDueInDaysDetained,
         FeatureToggler featureToggler,
         DateProvider dateProvider,
-        DueDateService dueDateService
+        DueDateService dueDateService,
+        UserDetails userDetails,
+        UserDetailsHelper userDetailsHelper
     ) {
         this.requestRespondentEvidenceDueInDays = requestRespondentEvidenceDueInDays;
         this.requestRespondentEvidenceDueInDaysAda = requestRespondentEvidenceDueInDaysAda;
@@ -55,6 +63,8 @@ public class RequestRespondentEvidencePreparer implements PreSubmitCallbackHandl
         this.featureToggler = featureToggler;
         this.dateProvider = dateProvider;
         this.dueDateService = dueDateService;
+        this.userDetails = requireNonNull(userDetails, "userDetails must not be null");
+        this.userDetailsHelper = requireNonNull(userDetailsHelper, "userDetailsHelper must not be null");
     }
 
     public boolean canHandle(
@@ -82,6 +92,15 @@ public class RequestRespondentEvidencePreparer implements PreSubmitCallbackHandl
                 .getCaseData();
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse = new PreSubmitCallbackResponse<>(asylumCase);
+
+        UserRole userRole = userDetailsHelper.getLoggedInUserRole(userDetails);
+        if (userRole == UserRole.ADMIN_OFFICER) {
+            YesOrNo stf24wStatus = asylumCase.read(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class).orElse(NO);
+            if (stf24wStatus != YES) {
+                callbackResponse.addError("You can only request respondent evidence on a 24 week case.");
+                return callbackResponse;
+            }
+        }
 
         final AppealType appealType = asylumCase.read(APPEAL_TYPE, AppealType.class)
                 .orElseThrow(() -> new IllegalStateException("AppealType is not present."));
