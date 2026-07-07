@@ -1,5 +1,6 @@
 {
-  "description": "DIAC-1575 Request respondent evidence start isNotificationTurnedOff No error - HO integration required",
+  "description": "DIAC-2360 Request respondent evidence error when completeCaseReviewDate is empty - non 24w",
+  "behind24wDate": "true",
   "request": {
     "uri": "/asylum/ccdAboutToStart",
     "credentials": "CaseOfficer",
@@ -9,8 +10,7 @@
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
-          "isNotificationTurnedOff": "No",
-          "completeCaseReviewDate": "{$TODAY-1}",
+          "homeOfficeSearchStatus": "SUCCESS",
           "sendDirectionExplanation": null,
           "sendDirectionParties": null,
           "sendDirectionDateDue": null
@@ -21,17 +21,16 @@
   "expectation": {
     "status": 200,
     "errors": [
-      "You need to match the appellant details before you can request the respondent evidence."
+      "You must run the Complete case review before running the 'Request respondent evidence' event"
     ],
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {
-        "isNotificationTurnedOff": "No",
-        "completeCaseReviewDate": "{$TODAY-1}",
+        "homeOfficeSearchStatus": "SUCCESS",
         "sendDirectionExplanation": null,
-        "sendDirectionParties": null,
+        "sendDirectionParties":  null,
         "sendDirectionDateDue": null
       }
     }
   }
-}
+} 
