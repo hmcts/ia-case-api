@@ -6,4 +6,9 @@
         <cve>CVE-2026-54399</cve>
         <cve>CVE-2026-54428</cve>
     </suppress>
+    <suppress until="2026-07-30">
+        <notes>behind ES </notes>
+        <cve>CVE-2026-56149</cve>
+        <cve>CVE-2026-56148</cve>
+    </suppress>
 </suppressions>
