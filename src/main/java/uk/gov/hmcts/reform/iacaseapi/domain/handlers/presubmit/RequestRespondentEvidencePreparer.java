@@ -106,7 +106,7 @@ public class RequestRespondentEvidencePreparer implements PreSubmitCallbackHandl
         }
 
         UserRole userRole = userDetailsHelper.getLoggedInUserRole(userDetails);
-        if (userRole == UserRole.ADMIN_OFFICER) {
+        if (UserRole.getAdminRoles().contains(userRole.getId())) {
             YesOrNo stf24wStatus = asylumCase.read(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class).orElse(NO);
             if (stf24wStatus != YES) {
                 callbackResponse.addError("You can only request respondent evidence on a 24 week case.");

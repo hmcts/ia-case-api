@@ -755,15 +755,19 @@ class RequestRespondentEvidencePreparerTest {
         assertThat(actualExplanation).doesNotContain("any record of interview with the appellant");
     }
 
-    @Test
-    void should_return_error_for_admin_officer_when_stf24w_flag_not_set() {
+    @ParameterizedTest
+    @EnumSource(value = UserRole.class, names = {
+        "ADMIN_OFFICER", "HEARING_CENTRE_ADMIN", "CTSC", "CTSC_TEAM_LEADER",
+        "NATIONAL_BUSINESS_CENTRE", "CHALLENGED_ACCESS_CTSC", "CHALLENGED_ACCESS_ADMIN"
+    })
+    void should_return_error_for_admin_role_when_stf24w_flag_not_set(UserRole adminRole) {
 
-        when(userDetailsHelper.getLoggedInUserRole(userDetails)).thenReturn(UserRole.ADMIN_OFFICER);
+        when(userDetailsHelper.getLoggedInUserRole(userDetails)).thenReturn(adminRole);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONDENT_EVIDENCE);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class)).thenReturn(Optional.empty());
-        // Satisfy the complete-case-review precondition so only our admin officer check triggers
+        // Satisfy the complete-case-review precondition so only the admin role check triggers
         when(asylumCase.read(COMPLETE_CASE_REVIEW_DATE, String.class)).thenReturn(Optional.of("2024-01-01"));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -775,10 +779,14 @@ class RequestRespondentEvidencePreparerTest {
             .contains("You can only request respondent evidence on a 24 week case.");
     }
 
-    @Test
-    void should_allow_admin_officer_when_stf24w_flag_is_yes() {
+    @ParameterizedTest
+    @EnumSource(value = UserRole.class, names = {
+        "ADMIN_OFFICER", "HEARING_CENTRE_ADMIN", "CTSC", "CTSC_TEAM_LEADER",
+        "NATIONAL_BUSINESS_CENTRE", "CHALLENGED_ACCESS_CTSC", "CHALLENGED_ACCESS_ADMIN"
+    })
+    void should_allow_admin_role_when_stf24w_flag_is_yes(UserRole adminRole) {
 
-        when(userDetailsHelper.getLoggedInUserRole(userDetails)).thenReturn(UserRole.ADMIN_OFFICER);
+        when(userDetailsHelper.getLoggedInUserRole(userDetails)).thenReturn(adminRole);
         when(dateProvider.now()).thenReturn(LocalDate.parse("2018-11-23"));
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONDENT_EVIDENCE);
