@@ -1046,8 +1046,6 @@ security:
       - "pipActivation"
       - "applyForFTPAAppellant"
       - "requestFeeRemission"
-    caseworker-ia-admofficer:
-      - "requestRespondentEvidence"
     caseworker-ia-iacjudge:
       - "generateDecisionAndReasons"
       - "endAppeal"
