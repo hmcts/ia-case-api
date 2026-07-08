@@ -9,9 +9,9 @@
         <cve>CVE-2026-56149</cve>
         <cve>CVE-2026-56148</cve>
     </suppress>
-    <suppress until="2026-08-07">
-        <notes>To be reviewed and fixed</notes>
-        <cve>CVE-2026-54428</cve>
+    <suppress>
+        <notes>CVEs from s2s client's use of googleAuth - https://github.com/wstrange/GoogleAuth/pull/105</notes>
         <cve>CVE-2026-54399</cve>
+        <cve>CVE-2026-54428</cve>
     </suppress>
 </suppressions>
