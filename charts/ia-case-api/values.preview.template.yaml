@@ -42,7 +42,7 @@ java:
     # The mock HO validation API lives at http://ia-home-office-mock-api-aat.service.core-compute-aat.internal/ichallenge/applications/v1/1111-2222-3333-4444
     # (you can use any valid UAN at the end; but in ExUI you must enter the expected UAN, name and DOB in order to proceed past validation)
     HOME_OFFICE_VALIDATION_ENABLED: "false" # Do not remove this this environment variable!
-    STATUTORY_TIMEFRAME_LIVE_DATE: "2000-01-01" # This must be in the past in order to test the add/remove 24-week timeframe events in Preview
+    STATUTORY_TIMEFRAME_LIVE_DATE: "2200-01-01" # This must be in the past in order to test the add/remove 24-week timeframe events in Preview
   keyVaults:
     ia:
       resourceGroup: ia
