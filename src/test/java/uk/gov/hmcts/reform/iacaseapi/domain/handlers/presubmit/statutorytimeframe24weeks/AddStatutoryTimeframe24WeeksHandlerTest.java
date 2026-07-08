@@ -1,38 +1,50 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.statutorytimeframe24weeks;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.when;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
 class AddStatutoryTimeframe24WeeksHandlerTest {
 
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase asylumCase;
-    @Mock private UpdateStatutoryTimeframe24WeeksService updateStatutoryTimeframe24WeeksService;
+    @Mock
+    private Callback<AsylumCase> callback;
+    @Mock
+    private CaseDetails<AsylumCase> caseDetails;
+    @Mock
+    private AsylumCase asylumCase;
+    @Mock
+    private AsylumCase updatedAsylumCase;
+    @Mock
+    private UpdateStatutoryTimeframe24WeeksService updateStatutoryTimeframe24WeeksService;
 
-    @InjectMocks private AddStatutoryTimeframe24WeeksHandler addStatutoryTimeframe24WeeksHandler;
+    @InjectMocks
+    private AddStatutoryTimeframe24WeeksHandler addStatutoryTimeframe24WeeksHandler;
 
     @BeforeEach
     public void setUp() {
@@ -41,15 +53,20 @@ class AddStatutoryTimeframe24WeeksHandlerTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
     }
 
-    @Test
-    void should_append_new_statutory_timeframe_24_weeks_to_existing_statutory_timeframe_24_weeks() {
+    @ParameterizedTest
+    @CsvSource({"AIP,NO", "REP,YES"})
+    void should_append_new_statutory_timeframe_24_weeks_to_existing_statutory_timeframe_24_weeks(JourneyType journeyType, YesOrNo isVirtualHearing) {
         when(updateStatutoryTimeframe24WeeksService.updateAsylumCase(any(AsylumCase.class), any(YesOrNo.class)))
-            .thenReturn(asylumCase);
-
+            .thenReturn(updatedAsylumCase);
+        when(updatedAsylumCase.read(AsylumCaseFieldDefinition.JOURNEY_TYPE, JourneyType.class))
+            .thenReturn(Optional.of(journeyType));
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             addStatutoryTimeframe24WeeksHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
-        assertThat(callbackResponse.getData()).isEqualTo(asylumCase);
+        assertThat(callbackResponse.getData()).isEqualTo(updatedAsylumCase);
+        verify(updateStatutoryTimeframe24WeeksService).updateAsylumCase(asylumCase, YesOrNo.YES);
+        verify(updatedAsylumCase).write(AsylumCaseFieldDefinition.IS_APPEAL_SUITABLE_TO_FLOAT, YesOrNo.NO);
+        verify(updatedAsylumCase).write(AsylumCaseFieldDefinition.IS_VIRTUAL_HEARING, isVirtualHearing);
     }
 
     @Test
