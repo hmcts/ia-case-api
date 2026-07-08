@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.config;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -14,7 +15,7 @@ public class HealthCheckConfiguration {
     private Map<String, Map<String, String>> services = new HashMap<>();
 
     public Map<String, Map<String, String>> getServices() {
-        return services;
+        return Collections.unmodifiableMap(services);
     }
 
     public void setServices(Map<String, Map<String, String>> services) {
