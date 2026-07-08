@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi.infrastructure.config;
 import com.google.common.collect.ImmutableSet;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
@@ -15,15 +16,23 @@ import org.springframework.context.annotation.Configuration;
 @ConfigurationProperties(prefix = "security")
 public class AuthCheckerConfiguration {
 
-    private final List<String> authorisedServices = new ArrayList<>();
-    private final List<String> authorisedRoles = new ArrayList<>();
+    private List<String> authorisedServices = new ArrayList<>();
+    private List<String> authorisedRoles = new ArrayList<>();
 
     public List<String> getAuthorisedServices() {
-        return authorisedServices;
+        return Collections.unmodifiableList(authorisedServices);
+    }
+
+    public void setAuthorisedServices(List<String> authorisedServices) {
+        this.authorisedServices = authorisedServices;
     }
 
     public List<String> getAuthorisedRoles() {
-        return authorisedRoles;
+        return Collections.unmodifiableList(authorisedRoles);
+    }
+
+    public void setAuthorisedRoles(List<String> authorisedRoles) {
+        this.authorisedRoles = authorisedRoles;
     }
 
     @Bean
