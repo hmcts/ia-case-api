@@ -26,21 +26,15 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isAppel
 public class AddStatutoryTimeframe24WeeksPreStartHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final LocalDate stf24wLiveDate;
-    private static final Set<State> unsupportedStates = Set.of(
-        State.APPEAL_STARTED,
+    private static final Set<State> supportedStates = Set.of(
         State.PENDING_PAYMENT,
+        State.APPEAL_SUBMITTED,
         State.CASE_BUILDING,
-        State.CASE_UNDER_REVIEW,
-        State.SUBMIT_HEARING_REQUIREMENTS,
-        State.RESPONDENT_REVIEW,
-        State.PREPARE_FOR_HEARING,
-        State.FINAL_BUNDLING,
-        State.PRE_HEARING,
-        State.DECISION,
-        State.ADJOURNED,
-        State.REMITTED,
-        State.AWAITING_REASONS_FOR_APPEAL,
-        State.REASONS_FOR_APPEAL_SUBMITTED);
+        State.AWAITING_RESPONDENT_EVIDENCE,
+        State.AWAITING_CLARIFYING_QUESTIONS_ANSWERS,
+        State.CLARIFYING_QUESTIONS_ANSWERS_SUBMITTED,
+        State.LISTING
+    );
 
     public AddStatutoryTimeframe24WeeksPreStartHandler(@Value("${app.statutory-timeframe.live-date}") String stf24wLiveDate) {
         this.stf24wLiveDate = LocalDate.parse(stf24wLiveDate);
@@ -72,7 +66,7 @@ public class AddStatutoryTimeframe24WeeksPreStartHandler implements PreSubmitCal
         PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
 
         State currentState = callback.getCaseDetails().getState();
-        if (unsupportedStates.contains(currentState)) {
+        if (!supportedStates.contains(currentState)) {
             String errorMessage = "This event cannot be run on this case";
             response.addError(errorMessage);
         }
