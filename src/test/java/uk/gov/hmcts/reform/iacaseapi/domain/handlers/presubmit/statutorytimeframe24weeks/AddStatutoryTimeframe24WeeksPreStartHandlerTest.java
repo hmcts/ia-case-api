@@ -3,6 +3,8 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.statutorytimefra
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -33,9 +35,12 @@ import static org.mockito.Mockito.when;
 @SuppressWarnings("unchecked")
 class AddStatutoryTimeframe24WeeksPreStartHandlerTest {
 
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase asylumCase;
+    @Mock
+    private Callback<AsylumCase> callback;
+    @Mock
+    private CaseDetails<AsylumCase> caseDetails;
+    @Mock
+    private AsylumCase asylumCase;
 
     private AddStatutoryTimeframe24WeeksPreStartHandler addStatutoryTimeframe24WeeksPreStartHandler;
 
@@ -155,9 +160,18 @@ class AddStatutoryTimeframe24WeeksPreStartHandlerTest {
         assertThat(errors).isEmpty();
     }
 
-    @Test
-    void should_return_error_when_state_is_unsupported() {
-        when(callback.getCaseDetails().getState()).thenReturn(State.CASE_BUILDING);
+    @ParameterizedTest
+    @EnumSource(value = State.class, names = {
+        "PENDING_PAYMENT",
+        "APPEAL_SUBMITTED",
+        "CASE_BUILDING",
+        "AWAITING_RESPONDENT_EVIDENCE",
+        "AWAITING_CLARIFYING_QUESTIONS_ANSWERS",
+        "CLARIFYING_QUESTIONS_ANSWERS_SUBMITTED",
+        "LISTING"
+    }, mode = EnumSource.Mode.EXCLUDE)
+    void should_return_error_when_state_is_not_supported(State state) {
+        when(callback.getCaseDetails().getState()).thenReturn(state);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             addStatutoryTimeframe24WeeksPreStartHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
@@ -166,6 +180,27 @@ class AddStatutoryTimeframe24WeeksPreStartHandlerTest {
         assertThat(errors).isNotEmpty();
         assertEquals(1, errors.size());
         assertTrue(errors.contains("This event cannot be run on this case"));
+    }
+
+
+    @ParameterizedTest
+    @EnumSource(value = State.class, names = {
+        "PENDING_PAYMENT",
+        "APPEAL_SUBMITTED",
+        "CASE_BUILDING",
+        "AWAITING_RESPONDENT_EVIDENCE",
+        "AWAITING_CLARIFYING_QUESTIONS_ANSWERS",
+        "CLARIFYING_QUESTIONS_ANSWERS_SUBMITTED",
+        "LISTING"
+    })
+    void should_not_return_error_when_state_is_supported(State state) {
+        when(callback.getCaseDetails().getState()).thenReturn(state);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            addStatutoryTimeframe24WeeksPreStartHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        final Set<String> errors = callbackResponse.getErrors();
+        assertThat(errors).isEmpty();
     }
 
     @Test
