@@ -29,7 +29,6 @@ public class AddStatutoryTimeframe24WeeksPreStartHandler implements PreSubmitCal
     private static final Set<State> supportedStates = Set.of(
         State.PENDING_PAYMENT,
         State.APPEAL_SUBMITTED,
-        State.CASE_BUILDING,
         State.AWAITING_RESPONDENT_EVIDENCE,
         State.AWAITING_CLARIFYING_QUESTIONS_ANSWERS,
         State.CLARIFYING_QUESTIONS_ANSWERS_SUBMITTED,

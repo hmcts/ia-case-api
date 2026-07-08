@@ -164,7 +164,6 @@ class AddStatutoryTimeframe24WeeksPreStartHandlerTest {
     @EnumSource(value = State.class, names = {
         "PENDING_PAYMENT",
         "APPEAL_SUBMITTED",
-        "CASE_BUILDING",
         "AWAITING_RESPONDENT_EVIDENCE",
         "AWAITING_CLARIFYING_QUESTIONS_ANSWERS",
         "CLARIFYING_QUESTIONS_ANSWERS_SUBMITTED",
@@ -187,7 +186,6 @@ class AddStatutoryTimeframe24WeeksPreStartHandlerTest {
     @EnumSource(value = State.class, names = {
         "PENDING_PAYMENT",
         "APPEAL_SUBMITTED",
-        "CASE_BUILDING",
         "AWAITING_RESPONDENT_EVIDENCE",
         "AWAITING_CLARIFYING_QUESTIONS_ANSWERS",
         "CLARIFYING_QUESTIONS_ANSWERS_SUBMITTED",
