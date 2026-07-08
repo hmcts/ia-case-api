@@ -54,12 +54,14 @@ class AddStatutoryTimeframe24WeeksHandlerTest {
     }
 
     @ParameterizedTest
-    @CsvSource({"AIP,NO", "REP,YES"})
-    void should_append_new_statutory_timeframe_24_weeks_to_existing_statutory_timeframe_24_weeks(JourneyType journeyType, YesOrNo isVirtualHearing) {
+    @CsvSource(value = {"AIP,null,NO", "REP,null,YES", "null,YES,NO", "null,NO,YES"}, nullValues = {"null"})
+    void should_append_new_statutory_timeframe_24_weeks_to_existing_statutory_timeframe_24_weeks(JourneyType journeyType, YesOrNo isAppellantsRepresentation, YesOrNo isVirtualHearing) {
         when(updateStatutoryTimeframe24WeeksService.updateAsylumCase(any(AsylumCase.class), any(YesOrNo.class)))
             .thenReturn(updatedAsylumCase);
         when(updatedAsylumCase.read(AsylumCaseFieldDefinition.JOURNEY_TYPE, JourneyType.class))
-            .thenReturn(Optional.of(journeyType));
+            .thenReturn(Optional.ofNullable(journeyType));
+        when(updatedAsylumCase.read(AsylumCaseFieldDefinition.APPELLANTS_REPRESENTATION, YesOrNo.class))
+            .thenReturn(Optional.ofNullable(isAppellantsRepresentation));
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             addStatutoryTimeframe24WeeksHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 

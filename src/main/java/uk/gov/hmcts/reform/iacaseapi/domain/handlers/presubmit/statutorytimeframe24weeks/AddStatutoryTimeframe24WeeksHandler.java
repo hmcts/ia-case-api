@@ -14,6 +14,7 @@ import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.ADD_STATUTORY_TIMEFRAME_24_WEEKS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isAipJourney;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isAppellantsRepresentation;
 
 @Component
 public class AddStatutoryTimeframe24WeeksHandler implements PreSubmitCallbackHandler<AsylumCase> {
@@ -41,7 +42,8 @@ public class AddStatutoryTimeframe24WeeksHandler implements PreSubmitCallbackHan
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
         AsylumCase updatedAsylum = updateStatutoryTimeframe24WeeksService.updateAsylumCase(asylumCase, YesOrNo.YES);
-        updatedAsylum.write(AsylumCaseFieldDefinition.IS_VIRTUAL_HEARING, isAipJourney(updatedAsylum) ? YesOrNo.NO : YesOrNo.YES);
+        boolean isVirtual = isAipJourney(updatedAsylum) || isAppellantsRepresentation(updatedAsylum);
+        updatedAsylum.write(AsylumCaseFieldDefinition.IS_VIRTUAL_HEARING, isVirtual ? YesOrNo.NO : YesOrNo.YES);
         updatedAsylum.write(AsylumCaseFieldDefinition.IS_APPEAL_SUITABLE_TO_FLOAT, YesOrNo.NO);
         return new PreSubmitCallbackResponse<>(updatedAsylum);
     }
