@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.AA_APPELLANT_DATE_OF_BIRTH;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SEND_DIRECTION_DATE_DUE;
 
 import java.time.LocalDate;
@@ -46,7 +47,11 @@ public class DirectionDueDateValidator implements PreSubmitCallbackHandler<Asylu
                 Event.REQUEST_RESPONSE_AMEND);
 
         return callbackStage == PreSubmitCallbackStage.MID_EVENT
-                && eligibleEvents.contains(callback.getEvent());
+                && eligibleEvents.contains(callback.getEvent())
+                && (callback.getPageId().equals("sendDirection")
+                    || callback.getPageId().equals("requestRespondentEvidence")
+                    || callback.getPageId().equals("requestCaseEdit")
+                    || callback.getPageId().equals("requestRespondentReview"));
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(

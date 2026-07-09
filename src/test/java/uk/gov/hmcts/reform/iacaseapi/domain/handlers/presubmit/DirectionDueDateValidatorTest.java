@@ -45,6 +45,7 @@ class DirectionDueDateValidatorTest {
     void should_handle_send_direction_mid_event() {
 
         when(callback.getEvent()).thenReturn(Event.SEND_DIRECTION);
+        when(callback.getPageId()).thenReturn("sendDirection");
 
         assertTrue(handler.canHandle(
                 PreSubmitCallbackStage.MID_EVENT,
@@ -78,6 +79,7 @@ class DirectionDueDateValidatorTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(Event.SEND_DIRECTION);
+        when(callback.getPageId()).thenReturn("sendDirection");
         when(dateProvider.now()).thenReturn(LocalDate.of(2025, 1, 10));
         when(asylumCase.read(SEND_DIRECTION_DATE_DUE, String.class))
                 .thenReturn(Optional.of("2025-01-09"));
@@ -97,6 +99,7 @@ class DirectionDueDateValidatorTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(Event.SEND_DIRECTION);
+        when(callback.getPageId()).thenReturn("sendDirection");
         when(dateProvider.now()).thenReturn(LocalDate.of(2025, 1, 10));
         when(asylumCase.read(SEND_DIRECTION_DATE_DUE, String.class))
                 .thenReturn(Optional.of("2025-01-10"));
@@ -113,6 +116,7 @@ class DirectionDueDateValidatorTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(Event.SEND_DIRECTION);
+        when(callback.getPageId()).thenReturn("sendDirection");
         when(dateProvider.now()).thenReturn(LocalDate.of(2025, 1, 10));
         when(asylumCase.read(SEND_DIRECTION_DATE_DUE, String.class))
                 .thenReturn(Optional.of("2025-01-11"));
