@@ -8,7 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REVIEW_HOME_OFFICE_RESPONSE_BY_LEGAL_REP;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STF_24W_CURRENT_STATUS_AUTO_GENERATED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED;
 
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -50,9 +50,10 @@ class RequestHearingRequirementsPreparerTest {
 
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getCaseDetails().getState()).thenReturn(State.RESPONDENT_REVIEW);
         when(callback.getEvent()).thenReturn(Event.REQUEST_HEARING_REQUIREMENTS_FEATURE);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.read(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class)).thenReturn(Optional.empty());
+        when(asylumCase.read(STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED, YesOrNo.class)).thenReturn(Optional.empty());
         when(asylumCase.read(REVIEW_HOME_OFFICE_RESPONSE_BY_LEGAL_REP, YesOrNo.class))
             .thenReturn(Optional.of(YesOrNo.NO));
 
@@ -70,9 +71,10 @@ class RequestHearingRequirementsPreparerTest {
 
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getCaseDetails().getState()).thenReturn(State.RESPONDENT_REVIEW);
         when(callback.getEvent()).thenReturn(Event.REQUEST_HEARING_REQUIREMENTS_FEATURE);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.read(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class)).thenReturn(Optional.empty());
+        when(asylumCase.read(STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED, YesOrNo.class)).thenReturn(Optional.empty());
         when(asylumCase.read(REVIEW_HOME_OFFICE_RESPONSE_BY_LEGAL_REP, YesOrNo.class)).thenReturn(Optional.empty());
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -91,7 +93,7 @@ class RequestHearingRequirementsPreparerTest {
         when(callback.getCaseDetails().getState()).thenReturn(State.RESPONDENT_REVIEW);
         when(callback.getEvent()).thenReturn(Event.REQUEST_HEARING_REQUIREMENTS_FEATURE);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.read(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             requestHearingRequirementsPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
@@ -109,7 +111,7 @@ class RequestHearingRequirementsPreparerTest {
         when(callback.getCaseDetails().getState()).thenReturn(State.CASE_UNDER_REVIEW);
         when(callback.getEvent()).thenReturn(Event.REQUEST_HEARING_REQUIREMENTS_FEATURE);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.read(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class)).thenReturn(Optional.empty());
+        when(asylumCase.read(STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED, YesOrNo.class)).thenReturn(Optional.empty());
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             requestHearingRequirementsPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
@@ -127,7 +129,7 @@ class RequestHearingRequirementsPreparerTest {
         when(callback.getCaseDetails().getState()).thenReturn(State.CASE_UNDER_REVIEW);
         when(callback.getEvent()).thenReturn(Event.REQUEST_HEARING_REQUIREMENTS_FEATURE);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.read(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             requestHearingRequirementsPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
@@ -142,9 +144,10 @@ class RequestHearingRequirementsPreparerTest {
 
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getCaseDetails().getState()).thenReturn(State.RESPONDENT_REVIEW);
         when(callback.getEvent()).thenReturn(Event.REQUEST_HEARING_REQUIREMENTS_FEATURE);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.read(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class)).thenReturn(Optional.empty());
+        when(asylumCase.read(STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED, YesOrNo.class)).thenReturn(Optional.empty());
         when(asylumCase.read(REVIEW_HOME_OFFICE_RESPONSE_BY_LEGAL_REP, YesOrNo.class))
             .thenReturn(Optional.of(YesOrNo.YES));
 
@@ -163,7 +166,7 @@ class RequestHearingRequirementsPreparerTest {
         when(callback.getCaseDetails().getState()).thenReturn(State.CASE_UNDER_REVIEW);
         when(callback.getEvent()).thenReturn(Event.REQUEST_HEARING_REQUIREMENTS_FEATURE);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.read(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class))
+        when(asylumCase.read(STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED, YesOrNo.class))
             .thenReturn(Optional.of(YesOrNo.YES));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
