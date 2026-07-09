@@ -122,7 +122,7 @@ public class RequestFeeRemissionAipHandler implements PreSubmitCallbackHandler<A
         RemissionDecision remissionDecision = asylumCase.read(REMISSION_DECISION, RemissionDecision.class).orElse(null);
 
         if (remissionDecision != null) {
-            List<IdValue<RemissionDetails>> previousRemissionDetails = appendPreviousRemissionDetails(asylumCase/*Before*/);
+            List<IdValue<RemissionDetails>> previousRemissionDetails = appendPreviousRemissionDetails(asylumCaseBefore);
             asylumCase.write(PREVIOUS_REMISSION_DETAILS, previousRemissionDetails);
         }
         asylumCase.write(IS_LATE_REMISSION_REQUEST, YesOrNo.YES);
