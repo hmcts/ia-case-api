@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static com.google.common.collect.Lists.newArrayList;
 import static java.util.Objects.requireNonNull;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isInternalCase;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -53,7 +54,7 @@ public class RemoveRepresentationPreparer implements PreSubmitCallbackHandler<As
             response.addError("If you are a legal representative, you must contact all parties confirming you no longer represent this client.");
 
         } else if (localAuthorityPolicy.get().getOrganisation() == null
-                || isEmpty(localAuthorityPolicy.get().getOrganisation().getOrganisationID())) {
+                || (isEmpty(localAuthorityPolicy.get().getOrganisation().getOrganisationID()) && !isInternalCase(asylumCase))) {
             response.addError("This appellant is not currently represented so Notice of Change cannot be actioned. Please contact the Service Desk giving this error message.");
         } else {
 
