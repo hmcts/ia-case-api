@@ -46,6 +46,10 @@ public class AsylumCaseSendDirectionEventValidForJourneyTypeChecker implements E
                 log.error("You cannot select appellant and respondent as joint recipients on a manual appeal. The direction will need to be issued to the recipients individually.");
                 return new EventValid("You cannot select appellant and respondent as joint recipients on a manual appeal. The direction will need to be issued to the recipients individually.");
             }
+            if (isInternalCase(asylumCase) && isAppellantsRepresentation(asylumCase) && (directionTo == Parties.APPELLANT_AND_RESPONDENT)) {
+                log.error("You cannot select appellant and respondent as joint recipients on a manual appeal. The direction will need to be issued to the recipients individually.");
+                return new EventValid("You cannot select appellant and respondent as joint recipients on a manual appeal. The direction will need to be issued to the recipients individually.");
+            }
         }
 
         return new EventValid();
