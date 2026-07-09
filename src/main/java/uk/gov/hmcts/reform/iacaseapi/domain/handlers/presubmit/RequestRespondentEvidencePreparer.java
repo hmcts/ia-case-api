@@ -100,9 +100,6 @@ public class RequestRespondentEvidencePreparer implements PreSubmitCallbackHandl
                 if (asylumCase.read(LIST_CASE_HEARING_DATE, String.class).isEmpty()) {
                     return callbackResponse.withError("You must list the case before running the 'Request respondent evidence' event");
                 }
-                if (asylumCase.read(UPLOAD_HOME_OFFICE_BUNDLE_AVAILABLE, YesOrNo.class).orElse(NO) == YES) {
-                    return callbackResponse.withError("Respondent evidence has already been requested for this case. You cannot request it again.");
-                }
             } else if (completeCaseReviewDateEmpty) {
                 return callbackResponse.withError("You must run the Complete case review before running the 'Request respondent evidence' event");
             }
