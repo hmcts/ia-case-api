@@ -31,65 +31,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LIST_CASE_HEARING_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.RELIST_CASE_IMMEDIATELY;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre.GLASGOW;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.ADA_SUITABILITY_REVIEW;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.ADJOURN_HEARING_WITHOUT_DATE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.APPLY_FOR_FTPA_APPELLANT;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.APPLY_FOR_FTPA_RESPONDENT;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.ASYNC_STITCHING_COMPLETE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.CHANGE_DIRECTION_DUE_DATE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.CHANGE_HEARING_CENTRE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.CREATE_CASE_LINK;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.CUSTOMISE_HEARING_BUNDLE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.DECIDE_AN_APPLICATION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.DECIDE_FTPA_APPLICATION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.DECISION_WITHOUT_HEARING;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.DRAFT_HEARING_REQUIREMENTS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.EDIT_APPEAL_AFTER_SUBMIT;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.EDIT_CASE_LISTING;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.END_APPEAL;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.END_APPEAL_AUTOMATICALLY;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.GENERATE_DECISION_AND_REASONS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.GENERATE_HEARING_BUNDLE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.GENERATE_UPDATED_HEARING_BUNDLE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.GENERATE_UPPER_TRIBUNAL_BUNDLE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.LIST_CASE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.LIST_CMA;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.MAINTAIN_CASE_LINKS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.MANAGE_FEE_UPDATE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.MARK_APPEAL_AS_ADA;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.MARK_APPEAL_AS_REMITTED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.MARK_APPEAL_PAID;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.RECORD_OUT_OF_TIME_DECISION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.RECORD_REMISSION_DECISION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.REINSTATE_APPEAL;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.REMOVE_DETAINED_STATUS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.REMOVE_LEGAL_REPRESENTATIVE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.REMOVE_REPRESENTATION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.REQUEST_CASE_BUILDING;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.REQUEST_HEARING_REQUIREMENTS_FEATURE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.REQUEST_RESPONDENT_EVIDENCE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.REQUEST_RESPONDENT_REVIEW;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.REQUEST_RESPONSE_AMEND;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.REQUEST_RESPONSE_REVIEW;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.RESIDENT_JUDGE_FTPA_DECISION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SAVE_NOTIFICATIONS_TO_DATA;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SEND_DECISION_AND_REASONS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SEND_DIRECTION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SUBMIT_APPEAL;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SUBMIT_CASE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SUBMIT_CLARIFYING_QUESTION_ANSWERS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SUBMIT_CMA_REQUIREMENTS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SUBMIT_REASONS_FOR_APPEAL;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.TRANSFER_OUT_OF_ADA;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.UPDATE_HEARING_ADJUSTMENTS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.UPDATE_HEARING_REQUIREMENTS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.UPDATE_TRIBUNAL_DECISION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.UPLOAD_ADDENDUM_EVIDENCE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.UPLOAD_ADDENDUM_EVIDENCE_ADMIN_OFFICER;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.UPLOAD_ADDENDUM_EVIDENCE_HOME_OFFICE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.UPLOAD_ADDITIONAL_EVIDENCE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.UPLOAD_ADDITIONAL_EVIDENCE_HOME_OFFICE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.UPLOAD_HOME_OFFICE_APPEAL_RESPONSE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
@@ -390,11 +332,13 @@ class GenerateDocumentHandlerTest {
                     UPDATE_HEARING_ADJUSTMENTS,
                     ADA_SUITABILITY_REVIEW,
                     LIST_CASE,
+                    CMR_LISTING,
+                    CMR_RE_LISTING,
                     EDIT_CASE_LISTING,
                     GENERATE_DECISION_AND_REASONS,
                     GENERATE_HEARING_BUNDLE,
                     CUSTOMISE_HEARING_BUNDLE,
-                        GENERATE_UPDATED_HEARING_BUNDLE,
+                    GENERATE_UPDATED_HEARING_BUNDLE,
                     SEND_DECISION_AND_REASONS,
                     ADJOURN_HEARING_WITHOUT_DATE,
                     END_APPEAL,
@@ -565,10 +509,12 @@ class GenerateDocumentHandlerTest {
                     UPDATE_HEARING_ADJUSTMENTS,
                     ADA_SUITABILITY_REVIEW,
                     LIST_CASE,
+                    CMR_LISTING,
+                    CMR_RE_LISTING,
                     GENERATE_DECISION_AND_REASONS,
                     GENERATE_HEARING_BUNDLE,
                     CUSTOMISE_HEARING_BUNDLE,
-                        GENERATE_UPDATED_HEARING_BUNDLE,
+                    GENERATE_UPDATED_HEARING_BUNDLE,
                     EDIT_CASE_LISTING,
                     SEND_DECISION_AND_REASONS,
                     ADJOURN_HEARING_WITHOUT_DATE,
