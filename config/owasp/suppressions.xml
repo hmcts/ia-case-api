@@ -10,7 +10,7 @@
         <cve>CVE-2026-56148</cve>
     </suppress>
     <suppress>
-        <notes>Fix is dependent on gov notify client migrating to httpclient5 - https://github.com/alphagov/notifications-java-client/issues/267</notes>
+        <notes>CVEs from s2s client's use of googleAuth - https://github.com/wstrange/GoogleAuth/pull/105</notes>
         <cve>CVE-2026-54399</cve>
         <cve>CVE-2026-54428</cve>
     </suppress>
