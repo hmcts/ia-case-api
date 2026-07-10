@@ -14,6 +14,8 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -122,11 +124,12 @@ class RequestHearingRequirementsPreparerTest {
             "This event cannot be run on this case at this time"));
     }
 
-    @Test
-    void should_check_state_for_hearing_requirements_when_in_stf24w_and_case_under_review() {
+    @ParameterizedTest
+    @CsvSource({"CASE_UNDER_REVIEW", "REASONS_FOR_APPEAL_SUBMITTED"})
+    void should_check_state_for_hearing_requirements_when_in_stf24w_and_correct_state(State state) {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getCaseDetails().getState()).thenReturn(State.CASE_UNDER_REVIEW);
+        when(callback.getCaseDetails().getState()).thenReturn(state);
         when(callback.getEvent()).thenReturn(Event.REQUEST_HEARING_REQUIREMENTS_FEATURE);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
