@@ -17,7 +17,7 @@ import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 import org.mockito.BDDMockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.SpringBootIntegrationTest;
 import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -34,7 +34,7 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.idam.IdamUserDetail
 
 class EditDocsCaseNoteServiceTest extends SpringBootIntegrationTest {
 
-    @MockBean
+    @MockitoBean
     private UserDetailsProvider userDetailsProvider;
 
     @Autowired
@@ -58,7 +58,7 @@ class EditDocsCaseNoteServiceTest extends SpringBootIntegrationTest {
         Optional<List<IdValue<CaseNote>>> idCaseNoteValues =
             asylumCaseAfterWithDocumentDeleted.read(AsylumCaseFieldDefinition.CASE_NOTES);
         if (idCaseNoteValues.isPresent()) {
-            IdValue<CaseNote> caseNoteIdValue = idCaseNoteValues.get().get(0);
+            IdValue<CaseNote> caseNoteIdValue = idCaseNoteValues.get().getFirst();
             CaseNote caseNote = caseNoteIdValue.getValue();
             assertCaseNote(caseNote);
         } else {

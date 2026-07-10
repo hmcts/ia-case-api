@@ -13,18 +13,25 @@ import static java.util.Objects.requireNonNull;
 public class StatutoryTimeframe24Weeks {
 
     private List<IdValue<StatutoryTimeframe24WeeksHistory>> history;
+    private HomeOfficeStatutoryTimeframe homeOfficeResponse;
 
     private StatutoryTimeframe24Weeks() {
     }
 
     public StatutoryTimeframe24Weeks(
-        List<IdValue<StatutoryTimeframe24WeeksHistory>> history
+        List<IdValue<StatutoryTimeframe24WeeksHistory>> history,
+        HomeOfficeStatutoryTimeframe homeOfficeResponse
     ) {
         this.history = requireNonNull(history);
+        this.homeOfficeResponse = homeOfficeResponse;
     }
 
     public List<IdValue<StatutoryTimeframe24WeeksHistory>> getHistory() {
         return requireNonNull(history);
+    }
+
+    public HomeOfficeStatutoryTimeframe getHomeOfficeResponse() {
+        return homeOfficeResponse;
     }
 
 }
