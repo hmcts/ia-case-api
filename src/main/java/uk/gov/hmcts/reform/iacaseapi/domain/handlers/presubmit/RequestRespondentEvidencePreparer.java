@@ -89,7 +89,7 @@ public class RequestRespondentEvidencePreparer implements PreSubmitCallbackHandl
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse = new PreSubmitCallbackResponse<>(asylumCase);
         if (stf24wLiveDate.isEqual(LocalDate.now()) || stf24wLiveDate.isBefore(LocalDate.now())) {
-            boolean is24WeekStfCase = asylumCase.read(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class)
+            boolean is24WeekStfCase = asylumCase.read(STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED, YesOrNo.class)
                     .map(status -> status == YES)
                     .orElse(false);
             boolean completeCaseReviewDateEmpty = asylumCase.read(COMPLETE_CASE_REVIEW_DATE, String.class).isEmpty();
