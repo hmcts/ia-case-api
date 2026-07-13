@@ -139,6 +139,34 @@ class DirectionDueDateValidatorTest {
     }
 
     @Test
+    void should_not_add_error_when_due_date_not_present() {
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getEvent()).thenReturn(Event.SEND_DIRECTION);
+        when(callback.getPageId()).thenReturn("sendDirection");
+        when(asylumCase.read(SEND_DIRECTION_DATE_DUE, String.class))
+                .thenReturn(Optional.empty());
+
+        PreSubmitCallbackResponse<AsylumCase> response =
+                handler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+
+        assertThat(response.getErrors()).isEmpty();
+    }
+
+    @Test
+    void should_not_handle_wrong_page() {
+
+        when(callback.getEvent()).thenReturn(Event.SEND_DIRECTION);
+        when(callback.getPageId()).thenReturn("someOtherPage");
+
+        assertFalse(handler.canHandle(
+                PreSubmitCallbackStage.MID_EVENT,
+                callback
+        ));
+    }
+
+    @Test
     void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> handler.canHandle(null, callback))

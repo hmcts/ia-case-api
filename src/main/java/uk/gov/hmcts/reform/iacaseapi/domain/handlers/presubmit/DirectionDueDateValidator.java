@@ -50,7 +50,8 @@ public class DirectionDueDateValidator implements PreSubmitCallbackHandler<Asylu
                 && (callback.getPageId().equals("sendDirection")
                     || callback.getPageId().equals("requestRespondentEvidence")
                     || callback.getPageId().equals("requestCaseEdit")
-                    || callback.getPageId().equals("requestRespondentReview"));
+                    || callback.getPageId().equals("requestRespondentReview")
+                    || callback.getPageId().equals("requestCaseBuilding"));
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
