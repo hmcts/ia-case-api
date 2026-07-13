@@ -91,6 +91,8 @@ class SubmitHearingRequirementsConfirmationTest {
         when(callback.getEvent()).thenReturn(Event.DRAFT_HEARING_REQUIREMENTS);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(AsylumCaseFieldDefinition.IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class))
+            .thenReturn(Optional.of(YesOrNo.NO));
         when(asylumCase.read(AsylumCaseFieldDefinition.STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED, YesOrNo.class))
             .thenReturn(Optional.of(YesOrNo.YES));
 
