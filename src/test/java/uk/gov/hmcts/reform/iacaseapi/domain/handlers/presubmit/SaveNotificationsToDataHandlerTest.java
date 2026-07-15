@@ -277,6 +277,7 @@ class SaveNotificationsToDataHandlerTest {
         verify(storedNotificationAppender, times(1)).append(storedNotification, emptyList());
         verify(asylumCase, times(1)).write(eq(NOTIFICATIONS), anyList());
     }
+
     @Test
     void should_access_notify_client_if_missing_letter_notification_no_address() throws NotificationClientException {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
