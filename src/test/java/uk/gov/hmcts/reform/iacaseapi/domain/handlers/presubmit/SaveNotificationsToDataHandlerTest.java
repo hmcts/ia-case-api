@@ -208,6 +208,53 @@ class SaveNotificationsToDataHandlerTest {
         ZonedDateTime zonedDateTime = localDateTime.atZone(ZoneId.of("Europe/London"));
         when(notification.getSentAt()).thenReturn(Optional.of(zonedDateTime));
         when(notification.getStatus()).thenReturn(status);
+        when(notification.getLine1()).thenReturn(Optional.of("line1"));
+        when(notification.getLine2()).thenReturn(Optional.of("line2"));
+        when(notification.getLine3()).thenReturn(Optional.of("line3"));
+        when(notification.getLine4()).thenReturn(Optional.of("line4"));
+        when(notification.getLine5()).thenReturn(Optional.of("line5"));
+        when(notification.getLine6()).thenReturn(Optional.of("line6"));
+        saveNotificationsToDataHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+        verify(notificationClient, times(1)).getNotificationById(anyString());
+        StoredNotification storedNotification =
+            StoredNotification.builder()
+                .notificationId(notificationId)
+                .notificationDateSent("2024-01-01T10:57")
+                .notificationSentTo("line1, line2, line3, line4, line5, line6")
+                .notificationBody("<div>" + body + "</div>")
+                .notificationMethod(StringUtils.capitalize(notificationTypeLetter))
+                .notificationStatus(StringUtils.capitalize(status))
+                .notificationReference(reference)
+                .notificationSubject("N/A")
+                .build();
+        verify(storedNotificationAppender, times(1)).append(storedNotification, emptyList());
+        verify(asylumCase, times(1)).write(eq(NOTIFICATIONS), anyList());
+    }
+
+    @Test
+    void should_access_notify_client_if_missing_letter_notification_empty_address() throws NotificationClientException {
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        List<IdValue<String>> notificationsSent =
+            List.of(new IdValue<>(reference, notificationId));
+        when(asylumCase.read(NOTIFICATIONS)).thenReturn(Optional.empty());
+        when(asylumCase.read(NOTIFICATIONS_SENT)).thenReturn(Optional.of(notificationsSent));
+        when(notificationClient.getNotificationById(notificationId)).thenReturn(notification);
+        when(notification.getBody()).thenReturn(body);
+        when(notification.getNotificationType()).thenReturn(notificationTypeLetter);
+        when(notification.getLine1()).thenReturn(Optional.of("line1"));
+        when(notification.getLine2()).thenReturn(Optional.of("line2"));
+        when(notification.getLine3()).thenReturn(Optional.of("line3"));
+        when(notification.getLine4()).thenReturn(Optional.of("line4"));
+        when(notification.getLine5()).thenReturn(Optional.of("line5"));
+        when(notification.getLine6()).thenReturn(Optional.of("line6"));
+        when(notification.getReference()).thenReturn(Optional.of(reference));
+        String dateString = "01-01-2024 10:57";
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
+        LocalDateTime localDateTime = LocalDateTime.parse(dateString, dateFormatter);
+        ZonedDateTime zonedDateTime = localDateTime.atZone(ZoneId.of("Europe/London"));
+        when(notification.getSentAt()).thenReturn(Optional.of(zonedDateTime));
+        when(notification.getStatus()).thenReturn(status);
         when(notification.getLine1()).thenReturn(Optional.of(""));
         when(notification.getLine2()).thenReturn(Optional.of(""));
         when(notification.getLine3()).thenReturn(Optional.of(""));
@@ -230,42 +277,6 @@ class SaveNotificationsToDataHandlerTest {
         verify(storedNotificationAppender, times(1)).append(storedNotification, emptyList());
         verify(asylumCase, times(1)).write(eq(NOTIFICATIONS), anyList());
     }
-
-    @Test
-    void should_access_notify_client_if_missing_letter_notification_empty_address() throws NotificationClientException {
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        List<IdValue<String>> notificationsSent =
-            List.of(new IdValue<>(reference, notificationId));
-        when(asylumCase.read(NOTIFICATIONS)).thenReturn(Optional.empty());
-        when(asylumCase.read(NOTIFICATIONS_SENT)).thenReturn(Optional.of(notificationsSent));
-        when(notificationClient.getNotificationById(notificationId)).thenReturn(notification);
-        when(notification.getBody()).thenReturn(body);
-        when(notification.getNotificationType()).thenReturn(notificationTypeLetter);
-        when(notification.getReference()).thenReturn(Optional.of(reference));
-        String dateString = "01-01-2024 10:57";
-        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
-        LocalDateTime localDateTime = LocalDateTime.parse(dateString, dateFormatter);
-        ZonedDateTime zonedDateTime = localDateTime.atZone(ZoneId.of("Europe/London"));
-        when(notification.getSentAt()).thenReturn(Optional.of(zonedDateTime));
-        when(notification.getStatus()).thenReturn(status);
-        saveNotificationsToDataHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
-        verify(notificationClient, times(1)).getNotificationById(anyString());
-        StoredNotification storedNotification =
-            StoredNotification.builder()
-                .notificationId(notificationId)
-                .notificationDateSent("2024-01-01T10:57")
-                .notificationSentTo("N/A")
-                .notificationBody("<div>" + body + "</div>")
-                .notificationMethod(StringUtils.capitalize(notificationTypeLetter))
-                .notificationStatus(StringUtils.capitalize(status))
-                .notificationReference(reference)
-                .notificationSubject("N/A")
-                .build();
-        verify(storedNotificationAppender, times(1)).append(storedNotification, emptyList());
-        verify(asylumCase, times(1)).write(eq(NOTIFICATIONS), anyList());
-    }
-
     @Test
     void should_access_notify_client_if_missing_letter_notification_no_address() throws NotificationClientException {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
