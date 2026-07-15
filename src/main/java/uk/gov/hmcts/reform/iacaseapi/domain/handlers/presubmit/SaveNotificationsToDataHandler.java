@@ -108,6 +108,17 @@ public class SaveNotificationsToDataHandler implements PreSubmitCallbackHandler<
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 
+    private static String getAddressFromNotification(Notification notification) {
+        StringBuilder addressBuilder = new StringBuilder();
+        notification.getLine1().ifPresent(line1 -> addressBuilder.append(line1).append(", "));
+        notification.getLine2().ifPresent(line2 -> addressBuilder.append(line2).append(", "));
+        notification.getLine3().ifPresent(line3 -> addressBuilder.append(line3).append(", "));
+        notification.getLine4().ifPresent(line4 -> addressBuilder.append(line4).append(", "));
+        notification.getLine5().ifPresent(line5 -> addressBuilder.append(line5).append(", "));
+        notification.getLine6().ifPresent(addressBuilder::append);
+        return addressBuilder.toString();
+    }
+
     private static StoredNotification getStoredNotification(String notificationId, Notification notification) {
         String reference = notification.getReference().orElse(notificationId);
         String notificationBody = "<div>" + notification.getBody()
@@ -120,6 +131,7 @@ public class SaveNotificationsToDataHandler implements PreSubmitCallbackHandler<
         String sentTo = switch (method) {
             case "email" -> notification.getEmailAddress().orElse("N/A");
             case "sms" -> notification.getPhoneNumber().orElse("N/A");
+            case "letter" -> getAddressFromNotification(notification);
             default -> "N/A";
         };
         String status = notification.getStatus();
