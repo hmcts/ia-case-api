@@ -79,7 +79,7 @@ class SendInviteToNonLegalRepHandler implements PreSubmitCallbackHandler<AsylumC
                         ccdDataService.revokeUserAccessToCase(callback.getCaseDetails().getId(), nonLegalRepDetails.getIdamId());
                     }
                 });
-            asylumCase.write(NLR_DETAILS, NonLegalRepDetails.builder().emailAddress(email));
+            asylumCase.write(NLR_DETAILS, NonLegalRepDetails.builder().emailAddress(email).build());
             asylumCase.clear(JOIN_APPEAL_PIN);
             asylumCase.clear(IS_SPONSOR_SAME_AS_NLR);
             asylumCase.clear(HAS_NON_LEGAL_REP_JOINED);
