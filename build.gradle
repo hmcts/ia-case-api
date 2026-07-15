@@ -269,7 +269,7 @@ repositories {
     }
 }
 
-ext["tomcat.version"] = "10.1.56"
+ext["tomcat.version"] = "10.1.57"
 
 dependencyManagement {
     imports {
