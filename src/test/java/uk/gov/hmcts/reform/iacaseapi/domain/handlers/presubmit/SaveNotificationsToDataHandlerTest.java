@@ -42,7 +42,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SAVE_NOTIF
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
-@SuppressWarnings("unchecked")
 class SaveNotificationsToDataHandlerTest {
 
     @Mock
@@ -202,7 +201,6 @@ class SaveNotificationsToDataHandlerTest {
         when(notification.getLine4()).thenReturn(Optional.of("line4"));
         when(notification.getLine5()).thenReturn(Optional.of("line5"));
         when(notification.getLine6()).thenReturn(Optional.of("line6"));
-        when(notification.getPostcode()).thenReturn(Optional.of("postcode"));
         when(notification.getReference()).thenReturn(Optional.of(reference));
         String dateString = "01-01-2024 10:57";
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
@@ -216,7 +214,7 @@ class SaveNotificationsToDataHandlerTest {
             StoredNotification.builder()
                 .notificationId(notificationId)
                 .notificationDateSent("2024-01-01T10:57")
-                .notificationSentTo("line1, line2, line3, line4, line5, line6, postcode")
+                .notificationSentTo("line1, line2, line3, line4, line5, line6")
                 .notificationBody("<div>" + body + "</div>")
                 .notificationMethod(StringUtils.capitalize(notificationTypeLetter))
                 .notificationStatus(StringUtils.capitalize(status))
@@ -251,7 +249,7 @@ class SaveNotificationsToDataHandlerTest {
             StoredNotification.builder()
                 .notificationId(notificationId)
                 .notificationDateSent("2024-01-01T10:57")
-                .notificationSentTo("No postcode provided")
+                .notificationSentTo("N/A")
                 .notificationBody("<div>" + body + "</div>")
                 .notificationMethod(StringUtils.capitalize(notificationTypeLetter))
                 .notificationStatus(StringUtils.capitalize(status))

@@ -116,6 +116,9 @@ public class SaveNotificationsToDataHandler implements PreSubmitCallbackHandler<
         notification.getLine4().ifPresent(line4 -> addressBuilder.append(line4).append(", "));
         notification.getLine5().ifPresent(line5 -> addressBuilder.append(line5).append(", "));
         notification.getLine6().ifPresent(addressBuilder::append);
+        if (addressBuilder.toString().isBlank()) {
+            return "N/A";
+        }
         return addressBuilder.toString();
     }
 
