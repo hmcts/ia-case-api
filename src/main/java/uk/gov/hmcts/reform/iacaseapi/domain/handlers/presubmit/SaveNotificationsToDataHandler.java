@@ -63,9 +63,9 @@ public class SaveNotificationsToDataHandler implements PreSubmitCallbackHandler<
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-                && callback.getEvent() == Event.SAVE_NOTIFICATIONS_TO_DATA
-                && featureToggler.getValue("save-notifications-feature", false)
-                && saveNotificationToDataEnabled;
+            && callback.getEvent() == Event.SAVE_NOTIFICATIONS_TO_DATA
+            && featureToggler.getValue("save-notifications-feature", false)
+            && saveNotificationToDataEnabled;
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
@@ -108,14 +108,23 @@ public class SaveNotificationsToDataHandler implements PreSubmitCallbackHandler<
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 
+    private static void appendNonEmptyToString(String someString, StringBuilder stringBuilder, boolean withComma) {
+        if (!someString.isBlank()) {
+            stringBuilder.append(someString);
+            if (withComma) {
+                stringBuilder.append(", ");
+            }
+        }
+    }
+
     private static String getAddressFromNotification(Notification notification) {
         StringBuilder addressBuilder = new StringBuilder();
-        notification.getLine1().ifPresent(line1 -> addressBuilder.append(line1).append(", "));
-        notification.getLine2().ifPresent(line2 -> addressBuilder.append(line2).append(", "));
-        notification.getLine3().ifPresent(line3 -> addressBuilder.append(line3).append(", "));
-        notification.getLine4().ifPresent(line4 -> addressBuilder.append(line4).append(", "));
-        notification.getLine5().ifPresent(line5 -> addressBuilder.append(line5).append(", "));
-        notification.getLine6().ifPresent(addressBuilder::append);
+        notification.getLine1().ifPresent(line1 -> appendNonEmptyToString(line1, addressBuilder, true));
+        notification.getLine2().ifPresent(line2 -> appendNonEmptyToString(line2, addressBuilder, true));
+        notification.getLine3().ifPresent(line3 -> appendNonEmptyToString(line3, addressBuilder, true));
+        notification.getLine4().ifPresent(line4 -> appendNonEmptyToString(line4, addressBuilder, true));
+        notification.getLine5().ifPresent(line5 -> appendNonEmptyToString(line5, addressBuilder, true));
+        notification.getLine6().ifPresent(line6 -> appendNonEmptyToString(line6, addressBuilder, false));
         if (addressBuilder.toString().isBlank()) {
             return "N/A";
         }
@@ -163,7 +172,7 @@ public class SaveNotificationsToDataHandler implements PreSubmitCallbackHandler<
             .toList();
         return sentNotificationIds.stream()
             .filter(idValue -> filterNotificationsSentInTheLastSevenDays(idValue)
-                        && !storedNotificationIds.contains(idValue.getValue()))
+                && !storedNotificationIds.contains(idValue.getValue()))
             .map(IdValue::getValue)
             .toList();
     }
@@ -190,7 +199,7 @@ public class SaveNotificationsToDataHandler implements PreSubmitCallbackHandler<
     private List<IdValue<StoredNotification>> sortNotificationsByDate(List<IdValue<StoredNotification>> allNotifications) {
         List<IdValue<StoredNotification>> mutableNotifications = new ArrayList<>(allNotifications);
         mutableNotifications.sort(Comparator.comparing(notification ->
-            LocalDateTime.parse(notification.getValue().getNotificationDateSent()),
+                LocalDateTime.parse(notification.getValue().getNotificationDateSent()),
             Comparator.reverseOrder()
         ));
         return mutableNotifications;
