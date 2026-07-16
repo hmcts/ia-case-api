@@ -459,7 +459,7 @@ class AiPFeesHandlerTest {
         when(callback.getEvent()).thenReturn(event);
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
 
-        if (event == Event.START_APPEAL || event == Event.EDIT_APPEAL || event == Event.SUBMIT_APPEAL) {
+        if (event == Event.START_APPEAL || event == Event.EDIT_APPEAL) {
             assertTrue(aiPFeesHandler.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback));
         } else {
             assertFalse(aiPFeesHandler.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback));
@@ -473,7 +473,7 @@ class AiPFeesHandlerTest {
                 .hasMessage("Cannot handle callback")
                 .isExactlyInstanceOf(IllegalStateException.class);
 
-        when(callback.getEvent()).thenReturn(Event.SEND_DIRECTION);
+        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
         assertThatThrownBy(() -> aiPFeesHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
                 .hasMessage("Cannot handle callback")
                 .isExactlyInstanceOf(IllegalStateException.class);

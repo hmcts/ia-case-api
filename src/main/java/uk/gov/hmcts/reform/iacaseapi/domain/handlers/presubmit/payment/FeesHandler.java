@@ -56,8 +56,7 @@ public class FeesHandler implements PreSubmitCallbackHandler<AsylumCase> {
         return (callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT)
             && Arrays.asList(
             Event.START_APPEAL,
-            Event.EDIT_APPEAL,
-            Event.SUBMIT_APPEAL
+            Event.EDIT_APPEAL
         ).contains(callback.getEvent())
             && !isAipJourney(callback.getCaseDetails().getCaseData())
             && isfeePaymentEnabled;
