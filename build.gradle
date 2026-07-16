@@ -408,8 +408,8 @@ dependencies {
 
     testImplementation group: 'com.h2database', name: 'h2', version: '2.4.240'
 
-    testImplementation group: 'net.serenity-bdd', name: 'serenity-rest-assured', version: '5.3.10'
-    testImplementation group: 'net.serenity-bdd', name: 'serenity-spring', version: '5.3.10'
+    testImplementation group: 'net.serenity-bdd', name: 'serenity-rest-assured', version: '5.3.11'
+    testImplementation group: 'net.serenity-bdd', name: 'serenity-spring', version: '5.3.11'
 
     functionalTestImplementation group: 'com.github.hmcts', name: 'core-case-data-store-client', version: '5.2.0'
 
