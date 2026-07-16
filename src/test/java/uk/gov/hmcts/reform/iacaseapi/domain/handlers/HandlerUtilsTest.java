@@ -1,8 +1,51 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers;
 
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseFlagDetail;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseFlagValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.FeeRemissionType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingAdjournmentDay;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.HelpWithFeesOption;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfCountryCircumstances;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfCountryDecisionType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionOption;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.SourceOfAppeal;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlag;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.Value;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationBasedFeatureToggler;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.Organisation;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.OrganisationPolicy;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Stream;
+
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -27,17 +70,19 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.AUTO_LIST_HEARING;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_LEVEL_FLAGS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.EXCEPTIONAL_CIRCUMSTANCES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.GWF_REFERENCE_NUMBER;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAS_ADDED_LEGAL_REP_DETAILS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_ADJOURNMENT_WHEN;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_CHANNEL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HELP_WITH_FEES_REFERENCE_NUMBER;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HELP_WITH_FEES_REF_NUMBER;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_APPELLANTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_APPELLANT_CLAIM_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_APPELLANT_DECISION_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_APPELLANT_DECISION_LETTER_DATE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_APPELLANTS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_REFERENCE_NUMBER;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_SEARCH_NO_MATCH;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_SEARCH_STATUS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_WAIVER_DOCUMENT;
@@ -110,49 +155,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isOnlyR
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isPanelRequired;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.outOfCountryDecisionTypeIsRefusalOfHumanRightsOrPermit;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.relistCaseImmediately;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Stream;
-
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.CsvSource;
-import org.junit.jupiter.params.provider.EnumSource;
-import org.junit.jupiter.params.provider.MethodSource;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
-
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseFlagDetail;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseFlagValue;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.FeeRemissionType;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingAdjournmentDay;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.HelpWithFeesOption;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfCountryCircumstances;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfCountryDecisionType;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionOption;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.SourceOfAppeal;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlag;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.Value;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationBasedFeatureToggler;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.Organisation;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.OrganisationPolicy;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -1144,13 +1146,16 @@ class HandlerUtilsTest {
     @Test
     void encryptThenDecrypt_match() {
         String plainText = "plain text string";
-        assertTrue(HandlerUtils.decrypt(HandlerUtils.encrypt(plainText)).equals(plainText));
+        String encryptedKey = "MDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNkZWY=";
+        assertEquals(plainText, HandlerUtils.decrypt(HandlerUtils.encrypt(plainText, encryptedKey), encryptedKey));
     }
 
     @Test
     void encryptThenDecrypt_noMatch() {
         String plainText = "plain text string";
-        assertFalse(HandlerUtils.decrypt(HandlerUtils.encrypt(plainText)).equals("something else"));
+        String encryptedKey = "MDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNkZWY=";
+        assertNotEquals("something else", HandlerUtils.decrypt(HandlerUtils.encrypt(plainText, encryptedKey), encryptedKey));
+
     }
 
     @Test
@@ -1168,4 +1173,46 @@ class HandlerUtilsTest {
         verify(asylumCase, times(6)).remove(any());
     }
 
+    @Test
+    void should_return_home_office_reference_number_when_present() {
+
+        when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of("1234-2345-3456-4567"));
+
+        String result = HandlerUtils.getUanOrGwf(asylumCase);
+
+        assertEquals("1234-2345-3456-4567", result);
+    }
+
+    @Test
+    void should_return_gwf_reference_number_when_home_office_reference_is_empty() {
+
+        when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of(""));
+        when(asylumCase.read(GWF_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of("GWF123456789"));
+
+        String result = HandlerUtils.getUanOrGwf(asylumCase);
+
+        assertEquals("GWF123456789", result);
+    }
+
+    @Test
+    void should_return_gwf_reference_number_when_home_office_reference_is_absent() {
+
+        when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class)).thenReturn(Optional.empty());
+        when(asylumCase.read(GWF_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of("GWF123456789"));
+
+        String result = HandlerUtils.getUanOrGwf(asylumCase);
+
+        assertEquals("GWF123456789", result);
+    }
+
+    @Test
+    void should_return_empty_string_when_neither_reference_exists() {
+
+        when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class)).thenReturn(Optional.empty());
+        when(asylumCase.read(GWF_REFERENCE_NUMBER, String.class)).thenReturn(Optional.empty());
+
+        String result = HandlerUtils.getUanOrGwf(asylumCase);
+
+        assertEquals("", result);
+    }
 }
