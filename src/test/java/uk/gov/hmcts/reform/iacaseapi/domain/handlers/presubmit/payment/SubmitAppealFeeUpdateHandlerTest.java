@@ -5,14 +5,18 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DECISION_HEARING_FEE_OPTION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FEE_AMOUNT_GBP;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ACCELERATED_DETAINED_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SOURCE_OF_APPEAL;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -32,7 +36,9 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.FeePayment;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.fee.Fee;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.fee.FeeType;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.FeeService;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -40,7 +46,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.FeePayment;
 class SubmitAppealFeeUpdateHandlerTest {
 
     @Mock
-    private FeePayment<AsylumCase> feePayment;
+    private FeeService feeService;
     @Mock
     private Callback<AsylumCase> callback;
     @Mock
@@ -50,28 +56,66 @@ class SubmitAppealFeeUpdateHandlerTest {
 
     private SubmitAppealFeeUpdateHandler handler;
 
+    private static final Fee FEE_WITH_HEARING_OBJ = new Fee("FEE0001", "Fee with hearing", "1", new BigDecimal("140"));
+    private static final Fee FEE_WITHOUT_HEARING_OBJ = new Fee("FEE0002", "Fee without hearing", "1", new BigDecimal("80"));
+
     @BeforeEach
     void setUp() {
-        handler = new SubmitAppealFeeUpdateHandler(true, feePayment);
+        handler = new SubmitAppealFeeUpdateHandler(true, feeService);
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
-        when(feePayment.aboutToSubmit(callback)).thenReturn(asylumCase);
     }
 
     @ParameterizedTest
     @EnumSource(value = AppealType.class, names = {"EA", "HU", "PA", "EU"})
-    void should_call_fee_payment_for_payable_appeal_types(AppealType appealType) {
+    void should_update_fee_with_hearing_for_payable_appeal_types(AppealType appealType) {
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
         when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(asylumCase.read(DECISION_HEARING_FEE_OPTION, String.class)).thenReturn(Optional.of("decisionWithHearing"));
+        when(feeService.getFee(FeeType.FEE_WITH_HEARING)).thenReturn(FEE_WITH_HEARING_OBJ);
 
         PreSubmitCallbackResponse<AsylumCase> response =
             handler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(response);
         assertEquals(asylumCase, response.getData());
-        verify(feePayment, times(1)).aboutToSubmit(callback);
+        verify(feeService, times(1)).getFee(FeeType.FEE_WITH_HEARING);
+        verify(asylumCase, times(1)).write(FEE_AMOUNT_GBP, "140");
+        verify(asylumCase, times(1)).write(
+            uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FEE_WITH_HEARING, "140");
+    }
+
+    @Test
+    void should_update_fee_without_hearing() {
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.PA));
+        when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(asylumCase.read(DECISION_HEARING_FEE_OPTION, String.class)).thenReturn(Optional.of("decisionWithoutHearing"));
+        when(feeService.getFee(FeeType.FEE_WITHOUT_HEARING)).thenReturn(FEE_WITHOUT_HEARING_OBJ);
+
+        PreSubmitCallbackResponse<AsylumCase> response =
+            handler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(response);
+        verify(feeService, times(1)).getFee(FeeType.FEE_WITHOUT_HEARING);
+        verify(asylumCase, times(1)).write(FEE_AMOUNT_GBP, "80");
+        verify(asylumCase, times(1)).write(
+            uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FEE_WITHOUT_HEARING, "80");
+    }
+
+    @Test
+    void should_not_update_fee_when_decision_hearing_fee_option_not_present() {
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.PA));
+        when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(asylumCase.read(DECISION_HEARING_FEE_OPTION, String.class)).thenReturn(Optional.empty());
+
+        PreSubmitCallbackResponse<AsylumCase> response =
+            handler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(response);
+        verifyNoInteractions(feeService);
+        verify(asylumCase, never()).write(FEE_AMOUNT_GBP, "140");
     }
 
     @ParameterizedTest
@@ -103,7 +147,7 @@ class SubmitAppealFeeUpdateHandlerTest {
 
     @Test
     void should_not_handle_when_fee_payment_disabled() {
-        handler = new SubmitAppealFeeUpdateHandler(false, feePayment);
+        handler = new SubmitAppealFeeUpdateHandler(false, feeService);
 
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.PA));
         when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
@@ -138,7 +182,7 @@ class SubmitAppealFeeUpdateHandlerTest {
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
 
-        verifyNoInteractions(feePayment);
+        verifyNoInteractions(feeService);
     }
 
     @Test

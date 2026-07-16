@@ -2,6 +2,10 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.payment;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DECISION_HEARING_FEE_OPTION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FEE_AMOUNT_GBP;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FEE_WITHOUT_HEARING;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FEE_WITH_HEARING;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ACCELERATED_DETAINED_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.sourceOfAppealEjp;
@@ -17,25 +21,27 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.fee.Fee;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.fee.FeeType;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.FeePayment;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.FeeService;
 
 /**
  * This handler refreshes the fee amount when submitting an appeal.
- * It only calls the payment API to get the latest fee without modifying
- * any remission fields that were already set during start/edit appeal.
+ * It fetches the latest fee from the fees register and updates the fee fields
+ * without modifying any remission fields that were already set during start/edit appeal.
  */
 @Component
 public class SubmitAppealFeeUpdateHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
-    private final FeePayment<AsylumCase> feePayment;
+    private final FeeService feeService;
     private final boolean isfeePaymentEnabled;
 
     public SubmitAppealFeeUpdateHandler(
         @Value("${featureFlag.isfeePaymentEnabled}") boolean isfeePaymentEnabled,
-        FeePayment<AsylumCase> feePayment
+        FeeService feeService
     ) {
-        this.feePayment = feePayment;
+        this.feeService = feeService;
         this.isfeePaymentEnabled = isfeePaymentEnabled;
     }
 
@@ -79,8 +85,27 @@ public class SubmitAppealFeeUpdateHandler implements PreSubmitCallbackHandler<As
             throw new IllegalStateException("Cannot handle callback");
         }
 
-        // Refresh the fee from the payment API
-        AsylumCase asylumCase = feePayment.aboutToSubmit(callback);
+        AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
+
+        Optional<String> decisionHearingFeeOption = asylumCase.read(DECISION_HEARING_FEE_OPTION, String.class);
+
+        if (decisionHearingFeeOption.isPresent()) {
+            FeeType feeType = decisionHearingFeeOption.get().equals("decisionWithHearing")
+                ? FeeType.FEE_WITH_HEARING
+                : FeeType.FEE_WITHOUT_HEARING;
+
+            Fee fee = feeService.getFee(feeType);
+
+            if (fee != null) {
+                asylumCase.write(FEE_AMOUNT_GBP, fee.getAmountAsString());
+
+                if (feeType == FeeType.FEE_WITH_HEARING) {
+                    asylumCase.write(FEE_WITH_HEARING, fee.getAmountAsString());
+                } else {
+                    asylumCase.write(FEE_WITHOUT_HEARING, fee.getAmountAsString());
+                }
+            }
+        }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
