@@ -30,6 +30,7 @@ import uk.gov.hmcts.reform.iacaseapi.component.testutils.SpringBootIntegrationTe
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.WithDocumentApiStub;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.WithNotificationsApiStub;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.WithHomeOfficeIntegrationStub;
+import uk.gov.hmcts.reform.iacaseapi.component.testutils.WithPaymentApiStub;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.WithReferenceDataStub;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.WithRoleAssignmentStub;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.WithServiceAuthStub;
@@ -40,7 +41,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
 class DocumentApiDelgationTest extends SpringBootIntegrationTest implements WithUserDetailsStub,
     WithRoleAssignmentStub, WithServiceAuthStub, WithDocumentApiStub, WithReferenceDataStub,
-    WithTimedEventServiceStub, WithNotificationsApiStub, WithHomeOfficeIntegrationStub {
+    WithTimedEventServiceStub, WithNotificationsApiStub, WithHomeOfficeIntegrationStub, WithPaymentApiStub {
 
     @Value("classpath:prd-org-users-response.json")
     private Resource resourceFile;
@@ -61,6 +62,7 @@ class DocumentApiDelgationTest extends SpringBootIntegrationTest implements With
         addReferenceDataPrdResponseStub(server, refDataPath, prdResponseJson);
         addRoleAssignmentActorStub(server);
         addDocumentApiTransformerStub(server);
+        addPaymentApiTransformerStub(server);
 
         iaCaseApiClient.aboutToSubmit(callback()
             .event(SUBMIT_APPEAL)
@@ -95,6 +97,7 @@ class DocumentApiDelgationTest extends SpringBootIntegrationTest implements With
         addHomeOfficeIntegrationApiTransformerStub(server);
         addTimedEventServiceStub(server);
         addNotificationsApiTransformerStub(server);
+        addPaymentApiTransformerStub(server);
 
         iaCaseApiClient.aboutToSubmit(callback()
             .event(SUBMIT_APPEAL)
