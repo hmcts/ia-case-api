@@ -12,6 +12,8 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.sourceO
 
 import java.util.List;
 import java.util.Optional;
+
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
@@ -31,6 +33,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.FeeService;
  * It fetches the latest fee from the fees register and updates the fee fields
  * without modifying any remission fields that were already set during start/edit appeal.
  */
+@Slf4j
 @Component
 public class SubmitAppealFeeUpdateHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
@@ -69,12 +72,16 @@ public class SubmitAppealFeeUpdateHandler implements PreSubmitCallbackHandler<As
         boolean isAda = isAcceleratedDetainedAppeal.isPresent() && isAcceleratedDetainedAppeal.get() == YES;
         boolean isEjp = sourceOfAppealEjp(asylumCase);
 
-        return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-            && callback.getEvent() == Event.SUBMIT_APPEAL
-            && isfeePaymentEnabled
-            && isPayableAppealType
-            && !isAda
-            && !isEjp;
+        boolean canHandle = callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
+                && callback.getEvent() == Event.SUBMIT_APPEAL
+                && isfeePaymentEnabled
+                && isPayableAppealType
+                && !isAda
+                && !isEjp;
+
+        log.info("SubmitAppealFeeUpdateHandler canHandle? : {} for caseId: {}",
+                canHandle, callback.getCaseDetails().getId());
+        return canHandle;
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
@@ -96,6 +103,8 @@ public class SubmitAppealFeeUpdateHandler implements PreSubmitCallbackHandler<As
 
             Fee fee = feeService.getFee(feeType);
 
+            log.info("Fee response: fee amount: {} caseId: {}", fee.getAmountAsString(),
+                    callback.getCaseDetails().getId());
             if (fee != null) {
                 asylumCase.write(FEE_AMOUNT_GBP, fee.getAmountAsString());
 
@@ -104,6 +113,8 @@ public class SubmitAppealFeeUpdateHandler implements PreSubmitCallbackHandler<As
                 } else {
                     asylumCase.write(FEE_WITHOUT_HEARING, fee.getAmountAsString());
                 }
+            } else {
+                log.info("Fee null for case {}", callback.getCaseDetails().getId());
             }
         }
 
