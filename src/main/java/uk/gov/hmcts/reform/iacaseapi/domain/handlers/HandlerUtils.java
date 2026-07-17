@@ -1,65 +1,43 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.core.io.ClassPathResource;
+import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.DirectionAppender;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationBasedFeatureToggler;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.CryptoUtils;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.OrganisationPolicy;
+
+import javax.crypto.SecretKey;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
+import java.util.stream.Collectors;
+
 import static java.util.Collections.emptyList;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingAdjournmentDay.BEFORE_HEARING_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingAdjournmentDay.ON_HEARING_DATE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HelpWithFeesOption.WILL_PAY_FOR_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfCountryCircumstances.ENTRY_CLEARANCE_DECISION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfCountryDecisionType.REFUSAL_OF_HUMAN_RIGHTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfCountryDecisionType.REFUSE_PERMIT;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagType.AUDIO_VIDEO_EVIDENCE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagType.FOREIGN_NATIONAL_OFFENDER;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagType.LACKING_CAPACITY;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagType.LITIGATION_FRIEND;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagType.PRESIDENTIAL_PANEL;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagType.SIGN_LANGUAGE_INTERPRETER;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagType.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.service.StrategicCaseFlagService.ACTIVE_STATUS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HelpWithFeesOption.WILL_PAY_FOR_APPEAL;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.core.io.ClassPathResource;
-import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseFlagDetail;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.Direction;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.DirectionTag;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.FeeRemissionType;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingAdjournmentDay;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.HelpWithFeesOption;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.Parties;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionOption;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlag;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.DirectionAppender;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationBasedFeatureToggler;
-
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfCountryCircumstances;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfCountryDecisionType;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.SourceOfAppeal;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.OrganisationPolicy;
 
 
 public class HandlerUtils {
@@ -592,10 +570,12 @@ public class HandlerUtils {
         asylumCase.clear(REMISSION_EC_EVIDENCE_DOCUMENTS);
     }
 
-    public static boolean appealHasRemissionOptionOrType(Optional<RemissionOption> remissionOption,
-                                                         Optional<HelpWithFeesOption> helpWithFeesOption,
-                                                         Optional<RemissionType> remissionType,
-                                                         Optional<RemissionType> lateRemissionType) {
+    public static boolean appealHasRemissionOptionOrType(
+        Optional<RemissionOption> remissionOption,
+        Optional<HelpWithFeesOption> helpWithFeesOption,
+        Optional<RemissionType> remissionType,
+        Optional<RemissionType> lateRemissionType
+    ) {
         return (remissionOption.isPresent() && remissionOption.get() != RemissionOption.NO_REMISSION)
             || (helpWithFeesOption.isPresent() && helpWithFeesOption.get() != WILL_PAY_FOR_APPEAL)
             || (remissionType.isPresent() && remissionType.get() != RemissionType.NO_REMISSION)
@@ -739,12 +719,46 @@ public class HandlerUtils {
     // Home Office endpoint or the old  applicationStatus/getBySearchParameters  Home Office endpoint
     public static boolean hasAppellantDataBeenValidated(AsylumCase asylumCase) {
         // Evidence from new validation endpoint
-        boolean validationDone = !asylumCase.read(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, String.class).orElse("").equals("");
+        boolean validationDone = asylumCase.read(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, String.class).isPresent();
         // Evidence from old validation endpoint
-        String homeOfficeSearchStatus = asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class).orElse("");
-        // DON'T DO THIS!  Apparently we must allow the case to proceed even if it says "NO_MATCH"
-        // String homeOfficeSearchNoMatch = asylumCase.read(HOME_OFFICE_SEARCH_NO_MATCH, String.class).orElse("");
-        // return validationDone || (homeOfficeSearchStatus.equals("SUCCESS") && !homeOfficeSearchNoMatch.equals("NO_MATCH"));
-        return validationDone || homeOfficeSearchStatus.equals("SUCCESS");
+        boolean homeOfficeSearchStatusSuccess = asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class).map(status -> status.equals("SUCCESS")).orElse(false);
+        return validationDone || homeOfficeSearchStatusSuccess;
+    }
+
+    // String encryption (for sensitive data)
+    public static String encrypt(String textString, String homeOfficeSerialisedEncryptionKey) {
+        String base64TextString = Base64.getEncoder().encodeToString(textString.getBytes(StandardCharsets.UTF_8));
+        SecretKey key = CryptoUtils.createKey(homeOfficeSerialisedEncryptionKey);
+        return CryptoUtils.encrypt(base64TextString, key);
+    }
+
+    // String decryption (for sensitive data)
+    public static String decrypt(String encryptedString, String homeOfficeSerialisedEncryptionKey) {
+        SecretKey key = CryptoUtils.createKey(homeOfficeSerialisedEncryptionKey);
+        String base64TextString = CryptoUtils.decrypt(encryptedString, key);
+        return new String(Base64.getDecoder().decode(base64TextString), StandardCharsets.UTF_8);
+    }
+
+    // Remove validation fields to force another request to the Home Office validation API
+    public static void removeValidationFields(AsylumCase asylumCase) {
+        asylumCase.remove(HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS);
+        asylumCase.remove(HOME_OFFICE_APPELLANT_CLAIM_DATE);
+        asylumCase.remove(HOME_OFFICE_APPELLANT_DECISION_DATE);
+        asylumCase.remove(HOME_OFFICE_APPELLANT_DECISION_LETTER_DATE);
+        asylumCase.remove(HOME_OFFICE_APPELLANTS);
+        asylumCase.remove(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY);
+    }
+
+    public static String getUanOrGwf(AsylumCase asylumCase) {
+        // Retrieve the UAN or GWF from the case record
+        String homeOfficeReferenceNumber = asylumCase
+            .read(HOME_OFFICE_REFERENCE_NUMBER, String.class)
+            .orElse("");
+        if (homeOfficeReferenceNumber.isEmpty()) {
+            homeOfficeReferenceNumber = asylumCase
+                .read(GWF_REFERENCE_NUMBER, String.class)
+                .orElse("");
+        }
+        return homeOfficeReferenceNumber;
     }
 }
