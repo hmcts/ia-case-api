@@ -22,7 +22,6 @@ import uk.gov.hmcts.reform.iacaseapi.Application;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.wiremock.DocumentsApiCallbackTransformer;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.wiremock.HomeOfficeIntegrationApiCallbackTransformer;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.wiremock.NotificationsApiCallbackTransformer;
-import uk.gov.hmcts.reform.iacaseapi.component.testutils.wiremock.PaymentApiCallbackTransformer;
 
 
 @SpringBootTest(classes = {
@@ -45,7 +44,6 @@ import uk.gov.hmcts.reform.iacaseapi.component.testutils.wiremock.PaymentApiCall
     "IA_DOCMOSIS_ENABLED=true",
     "IA_IDAM_CLIENT_ID=ia",
     "IA_HOME_OFFICE_INTEGRATION_API_URL=http://127.0.0.1:8990/home-office-integration-api",
-    "IA_CASE_PAYMENTS_API_URL=http://localhost:8990/ia-case-payments-api",
     "IA_S2S_MICROSERVICE=ia"})
 @AutoConfigureMockMvc(addFilters = false)
 @ActiveProfiles("integration")
@@ -70,8 +68,7 @@ public abstract class SpringBootIntegrationTest {
             .extensions(
                 new DocumentsApiCallbackTransformer(),
                 new NotificationsApiCallbackTransformer(),
-                new HomeOfficeIntegrationApiCallbackTransformer(),
-                new PaymentApiCallbackTransformer()
+                new HomeOfficeIntegrationApiCallbackTransformer()
             ).port(8990));
         server.start();
     }
