@@ -79,8 +79,9 @@ public class SubmitAppealFeeUpdateHandler implements PreSubmitCallbackHandler<As
                 && !isAda
                 && !isEjp;
 
-        log.info("SubmitAppealFeeUpdateHandler canHandle? : {} for caseId: {}",
-                canHandle, callback.getCaseDetails().getId());
+        log.info("SubmitAppealFeeUpdateHandler canHandle? : {}, isAda: {}, "
+                + "isEjp: {}, isfeePaymentEnabled: {}, isPayableAppealType: {} for caseId: {}",
+                canHandle, isAda, isEjp, isfeePaymentEnabled, isPayableAppealType, callback.getCaseDetails().getId());
         return canHandle;
     }
 
