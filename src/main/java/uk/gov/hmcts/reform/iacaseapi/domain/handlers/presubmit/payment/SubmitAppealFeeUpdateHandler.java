@@ -10,6 +10,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.sourceOfAppealEjp;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -104,11 +105,17 @@ public class SubmitAppealFeeUpdateHandler implements PreSubmitCallbackHandler<As
 
             Fee fee = feeService.getFee(feeType);
 
-            log.info("Fee response: fee amount: {} caseId: {}", fee.getAmountAsString(),
-                    callback.getCaseDetails().getId());
             if (fee != null) {
-                asylumCase.write(FEE_AMOUNT_GBP, fee.getAmountAsString());
+                log.info("Fee response: fee amount: {} caseId: {}", fee.getAmountAsString(),
+                        callback.getCaseDetails().getId());
 
+                // FEE_AMOUNT_GBP stores the amount in pence
+                String feeAmountInPence = fee.getCalculatedAmount()
+                    .multiply(new BigDecimal("100"))
+                    .toPlainString();
+                asylumCase.write(FEE_AMOUNT_GBP, feeAmountInPence);
+
+                // FEE_WITH_HEARING/FEE_WITHOUT_HEARING store the amount in pounds
                 if (feeType == FeeType.FEE_WITH_HEARING) {
                     asylumCase.write(FEE_WITH_HEARING, fee.getAmountAsString());
                 } else {

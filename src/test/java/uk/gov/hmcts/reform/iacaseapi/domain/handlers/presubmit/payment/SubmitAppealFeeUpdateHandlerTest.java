@@ -13,6 +13,8 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DECISION_HEARING_FEE_OPTION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FEE_AMOUNT_GBP;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FEE_WITH_HEARING;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FEE_WITHOUT_HEARING;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ACCELERATED_DETAINED_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SOURCE_OF_APPEAL;
 
@@ -82,9 +84,8 @@ class SubmitAppealFeeUpdateHandlerTest {
         assertNotNull(response);
         assertEquals(asylumCase, response.getData());
         verify(feeService, times(1)).getFee(FeeType.FEE_WITH_HEARING);
-        verify(asylumCase, times(1)).write(FEE_AMOUNT_GBP, "140");
-        verify(asylumCase, times(1)).write(
-            uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FEE_WITH_HEARING, "140");
+        verify(asylumCase, times(1)).write(FEE_AMOUNT_GBP, "14000");
+        verify(asylumCase, times(1)).write(FEE_WITH_HEARING, "140");
     }
 
     @Test
@@ -99,9 +100,8 @@ class SubmitAppealFeeUpdateHandlerTest {
 
         assertNotNull(response);
         verify(feeService, times(1)).getFee(FeeType.FEE_WITHOUT_HEARING);
-        verify(asylumCase, times(1)).write(FEE_AMOUNT_GBP, "80");
-        verify(asylumCase, times(1)).write(
-            uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FEE_WITHOUT_HEARING, "80");
+        verify(asylumCase, times(1)).write(FEE_AMOUNT_GBP, "8000");
+        verify(asylumCase, times(1)).write(FEE_WITHOUT_HEARING, "80");
     }
 
     @Test
@@ -115,7 +115,7 @@ class SubmitAppealFeeUpdateHandlerTest {
 
         assertNotNull(response);
         verifyNoInteractions(feeService);
-        verify(asylumCase, never()).write(FEE_AMOUNT_GBP, "140");
+        verify(asylumCase, never()).write(FEE_AMOUNT_GBP, "14000");
     }
 
     @ParameterizedTest
