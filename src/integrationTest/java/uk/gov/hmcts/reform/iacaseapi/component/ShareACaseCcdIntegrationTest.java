@@ -12,7 +12,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.DECISION;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
@@ -59,7 +59,7 @@ class ShareACaseCcdIntegrationTest extends SpringBootIntegrationTest implements 
     @BeforeEach
     void setupReferenceDataStub() throws IOException {
         prdResponseJson =
-            new String(Files.readAllBytes(Paths.get(resourceFile.getURI())));
+            new String(Files.readAllBytes(Path.of(resourceFile.getURI())));
 
         assertThat(prdResponseJson).isNotBlank();
     }

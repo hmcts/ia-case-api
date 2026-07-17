@@ -32,8 +32,10 @@ public class AddCaseNoteConfirmation implements PostSubmitCallbackHandler<Asylum
 
         postSubmitResponse.setConfirmationHeader("# You have added a case note");
         postSubmitResponse.setConfirmationBody(
-            "#### What happens next\n\n"
-            + "You can review this note in the case notes tab."
+            """
+            #### What happens next
+            
+            You can review this note in the case notes tab."""
         );
 
         return postSubmitResponse;

@@ -183,6 +183,27 @@ class RoleAssignmentServiceTest {
     }
 
     @Test
+    void getUsersAssignedToCaseTest() {
+        roleAssignmentService.getUsersAssignedToCase(caseId);
+
+        verify(roleAssignmentApi).queryRoleAssignments(
+            eq(accessToken),
+            eq(serviceToken),
+            queryRequestCaptor.capture()
+        );
+
+        QueryRequest queryReq = queryRequestCaptor.getValue();
+        assertEquals(List.of(RoleType.CASE), queryReq.getRoleType());
+        assertEquals(List.of(RoleCategory.PROFESSIONAL, RoleCategory.CITIZEN), queryReq.getRoleCategory());
+        assertEquals(List.of(RoleName.CREATOR, RoleName.LEGAL_REPRESENTATIVE), queryReq.getRoleName());
+        Map<Attributes, List<String>> attributes = queryReq.getAttributes();
+        assertEquals(List.of(Jurisdiction.IA.name()), attributes.get(Attributes.JURISDICTION));
+        assertEquals(List.of(String.valueOf(caseId)), attributes.get(Attributes.CASE_ID));
+        assertEquals(List.of("Asylum"), attributes.get(Attributes.CASE_TYPE));
+
+    }
+
+    @Test
     void getCaseRolesForUserTest() {
         Assignment assignment1 = Assignment.builder()
             .roleName(RoleName.CTSC_TEAM_LEADER)

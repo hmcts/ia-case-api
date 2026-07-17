@@ -90,8 +90,7 @@ public class AppealWasNotSubmittedSupportingDocumentsHandler implements PreSubmi
                     .stream()
                     .map(IdValue::getValue)
                     .map(document -> documentReceiver.tryReceive(document, DocumentTag.APPEAL_WAS_NOT_SUBMITTED_SUPPORTING_DOCUMENT))
-                    .filter(Optional::isPresent)
-                    .map(Optional::get)
+                    .flatMap(Optional::stream)
                     .collect(Collectors.toList());
 
             if (!appealWasNotSubmittedReasons.isEmpty()) {
@@ -107,12 +106,18 @@ public class AppealWasNotSubmittedSupportingDocumentsHandler implements PreSubmi
 
     private static List<IdValue<DocumentWithMetadata>> removeAppealNotSubmittedDocument(List<IdValue<DocumentWithMetadata>> existingLegalRepDocuments) {
         return Optional.ofNullable(existingLegalRepDocuments)
-                    .orElse(emptyList())
-                    .stream()
-                    .filter(Objects::nonNull)
-                    .filter(doc -> doc.getValue() != null)
-                    .filter(doc -> doc.getValue().getTag() != DocumentTag.APPEAL_WAS_NOT_SUBMITTED_SUPPORTING_DOCUMENT)
-                    .collect(Collectors.toList());
+                .orElse(emptyList())
+                .stream()
+                .filter(Objects::nonNull)
+                .filter(doc -> {
+                    DocumentWithMetadata value = doc.getValue();
+
+                    return value != null
+                            && value.getTag() != null
+                            && !DocumentTag.APPEAL_WAS_NOT_SUBMITTED_SUPPORTING_DOCUMENT
+                            .equals(value.getTag());
+                })
+                .collect(Collectors.toList());
     }
 
 }

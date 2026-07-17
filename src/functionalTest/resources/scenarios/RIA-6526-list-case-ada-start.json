@@ -1,6 +1,5 @@
 {
   "description": "RIA-6526 List accelerated detained appeal case from awaitingRespondentEvidence state",
-  "launchDarklyKey": "reheard-feature:true",
   "request": {
     "uri": "/asylum/ccdAboutToStart",
     "credentials": "AdminOfficer",

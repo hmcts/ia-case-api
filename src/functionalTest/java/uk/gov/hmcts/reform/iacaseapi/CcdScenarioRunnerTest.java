@@ -1,45 +1,34 @@
 package uk.gov.hmcts.reform.iacaseapi;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.when;
-
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.RetryableException;
 import io.restassured.RestAssured;
 import io.restassured.http.Headers;
-import java.io.IOException;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
-
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
 import net.serenitybdd.rest.SerenityRest;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.ansi.AnsiColor;
+import org.springframework.boot.ansi.AnsiOutput;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.core.env.AbstractEnvironment;
 import org.springframework.core.env.EnumerablePropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.http.MediaType;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.fixtures.Fixture;
@@ -53,16 +42,39 @@ import uk.gov.hmcts.reform.iacaseapi.util.MapValueExtractor;
 import uk.gov.hmcts.reform.iacaseapi.util.StringResourceLoader;
 import uk.gov.hmcts.reform.iacaseapi.verifiers.Verifier;
 
+import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
+
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assumptions.assumeFalse;
+import static org.mockito.Mockito.when;
+
 @RunWith(SpringIntegrationSerenityRunner.class)
 @Slf4j
 @SpringBootTest
 @ActiveProfiles("functional")
-@DirtiesContext
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class CcdScenarioRunnerTest {
+
+    private final Map<String, String> scenarioSources = new HashMap<>();
+
+    @MockitoBean
+    RequestUserAccessTokenProvider requestUserAccessTokenProvider;
 
     @Value("${targetInstance}")
     private String targetInstance;
-
+    @Value("${app.statutory-timeframe.live-date}")
+    private String stf24wLiveDate;
+    private boolean is24wDateInPast;
     @Autowired
     private Environment environment;
     @Autowired
@@ -75,44 +87,44 @@ public class CcdScenarioRunnerTest {
     private List<Verifier> verifiers;
     @Autowired
     private List<Fixture> fixtures;
-
     @Autowired
     private LaunchDarklyFunctionalTestClient launchDarklyFunctionalTestClient;
-    private boolean haveAllPassed = true;
-    private final ArrayList<String> failedScenarios = new ArrayList<>();
-    @MockBean
-    RequestUserAccessTokenProvider requestUserAccessTokenProvider;
 
-
-    @BeforeEach
-    public void setUp() {
+    @BeforeAll
+    @SneakyThrows
+    public void beforeAll() {
         MapSerializer.setObjectMapper(objectMapper);
         RestAssured.baseURI = targetInstance;
         RestAssured.useRelaxedHTTPSValidation();
-    }
+        String token = null;
+        int maxRetries = 3;
+        for (int attempt = 1; attempt <= maxRetries; attempt++) {
+            try {
+                token = authorizationHeadersProvider
+                    .getCaseOfficerAuthorization()
+                    .getValue("Authorization");
+                assertNotNull(token);
+                break;
+            } catch (Exception e) {
+                if (attempt == maxRetries) {
+                    System.out.println("Failed to obtain access token, giving up: " + e.getMessage());
+                    throw e;
+                }
+                System.out.println("Failed to obtain access token, retrying: " + e.getMessage());
+                Thread.sleep(1000);
+            }
+        }
+        when(requestUserAccessTokenProvider.getAccessToken()).thenReturn(token);
 
-    @BeforeEach
-    @SneakyThrows
-    void authenticateMe() {
-        String accessToken = authorizationHeadersProvider.getCaseOfficerAuthorization().getValue("Authorization");
-        Thread.sleep(1000);
-        assertNotNull(accessToken);
-        when(requestUserAccessTokenProvider.getAccessToken()).thenReturn(accessToken);
-    }
-
-
-    @Test
-    public void scenarios_should_behave_as_specified() throws IOException {
         loadPropertiesIntoMapValueExpander();
 
         for (Fixture fixture : fixtures) {
             fixture.prepare();
         }
 
-
         assertFalse(
-            "Verifiers are configured",
-            verifiers.isEmpty()
+            verifiers.isEmpty(),
+            "Verifiers are configured"
         );
 
         String scenarioPattern = System.getProperty("scenario");
@@ -121,131 +133,143 @@ public class CcdScenarioRunnerTest {
         } else {
             scenarioPattern = "*" + scenarioPattern + "*.json";
         }
+        is24wDateInPast = LocalDate.parse(stf24wLiveDate).isEqual(LocalDate.now()) || LocalDate.parse(stf24wLiveDate).isBefore(LocalDate.now());
+        scenarioSources.putAll(StringResourceLoader.load("/scenarios/" + scenarioPattern));
+        String separator = "-------------------------------------------------------------------";
+        log.info(AnsiOutput.toString(AnsiColor.CYAN, separator, AnsiColor.DEFAULT));
+        log.info(AnsiOutput.toString(AnsiColor.YELLOW, "RUNNING " + scenarioSources.size() + " SCENARIOS", AnsiColor.DEFAULT));
+        log.info(AnsiOutput.toString(AnsiColor.CYAN, separator, AnsiColor.DEFAULT));
+    }
 
-        Collection<String> scenarioSources =
-            StringResourceLoader
-                .load("/scenarios/" + scenarioPattern)
-                .values();
+    public Stream<Arguments> scenarioSources() {
+        return scenarioSources.entrySet().stream().map(entry -> {
+            String fileName = entry.getKey();
+            String scenarioSource = entry.getValue();
+            try {
+                Map<String, Object> scenario = deserializeWithExpandedValues(scenarioSource);
+                String description = MapValueExtractor.extract(scenario, "description");
+                String behind24wDate = MapValueExtractor.extractOrDefault(scenario, "behind24wDate", null);
+                boolean disabled24Date = false;
+                if (behind24wDate != null) {
+                    boolean behind24wDateValue = Boolean.parseBoolean(behind24wDate);
+                    disabled24Date = (behind24wDateValue && !is24wDateInPast) || (!behind24wDateValue && is24wDateInPast);
+                }
+                String scenarioDisabled = MapValueExtractor.extractOrDefault(scenario, "disabled", "false");
+                boolean isDisabled = scenarioDisabled.startsWith("!")
+                    ? !Boolean.parseBoolean(scenarioDisabled.substring(1))
+                    : Boolean.parseBoolean(scenarioDisabled);
+                String launchDarklyKey = MapValueExtractor.extract(scenario, "launchDarklyKey");
+                final String credentials = MapValueExtractor.extractOrDefault(scenario, "request.credentials", "none");
+                final Headers authorizationHeaders = getAuthorizationHeaders(credentials);
+                boolean isDisabledByLaunchDarkly = false;
+                if (launchDarklyKey instanceof String string && !string.isBlank()) {
+                    String[] keys = string.split(":");
+                    boolean actualLdFlagValue = launchDarklyFunctionalTestClient.getKey(keys[0], authorizationHeaders.getValue("Authorization"));
+                    boolean expectedLdFlagValue = Boolean.parseBoolean(keys[1]);
+                    isDisabledByLaunchDarkly = actualLdFlagValue != expectedLdFlagValue;
+                }
+                if (isDisabled || isDisabledByLaunchDarkly || disabled24Date) {
+                    return Arguments.of("Disabled: " + fileName, description, null, null, null, null, 0, 0, null);
+                }
 
-        log.info((char) 27 + "\033[36m" + "-------------------------------------------------------------------");
-        log.info((char) 27 + "\033[33m" + "RUNNING " + scenarioSources.size() + " SCENARIOS");
-        log.info((char) 27 + "\033[36m" + "-------------------------------------------------------------------");
-        int maxRetries = 3;
-        for (String scenarioSource : scenarioSources) {
-            String description = "";
-            for (int i = 0; i < maxRetries; i++) {
-                try {
-                    Map<String, Object> scenario = deserializeWithExpandedValues(scenarioSource);
-                    final Headers authorizationHeaders = getAuthorizationHeaders(scenario);
+                Map<String, String> templatesByFilename = StringResourceLoader.load("/templates/*.json");
 
-                    description = MapValueExtractor.extract(scenario, "description");
+                final long scenarioTestCaseId = MapValueExtractor.extractOrDefault(
+                    scenario,
+                    "request.input.id",
+                    -1
+                );
 
-                    Object scenarioEnabled = MapValueExtractor.extract(scenario, "enabled") == null
-                        ? MapValueExtractor.extract(scenario, "launchDarklyKey")
-                        : MapValueExtractor.extract(scenario, "enabled");
+                final long testCaseId = (scenarioTestCaseId == -1)
+                    ? ThreadLocalRandom.current().nextLong(1111111111111111L, 1999999999999999L)
+                    : scenarioTestCaseId;
 
-                    if (scenarioEnabled == null) {
-                        scenarioEnabled = true;
-                    } else if (scenarioEnabled instanceof String) {
+                final String requestBody = buildCallbackBody(
+                    testCaseId,
+                    MapValueExtractor.extract(scenario, "request.input"),
+                    templatesByFilename
+                );
 
-                        if (String.valueOf(scenarioEnabled).contains("feature")) {
+                final String requestUri = MapValueExtractor.extract(scenario, "request.uri");
+                final int expectedStatus = MapValueExtractor.extractOrDefault(scenario, "expectation.status", 200);
+                String expectedResponseBody = buildCallbackResponseBody(
+                    MapValueExtractor.extract(scenario, "expectation"),
+                    templatesByFilename
+                );
+                Map<String, Object> expectedResponse = MapSerializer.deserialize(expectedResponseBody);
+                return Arguments.of(
+                    fileName,
+                    description,
+                    scenario,
+                    authorizationHeaders,
+                    requestBody,
+                    requestUri,
+                    expectedStatus,
+                    testCaseId,
+                    expectedResponse
+                );
+            } catch (IOException e) {
+                System.out.println("Failed to load scenario" + e);
+                return null;
+            }
+        });
+    }
 
-                            String[] keys = ((String) scenarioEnabled).split(":");
+    @Execution(ExecutionMode.CONCURRENT)
+    @ParameterizedTest(name = "{0}:{1}")
+    @MethodSource("scenarioSources")
+    public void scenarios_should_behave_as_specified(String fileName,
+                                                     String description,
+                                                     Map<String, Object> scenario,
+                                                     Headers authorizationHeaders,
+                                                     String requestBody,
+                                                     String requestUri,
+                                                     int expectedStatus,
+                                                     long testCaseId,
+                                                     Map<String, Object> expectedResponse) throws IOException {
+        assumeFalse(fileName.startsWith("Disabled:"), "Test marked as disabled");
+        int maxRetries = 5;
+        for (int i = 0; i < maxRetries; i++) {
+            Map<String, Object> responseForError = null;
+            try {
+                String actualResponseBody =
+                    SerenityRest
+                        .given()
+                        .headers(authorizationHeaders)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .body(requestBody)
+                        .when()
+                        .post(requestUri)
+                        .then()
+                        .log().ifError()
+                        .log().ifValidationFails()
+                        .statusCode(expectedStatus)
+                        .and()
+                        .extract()
+                        .body()
+                        .asString();
 
-                            scenarioEnabled = launchDarklyFunctionalTestClient
-                                .getKey(keys[0], authorizationHeaders.getValue("Authorization"))
-                                && Boolean.valueOf(keys[1]);
-                        } else {
-                            scenarioEnabled = Boolean.valueOf((String) scenarioEnabled);
-                        }
-                    }
+                Map<String, Object> actualResponse = MapSerializer.deserialize(actualResponseBody);
+                responseForError = actualResponse;
 
-                    Object scenarioDisabled = MapValueExtractor.extract(scenario, "disabled");
-
-                    if (scenarioDisabled == null) {
-                        scenarioDisabled = false;
-                    } else if (scenarioDisabled instanceof String) {
-                        scenarioDisabled = Boolean.valueOf((String) scenarioDisabled);
-                    }
-
-                    if (!((Boolean) scenarioEnabled) || ((Boolean) scenarioDisabled)) {
-                        log.info((char) 27 + "\033[31m" + "SCENARIO: " + description + " **disabled**");
-                        break;
-                    }
-
-                    log.info((char) 27 + "\033[33m" + "SCENARIO: " + description);
-
-                    Map<String, String> templatesByFilename = StringResourceLoader.load("/templates/*.json");
-
-                    final long scenarioTestCaseId = MapValueExtractor.extractOrDefault(
-                        scenario,
-                        "request.input.id",
-                        -1
-                    );
-
-                    final long testCaseId = (scenarioTestCaseId == -1)
-                        ? ThreadLocalRandom.current().nextLong(1111111111111111L, 1999999999999999L)
-                        : scenarioTestCaseId;
-
-                    final String requestBody = buildCallbackBody(
+                verifiers.forEach(verifier -> verifier.verify(
                         testCaseId,
-                        MapValueExtractor.extract(scenario, "request.input"),
-                        templatesByFilename
-                    );
-
-                    final String requestUri = MapValueExtractor.extract(scenario, "request.uri");
-                    final int expectedStatus = MapValueExtractor.extractOrDefault(scenario, "expectation.status", 200);
-
-                    String actualResponseBody =
-                        SerenityRest
-                            .given()
-                            .headers(authorizationHeaders)
-                            .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
-                            .body(requestBody)
-                            .when()
-                            .post(requestUri)
-                            .then()
-                            .log().ifError()
-                            .log().ifValidationFails()
-                            .statusCode(expectedStatus)
-                            .and()
-                            .extract()
-                            .body()
-                            .asString();
-
-                    String expectedResponseBody = buildCallbackResponseBody(
-                        MapValueExtractor.extract(scenario, "expectation"),
-                        templatesByFilename
-                    );
-
-                    System.out.println(actualResponseBody);
-
-                    Map<String, Object> actualResponse = MapSerializer.deserialize(actualResponseBody);
-                    Map<String, Object> expectedResponse = MapSerializer.deserialize(expectedResponseBody);
-
-                    verifiers.forEach(verifier ->
-                        verifier.verify(
-                            testCaseId,
-                            scenario,
-                            expectedResponse,
-                            actualResponse
-                        )
-                    );
-                    break;
-                } catch (Error | RetryableException | NullPointerException e) {
-                    log.error("Scenario failed with error " + e.getMessage());
-                    if (i == maxRetries - 1) {
-                        this.failedScenarios.add(description);
-                        this.haveAllPassed = false;
-                    }
+                        scenario,
+                        expectedResponse,
+                        actualResponse
+                    )
+                );
+                break;
+            } catch (Error | RetryableException | NullPointerException e) {
+                log.error("Scenario failed with error {}", e.getMessage(), e);
+                if (responseForError != null) {
+                    log.info("actualResponse: {}", objectMapper.writeValueAsString(responseForError));
+                    log.info("expectedResponse: {}", objectMapper.writeValueAsString(expectedResponse));
+                }
+                if (i == maxRetries - 1) {
+                    throw e;
                 }
             }
-        }
-
-        log.info((char) 27 + "\033[36m" + "-------------------------------------------------------------------");
-        log.info((char) 27 + "\033[0m");
-        if (!haveAllPassed) {
-            throw new AssertionError("Not all scenarios passed.\nFailed scenarios are:\n" + failedScenarios.stream().map(Object::toString).collect(Collectors.joining(";\n")));
         }
     }
 
@@ -257,6 +281,7 @@ public class CcdScenarioRunnerTest {
             .filter(propertySource -> propertySource instanceof EnumerablePropertySource)
             .map(propertySource -> ((EnumerablePropertySource) propertySource).getPropertyNames())
             .flatMap(Arrays::stream)
+            .filter(name -> environment.getProperty(name) != null)
             .forEach(name -> MapValueExpander.ENVIRONMENT_PROPERTIES.setProperty(name, environment.getProperty(name)));
     }
 
@@ -370,27 +395,17 @@ public class CcdScenarioRunnerTest {
         }
     }
 
-    private Headers getAuthorizationHeaders(Map<String, Object> scenario) {
-
-        String credentials = MapValueExtractor.extract(scenario, "request.credentials");
-
-        return switch (Objects.requireNonNull(credentials).toLowerCase()) {
-            case "legalrepresentative" ->
-                authorizationHeadersProvider.getLegalRepresentativeAuthorization();
-            case "systemuser" ->
-                authorizationHeadersProvider.getSystemUserAuthorization();
-            case "caseofficer" ->
-                authorizationHeadersProvider.getCaseOfficerAuthorization();
-            case "adminofficer" ->
-                authorizationHeadersProvider.getAdminOfficerAuthorization();
-            case "homeofficeapc" ->
-                authorizationHeadersProvider.getHomeOfficeApcAuthorization();
-            case "homeofficelart" ->
-                authorizationHeadersProvider.getHomeOfficeLartAuthorization();
-            case "homeofficepou" ->
-                authorizationHeadersProvider.getHomeOfficePouAuthorization();
+    private Headers getAuthorizationHeaders(String credentials) {
+        return switch (credentials.toLowerCase()) {
+            case "legalrepresentative" -> authorizationHeadersProvider.getLegalRepresentativeAuthorization();
+            case "systemuser" -> authorizationHeadersProvider.getSystemUserAuthorization();
+            case "caseofficer" -> authorizationHeadersProvider.getCaseOfficerAuthorization();
+            case "adminofficer" -> authorizationHeadersProvider.getAdminOfficerAuthorization();
+            case "homeofficeapc" -> authorizationHeadersProvider.getHomeOfficeApcAuthorization();
+            case "homeofficelart" -> authorizationHeadersProvider.getHomeOfficeLartAuthorization();
+            case "homeofficepou" -> authorizationHeadersProvider.getHomeOfficePouAuthorization();
             case "homeofficegeneric" -> authorizationHeadersProvider
-                    .getHomeOfficeGenericAuthorization();
+                .getHomeOfficeGenericAuthorization();
             case "legalrepresentativeorga" -> authorizationHeadersProvider
                 .getLegalRepresentativeOrgAAuthorization();
             case "legalrepresentativeorgsuccess" -> authorizationHeadersProvider
