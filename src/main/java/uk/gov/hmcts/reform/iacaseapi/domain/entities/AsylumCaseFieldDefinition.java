@@ -560,6 +560,9 @@ public enum AsylumCaseFieldDefinition {
     UPLOAD_HOME_OFFICE_BUNDLE_ACTION_AVAILABLE(
         "uploadHomeOfficeBundleActionAvailable", new TypeReference<YesOrNo>(){}),
 
+    SHOULD_HIDE_REQUEST_RESPONDENT_EVIDENCE(
+        "shouldHideRequestRespondentEvidence", new TypeReference<YesOrNo>(){}),
+
     UPLOAD_HOME_OFFICE_BUNDLE_AVAILABLE(
         "uploadHomeOfficeBundleAvailable", new TypeReference<YesOrNo>(){}),
 
