@@ -109,9 +109,10 @@ public class SubmitAppealFeeUpdateHandler implements PreSubmitCallbackHandler<As
                 log.info("Fee response: fee amount: {} caseId: {}", fee.getAmountAsString(),
                         callback.getCaseDetails().getId());
 
-                // FEE_AMOUNT_GBP stores the amount in pence
+                // FEE_AMOUNT_GBP stores the amount in pence (as a whole number)
                 String feeAmountInPence = fee.getCalculatedAmount()
                     .multiply(new BigDecimal("100"))
+                    .setScale(0)
                     .toPlainString();
                 asylumCase.write(FEE_AMOUNT_GBP, feeAmountInPence);
 

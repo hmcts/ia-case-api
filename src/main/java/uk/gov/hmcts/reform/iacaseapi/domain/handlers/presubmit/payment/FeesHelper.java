@@ -48,8 +48,11 @@ public class FeesHelper {
     }
 
     private static void writeFeeDetails(AsylumCase asylumCase, Fee fee) {
-        String feeAmountInPence =
-                String.valueOf(new BigDecimal(fee.getAmountAsString()).multiply(new BigDecimal("100")));
+        // FEE_AMOUNT_GBP stores the amount in pence (as a whole number)
+        String feeAmountInPence = new BigDecimal(fee.getAmountAsString())
+                .multiply(new BigDecimal("100"))
+                .setScale(0)
+                .toPlainString();
         asylumCase.write(FEE_CODE, fee.getCode());
         asylumCase.write(FEE_DESCRIPTION, fee.getDescription());
         asylumCase.write(FEE_VERSION, fee.getVersion());

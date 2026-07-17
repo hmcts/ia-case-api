@@ -73,9 +73,11 @@ class FeesHelperTest {
         verify(asylumCase, times(1)).read(DECISION_HEARING_FEE_OPTION, String.class);
 
         // Verify common fee details are written
-        // FeesHelper computes: String.valueOf(new BigDecimal(fee.getAmountAsString()).multiply(new BigDecimal("100")))
-        String expectedFeeAmountInPence = String.valueOf(
-            new BigDecimal(feeMock.getAmountAsString()).multiply(new BigDecimal("100")));
+        // FeesHelper computes pence as a whole number
+        String expectedFeeAmountInPence = new BigDecimal(feeMock.getAmountAsString())
+            .multiply(new BigDecimal("100"))
+            .setScale(0)
+            .toPlainString();
         verify(asylumCase, times(1)).write(FEE_CODE, feeCode);
         verify(asylumCase, times(1)).write(FEE_DESCRIPTION, feeDesc);
         verify(asylumCase, times(1)).write(FEE_VERSION, VERSION);
