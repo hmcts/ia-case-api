@@ -91,6 +91,8 @@ java:
           alias: IA_REDIS_ACCESS_KEY
         - name: ia-redis-encryption-key
           alias: IA_REDIS_ENCRYPTION_KEY
+        - name: home-office-serialised-encryption-key
+          alias: IA_HOME_OFFICE_INTEGRATION_ENCRYPTION_KEY
   secrets:
     POSTGRES_PASSWORD:
       secretRef: postgres
@@ -1270,6 +1272,7 @@ em-stitching:
       FLYWAY_POSTGRESQL_TRANSACTIONAL_LOCK: false
       IDAM_API_BASE_URI: https://idam-api.aat.platform.hmcts.net
       OPEN_ID_API_BASE_URI: https://idam-web-public.aat.platform.hmcts.net/o
+      IDAM_WEB_API_BASE_URI: https://idam-web-public.aat.platform.hmcts.net
       S2S_BASE_URI: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
       DM_STORE_APP_URL: http://dm-store-aat.service.core-compute-aat.internal
       CDAM_URL: http://${SERVICE_NAME}-ccd-case-document-am-api
