@@ -3,10 +3,13 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
+import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsHelper;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfTimeDecisionType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Parties;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserRole;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
@@ -35,6 +38,8 @@ public class RequestRespondentEvidencePreparer implements PreSubmitCallbackHandl
     private final FeatureToggler featureToggler;
     private final DateProvider dateProvider;
     private final DueDateService dueDateService;
+    private final UserDetails userDetails;
+    private final UserDetailsHelper userDetailsHelper;
 
     public RequestRespondentEvidencePreparer(
             @Value("${requestRespondentEvidence.dueInDays}") int requestRespondentEvidenceDueInDays,
@@ -43,7 +48,9 @@ public class RequestRespondentEvidencePreparer implements PreSubmitCallbackHandl
             @Value("${app.statutory-timeframe.live-date}") String stf24wLiveDate,
             FeatureToggler featureToggler,
             DateProvider dateProvider,
-            DueDateService dueDateService
+            DueDateService dueDateService,
+            UserDetails userDetails,
+            UserDetailsHelper userDetailsHelper
     ) {
         this.requestRespondentEvidenceDueInDays = requestRespondentEvidenceDueInDays;
         this.requestRespondentEvidenceDueInDaysAda = requestRespondentEvidenceDueInDaysAda;
@@ -52,6 +59,8 @@ public class RequestRespondentEvidencePreparer implements PreSubmitCallbackHandl
         this.featureToggler = featureToggler;
         this.dateProvider = dateProvider;
         this.dueDateService = dueDateService;
+        this.userDetails = requireNonNull(userDetails, "userDetails must not be null");
+        this.userDetailsHelper = requireNonNull(userDetailsHelper, "userDetailsHelper must not be null");
     }
 
     public boolean canHandle(
@@ -93,6 +102,15 @@ public class RequestRespondentEvidencePreparer implements PreSubmitCallbackHandl
                 }
             } else if (completeCaseReviewDateEmpty) {
                 return callbackResponse.withError("You must run the Complete case review before running the 'Request respondent evidence' event");
+            }
+        }
+
+        UserRole userRole = userDetailsHelper.getLoggedInUserRole(userDetails);
+        if (UserRole.getAdminRoles().contains(userRole.getId())) {
+            YesOrNo stf24wStatus = asylumCase.read(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class).orElse(NO);
+            if (stf24wStatus != YES) {
+                callbackResponse.addError("You can only request respondent evidence on a 24 week case.");
+                return callbackResponse;
             }
         }
 
