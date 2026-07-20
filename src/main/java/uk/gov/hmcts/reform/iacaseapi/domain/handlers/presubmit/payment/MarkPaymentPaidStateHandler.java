@@ -1,10 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.payment;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.AG;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.EA;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.EU;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.HU;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
 import java.time.LocalDate;
@@ -74,12 +71,7 @@ public class MarkPaymentPaidStateHandler implements PreSubmitCallbackStateHandle
         AppealType appealType = asylumCase.read(APPEAL_TYPE, AppealType.class)
             .orElseThrow(() -> new IllegalStateException("AppealType is not present"));
 
-        if (List.of(EA, HU, EU, AG).contains(appealType)) {
-            return new PreSubmitCallbackResponse<>(asylumCase, State.APPEAL_SUBMITTED);
-        }
-
-        if (appealType == AppealType.PA && State.PENDING_PAYMENT == currentState) {
-
+        if (List.of(EA, HU, EU, AG, PA).contains(appealType) && State.PENDING_PAYMENT == currentState) {
             return new PreSubmitCallbackResponse<>(asylumCase, State.APPEAL_SUBMITTED);
         }
 
