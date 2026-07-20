@@ -1,13 +1,5 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
-import static java.util.Collections.emptyList;
-import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CHANGE_DIRECTION_DUE_DATE_ACTION_AVAILABLE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DIRECTIONS;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Direction;
@@ -20,6 +12,15 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+
+import static java.util.Collections.emptyList;
+import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CHANGE_DIRECTION_DUE_DATE_ACTION_AVAILABLE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DIRECTIONS;
 
 @Component
 public class ChangeDirectionDueDateActionAvailableUpdater implements PreSubmitCallbackHandler<AsylumCase> {
@@ -57,7 +58,6 @@ public class ChangeDirectionDueDateActionAvailableUpdater implements PreSubmitCa
 
         if (Arrays.asList(
             State.APPEAL_SUBMITTED,
-            State.APPEAL_SUBMITTED_OUT_OF_TIME,
             State.AWAITING_RESPONDENT_EVIDENCE,
             State.CASE_BUILDING,
             State.CASE_UNDER_REVIEW,
