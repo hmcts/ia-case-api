@@ -1,35 +1,23 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.controllers;
 
-import static java.util.Arrays.asList;
-import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_GROUNDS_PROTECTION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_REFERENCE_NUMBER;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_ADDRESS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_ARGUMENT_DOCUMENT;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_CENTRE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.RESPONDENT_DOCUMENTS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.RESPONDENT_EVIDENCE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SEND_DIRECTION_PARTIES;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SUBMISSION_OUT_OF_TIME;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre.MANCHESTER;
-
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.IOException;
-import java.util.List;
-import java.util.Optional;
 import org.junit.jupiter.api.Test;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithDescription;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithMetadata;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.Parties;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CheckValues;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.AddressUk;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Optional;
+
+import static java.util.Arrays.asList;
+import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre.MANCHESTER;
 
 @SuppressWarnings("OperatorWrap")
 class AsylumCaseTest {
@@ -323,5 +311,25 @@ class AsylumCaseTest {
         asylumCase.clear(APPEAL_REFERENCE_NUMBER);
 
         assertThat(asylumCase.read(APPEAL_REFERENCE_NUMBER, String.class)).isEmpty();
+    }
+
+    @Test
+    void writeIfEmpty_does_not_write_if_not_empty() throws JsonProcessingException {
+        String caseData = "{\"appealReferenceNumber\": \"PA/50222/2019\"}";
+        AsylumCase asylumCase = objectMapper.readValue(caseData, AsylumCase.class);
+
+        asylumCase.writeIfEmpty(APPEAL_REFERENCE_NUMBER, "test");
+
+        assertThat(asylumCase.read(APPEAL_REFERENCE_NUMBER, String.class)).isEqualTo(Optional.of("PA/50222/2019"));
+    }
+
+    @Test
+    void writeIfEmpty_writes_if_empty() throws JsonProcessingException {
+        String caseData = "{}";
+        AsylumCase asylumCase = objectMapper.readValue(caseData, AsylumCase.class);
+
+        asylumCase.writeIfEmpty(APPEAL_REFERENCE_NUMBER, "test");
+
+        assertThat(asylumCase.read(APPEAL_REFERENCE_NUMBER, String.class)).isEqualTo(Optional.of("test"));
     }
 }
