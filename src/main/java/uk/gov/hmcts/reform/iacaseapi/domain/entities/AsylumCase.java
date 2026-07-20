@@ -3,6 +3,8 @@ package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseData;
+
 import java.util.HashMap;
 import java.util.Optional;
 
@@ -44,6 +46,12 @@ public class AsylumCase extends HashMap<String, Object> implements CaseData {
 
     public <T> void write(AsylumCaseFieldDefinition extractor, T value) {
         this.put(extractor.value(), value);
+    }
+
+    public <T> void writeIfEmpty(AsylumCaseFieldDefinition extractor, T value) {
+        if (this.read(extractor).isEmpty()) {
+            this.put(extractor.value(), value);
+        }
     }
 
     public void clear(AsylumCaseFieldDefinition extractor) {
