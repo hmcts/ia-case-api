@@ -648,6 +648,7 @@ security:
       - "sendInviteToNonLegalRep"
       - "sendPipToNonLegalRep"
       - "joinAppealConfirmation"
+      - "requestRespondentEvidence"
     ctsc:
       - "appellantInPersonManual"
       - "startAppeal"
@@ -721,6 +722,7 @@ security:
       - "joinAppealConfirmation"
       - "forceDecidedState"
       - "forceFtpaDecidedState"
+      - "requestRespondentEvidence"
     ctsc-team-leader:
       - "appellantInPersonManual"
       - "startAppeal"
@@ -794,6 +796,7 @@ security:
       - "sendInviteToNonLegalRep"
       - "sendPipToNonLegalRep"
       - "joinAppealConfirmation"
+      - "requestRespondentEvidence"
     national-business-centre:
       - "appellantInPersonManual"
       - "startAppeal"
@@ -866,6 +869,7 @@ security:
       - "sendInviteToNonLegalRep"
       - "sendPipToNonLegalRep"
       - "joinAppealConfirmation"
+      - "requestRespondentEvidence"
     challenged-access-ctsc:
       - "appellantInPersonManual"
       - "startAppeal"
@@ -938,6 +942,7 @@ security:
       - "sendInviteToNonLegalRep"
       - "sendPipToNonLegalRep"
       - "joinAppealConfirmation"
+      - "requestRespondentEvidence"
     challenged-access-admin:
       - "appellantInPersonManual"
       - "startAppeal"
@@ -1011,6 +1016,7 @@ security:
       - "sendInviteToNonLegalRep"
       - "sendPipToNonLegalRep"
       - "joinAppealConfirmation"
+      - "requestRespondentEvidence"
     caseworker-ia-homeofficeapc:
       - "uploadHomeOfficeBundle"
       - "uploadAdditionalEvidenceHomeOffice"
