@@ -63,9 +63,9 @@ public class SaveNotificationsToDataHandler implements PreSubmitCallbackHandler<
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-                && callback.getEvent() == Event.SAVE_NOTIFICATIONS_TO_DATA
-                && featureToggler.getValue("save-notifications-feature", false)
-                && saveNotificationToDataEnabled;
+            && callback.getEvent() == Event.SAVE_NOTIFICATIONS_TO_DATA
+            && featureToggler.getValue("save-notifications-feature", false)
+            && saveNotificationToDataEnabled;
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
@@ -108,18 +108,44 @@ public class SaveNotificationsToDataHandler implements PreSubmitCallbackHandler<
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 
+    private static void appendNonEmptyToString(String someString, StringBuilder stringBuilder, boolean withComma) {
+        if (!someString.isBlank()) {
+            stringBuilder.append(someString);
+            if (withComma) {
+                stringBuilder.append(", ");
+            }
+        }
+    }
+
+    private static String getAddressFromNotification(Notification notification) {
+        StringBuilder addressBuilder = new StringBuilder();
+        notification.getLine1().ifPresent(line1 -> appendNonEmptyToString(line1, addressBuilder, true));
+        notification.getLine2().ifPresent(line2 -> appendNonEmptyToString(line2, addressBuilder, true));
+        notification.getLine3().ifPresent(line3 -> appendNonEmptyToString(line3, addressBuilder, true));
+        notification.getLine4().ifPresent(line4 -> appendNonEmptyToString(line4, addressBuilder, true));
+        notification.getLine5().ifPresent(line5 -> appendNonEmptyToString(line5, addressBuilder, true));
+        notification.getLine6().ifPresent(line6 -> appendNonEmptyToString(line6, addressBuilder, false));
+        if (addressBuilder.toString().isBlank()) {
+            return "N/A";
+        }
+        return addressBuilder.toString();
+    }
+
     private static StoredNotification getStoredNotification(String notificationId, Notification notification) {
         String reference = notification.getReference().orElse(notificationId);
         String notificationBody = "<div>" + notification.getBody()
             .replace("\r\n", "<br>")
             .replace("’", "'")
             .replace("‘", "'")
+            .replace(" ", " ")
+            .replace("&nbsp;", " ")
             + "</div>";
 
         String method = notification.getNotificationType();
         String sentTo = switch (method) {
             case "email" -> notification.getEmailAddress().orElse("N/A");
             case "sms" -> notification.getPhoneNumber().orElse("N/A");
+            case "letter" -> getAddressFromNotification(notification);
             default -> "N/A";
         };
         String status = notification.getStatus();
@@ -148,7 +174,7 @@ public class SaveNotificationsToDataHandler implements PreSubmitCallbackHandler<
             .toList();
         return sentNotificationIds.stream()
             .filter(idValue -> filterNotificationsSentInTheLastSevenDays(idValue)
-                        && !storedNotificationIds.contains(idValue.getValue()))
+                && !storedNotificationIds.contains(idValue.getValue()))
             .map(IdValue::getValue)
             .toList();
     }
@@ -175,7 +201,7 @@ public class SaveNotificationsToDataHandler implements PreSubmitCallbackHandler<
     private List<IdValue<StoredNotification>> sortNotificationsByDate(List<IdValue<StoredNotification>> allNotifications) {
         List<IdValue<StoredNotification>> mutableNotifications = new ArrayList<>(allNotifications);
         mutableNotifications.sort(Comparator.comparing(notification ->
-            LocalDateTime.parse(notification.getValue().getNotificationDateSent()),
+                LocalDateTime.parse(notification.getValue().getNotificationDateSent()),
             Comparator.reverseOrder()
         ));
         return mutableNotifications;
