@@ -33,18 +33,16 @@ java:
     CCD_DEFINITION_STORE_API_BASE_URL: "https://ccd-definition-store-{{ .Release.Name }}.preview.platform.hmcts.net"
     LOCATION_REF_DATA_URL: "http://rd-location-ref-api-aat.service.core-compute-aat.internal"
     FEES_REGISTER_API_URL: "http://fees-register-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
-    PAYMENT_REMINDER_DUE_IN_MINUTES: 30
+    PAYMENT_REMINDER_DUE_IN_MINUTES: 1
     ROLE_ASSIGNMENT_API_URL: https://am-role-assignment-ia-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net
     SAVE_NOTIFICATIONS_TO_DATA_EVENT_ENABLED: true
     SAVE_NOTIFICATIONS_DATA_SCHEDULE_HOUR: 16
     SAVE_NOTIFICATIONS_DATA_SCHEDULE_MAX_MINUTES: 5
-    #PAYMENT_AFTER_REMISSION_REJECTION_DUE_IN_MINUTES: 7
-    #PAYMENT_EA_HU_NO_REMISSION_DUE_IN_MINUTES: 7
     # Set HOME_OFFICE_VALIDATION_ENABLED: "true" if you want to run the validation against the mock HO validation API in Preview; otherwise leave at "false".
     # The mock HO validation API lives at http://ia-home-office-mock-api-aat.service.core-compute-aat.internal/ichallenge/applications/v1/1111-2222-3333-4444
     # (you can use any valid UAN at the end; but in ExUI you must enter the expected UAN, name and DOB in order to proceed past validation)
     HOME_OFFICE_VALIDATION_ENABLED: "false" # Do not remove this this environment variable!
-    STATUTORY_TIMEFRAME_LIVE_DATE: "2030-01-01" # This must be in the past in order to test the add/remove 24-week timeframe events in Preview
+    STATUTORY_TIMEFRAME_LIVE_DATE: "2000-01-01" # This must be in the past in order to test the add/remove 24-week timeframe events in Preview
   keyVaults:
     ia:
       resourceGroup: ia
@@ -116,7 +114,7 @@ ia-case-payments-api:
   enabled: true #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
-    image: hmctsprod.azurecr.io/ia/case-payments-api:pr-435
+    image: hmctsprod.azurecr.io/ia/case-payments-api:latest
     releaseNameOverride: ${SERVICE_NAME}-case-payments-api
     ingressHost: ${SERVICE_NAME}-payments-api.preview.platform.hmcts.net
     disableTraefikTls: true
