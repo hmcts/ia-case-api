@@ -495,6 +495,7 @@ class SendNotificationHandlerTest {
         Event.REFUND_CONFIRMATION,
         Event.REVOKE_CITIZEN_ACCESS,
         Event.HEARING_CANCELLED,
+        Event.CMR_HEARING_CANCELLED,
         Event.REMOVE_STATUTORY_TIMEFRAME_24_WEEKS,
         Event.GENERATE_PIN_IN_POST,
         Event.COMPLETE_CASE_REVIEW
@@ -502,7 +503,7 @@ class SendNotificationHandlerTest {
 
     private static final List<Event> allowedInternalEventTypes = List.of(
         Event.PROGRESS_MIGRATED_CASE,
-        Event.HEARING_CANCELLED,
+        Event.CMR_HEARING_CANCELLED,
         Event.REINSTATE_APPEAL,
         Event.UPLOAD_ADDITIONAL_EVIDENCE,
         Event.SEND_DIRECTION,

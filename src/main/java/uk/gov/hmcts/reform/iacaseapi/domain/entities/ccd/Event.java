@@ -160,6 +160,7 @@ public enum Event {
     RECORD_ADJOURNMENT_DETAILS("recordAdjournmentDetails"),
     LIST_ASSIST_INTEGRATION("listAssistIntegration"),
     CMR_LISTING("cmrListing"),
+    CMR_HEARING_CANCELLED("cmrHearingCancelled"),
     DECISION_WITHOUT_HEARING_LISTED("decisionWithoutHearingListed"),
     SAVE_NOTIFICATIONS_TO_DATA("saveNotificationsToData"),
     UPDATE_NEXT_HEARING_INFO("UpdateNextHearingInfo"),
