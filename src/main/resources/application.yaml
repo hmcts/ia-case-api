@@ -636,6 +636,7 @@ security:
       - "turnOnNotificationsWATasks"
       - "addStatutoryTimeframe24Weeks"
       - "revokeCitizenAccess"
+      - "requestRespondentEvidence"
     ctsc:
       - "appellantInPersonManual"
       - "startAppeal"
@@ -706,6 +707,7 @@ security:
       - "revokeCitizenAccess"
       - "forceDecidedState"
       - "forceFtpaDecidedState"
+      - "requestRespondentEvidence"
     ctsc-team-leader:
       - "appellantInPersonManual"
       - "startAppeal"
@@ -776,6 +778,7 @@ security:
       - "forceFtpaDecidedState"
       - "addStatutoryTimeframe24Weeks"
       - "revokeCitizenAccess"
+      - "requestRespondentEvidence"
     national-business-centre:
       - "appellantInPersonManual"
       - "startAppeal"
@@ -845,6 +848,7 @@ security:
       - "forceFtpaDecidedState"
       - "addStatutoryTimeframe24Weeks"
       - "revokeCitizenAccess"
+      - "requestRespondentEvidence"
     challenged-access-ctsc:
       - "appellantInPersonManual"
       - "startAppeal"
@@ -914,6 +918,7 @@ security:
       - "forceFtpaDecidedState"
       - "addStatutoryTimeframe24Weeks"
       - "revokeCitizenAccess"
+      - "requestRespondentEvidence"
     challenged-access-admin:
       - "appellantInPersonManual"
       - "startAppeal"
@@ -984,6 +989,7 @@ security:
       - "forceFtpaDecidedState"
       - "addStatutoryTimeframe24Weeks"
       - "revokeCitizenAccess"
+      - "requestRespondentEvidence"
     caseworker-ia-homeofficeapc:
       - "uploadHomeOfficeBundle"
       - "uploadAdditionalEvidenceHomeOffice"
