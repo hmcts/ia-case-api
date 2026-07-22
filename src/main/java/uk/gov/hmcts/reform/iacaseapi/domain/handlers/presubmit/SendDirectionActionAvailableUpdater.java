@@ -1,9 +1,5 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
-import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SEND_DIRECTION_ACTION_AVAILABLE;
-
-import java.util.Arrays;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
@@ -13,6 +9,11 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
+
+import java.util.Arrays;
+
+import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SEND_DIRECTION_ACTION_AVAILABLE;
 
 @Component
 public class SendDirectionActionAvailableUpdater implements PreSubmitCallbackHandler<AsylumCase> {
@@ -43,7 +44,6 @@ public class SendDirectionActionAvailableUpdater implements PreSubmitCallbackHan
 
         if (Arrays.asList(
             State.APPEAL_SUBMITTED,
-            State.APPEAL_SUBMITTED_OUT_OF_TIME,
             State.AWAITING_RESPONDENT_EVIDENCE,
             State.CASE_BUILDING,
             State.CASE_UNDER_REVIEW,
