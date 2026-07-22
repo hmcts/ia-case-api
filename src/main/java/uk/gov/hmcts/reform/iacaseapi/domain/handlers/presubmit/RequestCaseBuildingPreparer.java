@@ -73,7 +73,7 @@ public class RequestCaseBuildingPreparer implements PreSubmitCallbackHandler<Asy
             ZonedDateTime dueDateTime = dueDateService.calculateDueDate(ZonedDateTime.now(), legalRepresentativeBuildCaseDueInDaysAda);
             LocalDate dueDate = dueDateTime.toLocalDate();
             asylumCase.write(SEND_DIRECTION_DATE_DUE, dueDate.toString());
-        } else if (isAppellantInDetention(asylumCase)) {
+        } else if (isInternalDetained || isAppellantInDetention(asylumCase)) {
             LocalDate dueDateTime = dateProvider.now().plusDays(legalRepresentativeBuildCaseDueInDays);
             asylumCase.write(SEND_DIRECTION_DATE_DUE, dueDateTime.toString());
         } else {
