@@ -169,6 +169,8 @@ public enum Event {
     FORCE_DECIDED_STATE("forceDecidedState"),
     FORCE_FTPA_DECIDED_STATE("forceFtpaDecidedState"),
     ROLLBACK_MIGRATION("rollbackMigration"),
+    QUERY_MANAGEMENT_RAISE_QUERY("queryManagementRaiseQuery"),
+    QUERY_MANAGEMENT_RESPOND_QUERY("queryManagementRespondQuery"),
     COMPLETE_CASE_REVIEW("completeCaseReview"),
     FORCE_CASE_TO_PREPARE_FOR_HEARING("forceCaseToPrepareForHearing"),
     GENERATE_PIN_IN_POST("generatePinInPost"),
