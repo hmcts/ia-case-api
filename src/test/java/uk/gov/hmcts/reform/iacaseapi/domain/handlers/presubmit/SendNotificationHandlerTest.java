@@ -503,6 +503,7 @@ class SendNotificationHandlerTest {
 
     private static final List<Event> allowedInternalEventTypes = List.of(
         Event.PROGRESS_MIGRATED_CASE,
+        Event.HEARING_CANCELLED,
         Event.CMR_HEARING_CANCELLED,
         Event.REINSTATE_APPEAL,
         Event.UPLOAD_ADDITIONAL_EVIDENCE,
