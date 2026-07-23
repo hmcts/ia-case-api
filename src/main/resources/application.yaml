@@ -385,6 +385,7 @@ security:
       - "turnOnNotificationsWATasks"
       - "addStatutoryTimeframe24Weeks"
       - "removeStatutoryTimeframe24Weeks"
+      - "forceCaseToPrepareForHearing"
       - "revokeCitizenAccess"
     challenged-access-legal-operations:
       - "appellantInPersonManual"
@@ -475,6 +476,7 @@ security:
       - "generateListCmrTask"
       - "markAppealAsDetained"
       - "removeDetainedStatus"
+      - "forceCaseToPrepareForHearing"
       - "revokeCitizenAccess"
     senior-tribunal-caseworker:
       - "appellantInPersonManual"
@@ -567,6 +569,7 @@ security:
       - "removeDetainedStatus"
       - "turnOnNotificationsWATasks"
       - "removeStatutoryTimeframe24Weeks"
+      - "forceCaseToPrepareForHearing"
       - "revokeCitizenAccess"
     hearing-centre-admin:
       - "appellantInPersonManual"
