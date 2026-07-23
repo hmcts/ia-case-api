@@ -42,7 +42,7 @@ java:
     # The mock HO validation API lives at http://ia-home-office-mock-api-aat.service.core-compute-aat.internal/ichallenge/applications/v1/1111-2222-3333-4444
     # (you can use any valid UAN at the end; but in ExUI you must enter the expected UAN, name and DOB in order to proceed past validation)
     HOME_OFFICE_VALIDATION_ENABLED: "false" # Do not remove this this environment variable!
-    STATUTORY_TIMEFRAME_LIVE_DATE: "2000-01-01" # This must be in the past in order to test the add/remove 24-week timeframe events in Preview
+    STATUTORY_TIMEFRAME_LIVE_DATE: "2028-01-01" # This must be in the past in order to test the add/remove 24-week timeframe events in Preview
   keyVaults:
     ia:
       resourceGroup: ia
@@ -168,7 +168,7 @@ ia-case-documents-api:
   enabled: true #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
-    image: hmctsprod.azurecr.io/ia/case-documents-api:latest
+    image: hmctsprod.azurecr.io/ia/case-documents-api:pr-1167
     releaseNameOverride: ${SERVICE_NAME}-case-documents-api
     ingressHost: ${SERVICE_NAME}-documents-api.preview.platform.hmcts.net
     devcpuRequests: 500m
@@ -247,7 +247,7 @@ ia-case-notifications-api:
   enabled: true #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
-    image: hmctsprod.azurecr.io/ia/case-notifications-api:latest
+    image: hmctsprod.azurecr.io/ia/case-notifications-api:pr-1676
     releaseNameOverride: ${SERVICE_NAME}-case-notifications-api
     ingressHost: ${SERVICE_NAME}-notifications-api.preview.platform.hmcts.net
     devcpuRequests: 500m
@@ -667,7 +667,7 @@ ia-aip-frontend:
   enabled: true
   nodejs:
     imagePullPolicy: Always
-    image: hmctsprod.azurecr.io/ia/aip-frontend:latest
+    image: hmctsprod.azurecr.io/ia/aip-frontend:pr-1431
     ingressHost: ${SERVICE_NAME}-aip-frontend.preview.platform.hmcts.net # override in public facing environments
     applicationPort: 3000
     devcpuRequests: 500m
@@ -697,6 +697,7 @@ ia-aip-frontend:
       TRACKING_SCRIPTS: false
       TIMELINE_ENABLED: true
       ASK_FOR_MORE_TIME_ENABLED: true
+      MAX_DRAFT_APPEALS: 5
     keyVaults:
       ia:
         resourceGroup: ia
@@ -1466,7 +1467,7 @@ ia-hearings-api:
   enabled: true
   java:
     imagePullPolicy: Always
-    image: hmctsprod.azurecr.io/ia/hearings-api:latest
+    image: hmctsprod.azurecr.io/ia/hearings-api:pr-536
     releaseNameOverride: ${SERVICE_NAME}-hearings-api
     ingressHost: ${SERVICE_NAME}-hearings-api.preview.platform.hmcts.net
     devcpuRequests: 500m
