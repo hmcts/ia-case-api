@@ -42,10 +42,6 @@ public class AsylumCaseSendDirectionEventValidForJourneyTypeChecker implements E
                 log.error("This is an Appellant in Person (AiP) manual appeal. You cannot select 'Legal Representative' or 'Both' as a recipient.");
                 return new EventValid("This is an Appellant in Person (AiP) manual appeal. You cannot select 'Legal Representative' or 'Both' as a recipient.");
             }
-            if (isInternalCase(asylumCase) && (directionTo == Parties.APPELLANT_AND_RESPONDENT)) {
-                log.error("You cannot select appellant and respondent as joint recipients on a manual appeal. The direction will need to be issued to the recipients individually.");
-                return new EventValid("You cannot select appellant and respondent as joint recipients on a manual appeal. The direction will need to be issued to the recipients individually.");
-            }
         }
 
         return new EventValid();
