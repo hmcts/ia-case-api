@@ -59,6 +59,12 @@ public enum AsylumCaseFieldDefinition {
     HO_RIGHT_OF_APPEAL(
         "hoRightOfAppeal", new TypeReference<YesOrNo>(){}),
 
+    HO_ASYLUM_SUPPORT(
+        "hoAsylumSupport", new TypeReference<YesOrNo>(){}),
+
+    HO_FEE_WAIVER(
+        "hoFeeWaiver", new TypeReference<YesOrNo>(){}),
+
     APPELLANT_GIVEN_NAMES(
         "appellantGivenNames", new TypeReference<String>(){}),
 
