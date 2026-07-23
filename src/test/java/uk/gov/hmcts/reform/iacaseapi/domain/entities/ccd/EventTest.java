@@ -175,6 +175,7 @@ class EventTest {
             Arguments.of("ariaCreateCase", Event.ARIA_CREATE_CASE.toString()),
             Arguments.of("progressMigratedCase", Event.PROGRESS_MIGRATED_CASE.toString()),
             Arguments.of("refundConfirmation", Event.REFUND_CONFIRMATION.toString()),
+            Arguments.of("cmrHearingCancelled", Event.CMR_HEARING_CANCELLED.toString()),
             Arguments.of("hearingCancelled", Event.HEARING_CANCELLED.toString()),
             Arguments.of("updateInterpreterBookingStatus", Event.UPDATE_INTERPRETER_BOOKING_STATUS.toString()),
             Arguments.of("updateInterpreterDetails", Event.UPDATE_INTERPRETER_DETAILS.toString()),
