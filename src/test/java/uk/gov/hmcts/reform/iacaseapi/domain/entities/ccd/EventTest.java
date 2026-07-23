@@ -182,6 +182,7 @@ class EventTest {
             Arguments.of("updateHearingRequest", Event.UPDATE_HEARING_REQUEST.toString()),
             Arguments.of("handleHearingException", Event.HANDLE_HEARING_EXCEPTION.toString()),
             Arguments.of("cmrReListing", Event.CMR_RE_LISTING.toString()),
+            Arguments.of("reListHearing", Event.RE_LIST_HEARING.toString()),
             Arguments.of("recordAdjournmentDetails", Event.RECORD_ADJOURNMENT_DETAILS.toString()),
             Arguments.of("listAssistIntegration", Event.LIST_ASSIST_INTEGRATION.toString()),
             Arguments.of("cmrListing", Event.CMR_LISTING.toString()),

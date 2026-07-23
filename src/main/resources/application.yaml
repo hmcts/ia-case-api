@@ -1380,6 +1380,7 @@ security:
       - "editCaseListing"
       - "handleHearingException"
       - "cmrReListing"
+      - "reListHearing"
       - "recordAdjournmentDetails"
       - "cmrListing"
       - "decisionWithoutHearingListed"
