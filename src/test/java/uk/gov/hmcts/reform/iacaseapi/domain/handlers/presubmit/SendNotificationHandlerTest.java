@@ -419,6 +419,8 @@ class SendNotificationHandlerTest {
         Event.DECISION_WITHOUT_HEARING,
         Event.LIST_CASE,
         Event.LIST_CASE_WITHOUT_HEARING_REQUIREMENTS,
+        Event.CMR_LISTING,
+        Event.CMR_RE_LISTING,
         Event.EDIT_CASE_LISTING,
         Event.END_APPEAL,
         Event.UPLOAD_HOME_OFFICE_BUNDLE,
@@ -493,6 +495,7 @@ class SendNotificationHandlerTest {
         Event.REFUND_CONFIRMATION,
         Event.REVOKE_CITIZEN_ACCESS,
         Event.HEARING_CANCELLED,
+        Event.CMR_HEARING_CANCELLED,
         Event.REMOVE_STATUTORY_TIMEFRAME_24_WEEKS,
         Event.GENERATE_PIN_IN_POST,
         Event.COMPLETE_CASE_REVIEW
@@ -501,6 +504,7 @@ class SendNotificationHandlerTest {
     private static final List<Event> allowedInternalEventTypes = List.of(
         Event.PROGRESS_MIGRATED_CASE,
         Event.HEARING_CANCELLED,
+        Event.CMR_HEARING_CANCELLED,
         Event.REINSTATE_APPEAL,
         Event.UPLOAD_ADDITIONAL_EVIDENCE,
         Event.SEND_DIRECTION,
@@ -553,6 +557,8 @@ class SendNotificationHandlerTest {
         Event.REQUEST_RESPONDENT_REVIEW,
         Event.MARK_APPEAL_PAID,
         Event.LIST_CASE,
+        Event.CMR_LISTING,
+        Event.CMR_RE_LISTING,
         Event.DECISION_WITHOUT_HEARING,
         Event.REQUEST_RESPONDENT_EVIDENCE,
         Event.REMOVE_STATUTORY_TIMEFRAME_24_WEEKS,
