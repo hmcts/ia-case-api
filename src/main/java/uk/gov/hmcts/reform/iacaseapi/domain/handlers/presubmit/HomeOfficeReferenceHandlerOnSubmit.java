@@ -22,6 +22,9 @@ import java.util.Optional;
 
 import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HO_ASYLUM_SUPPORT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HO_FEE_WAIVER;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HO_RIGHT_OF_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_APPELLANTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY;
 
@@ -87,6 +90,16 @@ public class HomeOfficeReferenceHandlerOnSubmit implements PreSubmitCallbackHand
                         homeOfficeAppellantsSerialisedEncrypted, homeOfficeReferenceNumber, ex.getMessage());
             }
         }
+        homeOfficeAppellants.stream()
+            .map(IdValue::getValue)
+            .filter(a -> "01".equals(a.getPp()))
+            .findFirst()
+            .ifPresent(a -> {
+                asylumCase.write(HO_RIGHT_OF_APPEAL, a.getRoa());
+                asylumCase.write(HO_ASYLUM_SUPPORT, a.getAsylumSupport());
+                asylumCase.write(HO_FEE_WAIVER, a.getHoFeeWaiver());
+            });
+
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 }
