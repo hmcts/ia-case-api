@@ -170,6 +170,7 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
             Event.MARK_APPEAL_AS_REMITTED,
             Event.REFUND_CONFIRMATION,
             Event.HEARING_CANCELLED,
+            Event.CMR_HEARING_CANCELLED,
             Event.REMOVE_STATUTORY_TIMEFRAME_24_WEEKS,
             Event.REVOKE_CITIZEN_ACCESS,
             Event.GENERATE_PIN_IN_POST,
@@ -257,6 +258,7 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
             Event.PROGRESS_MIGRATED_CASE,
             Event.REFUND_CONFIRMATION,
             Event.HEARING_CANCELLED,
+                Event.CMR_HEARING_CANCELLED,
             Event.REMOVE_STATUTORY_TIMEFRAME_24_WEEKS,
             Event.COMPLETE_CASE_REVIEW
         );
