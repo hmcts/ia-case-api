@@ -8,12 +8,10 @@ import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DirectionAppender;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationBasedFeatureToggler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.PartyIdService;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.CryptoUtils;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.OrganisationPolicy;
 
@@ -747,6 +745,101 @@ public class HandlerUtils {
         asylumCase.remove(HOME_OFFICE_APPELLANT_DECISION_LETTER_DATE);
         asylumCase.remove(HOME_OFFICE_APPELLANTS);
         asylumCase.remove(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY);
+    }
+
+    public static void setSponsorDetailsFromNlrIfSame(AsylumCase asylumCase) {
+        boolean isSponsorSameAsNlr = asylumCase.read(IS_SPONSOR_SAME_AS_NLR, YesOrNo.class).orElse(YesOrNo.NO)
+            .equals(YesOrNo.YES);
+        PartyIdService.setSponsorPartyId(asylumCase);
+        if (isSponsorSameAsNlr) {
+            NonLegalRepDetails nlrDetails = asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class)
+                .orElseThrow(() -> new IllegalStateException("Non-legal representative details are not present"));
+            nlrDetails.setAddress(null);
+            asylumCase.write(NLR_DETAILS, nlrDetails);
+            String givenNames = nlrDetails.getGivenNames();
+            if (givenNames != null) {
+                asylumCase.write(SPONSOR_GIVEN_NAMES, givenNames);
+            }
+            String familyName = nlrDetails.getFamilyName();
+            if (familyName != null) {
+                asylumCase.write(SPONSOR_FAMILY_NAME, familyName);
+            }
+            AddressUk addressUk = nlrDetails.getAddressUk();
+            if (addressUk != null) {
+                asylumCase.write(SPONSOR_ADDRESS, addressUk);
+                asylumCase.write(SPONSOR_ADDRESS_FOR_DISPLAY, addressUk.toDisplay());
+            }
+            String nameForDisplay = givenNames != null && familyName != null ? (givenNames + " " + familyName).replaceAll("\\s+", " ").trim() : null;
+            if (nameForDisplay != null) {
+                asylumCase.write(SPONSOR_NAME_FOR_DISPLAY, nameForDisplay);
+            }
+            String email = nlrDetails.getEmailAddress();
+            if (email != null) {
+                asylumCase.write(SPONSOR_EMAIL, email);
+                asylumCase.write(SPONSOR_CONTACT_PREFERENCE, ContactPreference.WANTS_EMAIL);
+            }
+            String phoneNumber = nlrDetails.getPhoneNumber();
+            if (phoneNumber != null) {
+                asylumCase.write(SPONSOR_MOBILE_NUMBER, phoneNumber);
+            }
+            if (email != null && phoneNumber != null) {
+                String idamId = nlrDetails.getIdamId();
+                Subscriber newSubscriber = new Subscriber(SubscriberType.SUPPORTER, email, YES, phoneNumber, NO);
+                asylumCase.write(SPONSOR_SUBSCRIPTIONS, List.of(new IdValue<>(idamId == null
+                    ? UUID.randomUUID().toString() : idamId, newSubscriber)));
+            }
+            asylumCase.write(SPONSOR_AUTHORISATION, YesOrNo.YES);
+        } else if (asylumCase.read(HAS_NON_LEGAL_REP, YesOrNo.class).orElse(YesOrNo.NO).equals(YES)) {
+            NonLegalRepDetails nlrDetails = asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class)
+                .orElseThrow(() -> new IllegalStateException("Non-legal representative details are not present"));
+            nlrDetails.setAddressUk(null);
+            asylumCase.write(NLR_DETAILS, nlrDetails);
+        } else {
+            clearNlrFields(asylumCase);
+        }
+    }
+
+    public static void clearNlrFields(AsylumCase asylumCase) {
+        asylumCase.clear(NLR_DETAILS);
+        asylumCase.clear(JOIN_APPEAL_PIN);
+        asylumCase.clear(IS_SPONSOR_SAME_AS_NLR);
+        asylumCase.clear(HAS_NON_LEGAL_REP_JOINED);
+        updateSubscriptionsForNlr(asylumCase);
+    }
+
+    public static void updateSubscriptionsForNlr(AsylumCase asylumCase) {
+        String nlrIdamId = asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class)
+            .map(NonLegalRepDetails::getIdamId)
+            .orElse(null);
+        Optional<List<IdValue<Subscriber>>> subscribers = asylumCase.read(SUBSCRIPTIONS);
+        List<IdValue<Subscriber>> mutableSubscribers = new ArrayList<>(subscribers.orElse(emptyList()).stream()
+            .filter(subscriber -> subscriber.getValue().getSubscriber() != SubscriberType.SUPPORTER)
+            .toList());
+        if (nlrIdamId != null && asylumCase.read(HAS_NON_LEGAL_REP, YesOrNo.class).orElse(YesOrNo.NO).equals(YES)) {
+            NonLegalRepDetails nlrDetails = asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class)
+                .orElseThrow(() -> new IllegalStateException("Non-legal representative details are not present"));
+            mutableSubscribers.add(new IdValue<>(nlrIdamId, new Subscriber(SubscriberType.SUPPORTER,
+                nlrDetails.getEmailAddress(), YES, nlrDetails.getPhoneNumber(), NO)));
+        }
+        asylumCase.write(SUBSCRIPTIONS, mutableSubscribers);
+    }
+
+    public static boolean hasActiveNlr(AsylumCase asylumCase) {
+        return asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class)
+            .map(NonLegalRepDetails::getIdamId)
+            .isPresent();
+    }
+
+    public static boolean nlrAttendingHearing(AsylumCase asylumCase) {
+        return asylumCase.read(NLR_ATTENDING, YesOrNo.class).orElse(NO).equals(YES)
+            || asylumCase.read(NLR_ATTENDING_OUTSIDE_UK, YesOrNo.class).orElse(NO).equals(YES);
+    }
+
+    public static String getNlrFullName(AsylumCase asylumCase) {
+        return asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class)
+            .filter(nlr -> nlr.getGivenNames() != null && nlr.getFamilyName() != null)
+            .map(nlr -> nlr.getGivenNames() + " " + nlr.getFamilyName())
+            .orElseThrow(() -> new IllegalStateException("Non-legal representative name is not present"));
     }
 
     public static String getUanOrGwf(AsylumCase asylumCase) {

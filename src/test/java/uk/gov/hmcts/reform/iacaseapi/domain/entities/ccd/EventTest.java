@@ -1,15 +1,16 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Stream;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class EventTest {
 
@@ -74,6 +75,7 @@ class EventTest {
             Arguments.of("endAppeal", Event.END_APPEAL.toString()),
             Arguments.of("requestCaseBuilding", Event.REQUEST_CASE_BUILDING.toString()),
             Arguments.of("forceRequestCaseBuilding", Event.FORCE_REQUEST_CASE_BUILDING.toString()),
+            Arguments.of("deleteDraftAppeal", Event.DELETE_DRAFT_APPEAL.toString()),
             Arguments.of("uploadAdditionalEvidenceHomeOffice", Event.UPLOAD_ADDITIONAL_EVIDENCE_HOME_OFFICE.toString()),
             Arguments.of("requestResponseReview", Event.REQUEST_RESPONSE_REVIEW.toString()),
             Arguments.of("requestResponseAmend", Event.REQUEST_RESPONSE_AMEND.toString()),
@@ -194,6 +196,11 @@ class EventTest {
             Arguments.of("forceFtpaDecidedState", Event.FORCE_FTPA_DECIDED_STATE.toString()),
             Arguments.of("rollbackMigration", Event.ROLLBACK_MIGRATION.toString()),
             Arguments.of("revokeCitizenAccess", Event.REVOKE_CITIZEN_ACCESS.toString()),
+            Arguments.of("sendInviteToNonLegalRep", Event.SEND_INVITE_TO_NON_LEGAL_REP.toString()),
+            Arguments.of("sendPipToNonLegalRep", Event.SEND_PIP_TO_NON_LEGAL_REP.toString()),
+            Arguments.of("joinAppealConfirmation", Event.JOIN_APPEAL_CONFIRMATION.toString()),
+            Arguments.of("nlrDetailsUpdated", Event.NLR_DETAILS_UPDATED.toString()),
+            Arguments.of("removeNonLegalRep", Event.REMOVE_NON_LEGAL_REP.toString()),
             Arguments.of("completeCaseReview", Event.COMPLETE_CASE_REVIEW.toString()),
             Arguments.of("generatePinInPost", Event.GENERATE_PIN_IN_POST.toString()),
             Arguments.of("forceCaseToPrepareForHearing", Event.FORCE_CASE_TO_PREPARE_FOR_HEARING.toString()),
