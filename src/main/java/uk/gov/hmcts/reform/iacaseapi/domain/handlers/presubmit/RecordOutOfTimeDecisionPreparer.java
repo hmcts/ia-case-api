@@ -102,7 +102,10 @@ public class RecordOutOfTimeDecisionPreparer implements PreSubmitCallbackHandler
                 final OutOfTimeDecisionDetails outOfTimeDecisionDetails =
                     new OutOfTimeDecisionDetails(outOfTimeDecisionTypeDescription, outOfTimeDecisionMaker, outOfTimeDecisionDocument.get());
 
-                outOfTimeDecisionDetailsAppender.append(existingOutOfTimeDecisionDetails, outOfTimeDecisionDetails);
+                List<IdValue<OutOfTimeDecisionDetails>> allOutOfTimeDecisionDetails =
+                    outOfTimeDecisionDetailsAppender.append(existingOutOfTimeDecisionDetails, outOfTimeDecisionDetails);
+
+                asylumCase.write(PREVIOUS_OUT_OF_TIME_DECISION_DETAILS, allOutOfTimeDecisionDetails);
             }
 
             asylumCase.clear(OUT_OF_TIME_DECISION_TYPE);

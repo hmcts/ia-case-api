@@ -72,6 +72,8 @@ files:
 logging:
   level:
     io.lettuce.core: WARN
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] [%X{correlationId}] [%X{ccdCaseId}] %-5level %logger{36} - %msg%n"
 
 spring:
   retry:
@@ -380,6 +382,7 @@ security:
       - "turnOnNotificationsWATasks"
       - "addStatutoryTimeframe24Weeks"
       - "removeStatutoryTimeframe24Weeks"
+      - "forceCaseToPrepareForHearing"
       - "revokeCitizenAccess"
     challenged-access-legal-operations:
       - "appellantInPersonManual"
@@ -470,6 +473,7 @@ security:
       - "generateListCmrTask"
       - "markAppealAsDetained"
       - "removeDetainedStatus"
+      - "forceCaseToPrepareForHearing"
       - "revokeCitizenAccess"
     senior-tribunal-caseworker:
       - "appellantInPersonManual"
@@ -562,6 +566,7 @@ security:
       - "removeDetainedStatus"
       - "turnOnNotificationsWATasks"
       - "removeStatutoryTimeframe24Weeks"
+      - "forceCaseToPrepareForHearing"
       - "revokeCitizenAccess"
     hearing-centre-admin:
       - "appellantInPersonManual"
@@ -634,6 +639,7 @@ security:
       - "turnOnNotificationsWATasks"
       - "addStatutoryTimeframe24Weeks"
       - "revokeCitizenAccess"
+      - "requestRespondentEvidence"
     ctsc:
       - "appellantInPersonManual"
       - "startAppeal"
@@ -704,6 +710,7 @@ security:
       - "revokeCitizenAccess"
       - "forceDecidedState"
       - "forceFtpaDecidedState"
+      - "requestRespondentEvidence"
     ctsc-team-leader:
       - "appellantInPersonManual"
       - "startAppeal"
@@ -774,6 +781,7 @@ security:
       - "forceFtpaDecidedState"
       - "addStatutoryTimeframe24Weeks"
       - "revokeCitizenAccess"
+      - "requestRespondentEvidence"
     national-business-centre:
       - "appellantInPersonManual"
       - "startAppeal"
@@ -843,6 +851,7 @@ security:
       - "forceFtpaDecidedState"
       - "addStatutoryTimeframe24Weeks"
       - "revokeCitizenAccess"
+      - "requestRespondentEvidence"
     challenged-access-ctsc:
       - "appellantInPersonManual"
       - "startAppeal"
@@ -912,6 +921,7 @@ security:
       - "forceFtpaDecidedState"
       - "addStatutoryTimeframe24Weeks"
       - "revokeCitizenAccess"
+      - "requestRespondentEvidence"
     challenged-access-admin:
       - "appellantInPersonManual"
       - "startAppeal"
@@ -982,6 +992,7 @@ security:
       - "forceFtpaDecidedState"
       - "addStatutoryTimeframe24Weeks"
       - "revokeCitizenAccess"
+      - "requestRespondentEvidence"
     caseworker-ia-homeofficeapc:
       - "uploadHomeOfficeBundle"
       - "uploadAdditionalEvidenceHomeOffice"

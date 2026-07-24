@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.config;
 
+import java.util.Collections;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
@@ -19,15 +20,27 @@ public class HearingCentreFinderConfiguration {
     private Map<HearingCentre, List<String>> hearingCentreMappings = new EnumMap<>(HearingCentre.class);
 
     public Map<HearingCentre, List<String>> getHearingCentreCatchmentAreas() {
-        return hearingCentreCatchmentAreas;
+        return Collections.unmodifiableMap(hearingCentreCatchmentAreas);
+    }
+
+    public void setHearingCentreCatchmentAreas(Map<HearingCentre, List<String>> hearingCentreCatchmentAreas) {
+        this.hearingCentreCatchmentAreas = hearingCentreCatchmentAreas;
     }
 
     public Map<HearingCentre, String> getHearingCentreActivationDates() {
-        return hearingCentreActivationDates;
+        return Collections.unmodifiableMap(hearingCentreActivationDates);
+    }
+
+    public void setHearingCentreActivationDates(Map<HearingCentre, String> hearingCentreActivationDates) {
+        this.hearingCentreActivationDates = hearingCentreActivationDates;
     }
 
     public Map<HearingCentre, List<String>> getHearingCentreMappings() {
-        return hearingCentreMappings;
+        return Collections.unmodifiableMap(hearingCentreMappings);
+    }
+
+    public void setHearingCentreMappings(Map<HearingCentre, List<String>> hearingCentreMappings) {
+        this.hearingCentreMappings = hearingCentreMappings;
     }
 
 

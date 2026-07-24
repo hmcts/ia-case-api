@@ -39,7 +39,7 @@ public class PaymentStateHandler implements PreSubmitCallbackStateHandler<Asylum
 
     private final boolean isfeePaymentEnabled;
     protected static final String PAY_LATER = "payLater";
-    private FeatureToggler featureToggler;
+    private final FeatureToggler featureToggler;
 
     public PaymentStateHandler(
         @Value("${featureFlag.isfeePaymentEnabled}") boolean isfeePaymentEnabled,
@@ -93,13 +93,15 @@ public class PaymentStateHandler implements PreSubmitCallbackStateHandler<Asylum
             boolean isPaymentStatusPendingOrFailed = paymentStatus.isPresent()
                     && (paymentStatus.get() == PAYMENT_PENDING || paymentStatus.get() == FAILED)
                     || (remissionType.isPresent());
-            return decideAppealState(appealType, isPaymentStatusPendingOrFailed, asylumCase);
+            return decideAppealState(appealType, currentState, isPaymentStatusPendingOrFailed, asylumCase);
         }
     }
 
-    private PreSubmitCallbackResponse<AsylumCase> decideAiPAppealState(Callback<AsylumCase> callback,
-                                                                       AppealType appealType,
-                                                                       State currentState) {
+    private PreSubmitCallbackResponse<AsylumCase> decideAiPAppealState(
+        Callback<AsylumCase> callback,
+        AppealType appealType,
+        State currentState
+    ) {
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
         boolean isDlrmFeeRemissionEnabled = featureToggler.getValue("dlrm-fee-remission-feature-flag", false);
@@ -111,23 +113,26 @@ public class PaymentStateHandler implements PreSubmitCallbackStateHandler<Asylum
         boolean isPayLaterAppeal = paAppealTypePaymentOption.equals(PAY_LATER);
 
         Optional<PaymentStatus> paymentStatus = asylumCase.read(PAYMENT_STATUS, PaymentStatus.class);
-        boolean isPaymentStatusPaid = paymentStatus.isPresent() && (paymentStatus.get() == PAID);
-        boolean isPaymentStatusPendingOrFailed = (paymentStatus.isPresent()
-                && (paymentStatus.get() == PAYMENT_PENDING || paymentStatus.get() == FAILED))
-                || (remissionOption.isPresent() && remissionOption.get() != RemissionOption.NO_REMISSION);
 
         if (isDlrmFeeRemissionEnabled && aipRemissionExists) {
+            boolean isPaymentStatusPaid = paymentStatus.isPresent() && (paymentStatus.get() == PAID);
             return handleDlrmFeeRemission(callback, appealType, currentState, isPayLaterAppeal, isPaymentStatusPaid);
         } else if (isValidPayLaterPaymentEvent(callback, currentState, isPayLaterAppeal)) {
             return new PreSubmitCallbackResponse<>(asylumCase, currentState);
         } else {
-            return decideAppealState(appealType, isPaymentStatusPendingOrFailed, asylumCase);
+            boolean isPaymentStatusPendingOrFailed = (paymentStatus.isPresent()
+                    && (paymentStatus.get() == PAYMENT_PENDING || paymentStatus.get() == FAILED))
+                    || (remissionOption.isPresent() && remissionOption.get() != RemissionOption.NO_REMISSION);
+            return decideAppealState(appealType, currentState, isPaymentStatusPendingOrFailed, asylumCase);
         }
     }
 
-    private static PreSubmitCallbackResponse<AsylumCase> decideAppealState(AppealType appealType,
-                                                                           boolean isPaymentStatusPendingOrFailed,
-                                                                           AsylumCase asylumCase) {
+    private PreSubmitCallbackResponse<AsylumCase> decideAppealState(
+        AppealType appealType,
+        State currentState,
+        boolean isPaymentStatusPendingOrFailed,
+        AsylumCase asylumCase
+    ) {
         switch (appealType) {
             case EA:
             case HU:
@@ -136,23 +141,30 @@ public class PaymentStateHandler implements PreSubmitCallbackStateHandler<Asylum
                 if (isPaymentStatusPendingOrFailed) {
                     return new PreSubmitCallbackResponse<>(asylumCase, PENDING_PAYMENT);
                 }
+
                 return new PreSubmitCallbackResponse<>(asylumCase, APPEAL_SUBMITTED);
             default:
-                return new PreSubmitCallbackResponse<>(asylumCase, APPEAL_SUBMITTED);
+                return getAsylumCasePreSubmitCallbackResponse(asylumCase, currentState);
         }
     }
 
-    private PreSubmitCallbackResponse<AsylumCase> handleDlrmFeeRemission(Callback<AsylumCase> callback,
-                                                                         AppealType appealType,
-                                                                         State currentState,
-                                                                         boolean isPayLaterAppeal,
-                                                                         boolean isPaymentStatusPaid) {
+    private PreSubmitCallbackResponse<AsylumCase> handleDlrmFeeRemission(
+        Callback<AsylumCase> callback,
+        AppealType appealType,
+        State currentState,
+        boolean isPayLaterAppeal,
+        boolean isPaymentStatusPaid
+    ) {
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
-        State state = !isPayLaterAppeal && !isPaymentStatusPaid && appealType != AppealType.PA ? PENDING_PAYMENT : APPEAL_SUBMITTED;
         if (isValidPayLaterPaymentEvent(callback, currentState, isPayLaterAppeal)) {
-            state = currentState;
+            return new PreSubmitCallbackResponse<>(asylumCase);
         }
-        return new PreSubmitCallbackResponse<>(asylumCase, state);
+
+        if (!isPayLaterAppeal && !isPaymentStatusPaid && appealType != AppealType.PA) {
+            return new PreSubmitCallbackResponse<>(asylumCase, PENDING_PAYMENT);
+        } else {
+            return getAsylumCasePreSubmitCallbackResponse(asylumCase,currentState);
+        }
     }
 
     private boolean isValidPayLaterPaymentEvent(Callback<AsylumCase> callback, State currentState, boolean isPayLaterAppeal) {
@@ -162,4 +174,11 @@ public class PaymentStateHandler implements PreSubmitCallbackStateHandler<Asylum
         return isPayLaterAppeal && isPaymentEvent && isValidState;
     }
 
+    private PreSubmitCallbackResponse<AsylumCase> getAsylumCasePreSubmitCallbackResponse(AsylumCase asylumCase, State currentState) {
+        if (currentState == PENDING_PAYMENT || currentState == APPEAL_STARTED || currentState == APPEAL_STARTED_BY_ADMIN) {
+            return new PreSubmitCallbackResponse<>(asylumCase, APPEAL_SUBMITTED);
+        } else {
+            return new PreSubmitCallbackResponse<>(asylumCase, currentState);
+        }
+    }
 }

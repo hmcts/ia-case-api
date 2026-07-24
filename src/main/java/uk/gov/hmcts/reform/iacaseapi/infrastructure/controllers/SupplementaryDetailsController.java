@@ -104,13 +104,10 @@ public class SupplementaryDetailsController {
             + String.join(",", ccdCaseNumberList));
 
         try {
-
-            SupplementaryDetailsResponse supplementaryDetailsResponse;
-
             List<SupplementaryInfo> supplementaryInfo = Optional.ofNullable(supplementaryDetailsService
                 .getSupplementaryDetails(ccdCaseNumberList)).orElseThrow(NullSupplementaryInfoException::new);
 
-            supplementaryDetailsResponse = new SupplementaryDetailsResponse(
+            SupplementaryDetailsResponse supplementaryDetailsResponse = new SupplementaryDetailsResponse(
                 supplementaryInfo, missingSupplementaryDetailsInfo(ccdCaseNumberList, supplementaryInfo));
 
             if (supplementaryDetailsResponse.getSupplementaryInfo().isEmpty()) {
@@ -128,10 +125,6 @@ public class SupplementaryDetailsController {
             return status(HttpStatus.NOT_FOUND).body(e.getSupplementaryDetailsResponse());
         } catch (LargeSupplementaryInfoException e) {
             return status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getSupplementaryDetailsResponse());
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            Thread.currentThread().interrupt();
-            return status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 

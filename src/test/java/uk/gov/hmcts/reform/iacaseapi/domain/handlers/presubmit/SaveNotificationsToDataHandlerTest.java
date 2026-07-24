@@ -1,29 +1,5 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
-import static java.util.Collections.emptyList;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.anyList;
-import static org.mockito.Mockito.anyString;
-import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NOTIFICATIONS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NOTIFICATIONS_SENT;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SAVE_NOTIFICATIONS_TO_DATA;
-
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -48,9 +24,24 @@ import uk.gov.service.notify.Notification;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.Optional;
+
+import static java.util.Collections.emptyList;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NOTIFICATIONS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NOTIFICATIONS_SENT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SAVE_NOTIFICATIONS_TO_DATA;
+
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
-@SuppressWarnings("unchecked")
 class SaveNotificationsToDataHandlerTest {
 
     @Mock
@@ -77,6 +68,7 @@ class SaveNotificationsToDataHandlerTest {
     private final String body = "someBody";
     private final String notificationTypeEmail = "email";
     private final String notificationTypeSms = "sms";
+    private final String notificationTypeLetter = "letter";
     private final String status = "someStatus";
     private final String email = "some-email@test.com";
     private final String phoneNumber = "07827000000";
@@ -184,6 +176,135 @@ class SaveNotificationsToDataHandlerTest {
                 .notificationSentTo(phoneNumber)
                 .notificationBody("<div>" + body + "</div>")
                 .notificationMethod(StringUtils.capitalize(notificationTypeSms))
+                .notificationStatus(StringUtils.capitalize(status))
+                .notificationReference(reference)
+                .notificationSubject("N/A")
+                .build();
+        verify(storedNotificationAppender, times(1)).append(storedNotification, emptyList());
+        verify(asylumCase, times(1)).write(eq(NOTIFICATIONS), anyList());
+    }
+
+    @Test
+    void should_access_notify_client_if_missing_letter_notification_full_address() throws NotificationClientException {
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        List<IdValue<String>> notificationsSent =
+            List.of(new IdValue<>(reference, notificationId));
+        when(asylumCase.read(NOTIFICATIONS)).thenReturn(Optional.empty());
+        when(asylumCase.read(NOTIFICATIONS_SENT)).thenReturn(Optional.of(notificationsSent));
+        when(notificationClient.getNotificationById(notificationId)).thenReturn(notification);
+        when(notification.getBody()).thenReturn(body);
+        when(notification.getNotificationType()).thenReturn(notificationTypeLetter);
+        when(notification.getLine1()).thenReturn(Optional.of("line1"));
+        when(notification.getLine2()).thenReturn(Optional.of("line2"));
+        when(notification.getLine3()).thenReturn(Optional.of("line3"));
+        when(notification.getLine4()).thenReturn(Optional.of("line4"));
+        when(notification.getLine5()).thenReturn(Optional.of("line5"));
+        when(notification.getLine6()).thenReturn(Optional.of("line6"));
+        when(notification.getReference()).thenReturn(Optional.of(reference));
+        String dateString = "01-01-2024 10:57";
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
+        LocalDateTime localDateTime = LocalDateTime.parse(dateString, dateFormatter);
+        ZonedDateTime zonedDateTime = localDateTime.atZone(ZoneId.of("Europe/London"));
+        when(notification.getSentAt()).thenReturn(Optional.of(zonedDateTime));
+        when(notification.getStatus()).thenReturn(status);
+        when(notification.getLine1()).thenReturn(Optional.of("line1"));
+        when(notification.getLine2()).thenReturn(Optional.of("line2"));
+        when(notification.getLine3()).thenReturn(Optional.of("line3"));
+        when(notification.getLine4()).thenReturn(Optional.of("line4"));
+        when(notification.getLine5()).thenReturn(Optional.of("line5"));
+        when(notification.getLine6()).thenReturn(Optional.of("line6"));
+        saveNotificationsToDataHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+        verify(notificationClient, times(1)).getNotificationById(anyString());
+        StoredNotification storedNotification =
+            StoredNotification.builder()
+                .notificationId(notificationId)
+                .notificationDateSent("2024-01-01T10:57")
+                .notificationSentTo("line1, line2, line3, line4, line5, line6")
+                .notificationBody("<div>" + body + "</div>")
+                .notificationMethod(StringUtils.capitalize(notificationTypeLetter))
+                .notificationStatus(StringUtils.capitalize(status))
+                .notificationReference(reference)
+                .notificationSubject("N/A")
+                .build();
+        verify(storedNotificationAppender, times(1)).append(storedNotification, emptyList());
+        verify(asylumCase, times(1)).write(eq(NOTIFICATIONS), anyList());
+    }
+
+    @Test
+    void should_access_notify_client_if_missing_letter_notification_empty_address() throws NotificationClientException {
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        List<IdValue<String>> notificationsSent =
+            List.of(new IdValue<>(reference, notificationId));
+        when(asylumCase.read(NOTIFICATIONS)).thenReturn(Optional.empty());
+        when(asylumCase.read(NOTIFICATIONS_SENT)).thenReturn(Optional.of(notificationsSent));
+        when(notificationClient.getNotificationById(notificationId)).thenReturn(notification);
+        when(notification.getBody()).thenReturn(body);
+        when(notification.getNotificationType()).thenReturn(notificationTypeLetter);
+        when(notification.getLine1()).thenReturn(Optional.of("line1"));
+        when(notification.getLine2()).thenReturn(Optional.of("line2"));
+        when(notification.getLine3()).thenReturn(Optional.of("line3"));
+        when(notification.getLine4()).thenReturn(Optional.of("line4"));
+        when(notification.getLine5()).thenReturn(Optional.of("line5"));
+        when(notification.getLine6()).thenReturn(Optional.of("line6"));
+        when(notification.getReference()).thenReturn(Optional.of(reference));
+        String dateString = "01-01-2024 10:57";
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
+        LocalDateTime localDateTime = LocalDateTime.parse(dateString, dateFormatter);
+        ZonedDateTime zonedDateTime = localDateTime.atZone(ZoneId.of("Europe/London"));
+        when(notification.getSentAt()).thenReturn(Optional.of(zonedDateTime));
+        when(notification.getStatus()).thenReturn(status);
+        when(notification.getLine1()).thenReturn(Optional.of(""));
+        when(notification.getLine2()).thenReturn(Optional.of(""));
+        when(notification.getLine3()).thenReturn(Optional.of(""));
+        when(notification.getLine4()).thenReturn(Optional.of(""));
+        when(notification.getLine5()).thenReturn(Optional.of(""));
+        when(notification.getLine6()).thenReturn(Optional.of(""));
+        saveNotificationsToDataHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+        verify(notificationClient, times(1)).getNotificationById(anyString());
+        StoredNotification storedNotification =
+            StoredNotification.builder()
+                .notificationId(notificationId)
+                .notificationDateSent("2024-01-01T10:57")
+                .notificationSentTo("N/A")
+                .notificationBody("<div>" + body + "</div>")
+                .notificationMethod(StringUtils.capitalize(notificationTypeLetter))
+                .notificationStatus(StringUtils.capitalize(status))
+                .notificationReference(reference)
+                .notificationSubject("N/A")
+                .build();
+        verify(storedNotificationAppender, times(1)).append(storedNotification, emptyList());
+        verify(asylumCase, times(1)).write(eq(NOTIFICATIONS), anyList());
+    }
+
+    @Test
+    void should_access_notify_client_if_missing_letter_notification_no_address() throws NotificationClientException {
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        List<IdValue<String>> notificationsSent =
+            List.of(new IdValue<>(reference, notificationId));
+        when(asylumCase.read(NOTIFICATIONS)).thenReturn(Optional.empty());
+        when(asylumCase.read(NOTIFICATIONS_SENT)).thenReturn(Optional.of(notificationsSent));
+        when(notificationClient.getNotificationById(notificationId)).thenReturn(notification);
+        when(notification.getBody()).thenReturn(body);
+        when(notification.getNotificationType()).thenReturn(notificationTypeLetter);
+        when(notification.getReference()).thenReturn(Optional.of(reference));
+        String dateString = "01-01-2024 10:57";
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
+        LocalDateTime localDateTime = LocalDateTime.parse(dateString, dateFormatter);
+        ZonedDateTime zonedDateTime = localDateTime.atZone(ZoneId.of("Europe/London"));
+        when(notification.getSentAt()).thenReturn(Optional.of(zonedDateTime));
+        when(notification.getStatus()).thenReturn(status);
+        saveNotificationsToDataHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+        verify(notificationClient, times(1)).getNotificationById(anyString());
+        StoredNotification storedNotification =
+            StoredNotification.builder()
+                .notificationId(notificationId)
+                .notificationDateSent("2024-01-01T10:57")
+                .notificationSentTo("N/A")
+                .notificationBody("<div>" + body + "</div>")
+                .notificationMethod(StringUtils.capitalize(notificationTypeLetter))
                 .notificationStatus(StringUtils.capitalize(status))
                 .notificationReference(reference)
                 .notificationSubject("N/A")
