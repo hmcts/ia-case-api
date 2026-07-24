@@ -28,8 +28,10 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_APPELLANT_LANGUAGE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HO_ASYLUM_SUPPORT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HO_FEE_WAIVER;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HO_INTERPRETER_REQUIRED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HO_RIGHT_OF_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_APPELLANTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY;
@@ -278,7 +280,7 @@ class HomeOfficeReferenceHandlerOnSubmitTest {
 
         handlerUtilsMock.when(() -> HandlerUtils.getUanOrGwf(asylumCase)).thenReturn("non-empty-reference");
         String json =
-                "[{\"id\":\"1342-5786-9120-3564/01\",\"value\":{\"pp\":\"01\",\"familyName\":\"Bachchan\",\"givenNames\":\"Abhishek Amitabh\",\"roa\":\"Yes\",\"asylumSupport\":\"No\",\"hoFeeWaiver\":\"Yes\"}}," +
+                "[{\"id\":\"1342-5786-9120-3564/01\",\"value\":{\"pp\":\"01\",\"familyName\":\"Bachchan\",\"givenNames\":\"Abhishek Amitabh\",\"roa\":\"Yes\",\"asylumSupport\":\"No\",\"hoFeeWaiver\":\"Yes\",\"language\":\"hin\",\"interpreterNeeded\":\"No\"}}," +
                 "{\"id\":\"1342-5786-9120-3564/02\",\"value\":{\"pp\":\"02\",\"familyName\":\"Rai\",\"givenNames\":\"Aishwarya\",\"roa\":\"No\"}}]";
         handlerUtilsMock.when(() -> HandlerUtils.decrypt(encryptedData, homeOfficeSerialisedEncryptionKey)).thenReturn(json);
 
@@ -287,6 +289,8 @@ class HomeOfficeReferenceHandlerOnSubmitTest {
         verify(asylumCase).write(eq(HO_RIGHT_OF_APPEAL), eq(YesOrNo.YES));
         verify(asylumCase).write(eq(HO_ASYLUM_SUPPORT), eq(YesOrNo.NO));
         verify(asylumCase).write(eq(HO_FEE_WAIVER), eq(YesOrNo.YES));
+        verify(asylumCase).write(eq(HOME_OFFICE_APPELLANT_LANGUAGE), eq("hin"));
+        verify(asylumCase).write(eq(HO_INTERPRETER_REQUIRED), eq(YesOrNo.NO));
     }
 
     @Test
@@ -296,6 +300,8 @@ class HomeOfficeReferenceHandlerOnSubmitTest {
         appellant.setRoa(YesOrNo.YES);
         appellant.setAsylumSupport(YesOrNo.NO);
         appellant.setHoFeeWaiver(YesOrNo.YES);
+        appellant.setLanguage("hin");
+        appellant.setInterpreterNeeded(YesOrNo.NO);
 
         when(callback.getEvent()).thenReturn(Event.START_APPEAL);
         when(asylumCase.read(HOME_OFFICE_APPELLANTS)).thenReturn(Optional.of(List.of(new IdValue<>("1342-5786-9120-3564/01", appellant))));
@@ -309,6 +315,8 @@ class HomeOfficeReferenceHandlerOnSubmitTest {
         verify(asylumCase).write(eq(HO_RIGHT_OF_APPEAL), eq(YesOrNo.YES));
         verify(asylumCase).write(eq(HO_ASYLUM_SUPPORT), eq(YesOrNo.NO));
         verify(asylumCase).write(eq(HO_FEE_WAIVER), eq(YesOrNo.YES));
+        verify(asylumCase).write(eq(HOME_OFFICE_APPELLANT_LANGUAGE), eq("hin"));
+        verify(asylumCase).write(eq(HO_INTERPRETER_REQUIRED), eq(YesOrNo.NO));
     }
 
     @Test
@@ -329,5 +337,7 @@ class HomeOfficeReferenceHandlerOnSubmitTest {
         verify(asylumCase, never()).write(eq(HO_RIGHT_OF_APPEAL), any());
         verify(asylumCase, never()).write(eq(HO_ASYLUM_SUPPORT), any());
         verify(asylumCase, never()).write(eq(HO_FEE_WAIVER), any());
+        verify(asylumCase, never()).write(eq(HOME_OFFICE_APPELLANT_LANGUAGE), any());
+        verify(asylumCase, never()).write(eq(HO_INTERPRETER_REQUIRED), any());
     }
 }

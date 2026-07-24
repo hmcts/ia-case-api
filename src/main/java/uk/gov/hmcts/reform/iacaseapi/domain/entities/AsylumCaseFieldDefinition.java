@@ -65,6 +65,12 @@ public enum AsylumCaseFieldDefinition {
     HO_FEE_WAIVER(
         "hoFeeWaiver", new TypeReference<YesOrNo>(){}),
 
+    HOME_OFFICE_APPELLANT_LANGUAGE(
+        "homeOfficeAppellantLanguage", new TypeReference<String>(){}),
+
+    HO_INTERPRETER_REQUIRED(
+        "hoInterpreterRequired", new TypeReference<YesOrNo>(){}),
+
     APPELLANT_GIVEN_NAMES(
         "appellantGivenNames", new TypeReference<String>(){}),
 
