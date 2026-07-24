@@ -137,6 +137,8 @@ public class SaveNotificationsToDataHandler implements PreSubmitCallbackHandler<
             .replace("\r\n", "<br>")
             .replace("’", "'")
             .replace("‘", "'")
+            .replace("“", "\"")
+            .replace("”", "\"")
             .replace(" ", " ")
             .replace("&nbsp;", " ")
             + "</div>";
