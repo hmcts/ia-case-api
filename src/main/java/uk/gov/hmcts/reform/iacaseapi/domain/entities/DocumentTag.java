@@ -49,6 +49,8 @@ public enum DocumentTag {
     NOTICE_OF_ADJOURNED_HEARING("noticeOfAdjournedHearing"),
     APPEAL_WAS_NOT_SUBMITTED_SUPPORTING_DOCUMENT("appealWasNotSubmittedSupportingDocument"),
     INTERNAL_OUT_OF_TIME_DECISION_LETTER("internalOutOfTimeDecisionLetter"),
+    STF_24WEEKS_CASE_REVIEW_APPELLANT_DOCUMENT("stf24WeeksCaseReviewAppeallantDocument"),
+
 
     @JsonEnumDefaultValue
     NONE("");
