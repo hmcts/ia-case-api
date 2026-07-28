@@ -1395,7 +1395,6 @@ security:
       - "hearingCancelled"
       - "cmrHearingCancelled"
       - "forceDecidedState"
-      - "cmrHearingCancelled"
       - "forceFtpaDecidedState"
       - "rollbackMigration"
       - "addStatutoryTimeframe24Weeks"
