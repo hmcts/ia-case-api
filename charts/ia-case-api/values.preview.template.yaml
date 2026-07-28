@@ -164,6 +164,7 @@ ia-case-payments-api:
           - name: ia-redis-encryption-key
             alias: IA_REDIS_ENCRYPTION_KEY
 
+
 ia-case-documents-api:
   enabled: true #set to true if testing against a local branch
   java:
