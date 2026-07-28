@@ -473,6 +473,8 @@ security:
       - "generateListCmrTask"
       - "markAppealAsDetained"
       - "removeDetainedStatus"
+      - "addStatutoryTimeframe24Weeks"
+      - "removeStatutoryTimeframe24Weeks"
       - "forceCaseToPrepareForHearing"
       - "revokeCitizenAccess"
     senior-tribunal-caseworker:
@@ -565,8 +567,9 @@ security:
       - "markAppealAsDetained"
       - "removeDetainedStatus"
       - "turnOnNotificationsWATasks"
-      - "removeStatutoryTimeframe24Weeks"
       - "forceCaseToPrepareForHearing"
+      - "addStatutoryTimeframe24Weeks"
+      - "removeStatutoryTimeframe24Weeks"
       - "revokeCitizenAccess"
     hearing-centre-admin:
       - "appellantInPersonManual"
@@ -638,6 +641,7 @@ security:
       - "forceFtpaDecidedState"
       - "turnOnNotificationsWATasks"
       - "addStatutoryTimeframe24Weeks"
+      - "removeStatutoryTimeframe24Weeks"
       - "revokeCitizenAccess"
       - "requestRespondentEvidence"
     ctsc:
@@ -707,6 +711,7 @@ security:
       - "turnOnNotificationsWATasks"
       - "editDocuments"
       - "addStatutoryTimeframe24Weeks"
+      - "removeStatutoryTimeframe24Weeks"
       - "revokeCitizenAccess"
       - "forceDecidedState"
       - "forceFtpaDecidedState"
@@ -780,6 +785,7 @@ security:
       - "forceDecidedState"
       - "forceFtpaDecidedState"
       - "addStatutoryTimeframe24Weeks"
+      - "removeStatutoryTimeframe24Weeks"
       - "revokeCitizenAccess"
       - "requestRespondentEvidence"
     national-business-centre:
@@ -850,6 +856,7 @@ security:
       - "forceDecidedState"
       - "forceFtpaDecidedState"
       - "addStatutoryTimeframe24Weeks"
+      - "removeStatutoryTimeframe24Weeks"
       - "revokeCitizenAccess"
       - "requestRespondentEvidence"
     challenged-access-ctsc:
@@ -920,6 +927,7 @@ security:
       - "forceDecidedState"
       - "forceFtpaDecidedState"
       - "addStatutoryTimeframe24Weeks"
+      - "removeStatutoryTimeframe24Weeks"
       - "revokeCitizenAccess"
       - "requestRespondentEvidence"
     challenged-access-admin:
@@ -991,6 +999,7 @@ security:
       - "forceDecidedState"
       - "forceFtpaDecidedState"
       - "addStatutoryTimeframe24Weeks"
+      - "removeStatutoryTimeframe24Weeks"
       - "revokeCitizenAccess"
       - "requestRespondentEvidence"
     caseworker-ia-homeofficeapc:
@@ -1112,6 +1121,8 @@ security:
       - "createFlag"
       - "decideCostsApplication"
       - "considerMakingCostsOrder"
+      - "addStatutoryTimeframe24Weeks"
+      - "removeStatutoryTimeframe24Weeks"
       - "updateTribunalDecision"
     senior-judge:
       - "generateDecisionAndReasons"
@@ -1143,6 +1154,8 @@ security:
       - "createFlag"
       - "decideCostsApplication"
       - "considerMakingCostsOrder"
+      - "addStatutoryTimeframe24Weeks"
+      - "removeStatutoryTimeframe24Weeks"
       - "updateTribunalDecision"
     leadership-judge:
       - "generateDecisionAndReasons"
@@ -1174,6 +1187,8 @@ security:
       - "createFlag"
       - "decideCostsApplication"
       - "considerMakingCostsOrder"
+      - "addStatutoryTimeframe24Weeks"
+      - "removeStatutoryTimeframe24Weeks"
       - "updateTribunalDecision"
     fee-paid-judge:
       - "generateDecisionAndReasons"
@@ -1205,6 +1220,8 @@ security:
       - "createFlag"
       - "decideCostsApplication"
       - "considerMakingCostsOrder"
+      - "addStatutoryTimeframe24Weeks"
+      - "removeStatutoryTimeframe24Weeks"
       - "updateTribunalDecision"
     lead-judge:
       - "generateDecisionAndReasons"
@@ -1236,6 +1253,8 @@ security:
       - "createFlag"
       - "decideCostsApplication"
       - "considerMakingCostsOrder"
+      - "addStatutoryTimeframe24Weeks"
+      - "removeStatutoryTimeframe24Weeks"
       - "updateTribunalDecision"
     hearing-judge:
       - "generateDecisionAndReasons"
@@ -1267,6 +1286,8 @@ security:
       - "createFlag"
       - "decideCostsApplication"
       - "considerMakingCostsOrder"
+      - "addStatutoryTimeframe24Weeks"
+      - "removeStatutoryTimeframe24Weeks"
       - "updateTribunalDecision"
     ftpa-judge:
       - "generateDecisionAndReasons"
@@ -1298,6 +1319,8 @@ security:
       - "createFlag"
       - "decideCostsApplication"
       - "considerMakingCostsOrder"
+      - "addStatutoryTimeframe24Weeks"
+      - "removeStatutoryTimeframe24Weeks"
       - "updateTribunalDecision"
     hearing-panel-judge:
       - "generateDecisionAndReasons"
@@ -1329,6 +1352,8 @@ security:
       - "createFlag"
       - "decideCostsApplication"
       - "considerMakingCostsOrder"
+      - "addStatutoryTimeframe24Weeks"
+      - "removeStatutoryTimeframe24Weeks"
       - "updateTribunalDecision"
     challenged-access-judiciary:
       - "generateDecisionAndReasons"
@@ -1360,6 +1385,8 @@ security:
       - "createFlag"
       - "decideCostsApplication"
       - "considerMakingCostsOrder"
+      - "addStatutoryTimeframe24Weeks"
+      - "removeStatutoryTimeframe24Weeks"
       - "updateTribunalDecision"
     caseworker-ia-system:
       - "requestHearingRequirementsFeature"
