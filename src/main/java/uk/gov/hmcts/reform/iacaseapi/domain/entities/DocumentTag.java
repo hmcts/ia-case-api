@@ -49,6 +49,7 @@ public enum DocumentTag {
     NOTICE_OF_ADJOURNED_HEARING("noticeOfAdjournedHearing"),
     APPEAL_WAS_NOT_SUBMITTED_SUPPORTING_DOCUMENT("appealWasNotSubmittedSupportingDocument"),
     INTERNAL_OUT_OF_TIME_DECISION_LETTER("internalOutOfTimeDecisionLetter"),
+    CMR_HEARING_CANCELLED_LETTER("cmrHearingCancelledLetter"),
 
     @JsonEnumDefaultValue
     NONE("");
