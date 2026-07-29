@@ -22,10 +22,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -95,10 +92,22 @@ public class SaveNotificationsToDataHandler implements PreSubmitCallbackHandler<
                     Notification notification = notificationClient.getNotificationById(notificationId);
                     StoredNotification storedNotification =
                         getStoredNotification(notificationId, notification);
+                    if (storedNotification.getNotificationMethod().equals("Letter")) {
+                        try {
+                            byte[] pdfFile = notificationClient.getPdfForLetter(notificationId);
+                            if (pdfFile != null && pdfFile.length > 0) {
+                                String encodedPdfFile = Base64.getEncoder().encodeToString(pdfFile);
+                                storedNotification.setNotificationDocumentEncoded(encodedPdfFile);
+                            }
+                        } catch (NotificationClientException exception) {
+                            log.warn("Notification client getPdfForLetter failure on case {}: ",
+                                callback.getCaseDetails().getId(), exception);
+                        }
+                    }
                     allNotifications = notificationAppender.append(storedNotification, allNotifications);
                 } catch (NotificationClientException exception) {
-                    log.warn("Notification client error on case "
-                        + callback.getCaseDetails().getId() + ": ", exception);
+                    log.warn("Notification client error on case {}: ",
+                        callback.getCaseDetails().getId(), exception);
                 }
             }
             allNotifications = sortNotificationsByDate(allNotifications);

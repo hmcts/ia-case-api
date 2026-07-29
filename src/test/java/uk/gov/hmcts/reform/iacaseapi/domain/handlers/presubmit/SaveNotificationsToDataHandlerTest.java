@@ -29,6 +29,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 
@@ -609,4 +610,82 @@ class SaveNotificationsToDataHandlerTest {
         assertFalse(canHandle);
     }
 
+    @Test
+    void should_set_encoded_pdf_bye_array_for_letter() throws NotificationClientException {
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        List<IdValue<String>> notificationsSent =
+            List.of(new IdValue<>(reference, notificationId));
+        when(asylumCase.read(NOTIFICATIONS)).thenReturn(Optional.empty());
+        when(asylumCase.read(NOTIFICATIONS_SENT)).thenReturn(Optional.of(notificationsSent));
+        when(notificationClient.getNotificationById(notificationId)).thenReturn(notification);
+        when(notification.getBody()).thenReturn(body);
+        when(notification.getNotificationType()).thenReturn(notificationTypeLetter);
+        when(notification.getReference()).thenReturn(Optional.of(reference));
+        String dateString = "01-01-2024 10:57";
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
+        LocalDateTime localDateTime = LocalDateTime.parse(dateString, dateFormatter);
+        ZonedDateTime zonedDateTime = localDateTime.atZone(ZoneId.of("Europe/London"));
+        when(notification.getSentAt()).thenReturn(Optional.of(zonedDateTime));
+        when(notification.getStatus()).thenReturn(status);
+        byte[] pdfBytes = new byte[]{1, 2, 3, 4, 5};
+        when(notificationClient.getPdfForLetter(notificationId)).thenReturn(pdfBytes);
+
+        saveNotificationsToDataHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        verify(notificationClient, times(1)).getNotificationById(anyString());
+        verify(notificationClient, times(1)).getPdfForLetter(anyString());
+        String encodedPdfFile = Base64.getEncoder().encodeToString(pdfBytes);
+
+        StoredNotification storedNotification =
+            StoredNotification.builder()
+                .notificationId(notificationId)
+                .notificationDateSent("2024-01-01T10:57")
+                .notificationSentTo("N/A")
+                .notificationBody("<div>" + body + "</div>")
+                .notificationDocumentEncoded(encodedPdfFile)
+                .notificationMethod(StringUtils.capitalize(notificationTypeLetter))
+                .notificationStatus(StringUtils.capitalize(status))
+                .notificationReference(reference)
+                .notificationSubject("N/A")
+                .build();
+        verify(storedNotificationAppender, times(1)).append(storedNotification, emptyList());
+        verify(asylumCase, times(1)).write(eq(NOTIFICATIONS), anyList());
+    }
+
+    @Test
+    void should_continue_if_getPdfForLetter_throws_exception() throws NotificationClientException {
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        List<IdValue<String>> notificationsSent =
+            List.of(new IdValue<>(reference, notificationId));
+        when(asylumCase.read(NOTIFICATIONS)).thenReturn(Optional.empty());
+        when(asylumCase.read(NOTIFICATIONS_SENT)).thenReturn(Optional.of(notificationsSent));
+        when(notificationClient.getNotificationById(notificationId)).thenReturn(notification);
+        when(notification.getBody()).thenReturn(body);
+        when(notification.getNotificationType()).thenReturn(notificationTypeLetter);
+        when(notification.getReference()).thenReturn(Optional.of(reference));
+        String dateString = "01-01-2024 10:57";
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
+        LocalDateTime localDateTime = LocalDateTime.parse(dateString, dateFormatter);
+        ZonedDateTime zonedDateTime = localDateTime.atZone(ZoneId.of("Europe/London"));
+        when(notification.getSentAt()).thenReturn(Optional.of(zonedDateTime));
+        when(notification.getStatus()).thenReturn(status);
+        when(notificationClient.getPdfForLetter(notificationId)).thenThrow(new NotificationClientException("some-client-error"));
+        saveNotificationsToDataHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+        verify(notificationClient, times(1)).getNotificationById(anyString());
+        StoredNotification storedNotification =
+            StoredNotification.builder()
+                .notificationId(notificationId)
+                .notificationDateSent("2024-01-01T10:57")
+                .notificationSentTo("N/A")
+                .notificationBody("<div>" + body + "</div>")
+                .notificationMethod(StringUtils.capitalize(notificationTypeLetter))
+                .notificationStatus(StringUtils.capitalize(status))
+                .notificationReference(reference)
+                .notificationSubject("N/A")
+                .build();
+        verify(storedNotificationAppender, times(1)).append(storedNotification, emptyList());
+        verify(asylumCase, times(1)).write(eq(NOTIFICATIONS), anyList());
+    }
 }
