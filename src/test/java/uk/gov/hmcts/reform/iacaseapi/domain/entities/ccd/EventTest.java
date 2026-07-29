@@ -74,6 +74,7 @@ class EventTest {
             Arguments.of("endAppeal", Event.END_APPEAL.toString()),
             Arguments.of("requestCaseBuilding", Event.REQUEST_CASE_BUILDING.toString()),
             Arguments.of("forceRequestCaseBuilding", Event.FORCE_REQUEST_CASE_BUILDING.toString()),
+            Arguments.of("deleteDraftAppeal", Event.DELETE_DRAFT_APPEAL.toString()),
             Arguments.of("uploadAdditionalEvidenceHomeOffice", Event.UPLOAD_ADDITIONAL_EVIDENCE_HOME_OFFICE.toString()),
             Arguments.of("requestResponseReview", Event.REQUEST_RESPONSE_REVIEW.toString()),
             Arguments.of("requestResponseAmend", Event.REQUEST_RESPONSE_AMEND.toString()),
@@ -175,6 +176,7 @@ class EventTest {
             Arguments.of("ariaCreateCase", Event.ARIA_CREATE_CASE.toString()),
             Arguments.of("progressMigratedCase", Event.PROGRESS_MIGRATED_CASE.toString()),
             Arguments.of("refundConfirmation", Event.REFUND_CONFIRMATION.toString()),
+            Arguments.of("cmrHearingCancelled", Event.CMR_HEARING_CANCELLED.toString()),
             Arguments.of("hearingCancelled", Event.HEARING_CANCELLED.toString()),
             Arguments.of("updateInterpreterBookingStatus", Event.UPDATE_INTERPRETER_BOOKING_STATUS.toString()),
             Arguments.of("updateInterpreterDetails", Event.UPDATE_INTERPRETER_DETAILS.toString()),
@@ -196,6 +198,7 @@ class EventTest {
             Arguments.of("revokeCitizenAccess", Event.REVOKE_CITIZEN_ACCESS.toString()),
             Arguments.of("completeCaseReview", Event.COMPLETE_CASE_REVIEW.toString()),
             Arguments.of("generatePinInPost", Event.GENERATE_PIN_IN_POST.toString()),
+            Arguments.of("forceCaseToPrepareForHearing", Event.FORCE_CASE_TO_PREPARE_FOR_HEARING.toString()),
             Arguments.of("unknown", Event.UNKNOWN.toString())
         );
     }

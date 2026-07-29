@@ -48,6 +48,7 @@ public enum Event {
     END_APPEAL("endAppeal"),
     REQUEST_CASE_BUILDING("requestCaseBuilding"),
     FORCE_REQUEST_CASE_BUILDING("forceRequestCaseBuilding"),
+    DELETE_DRAFT_APPEAL("deleteDraftAppeal"),
     UPLOAD_ADDITIONAL_EVIDENCE_HOME_OFFICE("uploadAdditionalEvidenceHomeOffice"),
     REQUEST_RESPONSE_REVIEW("requestResponseReview"),
     REQUEST_RESPONSE_AMEND("requestResponseAmend"),
@@ -160,6 +161,7 @@ public enum Event {
     RECORD_ADJOURNMENT_DETAILS("recordAdjournmentDetails"),
     LIST_ASSIST_INTEGRATION("listAssistIntegration"),
     CMR_LISTING("cmrListing"),
+    CMR_HEARING_CANCELLED("cmrHearingCancelled"),
     DECISION_WITHOUT_HEARING_LISTED("decisionWithoutHearingListed"),
     SAVE_NOTIFICATIONS_TO_DATA("saveNotificationsToData"),
     UPDATE_NEXT_HEARING_INFO("UpdateNextHearingInfo"),
@@ -170,6 +172,7 @@ public enum Event {
     FORCE_FTPA_DECIDED_STATE("forceFtpaDecidedState"),
     ROLLBACK_MIGRATION("rollbackMigration"),
     COMPLETE_CASE_REVIEW("completeCaseReview"),
+    FORCE_CASE_TO_PREPARE_FOR_HEARING("forceCaseToPrepareForHearing"),
     GENERATE_PIN_IN_POST("generatePinInPost"),
 
     @JsonEnumDefaultValue
