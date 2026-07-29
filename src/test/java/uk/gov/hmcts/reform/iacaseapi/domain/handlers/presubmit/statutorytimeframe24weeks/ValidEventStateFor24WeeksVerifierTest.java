@@ -27,6 +27,7 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.UPDATE_INTERPRETER_DETAILS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.statutorytimeframe24weeks.ValidEventStateFor24WeeksVerifier.INVALID_ADJOURNMENT_STATES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.statutorytimeframe24weeks.ValidEventStateFor24WeeksVerifier.INVALID_UPDATE_HEARING_REQUEST_STATES;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -144,6 +145,21 @@ class ValidEventStateFor24WeeksVerifierTest {
         assertFalse(validEventStateFor24WeeksVerifier.isInvalidState(Event.UPDATE_HEARING_REQUEST, state, false));
     }
 
+
+    @ParameterizedTest
+    @MethodSource("invalidStatesForUpdateHearingRequest")
+    void isInvalidState_returns_true_for_invalid_states_adjournment_non_24w(State state) {
+        assertTrue(validEventStateFor24WeeksVerifier.isInvalidState(Event.ADJOURN_HEARING_WITHOUT_DATE, state, false));
+        assertTrue(validEventStateFor24WeeksVerifier.isInvalidState(Event.RECORD_ADJOURNMENT_DETAILS, state, false));
+    }
+
+    @ParameterizedTest
+    @MethodSource("validStatesForUpdateHearingRequest")
+    void isInvalidState_returns_false_for_valid_states_adjournment_non_24w(State state) {
+        assertFalse(validEventStateFor24WeeksVerifier.isInvalidState(Event.ADJOURN_HEARING_WITHOUT_DATE, state, false));
+        assertFalse(validEventStateFor24WeeksVerifier.isInvalidState(Event.RECORD_ADJOURNMENT_DETAILS, state, false));
+    }
+
     @ParameterizedTest
     @EnumSource(State.class)
     void isInvalidState_returns_false_for_all_states_update_hearing_request_24w(State state) {
@@ -201,5 +217,14 @@ class ValidEventStateFor24WeeksVerifierTest {
     static Stream<State> validStatesForUpdateHearingRequest() {
         return Arrays.stream(State.values())
             .filter(state -> !INVALID_UPDATE_HEARING_REQUEST_STATES.contains(state));
+    }
+
+    static Stream<State> invalidStatesForAdjournEvent() {
+        return INVALID_ADJOURNMENT_STATES.stream();
+    }
+
+    static Stream<State> validStatesForAdjournEvent() {
+        return Arrays.stream(State.values())
+            .filter(state -> !INVALID_ADJOURNMENT_STATES.contains(state));
     }
 }

@@ -34,6 +34,18 @@ public class ValidEventStateFor24WeeksVerifier implements PreSubmitCallbackHandl
         State.CLARIFYING_QUESTIONS_ANSWERS_SUBMITTED
     );
 
+    protected static final Set<State> INVALID_ADJOURNMENT_STATES = EnumSet.of(
+        State.AWAITING_RESPONDENT_EVIDENCE,
+        State.CASE_BUILDING,
+        State.CASE_UNDER_REVIEW,
+        State.SUBMIT_HEARING_REQUIREMENTS,
+        State.RESPONDENT_REVIEW,
+        State.AWAITING_REASONS_FOR_APPEAL,
+        State.REASONS_FOR_APPEAL_SUBMITTED,
+        State.AWAITING_CLARIFYING_QUESTIONS_ANSWERS,
+        State.CLARIFYING_QUESTIONS_ANSWERS_SUBMITTED
+    );
+
     private static final Set<Event> VALID_EVENTS = EnumSet.of(
         UPDATE_HEARING_REQUEST,
         UPDATE_INTERPRETER_DETAILS,
@@ -95,6 +107,12 @@ public class ValidEventStateFor24WeeksVerifier implements PreSubmitCallbackHandl
         if (event == UPDATE_HEARING_REQUEST) {
             return !is24WeekCase
                 && INVALID_UPDATE_HEARING_REQUEST_STATES.contains(state);
+        }
+
+        if (event == ADJOURN_HEARING_WITHOUT_DATE || event == RECORD_ADJOURNMENT_DETAILS) {
+            return is24WeekCase
+                ? state == State.LISTING
+                : INVALID_ADJOURNMENT_STATES.contains(state);
         }
 
         return is24WeekCase
