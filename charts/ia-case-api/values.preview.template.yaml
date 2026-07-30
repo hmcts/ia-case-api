@@ -763,7 +763,7 @@ ia-aip-frontend:
 ccd-case-document-am-api:
   enabled: true
   java:
-    image: hmctsprod.azurecr.io/ccd/case-document-am-api:latest
+    image: hmctsprod.azurecr.io/ccd/case-document-am-api:pr-1208
     releaseNameOverride: ${SERVICE_NAME}-ccd-case-document-am-api
     environment:
       CCD_DATA_STORE_API_BASE_URL: http://{{ .Release.Name }}-ccd-data-store-api
