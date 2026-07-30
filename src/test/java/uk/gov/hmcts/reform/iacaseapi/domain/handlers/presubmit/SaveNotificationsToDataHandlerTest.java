@@ -18,7 +18,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.Appender;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.service.notify.Notification;
 import uk.gov.service.notify.NotificationClient;
@@ -46,8 +45,6 @@ class SaveNotificationsToDataHandlerTest {
 
     @Mock
     private NotificationClient notificationClient;
-    @Mock
-    private Appender<StoredNotification> storedNotificationAppender;
     @Mock
     private Notification notification;
     @Mock
@@ -81,7 +78,6 @@ class SaveNotificationsToDataHandlerTest {
         when(callback.getEvent()).thenReturn(SAVE_NOTIFICATIONS_TO_DATA);
         saveNotificationsToDataHandler = new SaveNotificationsToDataHandler(
             notificationClient,
-            storedNotificationAppender,
             true,
             featureToggler);
     }
@@ -129,21 +125,13 @@ class SaveNotificationsToDataHandlerTest {
                 .build();
         long dateEightsDaysAgo = Instant.now().minusSeconds(8 * 24 * 60 * 60).toEpochMilli();
         String oldNotificationId = "notificationId_" + dateEightsDaysAgo;
-        List<IdValue<StoredNotification>> appendedStoredNotifications =
-            List.of(
-                new IdValue<>("1", mockedStoredNotification),
-                new IdValue<>(notificationId, storedNotification),
-                new IdValue<>(oldNotificationId, mockedStoredNotification2)
-            );
-        when(storedNotificationAppender.append(storedNotification, storedNotifications)).thenReturn(appendedStoredNotifications);
         saveNotificationsToDataHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
         verify(notificationClient, times(1)).getNotificationById(anyString());
-        verify(storedNotificationAppender, times(1)).append(storedNotification, storedNotifications);
         List<IdValue<StoredNotification>> sortedStoredNotifications =
             List.of(
-                new IdValue<>(notificationId, storedNotification),
-                new IdValue<>(oldNotificationId, mockedStoredNotification2),
-                new IdValue<>("1", mockedStoredNotification)
+                new IdValue<>("1", storedNotification),
+                new IdValue<>("2", mockedStoredNotification2),
+                new IdValue<>("3", mockedStoredNotification)
             );
         verify(asylumCase, times(1)).write(eq(NOTIFICATIONS), eq(sortedStoredNotifications));
     }
@@ -180,7 +168,6 @@ class SaveNotificationsToDataHandlerTest {
                 .notificationReference(reference)
                 .notificationSubject("N/A")
                 .build();
-        verify(storedNotificationAppender, times(1)).append(storedNotification, emptyList());
         verify(asylumCase, times(1)).write(eq(NOTIFICATIONS), anyList());
     }
 
@@ -227,7 +214,6 @@ class SaveNotificationsToDataHandlerTest {
                 .notificationReference(reference)
                 .notificationSubject("N/A")
                 .build();
-        verify(storedNotificationAppender, times(1)).append(storedNotification, emptyList());
         verify(asylumCase, times(1)).write(eq(NOTIFICATIONS), anyList());
     }
 
@@ -274,7 +260,6 @@ class SaveNotificationsToDataHandlerTest {
                 .notificationReference(reference)
                 .notificationSubject("N/A")
                 .build();
-        verify(storedNotificationAppender, times(1)).append(storedNotification, emptyList());
         verify(asylumCase, times(1)).write(eq(NOTIFICATIONS), anyList());
     }
 
@@ -309,7 +294,6 @@ class SaveNotificationsToDataHandlerTest {
                 .notificationReference(reference)
                 .notificationSubject("N/A")
                 .build();
-        verify(storedNotificationAppender, times(1)).append(storedNotification, emptyList());
         verify(asylumCase, times(1)).write(eq(NOTIFICATIONS), anyList());
     }
 
@@ -345,7 +329,6 @@ class SaveNotificationsToDataHandlerTest {
                 .notificationReference(notificationId)
                 .notificationSubject(subject)
                 .build();
-        verify(storedNotificationAppender, times(1)).append(storedNotification, emptyList());
         verify(asylumCase, times(1)).write(eq(NOTIFICATIONS), anyList());
     }
 
@@ -381,7 +364,6 @@ class SaveNotificationsToDataHandlerTest {
                 .notificationReference(notificationId)
                 .notificationSubject("N/A")
                 .build();
-        verify(storedNotificationAppender, times(1)).append(storedNotification, emptyList());
         verify(asylumCase, times(1)).write(eq(NOTIFICATIONS), anyList());
     }
 
@@ -417,7 +399,6 @@ class SaveNotificationsToDataHandlerTest {
                 .notificationReference(notificationId)
                 .notificationSubject("N/A")
                 .build();
-        verify(storedNotificationAppender, times(1)).append(storedNotification, emptyList());
         verify(asylumCase, times(1)).write(eq(NOTIFICATIONS), anyList());
     }
 
@@ -443,7 +424,6 @@ class SaveNotificationsToDataHandlerTest {
 
         saveNotificationsToDataHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
         verify(notificationClient, never()).getNotificationById(anyString());
-        verify(storedNotificationAppender, never()).append(any(StoredNotification.class), anyList());
         verify(asylumCase, never()).write(eq(NOTIFICATIONS), anyList());
     }
 
@@ -471,8 +451,6 @@ class SaveNotificationsToDataHandlerTest {
 
         saveNotificationsToDataHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
         verify(notificationClient, never()).getNotificationById(anyString());
-        verify(storedNotificationAppender, never())
-            .append(any(StoredNotification.class), anyList());
         verify(asylumCase, never()).write(eq(NOTIFICATIONS), anyList());
     }
 
@@ -487,8 +465,6 @@ class SaveNotificationsToDataHandlerTest {
         when(notificationClient.getNotificationById(anyString()))
             .thenThrow(new NotificationClientException("some-client-error"));
         saveNotificationsToDataHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
-        verify(storedNotificationAppender, times(0))
-            .append(any(StoredNotification.class), anyList());
         verify(asylumCase, times(1)).write(NOTIFICATIONS, emptyList());
     }
 
@@ -534,15 +510,14 @@ class SaveNotificationsToDataHandlerTest {
         when(notification.getEmailAddress()).thenReturn(Optional.of(email));
         when(notification.getReference()).thenReturn(Optional.of(reference));
         when(notification.getSubject()).thenReturn(Optional.of(subject));
-        String dateString = "01-01-2024 10:57";
-        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
-        LocalDateTime localDateTime = LocalDateTime.parse(dateString, dateFormatter);
+        LocalDateTime localDateTime = LocalDateTime.parse("2025-01-01T10:57");
         ZonedDateTime zonedDateTime = localDateTime.atZone(ZoneId.of("Europe/London"));
         when(notification.getSentAt()).thenReturn(Optional.of(zonedDateTime));
         when(notification.getStatus()).thenReturn(status);
         when(mockedStoredNotification.getNotificationId()).thenReturn("1");
+        when(mockedStoredNotification.getNotificationDateSent()).thenReturn("2025-01-01T10:57");
         when(mockedStoredNotification2.getNotificationId()).thenReturn("2");
-
+        when(mockedStoredNotification2.getNotificationDateSent()).thenReturn("2026-01-01T10:57");
 
         when(featureToggler.getValue("save-notifications-feature", false)).thenReturn(true);
 
@@ -561,7 +536,6 @@ class SaveNotificationsToDataHandlerTest {
 
         saveNotificationsToDataHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
         verify(notificationClient, never()).getNotificationById(anyString());
-        verify(storedNotificationAppender, never()).append(any(StoredNotification.class), anyList());
         verify(asylumCase, never()).write(eq(NOTIFICATIONS), anyList());
     }
 
@@ -600,7 +574,6 @@ class SaveNotificationsToDataHandlerTest {
 
         saveNotificationsToDataHandler = new SaveNotificationsToDataHandler(
                 notificationClient,
-                storedNotificationAppender,
                 saveNotificationsToDataEnvVarEnabled,
                 featureToggler);
 
@@ -608,5 +581,4 @@ class SaveNotificationsToDataHandlerTest {
                 PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
         assertFalse(canHandle);
     }
-
 }
