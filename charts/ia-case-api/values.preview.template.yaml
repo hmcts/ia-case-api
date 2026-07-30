@@ -169,7 +169,7 @@ ia-case-documents-api:
   java:
     imagePullPolicy: Always
     # image: hmctsprod.azurecr.io/ia/case-documents-api:latest
-    image: hmctsprod.azurecr.io/ia/case-documents-api:pr-1195
+    image: hmctsprod.azurecr.io/ia/case-documents-api:pr-1208
     releaseNameOverride: ${SERVICE_NAME}-case-documents-api
     ingressHost: ${SERVICE_NAME}-documents-api.preview.platform.hmcts.net
     devcpuRequests: 500m
@@ -763,7 +763,7 @@ ia-aip-frontend:
 ccd-case-document-am-api:
   enabled: true
   java:
-    image: hmctsprod.azurecr.io/ccd/case-document-am-api:pr-1208
+    image: hmctsprod.azurecr.io/ccd/case-document-am-api:latest
     releaseNameOverride: ${SERVICE_NAME}-ccd-case-document-am-api
     environment:
       CCD_DATA_STORE_API_BASE_URL: http://{{ .Release.Name }}-ccd-data-store-api
