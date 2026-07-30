@@ -52,6 +52,7 @@ class DocumentTagTest {
         assertEquals("appealWasNotSubmittedSupportingDocument", DocumentTag.APPEAL_WAS_NOT_SUBMITTED_SUPPORTING_DOCUMENT.toString());
         assertEquals("internalOutOfTimeDecisionLetter", DocumentTag.INTERNAL_OUT_OF_TIME_DECISION_LETTER.toString());
         assertEquals("cmrHearingCancelledLetter", DocumentTag.CMR_HEARING_CANCELLED_LETTER.toString());
+        assertEquals("stf24WeeksCaseReviewAppeallantDocument", DocumentTag.STF_24WEEKS_CASE_REVIEW_APPELLANT_DOCUMENT.toString());
 
     }
 
