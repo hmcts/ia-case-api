@@ -13,6 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
+import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsHelper;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -53,6 +54,10 @@ class RequestRespondentEvidencePreparerTest {
     @Mock
     private DueDateService dueDateService;
     @Mock
+    private UserDetails userDetails;
+    @Mock
+    private UserDetailsHelper userDetailsHelper;
+    @Mock
     private Callback<AsylumCase> callback;
     @Mock
     private CaseDetails<AsylumCase> caseDetails;
@@ -67,7 +72,9 @@ class RequestRespondentEvidencePreparerTest {
     @BeforeEach
     public void setUp() {
         requestRespondentEvidencePreparer =
-            new RequestRespondentEvidencePreparer(DUE_IN_DAYS, DUE_IN_DAYS_ADA, DUE_IN_DAYS_DETAINED, LocalDate.of(2000, 1, 1).toString(), featureToggler, dateProvider, dueDateService);
+            new RequestRespondentEvidencePreparer(DUE_IN_DAYS, DUE_IN_DAYS_ADA, DUE_IN_DAYS_DETAINED, LocalDate.of(2000, 1, 1).toString(), featureToggler, dateProvider, dueDateService, userDetails, userDetailsHelper);
+        // Default: non-admin role so existing tests are unaffected
+        when(userDetailsHelper.getLoggedInUserRole(userDetails)).thenReturn(UserRole.CASE_OFFICER);
     }
 
     @Test
@@ -80,10 +87,10 @@ class RequestRespondentEvidencePreparerTest {
 
         requestRespondentEvidencePreparer =
                 new RequestRespondentEvidencePreparer(DUE_IN_DAYS, DUE_IN_DAYS_ADA, DUE_IN_DAYS_DETAINED,
-                        LocalDate.now().minusDays(1).toString(), featureToggler, dateProvider, dueDateService);
+                        LocalDate.now().minusDays(1).toString(), featureToggler, dateProvider, dueDateService, userDetails, userDetailsHelper);
         requestRespondentEvidencePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
-        verify(asylumCase).read(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class);
+        verify(asylumCase).read(STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED, YesOrNo.class);
     }
 
     @Test
@@ -96,10 +103,10 @@ class RequestRespondentEvidencePreparerTest {
 
         requestRespondentEvidencePreparer =
                 new RequestRespondentEvidencePreparer(DUE_IN_DAYS, DUE_IN_DAYS_ADA, DUE_IN_DAYS_DETAINED,
-                        LocalDate.now().toString(), featureToggler, dateProvider, dueDateService);
+                        LocalDate.now().toString(), featureToggler, dateProvider, dueDateService, userDetails, userDetailsHelper);
         requestRespondentEvidencePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
-        verify(asylumCase).read(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class);
+        verify(asylumCase).read(STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED, YesOrNo.class);
     }
 
     @Test
@@ -112,10 +119,10 @@ class RequestRespondentEvidencePreparerTest {
 
         requestRespondentEvidencePreparer =
                 new RequestRespondentEvidencePreparer(DUE_IN_DAYS, DUE_IN_DAYS_ADA, DUE_IN_DAYS_DETAINED,
-                        LocalDate.now().plusDays(1).toString(), featureToggler, dateProvider, dueDateService);
+                        LocalDate.now().plusDays(1).toString(), featureToggler, dateProvider, dueDateService, userDetails, userDetailsHelper);
         requestRespondentEvidencePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
-        verify(asylumCase, never()).read(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class);
+        verify(asylumCase, never()).read(STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED, YesOrNo.class);
     }
 
     @Test
@@ -142,7 +149,7 @@ class RequestRespondentEvidencePreparerTest {
         when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONDENT_EVIDENCE);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(COMPLETE_CASE_REVIEW_DATE, String.class)).thenReturn(Optional.empty());
-        when(asylumCase.read(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             requestRespondentEvidencePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
@@ -160,7 +167,7 @@ class RequestRespondentEvidencePreparerTest {
         when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONDENT_EVIDENCE);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(COMPLETE_CASE_REVIEW_DATE, String.class)).thenReturn(Optional.of("2024-01-01"));
-        when(asylumCase.read(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(asylumCase.read(LIST_CASE_HEARING_DATE, String.class)).thenReturn(Optional.empty());
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -179,7 +186,7 @@ class RequestRespondentEvidencePreparerTest {
         when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONDENT_EVIDENCE);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(COMPLETE_CASE_REVIEW_DATE, String.class)).thenReturn(Optional.of("2024-01-01"));
-        when(asylumCase.read(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(asylumCase.read(LIST_CASE_HEARING_DATE, String.class)).thenReturn(Optional.of("2024-06-01T10:00:00.000"));
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.PA));
         when(dateProvider.now()).thenReturn(LocalDate.parse("2024-01-01"));
@@ -746,6 +753,58 @@ class RequestRespondentEvidencePreparerTest {
         assertThat(actualExplanation).doesNotContain("directed to supply the documents");
         assertThat(actualExplanation).doesNotContain("Rule 23 or Rule 24 of the Tribunal Procedure Rules 2014");
         assertThat(actualExplanation).doesNotContain("any record of interview with the appellant");
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = UserRole.class, names = {
+        "ADMIN_OFFICER", "HEARING_CENTRE_ADMIN", "CTSC", "CTSC_TEAM_LEADER",
+        "NATIONAL_BUSINESS_CENTRE", "CHALLENGED_ACCESS_CTSC", "CHALLENGED_ACCESS_ADMIN"
+    })
+    void should_return_error_for_admin_role_when_stf24w_flag_not_set(UserRole adminRole) {
+
+        when(userDetailsHelper.getLoggedInUserRole(userDetails)).thenReturn(adminRole);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONDENT_EVIDENCE);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class)).thenReturn(Optional.empty());
+        // Satisfy the complete-case-review precondition so only the admin role check triggers
+        when(asylumCase.read(COMPLETE_CASE_REVIEW_DATE, String.class)).thenReturn(Optional.of("2024-01-01"));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            requestRespondentEvidencePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        assertNotNull(callbackResponse);
+        assertFalse(callbackResponse.getErrors().isEmpty());
+        assertThat(callbackResponse.getErrors())
+            .contains("You can only request respondent evidence on a 24 week case.");
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = UserRole.class, names = {
+        "ADMIN_OFFICER", "HEARING_CENTRE_ADMIN", "CTSC", "CTSC_TEAM_LEADER",
+        "NATIONAL_BUSINESS_CENTRE", "CHALLENGED_ACCESS_CTSC", "CHALLENGED_ACCESS_ADMIN"
+    })
+    void should_allow_admin_role_when_stf24w_flag_is_yes(UserRole adminRole) {
+
+        when(userDetailsHelper.getLoggedInUserRole(userDetails)).thenReturn(adminRole);
+        when(dateProvider.now()).thenReturn(LocalDate.parse("2018-11-23"));
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONDENT_EVIDENCE);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        // Satisfy the 24-week preconditions (complete case review + listed)
+        when(asylumCase.read(COMPLETE_CASE_REVIEW_DATE, String.class)).thenReturn(Optional.of("2024-01-01"));
+        when(asylumCase.read(LIST_CASE_HEARING_DATE, String.class)).thenReturn(Optional.of("2024-06-01"));
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(PA));
+        when(asylumCase.read(APPEAL_OUT_OF_COUNTRY, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class)).thenReturn(Optional.of("SUCCESS"));
+        when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            requestRespondentEvidencePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        assertNotNull(callbackResponse);
+        assertThat(callbackResponse.getErrors()).isEmpty();
     }
 
     @Test
