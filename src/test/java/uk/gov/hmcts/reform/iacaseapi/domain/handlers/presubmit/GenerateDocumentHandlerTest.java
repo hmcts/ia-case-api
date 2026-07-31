@@ -334,6 +334,7 @@ class GenerateDocumentHandlerTest {
                     LIST_CASE,
                     CMR_LISTING,
                     CMR_RE_LISTING,
+                    CMR_HEARING_CANCELLED,
                     EDIT_CASE_LISTING,
                     GENERATE_DECISION_AND_REASONS,
                     GENERATE_HEARING_BUNDLE,
@@ -390,7 +391,8 @@ class GenerateDocumentHandlerTest {
                     REMOVE_LEGAL_REPRESENTATIVE,
                     MARK_APPEAL_AS_REMITTED,
                     DECIDE_FTPA_APPLICATION,
-                    DECISION_WITHOUT_HEARING
+                    DECISION_WITHOUT_HEARING,
+                    Event.COMPLETE_CASE_REVIEW
                 ).contains(event)) {
 
                 assertTrue(canHandle);
@@ -511,6 +513,7 @@ class GenerateDocumentHandlerTest {
                     LIST_CASE,
                     CMR_LISTING,
                     CMR_RE_LISTING,
+                    CMR_HEARING_CANCELLED,
                     GENERATE_DECISION_AND_REASONS,
                     GENERATE_HEARING_BUNDLE,
                     CUSTOMISE_HEARING_BUNDLE,
@@ -565,7 +568,8 @@ class GenerateDocumentHandlerTest {
                     REMOVE_LEGAL_REPRESENTATIVE,
                     MARK_APPEAL_AS_REMITTED,
                     DECIDE_FTPA_APPLICATION,
-                    DECISION_WITHOUT_HEARING
+                    DECISION_WITHOUT_HEARING,
+                    Event.COMPLETE_CASE_REVIEW
                 );
 
             if (callbackStage.equals(PreSubmitCallbackStage.ABOUT_TO_SUBMIT)
