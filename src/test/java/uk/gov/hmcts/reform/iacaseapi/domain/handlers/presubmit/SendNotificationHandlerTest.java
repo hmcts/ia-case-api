@@ -496,6 +496,7 @@ class SendNotificationHandlerTest {
         Event.SEND_INVITE_TO_NON_LEGAL_REP,
         Event.SEND_PIP_TO_NON_LEGAL_REP,
         Event.JOIN_APPEAL_CONFIRMATION,
+        Event.REMOVE_NON_LEGAL_REP,
         Event.NLR_DETAILS_UPDATED,
         Event.REMOVE_STATUTORY_TIMEFRAME_24_WEEKS,
         Event.GENERATE_PIN_IN_POST,
