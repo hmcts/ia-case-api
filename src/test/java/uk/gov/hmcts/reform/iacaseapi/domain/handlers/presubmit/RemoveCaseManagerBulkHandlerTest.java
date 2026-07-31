@@ -111,7 +111,7 @@ public class RemoveCaseManagerBulkHandlerTest {
         verify(roleAssignmentService, times(3)).removeCaseManagerRole(caseIdCaptor.capture(), eq("Bearer Token"));
         List<String> capturedCaseIds = caseIdCaptor.getAllValues();
         assertEquals(3, capturedCaseIds.size());
-        assertEquals("123", capturedCaseIds.get(0));
+        assertEquals("123", capturedCaseIds.getFirst());
         assertEquals("456", capturedCaseIds.get(1));
         assertEquals("789", capturedCaseIds.get(2));
         verify(asylumCase).clear(CASE_ID_LIST);

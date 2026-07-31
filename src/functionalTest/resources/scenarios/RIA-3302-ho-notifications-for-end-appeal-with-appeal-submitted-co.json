@@ -1,7 +1,5 @@
 {
-  "description": "RIA 3302 sends ho notifications for end appeal with appeal submitted state by co",
-  "enabled": true,
-  "launchDarklyKey": "home-office-notification-feature:true",
+  "description": "RIA-3302 sends HO notifications for end appeal with appeal submitted state by CO",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",
@@ -26,7 +24,6 @@
   },
   "homeOfficeSearchStatus": "SUCCESS",
   "homeOfficeNotificationsEligible": "Yes",
-
   "expectation": {
     "status": 200,
     "errors": [],

@@ -5,9 +5,16 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ADMIN;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOURNEY_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LOCAL_AUTHORITY_POLICY;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PA_APPEAL_TYPE_PAYMENT_OPTION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMISSION_TYPE;
 
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -87,7 +94,6 @@ class AppealSavedConfirmationTest {
 
         when(professionalOrganisationRetriever.retrieve()).thenReturn(organisationEntityResponse);
         when(organisationEntityResponse.getOrganisationIdentifier()).thenReturn(organisationIdentifier);
-        when(featureToggler.getValue("share-case-feature", false)).thenReturn(true);
 
         PostSubmitCallbackResponse callbackResponse =
             appealSavedConfirmation.handle(callback);
@@ -96,13 +102,9 @@ class AppealSavedConfirmationTest {
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
-        assertThat(
-            callbackResponse.getConfirmationHeader().get())
-            .contains("# You have saved your appeal");
+        assertTrue(callbackResponse.getConfirmationHeader().get().contains("# You have saved your appeal"));
 
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("### Do this next");
+        assertTrue(callbackResponse.getConfirmationBody().get().contains("### Do this next"));
 
         assertThat(
             callbackResponse.getConfirmationBody().get())
@@ -111,13 +113,9 @@ class AppealSavedConfirmationTest {
                     "the 'Next step' dropdown list from your case details page."
             );
 
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("Not ready to submit your appeal yet?");
+        assertTrue(callbackResponse.getConfirmationBody().get().contains("Not ready to submit your appeal yet?"));
 
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("You can return to the case details page to make changes from the ‘Next step’ dropdown list.");
+        assertTrue(callbackResponse.getConfirmationBody().get().contains("You can return to the case details page to make changes from the ‘Next step’ dropdown list."));
 
         verify(ccdCaseAssignment, times(1)).revokeAccessToCase(callback, organisationIdentifier);
     }
@@ -136,7 +134,6 @@ class AppealSavedConfirmationTest {
 
         when(professionalOrganisationRetriever.retrieve()).thenReturn(organisationEntityResponse);
         when(organisationEntityResponse.getOrganisationIdentifier()).thenReturn(organisationIdentifier);
-        when(featureToggler.getValue("share-case-feature", false)).thenReturn(true);
 
         PostSubmitCallbackResponse callbackResponse =
             appealSavedConfirmation.handle(callback);
@@ -145,13 +142,9 @@ class AppealSavedConfirmationTest {
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
-        assertThat(
-            callbackResponse.getConfirmationHeader().get())
-            .contains("# You have saved your appeal");
+        assertTrue(callbackResponse.getConfirmationHeader().get().contains("# You have saved your appeal"));
 
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("### Do this next");
+        assertTrue(callbackResponse.getConfirmationBody().get().contains("### Do this next"));
 
         assertThat(
             callbackResponse.getConfirmationBody().get())
@@ -159,13 +152,9 @@ class AppealSavedConfirmationTest {
                 ""
             );
 
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("Not ready to submit your appeal yet?");
+        assertTrue(callbackResponse.getConfirmationBody().get().contains("Not ready to submit your appeal yet?"));
 
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("You can return to the case details page to make changes from the ‘Next step’ dropdown list.");
+        assertTrue(callbackResponse.getConfirmationBody().get().contains("You can return to the case details page to make changes from the ‘Next step’ dropdown list."));
 
         verify(ccdCaseAssignment, times(1)).revokeAccessToCase(callback, organisationIdentifier);
     }
@@ -184,7 +173,6 @@ class AppealSavedConfirmationTest {
 
         when(professionalOrganisationRetriever.retrieve()).thenReturn(organisationEntityResponse);
         when(organisationEntityResponse.getOrganisationIdentifier()).thenReturn(organisationIdentifier);
-        when(featureToggler.getValue("share-case-feature", false)).thenReturn(true);
 
         PostSubmitCallbackResponse callbackResponse =
             appealSavedConfirmation.handle(callback);
@@ -193,13 +181,9 @@ class AppealSavedConfirmationTest {
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
-        assertThat(
-            callbackResponse.getConfirmationHeader().get())
-            .contains("# You have saved your appeal");
+        assertTrue(callbackResponse.getConfirmationHeader().get().contains("# You have saved your appeal"));
 
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("### Do this next");
+        assertTrue(callbackResponse.getConfirmationBody().get().contains("### Do this next"));
 
         assertThat(
             callbackResponse.getConfirmationBody().get())
@@ -207,13 +191,9 @@ class AppealSavedConfirmationTest {
                 ""
             );
 
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("Not ready to submit your appeal yet?");
+        assertTrue(callbackResponse.getConfirmationBody().get().contains("Not ready to submit your appeal yet?"));
 
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("You can return to the case details page to make changes from the ‘Next step’ dropdown list.");
+        assertTrue(callbackResponse.getConfirmationBody().get().contains("You can return to the case details page to make changes from the ‘Next step’ dropdown list."));
 
         verify(ccdCaseAssignment, times(1)).revokeAccessToCase(callback, organisationIdentifier);
     }
@@ -232,7 +212,6 @@ class AppealSavedConfirmationTest {
 
         when(professionalOrganisationRetriever.retrieve()).thenReturn(organisationEntityResponse);
         when(organisationEntityResponse.getOrganisationIdentifier()).thenReturn(organisationIdentifier);
-        when(featureToggler.getValue("share-case-feature", false)).thenReturn(true);
 
         PostSubmitCallbackResponse callbackResponse =
             appealSavedConfirmation.handle(callback);
@@ -241,13 +220,9 @@ class AppealSavedConfirmationTest {
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
-        assertThat(
-            callbackResponse.getConfirmationHeader().get())
-            .contains("# You have saved your appeal");
+        assertTrue(callbackResponse.getConfirmationHeader().get().contains("# You have saved your appeal"));
 
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("### Do this next");
+        assertTrue(callbackResponse.getConfirmationBody().get().contains("### Do this next"));
 
         assertThat(
             callbackResponse.getConfirmationBody().get())
@@ -255,13 +230,9 @@ class AppealSavedConfirmationTest {
                 ""
             );
 
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("Not ready to submit your appeal yet?");
+        assertTrue(callbackResponse.getConfirmationBody().get().contains("Not ready to submit your appeal yet?"));
 
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("You can return to the case details page to make changes from the ‘Next step’ dropdown list.");
+        assertTrue(callbackResponse.getConfirmationBody().get().contains("You can return to the case details page to make changes from the ‘Next step’ dropdown list."));
 
         verify(ccdCaseAssignment, times(1)).revokeAccessToCase(callback, organisationIdentifier);
     }
@@ -281,8 +252,6 @@ class AppealSavedConfirmationTest {
 
         when(professionalOrganisationRetriever.retrieve()).thenReturn(organisationEntityResponse);
         when(organisationEntityResponse.getOrganisationIdentifier()).thenReturn(organisationIdentifier);
-        when(featureToggler.getValue("share-case-feature", false)).thenReturn(true);
-
 
         PostSubmitCallbackResponse callbackResponse =
             appealSavedConfirmation.handle(callback);
@@ -291,13 +260,9 @@ class AppealSavedConfirmationTest {
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
-        assertThat(
-            callbackResponse.getConfirmationHeader().get())
-            .contains("# You have saved your appeal");
+        assertTrue(callbackResponse.getConfirmationHeader().get().contains("# You have saved your appeal"));
 
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("### Do this next");
+        assertTrue(callbackResponse.getConfirmationBody().get().contains("### Do this next"));
 
         assertThat(
             callbackResponse.getConfirmationBody().get())
@@ -305,13 +270,9 @@ class AppealSavedConfirmationTest {
                 ""
             );
 
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("Not ready to submit your appeal yet?");
+        assertTrue(callbackResponse.getConfirmationBody().get().contains("Not ready to submit your appeal yet?"));
 
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("You can return to the case details page to make changes from the ‘Next step’ dropdown list.");
+        assertTrue(callbackResponse.getConfirmationBody().get().contains("You can return to the case details page to make changes from the ‘Next step’ dropdown list."));
 
         verify(ccdCaseAssignment, times(1)).revokeAccessToCase(callback, organisationIdentifier);
     }
@@ -330,8 +291,6 @@ class AppealSavedConfirmationTest {
 
         when(professionalOrganisationRetriever.retrieve()).thenReturn(organisationEntityResponse);
         when(organisationEntityResponse.getOrganisationIdentifier()).thenReturn(organisationIdentifier);
-        when(featureToggler.getValue("share-case-feature", false)).thenReturn(true);
-
 
         PostSubmitCallbackResponse callbackResponse =
             appealSavedConfirmation.handle(callback);
@@ -340,13 +299,9 @@ class AppealSavedConfirmationTest {
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
-        assertThat(
-            callbackResponse.getConfirmationHeader().get())
-            .contains("# You have saved your appeal");
+        assertTrue(callbackResponse.getConfirmationHeader().get().contains("# You have saved your appeal"));
 
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("### Do this next");
+        assertTrue(callbackResponse.getConfirmationBody().get().contains("### Do this next"));
 
         assertThat(
             callbackResponse.getConfirmationBody().get())
@@ -354,13 +309,9 @@ class AppealSavedConfirmationTest {
                 ""
             );
 
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("Not ready to submit your appeal yet?");
+        assertTrue(callbackResponse.getConfirmationBody().get().contains("Not ready to submit your appeal yet?"));
 
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("You can return to the case details page to make changes from the ‘Next step’ dropdown list.");
+        assertTrue(callbackResponse.getConfirmationBody().get().contains("You can return to the case details page to make changes from the ‘Next step’ dropdown list."));
 
         verify(ccdCaseAssignment, times(1)).revokeAccessToCase(callback, organisationIdentifier);
     }
@@ -380,8 +331,6 @@ class AppealSavedConfirmationTest {
 
         when(professionalOrganisationRetriever.retrieve()).thenReturn(organisationEntityResponse);
         when(organisationEntityResponse.getOrganisationIdentifier()).thenReturn(organisationIdentifier);
-        when(featureToggler.getValue("share-case-feature", false)).thenReturn(true);
-
 
         PostSubmitCallbackResponse callbackResponse =
             appealSavedConfirmation.handle(callback);
@@ -413,7 +362,6 @@ class AppealSavedConfirmationTest {
 
         when(professionalOrganisationRetriever.retrieve()).thenReturn(organisationEntityResponse);
         when(organisationEntityResponse.getOrganisationIdentifier()).thenReturn(organisationIdentifier);
-        when(featureToggler.getValue("share-case-feature", false)).thenReturn(true);
 
         PostSubmitCallbackResponse callbackResponse =
             appealSavedConfirmation.handle(callback);
@@ -444,7 +392,6 @@ class AppealSavedConfirmationTest {
         when(asylumCase.read(REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.of(RemissionType.NO_REMISSION));
         when(professionalOrganisationRetriever.retrieve()).thenReturn(organisationEntityResponse);
         when(organisationEntityResponse.getOrganisationIdentifier()).thenReturn(organisationIdentifier);
-        when(featureToggler.getValue("share-case-feature", false)).thenReturn(true);
 
         PostSubmitCallbackResponse callbackResponse =
             appealSavedConfirmation.handle(callback);
@@ -506,28 +453,6 @@ class AppealSavedConfirmationTest {
     }
 
     @Test
-    void should_not_assign_or_revoke_access_to_case_when_feature_flag_disabled() {
-
-        long caseId = 1234;
-
-        when(callback.getEvent()).thenReturn(Event.START_APPEAL);
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(caseDetails.getId()).thenReturn(caseId);
-        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.EA));
-        when(featureToggler.getValue("share-case-feature", false)).thenReturn(false);
-
-        PostSubmitCallbackResponse callbackResponse =
-            appealSavedConfirmation.handle(callback);
-
-        assertNotNull(callbackResponse);
-        assertTrue(callbackResponse.getConfirmationHeader().isPresent());
-        assertTrue(callbackResponse.getConfirmationBody().isPresent());
-
-        verify(ccdCaseAssignment, times(0)).revokeAccessToCase(callback, organisationIdentifier);
-    }
-
-    @Test
     void should_return_confirmation_for_internal_cases_admin() {
 
         long caseId = 1234;
@@ -541,7 +466,6 @@ class AppealSavedConfirmationTest {
 
         when(professionalOrganisationRetriever.retrieve()).thenReturn(organisationEntityResponse);
         when(organisationEntityResponse.getOrganisationIdentifier()).thenReturn(organisationIdentifier);
-        when(featureToggler.getValue("share-case-feature", false)).thenReturn(true);
 
         PostSubmitCallbackResponse callbackResponse =
             appealSavedConfirmation.handle(callback);
@@ -550,13 +474,9 @@ class AppealSavedConfirmationTest {
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
-        assertThat(
-            callbackResponse.getConfirmationHeader().get())
-            .contains("# You have saved your appeal");
+        assertTrue(callbackResponse.getConfirmationHeader().get().contains("# You have saved your appeal"));
 
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("### Do this next");
+        assertTrue(callbackResponse.getConfirmationBody().get().contains("### Do this next"));
 
         assertThat(
             callbackResponse.getConfirmationBody().get())
@@ -565,13 +485,9 @@ class AppealSavedConfirmationTest {
                     "the 'Next step' dropdown list from your case details page."
             );
 
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("Not ready to submit your appeal yet?");
+        assertTrue(callbackResponse.getConfirmationBody().get().contains("Not ready to submit your appeal yet?"));
 
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("You can return to the case details page to make changes from the ‘Next step’ dropdown list.");
+        assertTrue(callbackResponse.getConfirmationBody().get().contains("You can return to the case details page to make changes from the ‘Next step’ dropdown list."));
 
     }
 

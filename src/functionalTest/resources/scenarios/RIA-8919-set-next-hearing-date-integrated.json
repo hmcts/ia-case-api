@@ -1,6 +1,6 @@
 {
   "description": "RIA-8919 Set next hearing date for integrated cases",
-  "enabled": false,
+  "disabled": "true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "SystemUser",

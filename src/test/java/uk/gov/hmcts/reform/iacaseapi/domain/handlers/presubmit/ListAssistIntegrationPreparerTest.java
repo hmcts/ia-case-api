@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.reset;
@@ -9,8 +8,6 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.LIST_ASSIST_INTEGRATION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,16 +20,12 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationBasedFeatureToggler;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
 public class ListAssistIntegrationPreparerTest {
-    @Mock
-    private LocationBasedFeatureToggler locationBasedFeatureToggler;
     @Mock
     private Callback<AsylumCase> callback;
     @Mock
@@ -44,32 +37,10 @@ public class ListAssistIntegrationPreparerTest {
 
     @BeforeEach
     void setup() {
-        listAssistIntegrationPreparer = new ListAssistIntegrationPreparer(locationBasedFeatureToggler);
+        listAssistIntegrationPreparer = new ListAssistIntegrationPreparer();
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(LIST_ASSIST_INTEGRATION);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-    }
-
-    @Test
-    void should_return_error_when_location_not_list_assist_enabled() {
-        when(locationBasedFeatureToggler.isListAssistEnabled(asylumCase)).thenReturn(NO);
-
-        PreSubmitCallbackResponse<AsylumCase> response = listAssistIntegrationPreparer
-            .handle(ABOUT_TO_START, callback);
-
-        assertEquals(1, response.getErrors().size());
-        assertTrue(response.getErrors().contains(
-            "List assist integration option is not available for selected hearing centre"));
-    }
-
-    @Test
-    void should_not_return_error_when_location_is_list_assist_enabled() {
-        when(locationBasedFeatureToggler.isListAssistEnabled(asylumCase)).thenReturn(YES);
-
-        PreSubmitCallbackResponse<AsylumCase> response = listAssistIntegrationPreparer
-            .handle(ABOUT_TO_START, callback);
-
-        assertTrue(response.getErrors().isEmpty());
     }
 
     @Test

@@ -1,7 +1,6 @@
 {
   "description": "DIAC-1601 Notice of Change Request Paper AboutToSubmit",
-  "disabled": false,
-  "request": {
+    "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "LegalRepresentative",
     "input": {

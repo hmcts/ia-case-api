@@ -32,8 +32,10 @@ public class ReviewUpdateHearingRequirementsConfirmation implements PostSubmitCa
 
         postSubmitResponse.setConfirmationHeader("# You've recorded the agreed hearing adjustments");
         postSubmitResponse.setConfirmationBody(
-            "#### What happens next\n\n"
-            + "All parties will be able to see the agreed adjustments in the hearing and appointment tab.<br><br>"
+            """
+            #### What happens next
+            
+            All parties will be able to see the agreed adjustments in the hearing and appointment tab.<br><br>"""
         );
 
         return postSubmitResponse;

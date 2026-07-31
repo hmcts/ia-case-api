@@ -13,8 +13,8 @@
           "hasCorrespondenceAddress": "Yes",
           "appellantOutOfCountryAddress": "Kabul, Afghanistan",
           "hasSponsor": "No",
-          "decisionLetterReceivedDate":"{$TODAY-7}",
-          "outOfCountryDecisionType":"removalOfClient"
+          "decisionLetterReceivedDate": "{$TODAY-7}",
+          "outOfCountryDecisionType": "removalOfClient"
         }
       }
     }
@@ -30,8 +30,8 @@
         "hasCorrespondenceAddress": "Yes",
         "appellantOutOfCountryAddress": "Kabul, Afghanistan",
         "hasSponsor": "No",
-        "decisionLetterReceivedDate":"{$TODAY-7}",
-        "outOfCountryDecisionType":"removalOfClient",
+        "decisionLetterReceivedDate": "{$TODAY-7}",
+        "outOfCountryDecisionType": "removalOfClient",
         "appellantHasFixedAddress": null,
         "homeOfficeDecisionDate": null,
         "homeOfficeReferenceNumber": null

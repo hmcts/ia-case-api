@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
 import java.time.LocalDate;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -23,7 +23,7 @@ class DatesToAvoidTest {
 
     @Test
     void should_hold_onto_values() {
-        Assert.assertEquals(dateToAvoid, datesToAvoid.getDateToAvoid());
-        Assert.assertEquals(dateToAvoidReason, datesToAvoid.getDateToAvoidReason());
+        Assertions.assertEquals(dateToAvoid, datesToAvoid.getDateToAvoid());
+        Assertions.assertEquals(dateToAvoidReason, datesToAvoid.getDateToAvoidReason());
     }
 }

@@ -54,7 +54,7 @@ public class AdditionalEvidenceForCostsPreparer implements PreSubmitCallbackHand
         if (applyForCostsList.isEmpty()) {
             response.addError("You do not have any cost applications to add evidence to.");
         } else {
-            DynamicList dynamicList = new DynamicList(applyForCostsList.get(0), applyForCostsList);
+            DynamicList dynamicList = new DynamicList(applyForCostsList.getFirst(), applyForCostsList);
             asylumCase.write(ADD_EVIDENCE_FOR_COSTS_LIST, dynamicList);
         }
 

@@ -35,10 +35,13 @@ public class RequestResponseAmendConfirmation implements PostSubmitCallbackHandl
         if (hoAmendResponseReadyInstructStatus.equalsIgnoreCase("FAIL")) {
 
             postSubmitResponse.setConfirmationBody(
-                "![Respondent notification failed confirmation]"
-                + "(https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/respondent_notification_failed.svg)\n"
-                + "#### Do this next\n\n"
-                + "Contact the respondent to tell them what has changed, including any action they need to take.\n"
+                """
+                ![Respondent notification failed confirmation]\
+                (https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/respondent_notification_failed.svg)
+                #### Do this next
+                
+                Contact the respondent to tell them what has changed, including any action they need to take.
+                """
             );
         } else {
 

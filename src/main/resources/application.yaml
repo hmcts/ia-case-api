@@ -12,9 +12,16 @@ management:
   endpoints:
     web:
       base-path: "/"
+      exposure:
+        include: health, info, ping
   health:
-    probes:
-      enabled: true
+    redis:
+      enabled: false
+    group:
+      readiness:
+        include: ping
+      liveness:
+        include: ping
   services:
     documentsApi:
       uri: ${IA_CASE_DOCUMENTS_API_URL:http://127.0.0.1:8092}/health
@@ -40,6 +47,7 @@ management:
     ccd:
       uri: ${CCD_URL:http://127.0.0.1:4452}/health
       response: '"status":"UP"'
+  endpoint.health.probes.enabled: true
 fees-register:
   api:
     url: ${FEES_REGISTER_API_URL:http://localhost:8991}
@@ -61,7 +69,15 @@ fees-register:
 files:
   detention-facilities-addresses: "/detention-facilities.csv"
 
+logging:
+  level:
+    io.lettuce.core: WARN
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] [%X{correlationId}] [%X{ccdCaseId}] %-5level %logger{36} - %msg%n"
+
 spring:
+  retry:
+    max-attempts: 3
   config:
     import: "optional:configtree:/mnt/secrets/ia/"
   application:
@@ -81,10 +97,14 @@ spring:
       resourceserver:
         jwt:
           jwk-set-uri: ${OPEN_ID_IDAM_URL:http://127.0.0.1:5000}/o/jwks
-  cache:
-    cache-names: userInfoCache, accessTokenCache
-    caffeine:
-      spec: expireAfterWrite=3600s
+  data:
+    redis:
+      url: ${IA_REDIS_CONNECTION_STRING:}
+      secret: ${IA_REDIS_ACCESS_KEY:}
+      encryption:
+        key: ${IA_REDIS_ENCRYPTION_KEY:}
+      ssl:
+        enabled: true
   datasource:
     driverClassName: org.postgresql.Driver
     url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5050}/${POSTGRES_NAME:ia_case_api}${POSTGRES_CONNECTION_OPTIONS:}
@@ -143,6 +163,7 @@ legalRepresentativeRemissionReminder.dueInMinutes: ${LEGAL_REP_REMISSION_REMINDE
 paymentEaHuNoRemission.dueInMinutes: ${PAYMENT_EA_HU_NO_REMISSION_DUE_IN_MINUTES:20160}
 adaCaseListedDirection.dueInDaysSinceSubmission: ${ADA_CASE_LISTED_DIRECTION_DUE_IN_DAYS:15}
 sendPaymentReminderNotification.dueInMinutesSinceSubmission: ${PAYMENT_REMINDER_DUE_IN_MINUTES:10080}
+paPayLaterDueDate: ${PA_PAY_LATER_DUE_DATE:14}
 
 core_case_data_api_url_template: "/caseworkers/{uid}/jurisdictions/{jid}/case-types/{ctid}/cases"
 core_case_data_api_metatdata_url: "/caseworkers/{uid}/jurisdictions/{jid}/case-types/{ctid}/cases/pagination_metadata"
@@ -218,6 +239,9 @@ homeOfficeApi:
   aboutToStartPath: "/asylum/ccdAboutToStart"
   aboutToSubmitPath: "/asylum/ccdAboutToSubmit"
   midEventPath: "/asylum/ccdMidEvent"
+  serialisation:
+    encryption:
+      key: ${IA_HOME_OFFICE_INTEGRATION_ENCRYPTION_KEY:}
 
 security:
   anonymousPaths:
@@ -357,6 +381,9 @@ security:
       - "removeDetainedStatus"
       - "turnOnNotificationsWATasks"
       - "addStatutoryTimeframe24Weeks"
+      - "removeStatutoryTimeframe24Weeks"
+      - "forceCaseToPrepareForHearing"
+      - "revokeCitizenAccess"
     challenged-access-legal-operations:
       - "appellantInPersonManual"
       - "moveToPaymentPending"
@@ -446,6 +473,10 @@ security:
       - "generateListCmrTask"
       - "markAppealAsDetained"
       - "removeDetainedStatus"
+      - "addStatutoryTimeframe24Weeks"
+      - "removeStatutoryTimeframe24Weeks"
+      - "forceCaseToPrepareForHearing"
+      - "revokeCitizenAccess"
     senior-tribunal-caseworker:
       - "appellantInPersonManual"
       - "moveToPaymentPending"
@@ -536,6 +567,10 @@ security:
       - "markAppealAsDetained"
       - "removeDetainedStatus"
       - "turnOnNotificationsWATasks"
+      - "forceCaseToPrepareForHearing"
+      - "addStatutoryTimeframe24Weeks"
+      - "removeStatutoryTimeframe24Weeks"
+      - "revokeCitizenAccess"
     hearing-centre-admin:
       - "appellantInPersonManual"
       - "startAppeal"
@@ -606,6 +641,9 @@ security:
       - "forceFtpaDecidedState"
       - "turnOnNotificationsWATasks"
       - "addStatutoryTimeframe24Weeks"
+      - "removeStatutoryTimeframe24Weeks"
+      - "revokeCitizenAccess"
+      - "requestRespondentEvidence"
     ctsc:
       - "appellantInPersonManual"
       - "startAppeal"
@@ -673,8 +711,11 @@ security:
       - "turnOnNotificationsWATasks"
       - "editDocuments"
       - "addStatutoryTimeframe24Weeks"
+      - "removeStatutoryTimeframe24Weeks"
+      - "revokeCitizenAccess"
       - "forceDecidedState"
       - "forceFtpaDecidedState"
+      - "requestRespondentEvidence"
     ctsc-team-leader:
       - "appellantInPersonManual"
       - "startAppeal"
@@ -744,6 +785,9 @@ security:
       - "forceDecidedState"
       - "forceFtpaDecidedState"
       - "addStatutoryTimeframe24Weeks"
+      - "removeStatutoryTimeframe24Weeks"
+      - "revokeCitizenAccess"
+      - "requestRespondentEvidence"
     national-business-centre:
       - "appellantInPersonManual"
       - "startAppeal"
@@ -812,6 +856,9 @@ security:
       - "forceDecidedState"
       - "forceFtpaDecidedState"
       - "addStatutoryTimeframe24Weeks"
+      - "removeStatutoryTimeframe24Weeks"
+      - "revokeCitizenAccess"
+      - "requestRespondentEvidence"
     challenged-access-ctsc:
       - "appellantInPersonManual"
       - "startAppeal"
@@ -880,6 +927,9 @@ security:
       - "forceDecidedState"
       - "forceFtpaDecidedState"
       - "addStatutoryTimeframe24Weeks"
+      - "removeStatutoryTimeframe24Weeks"
+      - "revokeCitizenAccess"
+      - "requestRespondentEvidence"
     challenged-access-admin:
       - "appellantInPersonManual"
       - "startAppeal"
@@ -949,6 +999,9 @@ security:
       - "forceDecidedState"
       - "forceFtpaDecidedState"
       - "addStatutoryTimeframe24Weeks"
+      - "removeStatutoryTimeframe24Weeks"
+      - "revokeCitizenAccess"
+      - "requestRespondentEvidence"
     caseworker-ia-homeofficeapc:
       - "uploadHomeOfficeBundle"
       - "uploadAdditionalEvidenceHomeOffice"
@@ -1005,6 +1058,7 @@ security:
       - "pipActivation"
       - "applyForFTPAAppellant"
       - "requestFeeRemission"
+      - "deleteDraftAppeal"
     caseworker-ia-iacjudge:
       - "generateDecisionAndReasons"
       - "endAppeal"
@@ -1068,6 +1122,8 @@ security:
       - "createFlag"
       - "decideCostsApplication"
       - "considerMakingCostsOrder"
+      - "addStatutoryTimeframe24Weeks"
+      - "removeStatutoryTimeframe24Weeks"
       - "updateTribunalDecision"
     senior-judge:
       - "generateDecisionAndReasons"
@@ -1099,6 +1155,8 @@ security:
       - "createFlag"
       - "decideCostsApplication"
       - "considerMakingCostsOrder"
+      - "addStatutoryTimeframe24Weeks"
+      - "removeStatutoryTimeframe24Weeks"
       - "updateTribunalDecision"
     leadership-judge:
       - "generateDecisionAndReasons"
@@ -1130,6 +1188,8 @@ security:
       - "createFlag"
       - "decideCostsApplication"
       - "considerMakingCostsOrder"
+      - "addStatutoryTimeframe24Weeks"
+      - "removeStatutoryTimeframe24Weeks"
       - "updateTribunalDecision"
     fee-paid-judge:
       - "generateDecisionAndReasons"
@@ -1161,6 +1221,8 @@ security:
       - "createFlag"
       - "decideCostsApplication"
       - "considerMakingCostsOrder"
+      - "addStatutoryTimeframe24Weeks"
+      - "removeStatutoryTimeframe24Weeks"
       - "updateTribunalDecision"
     lead-judge:
       - "generateDecisionAndReasons"
@@ -1192,6 +1254,8 @@ security:
       - "createFlag"
       - "decideCostsApplication"
       - "considerMakingCostsOrder"
+      - "addStatutoryTimeframe24Weeks"
+      - "removeStatutoryTimeframe24Weeks"
       - "updateTribunalDecision"
     hearing-judge:
       - "generateDecisionAndReasons"
@@ -1223,6 +1287,8 @@ security:
       - "createFlag"
       - "decideCostsApplication"
       - "considerMakingCostsOrder"
+      - "addStatutoryTimeframe24Weeks"
+      - "removeStatutoryTimeframe24Weeks"
       - "updateTribunalDecision"
     ftpa-judge:
       - "generateDecisionAndReasons"
@@ -1254,6 +1320,8 @@ security:
       - "createFlag"
       - "decideCostsApplication"
       - "considerMakingCostsOrder"
+      - "addStatutoryTimeframe24Weeks"
+      - "removeStatutoryTimeframe24Weeks"
       - "updateTribunalDecision"
     hearing-panel-judge:
       - "generateDecisionAndReasons"
@@ -1285,6 +1353,8 @@ security:
       - "createFlag"
       - "decideCostsApplication"
       - "considerMakingCostsOrder"
+      - "addStatutoryTimeframe24Weeks"
+      - "removeStatutoryTimeframe24Weeks"
       - "updateTribunalDecision"
     challenged-access-judiciary:
       - "generateDecisionAndReasons"
@@ -1316,6 +1386,8 @@ security:
       - "createFlag"
       - "decideCostsApplication"
       - "considerMakingCostsOrder"
+      - "addStatutoryTimeframe24Weeks"
+      - "removeStatutoryTimeframe24Weeks"
       - "updateTribunalDecision"
     caseworker-ia-system:
       - "requestHearingRequirementsFeature"
@@ -1348,11 +1420,18 @@ security:
       - "rollbackMigration"
       - "addStatutoryTimeframe24Weeks"
       - "removeStatutoryTimeframe24Weeks"
+      - "deleteDraftAppeal"
+      - "createCaseLink"
+      - "maintainCaseLinks"
+      - "revokeCitizenAccess"
+      - "generatePinInPost"
     caseworker-ia-internal:
       - "revokeCaseAccess"
       - "removeCaseManagerBulk"
       - "reTriggerWaTasks"
       - "reTriggerWaBulkTasks"
+      - "revokeCitizenAccess"
+      - "generatePinInPost"
     caseworker-ia-rparobot:
       - "addCaseNote"
     next-hearing-date-admin:
@@ -1361,6 +1440,9 @@ security:
 ### dependency configuration
 ccdGatewayUrl: ${CCD_GW_URL:http://localhost:3453}
 core_case_data_api_url: ${CCD_URL:http://127.0.0.1:4452}
+core_case_data:
+  api:
+    url: ${CCD_URL:http://127.0.0.1:4452}
 case_access:
   core_case_data_api_url: ${CCD_CASE_ACCESS_URL:http://127.0.0.1:4452}
 document_management.url: ${DM_URL:http://127.0.0.1:4506}
@@ -1389,13 +1471,14 @@ hystrix:
 #OpenID
 idam:
   baseUrl: ${OPEN_ID_IDAM_URL:http://127.0.0.1:5000}
+  apiUrl: ${IDAM_URL:http://127.0.0.1:4501}
   redirectUrl: ${IA_IDAM_REDIRECT_URI:http://localhost:3002/oauth2/callback}
   s2s-auth:
     totp_secret: ${IA_S2S_SECRET:AAAAAAAAAAAAAAAC}
     microservice: ${IA_S2S_MICROSERVICE:ia}
     url: ${S2S_URL:http://127.0.0.1:4502}
   s2s-authorised:
-    services: ${IA_S2S_AUTHORIZED_SERVICES:ccd,ccd_data,ccd_gw,ccd_ps,iac,payment_app,refunds_api}
+    services: ${IA_S2S_AUTHORIZED_SERVICES:ccd,ccd_data,ccd_ps,iac,payment_app,refunds_api}
   ia_system_user:
     username: ${IA_SYSTEM_USERNAME:system-user}
     password: ${IA_SYSTEM_PASSWORD:system-password}
@@ -1442,3 +1525,9 @@ ia:
   config:
     validator:
       secret: ${IA_CONFIG_VALIDATOR_SECRET:}
+
+app:
+  home-office-validation:
+    enabled: ${HOME_OFFICE_VALIDATION_ENABLED:true}
+  statutory-timeframe:
+    live-date: ${STATUTORY_TIMEFRAME_LIVE_DATE:2026-09-01}

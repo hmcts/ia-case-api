@@ -39,24 +39,31 @@ public class ListCaseConfirmation implements PostSubmitCallbackHandler<AsylumCas
 
         if (hoRequestEvidenceInstructStatus.equalsIgnoreCase("FAIL")) {
             postSubmitResponse.setConfirmationBody(
-                    "![Respondent notification failed confirmation]"
-                            + "(https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/respondent_notification_failed.svg)\n"
-                            + "#### Do this next\n\n"
-                            + "Contact the respondent to tell them what has changed, including any action they need to take.\n"
+                    """
+                    ![Respondent notification failed confirmation]\
+                    (https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/respondent_notification_failed.svg)
+                    #### Do this next
+                    
+                    Contact the respondent to tell them what has changed, including any action they need to take.
+                    """
             );
         } else if (isAcceleratedDetainedAppeal) {
             postSubmitResponse.setConfirmationHeader("# You have listed the case");
             postSubmitResponse.setConfirmationBody(
-                    "#### What happens next\n\n"
-                            + "The legal representative will be directed to submit the appellant's hearing<br>"
-                            + "requirements and a Notice of Hearing will be sent to all parties."
+                    """
+                    #### What happens next
+                    
+                    The legal representative will be directed to submit the appellant's hearing<br>\
+                    requirements and a Notice of Hearing will be sent to all parties."""
             );
         } else {
             postSubmitResponse.setConfirmationHeader("# You have listed the case");
             postSubmitResponse.setConfirmationBody(
-                    "#### What happens next\n\n"
-                            + "The hearing notice will be sent to all parties.<br>"
-                            + "You don't need to do any more on this case."
+                    """
+                    #### What happens next
+                    
+                    The hearing notice will be sent to all parties.<br>\
+                    You don't need to do any more on this case."""
             );
         }
 

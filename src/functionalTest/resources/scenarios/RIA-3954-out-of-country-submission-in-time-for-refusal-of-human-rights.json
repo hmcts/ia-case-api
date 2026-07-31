@@ -9,8 +9,8 @@
       "caseData": {
         "template": "minimal-appeal-started.json",
         "replacements": {
-          "dateEntryClearanceDecision":"{$TODAY-27}",
-          "outOfCountryDecisionType":"refusalOfHumanRights"
+          "dateEntryClearanceDecision": "{$TODAY-27}",
+          "outOfCountryDecisionType": "refusalOfHumanRights"
         }
       }
     }
@@ -21,8 +21,8 @@
     "caseData": {
       "template": "minimal-appeal-started.json",
       "replacements": {
-        "dateEntryClearanceDecision":"{$TODAY-27}",
-        "outOfCountryDecisionType":"refusalOfHumanRights",
+        "dateEntryClearanceDecision": "{$TODAY-27}",
+        "outOfCountryDecisionType": "refusalOfHumanRights",
         "submissionOutOfTime": "No"
       }
     }

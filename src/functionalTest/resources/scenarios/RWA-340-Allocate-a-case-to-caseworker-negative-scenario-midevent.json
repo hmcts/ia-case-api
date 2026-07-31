@@ -1,6 +1,6 @@
 {
   "description": "RWA-340 Allocate a case to caseworker when there is no assignments for the location midEvent",
-  "enabled": false,
+  "disabled": "true",
   "request": {
     "uri": "/asylum/ccdMidEvent",
     "credentials": "CaseOfficer",
@@ -19,7 +19,9 @@
   },
   "expectation": {
     "status": 200,
-    "errors": ["There are no users for the location you have selected. Choose another location to continue."],
+    "errors": [
+      "There are no users for the location you have selected. Choose another location to continue."
+    ],
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {

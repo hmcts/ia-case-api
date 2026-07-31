@@ -1,6 +1,6 @@
 {
   "description": "RIA-1654 RIA-2851 Edit listing Admin Officer",
-  "enabled": "{$featureFlag.docmosisEnabled}",
+  "disabled": "!{$featureFlag.docmosisEnabled}",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "AdminOfficer",

@@ -32,11 +32,14 @@ public class UploadHomeOfficeBundleConfirmation implements PostSubmitCallbackHan
 
         postSubmitResponse.setConfirmationHeader("# You've uploaded the Home Office bundle");
         postSubmitResponse.setConfirmationBody(
-            "#### What happens next\n\n"
-            + "The Tribunal will:\n"
-                + "* check that the bundle complies with the Procedure Rules and Practice Directions\n"
-                + "* inform you of any issues\n\n"
-            + "The Home Office will be notified when the Appeal Skeleton Argument is ready to review."
+            """
+            #### What happens next
+            
+            The Tribunal will:
+            * check that the bundle complies with the Procedure Rules and Practice Directions
+            * inform you of any issues
+            
+            The Home Office will be notified when the Appeal Skeleton Argument is ready to review."""
         );
 
         return postSubmitResponse;

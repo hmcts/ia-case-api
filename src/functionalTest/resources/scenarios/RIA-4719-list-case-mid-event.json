@@ -23,7 +23,9 @@
   },
   "expectation": {
     "status": 200,
-    "errors": ["You cannot select Decision without a hearing when listing a case"],
+    "errors": [
+      "You cannot select Decision without a hearing when listing a case"
+    ],
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {

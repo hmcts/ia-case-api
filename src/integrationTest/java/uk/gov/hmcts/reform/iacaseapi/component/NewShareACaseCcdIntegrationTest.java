@@ -10,7 +10,8 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.APPEAL_STA
 
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.nio.file.Path;
+
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -39,7 +40,7 @@ class NewShareACaseCcdIntegrationTest extends SpringBootIntegrationTest implemen
     void setupReferenceDataStub() throws IOException {
 
         prdResponseJson =
-            new String(Files.readAllBytes(Paths.get(resourceFile.getURI())));
+            new String(Files.readAllBytes(Path.of(resourceFile.getURI())));
 
         assertThat(prdResponseJson).isNotBlank();
     }

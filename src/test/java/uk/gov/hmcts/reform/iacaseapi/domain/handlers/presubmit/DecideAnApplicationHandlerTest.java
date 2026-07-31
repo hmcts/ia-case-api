@@ -45,7 +45,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -122,9 +121,8 @@ class DecideAnApplicationHandlerTest {
         when(dateProvider.now()).thenReturn(LocalDate.MAX);
     }
 
-    @ParameterizedTest
-    @ValueSource(booleans = {false, true})
-    void should_handle_the_about_to_submit(boolean waR2FeatureFlag) {
+    @Test
+    void should_handle_the_about_to_submit() {
 
         makeAnApplication =
             new MakeAnApplication("Legal representative", "Update appeal details", "A reason to update appeal details",
@@ -145,10 +143,6 @@ class DecideAnApplicationHandlerTest {
         when(asylumCase.read(MAKE_AN_APPLICATION_DECISION_REASON, String.class))
             .thenReturn(Optional.of("A reason of the decision"));
 
-        if (waR2FeatureFlag) {
-            when(featureToggler.getValue("wa-R2-feature", false)).thenReturn(true);
-        }
-
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             decideAnApplicationHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
@@ -159,11 +153,8 @@ class DecideAnApplicationHandlerTest {
         verify(asylumCase, times(1)).write(MAKE_AN_APPLICATIONS, asylumCase.read(MAKE_AN_APPLICATIONS));
         verify(asylumCase, times(1)).write(HAS_APPLICATIONS_TO_DECIDE, NO);
 
-        if (waR2FeatureFlag) {
-            verify(asylumCase, times(1)).write(LAST_MODIFIED_APPLICATION, makeAnApplication);
-        } else {
-            verify(asylumCase, times(0)).write(LAST_MODIFIED_APPLICATION, makeAnApplication);
-        }
+        verify(asylumCase, times(1)).write(LAST_MODIFIED_APPLICATION, makeAnApplication);
+
 
         verify(iaHearingsApiService, never()).aboutToSubmit(callback);
         verify(asylumCase, times(1)).clear(MAKE_AN_APPLICATIONS_LIST);
@@ -225,7 +216,6 @@ class DecideAnApplicationHandlerTest {
             .thenReturn(Optional.of(decision));
         when(asylumCase.read(MAKE_AN_APPLICATION_DECISION_REASON, String.class))
             .thenReturn(Optional.of("A reason of the decision"));
-        when(featureToggler.getValue("wa-R2-feature", false)).thenReturn(true);
         when(iaHearingsApiService.aboutToSubmit(callback)).thenReturn(updatedAsylumCase);
         when(updatedAsylumCase.read(MANUAL_CANCEL_HEARINGS_REQUIRED, YesOrNo.class)).thenReturn(Optional.of(NO));
         when(caseDetails.getState()).thenReturn(state);
@@ -270,7 +260,6 @@ class DecideAnApplicationHandlerTest {
             .thenReturn(Optional.of(GRANTED));
         when(asylumCase.read(MAKE_AN_APPLICATION_DECISION_REASON, String.class))
             .thenReturn(Optional.of("A reason of the decision"));
-        when(featureToggler.getValue("wa-R2-feature", false)).thenReturn(true);
         when(iaHearingsApiService.aboutToSubmit(callback)).thenReturn(updatedAsylumCase);
         when(updatedAsylumCase.read(MANUAL_CANCEL_HEARINGS_REQUIRED, YesOrNo.class)).thenReturn(Optional.of(YES));
         when(caseDetails.getState()).thenReturn(LISTING);
@@ -307,7 +296,6 @@ class DecideAnApplicationHandlerTest {
             .thenReturn(Optional.of(GRANTED));
         when(asylumCase.read(MAKE_AN_APPLICATION_DECISION_REASON, String.class))
             .thenReturn(Optional.of("A reason of the decision"));
-        when(featureToggler.getValue("wa-R2-feature", false)).thenReturn(true);
         when(iaHearingsApiService.aboutToSubmit(callback))
             .thenThrow(new AsylumCaseServiceResponseException("Error", new RestClientException("Error")));
         when(caseDetails.getState()).thenReturn(LISTING);

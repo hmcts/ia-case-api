@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static java.util.Objects.requireNonNull;
 
 import java.util.Collections;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -20,7 +19,6 @@ public class SendDirectionWithQuestionsPreparer implements PreSubmitCallbackHand
     public static final int DUE_IN_WEEKS = 4;
     private final DateProvider dateProvider;
 
-    @Autowired
     public SendDirectionWithQuestionsPreparer(DateProvider dateProvider) {
         this.dateProvider = dateProvider;
     }

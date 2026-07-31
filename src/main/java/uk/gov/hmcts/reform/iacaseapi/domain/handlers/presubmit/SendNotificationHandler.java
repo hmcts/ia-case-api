@@ -167,7 +167,11 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
             Event.RECORD_REMISSION_REMINDER,
             Event.MARK_APPEAL_AS_REMITTED,
             Event.REFUND_CONFIRMATION,
-            Event.HEARING_CANCELLED
+            Event.HEARING_CANCELLED,
+            Event.REMOVE_STATUTORY_TIMEFRAME_24_WEEKS,
+            Event.REVOKE_CITIZEN_ACCESS,
+            Event.GENERATE_PIN_IN_POST,
+            Event.COMPLETE_CASE_REVIEW
         );
         if (!isSaveAndContinueEnabled) {
             eventsToHandle.add(Event.BUILD_CASE);
@@ -179,12 +183,6 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
             eventsToHandle.add(Event.PAYMENT_APPEAL);
         }
 
-        if (isAipJourney(callback.getCaseDetails().getCaseData())
-            && !featureToggler.getValue("aip-ftpa-feature", false)) {
-
-            eventsToHandle.remove(Event.APPLY_FOR_FTPA_RESPONDENT);
-            eventsToHandle.remove(Event.APPLY_FOR_FTPA_APPELLANT);
-        }
         if (!isExAdaCaseWithHearingRequirementsSubmitted(callback)) {
             eventsToHandle.add(Event.REQUEST_RESPONSE_REVIEW);
         }
@@ -254,12 +252,11 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
             Event.SEND_PAYMENT_REMINDER_NOTIFICATION,
             Event.PROGRESS_MIGRATED_CASE,
             Event.REFUND_CONFIRMATION,
-            Event.HEARING_CANCELLED
+            Event.HEARING_CANCELLED,
+            Event.REMOVE_STATUTORY_TIMEFRAME_24_WEEKS,
+            Event.COMPLETE_CASE_REVIEW
         );
 
-        if (!isSaveAndContinueEnabled) {
-            //eventsToHandle.add(Event.BUILD_CASE);
-        }
         if (!isExAdaCaseWithHearingRequirementsSubmitted(callback)) {
             eventsToHandle.add(Event.UPLOAD_HOME_OFFICE_APPEAL_RESPONSE);
         }

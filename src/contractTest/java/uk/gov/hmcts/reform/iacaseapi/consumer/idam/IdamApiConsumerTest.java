@@ -1,19 +1,20 @@
 package uk.gov.hmcts.reform.iacaseapi.consumer.idam;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
+
 import au.com.dius.pact.consumer.dsl.PactDslJsonArray;
 import au.com.dius.pact.consumer.dsl.PactDslJsonBody;
 import au.com.dius.pact.consumer.dsl.PactDslJsonRootValue;
 import au.com.dius.pact.consumer.dsl.PactDslWithProvider;
 import au.com.dius.pact.consumer.junit5.PactConsumerTestExt;
 import au.com.dius.pact.consumer.junit5.PactTestFor;
-import au.com.dius.pact.core.model.RequestResponsePact;
+import au.com.dius.pact.core.model.V4Pact;
 import au.com.dius.pact.core.model.annotations.Pact;
 import au.com.dius.pact.core.model.annotations.PactFolder;
 import com.google.common.collect.ImmutableMap;
-import org.apache.http.client.fluent.Executor;
+import java.util.Map;
 import org.json.JSONException;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,25 +22,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.IdamApi;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.idam.Token;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.idam.UserInfo;
 
-import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
-
-
-@ExtendWith(SpringExtension.class)
 @ExtendWith(PactConsumerTestExt.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @PactFolder("pacts")
 @PactTestFor(providerName = "ia_caseApi", port = "8892")
-@ContextConfiguration(classes = {IdamConsumerApplication.class})
+@SpringJUnitConfig(classes = {IdamConsumerApplication.class})
 @TestPropertySource(locations = {"classpath:application.properties"}, properties = {"idam.baseUrl=http://localhost:8892"})
 public class IdamApiConsumerTest {
 
@@ -47,18 +41,8 @@ public class IdamApiConsumerTest {
     IdamApi idamApi;
     private static final String AUTH_TOKEN = "Bearer someAuthorizationToken";
 
-    @BeforeEach
-    public void prepareTest() throws Exception {
-        Thread.sleep(2000);
-    }
-
-    @AfterEach
-    void teardown() {
-        Executor.closeIdleConnections();
-    }
-
     @Pact(provider = "idamApi_oidc", consumer = "ia_caseApi")
-    public RequestResponsePact generatePactFragmentUserInfo(PactDslWithProvider builder) throws JSONException {
+    public V4Pact generatePactFragmentUserInfo(PactDslWithProvider builder) throws JSONException {
 
         return builder
             .given("userinfo is requested")
@@ -70,11 +54,11 @@ public class IdamApiConsumerTest {
             .willRespondWith()
             .status(200)
             .body(createUserDetailsResponse())
-            .toPact();
+            .toPact(V4Pact.class);
     }
 
     @Pact(provider = "idamApi_oidc", consumer = "ia_caseApi")
-    public RequestResponsePact generatePactFragmentToken(PactDslWithProvider builder) throws JSONException {
+    public V4Pact generatePactFragmentToken(PactDslWithProvider builder) throws JSONException {
 
         Map<String, String> responseheaders = ImmutableMap.<String, String>builder()
             .put("Content-Type", "application/json")
@@ -96,14 +80,14 @@ public class IdamApiConsumerTest {
             .status(HttpStatus.OK.value())
             .headers(responseheaders)
             .body(createAuthResponse())
-            .toPact();
+            .toPact(V4Pact.class);
     }
 
     @Test
     @PactTestFor(pactMethod = "generatePactFragmentUserInfo")
     public void verifyIdamUserDetailsRolesPactUserInfo() {
         UserInfo userInfo = idamApi.userInfo(AUTH_TOKEN);
-        assertEquals("User is not Case Officer", "ia-caseofficer@fake.hmcts.net", userInfo.getEmail());
+        assertEquals("ia-caseofficer@fake.hmcts.net", userInfo.getEmail(), "User is not Case Officer");
     }
 
     @Test
@@ -112,7 +96,7 @@ public class IdamApiConsumerTest {
 
         Map<String, String> tokenRequestMap = buildTokenRequestMap();
         Token token = idamApi.token(tokenRequestMap);
-        assertEquals("Token is not expected", "eyJ0eXAiOiJKV1QiLCJraWQiOiJiL082T3ZWdjEre", token.getAccessToken());
+        assertEquals("eyJ0eXAiOiJKV1QiLCJraWQiOiJiL082T3ZWdjEre", token.getAccessToken(), "Token is not expected");
     }
 
     private Map<String, String> buildTokenRequestMap() {

@@ -14,11 +14,13 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PostSubmitCallbackHandler;
 public class UpdateInterpreterDetailsConfirmation implements PostSubmitCallbackHandler<AsylumCase> {
 
     public static final String HEARING_UPDATE_FAILED_CONFIRMATION_MESSAGE =
-        "![Hearing could not be updated](https://raw.githubusercontent.com/hmcts/"
-        + "ia-appeal-frontend/master/app/assets/images/hearingCouldNotBeUpdated.png)"
-        + "\n\n"
-        + "#### What happens next\n\n"
-        + "The interpreter details could not be updated in List Assist. Please try again later.";
+        """
+        ![Hearing could not be updated](https://raw.githubusercontent.com/hmcts/\
+        ia-appeal-frontend/master/app/assets/images/hearingCouldNotBeUpdated.png)
+        
+        #### What happens next
+        
+        The interpreter details could not be updated in List Assist. Please try again later.""";
 
     public boolean canHandle(Callback<AsylumCase> callback) {
         requireNonNull(callback, "callback must not be null");

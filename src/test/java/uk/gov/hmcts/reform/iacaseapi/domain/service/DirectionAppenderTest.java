@@ -4,8 +4,11 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -20,7 +23,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ClarifyingQuestion;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.Direction;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DirectionTag;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.Parties;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 
 @ExtendWith(MockitoExtension.class)
@@ -80,13 +87,13 @@ class DirectionAppenderTest {
         assertNotNull(allDirections);
         assertEquals(3, allDirections.size());
 
-        assertEquals("3", allDirections.get(0).getId());
-        assertEquals(newDirectionExplanation, allDirections.get(0).getValue().getExplanation());
-        assertEquals(newDirectionParties, allDirections.get(0).getValue().getParties());
-        assertEquals(newDirectionDateDue, allDirections.get(0).getValue().getDateDue());
-        assertEquals(expectedDateSent, allDirections.get(0).getValue().getDateSent());
-        assertEquals(expectedDateSent, allDirections.get(0).getValue().getDateSent());
-        assertEquals(expectedTag, allDirections.get(0).getValue().getTag());
+        assertEquals("3", allDirections.getFirst().getId());
+        assertEquals(newDirectionExplanation, allDirections.getFirst().getValue().getExplanation());
+        assertEquals(newDirectionParties, allDirections.getFirst().getValue().getParties());
+        assertEquals(newDirectionDateDue, allDirections.getFirst().getValue().getDateDue());
+        assertEquals(expectedDateSent, allDirections.getFirst().getValue().getDateSent());
+        assertEquals(expectedDateSent, allDirections.getFirst().getValue().getDateSent());
+        assertEquals(expectedTag, allDirections.getFirst().getValue().getTag());
 
         assertEquals("2", allDirections.get(1).getId());
         assertEquals(existingDirection1, allDirections.get(1).getValue());
@@ -117,12 +124,12 @@ class DirectionAppenderTest {
         assertNotNull(allDirections);
         assertEquals(1, allDirections.size());
 
-        assertEquals("1", allDirections.get(0).getId());
-        assertEquals(newDirectionExplanation, allDirections.get(0).getValue().getExplanation());
-        assertEquals(newDirectionParties, allDirections.get(0).getValue().getParties());
-        assertEquals(newDirectionDateDue, allDirections.get(0).getValue().getDateDue());
-        assertEquals(expectedDateSent, allDirections.get(0).getValue().getDateSent());
-        assertEquals(expectedTag, allDirections.get(0).getValue().getTag());
+        assertEquals("1", allDirections.getFirst().getId());
+        assertEquals(newDirectionExplanation, allDirections.getFirst().getValue().getExplanation());
+        assertEquals(newDirectionParties, allDirections.getFirst().getValue().getParties());
+        assertEquals(newDirectionDateDue, allDirections.getFirst().getValue().getDateDue());
+        assertEquals(expectedDateSent, allDirections.getFirst().getValue().getDateSent());
+        assertEquals(expectedTag, allDirections.getFirst().getValue().getTag());
         verify(waFieldsPublisher).addLastModifiedDirection(eq(asylumCase), anyString(), any(Parties.class), anyString(), any(DirectionTag.class), anyString(), eq(null));
     }
 
@@ -226,17 +233,17 @@ class DirectionAppenderTest {
         assertNotNull(allDirections);
         assertEquals(3, allDirections.size());
 
-        assertEquals("3", allDirections.get(0).getId());
-        assertEquals(newDirectionExplanation, allDirections.get(0).getValue().getExplanation());
-        assertEquals(newDirectionParties, allDirections.get(0).getValue().getParties());
-        assertEquals(newDirectionDateDue, allDirections.get(0).getValue().getDateDue());
-        assertEquals(expectedDateSent, allDirections.get(0).getValue().getDateSent());
-        assertEquals(expectedDateSent, allDirections.get(0).getValue().getDateSent());
-        assertEquals(expectedTag, allDirections.get(0).getValue().getTag());
-        assertEquals(emptyList(), allDirections.get(0).getValue().getClarifyingQuestions());
-        assertNotNull(allDirections.get(0).getValue().getUniqueId());
-        assertThat(UUID.fromString(allDirections.get(0).getValue().getUniqueId())).isExactlyInstanceOf(UUID.class);
-        assertEquals(directionType, allDirections.get(0).getValue().getDirectionType());
+        assertEquals("3", allDirections.getFirst().getId());
+        assertEquals(newDirectionExplanation, allDirections.getFirst().getValue().getExplanation());
+        assertEquals(newDirectionParties, allDirections.getFirst().getValue().getParties());
+        assertEquals(newDirectionDateDue, allDirections.getFirst().getValue().getDateDue());
+        assertEquals(expectedDateSent, allDirections.getFirst().getValue().getDateSent());
+        assertEquals(expectedDateSent, allDirections.getFirst().getValue().getDateSent());
+        assertEquals(expectedTag, allDirections.getFirst().getValue().getTag());
+        assertEquals(emptyList(), allDirections.getFirst().getValue().getClarifyingQuestions());
+        assertNotNull(allDirections.getFirst().getValue().getUniqueId());
+        assertThat(UUID.fromString(allDirections.getFirst().getValue().getUniqueId())).isExactlyInstanceOf(UUID.class);
+        assertEquals(directionType, allDirections.getFirst().getValue().getDirectionType());
 
         assertEquals("2", allDirections.get(1).getId());
         assertEquals(existingDirection1, allDirections.get(1).getValue());
@@ -280,17 +287,17 @@ class DirectionAppenderTest {
         assertNotNull(allDirections);
         assertEquals(3, allDirections.size());
 
-        assertEquals("3", allDirections.get(0).getId());
-        assertEquals(newDirectionExplanation, allDirections.get(0).getValue().getExplanation());
-        assertEquals(newDirectionParties, allDirections.get(0).getValue().getParties());
-        assertEquals(newDirectionDateDue, allDirections.get(0).getValue().getDateDue());
-        assertEquals(expectedDateSent, allDirections.get(0).getValue().getDateSent());
-        assertEquals(expectedDateSent, allDirections.get(0).getValue().getDateSent());
-        assertEquals(expectedTag, allDirections.get(0).getValue().getTag());
-        assertEquals(newQuestions, allDirections.get(0).getValue().getClarifyingQuestions());
-        assertNotNull(allDirections.get(0).getValue().getUniqueId());
-        assertThat(UUID.fromString(allDirections.get(0).getValue().getUniqueId())).isExactlyInstanceOf(UUID.class);
-        assertEquals(directionType, allDirections.get(0).getValue().getDirectionType());
+        assertEquals("3", allDirections.getFirst().getId());
+        assertEquals(newDirectionExplanation, allDirections.getFirst().getValue().getExplanation());
+        assertEquals(newDirectionParties, allDirections.getFirst().getValue().getParties());
+        assertEquals(newDirectionDateDue, allDirections.getFirst().getValue().getDateDue());
+        assertEquals(expectedDateSent, allDirections.getFirst().getValue().getDateSent());
+        assertEquals(expectedDateSent, allDirections.getFirst().getValue().getDateSent());
+        assertEquals(expectedTag, allDirections.getFirst().getValue().getTag());
+        assertEquals(newQuestions, allDirections.getFirst().getValue().getClarifyingQuestions());
+        assertNotNull(allDirections.getFirst().getValue().getUniqueId());
+        assertThat(UUID.fromString(allDirections.getFirst().getValue().getUniqueId())).isExactlyInstanceOf(UUID.class);
+        assertEquals(directionType, allDirections.getFirst().getValue().getDirectionType());
 
         assertEquals("2", allDirections.get(1).getId());
         assertEquals(existingDirection1, allDirections.get(1).getValue());

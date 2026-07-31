@@ -32,8 +32,10 @@ public class UpdateTribunalDecisionConfirmation implements PostSubmitCallbackHan
 
         postSubmitResponse.setConfirmationHeader("# You have updated the decision");
         postSubmitResponse.setConfirmationBody(
-            "#### What happens next?\n\n"
-            + "All parties have been notified and the relevant appeal details have been updated."
+            """
+            #### What happens next?
+            
+            All parties have been notified and the relevant appeal details have been updated."""
         );
 
         return postSubmitResponse;

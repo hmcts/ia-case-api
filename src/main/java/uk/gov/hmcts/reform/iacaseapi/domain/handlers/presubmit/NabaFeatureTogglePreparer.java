@@ -73,9 +73,7 @@ public class NabaFeatureTogglePreparer implements PreSubmitCallbackHandler<Asylu
 
         // We need this in the backend, as the ccd -defs master branch still has this field in use. Once we do the
         // NABA ccd release, we can omit this.
-        YesOrNo isOutOfCountryEnabled
-            = featureToggler.getValue("out-of-country-feature", false) ? YES : NO;
-        asylumCase.write(IS_OUT_OF_COUNTRY_ENABLED, isOutOfCountryEnabled);
+        asylumCase.write(IS_OUT_OF_COUNTRY_ENABLED, YES);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }

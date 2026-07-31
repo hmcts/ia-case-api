@@ -27,7 +27,7 @@
         "isAdmin": "Yes",
         "isAcceleratedDetainedAppeal": "Yes",
         "makeAnApplicationTypes": {
-          "value":             {
+          "value": {
             "code": "TIME_EXTENSION",
             "label": "Time extension"
           },
@@ -50,7 +50,7 @@
             },
             {
               "code": "UPDATE_APPEAL_DETAILS",
-              "label":"Update appeal details"
+              "label": "Update appeal details"
             },
             {
               "code": "JUDGE_REVIEW_LO",

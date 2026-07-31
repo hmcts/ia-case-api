@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -8,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,8 +21,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
-
-import java.util.Optional;
 
 @MockitoSettings(strictness = org.mockito.quality.Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -56,17 +54,11 @@ class MarkAppealPaidConfirmationTest {
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
-        assertThat(
-            callbackResponse.getConfirmationHeader().get())
-            .contains("# Your have marked the appeal as paid");
+        assertTrue(callbackResponse.getConfirmationHeader().get().contains("# Your have marked the appeal as paid"));
 
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("#### What happens next\n\n");
+        assertTrue(callbackResponse.getConfirmationBody().get().contains("#### What happens next\n\n"));
 
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("The Tribunal will be notified that the fee has been paid. The appeal will progress as usual.");
+        assertTrue(callbackResponse.getConfirmationBody().get().contains("The Tribunal will be notified that the fee has been paid. The appeal will progress as usual."));
 
     }
 
@@ -80,17 +72,11 @@ class MarkAppealPaidConfirmationTest {
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
-        assertThat(
-                callbackResponse.getConfirmationHeader().get())
-                .contains("# Your have marked the appeal as paid");
+        assertTrue(callbackResponse.getConfirmationHeader().get().contains("# Your have marked the appeal as paid"));
 
-        assertThat(
-                callbackResponse.getConfirmationBody().get())
-                .contains("#### What happens next\n\n");
+        assertTrue(callbackResponse.getConfirmationBody().get().contains("#### What happens next\n\n"));
 
-        assertThat(
-                callbackResponse.getConfirmationBody().get())
-                .contains("The appellant has been notified that the fee has been paid. The appeal will progress as usual");
+        assertTrue(callbackResponse.getConfirmationBody().get().contains("The appellant has been notified that the fee has been paid. The appeal will progress as usual"));
 
     }
 

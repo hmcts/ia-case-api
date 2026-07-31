@@ -79,7 +79,7 @@ public class ShareACaseUserListPreparer implements PreSubmitCallbackHandler<Asyl
                 .collect(Collectors.toList());
 
         if (!values.isEmpty()) {
-            dynamicList = new DynamicList(values.get(0), values);
+            dynamicList = new DynamicList(values.getFirst(), values);
         } else {
             dynamicList = new DynamicList("");
         }

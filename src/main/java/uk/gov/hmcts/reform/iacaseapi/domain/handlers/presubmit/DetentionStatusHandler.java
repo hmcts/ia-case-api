@@ -62,7 +62,7 @@ public class DetentionStatusHandler implements PreSubmitCallbackHandler<AsylumCa
         if (callback.getEvent().equals(Event.MARK_APPEAL_AS_DETAINED) && isAcceleratedDetainedAppeal.isPresent()) {
             asylumCase.write(DETENTION_STATUS, DetentionStatus.DETAINED);
         }
-        if (!asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class).isPresent()) {
+        if (asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class).isEmpty()) {
             asylumCase.write(APPELLANT_IN_DETENTION, YesOrNo.NO);
         }
         return new PreSubmitCallbackResponse<>(asylumCase);

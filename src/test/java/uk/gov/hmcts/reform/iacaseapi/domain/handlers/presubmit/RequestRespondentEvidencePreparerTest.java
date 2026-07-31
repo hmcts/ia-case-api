@@ -1,27 +1,5 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfTimeDecisionType.*;
-
-import java.time.LocalDate;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
-import java.util.List;
-import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -35,6 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
+import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsHelper;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -44,6 +23,20 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DueDateService;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
+
+import java.time.LocalDate;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfTimeDecisionType.REJECTED;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -61,6 +54,10 @@ class RequestRespondentEvidencePreparerTest {
     @Mock
     private DueDateService dueDateService;
     @Mock
+    private UserDetails userDetails;
+    @Mock
+    private UserDetailsHelper userDetailsHelper;
+    @Mock
     private Callback<AsylumCase> callback;
     @Mock
     private CaseDetails<AsylumCase> caseDetails;
@@ -68,16 +65,137 @@ class RequestRespondentEvidencePreparerTest {
     private AsylumCase asylumCase;
 
     @Captor
-    private ArgumentCaptor<String> asylumCaseValuesCaptor;
-    @Captor
-    private ArgumentCaptor<AsylumCaseFieldDefinition> asylumExtractorCaptor;
+    private ArgumentCaptor<String> explanationCaptor;
 
     private RequestRespondentEvidencePreparer requestRespondentEvidencePreparer;
 
     @BeforeEach
     public void setUp() {
         requestRespondentEvidencePreparer =
-            new RequestRespondentEvidencePreparer(DUE_IN_DAYS, DUE_IN_DAYS_ADA, DUE_IN_DAYS_DETAINED, featureToggler, dateProvider, dueDateService);
+            new RequestRespondentEvidencePreparer(DUE_IN_DAYS, DUE_IN_DAYS_ADA, DUE_IN_DAYS_DETAINED, LocalDate.of(2000, 1, 1).toString(), featureToggler, dateProvider, dueDateService, userDetails, userDetailsHelper);
+        // Default: non-admin role so existing tests are unaffected
+        when(userDetailsHelper.getLoggedInUserRole(userDetails)).thenReturn(UserRole.CASE_OFFICER);
+    }
+
+    @Test
+    void handler_should_run_24w_code_if_go_live_is_in_past() {
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONDENT_EVIDENCE);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(PA));
+        when(dateProvider.now()).thenReturn(LocalDate.parse("2018-11-23"));
+
+        requestRespondentEvidencePreparer =
+                new RequestRespondentEvidencePreparer(DUE_IN_DAYS, DUE_IN_DAYS_ADA, DUE_IN_DAYS_DETAINED,
+                        LocalDate.now().minusDays(1).toString(), featureToggler, dateProvider, dueDateService, userDetails, userDetailsHelper);
+        requestRespondentEvidencePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        verify(asylumCase).read(STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED, YesOrNo.class);
+    }
+
+    @Test
+    void handler_should_run_24w_code_if_go_live_is_today() {
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONDENT_EVIDENCE);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(PA));
+        when(dateProvider.now()).thenReturn(LocalDate.parse("2018-11-23"));
+
+        requestRespondentEvidencePreparer =
+                new RequestRespondentEvidencePreparer(DUE_IN_DAYS, DUE_IN_DAYS_ADA, DUE_IN_DAYS_DETAINED,
+                        LocalDate.now().toString(), featureToggler, dateProvider, dueDateService, userDetails, userDetailsHelper);
+        requestRespondentEvidencePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        verify(asylumCase).read(STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED, YesOrNo.class);
+    }
+
+    @Test
+    void handler_should_not_run_24w_code_if_go_live_is_in_future() {
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONDENT_EVIDENCE);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(PA));
+        when(dateProvider.now()).thenReturn(LocalDate.parse("2018-11-23"));
+
+        requestRespondentEvidencePreparer =
+                new RequestRespondentEvidencePreparer(DUE_IN_DAYS, DUE_IN_DAYS_ADA, DUE_IN_DAYS_DETAINED,
+                        LocalDate.now().plusDays(1).toString(), featureToggler, dateProvider, dueDateService, userDetails, userDetailsHelper);
+        requestRespondentEvidencePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        verify(asylumCase, never()).read(STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED, YesOrNo.class);
+    }
+
+    @Test
+    void handler_should_return_error_if_complete_case_review_not_done() {
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONDENT_EVIDENCE);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(COMPLETE_CASE_REVIEW_DATE, String.class)).thenReturn(Optional.empty());
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            requestRespondentEvidencePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        assertNotNull(callbackResponse);
+        assertFalse(callbackResponse.getErrors().isEmpty());
+        assertThat(callbackResponse.getErrors())
+            .contains("You must run the Complete case review before running the 'Request respondent evidence' event");
+    }
+
+    @Test
+    void handler_should_return_stf_specific_error_if_complete_case_review_not_done_on_24_week_case() {
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONDENT_EVIDENCE);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(COMPLETE_CASE_REVIEW_DATE, String.class)).thenReturn(Optional.empty());
+        when(asylumCase.read(STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            requestRespondentEvidencePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        assertNotNull(callbackResponse);
+        assertFalse(callbackResponse.getErrors().isEmpty());
+        assertThat(callbackResponse.getErrors())
+            .contains("You must run the Complete case review and list the case before running the 'Request respondent evidence' event");
+    }
+
+    @Test
+    void handler_should_return_error_if_list_case_not_done_on_24_week_case() {
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONDENT_EVIDENCE);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(COMPLETE_CASE_REVIEW_DATE, String.class)).thenReturn(Optional.of("2024-01-01"));
+        when(asylumCase.read(STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(LIST_CASE_HEARING_DATE, String.class)).thenReturn(Optional.empty());
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            requestRespondentEvidencePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        assertNotNull(callbackResponse);
+        assertFalse(callbackResponse.getErrors().isEmpty());
+        assertThat(callbackResponse.getErrors())
+            .contains("You must list the case before running the 'Request respondent evidence' event");
+    }
+
+    @Test
+    void handler_should_not_return_error_if_list_case_done_on_24_week_case() {
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONDENT_EVIDENCE);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(COMPLETE_CASE_REVIEW_DATE, String.class)).thenReturn(Optional.of("2024-01-01"));
+        when(asylumCase.read(STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(LIST_CASE_HEARING_DATE, String.class)).thenReturn(Optional.of("2024-06-01T10:00:00.000"));
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.PA));
+        when(dateProvider.now()).thenReturn(LocalDate.parse("2024-01-01"));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            requestRespondentEvidencePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        assertNotNull(callbackResponse);
+        assertTrue(callbackResponse.getErrors().isEmpty());
     }
 
     @Test
@@ -86,23 +204,28 @@ class RequestRespondentEvidencePreparerTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONDENT_EVIDENCE);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(COMPLETE_CASE_REVIEW_DATE, String.class)).thenReturn(Optional.of("2024-01-01"));
 
         assertThatThrownBy(() -> requestRespondentEvidencePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
-                .isExactlyInstanceOf(IllegalStateException.class)
-                .hasMessage("AppealType is not present.");
+            .isExactlyInstanceOf(IllegalStateException.class)
+            .hasMessage("AppealType is not present.");
     }
 
     @ParameterizedTest
-    @EnumSource(value = AppealType.class, names = { "PA", "RP", "DC", "EA", "HU" })
+    @EnumSource(value = AppealType.class, names = {"PA", "RP", "DC", "EA", "HU", "EU", "AG"})
     void should_prepare_send_direction_fields(AppealType appealType) {
 
         final String expectedExplanationContains = "A notice of appeal has been lodged against this decision.";
         final Parties expectedParties = Parties.RESPONDENT;
         final String expectedDateDue = "2018-12-07";
 
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
-        when(featureToggler.getValue("home-office-uan-pa-rp-feature", false)).thenReturn(true);
-        when(featureToggler.getValue("home-office-uan-dc-ea-hu-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-pa-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-rp-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-ea-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-hu-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-dc-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-eu-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-ag-feature", false)).thenReturn(true);
 
         when(dateProvider.now()).thenReturn(LocalDate.parse("2018-11-23"));
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -111,6 +234,7 @@ class RequestRespondentEvidencePreparerTest {
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
         when(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class)).thenReturn(Optional.of("SUCCESS"));
         when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(asylumCase.read(COMPLETE_CASE_REVIEW_DATE, String.class)).thenReturn(Optional.of("2024-01-01"));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             requestRespondentEvidencePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
@@ -118,14 +242,7 @@ class RequestRespondentEvidencePreparerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(asylumCase, times(4)).write(asylumExtractorCaptor.capture(), asylumCaseValuesCaptor.capture());
-
-        List<AsylumCaseFieldDefinition> extractors = asylumExtractorCaptor.getAllValues();
-        List<String> asylumCaseValues = asylumCaseValuesCaptor.getAllValues();
-
-        assertThat(
-            asylumCaseValues.get(extractors.indexOf(SEND_DIRECTION_EXPLANATION)))
-            .contains(expectedExplanationContains);
+        verify(asylumCase, times(1)).write(eq(SEND_DIRECTION_EXPLANATION), contains(expectedExplanationContains));
 
         verify(asylumCase, times(1)).write(SEND_DIRECTION_PARTIES, expectedParties);
         verify(asylumCase, times(1)).write(SEND_DIRECTION_DATE_DUE, expectedDateDue);
@@ -133,16 +250,20 @@ class RequestRespondentEvidencePreparerTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = AppealType.class, names = { "PA", "RP", "DC", "EA", "HU" })
+    @EnumSource(value = AppealType.class, names = {"PA", "RP", "DC", "EA", "HU", "EU", "AG"})
     void should_prepare_send_direction_fields_ada(AppealType appealType) {
 
         final String expectedExplanationContains = "A notice of appeal has been lodged against this decision.";
         final Parties expectedParties = Parties.RESPONDENT;
         final String expectedDateDue = "2023-01-22";
 
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
-        when(featureToggler.getValue("home-office-uan-pa-rp-feature", false)).thenReturn(true);
-        when(featureToggler.getValue("home-office-uan-dc-ea-hu-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-pa-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-rp-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-ea-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-hu-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-dc-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-eu-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-ag-feature", false)).thenReturn(true);
 
         when(dateProvider.now()).thenReturn(LocalDate.parse("2023-01-19"));
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -151,6 +272,7 @@ class RequestRespondentEvidencePreparerTest {
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
         when(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class)).thenReturn(Optional.of("SUCCESS"));
         when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(COMPLETE_CASE_REVIEW_DATE, String.class)).thenReturn(Optional.of("2024-01-01"));
 
         when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(dueDateService.calculateDueDate(any(), eq(DUE_IN_DAYS_ADA))).thenReturn(LocalDate.parse(expectedDateDue).atStartOfDay(ZoneOffset.UTC));
@@ -161,14 +283,7 @@ class RequestRespondentEvidencePreparerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(asylumCase, times(4)).write(asylumExtractorCaptor.capture(), asylumCaseValuesCaptor.capture());
-
-        List<AsylumCaseFieldDefinition> extractors = asylumExtractorCaptor.getAllValues();
-        List<String> asylumCaseValues = asylumCaseValuesCaptor.getAllValues();
-
-        assertThat(
-            asylumCaseValues.get(extractors.indexOf(SEND_DIRECTION_EXPLANATION)))
-            .contains(expectedExplanationContains);
+        verify(asylumCase, times(1)).write(eq(SEND_DIRECTION_EXPLANATION), contains(expectedExplanationContains));
 
         verify(asylumCase, times(1)).write(SEND_DIRECTION_PARTIES, expectedParties);
         verify(asylumCase, times(1)).write(SEND_DIRECTION_DATE_DUE, expectedDateDue);
@@ -191,12 +306,16 @@ class RequestRespondentEvidencePreparerTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = AppealType.class, names = { "PA", "RP", "DC", "EA", "HU" })
+    @EnumSource(value = AppealType.class, names = {"PA", "RP", "DC", "EA", "HU", "EU", "AG"})
     void handle_should_not_error_for_out_of_country_appeals(AppealType appealType) {
 
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
-        when(featureToggler.getValue("home-office-uan-pa-rp-feature", false)).thenReturn(true);
-        when(featureToggler.getValue("home-office-uan-dc-ea-hu-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-pa-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-rp-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-ea-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-hu-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-dc-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-eu-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-ag-feature", false)).thenReturn(true);
 
         when(dateProvider.now()).thenReturn(LocalDate.parse("2018-11-23"));
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -206,21 +325,26 @@ class RequestRespondentEvidencePreparerTest {
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
         when(asylumCase.read(APPEAL_OUT_OF_COUNTRY, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(asylumCase.read(RECORDED_OUT_OF_TIME_DECISION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(asylumCase.read(COMPLETE_CASE_REVIEW_DATE, String.class)).thenReturn(Optional.of("2024-01-01"));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                requestRespondentEvidencePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+            requestRespondentEvidencePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
         assertNotNull(callbackResponse);
         assertThat(callbackResponse.getErrors()).isEmpty();
     }
 
     @ParameterizedTest
-    @EnumSource(value = AppealType.class, names = { "PA", "RP", "DC", "EA", "HU" })
+    @EnumSource(value = AppealType.class, names = {"PA", "RP", "DC", "EA", "HU", "EU", "AG"})
     void handle_should_return_callback_response_for_no_record_out_of_time_decision(AppealType appealType) {
 
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
-        when(featureToggler.getValue("home-office-uan-pa-rp-feature", false)).thenReturn(true);
-        when(featureToggler.getValue("home-office-uan-dc-ea-hu-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-pa-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-rp-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-ea-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-hu-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-dc-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-eu-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-ag-feature", false)).thenReturn(true);
 
         when(dateProvider.now()).thenReturn(LocalDate.parse("2018-11-23"));
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -230,6 +354,7 @@ class RequestRespondentEvidencePreparerTest {
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
         when(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class)).thenReturn(Optional.of("SUCCESS"));
         when(asylumCase.read(RECORDED_OUT_OF_TIME_DECISION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(asylumCase.read(COMPLETE_CASE_REVIEW_DATE, String.class)).thenReturn(Optional.of("2024-01-01"));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             requestRespondentEvidencePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
@@ -239,12 +364,16 @@ class RequestRespondentEvidencePreparerTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = AppealType.class, names = { "PA", "RP", "DC", "EA", "HU" })
+    @EnumSource(value = AppealType.class, names = {"PA", "RP", "DC", "EA", "HU", "EU", "AG"})
     void handle_should_throw_error_for_recorded_out_of_time_decision_and_missing_decision_type(AppealType appealType) {
 
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
-        when(featureToggler.getValue("home-office-uan-pa-rp-feature", false)).thenReturn(true);
-        when(featureToggler.getValue("home-office-uan-dc-ea-hu-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-pa-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-rp-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-ea-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-hu-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-dc-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-eu-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-ag-feature", false)).thenReturn(true);
 
         when(dateProvider.now()).thenReturn(LocalDate.parse("2018-11-23"));
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -254,6 +383,7 @@ class RequestRespondentEvidencePreparerTest {
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
         when(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class)).thenReturn(Optional.of("SUCCESS"));
         when(asylumCase.read(RECORDED_OUT_OF_TIME_DECISION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(COMPLETE_CASE_REVIEW_DATE, String.class)).thenReturn(Optional.of("2024-01-01"));
 
         assertThatThrownBy(() -> requestRespondentEvidencePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
             .isExactlyInstanceOf(IllegalStateException.class)
@@ -261,37 +391,32 @@ class RequestRespondentEvidencePreparerTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = { "FAIL", "MULTIPLE" })
+    @ValueSource(strings = {"FAIL", "MULTIPLE"})
     void handle_should_throw_error_for_the_failed_home_office_response_pa_appeal_type(String hoSearchStatus) {
 
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
-        when(featureToggler.getValue("home-office-uan-pa-rp-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-pa-feature", false)).thenReturn(true);
 
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
         when(dateProvider.now()).thenReturn(LocalDate.parse("2018-11-23"));
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONDENT_EVIDENCE);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(PA));
         when(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class)).thenReturn(Optional.of(hoSearchStatus));
+        when(asylumCase.read(COMPLETE_CASE_REVIEW_DATE, String.class)).thenReturn(Optional.of("2024-01-01"));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                requestRespondentEvidencePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+            requestRespondentEvidencePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
         assertNotNull(callbackResponse);
         assertFalse(callbackResponse.getErrors().isEmpty());
         assertThat(callbackResponse.getErrors())
-                .contains("You need to match the appellant details before you can request the respondent evidence.");
+            .contains("You need to match the appellant details before you can request the respondent evidence.");
     }
 
     @ParameterizedTest
-    @ValueSource(strings = { "FAIL", "MULTIPLE" })
+    @ValueSource(strings = {"FAIL", "MULTIPLE"})
     void handle_should_not_throw_error_for_the_failed_home_office_response_pa_appeal_type_rehydrated_isNotificationTurnedOff_yes(String hoSearchStatus) {
 
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
-        when(featureToggler.getValue("home-office-uan-pa-rp-feature", false)).thenReturn(true);
-
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
         when(dateProvider.now()).thenReturn(LocalDate.parse("2018-11-23"));
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONDENT_EVIDENCE);
@@ -301,9 +426,10 @@ class RequestRespondentEvidencePreparerTest {
         when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(asylumCase.read(SOURCE_OF_APPEAL, SourceOfAppeal.class)).thenReturn(Optional.of(SourceOfAppeal.REHYDRATED_APPEAL));
         when(asylumCase.read(IS_NOTIFICATION_TURNED_OFF, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(COMPLETE_CASE_REVIEW_DATE, String.class)).thenReturn(Optional.of("2024-01-01"));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                requestRespondentEvidencePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+            requestRespondentEvidencePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
         assertNotNull(callbackResponse);
         assertTrue(callbackResponse.getErrors().isEmpty());
@@ -312,10 +438,8 @@ class RequestRespondentEvidencePreparerTest {
     @Test
     void handle_should_throw_error_for_the_detained_appeal_when_appellant_details_not_matched() {
 
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
-        when(featureToggler.getValue("home-office-uan-pa-rp-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-pa-feature", false)).thenReturn(true);
 
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
         when(dateProvider.now()).thenReturn(LocalDate.parse("2018-11-23"));
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONDENT_EVIDENCE);
@@ -323,6 +447,7 @@ class RequestRespondentEvidencePreparerTest {
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(PA));
         when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class)).thenReturn(Optional.empty());
+        when(asylumCase.read(COMPLETE_CASE_REVIEW_DATE, String.class)).thenReturn(Optional.of("2024-01-01"));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             requestRespondentEvidencePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
@@ -330,61 +455,61 @@ class RequestRespondentEvidencePreparerTest {
         assertNotNull(callbackResponse);
         assertFalse(callbackResponse.getErrors().isEmpty());
         assertThat(callbackResponse.getErrors())
-                .contains("You need to match the appellant details before you can request the respondent evidence.");
+            .contains("You need to match the appellant details before you can request the respondent evidence.");
     }
 
     @Test
-    void handle_should_not_throw_error_for_aaa_appeal() {
+    void handle_should_not_throw_error_for_aa_appeal() {
 
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
-        when(featureToggler.getValue("home-office-uan-pa-rp-feature", false)).thenReturn(true);
-
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
         when(dateProvider.now()).thenReturn(LocalDate.parse("2018-11-23"));
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONDENT_EVIDENCE);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AG));
         when(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class)).thenReturn(Optional.empty());
+        when(asylumCase.read(COMPLETE_CASE_REVIEW_DATE, String.class)).thenReturn(Optional.of("2024-01-01"));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             requestRespondentEvidencePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
         assertNotNull(callbackResponse);
-        assertTrue(callbackResponse.getErrors().isEmpty());;
+        assertTrue(callbackResponse.getErrors().isEmpty());
     }
 
     @ParameterizedTest
-    @ValueSource(strings = { "FAIL", "MULTIPLE" })
+    @ValueSource(strings = {"FAIL", "MULTIPLE"})
     void handle_should_throw_error_for_the_failed_home_office_response_hu_appeal_type(String hoSearchStatus) {
 
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
-        when(featureToggler.getValue("home-office-uan-dc-ea-hu-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-hu-feature", false)).thenReturn(true);
 
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
         when(dateProvider.now()).thenReturn(LocalDate.parse("2018-11-23"));
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONDENT_EVIDENCE);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(HU));
         when(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class)).thenReturn(Optional.of(hoSearchStatus));
+        when(asylumCase.read(COMPLETE_CASE_REVIEW_DATE, String.class)).thenReturn(Optional.of("2024-01-01"));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                requestRespondentEvidencePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+            requestRespondentEvidencePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
         assertNotNull(callbackResponse);
         assertFalse(callbackResponse.getErrors().isEmpty());
         assertThat(callbackResponse.getErrors())
-                .contains("You need to match the appellant details before you can request the respondent evidence.");
+            .contains("You need to match the appellant details before you can request the respondent evidence.");
     }
 
     @ParameterizedTest
-    @EnumSource(value = AppealType.class, names = { "PA", "RP", "DC", "EA", "HU" })
+    @EnumSource(value = AppealType.class, names = {"PA", "RP", "DC", "EA", "HU", "EU", "AG"})
     void handle_should_return_callback_error_for_rejected_record_out_of_time_decision(AppealType appealType) {
 
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
-        when(featureToggler.getValue("home-office-uan-pa-rp-feature", false)).thenReturn(true);
-        when(featureToggler.getValue("home-office-uan-dc-ea-hu-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-pa-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-rp-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-ea-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-hu-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-dc-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-eu-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-ag-feature", false)).thenReturn(true);
 
         when(dateProvider.now()).thenReturn(LocalDate.parse("2018-11-23"));
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -396,6 +521,7 @@ class RequestRespondentEvidencePreparerTest {
         when(asylumCase.read(RECORDED_OUT_OF_TIME_DECISION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(asylumCase.read(OUT_OF_TIME_DECISION_TYPE, OutOfTimeDecisionType.class))
             .thenReturn(Optional.of(REJECTED));
+        when(asylumCase.read(COMPLETE_CASE_REVIEW_DATE, String.class)).thenReturn(Optional.of("2024-01-01"));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             requestRespondentEvidencePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
@@ -466,9 +592,10 @@ class RequestRespondentEvidencePreparerTest {
         when(dueDateService.calculateDueDate(
                 any(), anyInt()))
                 .thenReturn(adaDueDate);
+        when(asylumCase.read(COMPLETE_CASE_REVIEW_DATE, String.class)).thenReturn(Optional.of("2024-01-01"));
 
         PreSubmitCallbackResponse<AsylumCase> response =
-                requestRespondentEvidencePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+            requestRespondentEvidencePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
         verify(asylumCase).write(SEND_DIRECTION_DATE_DUE, expectedDateDue);
     }
@@ -484,9 +611,10 @@ class RequestRespondentEvidencePreparerTest {
         when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         when(dateProvider.now()).thenReturn(today);
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(PA));
+        when(asylumCase.read(COMPLETE_CASE_REVIEW_DATE, String.class)).thenReturn(Optional.of("2024-01-01"));
 
         PreSubmitCallbackResponse<AsylumCase> response =
-                requestRespondentEvidencePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+            requestRespondentEvidencePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
         verify(asylumCase).write(SEND_DIRECTION_DATE_DUE, expectedDateDue);
     }
@@ -503,24 +631,29 @@ class RequestRespondentEvidencePreparerTest {
         when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(dateProvider.now()).thenReturn(today);
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(PA));
+        when(asylumCase.read(COMPLETE_CASE_REVIEW_DATE, String.class)).thenReturn(Optional.of("2024-01-01"));
 
         PreSubmitCallbackResponse<AsylumCase> response =
-                requestRespondentEvidencePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+            requestRespondentEvidencePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
         verify(asylumCase).write(SEND_DIRECTION_DATE_DUE, expectedDateDue);
     }
 
     @ParameterizedTest
-    @EnumSource(value = AppealType.class, names = { "PA", "RP", "DC", "EA", "HU" })
+    @EnumSource(value = AppealType.class, names = {"PA", "RP", "DC", "EA", "HU", "EU", "AG"})
     void should_prepare_detention_specific_direction_explanation_for_detained_appeals(AppealType appealType) {
 
         final String expectedExplanationContains = "A notice of appeal has been lodged against this decision.";
         final Parties expectedParties = Parties.RESPONDENT;
         final String expectedDateDue = "2018-11-30";
 
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
-        when(featureToggler.getValue("home-office-uan-pa-rp-feature", false)).thenReturn(true);
-        when(featureToggler.getValue("home-office-uan-dc-ea-hu-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-pa-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-rp-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-ea-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-hu-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-dc-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-eu-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-ag-feature", false)).thenReturn(true);
 
         when(dateProvider.now()).thenReturn(LocalDate.parse("2018-11-23"));
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -529,6 +662,7 @@ class RequestRespondentEvidencePreparerTest {
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
         when(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class)).thenReturn(Optional.of("SUCCESS"));
         when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(COMPLETE_CASE_REVIEW_DATE, String.class)).thenReturn(Optional.of("2024-01-01"));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             requestRespondentEvidencePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
@@ -536,14 +670,7 @@ class RequestRespondentEvidencePreparerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(asylumCase, times(4)).write(asylumExtractorCaptor.capture(), asylumCaseValuesCaptor.capture());
-
-        List<AsylumCaseFieldDefinition> extractors = asylumExtractorCaptor.getAllValues();
-        List<String> asylumCaseValues = asylumCaseValuesCaptor.getAllValues();
-
-        assertThat(
-            asylumCaseValues.get(extractors.indexOf(SEND_DIRECTION_EXPLANATION)))
-            .contains(expectedExplanationContains);
+        verify(asylumCase, times(1)).write(eq(SEND_DIRECTION_EXPLANATION), contains(expectedExplanationContains));
 
         verify(asylumCase, times(1)).write(SEND_DIRECTION_PARTIES, expectedParties);
         verify(asylumCase, times(1)).write(SEND_DIRECTION_DATE_DUE, expectedDateDue);
@@ -551,16 +678,20 @@ class RequestRespondentEvidencePreparerTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = AppealType.class, names = { "PA", "RP", "DC", "EA", "HU" })
+    @EnumSource(value = AppealType.class, names = {"PA", "RP", "DC", "EA", "HU", "EU", "AG"})
     void should_prepare_standard_direction_explanation_for_non_detained_appeals(AppealType appealType) {
 
         final String expectedExplanationContains = "A notice of appeal has been lodged against this decision.";
         final Parties expectedParties = Parties.RESPONDENT;
         final String expectedDateDue = "2018-12-07";
 
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
-        when(featureToggler.getValue("home-office-uan-pa-rp-feature", false)).thenReturn(true);
-        when(featureToggler.getValue("home-office-uan-dc-ea-hu-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-pa-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-rp-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-ea-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-hu-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-dc-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-eu-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-ag-feature", false)).thenReturn(true);
 
         when(dateProvider.now()).thenReturn(LocalDate.parse("2018-11-23"));
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -569,6 +700,7 @@ class RequestRespondentEvidencePreparerTest {
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
         when(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class)).thenReturn(Optional.of("SUCCESS"));
         when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(asylumCase.read(COMPLETE_CASE_REVIEW_DATE, String.class)).thenReturn(Optional.of("2024-01-01"));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             requestRespondentEvidencePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
@@ -576,14 +708,7 @@ class RequestRespondentEvidencePreparerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(asylumCase, times(4)).write(asylumExtractorCaptor.capture(), asylumCaseValuesCaptor.capture());
-
-        List<AsylumCaseFieldDefinition> extractors = asylumExtractorCaptor.getAllValues();
-        List<String> asylumCaseValues = asylumCaseValuesCaptor.getAllValues();
-
-        assertThat(
-            asylumCaseValues.get(extractors.indexOf(SEND_DIRECTION_EXPLANATION)))
-            .contains(expectedExplanationContains);
+        verify(asylumCase, times(1)).write(eq(SEND_DIRECTION_EXPLANATION), contains(expectedExplanationContains));
 
         verify(asylumCase, times(1)).write(SEND_DIRECTION_PARTIES, expectedParties);
         verify(asylumCase, times(1)).write(SEND_DIRECTION_DATE_DUE, expectedDateDue);
@@ -593,8 +718,7 @@ class RequestRespondentEvidencePreparerTest {
     @Test
     void should_use_detention_specific_explanation_text_for_detained_appeals() {
 
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
-        when(featureToggler.getValue("home-office-uan-pa-rp-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-pa-feature", false)).thenReturn(true);
 
         when(dateProvider.now()).thenReturn(LocalDate.parse("2018-11-23"));
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -603,6 +727,7 @@ class RequestRespondentEvidencePreparerTest {
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(PA));
         when(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class)).thenReturn(Optional.of("SUCCESS"));
         when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(COMPLETE_CASE_REVIEW_DATE, String.class)).thenReturn(Optional.of("2024-01-01"));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             requestRespondentEvidencePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
@@ -610,16 +735,13 @@ class RequestRespondentEvidencePreparerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(asylumCase, times(4)).write(asylumExtractorCaptor.capture(), asylumCaseValuesCaptor.capture());
+        verify(asylumCase, times(1)).write(eq(SEND_DIRECTION_EXPLANATION), explanationCaptor.capture());
 
-        List<AsylumCaseFieldDefinition> extractors = asylumExtractorCaptor.getAllValues();
-        List<String> asylumCaseValues = asylumCaseValuesCaptor.getAllValues();
+        String actualExplanation = explanationCaptor.getValue();
 
-        String actualExplanation = asylumCaseValues.get(extractors.indexOf(SEND_DIRECTION_EXPLANATION));
-        
         // Verify it contains the standard opening
         assertThat(actualExplanation).contains("A notice of appeal has been lodged against this decision.");
-        
+
         // Verify it contains detention-specific content
         assertThat(actualExplanation).contains("You must now upload all documents to the Tribunal");
         assertThat(actualExplanation).contains("Rule 24 of the Tribunal Procedure Rules 2014");
@@ -633,11 +755,62 @@ class RequestRespondentEvidencePreparerTest {
         assertThat(actualExplanation).doesNotContain("any record of interview with the appellant");
     }
 
+    @ParameterizedTest
+    @EnumSource(value = UserRole.class, names = {
+        "ADMIN_OFFICER", "HEARING_CENTRE_ADMIN", "CTSC", "CTSC_TEAM_LEADER",
+        "NATIONAL_BUSINESS_CENTRE", "CHALLENGED_ACCESS_CTSC", "CHALLENGED_ACCESS_ADMIN"
+    })
+    void should_return_error_for_admin_role_when_stf24w_flag_not_set(UserRole adminRole) {
+
+        when(userDetailsHelper.getLoggedInUserRole(userDetails)).thenReturn(adminRole);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONDENT_EVIDENCE);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class)).thenReturn(Optional.empty());
+        // Satisfy the complete-case-review precondition so only the admin role check triggers
+        when(asylumCase.read(COMPLETE_CASE_REVIEW_DATE, String.class)).thenReturn(Optional.of("2024-01-01"));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            requestRespondentEvidencePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        assertNotNull(callbackResponse);
+        assertFalse(callbackResponse.getErrors().isEmpty());
+        assertThat(callbackResponse.getErrors())
+            .contains("You can only request respondent evidence on a 24 week case.");
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = UserRole.class, names = {
+        "ADMIN_OFFICER", "HEARING_CENTRE_ADMIN", "CTSC", "CTSC_TEAM_LEADER",
+        "NATIONAL_BUSINESS_CENTRE", "CHALLENGED_ACCESS_CTSC", "CHALLENGED_ACCESS_ADMIN"
+    })
+    void should_allow_admin_role_when_stf24w_flag_is_yes(UserRole adminRole) {
+
+        when(userDetailsHelper.getLoggedInUserRole(userDetails)).thenReturn(adminRole);
+        when(dateProvider.now()).thenReturn(LocalDate.parse("2018-11-23"));
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONDENT_EVIDENCE);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        // Satisfy the 24-week preconditions (complete case review + listed)
+        when(asylumCase.read(COMPLETE_CASE_REVIEW_DATE, String.class)).thenReturn(Optional.of("2024-01-01"));
+        when(asylumCase.read(LIST_CASE_HEARING_DATE, String.class)).thenReturn(Optional.of("2024-06-01"));
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(PA));
+        when(asylumCase.read(APPEAL_OUT_OF_COUNTRY, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class)).thenReturn(Optional.of("SUCCESS"));
+        when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            requestRespondentEvidencePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        assertNotNull(callbackResponse);
+        assertThat(callbackResponse.getErrors()).isEmpty();
+    }
+
     @Test
     void should_use_standard_explanation_text_for_non_detained_appeals() {
 
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
-        when(featureToggler.getValue("home-office-uan-pa-rp-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-pa-feature", false)).thenReturn(true);
 
         when(dateProvider.now()).thenReturn(LocalDate.parse("2018-11-23"));
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -646,6 +819,7 @@ class RequestRespondentEvidencePreparerTest {
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(PA));
         when(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class)).thenReturn(Optional.of("SUCCESS"));
         when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(asylumCase.read(COMPLETE_CASE_REVIEW_DATE, String.class)).thenReturn(Optional.of("2024-01-01"));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             requestRespondentEvidencePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
@@ -653,26 +827,21 @@ class RequestRespondentEvidencePreparerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(asylumCase, times(4)).write(asylumExtractorCaptor.capture(), asylumCaseValuesCaptor.capture());
+        verify(asylumCase, times(1)).write(eq(SEND_DIRECTION_EXPLANATION), explanationCaptor.capture());
 
-        List<AsylumCaseFieldDefinition> extractors = asylumExtractorCaptor.getAllValues();
-        List<String> asylumCaseValues = asylumCaseValuesCaptor.getAllValues();
-
-        String actualExplanation = asylumCaseValues.get(extractors.indexOf(SEND_DIRECTION_EXPLANATION));
-        
-        // Verify it contains the standard opening
-        assertThat(actualExplanation).contains("A notice of appeal has been lodged against this decision.");
-        
-        // Verify it contains standard content
-        assertThat(actualExplanation).contains("directed to supply the documents");
-        assertThat(actualExplanation).contains("Rule 23 or Rule 24 of the Tribunal Procedure Rules 2014");
-        assertThat(actualExplanation).contains("any record of interview with the appellant");
-        assertThat(actualExplanation).contains("copy of the Certificate of Conviction");
-        
-        // Verify it does NOT contain detention-specific content
-        assertThat(actualExplanation).doesNotContain("You must now upload all documents to the Tribunal");
-        assertThat(actualExplanation).doesNotContain("The explanation for refusal");
-        assertThat(actualExplanation).doesNotContain("Interview record (if any)");
-        assertThat(actualExplanation).doesNotContain("copy of any medical report (if any)");
+        assertThat(
+            explanationCaptor.getValue())
+            // Verify it contains the standard opening
+            .contains("A notice of appeal has been lodged against this decision.")
+            // Verify it contains standard content
+            .contains("directed to supply the documents")
+            .contains("Rule 23 or Rule 24 of the Tribunal Procedure Rules 2014")
+            .contains("any record of interview with the appellant")
+            .contains("copy of the Certificate of Conviction")
+            // Verify it does NOT contain detention-specific content
+            .doesNotContain("You must now upload all documents to the Tribunal")
+            .doesNotContain("The explanation for refusal")
+            .doesNotContain("Interview record (if any)")
+            .doesNotContain("copy of any medical report (if any)");
     }
 }

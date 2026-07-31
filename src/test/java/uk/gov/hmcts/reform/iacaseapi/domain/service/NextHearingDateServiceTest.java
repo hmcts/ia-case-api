@@ -16,8 +16,6 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -36,8 +34,6 @@ class NextHearingDateServiceTest {
 
     @Mock
     private IaHearingsApiService iaHearingsApiService;
-    @Mock
-    private FeatureToggler featureToggler;
     @Mock
     private Callback<AsylumCase> callback;
     @Mock
@@ -65,15 +61,7 @@ class NextHearingDateServiceTest {
         when(callback.getEvent()).thenReturn(Event.LIST_CASE);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
-        nextHearingDateService = new NextHearingDateService(iaHearingsApiService, featureToggler);
-    }
-
-    @ParameterizedTest
-    @CsvSource({"true", "false"})
-    void test_enabled(boolean enabled) {
-        when(featureToggler.getValue("nextHearingDateEnabled", false)).thenReturn(enabled);
-
-        assertEquals(enabled, nextHearingDateService.enabled());
+        nextHearingDateService = new NextHearingDateService(iaHearingsApiService);
     }
 
     @Test

@@ -2,7 +2,9 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 
@@ -43,13 +45,9 @@ class GenerateUpperTribunalBundleConfirmationTest {
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
-        assertThat(
-            callbackResponse.getConfirmationHeader().get())
-            .contains("The Upper Tribunal bundle is being generated");
+        assertTrue(callbackResponse.getConfirmationHeader().get().contains("The Upper Tribunal bundle is being generated"));
 
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("What happens next");
+        assertTrue(callbackResponse.getConfirmationBody().get().contains("What happens next"));
 
         assertThat(
             callbackResponse.getConfirmationBody().get())

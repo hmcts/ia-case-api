@@ -81,7 +81,6 @@ public class AppealOutOfCountryEditAppealAipHandler implements PreSubmitCallback
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
             && (callback.getEvent() == Event.EDIT_APPEAL || callback.getEvent() == Event.EDIT_APPEAL_AFTER_SUBMIT)
-            && featureToggler.getValue("aip-ooc-feature", false)
             && HandlerUtils.isAipJourney(callback.getCaseDetails().getCaseData());
     }
 
@@ -236,11 +235,11 @@ public class AppealOutOfCountryEditAppealAipHandler implements PreSubmitCallback
             maybeSponsorSubscriptions.orElse(Collections.emptyList());
 
         if (!existingSponsorSubscriptions.isEmpty()) {
-            final IdValue<Subscriber> sponsorMobileNumber = existingSponsorSubscriptions.get(0);
-            final IdValue<Subscriber> sponsorEmail = existingSponsorSubscriptions.get(0);
+            final IdValue<Subscriber> sponsorMobileNumber = existingSponsorSubscriptions.getFirst();
+            final IdValue<Subscriber> sponsorEmail = existingSponsorSubscriptions.getFirst();
 
-            if (existingSponsorSubscriptions.get(0).getValue().getEmail() != null
-                && existingSponsorSubscriptions.get(0).getValue().getMobileNumber() != null) {
+            if (existingSponsorSubscriptions.getFirst().getValue().getEmail() != null
+                && existingSponsorSubscriptions.getFirst().getValue().getMobileNumber() != null) {
                 asylumCase.write(SPONSOR_EMAIL, sponsorEmail.getValue().getEmail());
                 asylumCase.write(AIP_SPONSOR_EMAIL_FOR_DISPLAY, sponsorEmail.getValue().getEmail());
                 asylumCase.write(SPONSOR_MOBILE_NUMBER, sponsorMobileNumber.getValue().getMobileNumber());

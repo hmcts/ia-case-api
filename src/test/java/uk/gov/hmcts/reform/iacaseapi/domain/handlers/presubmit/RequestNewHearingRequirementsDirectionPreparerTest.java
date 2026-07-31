@@ -57,8 +57,7 @@ class RequestNewHearingRequirementsDirectionPreparerTest {
         requestNewHearingRequirementsDirectionPreparer =
             new RequestNewHearingRequirementsDirectionPreparer(
                 HEARING_REQUIREMENTS_DUE_IN_DAYS,
-                dateProvider,
-                featureToggler
+                dateProvider
             );
     }
 
@@ -66,13 +65,11 @@ class RequestNewHearingRequirementsDirectionPreparerTest {
     void can_handle_request_hearing_requirements_feature() {
 
         when(callback.getEvent()).thenReturn(Event.REQUEST_NEW_HEARING_REQUIREMENTS);
-        when(featureToggler.getValue("reheard-feature", false)).thenReturn(true);
 
         requestNewHearingRequirementsDirectionPreparer =
             new RequestNewHearingRequirementsDirectionPreparer(
                 HEARING_REQUIREMENTS_DUE_IN_DAYS,
-                dateProvider,
-                featureToggler
+                dateProvider
             );
 
         boolean canHandle =
@@ -85,21 +82,22 @@ class RequestNewHearingRequirementsDirectionPreparerTest {
     void should_prepare_send_direction_fields() {
 
         final String expectedExplanationContains =
-            "This appeal will be reheard. You should tell the Tribunal if the appellant’s hearing requirements have changed.\n\n"
-                + "# Next steps\n\n"
-                +
-                "Visit the online service and use the HMCTS reference to find the case. Use the link on the overview tab to submit the appellant’s hearing requirements.\n\n"
-                +
-                "The Tribunal will review the hearing requirements and any requests for additional adjustments. You'll then be sent a hearing date.\n\n"
-                +
-                "If you do not submit the hearing requirements by the date indicated below, the Tribunal may not be able to accommodate the appellant's needs for the hearing.";
+            """
+            This appeal will be reheard. You should tell the Tribunal if the appellant’s hearing requirements have changed.
+            
+            # Next steps
+            
+            Visit the online service and use the HMCTS reference to find the case. Use the link on the overview tab to submit the appellant’s hearing requirements.
+            
+            The Tribunal will review the hearing requirements and any requests for additional adjustments. You'll then be sent a hearing date.
+            
+            If you do not submit the hearing requirements by the date indicated below, the Tribunal may not be able to accommodate the appellant's needs for the hearing.""";
 
         final Parties expectedParties = Parties.LEGAL_REPRESENTATIVE;
         final String expectedDueDate = "2020-10-06";
 
         when(dateProvider.now()).thenReturn(LocalDate.parse("2020-10-01"));
         when(callback.getEvent()).thenReturn(Event.REQUEST_NEW_HEARING_REQUIREMENTS);
-        when(featureToggler.getValue("reheard-feature", false)).thenReturn(true);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
@@ -120,7 +118,6 @@ class RequestNewHearingRequirementsDirectionPreparerTest {
     void should_display_error_when_not_a_reheard_decision() {
 
         when(callback.getEvent()).thenReturn(Event.REQUEST_NEW_HEARING_REQUIREMENTS);
-        when(featureToggler.getValue("reheard-feature", false)).thenReturn(true);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
@@ -154,7 +151,6 @@ class RequestNewHearingRequirementsDirectionPreparerTest {
         for (Event event : Event.values()) {
 
             when(callback.getEvent()).thenReturn(event);
-            when(featureToggler.getValue("reheard-feature", false)).thenReturn(true);
 
             for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
 
@@ -165,23 +161,6 @@ class RequestNewHearingRequirementsDirectionPreparerTest {
 
                     assertTrue(canHandle);
                 } else {
-                    assertFalse(canHandle);
-                }
-            }
-        }
-
-        for (Event event : Event.values()) {
-
-            when(callback.getEvent()).thenReturn(event);
-            when(featureToggler.getValue("reheard-feature", false)).thenReturn(false);
-
-            for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
-
-                boolean canHandle = requestNewHearingRequirementsDirectionPreparer.canHandle(callbackStage, callback);
-
-                if (event == Event.REQUEST_NEW_HEARING_REQUIREMENTS
-                    && callbackStage == PreSubmitCallbackStage.ABOUT_TO_START) {
-
                     assertFalse(canHandle);
                 }
             }

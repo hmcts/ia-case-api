@@ -1,6 +1,6 @@
 {
   "description": "RIA-2041 List case without submit hearing requirements",
-  "enabled": "{$featureFlag.isSubmitHearingRequirementsEnabled}",
+  "disabled": "!{$featureFlag.isSubmitHearingRequirementsEnabled}",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",

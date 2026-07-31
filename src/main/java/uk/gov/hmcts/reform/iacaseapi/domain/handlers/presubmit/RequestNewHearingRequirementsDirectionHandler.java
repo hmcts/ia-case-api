@@ -29,7 +29,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DirectionAppender;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.PreviousHearingAppender;
 
 @Component
@@ -40,20 +39,17 @@ public class RequestNewHearingRequirementsDirectionHandler implements PreSubmitC
     private final DateProvider dateProvider;
     private final DirectionAppender directionAppender;
     private final PreviousHearingAppender previousHearingAppender;
-    private final FeatureToggler featureToggler;
 
     public RequestNewHearingRequirementsDirectionHandler(
         @Value("${legalRepresentativeHearingRequirements.dueInDays}") int hearingRequirementsDueInDays,
         DateProvider dateProvider,
         DirectionAppender directionAppender,
-        PreviousHearingAppender previousHearingAppender,
-        FeatureToggler featureToggler
+        PreviousHearingAppender previousHearingAppender
     ) {
         this.hearingRequirementsDueInDays = hearingRequirementsDueInDays;
         this.dateProvider = dateProvider;
         this.directionAppender = directionAppender;
         this.previousHearingAppender = previousHearingAppender;
-        this.featureToggler = featureToggler;
     }
 
     public boolean canHandle(PreSubmitCallbackStage callbackStage, Callback<AsylumCase> callback) {
@@ -61,8 +57,7 @@ public class RequestNewHearingRequirementsDirectionHandler implements PreSubmitC
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-               && callback.getEvent() == Event.REQUEST_NEW_HEARING_REQUIREMENTS
-               && featureToggler.getValue("reheard-feature", false);
+               && callback.getEvent() == Event.REQUEST_NEW_HEARING_REQUIREMENTS;
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(PreSubmitCallbackStage callbackStage, Callback<AsylumCase> callback) {
@@ -80,11 +75,16 @@ public class RequestNewHearingRequirementsDirectionHandler implements PreSubmitC
         final List<IdValue<Direction>> existingDirections =
             maybeDirections.orElse(emptyList());
 
-        String defaultExplanation = "This appeal will be reheard. You should tell the Tribunal if the appellant’s hearing requirements have changed.\n\n"
-                                    + "# Next steps\n\n"
-                                    + "Visit the online service and use the HMCTS reference to find the case. Use the link on the overview tab to submit the appellant’s hearing requirements.\n\n"
-                                    + "The Tribunal will review the hearing requirements and any requests for additional adjustments. You'll then be sent a hearing date.\n\n"
-                                    + "If you do not submit the hearing requirements by the date indicated below, the Tribunal may not be able to accommodate the appellant's needs for the hearing.";
+        String defaultExplanation = """
+                                    This appeal will be reheard. You should tell the Tribunal if the appellant’s hearing requirements have changed.
+                                    
+                                    # Next steps
+                                    
+                                    Visit the online service and use the HMCTS reference to find the case. Use the link on the overview tab to submit the appellant’s hearing requirements.
+                                    
+                                    The Tribunal will review the hearing requirements and any requests for additional adjustments. You'll then be sent a hearing date.
+                                    
+                                    If you do not submit the hearing requirements by the date indicated below, the Tribunal may not be able to accommodate the appellant's needs for the hearing.""";
 
         Optional<String> explanation = Optional.of(asylumCase.read(SEND_DIRECTION_EXPLANATION, String.class).orElse(defaultExplanation));
 

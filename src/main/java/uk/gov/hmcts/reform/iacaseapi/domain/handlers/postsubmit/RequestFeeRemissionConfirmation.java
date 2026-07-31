@@ -32,9 +32,11 @@ public class RequestFeeRemissionConfirmation implements PostSubmitCallbackHandle
 
         postSubmitResponse.setConfirmationHeader("# Your remission request has been submitted");
         postSubmitResponse.setConfirmationBody(
-            "#### What happens next\n\n"
-            + "The Tribunal will review the remission request. The decision details will be available to view in the appeal tab "
-            + "when a decision has been made.<br>"
+            """
+            #### What happens next
+            
+            The Tribunal will review the remission request. The decision details will be available to view in the appeal tab \
+            when a decision has been made.<br>"""
         );
 
         return postSubmitResponse;

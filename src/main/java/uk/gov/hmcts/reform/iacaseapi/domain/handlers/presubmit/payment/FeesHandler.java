@@ -224,7 +224,7 @@ public class FeesHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private void setFeePaymentDetails(AsylumCase asylumCase, AppealType appealType) {
 
-        if (!asylumCase.read(PAYMENT_STATUS, PaymentStatus.class).isPresent()) {
+        if (asylumCase.read(PAYMENT_STATUS, PaymentStatus.class).isEmpty()) {
             asylumCase.write(PAYMENT_STATUS, PAYMENT_PENDING);
         }
 

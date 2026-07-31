@@ -58,7 +58,7 @@ public class ChangeDirectionDueDatePreparer implements PreSubmitCallbackHandler<
         }
 
         Collections.reverse(directionListElements);
-        DynamicList directionList = new DynamicList(directionListElements.get(0), directionListElements);
+        DynamicList directionList = new DynamicList(directionListElements.getFirst(), directionListElements);
         asylumCase.write(DIRECTION_LIST, directionList);
 
         List<IdValue<EditableDirection>> editableDirections =

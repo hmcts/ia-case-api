@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi.component;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.test.context.support.WithMockUser;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.SpringBootIntegrationTest;
+import uk.gov.hmcts.reform.iacaseapi.component.testutils.WithNotificationsApiStub;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.WithRoleAssignmentStub;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.WithServiceAuthStub;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.WithUserDetailsStub;
@@ -33,7 +34,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.REMOVE_STA
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.APPEAL_SUBMITTED;
 
 class RemoveStatutoryTimeframe24WeeksTest extends SpringBootIntegrationTest implements WithUserDetailsStub,
-        WithRoleAssignmentStub, WithServiceAuthStub {
+        WithRoleAssignmentStub, WithServiceAuthStub, WithNotificationsApiStub {
 
     private static final String APPEAL_SUBMISSION_DATE_STR = "2025-12-10";
     private static final String BANNER_TEXT = "some text 24 Week STF (27 May 2026)";
@@ -44,6 +45,7 @@ class RemoveStatutoryTimeframe24WeeksTest extends SpringBootIntegrationTest impl
         addCaseWorkerUserDetailsStub(server);
         addServiceAuthStub(server);
         addRoleAssignmentQueryStub(server);
+        addNotificationsApiTransformerStub(server);
         String reason = "some reason";
         PreSubmitCallbackResponseForTest response = iaCaseApiClient.aboutToSubmit(callback()
                 .event(REMOVE_STATUTORY_TIMEFRAME_24_WEEKS)
@@ -60,7 +62,7 @@ class RemoveStatutoryTimeframe24WeeksTest extends SpringBootIntegrationTest impl
 
         Optional<List<IdValue<CaseNote>>> caseNotes = response.getAsylumCase().read(CASE_NOTES);
 
-        CaseNote caseNote = caseNotes.get().get(0).getValue();
+        CaseNote caseNote = caseNotes.get().getFirst().getValue();
 
         assertThat(caseNotes.get()).hasSize(1);
         assertThat(caseNote.getUser()).isEqualTo("Case Officer");
@@ -71,9 +73,9 @@ class RemoveStatutoryTimeframe24WeeksTest extends SpringBootIntegrationTest impl
         List<IdValue<StatutoryTimeframe24WeeksHistory>> statutoryTimeframe24WeekHistory = statutoryTimeframe24Weeks.get().getHistory();
 
         assertThat(statutoryTimeframe24WeekHistory).hasSize(1);
-        assertThat(statutoryTimeframe24WeekHistory.get(0).getValue().getUser()).isEqualTo("Case Officer");
-        assertThat(statutoryTimeframe24WeekHistory.get(0).getValue().getStatus()).isEqualTo(YesOrNo.NO);
-        assertThat(statutoryTimeframe24WeekHistory.get(0).getValue().getReason()).isEqualTo(reason);
+        assertThat(statutoryTimeframe24WeekHistory.getFirst().getValue().getUser()).isEqualTo("Case Officer");
+        assertThat(statutoryTimeframe24WeekHistory.getFirst().getValue().getStatus()).isEqualTo(YesOrNo.NO);
+        assertThat(statutoryTimeframe24WeekHistory.getFirst().getValue().getReason()).isEqualTo(reason);
 
         assertThat(response.getAsylumCase().read(XUI_BANNER_TEXT).get()).isEqualTo("some text");
         assertThat(response.getAsylumCase().read(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class).get()).isEqualTo(YesOrNo.NO);

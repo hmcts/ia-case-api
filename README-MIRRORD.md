@@ -34,16 +34,16 @@ brew install mirrord
 ```
 
 * Setup settings in VS Code. It's better to explicitly set the JDK that will be used by VS Code.
-Find your local JDK installation and set it in both settings.json and tasks.json. Replace `/Library/Java/JavaVirtualMachines/jdk-17.0.5.jdk/Contents/Home` with your actual JDK path.
+Find your local JDK installation and set it in both settings.json and tasks.json. Replace `/Library/Java/JavaVirtualMachines/jdk-21.0.5.jdk/Contents/Home` with your actual JDK path.
 
 Add the following to `.vscode/settings.json`:
 ```json
 {
-  "java.jdt.ls.java.home": "/Library/Java/JavaVirtualMachines/jdk-17.0.5.jdk/Contents/Home",
+  "java.jdt.ls.java.home": "/Library/Java/JavaVirtualMachines/jdk-21.0.5.jdk/Contents/Home",
   "java.configuration.runtimes": [
     {
-      "name": "JavaSE-17",
-      "path": "/Library/Java/JavaVirtualMachines/jdk-17.0.5.jdk/Contents/Home",
+      "name": "JavaSE-21",
+      "path": "/Library/Java/JavaVirtualMachines/jdk-21.0.5.jdk/Contents/Home",
       "default": true
     }
   ],
@@ -75,7 +75,7 @@ in .vscode/tasks.json add
       ],
       "options": {
         "env": {
-          "JAVA_HOME": "/Library/Java/JavaVirtualMachines/jdk-17.0.5.jdk/Contents/Home",
+          "JAVA_HOME": "/Library/Java/JavaVirtualMachines/jdk-21.0.5.jdk/Contents/Home",
           "GRADLE_OPTS": "-Dorg.gradle.daemon=false"
         }
       },

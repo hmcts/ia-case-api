@@ -1,6 +1,5 @@
 {
   "description": "RIA-8014 Record adjournment details hearing cancellation confirmation",
-  "enabled": true,
   "request": {
     "uri": "/asylum/ccdSubmitted",
     "credentials": "CaseOfficer",

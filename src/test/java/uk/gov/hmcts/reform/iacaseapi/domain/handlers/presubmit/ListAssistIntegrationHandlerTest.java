@@ -107,7 +107,7 @@ class ListAssistIntegrationHandlerTest {
         verify(asylumCase).write(eq(LEGAL_REP_ORGANISATION_PARTY_ID), legalRepOrgPartyIdCaptor.capture());
         verify(asylumCase).write(eq(SPONSOR_PARTY_ID), sponsorPartyIdCaptor.capture());
 
-        assertEquals(WITNESS_1_PARTY_ID, witnessDetailsCaptor.getValue().get(0).getValue().getWitnessPartyId());
+        assertEquals(WITNESS_1_PARTY_ID, witnessDetailsCaptor.getValue().getFirst().getValue().getWitnessPartyId());
         assertEquals(WITNESS_2_PARTY_ID, witnessDetailsCaptor.getValue().get(1).getValue().getWitnessPartyId());
         assertTrue(partyIdRegexPattern.matcher(appellantPartyIdCaptor.getValue()).matches());
         assertTrue(partyIdRegexPattern.matcher(legalRepIndividualPartyIdCaptor.getValue()).matches());
@@ -133,8 +133,8 @@ class ListAssistIntegrationHandlerTest {
 
         verify(asylumCase, times(2)).write(eq(WITNESS_DETAILS), witnessDetailsCaptor.capture());
 
-        assertEquals("firstName1", witnessDetailsCaptor.getValue().get(0).getValue().getWitnessName());
-        assertEquals("familyName1", witnessDetailsCaptor.getValue().get(0).getValue().getWitnessFamilyName());
+        assertEquals("firstName1", witnessDetailsCaptor.getValue().getFirst().getValue().getWitnessName());
+        assertEquals("familyName1", witnessDetailsCaptor.getValue().getFirst().getValue().getWitnessFamilyName());
         assertEquals("firstName2", witnessDetailsCaptor.getValue().get(1).getValue().getWitnessName());
         assertEquals("familyName2", witnessDetailsCaptor.getValue().get(1).getValue().getWitnessFamilyName());
     }

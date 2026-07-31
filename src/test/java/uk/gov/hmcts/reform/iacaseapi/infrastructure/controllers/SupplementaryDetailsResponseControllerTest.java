@@ -64,10 +64,10 @@ class SupplementaryDetailsResponseControllerTest {
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(ccdCaseNumberList.size(), response.getBody().getSupplementaryInfo().size());
-        assertEquals("11111111111111", response.getBody().getSupplementaryInfo().get(0).getCcdCaseNumber());
+        assertEquals("11111111111111", response.getBody().getSupplementaryInfo().getFirst().getCcdCaseNumber());
         assertEquals(
             "Johnson",
-            response.getBody().getSupplementaryInfo().get(0).getSupplementaryDetails().getSurname()
+            response.getBody().getSupplementaryInfo().getFirst().getSupplementaryDetails().getSurname()
         );
         assertNull(response.getBody().getMissingSupplementaryInfo());
     }
@@ -106,11 +106,11 @@ class SupplementaryDetailsResponseControllerTest {
         assertEquals(3, response.getBody().getSupplementaryInfo().size());
         assertEquals(
             "11111111111111",
-            response.getBody().getSupplementaryInfo().get(0).getCcdCaseNumber()
+            response.getBody().getSupplementaryInfo().getFirst().getCcdCaseNumber()
         );
         assertEquals(
             "Johnson",
-            response.getBody().getSupplementaryInfo().get(0).getSupplementaryDetails().getSurname()
+            response.getBody().getSupplementaryInfo().getFirst().getSupplementaryDetails().getSurname()
         );
         assertNull(response.getBody().getMissingSupplementaryInfo());
     }
@@ -135,10 +135,10 @@ class SupplementaryDetailsResponseControllerTest {
 
         assertEquals(HttpStatus.PARTIAL_CONTENT, response.getStatusCode());
         assertEquals(1, response.getBody().getSupplementaryInfo().size());
-        assertEquals("11111111111111", response.getBody().getSupplementaryInfo().get(0).getCcdCaseNumber());
+        assertEquals("11111111111111", response.getBody().getSupplementaryInfo().getFirst().getCcdCaseNumber());
         assertEquals(
             "Johnson",
-            response.getBody().getSupplementaryInfo().get(0).getSupplementaryDetails().getSurname()
+            response.getBody().getSupplementaryInfo().getFirst().getSupplementaryDetails().getSurname()
         );
         assertEquals(2, response.getBody().getMissingSupplementaryInfo().getCcdCaseNumbers().size());
         assertTrue(response.getBody().getMissingSupplementaryInfo().getCcdCaseNumbers().contains("22222222222222"));

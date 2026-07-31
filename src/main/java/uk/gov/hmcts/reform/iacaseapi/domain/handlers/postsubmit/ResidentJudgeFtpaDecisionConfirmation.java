@@ -77,16 +77,20 @@ public class ResidentJudgeFtpaDecisionConfirmation implements PostSubmitCallback
             case "granted":
             case "partiallyGranted":
                 postSubmitResponse.setConfirmationBody(
-                        "#### What happens next\n\n"
-                                + "Both parties have been notified of the decision. The Upper Tribunal has also been notified, and will now proceed with the case.<br>"
+                        """
+                        #### What happens next
+                        
+                        Both parties have been notified of the decision. The Upper Tribunal has also been notified, and will now proceed with the case.<br>"""
                 );
                 break;
 
             case "refused":
             case "notAdmitted":
                 postSubmitResponse.setConfirmationBody(
-                        "#### What happens next\n\n"
-                                + "Both parties have been notified that permission was refused. They'll also be able to access this information in the FTPA tab.<br>"
+                        """
+                        #### What happens next
+                        
+                        Both parties have been notified that permission was refused. They'll also be able to access this information in the FTPA tab.<br>"""
                 );
                 break;
 
@@ -94,13 +98,17 @@ public class ResidentJudgeFtpaDecisionConfirmation implements PostSubmitCallback
             case "reheardRule35":
                 if (isDlrmSetAside) {
                     postSubmitResponse.setConfirmationBody(
-                            "#### What happens next\n\n"
-                                    + "Both parties will be notified of the decision. A Legal Officer will review any Tribunal instructions and then relist the case.<br>"
+                            """
+                            #### What happens next
+                            
+                            Both parties will be notified of the decision. A Legal Officer will review any Tribunal instructions and then relist the case.<br>"""
                     );
                 } else {
                     postSubmitResponse.setConfirmationBody(
-                            "#### What happens next\n\n"
-                                    + "Both parties will be notified of the decision. A Caseworker will review any Tribunal instructions and then relist the case.<br>"
+                            """
+                            #### What happens next
+                            
+                            Both parties will be notified of the decision. A Caseworker will review any Tribunal instructions and then relist the case.<br>"""
                     );
                 }
                 break;
@@ -111,13 +119,17 @@ public class ResidentJudgeFtpaDecisionConfirmation implements PostSubmitCallback
                 if (isDlrmSetAside) {
                     postSubmitResponse.setConfirmationHeader("# You've disposed of the application");
                     postSubmitResponse.setConfirmationBody(
-                            "#### What happens next\n\n"
-                                    + "A Judge will update the decision.<br>"
+                            """
+                            #### What happens next
+                            
+                            A Judge will update the decision.<br>"""
                     );
                 } else {
                     postSubmitResponse.setConfirmationBody(
-                            "#### What happens next\n\n"
-                                    + "Both parties have been notified of the decision.<br>"
+                            """
+                            #### What happens next
+                            
+                            Both parties have been notified of the decision.<br>"""
                     );
                 }
 

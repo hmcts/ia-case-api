@@ -1,9 +1,15 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.RESPOND_TO_COSTS_LIST;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -62,7 +68,7 @@ class RespondToCostsPreparerTest {
             respondToCostsPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
         assertNotNull(callbackResponse);
-        verify(asylumCase, times(1)).write(RESPOND_TO_COSTS_LIST, new DynamicList(applyForCostsList.get(0), applyForCostsList));
+        verify(asylumCase, times(1)).write(RESPOND_TO_COSTS_LIST, new DynamicList(applyForCostsList.getFirst(), applyForCostsList));
     }
 
 

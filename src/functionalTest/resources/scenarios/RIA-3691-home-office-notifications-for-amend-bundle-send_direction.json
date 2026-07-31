@@ -1,6 +1,5 @@
 {
   "description": "RIA-3691 sends home office notifications for amend bundle for sendDirection",
-  "launchDarklyKey": "home-office-notification-feature:true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",

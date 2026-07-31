@@ -18,7 +18,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SEND_DIRECTION_EXPLANATION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SEND_DIRECTION_PARTIES;
 
-
 import com.google.common.collect.Sets;
 import java.util.ArrayList;
 import java.util.List;
@@ -251,7 +250,7 @@ class DirectionHandlerTest {
         List<IdValue<Direction>> actualExistingDirections =
                 existingDirectionsCaptor
                         .getAllValues()
-                        .get(0);
+                        .getFirst();
 
         assertEquals(0, actualExistingDirections.size());
         verifyCaseAfterHandling(event, allDirections);
@@ -312,7 +311,7 @@ class DirectionHandlerTest {
         List<IdValue<Direction>> actualExistingDirections =
                 existingDirectionsCaptor
                         .getAllValues()
-                        .get(0);
+                        .getFirst();
         assertEquals(0, actualExistingDirections.size());
 
         verifyCaseAfterHandling(event, allDirections);

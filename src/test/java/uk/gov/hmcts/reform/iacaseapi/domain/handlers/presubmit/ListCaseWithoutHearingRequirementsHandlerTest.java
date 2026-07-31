@@ -109,7 +109,6 @@ class ListCaseWithoutHearingRequirementsHandlerTest {
     @Test
     void should_clear_previous_attendance_and_duration_fields_when_set_aside_reheard_flag_exists() {
 
-        when(featureToggler.getValue("reheard-feature", false)).thenReturn(true);
         when(asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
 
         listCaseWithoutHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);

@@ -1,6 +1,5 @@
 {
   "description": "RIA-3313 Home Office notification for FTPA Respondent (POU) application - FTPA submitted state",
-  "launchDarklyKey": "home-office-notification-feature:true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "HomeOfficePou",

@@ -18,6 +18,44 @@ dmnFilepath="$(realpath $workspace)/resources"
 
 echo "${CAMUNDA_BASE_URL} import-dmn-diagram.sh line 19"
 
+MAX_RETRIES=6
+RETRY_DELAY=5
+
+service_up=false
+
+for ((i=1; i<=MAX_RETRIES; i++)); do
+  echo "Attempt $i of $MAX_RETRIES..."
+
+  response=$(curl --insecure -v --silent --show-error \
+    -w "\n%{http_code}" \
+    -X GET "${CAMUNDA_BASE_URL:-http://localhost:9404}/health")
+
+  http_code=$(echo "$response" | tail -n1)
+  body=$(echo "$response" | sed '$d')
+
+  status=$(echo "$body" | jq -r '.status // empty')
+
+  echo "HTTP Status: $http_code"
+  echo "Status: $status"
+
+  if [[ "$http_code" == "200" && "$status" == "UP" ]]; then
+    service_up=true
+    break
+  fi
+
+  if [[ $i -lt $MAX_RETRIES ]]; then
+    echo "Service not UP yet. Retrying in ${RETRY_DELAY}s..."
+    sleep "$RETRY_DELAY"
+  fi
+done
+
+if [[ "$service_up" == true ]]; then
+  echo "do something"
+else
+  echo "Service did not become UP after $MAX_RETRIES attempts"
+  exit 1
+fi
+
 for file in $(find ${dmnFilepath} -name '*.dmn')
 do
   uploadResponse=$(curl --insecure -v --silent -w "\n%{http_code}" --show-error -X POST \

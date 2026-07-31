@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -40,13 +39,9 @@ class GenerateDecisionAndReasonsConfirmationTest {
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
-        assertThat(
-            callbackResponse.getConfirmationHeader().get())
-            .contains("# The Decision and Reasons document is ready to download");
+        assertTrue(callbackResponse.getConfirmationHeader().get().contains("# The Decision and Reasons document is ready to download"));
 
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("Go to the documents tab to download the Decision and Reasons document.");
+        assertTrue(callbackResponse.getConfirmationBody().get().contains("Go to the documents tab to download the Decision and Reasons document."));
 
     }
 

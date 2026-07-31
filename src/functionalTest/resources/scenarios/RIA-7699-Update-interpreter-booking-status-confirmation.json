@@ -1,6 +1,6 @@
 {
   "description": "RIA-7699 Update interpreter booking status confirmation",
-  "enabled": false,
+  "disabled": "true",
   "request": {
     "uri": "/asylum/ccdSubmitted",
     "credentials": "CaseOfficer",
@@ -129,7 +129,7 @@
   },
   "expectation": {
     "status": 200,
-   "confirmation": {
+    "confirmation": {
       "header": "# Booking statuses have been updated",
       "body": "#### What happens next\n\nYou now need to update the hearing in the [Hearings tab](/case/IA/Asylum/7699#Hearing%20and%20appointment) to ensure the update is displayed in List Assist.\n\nIf an interpreter status has been moved to booked, or has been cancelled, ensure that the interpreter details are up to date before updating the hearing."
     }

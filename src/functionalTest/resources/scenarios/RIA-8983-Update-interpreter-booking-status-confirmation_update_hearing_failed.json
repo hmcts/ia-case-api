@@ -1,6 +1,5 @@
 {
   "description": "RIA-8983 Update interpreter booking status confirmation when update hearing failed",
-  "enabled": true,
   "request": {
     "uri": "/asylum/ccdSubmitted",
     "credentials": "CaseOfficer",
@@ -130,8 +129,8 @@
   },
   "expectation": {
     "status": 200,
-   "confirmation": {
-     "body": "![Hearing could not be updated](https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/hearingCouldNotBeUpdated.png)\n\n#### What happens next\n\nThe interpreter booking statuses could not be updated in List Assist. Please try again later."
+    "confirmation": {
+      "body": "![Hearing could not be updated](https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/hearingCouldNotBeUpdated.png)\n\n#### What happens next\n\nThe interpreter booking statuses could not be updated in List Assist. Please try again later."
     }
   }
 }

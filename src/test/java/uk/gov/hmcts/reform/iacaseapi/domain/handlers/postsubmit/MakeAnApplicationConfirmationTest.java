@@ -44,9 +44,7 @@ class MakeAnApplicationConfirmationTest {
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
-        assertThat(
-            callbackResponse.getConfirmationHeader().get())
-            .contains("# You've made an application");
+        assertTrue(callbackResponse.getConfirmationHeader().get().contains("# You've made an application"));
 
         assertThat(
             callbackResponse.getConfirmationBody().get())

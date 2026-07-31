@@ -66,7 +66,10 @@ public class AriaCreateCaseHandler implements PreSubmitCallbackHandler<AsylumCas
             return asylumCasePreSubmitCallbackResponse;
         }
 
-        String appealSubmissionDate = asylumCase.read(APPEAL_SUBMISSION_DATE, String.class).orElse(dateProvider.now().toString());
+        String caseId = String.valueOf(callback.getCaseDetails().getId());
+        caseId = caseId.replaceAll("(.{" + 4 + "})", "$1 ").trim();
+        
+        final String appealSubmissionDate = asylumCase.read(APPEAL_SUBMISSION_DATE, String.class).orElse(dateProvider.now().toString());
 
         AppealType appealType =
             asylumCase
@@ -80,8 +83,9 @@ public class AriaCreateCaseHandler implements PreSubmitCallbackHandler<AsylumCas
         if (!isValidAppealReferenceNumber(appealReferenceNumber)) {
             throw new IllegalStateException("appealReferenceNumber is not valid");
         }
-
+        
         asylumCase.write(APPEAL_REFERENCE_NUMBER, appealReferenceNumber);
+        asylumCase.write(CCD_REFERENCE_NUMBER_FOR_DISPLAY, caseId);
         asylumCase.write(APPEAL_SUBMISSION_DATE, appealSubmissionDate);
         asylumCase.write(IS_ARIA_MIGRATED, YesOrNo.YES);
         //isAriaMigratedFilter is used separately for case list filtering on ExUI

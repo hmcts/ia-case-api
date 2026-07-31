@@ -1,6 +1,5 @@
 {
   "description": "RIA-3651 Leadership judge record FTPA appellant decision (Reheard Rule 32) - feature flag on",
-  "launchDarklyKey": "reheard-feature:true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "Judge",

@@ -1,7 +1,10 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.service;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static java.util.Collections.singletonList;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.util.Collections;
 import java.util.List;
@@ -17,8 +20,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithMetadata;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
-
-import static java.util.Collections.singletonList;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
@@ -202,7 +203,7 @@ class RemissionDetailsAppenderTest {
 
         IdValue<DocumentWithMetadata> idValue = new IdValue<>("1", Mockito.mock(DocumentWithMetadata.class));
 
-        when(localAuthorityLetterList.get(0)).thenReturn(idValue);
+        when(localAuthorityLetterList.getFirst()).thenReturn(idValue);
 
         when(localAuthorityLetterList.size()).thenReturn(2);
 

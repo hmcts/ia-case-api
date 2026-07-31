@@ -18,19 +18,26 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.RoleAssignmentService;
 @Component
 public class EndAppealConfirmation implements PostSubmitCallbackHandler<AsylumCase> {
 
-    public static final String HEARING_CANCEL_SUCCEED = "#### What happens next\n\n"
-        + "A notification has been sent to all parties.<br><br>"
-        + "Any hearings requested or listed in List Assist have been automatically cancelled.";
+    public static final String HEARING_CANCEL_SUCCEED = """
+        #### What happens next
+        
+        A notification has been sent to all parties.<br><br>\
+        Any hearings requested or listed in List Assist have been automatically cancelled.""";
 
-    public static final String HEARING_CANCEL_FAILED = "#### What happens next\n\n"
-        + "A notification has been sent to all parties.<br><br>"
-        + "The hearing could not be automatically cancelled.<br><br>"
-        + "[Cancel the hearing on the Hearings tab](/cases/case-details/%s/hearings)";
+    public static final String HEARING_CANCEL_FAILED = """
+        #### What happens next
+        
+        A notification has been sent to all parties.<br><br>\
+        The hearing could not be automatically cancelled.<br><br>\
+        [Cancel the hearing on the Hearings tab](/cases/case-details/%s/hearings)""";
 
-    public static final String NOTIFICATION_FAILED = "![Respondent notification failed confirmation]"
-        + "(https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/respondent_notification_failed.svg)\n"
-        + "#### Do this next\n\n"
-        + "Contact the respondent to tell them what has changed, including any action they need to take.\n";
+    public static final String NOTIFICATION_FAILED = """
+        ![Respondent notification failed confirmation]\
+        (https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/respondent_notification_failed.svg)
+        #### Do this next
+        
+        Contact the respondent to tell them what has changed, including any action they need to take.
+        """;
 
     private final RoleAssignmentService roleAssignmentService;
     private final IdamService idamService;
@@ -83,7 +90,7 @@ public class EndAppealConfirmation implements PostSubmitCallbackHandler<AsylumCa
 
         if (asylumCase.read(MANUAL_CANCEL_HEARINGS_REQUIRED).isPresent()) {
             postSubmitResponse.setConfirmationBody(
-                String.format(HEARING_CANCEL_FAILED, callback.getCaseDetails().getId())
+                HEARING_CANCEL_FAILED.formatted(callback.getCaseDetails().getId())
             );
         } else {
             postSubmitResponse.setConfirmationBody(HEARING_CANCEL_SUCCEED);

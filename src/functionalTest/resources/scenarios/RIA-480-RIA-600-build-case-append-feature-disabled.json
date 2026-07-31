@@ -1,6 +1,5 @@
 {
   "description": "RIA-480 & RIA-600 Build case -- case argument append previous (save and continue disabled)",
-  "enabled": true,
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "LegalRepresentative",

@@ -11,14 +11,13 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 import java.util.Arrays;
-import java.util.Optional;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.GENERATE_LIST_CMR_TASK_REQUESTED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_SEARCH_STATUS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.GENERATE_LIST_CMR_TASK;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 
 @Slf4j
 @Component
@@ -88,17 +87,10 @@ public class GenerateListCmrTaskHandler implements PreSubmitCallbackHandler<Asyl
                 .orElseThrow(() -> new IllegalStateException("AppealType is not present."));
 
         // Only check for RP and PA appeal types
-        if (Arrays.asList(AppealType.RP, AppealType.PA).contains(appealType)
-                && appellantDetailsNotMatchedOrFailed(asylumCase)) {
+        if (Arrays.asList(AppealType.RP, AppealType.PA).contains(appealType) && !HandlerUtils.hasAppellantDataBeenValidated(asylumCase)) {
 
             callbackResponse.addError("You need to match the appellant details before you can generate the list CMR task.");
         }
     }
 
-    private boolean appellantDetailsNotMatchedOrFailed(AsylumCase asylumCase) {
-        Optional<String> homeOfficeSearchStatus = asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class);
-
-        return homeOfficeSearchStatus.isEmpty()
-                || Arrays.asList("FAIL", "MULTIPLE").contains(homeOfficeSearchStatus.get());
-    }
 }

@@ -38,7 +38,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
@@ -106,8 +105,6 @@ class MarkAppealAsRemittedUploadDecisionHandlerTest {
 
     @BeforeEach
     public void setUp() {
-
-        MockitoAnnotations.openMocks(this);
 
         markAppealAsRemittedUploadDecisionHandler = new MarkAppealAsRemittedUploadDecisionHandler(caseNoteAppender, dateProvider, remittalDocumentsAppender);
         when(callback.getEvent()).thenReturn(MARK_APPEAL_AS_REMITTED);

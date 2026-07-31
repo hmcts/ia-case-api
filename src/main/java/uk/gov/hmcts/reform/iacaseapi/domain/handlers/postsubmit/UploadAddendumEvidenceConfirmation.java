@@ -35,8 +35,10 @@ public class UploadAddendumEvidenceConfirmation implements PostSubmitCallbackHan
 
         postSubmitResponse.setConfirmationHeader("# You have uploaded\n# additional evidence");
         postSubmitResponse.setConfirmationBody(
-            "#### What happens next\n\n"
-            + "The evidence is now available in the documents tab. This is not included in the hearing bundle, it is added as an addendum."
+            """
+            #### What happens next
+            
+            The evidence is now available in the documents tab. This is not included in the hearing bundle, it is added as an addendum."""
         );
 
         return postSubmitResponse;

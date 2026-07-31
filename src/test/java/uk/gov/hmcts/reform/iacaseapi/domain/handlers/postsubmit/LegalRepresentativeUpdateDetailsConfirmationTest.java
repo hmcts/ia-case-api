@@ -40,9 +40,7 @@ class LegalRepresentativeUpdateDetailsConfirmationTest {
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
-        assertThat(
-            callbackResponse.getConfirmationHeader().get())
-            .contains("You've updated the legal representative's details");
+        assertTrue(callbackResponse.getConfirmationHeader().get().contains("You've updated the legal representative's details"));
 
         assertThat(
             callbackResponse.getConfirmationBody().get())

@@ -48,6 +48,7 @@ public enum Event {
     END_APPEAL("endAppeal"),
     REQUEST_CASE_BUILDING("requestCaseBuilding"),
     FORCE_REQUEST_CASE_BUILDING("forceRequestCaseBuilding"),
+    DELETE_DRAFT_APPEAL("deleteDraftAppeal"),
     UPLOAD_ADDITIONAL_EVIDENCE_HOME_OFFICE("uploadAdditionalEvidenceHomeOffice"),
     REQUEST_RESPONSE_REVIEW("requestResponseReview"),
     REQUEST_RESPONSE_AMEND("requestResponseAmend"),
@@ -113,6 +114,7 @@ public enum Event {
     REMOVE_REPRESENTATION("removeRepresentation"),
     REMOVE_LEGAL_REPRESENTATIVE("removeLegalRepresentative"),
     REVOKE_CASE_ACCESS("revokeCaseAccess"),
+    REVOKE_CITIZEN_ACCESS("revokeCitizenAccess"),
     REQUEST_FEE_REMISSION("requestFeeRemission"),
     RECORD_OUT_OF_TIME_DECISION("recordOutOfTimeDecision"),
     GENERATE_UPPER_TRIBUNAL_BUNDLE("generateUpperTribunalBundle"),
@@ -169,6 +171,8 @@ public enum Event {
     FORCE_FTPA_DECIDED_STATE("forceFtpaDecidedState"),
     ROLLBACK_MIGRATION("rollbackMigration"),
     COMPLETE_CASE_REVIEW("completeCaseReview"),
+    FORCE_CASE_TO_PREPARE_FOR_HEARING("forceCaseToPrepareForHearing"),
+    GENERATE_PIN_IN_POST("generatePinInPost"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");

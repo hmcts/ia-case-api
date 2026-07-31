@@ -1,6 +1,5 @@
 {
   "description": "RIA-3683 List case - feature flag on",
-  "launchDarklyKey": "reheard-feature:true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "AdminOfficer",

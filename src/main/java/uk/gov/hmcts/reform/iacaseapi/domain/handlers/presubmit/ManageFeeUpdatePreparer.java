@@ -38,8 +38,7 @@ public class ManageFeeUpdatePreparer implements PreSubmitCallbackHandler<AsylumC
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_START
-            && callback.getEvent() == Event.MANAGE_FEE_UPDATE
-            && featureToggler.getValue("manage-fee-update-feature", false);
+            && callback.getEvent() == Event.MANAGE_FEE_UPDATE;
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(

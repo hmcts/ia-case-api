@@ -32,8 +32,10 @@ public class ForceFtpaDecidedStateConfirmation implements PostSubmitCallbackHand
 
         postSubmitResponse.setConfirmationHeader("# The appeal has been moved to the FTPA decided state");
         postSubmitResponse.setConfirmationBody(
-            "#### What happens next\n\n"
-            + "The appeal can now be progressed from the FTPA decided state."
+            """
+            #### What happens next
+            
+            The appeal can now be progressed from the FTPA decided state."""
         );
 
         return postSubmitResponse;

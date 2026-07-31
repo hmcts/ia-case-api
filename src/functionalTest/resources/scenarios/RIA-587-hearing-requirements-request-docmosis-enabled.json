@@ -1,6 +1,6 @@
 {
   "description": "RIA-587 Create hearing requirements request PDF (Docmosis enabled)",
-  "enabled": "{$featureFlag.isSubmitHearingRequirementsEnabled}",
+  "disabled": "!{$featureFlag.isSubmitHearingRequirementsEnabled}",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "LegalRepresentative",

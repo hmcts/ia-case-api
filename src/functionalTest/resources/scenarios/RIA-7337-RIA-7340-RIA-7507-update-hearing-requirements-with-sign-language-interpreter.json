@@ -1,6 +1,6 @@
 {
   "description": "RIA-7337 RIA-7340 RIA-7507 Update hearing requirements for appellant with sign language interpreter",
-  "enabled": false,
+  "disabled": "true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",
@@ -80,14 +80,16 @@
             {
               "id": "1",
               "value": {
-                "applicationDocuments": [{
-                  "id": "1",
-                  "value": {
-                    "document_url": "{$FIXTURE_DOC1_PDF_URL}",
-                    "document_binary_url": "{$FIXTURE_DOC1_PDF_URL_BINARY}",
-                    "document_filename": "{$FIXTURE_DOC1_PDF_FILENAME}"
+                "applicationDocuments": [
+                  {
+                    "id": "1",
+                    "value": {
+                      "document_url": "{$FIXTURE_DOC1_PDF_URL}",
+                      "document_binary_url": "{$FIXTURE_DOC1_PDF_URL_BINARY}",
+                      "document_filename": "{$FIXTURE_DOC1_PDF_FILENAME}"
+                    }
                   }
-                }],
+                ],
                 "applicationSupplier": "The legal representative",
                 "applicationType": "Update hearing requirements",
                 "applicationReason": "Updating hearing requirements",
@@ -172,14 +174,16 @@
           {
             "id": "1",
             "value": {
-              "applicationDocuments": [{
-                "id": "1",
-                "value": {
-                  "document_url": "{$FIXTURE_DOC1_PDF_URL}",
-                  "document_binary_url": "{$FIXTURE_DOC1_PDF_URL_BINARY}",
-                  "document_filename": "{$FIXTURE_DOC1_PDF_FILENAME}"
+              "applicationDocuments": [
+                {
+                  "id": "1",
+                  "value": {
+                    "document_url": "{$FIXTURE_DOC1_PDF_URL}",
+                    "document_binary_url": "{$FIXTURE_DOC1_PDF_URL_BINARY}",
+                    "document_filename": "{$FIXTURE_DOC1_PDF_FILENAME}"
+                  }
                 }
-              }],
+              ],
               "applicationSupplier": "The legal representative",
               "applicationType": "Update hearing requirements",
               "applicationReason": "Updating hearing requirements",

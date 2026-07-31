@@ -8,7 +8,7 @@ import au.com.dius.pact.consumer.dsl.DslPart;
 import au.com.dius.pact.consumer.dsl.PactDslWithProvider;
 import au.com.dius.pact.consumer.junit5.PactConsumerTestExt;
 import au.com.dius.pact.consumer.junit5.PactTestFor;
-import au.com.dius.pact.core.model.RequestResponsePact;
+import au.com.dius.pact.core.model.V4Pact;
 import au.com.dius.pact.core.model.annotations.Pact;
 import au.com.dius.pact.core.model.annotations.PactFolder;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -20,19 +20,17 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.refdata.CaseWorkerProfile;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.refdata.UserIds;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.refdata.CommonDataRefApi;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.refdata.RefDataCaseWorkerApi;
 
-@ExtendWith(SpringExtension.class)
 @ExtendWith(PactConsumerTestExt.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @PactFolder("pacts")
 @PactTestFor(providerName = "referenceData_caseworkerRefUsers", port = "8991")
-@ContextConfiguration(classes = {RefDataConsumerApplication.class})
+@SpringJUnitConfig(classes = {RefDataConsumerApplication.class})
 public class RefDataConsumerTest {
 
     private static final String SERVICE_AUTHORIZATION = "ServiceAuthorization";
@@ -47,7 +45,7 @@ public class RefDataConsumerTest {
     CommonDataRefApi commonDataRefApi;
 
     @Pact(provider = "referenceData_caseworkerRefUsers", consumer = "ia_caseApi")
-    public RequestResponsePact generatePactFragment(PactDslWithProvider builder) throws JSONException, JsonProcessingException {
+    public V4Pact generatePactFragment(PactDslWithProvider builder) throws JSONException, JsonProcessingException {
 
         return builder
             .given("A list of users for CRD request")
@@ -60,7 +58,7 @@ public class RefDataConsumerTest {
             .willRespondWith()
             .status(200)
             .body(buildCaseworkerListResponsePactDsl())
-            .toPact();
+            .toPact(V4Pact.class);
     }
 
     @Test
@@ -71,7 +69,7 @@ public class RefDataConsumerTest {
             AUTH_TOKEN,
             SERVICE_AUTH_TOKEN,
             getUserIds());
-        assertEquals("firstName", caseWorkerProfiles.get(0).getFirstName());
+        assertEquals("firstName", caseWorkerProfiles.getFirst().getFirstName());
 
     }
 

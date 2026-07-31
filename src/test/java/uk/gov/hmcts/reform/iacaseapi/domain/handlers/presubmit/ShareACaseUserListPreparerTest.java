@@ -98,8 +98,8 @@ class ShareACaseUserListPreparerTest {
         assertThat(dynamicList.getValue().getCode()).isEqualTo(userId);
         assertThat(dynamicList.getValue().getLabel()).isEqualTo(userEmail);
         assertThat(values.size()).isEqualTo(1);
-        assertThat(values.get(0).getCode()).isEqualTo(userId);
-        assertThat(values.get(0).getLabel()).isEqualTo(userEmail);
+        assertThat(values.getFirst().getCode()).isEqualTo(userId);
+        assertThat(values.getFirst().getLabel()).isEqualTo(userEmail);
 
     }
 

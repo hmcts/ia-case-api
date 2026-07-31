@@ -39,13 +39,9 @@ class RemoveFlagConfirmationTest {
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
-        assertThat(
-            callbackResponse.getConfirmationHeader().get())
-            .contains("You've removed the flag from this case");
+        assertTrue(callbackResponse.getConfirmationHeader().get().contains("You've removed the flag from this case"));
 
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("What happens next");
+        assertTrue(callbackResponse.getConfirmationBody().get().contains("What happens next"));
 
         assertThat(
             callbackResponse.getConfirmationBody().get())

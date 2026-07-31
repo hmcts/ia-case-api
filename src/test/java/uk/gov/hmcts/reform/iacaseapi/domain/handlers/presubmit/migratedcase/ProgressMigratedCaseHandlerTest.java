@@ -1,5 +1,28 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.migratedcase;
 
+import static java.util.Collections.emptyList;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ADD_CASE_NOTES_MIGRATION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ARIA_DESIRED_STATE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_NOTES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.PROGRESS_MIGRATED_CASE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.PRE_HEARING;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
+
+import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,30 +45,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.Appender;
-
-import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-
-import static java.util.Collections.emptyList;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ADD_CASE_NOTES_MIGRATION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ARIA_DESIRED_STATE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_NOTES;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.PROGRESS_MIGRATED_CASE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.PRE_HEARING;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -206,7 +205,7 @@ class ProgressMigratedCaseHandlerTest {
         assertEquals(fullName, writtenCaseNote1.getUser());
         assertEquals(currentDate.toString(), writtenCaseNote1.getDateAdded());
 
-        CaseNote writtenCaseNote2 = writtenCaseNotes.get(0).getValue();
+        CaseNote writtenCaseNote2 = writtenCaseNotes.getFirst().getValue();
 
         assertEquals(subject2, writtenCaseNote2.getCaseNoteSubject());
         assertEquals(description2, writtenCaseNote2.getCaseNoteDescription());
@@ -269,7 +268,7 @@ class ProgressMigratedCaseHandlerTest {
         assertEquals(fullName, writtenCaseNote1.getUser());
         assertEquals(currentDate.toString(), writtenCaseNote1.getDateAdded());
 
-        CaseNote writtenCaseNote2 = writtenCaseNotes.get(0).getValue();
+        CaseNote writtenCaseNote2 = writtenCaseNotes.getFirst().getValue();
 
         assertEquals(subject2, writtenCaseNote2.getCaseNoteSubject());
         assertEquals(description2, writtenCaseNote2.getCaseNoteDescription());
@@ -281,4 +280,83 @@ class ProgressMigratedCaseHandlerTest {
 
     }
 
+    @Test
+    void should_create_case_notes_with_documents_retain_history() {
+        when(asylumCase.read(ARIA_DESIRED_STATE, State.class)).thenReturn(Optional.of(PRE_HEARING));
+
+        String subjectA = "Test Subject A";
+        String subject1 = "Test Subject 1";
+        String subject2 = "Test Subject 2";
+
+        String descriptionA = "Test Description A";
+        String description1 = "Test Description 1";
+        String description2 = "Test Description 2";
+
+        Document documentA = mock(Document.class);
+        Document document1 = mock(Document.class);
+        Document document2 = mock(Document.class);
+
+        String fullName = "Full Name";
+        LocalDate currentDate = LocalDate.of(2024, 7, 25);
+
+        CaseNote caseNoteA = new CaseNote(subjectA, descriptionA, fullName, currentDate.toString());
+        caseNoteA.setCaseNoteDocument(documentA);
+
+        when(asylumCase.read(CASE_NOTES)).thenReturn(Optional.of(Arrays.asList(
+                new IdValue<>("1", caseNoteA)
+        )));
+
+        when(asylumCase.read(ADD_CASE_NOTES_MIGRATION)).thenReturn(Optional.of(Arrays.asList(
+                new IdValue<>("1", new CaseNoteMigration(subject1, description1, document1)),
+                new IdValue<>("2", new CaseNoteMigration(subject2, description2, document2))
+        )));
+
+        when(userDetails.getForename()).thenReturn("Full");
+        when(userDetails.getSurname()).thenReturn("Name");
+
+        when(dateProvider.now()).thenReturn(currentDate);
+        when(caseNoteAppender.append(any(), any())).thenAnswer(invocation -> {
+            CaseNote caseNote = invocation.getArgument(0);
+            List<IdValue<CaseNote>> list = invocation.getArgument(1);
+            list.add(new IdValue<>(list.size() + "", caseNote));
+            return list;
+        });
+
+        PreSubmitCallbackResponse<AsylumCase> response =
+                progressMigratedCaseHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse);
+
+        assertEquals(State.PRE_HEARING, response.getState());
+
+        ArgumentCaptor<List> writeCaptor = ArgumentCaptor.forClass(List.class);
+        verify(asylumCase).write(eq(CASE_NOTES), writeCaptor.capture());
+        List<IdValue<CaseNote>> writtenCaseNotes = writeCaptor.getValue();
+
+        assertEquals(3, writtenCaseNotes.size());
+        CaseNote writtenCaseNote1 = writtenCaseNotes.get(0).getValue();
+
+        assertEquals(subjectA, writtenCaseNote1.getCaseNoteSubject());
+        assertEquals(descriptionA, writtenCaseNote1.getCaseNoteDescription());
+        assertEquals(documentA, writtenCaseNote1.getCaseNoteDocument());
+        assertEquals(fullName, writtenCaseNote1.getUser());
+        assertEquals(currentDate.toString(), writtenCaseNote1.getDateAdded());
+
+        CaseNote writtenCaseNote2 = writtenCaseNotes.get(2).getValue();
+
+        assertEquals(subject1, writtenCaseNote2.getCaseNoteSubject());
+        assertEquals(description1, writtenCaseNote2.getCaseNoteDescription());
+        assertEquals(document1, writtenCaseNote2.getCaseNoteDocument());
+        assertEquals(fullName, writtenCaseNote2.getUser());
+        assertEquals(currentDate.toString(), writtenCaseNote2.getDateAdded());
+
+        CaseNote writtenCaseNote3 = writtenCaseNotes.get(1).getValue();
+
+        assertEquals(subject2, writtenCaseNote3.getCaseNoteSubject());
+        assertEquals(description2, writtenCaseNote3.getCaseNoteDescription());
+        assertEquals(document2, writtenCaseNote3.getCaseNoteDocument());
+        assertEquals(fullName, writtenCaseNote3.getUser());
+        assertEquals(currentDate.toString(), writtenCaseNote3.getDateAdded());
+
+        verify(asylumCase).clear(ADD_CASE_NOTES_MIGRATION);
+
+    }
 }

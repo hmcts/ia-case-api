@@ -2,18 +2,31 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_SUBMISSION_DATE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANTS_REPRESENTATION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_IN_DETENTION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ADMIN;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_EJP;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_LEGALLY_REPRESENTED_EJP;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SEND_DIRECTION_DATE_DUE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SEND_DIRECTION_EXPLANATION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SEND_DIRECTION_PARTIES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
-import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,8 +35,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -58,11 +69,6 @@ class RequestCaseBuildingPreparerTest {
     private CaseDetails<AsylumCase> caseDetails;
     @Mock
     private AsylumCase asylumCase;
-
-    @Captor
-    private ArgumentCaptor<String> asylumCaseValuesArgumentCaptor;
-    @Captor
-    private ArgumentCaptor<AsylumCaseFieldDefinition> asylumExtractorCaptor;
 
     private RequestCaseBuildingPreparer requestCaseBuildingPreparer;
 
@@ -105,18 +111,7 @@ class RequestCaseBuildingPreparerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(asylumCase, times(3)).write(asylumExtractorCaptor.capture(), asylumCaseValuesArgumentCaptor.capture());
-
-        List<AsylumCaseFieldDefinition> extractors = asylumExtractorCaptor.getAllValues();
-        List<String> asylumCaseValues = asylumCaseValuesArgumentCaptor.getAllValues();
-
-        assertThat(
-            asylumCaseValues.get(extractors.indexOf(SEND_DIRECTION_EXPLANATION)))
-            .contains(expectedExplanationContains);
-
-        assertThat(
-            asylumCaseValues.get(extractors.indexOf(SEND_DIRECTION_DATE_DUE)))
-            .contains(expectedDueDate);
+        verify(asylumCase).write(eq(SEND_DIRECTION_EXPLANATION), contains(expectedExplanationContains));
 
         verify(asylumCase, times(1)).write(SEND_DIRECTION_PARTIES, expectedParties);
         verify(asylumCase, times(1)).write(SEND_DIRECTION_DATE_DUE, expectedDueDate);
@@ -156,18 +151,7 @@ class RequestCaseBuildingPreparerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(asylumCase, times(3)).write(asylumExtractorCaptor.capture(), asylumCaseValuesArgumentCaptor.capture());
-
-        List<AsylumCaseFieldDefinition> extractors = asylumExtractorCaptor.getAllValues();
-        List<String> asylumCaseValues = asylumCaseValuesArgumentCaptor.getAllValues();
-
-        assertThat(
-            asylumCaseValues.get(extractors.indexOf(SEND_DIRECTION_EXPLANATION)))
-            .contains(expectedExplanationContains);
-
-        assertThat(
-            asylumCaseValues.get(extractors.indexOf(SEND_DIRECTION_DATE_DUE)))
-            .contains(expectedDueDate);
+        verify(asylumCase).write(eq(SEND_DIRECTION_EXPLANATION), contains(expectedExplanationContains));
 
         verify(asylumCase, times(1)).write(SEND_DIRECTION_PARTIES, party);
         verify(asylumCase, times(1)).write(SEND_DIRECTION_DATE_DUE, expectedDueDate);
@@ -263,7 +247,7 @@ class RequestCaseBuildingPreparerTest {
     void should_return_current_date_plus_9_days_when_submission_is_an_ada_case() {
 
         final String expectedExplanationContains =
-                "The appellant and their representative are reminded that they have an obligation under Rule 2(4)";
+            "The appellant and their representative are reminded that they have an obligation under Rule 2(4)";
         final Parties expectedParties = Parties.LEGAL_REPRESENTATIVE;
         final String expectedDueDate = "2023-02-16";
         final ZonedDateTime zonedDueDateTime = LocalDate.parse(expectedDueDate).atStartOfDay(ZoneOffset.UTC);
@@ -277,18 +261,8 @@ class RequestCaseBuildingPreparerTest {
 
         requestCaseBuildingPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
-        verify(asylumCase, times(3)).write(asylumExtractorCaptor.capture(), asylumCaseValuesArgumentCaptor.capture());
-
-        List<AsylumCaseFieldDefinition> extractors = asylumExtractorCaptor.getAllValues();
-        List<String> asylumCaseValues = asylumCaseValuesArgumentCaptor.getAllValues();
-
-        assertThat(
-                asylumCaseValues.get(extractors.indexOf(SEND_DIRECTION_EXPLANATION)))
-                .contains(expectedExplanationContains);
-
-        assertThat(
-                asylumCaseValues.get(extractors.indexOf(SEND_DIRECTION_DATE_DUE)))
-                .contains(expectedDueDate);
+        verify(asylumCase, times(1))
+            .write(eq(SEND_DIRECTION_EXPLANATION), contains(expectedExplanationContains));
 
         verify(asylumCase, times(1)).write(SEND_DIRECTION_PARTIES, expectedParties);
         verify(asylumCase, times(1)).write(SEND_DIRECTION_DATE_DUE, expectedDueDate);
@@ -297,9 +271,9 @@ class RequestCaseBuildingPreparerTest {
 
     static Stream<Arguments> caseTypeScenarios() {
         return Stream.of(
-                Arguments.of(YES, YES, Parties.APPELLANT),
-                Arguments.of(YES, NO, Parties.APPELLANT),
-                Arguments.of(NO, NO, Parties.LEGAL_REPRESENTATIVE)
+            Arguments.of(YES, YES, Parties.APPELLANT),
+            Arguments.of(YES, NO, Parties.APPELLANT),
+            Arguments.of(NO, NO, Parties.LEGAL_REPRESENTATIVE)
         );
     }
 

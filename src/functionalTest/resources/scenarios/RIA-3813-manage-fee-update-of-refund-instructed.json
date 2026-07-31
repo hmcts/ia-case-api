@@ -1,6 +1,5 @@
 {
   "description": "RIA-3813 Admin officer manage fee update of refund instructed",
-  "launchDarklyKey": "manage-fee-update-feature:true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "AdminOfficer",

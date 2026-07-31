@@ -37,17 +37,22 @@ public class RequestRespondentReviewConfirmation implements PostSubmitCallbackHa
 
         if (hoRequestEvidenceInstructStatus.equalsIgnoreCase("FAIL")) {
             postSubmitResponse.setConfirmationBody(
-                "![Respondent notification failed confirmation]"
-                + "(https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/respondent_notification_failed.svg)\n"
-                + "#### Do this next\n\n"
-                + "Contact the respondent to tell them what has changed, including any action they need to take.\n"
+                """
+                ![Respondent notification failed confirmation]\
+                (https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/respondent_notification_failed.svg)
+                #### Do this next
+                
+                Contact the respondent to tell them what has changed, including any action they need to take.
+                """
             );
         } else {
             postSubmitResponse.setConfirmationHeader("# You have sent a direction");
             postSubmitResponse.setConfirmationBody(
-                "#### What happens next\n\n"
-                + "Wait for the respondent to complete the direction.\n"
-                + "You must upload the response as soon as you receive it."
+                """
+                #### What happens next
+                
+                Wait for the respondent to complete the direction.
+                You must upload the response as soon as you receive it."""
             );
         }
 

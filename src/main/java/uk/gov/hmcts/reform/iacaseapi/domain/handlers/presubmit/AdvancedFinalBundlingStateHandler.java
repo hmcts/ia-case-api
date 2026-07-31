@@ -63,7 +63,7 @@ public class AdvancedFinalBundlingStateHandler implements PreSubmitCallbackState
         }
 
         //stictchStatusflags -  NEW, IN_PROGRESS, DONE, FAILED
-        final String stitchStatus = caseBundles.get(0).getStitchStatus().orElse("");
+        final String stitchStatus = caseBundles.getFirst().getStitchStatus().orElse("");
 
         asylumCase.write(AsylumCaseFieldDefinition.STITCHING_STATUS, stitchStatus);
         YesOrNo isHearingBundleUpdated = asylumCase

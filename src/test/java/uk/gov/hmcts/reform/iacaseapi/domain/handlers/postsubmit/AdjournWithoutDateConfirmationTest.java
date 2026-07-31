@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
 
@@ -10,7 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import lombok.Value;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -62,7 +62,7 @@ class AdjournWithoutDateConfirmationTest {
 
         assertNotNull(callbackResponse);
         assertThat(callbackResponse.getConfirmationHeader()).isNotPresent();
-        Assertions.assertTrue(callbackResponse.getConfirmationBody().isPresent());
+        assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
         assertThat(
             callbackResponse.getConfirmationBody().get()).contains(
@@ -104,17 +104,17 @@ class AdjournWithoutDateConfirmationTest {
         PostSubmitCallbackResponse callbackResponse = handler.handle(callback);
 
         assertNotNull(callbackResponse);
-        Assertions.assertTrue(callbackResponse.getConfirmationHeader().isPresent());
-        Assertions.assertTrue(callbackResponse.getConfirmationBody().isPresent());
+        assertTrue(callbackResponse.getConfirmationHeader().isPresent());
+        assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
-        assertThat(
-            callbackResponse.getConfirmationHeader().get())
-            .contains("# The hearing has been adjourned");
+        assertTrue(callbackResponse.getConfirmationHeader().get().contains("# The hearing has been adjourned"));
 
         assertThat(
             callbackResponse.getConfirmationBody().get())
-            .contains("#### What happens next\n\n"
-                + "A new Notice of Hearing has been generated."
+            .contains("""
+                #### What happens next
+                
+                A new Notice of Hearing has been generated."""
             );
     }
 

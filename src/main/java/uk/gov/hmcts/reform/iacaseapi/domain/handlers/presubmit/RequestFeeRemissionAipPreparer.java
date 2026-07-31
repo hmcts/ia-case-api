@@ -21,7 +21,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
@@ -76,11 +75,14 @@ public class RequestFeeRemissionAipPreparer implements PreSubmitCallbackHandler<
         Optional<RemissionType> previousLateRemissionType = asylumCase.read(LATE_REMISSION_TYPE, RemissionType.class);
         Optional<RemissionDecision> remissionDecision = asylumCase.read(REMISSION_DECISION, RemissionDecision.class);
 
-        if (appealHasRemissionOptionOrType(previousRemissionOption, previousHelpWithFeesOptionAip, previousRemissionType, previousLateRemissionType)) {
+        if (appealHasRemissionOptionOrType(
+            previousRemissionOption,
+            previousHelpWithFeesOptionAip,
+            previousRemissionType,
+            previousLateRemissionType
+        )) {
             if (remissionDecision.isEmpty()) {
                 return callbackResponse.withError("You cannot request a fee remission at this time because another fee remission request for this appeal has yet to be decided.");
-            } else {
-                asylumCase.write(HAS_PREVIOUS_REMISSION, YesOrNo.YES);
             }
         }
 

@@ -16,7 +16,9 @@
   },
   "expectation": {
     "status": 200,
-    "errors": ["The appeal cannot be reinstated"],
+    "errors": [
+      "The appeal cannot be reinstated"
+    ],
     "caseData": {
       "template": "minimal-appeal-submitted.json"
     }

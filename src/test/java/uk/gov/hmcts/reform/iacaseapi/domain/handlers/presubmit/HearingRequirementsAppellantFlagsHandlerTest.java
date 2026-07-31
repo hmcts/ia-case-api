@@ -113,8 +113,8 @@ public class HearingRequirementsAppellantFlagsHandlerTest {
         StrategicCaseFlag caseFlag = caseFlagArgumentCaptor.getValue();
         assertNotNull(caseFlag);
         assertEquals(1, caseFlag.getDetails().size());
-        assertEquals(ACTIVE_STATUS, caseFlag.getDetails().get(0).getValue().getStatus());
-        assertEquals(HEARING_LOOP.getFlagCode(), caseFlag.getDetails().get(0).getValue().getFlagCode());
+        assertEquals(ACTIVE_STATUS, caseFlag.getDetails().getFirst().getValue().getStatus());
+        assertEquals(HEARING_LOOP.getFlagCode(), caseFlag.getDetails().getFirst().getValue().getFlagCode());
     }
 
     @ParameterizedTest
@@ -158,8 +158,8 @@ public class HearingRequirementsAppellantFlagsHandlerTest {
         StrategicCaseFlag caseFlag = caseFlagArgumentCaptor.getValue();
         assertNotNull(caseFlag);
         assertEquals(1, caseFlag.getDetails().size());
-        assertEquals(ACTIVE_STATUS, caseFlag.getDetails().get(0).getValue().getStatus());
-        assertEquals(STEP_FREE_WHEELCHAIR_ACCESS.getFlagCode(), caseFlag.getDetails().get(0).getValue().getFlagCode());
+        assertEquals(ACTIVE_STATUS, caseFlag.getDetails().getFirst().getValue().getStatus());
+        assertEquals(STEP_FREE_WHEELCHAIR_ACCESS.getFlagCode(), caseFlag.getDetails().getFirst().getValue().getFlagCode());
     }
 
     @ParameterizedTest
@@ -202,11 +202,11 @@ public class HearingRequirementsAppellantFlagsHandlerTest {
 
         assertNotNull(caseFlag);
         assertEquals(2, caseFlag.getDetails().size());
-        assertEquals(ACTIVE_STATUS, caseFlag.getDetails().get(0).getValue().getStatus());
+        assertEquals(ACTIVE_STATUS, caseFlag.getDetails().getFirst().getValue().getStatus());
         assertEquals(ACTIVE_STATUS, caseFlag.getDetails().get(1).getValue().getStatus());
 
         List<String> actualFlagCodes = List.of(
-            caseFlag.getDetails().get(0).getValue().getFlagCode(),
+            caseFlag.getDetails().getFirst().getValue().getFlagCode(),
             caseFlag.getDetails().get(1).getValue().getFlagCode());
 
         assertTrue(actualFlagCodes.contains(HEARING_LOOP.getFlagCode()));
@@ -238,8 +238,8 @@ public class HearingRequirementsAppellantFlagsHandlerTest {
         StrategicCaseFlag caseFlag = caseFlagArgumentCaptor.getValue();
         assertNotNull(caseFlag);
         assertEquals(1, caseFlag.getDetails().size());
-        assertEquals(ACTIVE_STATUS, caseFlag.getDetails().get(0).getValue().getStatus());
-        assertEquals(CASE_GIVEN_IN_PRIVATE.getFlagCode(), caseFlag.getDetails().get(0).getValue().getFlagCode());
+        assertEquals(ACTIVE_STATUS, caseFlag.getDetails().getFirst().getValue().getStatus());
+        assertEquals(CASE_GIVEN_IN_PRIVATE.getFlagCode(), caseFlag.getDetails().getFirst().getValue().getFlagCode());
     }
 
     @ParameterizedTest
@@ -272,8 +272,8 @@ public class HearingRequirementsAppellantFlagsHandlerTest {
         StrategicCaseFlag caseFlag = caseFlagArgumentCaptor.getValue();
         assertNotNull(caseFlag);
         assertEquals(1, caseFlag.getDetails().size());
-        assertEquals(INACTIVE_STATUS, caseFlag.getDetails().get(0).getValue().getStatus());
-        assertEquals(HEARING_LOOP.getFlagCode(), caseFlag.getDetails().get(0).getValue().getFlagCode());
+        assertEquals(INACTIVE_STATUS, caseFlag.getDetails().getFirst().getValue().getStatus());
+        assertEquals(HEARING_LOOP.getFlagCode(), caseFlag.getDetails().getFirst().getValue().getFlagCode());
     }
 
     @ParameterizedTest
@@ -323,8 +323,8 @@ public class HearingRequirementsAppellantFlagsHandlerTest {
         StrategicCaseFlag caseFlag = caseFlagArgumentCaptor.getValue();
         assertNotNull(caseFlag);
         assertEquals(1, caseFlag.getDetails().size());
-        assertEquals(INACTIVE_STATUS, caseFlag.getDetails().get(0).getValue().getStatus());
-        assertEquals(STEP_FREE_WHEELCHAIR_ACCESS.getFlagCode(), caseFlag.getDetails().get(0).getValue().getFlagCode());
+        assertEquals(INACTIVE_STATUS, caseFlag.getDetails().getFirst().getValue().getStatus());
+        assertEquals(STEP_FREE_WHEELCHAIR_ACCESS.getFlagCode(), caseFlag.getDetails().getFirst().getValue().getFlagCode());
     }
 
     @ParameterizedTest
@@ -360,8 +360,8 @@ public class HearingRequirementsAppellantFlagsHandlerTest {
         StrategicCaseFlag caseFlag = caseFlagArgumentCaptor.getValue();
         assertNotNull(caseFlag);
         assertEquals(1, caseFlag.getDetails().size());
-        assertEquals(INACTIVE_STATUS, caseFlag.getDetails().get(0).getValue().getStatus());
-        assertEquals(CASE_GIVEN_IN_PRIVATE.getFlagCode(), caseFlag.getDetails().get(0).getValue().getFlagCode());
+        assertEquals(INACTIVE_STATUS, caseFlag.getDetails().getFirst().getValue().getStatus());
+        assertEquals(CASE_GIVEN_IN_PRIVATE.getFlagCode(), caseFlag.getDetails().getFirst().getValue().getFlagCode());
     }
 
     @ParameterizedTest
@@ -389,8 +389,8 @@ public class HearingRequirementsAppellantFlagsHandlerTest {
         StrategicCaseFlag caseFlag = caseFlagArgumentCaptor.getValue();
         assertNotNull(caseFlag);
         assertEquals(1, caseFlag.getDetails().size());
-        assertEquals(ACTIVE_STATUS, caseFlag.getDetails().get(0).getValue().getStatus());
-        assertEquals(AUDIO_VIDEO_EVIDENCE.getFlagCode(), caseFlag.getDetails().get(0).getValue().getFlagCode());
+        assertEquals(ACTIVE_STATUS, caseFlag.getDetails().getFirst().getValue().getStatus());
+        assertEquals(AUDIO_VIDEO_EVIDENCE.getFlagCode(), caseFlag.getDetails().getFirst().getValue().getFlagCode());
     }
 
     @ParameterizedTest
@@ -426,8 +426,8 @@ public class HearingRequirementsAppellantFlagsHandlerTest {
         StrategicCaseFlag caseFlag = caseFlagArgumentCaptor.getValue();
         assertNotNull(caseFlag);
         assertEquals(1, caseFlag.getDetails().size());
-        assertEquals(INACTIVE_STATUS, caseFlag.getDetails().get(0).getValue().getStatus());
-        assertEquals(AUDIO_VIDEO_EVIDENCE.getFlagCode(), caseFlag.getDetails().get(0).getValue().getFlagCode());
+        assertEquals(INACTIVE_STATUS, caseFlag.getDetails().getFirst().getValue().getStatus());
+        assertEquals(AUDIO_VIDEO_EVIDENCE.getFlagCode(), caseFlag.getDetails().getFirst().getValue().getFlagCode());
     }
 
     @ParameterizedTest

@@ -35,7 +35,9 @@
   },
   "expectation": {
     "status": 200,
-    "errors": ["You must update the decision or the Decision and Reasons document to continue."],
+    "errors": [
+      "You must update the decision or the Decision and Reasons document to continue."
+    ],
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {

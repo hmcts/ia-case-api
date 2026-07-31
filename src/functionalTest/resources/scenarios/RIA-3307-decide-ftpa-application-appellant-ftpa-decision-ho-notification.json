@@ -1,5 +1,5 @@
 {
-  "description": "RIA-3307 Decide FT{A application - HO notification",
+  "description": "RIA-3307 Decide FTPA application - HO notification",
   "launchDarklyKey": "dlrm-setaside-feature-flag:true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",

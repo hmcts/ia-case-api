@@ -1,16 +1,18 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
-import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REVIEW_HOME_OFFICE_RESPONSE_BY_LEGAL_REP;
-
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
+
+import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REVIEW_HOME_OFFICE_RESPONSE_BY_LEGAL_REP;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED;
 
 @Component
 public class RequestHearingRequirementsPreparer implements PreSubmitCallbackHandler<AsylumCase> {
@@ -41,7 +43,16 @@ public class RequestHearingRequirementsPreparer implements PreSubmitCallbackHand
 
         PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
 
-        if (asylumCase.read(REVIEW_HOME_OFFICE_RESPONSE_BY_LEGAL_REP, YesOrNo.class).map(flag -> flag.equals(YesOrNo.NO)).orElse(true)) {
+        boolean is24WeeksCase = asylumCase.read(STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED, YesOrNo.class)
+            .map(flag -> flag.equals(YesOrNo.YES))
+            .orElse(false);
+
+        State currentState = callback.getCaseDetails().getState();
+        if ((is24WeeksCase && currentState != State.CASE_UNDER_REVIEW && currentState != State.REASONS_FOR_APPEAL_SUBMITTED) || (!is24WeeksCase && currentState != State.RESPONDENT_REVIEW)) {
+            return response.withError("This event cannot be run on this case at this time");
+        }
+
+        if (!is24WeeksCase && asylumCase.read(REVIEW_HOME_OFFICE_RESPONSE_BY_LEGAL_REP, YesOrNo.class).map(flag -> flag.equals(YesOrNo.NO)).orElse(true)) {
             response.addError("You cannot submit your hearing requirements before the Home Office response has been uploaded.");
         }
 

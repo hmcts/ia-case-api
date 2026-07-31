@@ -15,23 +15,19 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
 @Component
 public class RequestNewHearingRequirementsDirectionPreparer implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final int hearingRequirementsDueInDays;
     private final DateProvider dateProvider;
-    private final FeatureToggler featureToggler;
 
     public RequestNewHearingRequirementsDirectionPreparer(
         @Value("${legalRepresentativeHearingRequirements.dueInDays}") int hearingRequirementsDueInDays,
-        DateProvider dateProvider,
-        FeatureToggler featureToggler
+        DateProvider dateProvider
     ) {
         this.hearingRequirementsDueInDays = hearingRequirementsDueInDays;
         this.dateProvider = dateProvider;
-        this.featureToggler = featureToggler;
     }
 
     public boolean canHandle(PreSubmitCallbackStage callbackStage, Callback<AsylumCase> callback) {
@@ -39,8 +35,7 @@ public class RequestNewHearingRequirementsDirectionPreparer implements PreSubmit
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_START
-               && callback.getEvent() == Event.REQUEST_NEW_HEARING_REQUIREMENTS
-               && featureToggler.getValue("reheard-feature", false);
+               && callback.getEvent() == Event.REQUEST_NEW_HEARING_REQUIREMENTS;
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(PreSubmitCallbackStage callbackStage, Callback<AsylumCase> callback) {
@@ -59,11 +54,16 @@ public class RequestNewHearingRequirementsDirectionPreparer implements PreSubmit
             response.addError("You cannot request hearing requirements for this appeal in this state.");
         } else {
 
-            String explanation = "This appeal will be reheard. You should tell the Tribunal if the appellant’s hearing requirements have changed.\n\n"
-                                 + "# Next steps\n\n"
-                                 + "Visit the online service and use the HMCTS reference to find the case. Use the link on the overview tab to submit the appellant’s hearing requirements.\n\n"
-                                 + "The Tribunal will review the hearing requirements and any requests for additional adjustments. You'll then be sent a hearing date.\n\n"
-                                 + "If you do not submit the hearing requirements by the date indicated below, the Tribunal may not be able to accommodate the appellant's needs for the hearing.";
+            String explanation = """
+                                 This appeal will be reheard. You should tell the Tribunal if the appellant’s hearing requirements have changed.
+                                 
+                                 # Next steps
+                                 
+                                 Visit the online service and use the HMCTS reference to find the case. Use the link on the overview tab to submit the appellant’s hearing requirements.
+                                 
+                                 The Tribunal will review the hearing requirements and any requests for additional adjustments. You'll then be sent a hearing date.
+                                 
+                                 If you do not submit the hearing requirements by the date indicated below, the Tribunal may not be able to accommodate the appellant's needs for the hearing.""";
 
             asylumCase.write(SEND_DIRECTION_EXPLANATION, explanation);
 

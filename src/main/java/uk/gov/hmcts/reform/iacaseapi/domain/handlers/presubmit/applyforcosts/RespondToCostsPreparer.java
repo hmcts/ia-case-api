@@ -53,7 +53,7 @@ public class RespondToCostsPreparer implements PreSubmitCallbackHandler<AsylumCa
         if (applyForCostsList.isEmpty()) {
             response.addError("You do not have any cost applications to respond to.");
         } else {
-            DynamicList dynamicList = new DynamicList(applyForCostsList.get(0), applyForCostsList);
+            DynamicList dynamicList = new DynamicList(applyForCostsList.getFirst(), applyForCostsList);
             asylumCase.write(RESPOND_TO_COSTS_LIST, dynamicList);
 
         }

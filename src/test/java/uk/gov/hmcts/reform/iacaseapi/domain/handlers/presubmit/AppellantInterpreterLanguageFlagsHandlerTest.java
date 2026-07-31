@@ -110,9 +110,9 @@ public class AppellantInterpreterLanguageFlagsHandlerTest {
         StrategicCaseFlag appellantLanguageFlag = partyFlagsCaptor.getValue();
         List<CaseFlagDetail> flagDetails = appellantLanguageFlag.getDetails();
         assertEquals(1, flagDetails.size());
-        assertEquals(INTERPRETER_LANGUAGE_FLAG.getFlagCode(), flagDetails.get(0).getValue().getFlagCode());
-        assertEquals("Active", flagDetails.get(0).getValue().getStatus());
-        assertEquals(spokenLanguageValue.getCode(), flagDetails.get(0).getValue().getSubTypeKey());
+        assertEquals(INTERPRETER_LANGUAGE_FLAG.getFlagCode(), flagDetails.getFirst().getValue().getFlagCode());
+        assertEquals("Active", flagDetails.getFirst().getValue().getStatus());
+        assertEquals(spokenLanguageValue.getCode(), flagDetails.getFirst().getValue().getSubTypeKey());
     }
 
     @ParameterizedTest
@@ -137,9 +137,9 @@ public class AppellantInterpreterLanguageFlagsHandlerTest {
         StrategicCaseFlag appellantLanguageFlag = partyFlagsCaptor.getValue();
         List<CaseFlagDetail> flagDetails = appellantLanguageFlag.getDetails();
         assertEquals(1, flagDetails.size());
-        assertEquals(INTERPRETER_LANGUAGE_FLAG.getFlagCode(), flagDetails.get(0).getValue().getFlagCode());
-        assertEquals("Active", flagDetails.get(0).getValue().getStatus());
-        assertEquals(spokenLanguageValue.getLabel(), flagDetails.get(0).getValue().getSubTypeValue());
+        assertEquals(INTERPRETER_LANGUAGE_FLAG.getFlagCode(), flagDetails.getFirst().getValue().getFlagCode());
+        assertEquals("Active", flagDetails.getFirst().getValue().getStatus());
+        assertEquals(spokenLanguageValue.getLabel(), flagDetails.getFirst().getValue().getSubTypeValue());
     }
 
     @ParameterizedTest
@@ -194,8 +194,8 @@ public class AppellantInterpreterLanguageFlagsHandlerTest {
         StrategicCaseFlag appellantLanguageFlag = partyFlagsCaptor.getValue();
         List<CaseFlagDetail> flagDetails = appellantLanguageFlag.getDetails();
         assertEquals(1, flagDetails.size());
-        assertEquals(INTERPRETER_LANGUAGE_FLAG.getFlagCode(), flagDetails.get(0).getValue().getFlagCode());
-        assertEquals("Inactive", flagDetails.get(0).getValue().getStatus());
+        assertEquals(INTERPRETER_LANGUAGE_FLAG.getFlagCode(), flagDetails.getFirst().getValue().getFlagCode());
+        assertEquals("Inactive", flagDetails.getFirst().getValue().getStatus());
     }
 
     @ParameterizedTest
@@ -220,9 +220,9 @@ public class AppellantInterpreterLanguageFlagsHandlerTest {
         StrategicCaseFlag appellantLanguageFlag = partyFlagsCaptor.getValue();
         List<CaseFlagDetail> flagDetails = appellantLanguageFlag.getDetails();
         assertEquals(1, flagDetails.size());
-        assertEquals(StrategicCaseFlagType.SIGN_LANGUAGE_INTERPRETER.getFlagCode(), flagDetails.get(0).getValue().getFlagCode());
-        assertEquals("Active", flagDetails.get(0).getValue().getStatus());
-        assertEquals(signLanguageValue.getCode(), flagDetails.get(0).getValue().getSubTypeKey());
+        assertEquals(StrategicCaseFlagType.SIGN_LANGUAGE_INTERPRETER.getFlagCode(), flagDetails.getFirst().getValue().getFlagCode());
+        assertEquals("Active", flagDetails.getFirst().getValue().getStatus());
+        assertEquals(signLanguageValue.getCode(), flagDetails.getFirst().getValue().getSubTypeKey());
     }
 
     @ParameterizedTest
@@ -247,9 +247,9 @@ public class AppellantInterpreterLanguageFlagsHandlerTest {
         StrategicCaseFlag appellantLanguageFlag = partyFlagsCaptor.getValue();
         List<CaseFlagDetail> flagDetails = appellantLanguageFlag.getDetails();
         assertEquals(1, flagDetails.size());
-        assertEquals(StrategicCaseFlagType.SIGN_LANGUAGE_INTERPRETER.getFlagCode(), flagDetails.get(0).getValue().getFlagCode());
-        assertEquals("Active", flagDetails.get(0).getValue().getStatus());
-        assertEquals(signLanguageValue.getLabel(), flagDetails.get(0).getValue().getSubTypeValue());
+        assertEquals(StrategicCaseFlagType.SIGN_LANGUAGE_INTERPRETER.getFlagCode(), flagDetails.getFirst().getValue().getFlagCode());
+        assertEquals("Active", flagDetails.getFirst().getValue().getStatus());
+        assertEquals(signLanguageValue.getLabel(), flagDetails.getFirst().getValue().getSubTypeValue());
     }
 
     @ParameterizedTest
@@ -284,9 +284,9 @@ public class AppellantInterpreterLanguageFlagsHandlerTest {
         StrategicCaseFlag appellantLanguageFlag = partyFlagsCaptor.getValue();
         List<CaseFlagDetail> flagDetails = appellantLanguageFlag.getDetails();
         assertEquals(1, flagDetails.size());
-        assertEquals(StrategicCaseFlagType.SIGN_LANGUAGE_INTERPRETER.getFlagCode(), flagDetails.get(0).getValue().getFlagCode());
-        assertEquals("Inactive", flagDetails.get(0).getValue().getStatus());
-        assertEquals(signLanguageValue.getCode(), flagDetails.get(0).getValue().getSubTypeKey());
+        assertEquals(StrategicCaseFlagType.SIGN_LANGUAGE_INTERPRETER.getFlagCode(), flagDetails.getFirst().getValue().getFlagCode());
+        assertEquals("Inactive", flagDetails.getFirst().getValue().getStatus());
+        assertEquals(signLanguageValue.getCode(), flagDetails.getFirst().getValue().getSubTypeKey());
     }
 
     @Test

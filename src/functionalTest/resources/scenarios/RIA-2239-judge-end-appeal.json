@@ -1,6 +1,5 @@
 {
   "description": "RIA-2239 end appeal",
-  "enabled": true,
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "Judge",
@@ -21,14 +20,16 @@
             {
               "id": "1",
               "value": {
-                "applicationDocuments": [{
-                  "id": "1",
-                  "value": {
-                    "document_url": "{$FIXTURE_DOC1_PDF_URL}",
-                    "document_binary_url": "{$FIXTURE_DOC1_PDF_URL_BINARY}",
-                    "document_filename": "{$FIXTURE_DOC1_PDF_FILENAME}"
+                "applicationDocuments": [
+                  {
+                    "id": "1",
+                    "value": {
+                      "document_url": "{$FIXTURE_DOC1_PDF_URL}",
+                      "document_binary_url": "{$FIXTURE_DOC1_PDF_URL_BINARY}",
+                      "document_filename": "{$FIXTURE_DOC1_PDF_FILENAME}"
+                    }
                   }
-                }],
+                ],
                 "applicationSupplier": "The legal representative",
                 "applicationType": "Withdraw",
                 "applicationReason": "some reason",
@@ -80,14 +81,16 @@
           {
             "id": "1",
             "value": {
-              "applicationDocuments": [{
-                "id": "1",
-                "value": {
-                  "document_url": "{$FIXTURE_DOC1_PDF_URL}",
-                  "document_binary_url": "{$FIXTURE_DOC1_PDF_URL_BINARY}",
-                  "document_filename": "{$FIXTURE_DOC1_PDF_FILENAME}"
+              "applicationDocuments": [
+                {
+                  "id": "1",
+                  "value": {
+                    "document_url": "{$FIXTURE_DOC1_PDF_URL}",
+                    "document_binary_url": "{$FIXTURE_DOC1_PDF_URL_BINARY}",
+                    "document_filename": "{$FIXTURE_DOC1_PDF_FILENAME}"
+                  }
                 }
-              }],
+              ],
               "applicationSupplier": "The legal representative",
               "applicationType": "Withdraw",
               "applicationReason": "some reason",

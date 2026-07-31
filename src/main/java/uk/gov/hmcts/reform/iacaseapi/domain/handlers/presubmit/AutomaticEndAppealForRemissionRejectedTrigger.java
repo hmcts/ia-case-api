@@ -83,7 +83,10 @@ public class AutomaticEndAppealForRemissionRejectedTrigger implements PreSubmitC
             return new PreSubmitCallbackResponse<>(asylumCase);
         }
 
-        ZonedDateTime scheduledDate = ZonedDateTime.of(dateProvider.nowWithTime(), ZoneId.systemDefault()).plusMinutes(schedule14DaysInMinutes);
+        int scheduleInMinutes = isAppellantInDetention(asylumCase)
+                ? schedule14DaysInMinutes * 2
+                : schedule14DaysInMinutes;
+        ZonedDateTime scheduledDate = ZonedDateTime.of(dateProvider.nowWithTime(), ZoneId.systemDefault()).plusMinutes(scheduleInMinutes);
 
         TimedEvent timedEvent = scheduler.schedule(
             new TimedEvent(

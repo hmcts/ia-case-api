@@ -2,7 +2,9 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit.applyforcosts;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 
@@ -45,9 +47,7 @@ class RespondToCostsConfirmationTest {
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
-        assertThat(
-                callbackResponse.getConfirmationHeader().get())
-                .contains("# You've responded to the costs application");
+        assertTrue(callbackResponse.getConfirmationHeader().get().contains("# You've responded to the costs application"));
 
         assertThat(
                 callbackResponse.getConfirmationBody().get())

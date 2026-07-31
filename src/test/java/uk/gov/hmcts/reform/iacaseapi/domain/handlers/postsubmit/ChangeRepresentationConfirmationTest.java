@@ -1,12 +1,18 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
-import static junit.framework.TestCase.assertTrue;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PREV_JOURNEY_TYPE;
 
 import java.util.Arrays;
@@ -25,7 +31,14 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.*;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.Assignment;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.Attributes;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.Jurisdiction;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.QueryRequest;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleAssignmentResource;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleCategory;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleName;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleType;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.IdamService;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.PostNotificationSender;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.RoleAssignmentService;
@@ -71,16 +84,16 @@ class ChangeRepresentationConfirmationTest {
 
         verify(ccdCaseAssignment, times(1)).applyNoc(callback);
 
-        assertThat(
-            callbackResponse.getConfirmationHeader().get())
-            .contains("You have stopped representing this client");
+        assertTrue(callbackResponse.getConfirmationHeader().get().contains("You have stopped representing this client"));
 
         assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains(
-                "We've sent you an email confirming you're no longer representing this client.\n"
-                + "You have been removed from this case and no longer have access to it.\n\n"
-                + "[View case list](/cases)"
+                """
+                We've sent you an email confirming you're no longer representing this client.
+                You have been removed from this case and no longer have access to it.
+                
+                [View case list](/cases)"""
             );
     }
 
@@ -98,13 +111,9 @@ class ChangeRepresentationConfirmationTest {
 
         verify(ccdCaseAssignment, times(1)).applyNoc(callback);
 
-        assertThat(
-            callbackResponse.getConfirmationHeader().get())
-            .contains("You have removed the legal representative from this appeal");
+        assertTrue(callbackResponse.getConfirmationHeader().get().contains("You have removed the legal representative from this appeal"));
 
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("All parties will be notified.");
+        assertTrue(callbackResponse.getConfirmationBody().get().contains("All parties will be notified."));
     }
 
     @Test
@@ -121,13 +130,9 @@ class ChangeRepresentationConfirmationTest {
 
         verify(ccdCaseAssignment, times(1)).applyNoc(callback);
 
-        assertThat(
-            callbackResponse.getConfirmationHeader().get())
-            .contains("You have started representing this client");
+        assertTrue(callbackResponse.getConfirmationHeader().get().contains("You have started representing this client"));
 
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("All parties will be notified.");
+        assertTrue(callbackResponse.getConfirmationBody().get().contains("All parties will be notified."));
     }
 
     @Test
@@ -215,9 +220,7 @@ class ChangeRepresentationConfirmationTest {
         PostSubmitCallbackResponse callbackResponse =
             changeRepresentationConfirmation.handle(callback);
 
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("Something went wrong");
+        assertTrue(callbackResponse.getConfirmationBody().get().contains("Something went wrong"));
     }
 
     @Test
@@ -256,13 +259,15 @@ class ChangeRepresentationConfirmationTest {
         assertNotNull(callbackResponse);
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
-        assertThat(
-                callbackResponse.getConfirmationHeader().get())
-                .contains("# You have updated this case to Appellant in Person - Manual");
+        assertTrue(callbackResponse.getConfirmationHeader().get().contains("# You have updated this case to Appellant in Person - Manual"));
         assertThat(
                 callbackResponse.getConfirmationBody().get())
-                .contains("#### What happens next\n\n"
-                        + "This appeal will have to be continued by internal users\n\n");
+                .contains("""
+                        #### What happens next
+                        
+                        This appeal will have to be continued by internal users
+                        
+                        """);
 
         verify(roleAssignmentService, times(1)).queryRoleAssignments(queryRequest);
         verify(roleAssignmentService, times(1)).deleteRoleAssignment(assignmentId, serviceUserToken);

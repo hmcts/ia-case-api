@@ -1,6 +1,5 @@
 {
   "description": "RIA-8772 Create case summary on remitted reheard should append to complex reheard documents collection",
-  "launchDarklyKey": "dlrm-remitted-feature-flag:true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",

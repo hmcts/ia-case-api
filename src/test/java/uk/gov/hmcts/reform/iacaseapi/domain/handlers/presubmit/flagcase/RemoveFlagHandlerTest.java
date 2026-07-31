@@ -77,7 +77,7 @@ class RemoveFlagHandlerTest {
             .map(idValue -> new Value(idValue.getId(), idValue.getValue().getLegacyCaseFlagType().getReadableText()))
             .collect(Collectors.toList());
 
-        final DynamicList dynamicList = new DynamicList(expectedElements.get(0), expectedElements);
+        final DynamicList dynamicList = new DynamicList(expectedElements.getFirst(), expectedElements);
         final List<IdValue<LegacyCaseFlag>> expectedCaseFlagList = new ArrayList<>();
         expectedCaseFlagList.add(expectedIdValue);
 

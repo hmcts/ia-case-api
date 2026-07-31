@@ -58,8 +58,8 @@ class PreviousHearingAppenderTest {
         assertNotNull(allPreviousHearings);
         assertEquals(3, allPreviousHearings.size());
 
-        assertEquals("3", allPreviousHearings.get(0).getId());
-        assertEquals(newPreviousHearing1, allPreviousHearings.get(0).getValue());
+        assertEquals("3", allPreviousHearings.getFirst().getId());
+        assertEquals(newPreviousHearing1, allPreviousHearings.getFirst().getValue());
 
         assertEquals("2", allPreviousHearings.get(1).getId());
         assertEquals(existingPreviousHearing1, allPreviousHearings.get(1).getValue());
@@ -79,8 +79,8 @@ class PreviousHearingAppenderTest {
         assertNotNull(allPreviousHearings);
         assertEquals(1, allPreviousHearings.size());
 
-        assertEquals("1", allPreviousHearings.get(0).getId());
-        assertEquals(newPreviousHearing1, allPreviousHearings.get(0).getValue());
+        assertEquals("1", allPreviousHearings.getFirst().getId());
+        assertEquals(newPreviousHearing1, allPreviousHearings.getFirst().getValue());
     }
 
     @Test

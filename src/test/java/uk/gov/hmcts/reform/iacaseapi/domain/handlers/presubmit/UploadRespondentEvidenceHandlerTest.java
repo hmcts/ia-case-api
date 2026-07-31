@@ -167,7 +167,7 @@ class UploadRespondentEvidenceHandlerTest {
         List<IdValue<DocumentWithMetadata>> actualExistingRespondentDocuments =
             existingRespondentDocumentsCaptor
                 .getAllValues()
-                .get(0);
+                .getFirst();
 
         assertEquals(0, actualExistingRespondentDocuments.size());
 

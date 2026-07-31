@@ -75,6 +75,6 @@ public class RemoveFlagPreparer implements PreSubmitCallbackHandler<AsylumCase> 
 
     public DynamicList createDynamicList(List<Value> elementsList) {
         requireNonNull(elementsList, "elementsList must not be null");
-        return new DynamicList(elementsList.get(0), elementsList);
+        return new DynamicList(elementsList.getFirst(), elementsList);
     }
 }

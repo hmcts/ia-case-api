@@ -1,6 +1,5 @@
 {
   "description": "RIA-7487 Update hearing adjustments (display decision and tribunal response in hearing tab)",
-  "enabled": "true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",

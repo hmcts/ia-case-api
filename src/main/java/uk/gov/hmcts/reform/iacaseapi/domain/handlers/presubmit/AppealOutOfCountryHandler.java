@@ -97,7 +97,7 @@ public class AppealOutOfCountryHandler implements PreSubmitCallbackHandler<Asylu
                 writeSponsorNameForDisplay(asylumCase, sponsorNameForDisplay);
             }
 
-            if (isAipJourney && featureToggler.getValue("aip-ooc-feature", false)) {
+            if (isAipJourney) {
                 Optional<String> sponsorGivenNames = asylumCase.read(SPONSOR_GIVEN_NAMES, String.class);
                 Optional<String> sponsorFamilyName = asylumCase.read(SPONSOR_FAMILY_NAME, String.class);
 

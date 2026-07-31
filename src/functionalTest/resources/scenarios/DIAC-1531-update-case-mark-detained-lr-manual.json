@@ -1,6 +1,5 @@
 {
   "description": "DIAC-1531 Update Case Mark Detained Legally Represented - Manual",
-
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "AdminOfficer",

@@ -28,7 +28,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.Appender;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentReceiver;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
 @Component
 public class UpdateTribunalDecisionHandler implements PreSubmitCallbackHandler<AsylumCase> {
@@ -37,20 +36,17 @@ public class UpdateTribunalDecisionHandler implements PreSubmitCallbackHandler<A
     private final Appender<DecisionAndReasons> decisionAndReasonsAppender;
     private final DocumentReceiver documentReceiver;
     private final DocumentsAppender documentsAppender;
-    private final FeatureToggler featureToggler;
 
     public UpdateTribunalDecisionHandler(
         DateProvider dateProvider,
         Appender<DecisionAndReasons> decisionAndReasonsAppender,
         DocumentReceiver documentReceiver,
-        DocumentsAppender documentsAppender,
-        FeatureToggler featureToggler
+        DocumentsAppender documentsAppender
     ) {
         this.dateProvider = dateProvider;
         this.decisionAndReasonsAppender = decisionAndReasonsAppender;
         this.documentReceiver = documentReceiver;
         this.documentsAppender = documentsAppender;
-        this.featureToggler = featureToggler;
     }
 
     public boolean canHandle(PreSubmitCallbackStage callbackStage, Callback<AsylumCase> callback) {
@@ -179,14 +175,10 @@ public class UpdateTribunalDecisionHandler implements PreSubmitCallbackHandler<A
     }
 
     private void setFtpaReheardCaseFlag(AsylumCase asylumCase) {
-        boolean isReheardAppealEnabled = featureToggler.getValue("reheard-feature", false);
-        asylumCase.write(AsylumCaseFieldDefinition.IS_REHEARD_APPEAL_ENABLED,
-            isReheardAppealEnabled ? YesOrNo.YES : YesOrNo.NO);
+        asylumCase.write(AsylumCaseFieldDefinition.IS_REHEARD_APPEAL_ENABLED, YesOrNo.YES);
 
-        if (isReheardAppealEnabled) {
-            asylumCase.write(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YES);
-            asylumCase.write(STITCHING_STATUS,"");
-        }
+        asylumCase.write(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YES);
+        asylumCase.write(STITCHING_STATUS,"");
     }
 }
 

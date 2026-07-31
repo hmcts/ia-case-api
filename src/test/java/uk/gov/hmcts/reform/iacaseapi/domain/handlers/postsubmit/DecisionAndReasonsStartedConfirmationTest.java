@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
-import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -12,6 +11,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -60,13 +60,9 @@ class DecisionAndReasonsStartedConfirmationTest {
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
-        assertThat(
-            callbackResponse.getConfirmationHeader().get())
-            .contains(CONFIRMATION_HEADER_TEXT);
+        assertTrue(callbackResponse.getConfirmationHeader().get().contains(CONFIRMATION_HEADER_TEXT));
 
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains(COMPLETE_DECISION_TEXT);
+        assertTrue(callbackResponse.getConfirmationBody().get().contains(COMPLETE_DECISION_TEXT));
     }
 
     @Test
@@ -86,9 +82,7 @@ class DecisionAndReasonsStartedConfirmationTest {
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
-        assertThat(
-            callbackResponse.getConfirmationHeader().get())
-            .contains(CONFIRMATION_HEADER_TEXT);
+        assertTrue(callbackResponse.getConfirmationHeader().get().contains(CONFIRMATION_HEADER_TEXT));
 
         assertThat(
             callbackResponse.getConfirmationBody().get())
@@ -104,7 +98,7 @@ class DecisionAndReasonsStartedConfirmationTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(caseDetails.getId()).thenReturn(1L);
         when(autoRequestHearingService.shouldAutoRequestHearing(asylumCase))
-            .thenReturn(true);;
+            .thenReturn(true);
         when(callback.getEvent()).thenReturn(Event.DECISION_AND_REASONS_STARTED);
         when(asylumCase.read(MANUAL_CREATE_HEARING_REQUIRED, YesOrNo.class)).thenReturn(Optional.of(YES));
 
@@ -115,9 +109,7 @@ class DecisionAndReasonsStartedConfirmationTest {
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
-        assertThat(
-            callbackResponse.getConfirmationHeader().get())
-            .contains(CONFIRMATION_HEADER_TEXT);
+        assertTrue(callbackResponse.getConfirmationHeader().get().contains(CONFIRMATION_HEADER_TEXT));
 
         assertThat(
             callbackResponse.getConfirmationBody().get())

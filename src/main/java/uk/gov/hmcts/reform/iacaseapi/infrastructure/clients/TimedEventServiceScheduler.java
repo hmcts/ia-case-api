@@ -100,7 +100,7 @@ public class TimedEventServiceScheduler implements Scheduler {
 
     @Override
     public void scheduleTimedEventNow(String caseId, Event event) {
-        ZonedDateTime now = ZonedDateTime.now(ZoneId.systemDefault()); ;
+        ZonedDateTime now = ZonedDateTime.now(ZoneId.systemDefault());
         scheduleTimedEvent(caseId, now, event, "");
     }
 

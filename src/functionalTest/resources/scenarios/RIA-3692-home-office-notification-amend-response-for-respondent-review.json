@@ -1,6 +1,5 @@
 {
   "description": "RIA-3692 home office notification for amend response for respondentReview",
-  "launchDarklyKey": "home-office-notification-feature:true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",

@@ -52,13 +52,9 @@ class SendDecisionAndReasonsConfirmationTest {
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
-        assertThat(
-                callbackResponse.getConfirmationHeader().get())
-                .contains("# You've uploaded the Decision and Reasons document");
+        assertTrue(callbackResponse.getConfirmationHeader().get().contains("# You've uploaded the Decision and Reasons document"));
 
-        assertThat(
-                callbackResponse.getConfirmationBody().get())
-                .contains("What happens next");
+        assertTrue(callbackResponse.getConfirmationBody().get().contains("What happens next"));
 
         assertThat(
                 callbackResponse.getConfirmationBody().get())

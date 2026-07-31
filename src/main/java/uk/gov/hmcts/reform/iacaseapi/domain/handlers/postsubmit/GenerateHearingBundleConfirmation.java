@@ -31,10 +31,12 @@ public class GenerateHearingBundleConfirmation implements PostSubmitCallbackHand
 
         postSubmitResponse.setConfirmationHeader("# The hearing bundle is being generated");
         postSubmitResponse.setConfirmationBody(
-            "#### What happens next\n\n"
-            + "You will soon be able to view the hearing bundle in the documents tab.</br>"
-            + "You and the other parties will be notified when the hearing bundle is available.</br>"
-            + "If the bundle fails to generate, you will be notified and will need to generate the bundle again."
+            """
+            #### What happens next
+            
+            You will soon be able to view the hearing bundle in the documents tab.</br>\
+            You and the other parties will be notified when the hearing bundle is available.</br>\
+            If the bundle fails to generate, you will be notified and will need to generate the bundle again."""
         );
 
         return postSubmitResponse;

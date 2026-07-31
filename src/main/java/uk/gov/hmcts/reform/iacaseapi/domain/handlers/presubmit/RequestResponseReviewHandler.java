@@ -48,10 +48,14 @@ public class RequestResponseReviewHandler implements PreSubmitCallbackHandler<As
                         .getCaseData();
 
         asylumCase.write(SEND_DIRECTION_EXPLANATION,
-                "The Home Office has replied to your Appeal Skeleton Argument and evidence. You should review their response.\n\n"
-                       + "# Next steps\n\n"
-                       + "Review the Home Office response. If you want to respond to what they have said, you should email the Tribunal.\n\n"
-                       + "If you do not respond by the date indicated below, the case will automatically go to hearing."
+                """
+                The Home Office has replied to your Appeal Skeleton Argument and evidence. You should review their response.
+                
+                # Next steps
+                
+                Review the Home Office response. If you want to respond to what they have said, you should email the Tribunal.
+                
+                If you do not respond by the date indicated below, the case will automatically go to hearing."""
         );
 
         boolean isInternalDetainedNonAda = (isInternalCase(asylumCase) && isAppellantInDetention(asylumCase) && !isAcceleratedDetainedAppeal(asylumCase));

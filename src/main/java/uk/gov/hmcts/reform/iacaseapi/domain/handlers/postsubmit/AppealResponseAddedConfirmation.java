@@ -32,9 +32,12 @@ public class AppealResponseAddedConfirmation implements PostSubmitCallbackHandle
 
         postSubmitResponse.setConfirmationHeader("# You have uploaded the appeal response");
         postSubmitResponse.setConfirmationBody(
-            "#### What happens next?\n\n"
-            + "The legal representative will now get an email directing them to review the response.\n\n"
-            + "This is an automated email sent from the system - you don't need to do anything."
+            """
+            #### What happens next?
+            
+            The legal representative will now get an email directing them to review the response.
+            
+            This is an automated email sent from the system - you don't need to do anything."""
         );
 
         return postSubmitResponse;

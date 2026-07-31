@@ -5,10 +5,10 @@ import static au.com.dius.pact.consumer.dsl.LambdaDsl.newJsonBody;
 import au.com.dius.pact.consumer.dsl.DslPart;
 import au.com.dius.pact.consumer.dsl.PactDslWithProvider;
 import au.com.dius.pact.consumer.junit5.PactTestFor;
-import au.com.dius.pact.core.model.RequestResponsePact;
+import au.com.dius.pact.core.model.V4Pact;
 import au.com.dius.pact.core.model.annotations.Pact;
 import java.io.IOException;
-import org.apache.http.HttpStatus;
+import org.apache.hc.core5.http.HttpStatus;
 import org.json.JSONException;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.TestPropertySource;
@@ -19,7 +19,7 @@ import org.springframework.test.context.TestPropertySource;
 public class AssignCaseAccessConsumerTest extends CcdCaseAssignmentProviderBaseTest {
 
     @Pact(provider = "acc_manageCaseAssignment", consumer = "ia_caseApi")
-    public RequestResponsePact generatePactFragmentForAssign(PactDslWithProvider builder) throws JSONException, IOException {
+    public V4Pact generatePactFragmentForAssign(PactDslWithProvider builder) throws JSONException, IOException {
         // @formatter:off
         return builder
             .given("Assign a user to a case")
@@ -31,7 +31,7 @@ public class AssignCaseAccessConsumerTest extends CcdCaseAssignmentProviderBaseT
             .willRespondWith()
             .body(buildAssignCasesResponseDsl())
             .status(HttpStatus.SC_CREATED)
-            .toPact();
+            .toPact(V4Pact.class);
     }
 
     @Test

@@ -54,20 +54,16 @@ public class WaFieldsPublisher {
             String state,
             String applicantRole) {
 
-        log.info("Evaluate wa-R2-feature: " + featureToggler.getValue("wa-R2-feature", false));
 
-        if (featureToggler.getValue("wa-R2-feature", false)) {
+        final MakeAnApplication lastModifiedApplication = new MakeAnApplication(
+                applicant, type, details,
+                evidence, dateProvider.now().toString(), decision,
+                state);
 
-            final MakeAnApplication lastModifiedApplication = new MakeAnApplication(
-                    applicant, type, details,
-                    evidence, dateProvider.now().toString(), decision,
-                    state);
+        log.info("lastModifiedApplication type: " + lastModifiedApplication.getType());
 
-            log.info("lastModifiedApplication type: " + lastModifiedApplication.getType());
+        lastModifiedApplication.setApplicantRole(applicantRole);
 
-            lastModifiedApplication.setApplicantRole(applicantRole);
-
-            asylumCase.write(AsylumCaseFieldDefinition.LAST_MODIFIED_APPLICATION, lastModifiedApplication);
-        }
+        asylumCase.write(AsylumCaseFieldDefinition.LAST_MODIFIED_APPLICATION, lastModifiedApplication);
     }
 }

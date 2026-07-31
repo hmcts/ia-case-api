@@ -50,7 +50,7 @@ class AppealReferenceNumberValidatorTest {
         List<String> errors = validator.validate(null, CCD_REF_NUMBER);
 
         assertEquals(1, errors.size());
-        assertThat(errors.get(0)).contains("cannot be null or empty");
+        assertThat(errors.getFirst()).contains("cannot be null or empty");
     }
 
     @Test
@@ -58,7 +58,7 @@ class AppealReferenceNumberValidatorTest {
         List<String> errors = validator.validate("", CCD_REF_NUMBER);
 
         assertEquals(1, errors.size());
-        assertThat(errors.get(0)).contains("cannot be null or empty");
+        assertThat(errors.getFirst()).contains("cannot be null or empty");
     }
 
     @Test
@@ -68,7 +68,7 @@ class AppealReferenceNumberValidatorTest {
         List<String> errors = validator.validate(invalidReferenceNumber, CCD_REF_NUMBER);
 
         assertEquals(1, errors.size());
-        assertThat(errors.get(0)).contains("incorrect format");
+        assertThat(errors.getFirst()).contains("incorrect format");
         verify(appealReferenceNumberSearchService, never()).appealReferenceNumberExists(invalidReferenceNumber, CCD_REF_NUMBER);
     }
 
@@ -81,7 +81,7 @@ class AppealReferenceNumberValidatorTest {
         List<String> errors = validator.validate(existingReferenceNumber, CCD_REF_NUMBER);
 
         assertEquals(1, errors.size());
-        assertThat(errors.get(0)).contains("already exists");
+        assertThat(errors.getFirst()).contains("already exists");
         verify(appealReferenceNumberSearchService).appealReferenceNumberExists(existingReferenceNumber, CCD_REF_NUMBER);
     }
 
@@ -106,7 +106,7 @@ class AppealReferenceNumberValidatorTest {
         List<String> errors = validator.validate(invalidYearReferenceNumber, CCD_REF_NUMBER);
 
         assertEquals(1, errors.size());
-        assertThat(errors.get(0)).contains("incorrect format");
+        assertThat(errors.getFirst()).contains("incorrect format");
     }
 
     @Test
@@ -116,7 +116,7 @@ class AppealReferenceNumberValidatorTest {
         List<String> errors = validator.validate(invalidNumberLength, CCD_REF_NUMBER);
 
         assertEquals(1, errors.size());
-        assertThat(errors.get(0)).contains("incorrect format");
+        assertThat(errors.getFirst()).contains("incorrect format");
     }
 
 }

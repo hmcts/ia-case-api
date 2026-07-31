@@ -11,7 +11,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.APPEAL_STA
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.DECISION;
 
 import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
 
@@ -48,7 +48,7 @@ class ShareACaseRefDataIntegrationTest extends SpringBootIntegrationTest impleme
     void should_get_users_from_professional_ref_data() throws Exception {
 
         String prdResponseJson =
-            new String(Files.readAllBytes(Paths.get(resourceFile.getURI())));
+            new String(Files.readAllBytes(Path.of(resourceFile.getURI())));
 
         assertThat(prdResponseJson).isNotBlank();
 
@@ -80,9 +80,9 @@ class ShareACaseRefDataIntegrationTest extends SpringBootIntegrationTest impleme
         List<Value> listItems = dynamicList.getListItems();
         assertThat(listItems.size()).isEqualTo(2);
 
-        assertThat(listItems.get(0).getCode()).isEqualTo(prdSuccessResponse.getUsers().get(0).getUserIdentifier());
+        assertThat(listItems.getFirst().getCode()).isEqualTo(prdSuccessResponse.getUsers().getFirst().getUserIdentifier());
         assertThat(listItems.get(1).getCode()).isEqualTo(prdSuccessResponse.getUsers().get(1).getUserIdentifier());
-        assertThat(listItems.get(0).getLabel()).isEqualTo(prdSuccessResponse.getUsers().get(0).getEmail());
+        assertThat(listItems.getFirst().getLabel()).isEqualTo(prdSuccessResponse.getUsers().getFirst().getEmail());
         assertThat(listItems.get(1).getLabel()).isEqualTo(prdSuccessResponse.getUsers().get(1).getEmail());
 
     }
@@ -92,7 +92,7 @@ class ShareACaseRefDataIntegrationTest extends SpringBootIntegrationTest impleme
     void should_get_users_from_professional_ref_data_no_org_id() throws Exception {
 
         String prdResponseJsonNoOrgId =
-            new String(Files.readAllBytes(Paths.get(resourceFileNoOrgId.getURI())));
+            new String(Files.readAllBytes(Path.of(resourceFileNoOrgId.getURI())));
 
         assertThat(prdResponseJsonNoOrgId).isNotBlank();
 
@@ -124,9 +124,9 @@ class ShareACaseRefDataIntegrationTest extends SpringBootIntegrationTest impleme
         List<Value> listItems = dynamicList.getListItems();
         assertThat(listItems.size()).isEqualTo(2);
 
-        assertThat(listItems.get(0).getCode()).isEqualTo(prdSuccessResponse.getUsers().get(0).getUserIdentifier());
+        assertThat(listItems.getFirst().getCode()).isEqualTo(prdSuccessResponse.getUsers().getFirst().getUserIdentifier());
         assertThat(listItems.get(1).getCode()).isEqualTo(prdSuccessResponse.getUsers().get(1).getUserIdentifier());
-        assertThat(listItems.get(0).getLabel()).isEqualTo(prdSuccessResponse.getUsers().get(0).getEmail());
+        assertThat(listItems.getFirst().getLabel()).isEqualTo(prdSuccessResponse.getUsers().getFirst().getEmail());
         assertThat(listItems.get(1).getLabel()).isEqualTo(prdSuccessResponse.getUsers().get(1).getEmail());
 
     }
@@ -136,7 +136,7 @@ class ShareACaseRefDataIntegrationTest extends SpringBootIntegrationTest impleme
     void should_get_organisation_identifier_from_professional_ref_data() throws Exception {
 
         String prdResponseJson =
-            new String(Files.readAllBytes(Paths.get(resourceFile.getURI())));
+            new String(Files.readAllBytes(Path.of(resourceFile.getURI())));
 
         assertThat(prdResponseJson).isNotBlank();
 

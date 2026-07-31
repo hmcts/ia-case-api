@@ -1,6 +1,5 @@
 {
   "description": "RIA-910 & RIA-911 & RIA-912 Case building ready for submission flagged when argument is uploaded",
-  "enabled": true,
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "LegalRepresentative",

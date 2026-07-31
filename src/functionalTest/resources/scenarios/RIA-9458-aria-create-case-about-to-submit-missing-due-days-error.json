@@ -16,7 +16,9 @@
   },
   "expectation": {
     "status": 200,
-    "errors": ["You must provide ariaMigrationTaskDueDays as part of the case creation."],
+    "errors": [
+      "You must provide ariaMigrationTaskDueDays as part of the case creation."
+    ],
     "caseData": {
       "template": "minimal-appeal-started.json",
       "replacements": {

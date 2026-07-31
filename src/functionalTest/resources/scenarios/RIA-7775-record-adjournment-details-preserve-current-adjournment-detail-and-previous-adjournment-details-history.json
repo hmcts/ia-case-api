@@ -1,6 +1,5 @@
 {
   "description": "RIA-7775 preserve current adjournment detail and previous adjournment details history",
-  "enabled": true,
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "AdminOfficer",
@@ -11,7 +10,7 @@
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
-          "adjournmentDetailsHearing" : {
+          "adjournmentDetailsHearing": {
             "value": {
               "code": "hearing1",
               "label": "Substantive - 31 October 2023"
@@ -69,7 +68,7 @@
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {
-        "adjournmentDetailsHearing" : {
+        "adjournmentDetailsHearing": {
           "value": {
             "code": "hearing1",
             "label": "Substantive - 31 October 2023"

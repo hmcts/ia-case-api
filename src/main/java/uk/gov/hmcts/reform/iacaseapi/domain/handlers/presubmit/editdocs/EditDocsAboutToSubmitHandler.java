@@ -29,7 +29,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 @Component
 public class EditDocsAboutToSubmitHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
-    
+
     @Autowired
     private EditDocsCaseNoteService editDocsCaseNoteService;
     @Autowired
@@ -56,6 +56,7 @@ public class EditDocsAboutToSubmitHandler implements PreSubmitCallbackHandler<As
         restoreDocumentTagForDocs(asylumCase, asylumCaseBefore);
         editDocsCaseNoteService.writeAuditCaseNoteForGivenCaseId(caseId, asylumCase, asylumCaseBefore);
         editDocService.cleanUpOverviewTabDocs(asylumCase, asylumCaseBefore);
+        editDocService.cleanUpAppealTabDocs(asylumCase, asylumCaseBefore);
         updateEjpDocumentFields(asylumCase);
         return new PreSubmitCallbackResponse<>(asylumCase);
     }

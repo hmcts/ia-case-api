@@ -39,15 +39,15 @@ class SendDirectionWithQuestionsConfirmationTest {
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
-        assertThat(
-            callbackResponse.getConfirmationHeader().get())
-            .contains("Your direction has been sent");
+        assertTrue(callbackResponse.getConfirmationHeader().get().contains("Your direction has been sent"));
 
         assertThat(
             callbackResponse.getConfirmationBody().get())
-            .contains("#### What happens next\n\n"
-                + "The appellant will be directed to answer the questions. "
-                + "You will be notified when they are ready to review.");
+            .contains("""
+                #### What happens next
+                
+                The appellant will be directed to answer the questions. \
+                You will be notified when they are ready to review.""");
 
     }
 

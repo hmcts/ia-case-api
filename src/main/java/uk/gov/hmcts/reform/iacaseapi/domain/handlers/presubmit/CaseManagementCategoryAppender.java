@@ -51,7 +51,7 @@ public class CaseManagementCategoryAppender implements PreSubmitCallbackHandler<
         String description = appealType.getDescription();
         List<Value> values = Collections.singletonList(new Value(value, description));
 
-        asylumCase.write(CASE_MANAGEMENT_CATEGORY, new DynamicList(values.get(0), values));
+        asylumCase.write(CASE_MANAGEMENT_CATEGORY, new DynamicList(values.getFirst(), values));
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }

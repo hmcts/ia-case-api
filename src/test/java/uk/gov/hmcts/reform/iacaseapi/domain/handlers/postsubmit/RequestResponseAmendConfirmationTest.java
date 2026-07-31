@@ -52,13 +52,9 @@ class RequestResponseAmendConfirmationTest {
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
-        assertThat(
-            callbackResponse.getConfirmationHeader().get())
-            .contains("sent a direction");
+        assertTrue(callbackResponse.getConfirmationHeader().get().contains("sent a direction"));
 
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("What happens next");
+        assertTrue(callbackResponse.getConfirmationBody().get().contains("What happens next"));
 
         assertThat(
             callbackResponse.getConfirmationBody().get())
@@ -90,13 +86,9 @@ class RequestResponseAmendConfirmationTest {
             .contains("![Respondent notification failed confirmation]"
                            + "(https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/respondent_notification_failed.svg)");
 
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("#### Do this next");
+        assertTrue(callbackResponse.getConfirmationBody().get().contains("#### Do this next"));
 
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("Contact the respondent to tell them what has changed, including any action they need to take.");
+        assertTrue(callbackResponse.getConfirmationBody().get().contains("Contact the respondent to tell them what has changed, including any action they need to take."));
     }
 
     @Test

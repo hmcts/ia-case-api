@@ -1,5 +1,20 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DECIDE_AN_APPLICATION_ID;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_INTEGRATED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MAKE_AN_APPLICATIONS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REASON_FOR_LINK_APPEAL;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -8,7 +23,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
@@ -24,22 +38,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCall
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
-
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DECIDE_AN_APPLICATION_ID;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_INTEGRATED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MAKE_AN_APPLICATIONS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REASON_FOR_LINK_APPEAL;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -62,8 +60,6 @@ class DecideAnApplicationConfirmationTest {
 
     @BeforeEach
     public void setUp() {
-
-        MockitoAnnotations.openMocks(this);
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -131,9 +127,11 @@ class DecideAnApplicationConfirmationTest {
                     + " or [unlink the appeal](/case/IA/Asylum/"
                     + id + "/trigger/unlinkAppeal).";
 
-            case "Judge's review of application decision" -> "#### What happens next\n\n"
-                    + "The application decision has been recorded and is now available in the applications tab. "
-                    + "Both parties will receive a notification detailing your decision.";
+            case "Judge's review of application decision" -> """
+                    #### What happens next
+                    
+                    The application decision has been recorded and is now available in the applications tab. \
+                    Both parties will receive a notification detailing your decision.""";
 
             case "Reinstate an ended appeal" -> "#### What happens next\n\n"
                     + "The application decision has been recorded and is now available in the applications tab. "
@@ -158,8 +156,10 @@ class DecideAnApplicationConfirmationTest {
                     + "The application decision has been recorded and is now available in the applications tab. "
                     + "You must now [end the appeal](/case/IA/Asylum/" + id + "/trigger/endAppeal)";
 
-            default -> "#### What happens next\n\n"
-                    + "The application decision has been recorded and is now available in the applications tab. ";
+            default -> """
+                    #### What happens next
+                    
+                    The application decision has been recorded and is now available in the applications tab. """;
         };
         assertThat(callbackResponse.getConfirmationBody()).contains(expectedBody);
     }
@@ -194,9 +194,12 @@ class DecideAnApplicationConfirmationTest {
         assertThat(callbackResponse.getConfirmationHeader()).contains("# You have decided an application");
 
         assertThat(callbackResponse.getConfirmationBody()).contains(
-            "#### What happens next\n\nThe application decision has been recorded and is now available in"
-            + " the applications tab. You need to tell the listing team to relist the case. Once the case is relisted"
-            + " a new Notice of Hearing will be sent to all parties.");
+            """
+            #### What happens next
+            
+            The application decision has been recorded and is now available in\
+             the applications tab. You need to tell the listing team to relist the case. Once the case is relisted\
+             a new Notice of Hearing will be sent to all parties.""");
     }
 
     @Test
@@ -225,9 +228,11 @@ class DecideAnApplicationConfirmationTest {
         assertThat(callbackResponse.getConfirmationHeader().orElseThrow()).contains("You have decided an application");
 
         assertThat(callbackResponse.getConfirmationBody().orElseThrow()).contains(
-            "#### What happens next\n\n"
-                + "The application decision has been recorded and is now available in the applications tab. "
-                + "Both parties will be notified that the application was refused."
+            """
+            #### What happens next
+            
+            The application decision has been recorded and is now available in the applications tab. \
+            Both parties will be notified that the application was refused."""
         );
     }
 

@@ -69,7 +69,7 @@ class MakeAnApplicationPreparerTest {
             new Value("withdraw", WITHDRAW.toString()),
             new Value("other", OTHER.toString()));
         DynamicList dynamicList =
-            new DynamicList(values.get(0), values);
+            new DynamicList(values.getFirst(), values);
 
         when(makeAnApplicationTypesProvider.getMakeAnApplicationTypes(callback))
             .thenReturn(dynamicList);

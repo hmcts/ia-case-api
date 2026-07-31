@@ -84,40 +84,55 @@ public class ChangeRepresentationConfirmation implements PostSubmitCallbackHandl
                     "# You have stopped representing this client"
                 );
                 postSubmitResponse.setConfirmationBody(
-                    "#### What happens next\n\n"
-                    + "We've sent you an email confirming you're no longer representing this client.\n"
-                    + "You have been removed from this case and no longer have access to it.\n\n"
-                    + "[View case list](/cases)"
+                    """
+                    #### What happens next
+                    
+                    We've sent you an email confirming you're no longer representing this client.
+                    You have been removed from this case and no longer have access to it.
+                    
+                    [View case list](/cases)"""
                 );
             } else if (callback.getEvent() == Event.NOC_REQUEST) {
                 postSubmitResponse.setConfirmationHeader(
                     "# You have started representing this client"
                 );
                 postSubmitResponse.setConfirmationBody(
-                    "#### What happens next\n\n"
-                    + "All parties will be notified."
+                    """
+                    #### What happens next
+                    
+                    All parties will be notified."""
                 );
             } else if (callback.getEvent() == Event.APPELLANT_IN_PERSON_MANUAL) {
                 postSubmitResponse.setConfirmationHeader(
                         "# You have updated this case to Appellant in Person - Manual");
                 postSubmitResponse.setConfirmationBody(
-                        "#### What happens next\n\n"
-                                + "This appeal will have to be continued by internal users\n\n"
+                        """
+                        #### What happens next
+                        
+                        This appeal will have to be continued by internal users
+                        
+                        """
                 );
             } else if (callback.getEvent() == Event.MARK_APPEAL_AS_DETAINED) {
                 postSubmitResponse.setConfirmationHeader(
                         "# You have marked the appeal as detained");
                 postSubmitResponse.setConfirmationBody(
-                        "#### What happens next\n\nAll parties will be notified that the appeal has been marked an detained.\n\n"
-                                + "You should update the hearing center, if necessary."
+                        """
+                        #### What happens next
+                        
+                        All parties will be notified that the appeal has been marked an detained.
+                        
+                        You should update the hearing center, if necessary."""
                 );
             } else {
                 postSubmitResponse.setConfirmationHeader(
                     "# You have removed the legal representative from this appeal"
                 );
                 postSubmitResponse.setConfirmationBody(
-                    "#### What happens next\n\n"
-                    + "All parties will be notified."
+                    """
+                    #### What happens next
+                    
+                    All parties will be notified."""
                 );
             }
         } catch (Exception e) {
@@ -125,8 +140,12 @@ public class ChangeRepresentationConfirmation implements PostSubmitCallbackHandl
                 log.error("Revoking Appellant's access to appeal with case id {} failed. Cause: {}",
                         callback.getCaseDetails().getId(), e);
                 postSubmitResponse.setConfirmationBody(
-                        "### Something went wrong\n\n"
-                                + "The appellant's case access has not been revoked for this appeal.\n\n"
+                        """
+                        ### Something went wrong
+                        
+                        The appellant's case access has not been revoked for this appeal.
+                        
+                        """
                 );
             } else {
                 if (shouldRevokeAppellantAccess(callback.getEvent(), callback.getCaseDetails().getCaseData())

@@ -1,6 +1,5 @@
 {
   "description": "RIA-1379-RIA-2694: Upload respondent evidence - direction due date based on submission date",
-  "enabled": true,
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",

@@ -31,8 +31,10 @@ public class HearingCancelledConfirmation implements PostSubmitCallbackHandler<A
 
         postSubmitResponse.setConfirmationHeader("# Hearing details updated");
         postSubmitResponse.setConfirmationBody(
-                    "#### What happens next\n\n"
-                            + "Add new hearing information as required."
+                    """
+                    #### What happens next
+                    
+                    Add new hearing information as required."""
         );
 
         return postSubmitResponse;

@@ -17,7 +17,9 @@
   },
   "expectation": {
     "status": 200,
-    "errors": ["This appeal is not linked and so cannot be unlinked"],
+    "errors": [
+      "This appeal is not linked and so cannot be unlinked"
+    ],
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum HomeOfficeApiResponseStatusType {
 
+    BADLY_FORMATTED_DATA(-4, "badlyFormattedData", UserFacingErrorText.SERVER, "The Home Office validation API's response contained data that did not match the expected format."),
     OTHER_APPLICATION_DATA(-3, "otherApplicationData", UserFacingErrorText.SERVER, "The Home Office validation API's response contained data from a different application."),
     NO_DATA(-2, "noData", UserFacingErrorText.SERVER, "The Home Office validation API's response contained no data."),
     DID_NOT_RESPOND(-1, "didNotRespond", UserFacingErrorText.SERVER, "The Home Office validation API did not respond."),
@@ -55,9 +56,11 @@ public enum HomeOfficeApiResponseStatusType {
     }
 
     private final class UserFacingErrorText {
-        private static final String CLIENT = "An error occurred.  Please report this to HMCTS.";
-        private static final String SERVER = "An error occurred.  Please try again in 15-20 minutes.  If it occurs again, please report this to HMCTS.";
-        private static final String USER = "The Home Office reference number XYZYX does not match any existing case records in Home Office systems.  Please check your decision letter and try again.";
+        private static final String CLIENT = "An error occurred.  Please report this to HMCTS using the following contact details: Email contactia@justice.gov.uk or Telephone: 0300 123 1711.";
+        private static final String SERVER = "An error occurred.  Please try again in 15-20 minutes.  If it occurs again, please report this to HMCTS using the following contact details: Email contactia@justice.gov.uk or Telephone: 0300 123 1711.";
+        private static final String USER = "The reference XYZYX cannot be matched to a Home Office record.  " + 
+            "You should enter the UAN or GWF reference exactly as it appears on the decision letter.  This can often be found in the 'How to appeal' section.  " + 
+            "If you need help, please use the Home Office help form in the bullet points on this page.";
     }    
 }
 

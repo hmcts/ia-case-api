@@ -1,6 +1,5 @@
 {
   "description": "RIA-3827-RIA-4238 Request response review for out of country appeal",
-  "enabled": true,
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",

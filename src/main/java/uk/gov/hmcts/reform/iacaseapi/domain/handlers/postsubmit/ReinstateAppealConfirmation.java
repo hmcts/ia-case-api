@@ -33,8 +33,10 @@ public class ReinstateAppealConfirmation implements PostSubmitCallbackHandler<As
 
         postSubmitResponse.setConfirmationHeader("# This appeal has been reinstated");
         postSubmitResponse.setConfirmationBody(
-            "#### What happens next\n\n"
-            + "The legal representative and the Home Office will be notified that the case has been reinstated.<br>"
+            """
+            #### What happens next
+            
+            The legal representative and the Home Office will be notified that the case has been reinstated.<br>"""
         );
 
         return postSubmitResponse;

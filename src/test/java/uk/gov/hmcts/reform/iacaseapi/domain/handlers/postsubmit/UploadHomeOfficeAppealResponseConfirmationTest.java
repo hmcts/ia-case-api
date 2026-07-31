@@ -40,18 +40,14 @@ class UploadHomeOfficeAppealResponseConfirmationTest {
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
-        assertThat(
-            callbackResponse.getConfirmationHeader().get())
-            .contains("You've uploaded the appeal response");
+        assertTrue(callbackResponse.getConfirmationHeader().get().contains("You've uploaded the appeal response"));
 
         assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains(
                 "The Tribunal will: \n* check that the Home Office response complies with the Procedure Rules and Practice Directions\n* inform you of any issues\n\nProviding there are no issues, the response will be shared with the appellant");
 
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("All parties will be notified when the Hearing Notice is ready.");
+        assertTrue(callbackResponse.getConfirmationBody().get().contains("All parties will be notified when the Hearing Notice is ready."));
     }
 
     @Test

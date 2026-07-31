@@ -9,7 +9,8 @@ import com.github.tomakehurst.wiremock.http.RequestMethod;
 import com.github.tomakehurst.wiremock.stubbing.StubMapping;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.nio.file.Path;
+
 import org.springframework.core.io.Resource;
 
 public interface WithCcdStub {
@@ -39,7 +40,7 @@ public interface WithCcdStub {
     default void addSearchStub(WireMockServer server, Resource resourceFile) throws IOException {
 
         String ccdDataResponseJson =
-            new String(Files.readAllBytes(Paths.get(resourceFile.getURI())));
+            new String(Files.readAllBytes(Path.of(resourceFile.getURI())));
 
         server.addStubMapping(
             new StubMapping(

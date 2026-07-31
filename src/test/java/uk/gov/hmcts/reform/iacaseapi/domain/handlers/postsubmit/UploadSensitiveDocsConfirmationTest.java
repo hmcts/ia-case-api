@@ -3,7 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.powermock.api.mockito.PowerMockito.when;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,13 +57,9 @@ class UploadSensitiveDocsConfirmationTest {
         assertTrue(actualResponse.getConfirmationHeader().isPresent());
         assertTrue(actualResponse.getConfirmationBody().isPresent());
 
-        assertThat(
-            actualResponse.getConfirmationHeader().get())
-            .contains("# You have uploaded sensitive documentation");
+        assertTrue(actualResponse.getConfirmationHeader().get().contains("# You have uploaded sensitive documentation"));
 
-        assertThat(
-            actualResponse.getConfirmationBody().get())
-            .contains("#### What happens next\r\n\r\n");
+        assertTrue(actualResponse.getConfirmationBody().get().contains("#### What happens next\r\n\r\n"));
 
         assertThat(
             actualResponse.getConfirmationBody().get())

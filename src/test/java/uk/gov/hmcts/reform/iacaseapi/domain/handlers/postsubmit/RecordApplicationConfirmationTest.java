@@ -73,9 +73,7 @@ class RecordApplicationConfirmationTest {
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
-        assertThat(
-            callbackResponse.getConfirmationHeader().get())
-            .contains(YOU_VE_RECORDED_AN_APPLICATION);
+        assertTrue(callbackResponse.getConfirmationHeader().get().contains(YOU_VE_RECORDED_AN_APPLICATION));
 
         assertThat(
             callbackResponse.getConfirmationBody().get())
@@ -102,9 +100,7 @@ class RecordApplicationConfirmationTest {
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
-        assertThat(
-            callbackResponse.getConfirmationHeader().get())
-            .contains(YOU_VE_RECORDED_AN_APPLICATION);
+        assertTrue(callbackResponse.getConfirmationHeader().get().contains(YOU_VE_RECORDED_AN_APPLICATION));
 
         assertThat(
             callbackResponse.getConfirmationBody().get())
@@ -132,9 +128,7 @@ class RecordApplicationConfirmationTest {
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
-        assertThat(
-            callbackResponse.getConfirmationHeader().get())
-            .contains(YOU_VE_RECORDED_AN_APPLICATION);
+        assertTrue(callbackResponse.getConfirmationHeader().get().contains(YOU_VE_RECORDED_AN_APPLICATION));
 
         assertThat(
             callbackResponse.getConfirmationBody().get())
@@ -162,13 +156,9 @@ class RecordApplicationConfirmationTest {
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
-        assertThat(
-            callbackResponse.getConfirmationHeader().get())
-            .contains(YOU_VE_RECORDED_AN_APPLICATION);
+        assertTrue(callbackResponse.getConfirmationHeader().get().contains(YOU_VE_RECORDED_AN_APPLICATION));
 
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("You must now [end the appeal](/case/IA/Asylum/" + caseId + "/trigger/endAppeal).");
+        assertTrue(callbackResponse.getConfirmationBody().get().contains("You must now [end the appeal](/case/IA/Asylum/" + caseId + "/trigger/endAppeal)."));
 
         verify(asylumCase).clear(APPLICATION_DECISION);
         verify(asylumCase).clear(APPLICATION_TYPE);
@@ -191,9 +181,7 @@ class RecordApplicationConfirmationTest {
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
-        assertThat(
-            callbackResponse.getConfirmationHeader().get())
-            .contains(YOU_VE_RECORDED_AN_APPLICATION);
+        assertTrue(callbackResponse.getConfirmationHeader().get().contains(YOU_VE_RECORDED_AN_APPLICATION));
 
         assertThat(
             callbackResponse.getConfirmationBody().get())
@@ -222,9 +210,7 @@ class RecordApplicationConfirmationTest {
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
-        assertThat(
-            callbackResponse.getConfirmationHeader().get())
-            .contains(YOU_VE_RECORDED_AN_APPLICATION);
+        assertTrue(callbackResponse.getConfirmationHeader().get().contains(YOU_VE_RECORDED_AN_APPLICATION));
 
         assertThat(
             callbackResponse.getConfirmationBody().get())
@@ -252,9 +238,7 @@ class RecordApplicationConfirmationTest {
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
-        assertThat(
-            callbackResponse.getConfirmationHeader().get())
-            .contains(YOU_VE_RECORDED_AN_APPLICATION);
+        assertTrue(callbackResponse.getConfirmationHeader().get().contains(YOU_VE_RECORDED_AN_APPLICATION));
 
         assertThat(
             callbackResponse.getConfirmationBody().get())

@@ -32,8 +32,10 @@ public class ForceDecidedStateConfirmation implements PostSubmitCallbackHandler<
 
         postSubmitResponse.setConfirmationHeader("# The appeal has been moved to the decided state");
         postSubmitResponse.setConfirmationBody(
-            "#### What happens next\n\n"
-            + "The appeal can now be progressed from the decided state."
+            """
+            #### What happens next
+            
+            The appeal can now be progressed from the decided state."""
         );
 
         return postSubmitResponse;

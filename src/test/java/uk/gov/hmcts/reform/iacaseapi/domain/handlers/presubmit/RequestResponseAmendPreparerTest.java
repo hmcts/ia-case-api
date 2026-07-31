@@ -1,18 +1,17 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SEND_DIRECTION_EXPLANATION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SEND_DIRECTION_PARTIES;
 
-import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,7 +20,6 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Parties;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -29,9 +27,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 
-
 @ExtendWith(MockitoExtension.class)
-@SuppressWarnings("unchecked")
 class RequestResponseAmendPreparerTest {
 
     @Mock
@@ -42,9 +38,7 @@ class RequestResponseAmendPreparerTest {
     private AsylumCase asylumCase;
 
     @Captor
-    private ArgumentCaptor<String> asylumCaseValuesArgumentCaptor;
-    @Captor
-    private ArgumentCaptor<AsylumCaseFieldDefinition> asylumExtractorCaptor;
+    private ArgumentCaptor<String> stringArgumentCaptor;
 
     private RequestResponseAmendPreparer requestResponseAmendPreparer;
 
@@ -56,7 +50,6 @@ class RequestResponseAmendPreparerTest {
     @Test
     void should_prepare_send_direction_fields() {
 
-        final String expectedExplanationContains = "";
         final Parties expectedParties = Parties.RESPONDENT;
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -69,14 +62,9 @@ class RequestResponseAmendPreparerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(asylumCase, times(2)).write(asylumExtractorCaptor.capture(), asylumCaseValuesArgumentCaptor.capture());
+        verify(asylumCase, times(1)).write(eq(SEND_DIRECTION_EXPLANATION), stringArgumentCaptor.capture());
 
-        List<AsylumCaseFieldDefinition> extractors = asylumExtractorCaptor.getAllValues();
-        List<String> asylumCaseValues = asylumCaseValuesArgumentCaptor.getAllValues();
-
-        assertThat(
-            asylumCaseValues.get(extractors.indexOf(SEND_DIRECTION_EXPLANATION)))
-            .contains(expectedExplanationContains);
+        assertTrue(stringArgumentCaptor.getValue().isBlank());
 
         verify(asylumCase, times(1)).write(SEND_DIRECTION_PARTIES, expectedParties);
     }

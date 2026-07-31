@@ -81,9 +81,9 @@ class EditDocsAuditLogHandlerTest {
         editDocsAuditLogHandler.handle(callback);
 
         List<ILoggingEvent> logsList = listAppender.list;
-        assertEquals("INFO", logsList.get(0).getLevel().toString());
+        assertEquals("INFO", logsList.getFirst().getLevel().toString());
         assertEquals("Edit Document audit logs: AuditDetails(idamUserId=null, user=null, documentIds=null, "
-            + "documentNames=null, caseId=0, reason=null, dateTime=null)", logsList.get(0).getFormattedMessage());
+            + "documentNames=null, caseId=0, reason=null, dateTime=null)", logsList.getFirst().getFormattedMessage());
     }
 
     private void mockServiceDependency() {

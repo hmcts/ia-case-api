@@ -1,5 +1,18 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.service;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealDecision.ALLOWED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealDecision.DISMISSED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CURRENT_HEARING_ID;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_DECISION_LIST;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_DECISION_ALLOWED;
+
+import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -11,20 +24,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealDecision;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingDecision;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
-
-import java.util.List;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealDecision.ALLOWED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealDecision.DISMISSED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CURRENT_HEARING_ID;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_DECISION_LIST;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_DECISION_ALLOWED;
 
 @ExtendWith(MockitoExtension.class)
 class HearingDecisionProcessorTest {
@@ -55,9 +54,9 @@ class HearingDecisionProcessorTest {
         verify(asylumCase).write(eq(HEARING_DECISION_LIST), newHearingDecisionListArgumentCaptor.capture());
         List<IdValue<HearingDecision>> hearingDecisionList = newHearingDecisionListArgumentCaptor.getValue();
         assertEquals(1, hearingDecisionList.size());
-        assertEquals("1", hearingDecisionList.get(0).getId());
-        assertEquals("12345", hearingDecisionList.get(0).getValue().getHearingId());
-        assertEquals("allowed", hearingDecisionList.get(0).getValue().getDecision());
+        assertEquals("1", hearingDecisionList.getFirst().getId());
+        assertEquals("12345", hearingDecisionList.getFirst().getValue().getHearingId());
+        assertEquals("allowed", hearingDecisionList.getFirst().getValue().getDecision());
     }
 
     @Test
@@ -81,9 +80,9 @@ class HearingDecisionProcessorTest {
         verify(asylumCase).write(eq(HEARING_DECISION_LIST), newHearingDecisionListArgumentCaptor.capture());
         List<IdValue<HearingDecision>> hearingDecisionList = newHearingDecisionListArgumentCaptor.getValue();
         assertEquals(3, hearingDecisionList.size());
-        assertEquals("1", hearingDecisionList.get(0).getId());
-        assertEquals("23456", hearingDecisionList.get(0).getValue().getHearingId());
-        assertEquals("dismissed", hearingDecisionList.get(0).getValue().getDecision());
+        assertEquals("1", hearingDecisionList.getFirst().getId());
+        assertEquals("23456", hearingDecisionList.getFirst().getValue().getHearingId());
+        assertEquals("dismissed", hearingDecisionList.getFirst().getValue().getDecision());
         assertEquals("2", hearingDecisionList.get(1).getId());
         assertEquals("34567", hearingDecisionList.get(1).getValue().getHearingId());
         assertEquals("dismissed", hearingDecisionList.get(1).getValue().getDecision());
@@ -113,9 +112,9 @@ class HearingDecisionProcessorTest {
         verify(asylumCase).write(eq(HEARING_DECISION_LIST), newHearingDecisionListArgumentCaptor.capture());
         List<IdValue<HearingDecision>> hearingDecisionList = newHearingDecisionListArgumentCaptor.getValue();
         assertEquals(2, hearingDecisionList.size());
-        assertEquals("1", hearingDecisionList.get(0).getId());
-        assertEquals("12345", hearingDecisionList.get(0).getValue().getHearingId());
-        assertEquals("allowed", hearingDecisionList.get(0).getValue().getDecision());
+        assertEquals("1", hearingDecisionList.getFirst().getId());
+        assertEquals("12345", hearingDecisionList.getFirst().getValue().getHearingId());
+        assertEquals("allowed", hearingDecisionList.getFirst().getValue().getDecision());
         assertEquals("2", hearingDecisionList.get(1).getId());
         assertEquals("34567", hearingDecisionList.get(1).getValue().getHearingId());
         assertEquals("dismissed", hearingDecisionList.get(1).getValue().getDecision());
@@ -135,9 +134,9 @@ class HearingDecisionProcessorTest {
         verify(asylumCase).write(eq(HEARING_DECISION_LIST), newHearingDecisionListArgumentCaptor.capture());
         List<IdValue<HearingDecision>> hearingDecisionList = newHearingDecisionListArgumentCaptor.getValue();
         assertEquals(1, hearingDecisionList.size());
-        assertEquals("1", hearingDecisionList.get(0).getId());
-        assertEquals("12345", hearingDecisionList.get(0).getValue().getHearingId());
-        assertEquals("decided", hearingDecisionList.get(0).getValue().getDecision());
+        assertEquals("1", hearingDecisionList.getFirst().getId());
+        assertEquals("12345", hearingDecisionList.getFirst().getValue().getHearingId());
+        assertEquals("decided", hearingDecisionList.getFirst().getValue().getDecision());
     }
 
     @Test

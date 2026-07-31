@@ -1,6 +1,5 @@
 {
   "description": "RIA-7487 Review hearing requirements (display decision and tribunal response in hearing tab)",
-  "enabled": "true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",

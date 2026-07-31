@@ -1,6 +1,5 @@
 {
   "description": "RIA-480 & RIA-600 Build case confirmation (feature enabled)",
-  "enabled": true,
   "request": {
     "uri": "/asylum/ccdSubmitted",
     "credentials": "LegalRepresentative",

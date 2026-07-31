@@ -78,8 +78,12 @@ class GenerateServiceRequestMakeAPaymentConfirmationTest {
         assertThat(callbackResponse.getConfirmationBody()).isPresent();
         assertThat(callbackResponse.getConfirmationHeader()).contains("# You have created a service request");
         assertThat(callbackResponse.getConfirmationBody())
-            .contains("### What happens next\n\n"
-                + "The legal representative can now pay for this appeal in the 'Service Request' tab on the case details screen.\n\n");
+            .contains("""
+                ### What happens next
+                
+                The legal representative can now pay for this appeal in the 'Service Request' tab on the case details screen.
+                
+                """);
     }
 
     @Test

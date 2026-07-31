@@ -1,6 +1,5 @@
 {
   "description": "RIA-3683 List reheard case - clear attendees and duration fields",
-  "launchDarklyKey": "reheard-feature:true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "AdminOfficer",

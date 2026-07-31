@@ -17,17 +17,14 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationRefDataService;
 
 @Component
 public class ListCasePreparer implements PreSubmitCallbackHandler<AsylumCase> {
 
-    private final FeatureToggler featureToggler;
     private final LocationRefDataService locationRefDataService;
 
-    public ListCasePreparer(FeatureToggler featureToggler, LocationRefDataService locationRefDataService) {
-        this.featureToggler = featureToggler;
+    public ListCasePreparer(LocationRefDataService locationRefDataService) {
         this.locationRefDataService = locationRefDataService;
     }
 
@@ -63,8 +60,7 @@ public class ListCasePreparer implements PreSubmitCallbackHandler<AsylumCase> {
             return asylumCasePreSubmitCallbackResponse;
         }
 
-        if (asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class).map(flag -> flag.equals(YesOrNo.YES)).orElse(false)
-            && featureToggler.getValue("reheard-feature", false)) {
+        if (asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class).map(flag -> flag.equals(YesOrNo.YES)).orElse(false)) {
             asylumCase.clear(LIST_CASE_HEARING_CENTRE);
             asylumCase.clear(LIST_CASE_HEARING_CENTRE_ADDRESS);
             asylumCase.clear(LIST_CASE_HEARING_DATE);

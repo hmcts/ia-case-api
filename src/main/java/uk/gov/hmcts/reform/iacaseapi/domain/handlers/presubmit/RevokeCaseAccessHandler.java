@@ -92,7 +92,7 @@ public class RevokeCaseAccessHandler implements PreSubmitCallbackHandler<AsylumC
         String userIdToRevokeAccessFrom,
         String organisationId
     ) {
-        Assignment roleAssignment = roleAssignmentResource.getRoleAssignmentResponse().get(0);
+        Assignment roleAssignment = roleAssignmentResource.getRoleAssignmentResponse().getFirst();
 
         if (roleAssignment.getRoleCategory() == RoleCategory.CITIZEN) {
             deleteRoleAssignment(roleAssignment.getId());

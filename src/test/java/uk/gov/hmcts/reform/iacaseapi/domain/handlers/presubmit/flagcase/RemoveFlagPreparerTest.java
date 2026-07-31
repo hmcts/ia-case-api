@@ -74,7 +74,7 @@ class RemoveFlagPreparerTest {
             .map(idValue -> new Value(idValue.getId(), idValue.getValue().getLegacyCaseFlagType().getReadableText()))
             .collect(Collectors.toList());
 
-        final DynamicList dynamicList = new DynamicList(expectedElements.get(0), expectedElements);
+        final DynamicList dynamicList = new DynamicList(expectedElements.getFirst(), expectedElements);
 
         doReturn(expectedElements).when(removeFlagPreparer).getExistingCaseFlagListElements(expectedList);
         doReturn(dynamicList).when(removeFlagPreparer).createDynamicList(expectedElements);
@@ -97,7 +97,7 @@ class RemoveFlagPreparerTest {
             .map(idValue -> new Value(idValue.getId(), idValue.getValue().getLegacyCaseFlagType().getReadableText()))
             .collect(Collectors.toList());
 
-        final DynamicList dynamicList = new DynamicList(expectedElements.get(0), expectedElements);
+        final DynamicList dynamicList = new DynamicList(expectedElements.getFirst(), expectedElements);
 
         when(asylumCase.read(LEGACY_CASE_FLAGS)).thenReturn(Optional.of(Collections.emptyList()));
 
@@ -115,7 +115,7 @@ class RemoveFlagPreparerTest {
 
         final List<Value> actualList = removeFlagPreparer.getExistingCaseFlagListElements(expectedList);
         assertEquals(1, actualList.size());
-        assertEquals(expectedCaseFlag.getLegacyCaseFlagType().getReadableText(), actualList.get(0).getLabel());
+        assertEquals(expectedCaseFlag.getLegacyCaseFlagType().getReadableText(), actualList.getFirst().getLabel());
     }
 
     @Test

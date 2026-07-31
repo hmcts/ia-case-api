@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -19,7 +18,6 @@ public class RequestCmaRequirementsPreparer implements PreSubmitCallbackHandler<
     public static final int DUE_IN_WEEKS = 1;
     private final DateProvider dateProvider;
 
-    @Autowired
     public RequestCmaRequirementsPreparer(DateProvider dateProvider) {
         this.dateProvider = dateProvider;
     }

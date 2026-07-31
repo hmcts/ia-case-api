@@ -1,6 +1,5 @@
 {
   "description": "RIA-3582 Review hearing requirements - feature flag enabled",
-  "launchDarklyKey": "reheard-feature:true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",

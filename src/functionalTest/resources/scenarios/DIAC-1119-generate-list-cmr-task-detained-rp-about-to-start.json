@@ -1,6 +1,5 @@
 {
   "description": "DIAC-1119: CMR for a detained appeal RP and PA - validation at about to start",
-  "enabled": true,
   "request": {
     "uri": "/asylum/ccdAboutToStart",
     "credentials": "CaseOfficer",

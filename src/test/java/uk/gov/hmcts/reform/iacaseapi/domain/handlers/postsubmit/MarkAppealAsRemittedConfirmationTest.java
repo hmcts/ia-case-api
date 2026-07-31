@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -45,13 +44,9 @@ class MarkAppealAsRemittedConfirmationTest {
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
-        assertThat(
-            callbackResponse.getConfirmationHeader().get())
-            .contains("# You have marked the appeal as remitted");
+        assertTrue(callbackResponse.getConfirmationHeader().get().contains("# You have marked the appeal as remitted"));
 
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("All parties have been notified and the relevant appeal details have been updated.");
+        assertTrue(callbackResponse.getConfirmationBody().get().contains("All parties have been notified and the relevant appeal details have been updated."));
     }
 
     @Test

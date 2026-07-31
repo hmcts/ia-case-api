@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -47,13 +46,9 @@ class CaseSubmittedConfirmationTest {
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
-        assertThat(
-            callbackResponse.getConfirmationHeader().get())
-            .contains("You have submitted your case");
+        assertTrue(callbackResponse.getConfirmationHeader().get().contains("You have submitted your case"));
 
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("The case officer will now review your appeal");
+        assertTrue(callbackResponse.getConfirmationBody().get().contains("The case officer will now review your appeal"));
     }
 
     @Test

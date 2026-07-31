@@ -1,7 +1,6 @@
 {
   "description": "DIAC-1160 Update Case Appellant In Person - Manual - AboutToStart - Error",
-  "disabled": false,
-  "request": {
+    "request": {
     "uri": "/asylum/ccdAboutToStart",
     "credentials": "AdminOfficer",
     "input": {
@@ -18,7 +17,9 @@
   },
   "expectation": {
     "status": 200,
-    "errors": ["You cannot request Appellant in Person - Manual for this appeal"],
+    "errors": [
+      "You cannot request Appellant in Person - Manual for this appeal"
+    ],
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {
