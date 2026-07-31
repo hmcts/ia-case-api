@@ -92,9 +92,3 @@ resource "random_password" "password" {
   override_special = "!#$%&*()-_=+[]{}<>:?"
 }
 
-resource "azurerm_key_vault_secret" "local_ia_ccd_importer_password" {
-  name         = "ccd-importer-password"
-  value        = random_password.password.result
-  key_vault_id = data.azurerm_key_vault.ia_key_vault.id
-}
-
