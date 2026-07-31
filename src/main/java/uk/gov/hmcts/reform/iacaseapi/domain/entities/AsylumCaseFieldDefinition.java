@@ -1758,6 +1758,9 @@ public enum AsylumCaseFieldDefinition {
     NLR_DETAILS(
         "nlrDetails", new TypeReference<NonLegalRepDetails>(){}),
 
+    PREVIOUS_NLR_DETAILS(
+        "previousNlrDetails", new TypeReference<NonLegalRepDetails>(){}),
+
     SHOULD_INVITE_NLR_TO_IDAM(
         "shouldInviteNlrToIdam", new TypeReference<YesOrNo>(){}),
 

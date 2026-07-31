@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.NonLegalRepDetails;
@@ -15,6 +16,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.CcdDataService;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAS_NON_LEGAL_REP;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NLR_DETAILS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PREVIOUS_NLR_DETAILS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.clearNlrFields;
 
 @Component
@@ -50,9 +52,10 @@ public class RemoveNonLegalRepHandler implements PreSubmitCallbackHandler<Asylum
         long caseId = callback.getCaseDetails().getId();
 
         asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class)
-            .map(NonLegalRepDetails::getIdamId)
-            .ifPresent(nlrIdamId -> {
-                ccdDataService.revokeUserAccessToCase(caseId, nlrIdamId);
+            .filter(nlrDetails -> StringUtils.isNotBlank(nlrDetails.getIdamId()))
+            .ifPresent(nlrDetails -> {
+                asylumCase.write(PREVIOUS_NLR_DETAILS, nlrDetails);
+                ccdDataService.revokeUserAccessToCase(caseId, nlrDetails.getIdamId());
                 asylumCase.write(HAS_NON_LEGAL_REP, YesOrNo.NO);
                 clearNlrFields(asylumCase);
             });

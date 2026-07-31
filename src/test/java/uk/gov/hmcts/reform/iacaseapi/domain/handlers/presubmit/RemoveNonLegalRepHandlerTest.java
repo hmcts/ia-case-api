@@ -36,6 +36,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_SPONSOR_SAME_AS_NLR;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOIN_APPEAL_PIN;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NLR_DETAILS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PREVIOUS_NLR_DETAILS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 
 @ExtendWith(MockitoExtension.class)
@@ -79,6 +80,7 @@ class RemoveNonLegalRepHandlerTest {
         assertEquals(asylumCase, response.getData());
         assertTrue(response.getErrors().isEmpty());
 
+        verify(asylumCase).write(PREVIOUS_NLR_DETAILS, nlrDetails);
         verify(ccdDataService).revokeUserAccessToCase(caseId, nlrIdamId);
         verify(asylumCase).write(HAS_NON_LEGAL_REP, NO);
         verify(asylumCase).clear(NLR_DETAILS);
@@ -89,6 +91,36 @@ class RemoveNonLegalRepHandlerTest {
 
     @Test
     void should_do_nothing_if_no_nlr() {
+        handler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        verifyNoInteractions(ccdDataService);
+        verify(asylumCase, never()).write(any(), any());
+        verify(asylumCase, never()).clear();
+    }
+
+    @Test
+    void should_do_nothing_if_nlr_idam_id_is_null() {
+        NonLegalRepDetails nlrDetails = NonLegalRepDetails.builder()
+            .idamId(null)
+            .build();
+        when(asylumCase.read(AsylumCaseFieldDefinition.NLR_DETAILS, NonLegalRepDetails.class))
+            .thenReturn(Optional.of(nlrDetails));
+
+        handler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        verifyNoInteractions(ccdDataService);
+        verify(asylumCase, never()).write(any(), any());
+        verify(asylumCase, never()).clear();
+    }
+
+    @Test
+    void should_do_nothing_if_nlr_idam_id_is_empty() {
+        NonLegalRepDetails nlrDetails = NonLegalRepDetails.builder()
+            .idamId("")
+            .build();
+        when(asylumCase.read(AsylumCaseFieldDefinition.NLR_DETAILS, NonLegalRepDetails.class))
+            .thenReturn(Optional.of(nlrDetails));
+
         handler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         verifyNoInteractions(ccdDataService);
