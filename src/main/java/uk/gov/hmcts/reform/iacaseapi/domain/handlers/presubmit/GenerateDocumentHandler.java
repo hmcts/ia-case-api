@@ -96,6 +96,7 @@ public class GenerateDocumentHandler implements PreSubmitCallbackHandler<AsylumC
             Event.LIST_CASE,
             Event.CMR_LISTING,
             Event.CMR_RE_LISTING,
+            Event.CMR_HEARING_CANCELLED,
             Event.GENERATE_HEARING_BUNDLE,
             Event.CUSTOMISE_HEARING_BUNDLE,
             Event.GENERATE_UPDATED_HEARING_BUNDLE,
@@ -148,7 +149,8 @@ public class GenerateDocumentHandler implements PreSubmitCallbackHandler<AsylumC
             Event.REMOVE_REPRESENTATION,
             Event.MARK_APPEAL_AS_REMITTED,
             Event.DECIDE_FTPA_APPLICATION,
-            Event.DECISION_WITHOUT_HEARING);
+            Event.DECISION_WITHOUT_HEARING,
+            Event.COMPLETE_CASE_REVIEW);
 
         if (isEmStitchingEnabled) {
             allowedEvents.add(Event.SUBMIT_CASE);

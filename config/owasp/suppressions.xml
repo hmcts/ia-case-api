@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
 <suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
-    <suppress until="2026-07-30">
+    <suppress until="2026-08-30">
         <notes>behind ES </notes>
         <cve>CVE-2026-56149</cve>
         <cve>CVE-2026-56148</cve>
@@ -12,18 +12,5 @@
         <cve>CVE-2026-44891</cve>
         <cve>CVE-2026-55831</cve>
         <cve>CVE-2026-55833</cve>
-    </suppress>
-    <suppress>
-        <notes>CVEs from s2s client's use of googleAuth - https://github.com/wstrange/GoogleAuth/pull/105</notes>
-        <cve>CVE-2026-54399</cve>
-        <cve>CVE-2026-54428</cve>
-    </suppress>
-    <suppress until="2026-07-30">
-        <cve>CVE-2026-59083</cve>
-        <cve>CVE-2026-59084</cve>
-        <cve>CVE-2026-49844</cve>
-        <cve>CVE-2026-55833</cve>
-        <cve>CVE-2026-44891</cve>
-        <cve>CVE-2026-55831</cve>        
     </suppress>
 </suppressions>
