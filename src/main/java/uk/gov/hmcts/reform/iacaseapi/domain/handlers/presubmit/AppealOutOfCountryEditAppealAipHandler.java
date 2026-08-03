@@ -98,6 +98,7 @@ public class AppealOutOfCountryEditAppealAipHandler implements PreSubmitCallback
                 .getCaseData();
 
         final long caseId = callback.getCaseDetails().getId();
+        final boolean isEditAppealAfterSubmit = callback.getEvent() == Event.EDIT_APPEAL_AFTER_SUBMIT;
         boolean holdFieldsForInUkChange = true;
         boolean holdFieldsForAppealTypeChange = true;
         boolean holdFieldsForOutsideUkWhenApplicationMadeChange = true;
@@ -152,7 +153,8 @@ public class AppealOutOfCountryEditAppealAipHandler implements PreSubmitCallback
             optionalAppellantInUk,
             asylumCase,
             holdFieldsForInUkChange,
-            caseId
+            caseId,
+            isEditAppealAfterSubmit
         );
 
         Optional<YesOrNo> optionalHasSponsor = asylumCase.read(HAS_SPONSOR, YesOrNo.class);
@@ -200,7 +202,8 @@ public class AppealOutOfCountryEditAppealAipHandler implements PreSubmitCallback
         Optional<YesOrNo> optionalAppellantInUk,
         AsylumCase asylumCase,
         boolean holdFieldsForInUkChange,
-        long caseId
+        long caseId,
+        boolean isEditAppealAfterSubmit
     ) {
         if (optionalAppellantInUk.isPresent()) {
             YesOrNo appellantInUk = optionalAppellantInUk.get();
@@ -210,7 +213,12 @@ public class AppealOutOfCountryEditAppealAipHandler implements PreSubmitCallback
                 asylumCase.clear(HAS_CORRESPONDENCE_ADDRESS);
                 if (!holdFieldsForInUkChange) {
                     log.info("Clearing Out Of Country fields for an In Country AIP Appeal with case Id [{}]", caseId);
-                    clearAipFieldsForAppealType(asylumCase, true);
+                    if (isEditAppealAfterSubmit) {
+                        // For EDIT_APPEAL_AFTER_SUBMIT, only clear address fields to preserve appellant identity details
+                        clearAipAddressDetails(asylumCase);
+                    } else {
+                        clearAipFieldsForAppealType(asylumCase, true);
+                    }
                 }
             }
 
@@ -219,7 +227,12 @@ public class AppealOutOfCountryEditAppealAipHandler implements PreSubmitCallback
                 asylumCase.write(HAS_CORRESPONDENCE_ADDRESS, YES);
                 if (!holdFieldsForInUkChange) {
                     log.info("Clearing In Country fields for Out Of Country AIP Appeal with case Id [{}]", caseId);
-                    clearAipFieldsForAppealType(asylumCase, true);
+                    if (isEditAppealAfterSubmit) {
+                        // For EDIT_APPEAL_AFTER_SUBMIT, only clear address fields to preserve appellant identity details
+                        clearAipAddressDetails(asylumCase);
+                    } else {
+                        clearAipFieldsForAppealType(asylumCase, true);
+                    }
                 }
             }
 
@@ -293,6 +306,13 @@ public class AppealOutOfCountryEditAppealAipHandler implements PreSubmitCallback
         asylumCase.clear(APPELLANT_NATIONALITIES);
         asylumCase.clear(APPELLANT_NATIONALITIES_DESCRIPTION);
         asylumCase.clear(APPELLANT_STATELESS);
+        asylumCase.clear(APPELLANT_HAS_FIXED_ADDRESS);
+        asylumCase.clear(APPELLANT_ADDRESS);
+        asylumCase.clear(SEARCH_POSTCODE);
+        asylumCase.clear(APPELLANT_OUT_OF_COUNTRY_ADDRESS);
+    }
+
+    private void clearAipAddressDetails(AsylumCase asylumCase) {
         asylumCase.clear(APPELLANT_HAS_FIXED_ADDRESS);
         asylumCase.clear(APPELLANT_ADDRESS);
         asylumCase.clear(SEARCH_POSTCODE);
