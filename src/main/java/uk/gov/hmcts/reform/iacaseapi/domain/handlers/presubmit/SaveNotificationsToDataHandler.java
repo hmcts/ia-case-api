@@ -37,7 +37,7 @@ public class SaveNotificationsToDataHandler implements PreSubmitCallbackHandler<
     private final NotificationClient notificationClient;
     private final boolean saveNotificationToDataEnabled;
     private final FeatureToggler featureToggler;
-    private final List<String> VALID_REFERENCES = List.of("_SOME_TEST_REFERENCE");
+    private final List<String> validReferences = List.of("_SOME_TEST_REFERENCE");
 
     public SaveNotificationsToDataHandler(
         NotificationClient notificationClient,
@@ -110,7 +110,7 @@ public class SaveNotificationsToDataHandler implements PreSubmitCallbackHandler<
 
 
     public boolean isReferenceValidForLetterPdf(String notificationReference) {
-        return VALID_REFERENCES.stream().anyMatch(notificationReference::contains);
+        return validReferences.stream().anyMatch(notificationReference::contains);
     }
 
     public String getLetterEncodedPdfFile(String method,
