@@ -7,6 +7,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -28,6 +30,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 
@@ -59,8 +62,11 @@ class SaveNotificationsToDataHandlerTest {
     private StoredNotification mockedStoredNotification2;
     @Mock
     private FeatureToggler featureToggler;
+    @Captor
+    private ArgumentCaptor<List<IdValue<StoredNotification>>> listCaptor;
 
     private final String reference = "someReference_" + Instant.now().toEpochMilli();
+    private final String validLetterReference = "_SOME_TEST_REFERENCE_" + Instant.now().toEpochMilli();
     private final String notificationId = "someNotificationId";
     private final String body = "someBody";
     private final String notificationTypeEmail = "email";
@@ -123,8 +129,6 @@ class SaveNotificationsToDataHandlerTest {
                 .notificationReference(reference)
                 .notificationSubject(subject)
                 .build();
-        long dateEightsDaysAgo = Instant.now().minusSeconds(8 * 24 * 60 * 60).toEpochMilli();
-        String oldNotificationId = "notificationId_" + dateEightsDaysAgo;
         saveNotificationsToDataHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
         verify(notificationClient, times(1)).getNotificationById(anyString());
         List<IdValue<StoredNotification>> sortedStoredNotifications =
@@ -157,6 +161,9 @@ class SaveNotificationsToDataHandlerTest {
         when(notification.getStatus()).thenReturn(status);
         saveNotificationsToDataHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
         verify(notificationClient, times(1)).getNotificationById(anyString());
+        verify(asylumCase, times(1)).write(eq(NOTIFICATIONS), listCaptor.capture());
+        List<IdValue<StoredNotification>> list = listCaptor.getValue();
+        assertEquals(1, list.size());
         StoredNotification storedNotification =
             StoredNotification.builder()
                 .notificationId(notificationId)
@@ -168,7 +175,7 @@ class SaveNotificationsToDataHandlerTest {
                 .notificationReference(reference)
                 .notificationSubject("N/A")
                 .build();
-        verify(asylumCase, times(1)).write(eq(NOTIFICATIONS), anyList());
+        assertEquals(storedNotification, listCaptor.getValue().getFirst().getValue());
     }
 
     @Test
@@ -203,6 +210,9 @@ class SaveNotificationsToDataHandlerTest {
         when(notification.getLine6()).thenReturn(Optional.of("line6"));
         saveNotificationsToDataHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
         verify(notificationClient, times(1)).getNotificationById(anyString());
+        verify(asylumCase, times(1)).write(eq(NOTIFICATIONS), listCaptor.capture());
+        List<IdValue<StoredNotification>> list = listCaptor.getValue();
+        assertEquals(1, list.size());
         StoredNotification storedNotification =
             StoredNotification.builder()
                 .notificationId(notificationId)
@@ -214,7 +224,7 @@ class SaveNotificationsToDataHandlerTest {
                 .notificationReference(reference)
                 .notificationSubject("N/A")
                 .build();
-        verify(asylumCase, times(1)).write(eq(NOTIFICATIONS), anyList());
+        assertEquals(storedNotification, listCaptor.getValue().getFirst().getValue());
     }
 
     @Test
@@ -249,6 +259,9 @@ class SaveNotificationsToDataHandlerTest {
         when(notification.getLine6()).thenReturn(Optional.of(""));
         saveNotificationsToDataHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
         verify(notificationClient, times(1)).getNotificationById(anyString());
+        verify(asylumCase, times(1)).write(eq(NOTIFICATIONS), listCaptor.capture());
+        List<IdValue<StoredNotification>> list = listCaptor.getValue();
+        assertEquals(1, list.size());
         StoredNotification storedNotification =
             StoredNotification.builder()
                 .notificationId(notificationId)
@@ -260,7 +273,7 @@ class SaveNotificationsToDataHandlerTest {
                 .notificationReference(reference)
                 .notificationSubject("N/A")
                 .build();
-        verify(asylumCase, times(1)).write(eq(NOTIFICATIONS), anyList());
+        assertEquals(storedNotification, list.getFirst().getValue());
     }
 
     @Test
@@ -283,6 +296,9 @@ class SaveNotificationsToDataHandlerTest {
         when(notification.getStatus()).thenReturn(status);
         saveNotificationsToDataHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
         verify(notificationClient, times(1)).getNotificationById(anyString());
+        verify(asylumCase, times(1)).write(eq(NOTIFICATIONS), listCaptor.capture());
+        List<IdValue<StoredNotification>> list = listCaptor.getValue();
+        assertEquals(1, list.size());
         StoredNotification storedNotification =
             StoredNotification.builder()
                 .notificationId(notificationId)
@@ -294,7 +310,7 @@ class SaveNotificationsToDataHandlerTest {
                 .notificationReference(reference)
                 .notificationSubject("N/A")
                 .build();
-        verify(asylumCase, times(1)).write(eq(NOTIFICATIONS), anyList());
+        assertEquals(storedNotification, listCaptor.getValue().getFirst().getValue());
     }
 
     @Test
@@ -318,6 +334,9 @@ class SaveNotificationsToDataHandlerTest {
         when(notification.getStatus()).thenReturn(status);
         saveNotificationsToDataHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
         verify(notificationClient, times(1)).getNotificationById(anyString());
+        verify(asylumCase, times(1)).write(eq(NOTIFICATIONS), listCaptor.capture());
+        List<IdValue<StoredNotification>> list = listCaptor.getValue();
+        assertEquals(1, list.size());
         StoredNotification storedNotification =
             StoredNotification.builder()
                 .notificationId(notificationId)
@@ -329,7 +348,7 @@ class SaveNotificationsToDataHandlerTest {
                 .notificationReference(notificationId)
                 .notificationSubject(subject)
                 .build();
-        verify(asylumCase, times(1)).write(eq(NOTIFICATIONS), anyList());
+        assertEquals(storedNotification, listCaptor.getValue().getFirst().getValue());
     }
 
     @Test
@@ -353,6 +372,9 @@ class SaveNotificationsToDataHandlerTest {
         when(notification.getStatus()).thenReturn(status);
         saveNotificationsToDataHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
         verify(notificationClient, times(1)).getNotificationById(anyString());
+        verify(asylumCase, times(1)).write(eq(NOTIFICATIONS), listCaptor.capture());
+        List<IdValue<StoredNotification>> list = listCaptor.getValue();
+        assertEquals(1, list.size());
         StoredNotification storedNotification =
             StoredNotification.builder()
                 .notificationId(notificationId)
@@ -364,7 +386,7 @@ class SaveNotificationsToDataHandlerTest {
                 .notificationReference(notificationId)
                 .notificationSubject("N/A")
                 .build();
-        verify(asylumCase, times(1)).write(eq(NOTIFICATIONS), anyList());
+        assertEquals(storedNotification, listCaptor.getValue().getFirst().getValue());
     }
 
 
@@ -388,6 +410,9 @@ class SaveNotificationsToDataHandlerTest {
         when(notification.getStatus()).thenReturn(status);
         saveNotificationsToDataHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
         verify(notificationClient, times(1)).getNotificationById(anyString());
+        verify(asylumCase, times(1)).write(eq(NOTIFICATIONS), listCaptor.capture());
+        List<IdValue<StoredNotification>> list = listCaptor.getValue();
+        assertEquals(1, list.size());
         StoredNotification storedNotification =
             StoredNotification.builder()
                 .notificationId(notificationId)
@@ -399,7 +424,7 @@ class SaveNotificationsToDataHandlerTest {
                 .notificationReference(notificationId)
                 .notificationSubject("N/A")
                 .build();
-        verify(asylumCase, times(1)).write(eq(NOTIFICATIONS), anyList());
+        assertEquals(storedNotification, listCaptor.getValue().getFirst().getValue());
     }
 
     @Test
@@ -486,8 +511,8 @@ class SaveNotificationsToDataHandlerTest {
         when(featureToggler.getValue("save-notifications-feature", false)).thenReturn(false);
 
         assertThatThrownBy(() -> saveNotificationsToDataHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
-                .hasMessage("Cannot handle callback")
-                .isExactlyInstanceOf(IllegalStateException.class);
+            .hasMessage("Cannot handle callback")
+            .isExactlyInstanceOf(IllegalStateException.class);
     }
 
     @Test
@@ -495,12 +520,12 @@ class SaveNotificationsToDataHandlerTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         List<IdValue<String>> notificationsSent =
-                List.of(new IdValue<>(reference, notificationId));
+            List.of(new IdValue<>(reference, notificationId));
         List<IdValue<StoredNotification>> storedNotifications =
-                List.of(
-                        new IdValue<>("1", mockedStoredNotification),
-                        new IdValue<>("2", mockedStoredNotification2)
-                );
+            List.of(
+                new IdValue<>("1", mockedStoredNotification),
+                new IdValue<>("2", mockedStoredNotification2)
+            );
 
         when(asylumCase.read(NOTIFICATIONS)).thenReturn(Optional.of(storedNotifications));
         when(asylumCase.read(NOTIFICATIONS_SENT)).thenReturn(Optional.of(notificationsSent));
@@ -531,12 +556,178 @@ class SaveNotificationsToDataHandlerTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         List<IdValue<String>> notificationsSent =
-                List.of(new IdValue<>("notificationReference", notificationId));
+            List.of(new IdValue<>("notificationReference", notificationId));
         when(asylumCase.read(NOTIFICATIONS_SENT)).thenReturn(Optional.of(notificationsSent));
 
         saveNotificationsToDataHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
         verify(notificationClient, never()).getNotificationById(anyString());
         verify(asylumCase, never()).write(eq(NOTIFICATIONS), anyList());
+    }
+
+    @Test
+    void should_set_encoded_pdf_bye_array_for_letter() throws NotificationClientException {
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        List<IdValue<String>> notificationsSent =
+            List.of(new IdValue<>(validLetterReference, notificationId));
+        when(asylumCase.read(NOTIFICATIONS)).thenReturn(Optional.empty());
+        when(asylumCase.read(NOTIFICATIONS_SENT)).thenReturn(Optional.of(notificationsSent));
+        when(notificationClient.getNotificationById(notificationId)).thenReturn(notification);
+        when(notification.getBody()).thenReturn(body);
+        when(notification.getNotificationType()).thenReturn(notificationTypeLetter);
+        when(notification.getReference()).thenReturn(Optional.of(validLetterReference));
+        String dateString = "01-01-2024 10:57";
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
+        LocalDateTime localDateTime = LocalDateTime.parse(dateString, dateFormatter);
+        ZonedDateTime zonedDateTime = localDateTime.atZone(ZoneId.of("Europe/London"));
+        when(notification.getSentAt()).thenReturn(Optional.of(zonedDateTime));
+        when(notification.getStatus()).thenReturn(status);
+        byte[] pdfBytes = new byte[]{1, 2, 3, 4, 5};
+        when(notificationClient.getPdfForLetter(notificationId)).thenReturn(pdfBytes);
+
+        saveNotificationsToDataHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        verify(notificationClient, times(1)).getNotificationById(anyString());
+        verify(notificationClient, times(1)).getPdfForLetter(anyString());
+        String encodedPdfFile = Base64.getEncoder().encodeToString(pdfBytes);
+        verify(asylumCase, times(1)).write(eq(NOTIFICATIONS), listCaptor.capture());
+        List<IdValue<StoredNotification>> list = listCaptor.getValue();
+        assertEquals(1, list.size());
+        StoredNotification storedNotification =
+            StoredNotification.builder()
+                .notificationId(notificationId)
+                .notificationDateSent("2024-01-01T10:57")
+                .notificationSentTo("N/A")
+                .notificationBody("<div>" + body + "</div>")
+                .notificationDocumentEncoded(encodedPdfFile)
+                .notificationMethod(StringUtils.capitalize(notificationTypeLetter))
+                .notificationStatus(StringUtils.capitalize(status))
+                .notificationReference(validLetterReference)
+                .notificationSubject("N/A")
+                .build();
+        assertEquals(storedNotification, listCaptor.getValue().getFirst().getValue());
+    }
+
+    @Test
+    void should_continue_if_getPdfForLetter_throws_exception() throws NotificationClientException {
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        List<IdValue<String>> notificationsSent =
+            List.of(new IdValue<>(reference, notificationId));
+        when(asylumCase.read(NOTIFICATIONS)).thenReturn(Optional.empty());
+        when(asylumCase.read(NOTIFICATIONS_SENT)).thenReturn(Optional.of(notificationsSent));
+        when(notificationClient.getNotificationById(notificationId)).thenReturn(notification);
+        when(notification.getBody()).thenReturn(body);
+        when(notification.getNotificationType()).thenReturn(notificationTypeLetter);
+        when(notification.getReference()).thenReturn(Optional.of(reference));
+        String dateString = "01-01-2024 10:57";
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
+        LocalDateTime localDateTime = LocalDateTime.parse(dateString, dateFormatter);
+        ZonedDateTime zonedDateTime = localDateTime.atZone(ZoneId.of("Europe/London"));
+        when(notification.getSentAt()).thenReturn(Optional.of(zonedDateTime));
+        when(notification.getStatus()).thenReturn(status);
+        when(notificationClient.getPdfForLetter(notificationId)).thenThrow(new NotificationClientException("some-client-error"));
+        saveNotificationsToDataHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+        verify(notificationClient, times(1)).getNotificationById(anyString());
+        verify(asylumCase, times(1)).write(eq(NOTIFICATIONS), listCaptor.capture());
+        List<IdValue<StoredNotification>> list = listCaptor.getValue();
+        assertEquals(1, list.size());
+        StoredNotification storedNotification =
+            StoredNotification.builder()
+                .notificationId(notificationId)
+                .notificationDateSent("2024-01-01T10:57")
+                .notificationSentTo("N/A")
+                .notificationBody("<div>" + body + "</div>")
+                .notificationMethod(StringUtils.capitalize(notificationTypeLetter))
+                .notificationStatus(StringUtils.capitalize(status))
+                .notificationReference(reference)
+                .notificationSubject("N/A")
+                .build();
+        assertEquals(storedNotification, listCaptor.getValue().getFirst().getValue());
+    }
+
+
+    @Test
+    void isReferenceValidForLetterPdf_returnsTrueForValidReference() {
+        String validReference = "1233123412_SOME_TEST_REFERENCE_2132131233";
+        assertTrue(saveNotificationsToDataHandler.isReferenceValidForLetterPdf(validReference));
+    }
+
+    @Test
+    void isReferenceValidForLetterPdf_returnsFalseForInvalidReference() {
+        String validReference = "1233123412_SOME_INVALID_TEST_REFERENCE_2132131233";
+        assertFalse(saveNotificationsToDataHandler.isReferenceValidForLetterPdf(validReference));
+    }
+
+    @Test
+    void getLetterEncodedPdfFile_returnsEncodedPdfFileForValidReference() throws NotificationClientException {
+        String validReference = "1233123412_SOME_TEST_REFERENCE_2132131233";
+        byte[] pdfBytes = new byte[]{1, 2, 3, 4, 5};
+        when(notificationClient.getPdfForLetter("id")).thenReturn(pdfBytes);
+
+        String encodedPdfFile = saveNotificationsToDataHandler.getLetterEncodedPdfFile("letter",
+            "id", validReference, callback);
+
+        String expectedEncodedPdfFile = Base64.getEncoder().encodeToString(pdfBytes);
+        verify(notificationClient).getPdfForLetter("id");
+        assertEquals(expectedEncodedPdfFile, encodedPdfFile);
+    }
+
+    @Test
+    void getLetterEncodedPdfFile_returnsNullIfLetterFetchNull() throws NotificationClientException {
+        String validReference = "1233123412_SOME_TEST_REFERENCE_2132131233";
+        when(notificationClient.getPdfForLetter("id")).thenReturn(null);
+
+        String encodedPdfFile = saveNotificationsToDataHandler.getLetterEncodedPdfFile("letter",
+            "id", validReference, callback);
+
+        verify(notificationClient).getPdfForLetter("id");
+        assertNull(encodedPdfFile);
+    }
+
+    @Test
+    void getLetterEncodedPdfFile_returnsNullIfLetterFetchEmpty() throws NotificationClientException {
+        String validReference = "1233123412_SOME_TEST_REFERENCE_2132131233";
+        byte[] pdfBytes = new byte[]{};
+        when(notificationClient.getPdfForLetter("id")).thenReturn(pdfBytes);
+
+        String encodedPdfFile = saveNotificationsToDataHandler.getLetterEncodedPdfFile("letter",
+            "id", validReference, callback);
+
+        verify(notificationClient).getPdfForLetter("id");
+        assertNull(encodedPdfFile);
+    }
+
+    @Test
+    void getLetterEncodedPdfFile_returnsNullIfLetterFetchThrows() throws NotificationClientException {
+        String validReference = "1233123412_SOME_TEST_REFERENCE_2132131233";
+        when(notificationClient.getPdfForLetter("id"))
+            .thenThrow(new NotificationClientException("some-client-error"));
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getId()).thenReturn(1234L);
+        String encodedPdfFile = saveNotificationsToDataHandler.getLetterEncodedPdfFile("letter",
+            "id", validReference, callback);
+
+        verify(notificationClient).getPdfForLetter("id");
+        assertNull(encodedPdfFile);
+    }
+
+    @Test
+    void getLetterEncodedPdfFile_doesNotFetchPdfForLetterIfNonLetter() throws NotificationClientException {
+        String validReference = "1233123412_SOME_TEST_REFERENCE_2132131233";
+        String encodedPdfFile = saveNotificationsToDataHandler.getLetterEncodedPdfFile("email",
+            "id", validReference, callback);
+        assertNull(encodedPdfFile);
+        verify(notificationClient, never()).getPdfForLetter(anyString());
+    }
+
+    @Test
+    void getLetterEncodedPdfFile_doesNotFetchPdfForLetterIfReferenceIsInvalid() throws NotificationClientException {
+        String invalidReference = "1233123412_SOME_INVALID_TEST_REFERENCE_2132131233";
+        String encodedPdfFile = saveNotificationsToDataHandler.getLetterEncodedPdfFile("letter",
+            "id", invalidReference, callback);
+        assertNull(encodedPdfFile);
+        verify(notificationClient, never()).getPdfForLetter(anyString());
     }
 
     @ParameterizedTest
@@ -565,20 +756,20 @@ class SaveNotificationsToDataHandlerTest {
     })
     @ParameterizedTest
     void it_can_handle_callback_when_save_notification_to_data_env_var_or_feature_flag_is_false(
-            boolean saveNotificationsFeatureEnabled,
-            boolean saveNotificationsToDataEnvVarEnabled
+        boolean saveNotificationsFeatureEnabled,
+        boolean saveNotificationsToDataEnvVarEnabled
     ) {
         when(featureToggler.getValue("save-notifications-feature", false))
-                .thenReturn(saveNotificationsFeatureEnabled);
+            .thenReturn(saveNotificationsFeatureEnabled);
         when(callback.getEvent()).thenReturn(SAVE_NOTIFICATIONS_TO_DATA);
 
         saveNotificationsToDataHandler = new SaveNotificationsToDataHandler(
-                notificationClient,
-                saveNotificationsToDataEnvVarEnabled,
-                featureToggler);
+            notificationClient,
+            saveNotificationsToDataEnvVarEnabled,
+            featureToggler);
 
         boolean canHandle = saveNotificationsToDataHandler.canHandle(
-                PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+            PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
         assertFalse(canHandle);
     }
 }
