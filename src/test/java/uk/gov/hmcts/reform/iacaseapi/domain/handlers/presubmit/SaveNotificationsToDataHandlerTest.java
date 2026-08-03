@@ -646,48 +646,6 @@ class SaveNotificationsToDataHandlerTest {
         assertEquals(storedNotification, listCaptor.getValue().getFirst().getValue());
     }
 
-    @ParameterizedTest
-    @EnumSource(value = Event.class)
-    void it_can_handle_callback(Event event) {
-        when(callback.getEvent()).thenReturn(event);
-        for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
-
-            boolean canHandle = saveNotificationsToDataHandler.canHandle(callbackStage, callback);
-
-            if (callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-                && SAVE_NOTIFICATIONS_TO_DATA == callback.getEvent()
-                && featureToggler.getValue("save-notifications-feature", false)) {
-
-                assertTrue(canHandle);
-            } else {
-                assertFalse(canHandle);
-            }
-        }
-    }
-
-    @CsvSource({
-        "true, false",
-        "false, true",
-        "false, false"
-    })
-    @ParameterizedTest
-    void it_can_handle_callback_when_save_notification_to_data_env_var_or_feature_flag_is_false(
-        boolean saveNotificationsFeatureEnabled,
-        boolean saveNotificationsToDataEnvVarEnabled
-    ) {
-        when(featureToggler.getValue("save-notifications-feature", false))
-            .thenReturn(saveNotificationsFeatureEnabled);
-        when(callback.getEvent()).thenReturn(SAVE_NOTIFICATIONS_TO_DATA);
-
-        saveNotificationsToDataHandler = new SaveNotificationsToDataHandler(
-            notificationClient,
-            saveNotificationsToDataEnvVarEnabled,
-            featureToggler);
-
-        boolean canHandle = saveNotificationsToDataHandler.canHandle(
-            PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
-        assertFalse(canHandle);
-    }
 
     @Test
     void isReferenceValidForLetterPdf_returnsTrueForValidReference() {
@@ -770,5 +728,48 @@ class SaveNotificationsToDataHandlerTest {
             "id", invalidReference, callback);
         assertNull(encodedPdfFile);
         verify(notificationClient, never()).getPdfForLetter(anyString());
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = Event.class)
+    void it_can_handle_callback(Event event) {
+        when(callback.getEvent()).thenReturn(event);
+        for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
+
+            boolean canHandle = saveNotificationsToDataHandler.canHandle(callbackStage, callback);
+
+            if (callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
+                && SAVE_NOTIFICATIONS_TO_DATA == callback.getEvent()
+                && featureToggler.getValue("save-notifications-feature", false)) {
+
+                assertTrue(canHandle);
+            } else {
+                assertFalse(canHandle);
+            }
+        }
+    }
+
+    @CsvSource({
+        "true, false",
+        "false, true",
+        "false, false"
+    })
+    @ParameterizedTest
+    void it_can_handle_callback_when_save_notification_to_data_env_var_or_feature_flag_is_false(
+        boolean saveNotificationsFeatureEnabled,
+        boolean saveNotificationsToDataEnvVarEnabled
+    ) {
+        when(featureToggler.getValue("save-notifications-feature", false))
+            .thenReturn(saveNotificationsFeatureEnabled);
+        when(callback.getEvent()).thenReturn(SAVE_NOTIFICATIONS_TO_DATA);
+
+        saveNotificationsToDataHandler = new SaveNotificationsToDataHandler(
+            notificationClient,
+            saveNotificationsToDataEnvVarEnabled,
+            featureToggler);
+
+        boolean canHandle = saveNotificationsToDataHandler.canHandle(
+            PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+        assertFalse(canHandle);
     }
 }
