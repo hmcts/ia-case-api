@@ -21,10 +21,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -40,6 +37,7 @@ public class SaveNotificationsToDataHandler implements PreSubmitCallbackHandler<
     private final NotificationClient notificationClient;
     private final boolean saveNotificationToDataEnabled;
     private final FeatureToggler featureToggler;
+    private final List<String> validReferences = List.of("_SOME_TEST_REFERENCE");
 
     public SaveNotificationsToDataHandler(
         NotificationClient notificationClient,
@@ -102,12 +100,35 @@ public class SaveNotificationsToDataHandler implements PreSubmitCallbackHandler<
         try {
             Notification notification = notificationClient.getNotificationById(notificationId);
             StoredNotification storedNotification =
-                getStoredNotification(notificationId, notification);
+                getStoredNotification(notificationId, notification, callback);
             allNotifications.addFirst(new IdValue<>("", storedNotification));
         } catch (NotificationClientException exception) {
             log.warn("Notification client error on case {}: ",
                 callback.getCaseDetails().getId(), exception);
         }
+    }
+
+
+    public boolean isReferenceValidForLetterPdf(String notificationReference) {
+        return validReferences.stream().anyMatch(notificationReference::contains);
+    }
+
+    public String getLetterEncodedPdfFile(String method,
+                                          String notificationId,
+                                          String notificationReference,
+                                          Callback<AsylumCase> callback) {
+        if (method.equalsIgnoreCase("letter") && isReferenceValidForLetterPdf(notificationReference)) {
+            try {
+                byte[] pdfFile = notificationClient.getPdfForLetter(notificationId);
+                if (pdfFile != null && pdfFile.length > 0) {
+                    return Base64.getEncoder().encodeToString(pdfFile);
+                }
+            } catch (NotificationClientException exception) {
+                log.warn("Notification client getPdfForLetter failure on case {}: ",
+                    callback.getCaseDetails().getId(), exception);
+            }
+        }
+        return null;
     }
 
     private static void appendNonEmptyToString(String someString, StringBuilder stringBuilder, boolean withComma) {
@@ -133,7 +154,7 @@ public class SaveNotificationsToDataHandler implements PreSubmitCallbackHandler<
         return addressBuilder.toString();
     }
 
-    private StoredNotification getStoredNotification(String notificationId, Notification notification) {
+    private StoredNotification getStoredNotification(String notificationId, Notification notification, Callback<AsylumCase> callback) {
         String reference = notification.getReference().orElse(notificationId);
         String notificationBody = "<div>" + notification.getBody()
             .replace("\r\n", "<br>")
@@ -164,6 +185,7 @@ public class SaveNotificationsToDataHandler implements PreSubmitCallbackHandler<
             .notificationDateSent(sentAt)
             .notificationSentTo(sentTo)
             .notificationBody(notificationBody)
+            .notificationDocumentEncoded(getLetterEncodedPdfFile(method, notificationId, reference, callback))
             .notificationMethod(StringUtils.capitalize(method))
             .notificationStatus(status)
             .notificationReference(reference)
@@ -171,11 +193,9 @@ public class SaveNotificationsToDataHandler implements PreSubmitCallbackHandler<
             .build();
     }
 
-    private boolean isNotificationAlreadyStored(List<IdValue<StoredNotification>> storedNotifications,
-                                                String notificationId) {
+    private boolean isNotificationAlreadyStored(List<IdValue<StoredNotification>> storedNotifications, String notificationId) {
         return storedNotifications.stream()
-            .anyMatch(idValue -> idValue.getValue().getNotificationId()
-                .equals(notificationId));
+            .anyMatch(idValue -> idValue.getValue().getNotificationId().equals(notificationId));
     }
 
     private List<String> getUnstoredNotificationIds(List<IdValue<StoredNotification>> storedNotifications,
