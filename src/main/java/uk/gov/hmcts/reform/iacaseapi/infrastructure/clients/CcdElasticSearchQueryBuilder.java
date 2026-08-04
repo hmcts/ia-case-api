@@ -1,9 +1,12 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.clients;
 
+import org.json.JSONObject;
+import org.springframework.stereotype.Component;
+
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.springframework.stereotype.Component;
 
 /**
  * Builder for creating Elasticsearch queries for CCD case searches.
@@ -39,7 +42,7 @@ public class CcdElasticSearchQueryBuilder {
      * before comparison (e.g., "1234 5678 9012 3456" becomes "1234567890123456").
      *
      * @param appealReferenceNumber The appeal reference number to search for
-     * @param ccdRefNumber The CCD reference number of the current case to exclude (can be null)
+     * @param ccdRefNumber          The CCD reference number of the current case to exclude (can be null)
      * @return CcdSearchQuery object containing the Elasticsearch query
      */
     public CcdSearchQuery buildAppealReferenceNumberQuery(String appealReferenceNumber, String ccdRefNumber) {
@@ -89,6 +92,30 @@ public class CcdElasticSearchQueryBuilder {
         fieldValue.put(field, value);
         matchPhrase.put("match_phrase", fieldValue);
         return matchPhrase;
+    }
+
+    /**
+     * Builds an Elasticsearch query to search for cases by ccd reference numbers,
+     * allowing for multiple references to be searched at once.
+     *
+     * @param ccdRefNumberList The ccd references to search for
+     * @param maxRecords       The maximum number of records to return in the search results
+     * @return CcdSearchQuery object containing the Elasticsearch query
+     */
+    public JSONObject buildCcdReferenceListQuery(List<String> ccdRefNumberList, int maxRecords) {
+        Map<String, Object> query = Map.of("terms", Map.of(
+            "reference", ccdRefNumberList,
+            "boost", 1.0
+        ));
+        List<Map<String, Object>> sort = Collections
+            .singletonList(Map.of("created_date", Map.of("order", "desc")));
+
+        return new JSONObject(Map.of(
+            "from", 0,
+            "size", maxRecords,
+            "query", query,
+            "sort", sort
+        ));
     }
 }
 
