@@ -134,7 +134,7 @@ class AddStatutoryTimeframe24WeeksTest extends SpringBootIntegrationTest impleme
                                 .with(APPELLANT_FAMILY_NAME, SOME_FAMILY_NAME))));
 
         assertThat(response.getAsylumCase().read(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class).get()).isEqualTo(YesOrNo.YES);
-        assertThat(response.getAsylumCase().read(STF_24W_CURRENT_REASON_AUTO_GENERATED, String.class).get()).isEqualTo(SOME_REASON);
+        assertThat(response.getAsylumCase().read(STF_24W_CURRENT_REASON_AUTO_GENERATED, String.class)).isEmpty();
         assertThat(response.getAsylumCase().read(STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED, YesOrNo.class).get()).isEqualTo(YesOrNo.YES);
     }
 
