@@ -177,6 +177,7 @@ class UpdateStatutoryTimeframe24WeeksServiceTest {
             .isEqualTo(allAppendedStatutoryTimeframe24Weeks);
 
         verify(bannerTextService, times(1)).updateBannerText(asylumCaseCaptor.capture());
+        verify(asylumCase, times(1)).clear(eq(STF_24W_CURRENT_REASON_AUTO_GENERATED));
     }
 
     @Test
@@ -239,6 +240,7 @@ class UpdateStatutoryTimeframe24WeeksServiceTest {
             ArgumentCaptor.forClass(StatutoryTimeframe24Weeks.class);
 
         verify(asylumCase).write(eq(STATUTORY_TIMEFRAME_24_WEEKS), statutoryCaptor.capture());
+        verify(asylumCase, times(1)).clear(eq(STF_24W_CURRENT_REASON_AUTO_GENERATED));
 
         StatutoryTimeframe24Weeks writtenStatutoryTimeframe = statutoryCaptor.getValue();
 
@@ -266,6 +268,7 @@ class UpdateStatutoryTimeframe24WeeksServiceTest {
         updateStatutoryTimeframe24WeeksService.updateAsylumCase(asylumCase, YesOrNo.YES);
 
         verify(asylumCase, times(1)).write(eq(STATUTORY_TIMEFRAME_24_WEEKS), any());
+        verify(asylumCase, times(1)).clear(eq(STF_24W_CURRENT_REASON_AUTO_GENERATED));
     }
 
     @Test
@@ -285,6 +288,7 @@ class UpdateStatutoryTimeframe24WeeksServiceTest {
 
         verify(asylumCase, times(1)).write(eq(STATUTORY_TIMEFRAME_24_WEEKS), any(StatutoryTimeframe24Weeks.class));
         verify(asylumCase, times(1)).write(eq(CASE_NOTES), anyList());
+        verify(asylumCase, times(1)).clear(eq(STF_24W_CURRENT_REASON_AUTO_GENERATED));
     }
 
 }

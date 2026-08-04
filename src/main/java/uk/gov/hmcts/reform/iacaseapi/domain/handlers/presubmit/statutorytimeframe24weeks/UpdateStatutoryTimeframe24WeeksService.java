@@ -83,6 +83,8 @@ public class UpdateStatutoryTimeframe24WeeksService {
         // Always ensure that the banner text is up to date
         stf24WeeksBannerTextService.updateBannerText(asylumCase);
 
+        asylumCase.clear(STF_24W_CURRENT_REASON_AUTO_GENERATED);
+
         return asylumCase;
     }
 
