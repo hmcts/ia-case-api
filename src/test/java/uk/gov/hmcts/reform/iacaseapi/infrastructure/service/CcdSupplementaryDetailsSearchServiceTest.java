@@ -1,8 +1,21 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.service;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.SupplementaryInfo;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.IdamService;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CcdDataCaseAccessApi;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CcdElasticSearchQueryBuilder;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.CaseDetails;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.SearchResult;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -10,23 +23,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.index.query.TermsQueryBuilder;
-import org.elasticsearch.search.builder.SearchSourceBuilder;
-import org.elasticsearch.search.sort.SortOrder;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.SupplementaryInfo;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.IdamService;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CcdDataCaseAccessApi;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.CaseDetails;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.SearchResult;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
+@SuppressWarnings("unchecked")
 class CcdSupplementaryDetailsSearchServiceTest {
 
     @Mock
@@ -39,6 +45,8 @@ class CcdSupplementaryDetailsSearchServiceTest {
     private CaseDetails caseDetails;
     @Mock
     SearchResult searchResult;
+    @Captor
+    ArgumentCaptor<String> queryCaptor;
 
     private CcdSupplementaryDetailsSearchService ccdSupplementaryDetailsSearchService;
     private static final int MAX_RECORDS = 100;
@@ -50,36 +58,29 @@ class CcdSupplementaryDetailsSearchServiceTest {
     private final long caseId = 1234;
     private final List<String> ccdCaseNumberList = Arrays.asList("11111111111111", "22222222222222", "99999999999999");
 
-    SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
     private Map<String, Object> data = new HashMap<>();
     private ExecutorService executorService;
+    CcdElasticSearchQueryBuilder queryBuilder = new CcdElasticSearchQueryBuilder();
 
     @BeforeEach
     void setUp() {
         data = new HashMap<>();
         data.put("appellantFamilyName", "Johnson");
-
-        TermsQueryBuilder termQueryBuilder = QueryBuilders.termsQuery("reference", ccdCaseNumberList);
-        searchSourceBuilder.size(MAX_RECORDS);
-        searchSourceBuilder.from(0);
-        searchSourceBuilder.sort("created_date", SortOrder.DESC);
-        searchSourceBuilder.query(termQueryBuilder);
-
         executorService = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
 
         when(idamService.getServiceUserToken()).thenReturn("Bearer token");
         when(s2sAuthTokenGenerator.generate()).thenReturn(serviceToken);
 
-        when(coreCaseDataApi.searchCases(authorisation, serviceToken, caseType,
-                                         searchSourceBuilder.toString()
-        )).thenReturn(searchResult);
+        when(coreCaseDataApi.searchCases(eq(authorisation), eq(serviceToken), eq(caseType), anyString()))
+            .thenReturn(searchResult);
 
         ccdSupplementaryDetailsSearchService = new CcdSupplementaryDetailsSearchService(
             idamService,
             coreCaseDataApi,
             s2sAuthTokenGenerator,
             executorService,
-            MAX_RECORDS
+            MAX_RECORDS,
+            new CcdElasticSearchQueryBuilder()
         );
     }
 
@@ -97,7 +98,25 @@ class CcdSupplementaryDetailsSearchServiceTest {
         assertEquals("Johnson", supplementaryInfoList.getFirst().getSupplementaryDetails().getSurname());
 
         verify(idamService).getServiceUserToken();
-        verify(coreCaseDataApi).searchCases(authorisation, serviceToken, caseType, searchSourceBuilder.toString());
+        verify(coreCaseDataApi).searchCases(eq(authorisation), eq(serviceToken), eq(caseType), queryCaptor.capture());
+        String capturedQuery = queryCaptor.getValue();
+        JSONObject queryJson = new JSONObject(capturedQuery);
+        assertEquals(MAX_RECORDS, queryJson.get("size"));
+        assertEquals(0, queryJson.get("from"));
+        JSONArray sortList = queryJson.getJSONArray("sort");
+        Map<String, Object> sortMap = ((JSONObject) sortList.get(0)).toMap();
+        assertTrue(sortMap.containsKey("created_date"));
+        Map<String, Object> createdDateMap = (Map<String, Object>) sortMap.get("created_date");
+        assertTrue(createdDateMap.containsKey("order"));
+        assertEquals("desc", createdDateMap.get("order"));
+        Map<String, Object> queryMap = queryJson.getJSONObject("query").toMap();
+        assertTrue(queryMap.containsKey("terms"));
+        Map<String, Object> terms = (Map<String, Object>) queryMap.get("terms");
+        assertTrue(terms.containsKey("reference"));
+        List<String> capturedCcdCaseNumbers = (List<String>) terms.get("reference");
+        assertEquals(ccdCaseNumberList, capturedCcdCaseNumbers);
+        assertTrue(terms.containsKey("boost"));
+        assertEquals(1, terms.get("boost"));
     }
 
     @Test
@@ -108,6 +127,24 @@ class CcdSupplementaryDetailsSearchServiceTest {
 
         assertEquals(0, supplementaryInfoList.size());
         verify(idamService).getServiceUserToken();
-        verify(coreCaseDataApi).searchCases(authorisation, serviceToken, caseType, searchSourceBuilder.toString());
+        verify(coreCaseDataApi).searchCases(eq(authorisation), eq(serviceToken), eq(caseType), queryCaptor.capture());
+        String capturedQuery = queryCaptor.getValue();
+        JSONObject queryJson = new JSONObject(capturedQuery);
+        assertEquals(MAX_RECORDS, queryJson.get("size"));
+        assertEquals(0, queryJson.get("from"));
+        JSONArray sortList = queryJson.getJSONArray("sort");
+        Map<String, Object> sortMap = ((JSONObject) sortList.get(0)).toMap();
+        assertTrue(sortMap.containsKey("created_date"));
+        Map<String, Object> createdDateMap = (Map<String, Object>) sortMap.get("created_date");
+        assertTrue(createdDateMap.containsKey("order"));
+        assertEquals("desc", createdDateMap.get("order"));
+        Map<String, Object> queryMap = queryJson.getJSONObject("query").toMap();
+        assertTrue(queryMap.containsKey("terms"));
+        Map<String, Object> terms = (Map<String, Object>) queryMap.get("terms");
+        assertTrue(terms.containsKey("reference"));
+        List<String> capturedCcdCaseNumbers = (List<String>) terms.get("reference");
+        assertEquals(ccdCaseNumberList, capturedCcdCaseNumbers);
+        assertTrue(terms.containsKey("boost"));
+        assertEquals(1, terms.get("boost"));
     }
 }

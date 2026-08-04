@@ -1,18 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.service;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
-import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.index.query.TermsQueryBuilder;
-import org.elasticsearch.search.builder.SearchSourceBuilder;
-import org.elasticsearch.search.sort.SortOrder;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -22,9 +11,19 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.SupplementaryInfo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.IdamService;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.SupplementaryDetailsService;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CcdDataCaseAccessApi;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CcdElasticSearchQueryBuilder;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.SearchResult;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.idam.IdentityManagerResponseException;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -37,18 +36,21 @@ public class CcdSupplementaryDetailsSearchService implements SupplementaryDetail
     private final AuthTokenGenerator s2sAuthTokenGenerator;
     private final int maxRecords;
     private final ExecutorService executorService;
+    private final CcdElasticSearchQueryBuilder queryBuilder;
 
     public CcdSupplementaryDetailsSearchService(IdamService idamService,
                                                 CcdDataCaseAccessApi ccdDataCaseAccessApi,
                                                 AuthTokenGenerator s2sAuthTokenGenerator,
                                                 @Qualifier("fixedThreadPool") ExecutorService executorService,
-                                                @Value("${requestPagination.maxRecords}") int maxRecords
+                                                @Value("${requestPagination.maxRecords}") int maxRecords,
+                                                CcdElasticSearchQueryBuilder queryBuilder
     ) {
         this.idamService = idamService;
         this.ccdDataCaseAccessApi = ccdDataCaseAccessApi;
         this.s2sAuthTokenGenerator = s2sAuthTokenGenerator;
         this.executorService = executorService;
         this.maxRecords = maxRecords;
+        this.queryBuilder = queryBuilder;
     }
 
     @Override
@@ -82,14 +84,8 @@ public class CcdSupplementaryDetailsSearchService implements SupplementaryDetail
         for (List<String> splitCcdCaseList : chunkedCcdCaseList) {
             CompletableFuture<List<SupplementaryInfo>> completableFuture = CompletableFuture.supplyAsync(
                 () -> {
-                    SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
-                    TermsQueryBuilder termQueryBuilder = QueryBuilders.termsQuery("reference", splitCcdCaseList);
-                    searchSourceBuilder.size(maxRecords);
-                    searchSourceBuilder.from(0);
-                    searchSourceBuilder.sort("created_date", SortOrder.DESC);
-                    searchSourceBuilder.query(termQueryBuilder);
-
-                    return search(userToken, s2sToken, searchSourceBuilder.toString());
+                    JSONObject query = queryBuilder.buildCcdReferenceListQuery(splitCcdCaseList, maxRecords);
+                    return search(userToken, s2sToken, query.toString());
                 },
                 executorService
             );
