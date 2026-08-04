@@ -74,6 +74,7 @@ class EventTest {
             Arguments.of("endAppeal", Event.END_APPEAL.toString()),
             Arguments.of("requestCaseBuilding", Event.REQUEST_CASE_BUILDING.toString()),
             Arguments.of("forceRequestCaseBuilding", Event.FORCE_REQUEST_CASE_BUILDING.toString()),
+            Arguments.of("deleteDraftAppeal", Event.DELETE_DRAFT_APPEAL.toString()),
             Arguments.of("uploadAdditionalEvidenceHomeOffice", Event.UPLOAD_ADDITIONAL_EVIDENCE_HOME_OFFICE.toString()),
             Arguments.of("requestResponseReview", Event.REQUEST_RESPONSE_REVIEW.toString()),
             Arguments.of("requestResponseAmend", Event.REQUEST_RESPONSE_AMEND.toString()),

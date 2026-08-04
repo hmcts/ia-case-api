@@ -27,6 +27,7 @@ import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isDecisionWithHearing;
 
 @Component
 public class RequestRespondentEvidencePreparer implements PreSubmitCallbackHandler<AsylumCase> {
@@ -97,7 +98,7 @@ public class RequestRespondentEvidencePreparer implements PreSubmitCallbackHandl
                 if (completeCaseReviewDateEmpty) {
                     return callbackResponse.withError("You must run the Complete case review and list the case before running the 'Request respondent evidence' event");
                 }
-                if (asylumCase.read(LIST_CASE_HEARING_DATE, String.class).isEmpty()) {
+                if (isDecisionWithHearing(asylumCase) && asylumCase.read(LIST_CASE_HEARING_DATE, String.class).isEmpty()) {
                     return callbackResponse.withError("You must list the case before running the 'Request respondent evidence' event");
                 }
             } else if (completeCaseReviewDateEmpty) {
