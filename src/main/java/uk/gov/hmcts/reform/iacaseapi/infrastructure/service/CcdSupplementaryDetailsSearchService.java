@@ -1,13 +1,5 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.service;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.TermsQueryBuilder;
@@ -25,6 +17,15 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CcdDataCaseAccessApi
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.SearchResult;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.idam.IdentityManagerResponseException;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -82,6 +83,8 @@ public class CcdSupplementaryDetailsSearchService implements SupplementaryDetail
         for (List<String> splitCcdCaseList : chunkedCcdCaseList) {
             CompletableFuture<List<SupplementaryInfo>> completableFuture = CompletableFuture.supplyAsync(
                 () -> {
+                    // TODO replace this with a proper query builder class to build the query for CCD search extending
+                    //  the existing CcdElasticSearchQueryBuilder class. This will mean we can remove the dependency on elasticsearch libraries
                     SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
                     TermsQueryBuilder termQueryBuilder = QueryBuilders.termsQuery("reference", splitCcdCaseList);
                     searchSourceBuilder.size(maxRecords);
