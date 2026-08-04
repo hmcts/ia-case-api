@@ -4,5 +4,14 @@
         <notes>behind ES </notes>
         <cve>CVE-2026-56149</cve>
         <cve>CVE-2026-56148</cve>
+        <cve>CVE-2026-54399</cve>
+        <cve>CVE-2026-54428</cve>
+        <cve>CVE-2026-59084</cve>
+        <cve>CVE-2026-59083</cve>
+        <cve>CVE-2026-49844</cve>
+        <cve>CVE-2026-44891</cve>
+        <cve>CVE-2026-55831</cve>
+        <cve>CVE-2026-55833</cve>
+        <cve>CVE-2026-63263</cve>
     </suppress>
 </suppressions>
