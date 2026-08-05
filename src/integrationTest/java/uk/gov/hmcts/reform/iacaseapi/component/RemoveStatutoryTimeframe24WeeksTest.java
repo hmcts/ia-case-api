@@ -2,11 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.component;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.security.test.context.support.WithMockUser;
-import uk.gov.hmcts.reform.iacaseapi.component.testutils.SpringBootIntegrationTest;
-import uk.gov.hmcts.reform.iacaseapi.component.testutils.WithNotificationsApiStub;
-import uk.gov.hmcts.reform.iacaseapi.component.testutils.WithRoleAssignmentStub;
-import uk.gov.hmcts.reform.iacaseapi.component.testutils.WithServiceAuthStub;
-import uk.gov.hmcts.reform.iacaseapi.component.testutils.WithUserDetailsStub;
+import uk.gov.hmcts.reform.iacaseapi.component.testutils.*;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.PreSubmitCallbackResponseForTest;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseNote;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.StatutoryTimeframe24Weeks;
@@ -34,7 +30,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.REMOVE_STA
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.APPEAL_SUBMITTED;
 
 class RemoveStatutoryTimeframe24WeeksTest extends SpringBootIntegrationTest implements WithUserDetailsStub,
-        WithRoleAssignmentStub, WithServiceAuthStub, WithNotificationsApiStub {
+        WithRoleAssignmentStub, WithServiceAuthStub, WithNotificationsApiStub, WithDocumentApiStub {
 
     private static final String APPEAL_SUBMISSION_DATE_STR = "2025-12-10";
     private static final String BANNER_TEXT = "some text 24 Week STF (27 May 2026)";
@@ -46,6 +42,7 @@ class RemoveStatutoryTimeframe24WeeksTest extends SpringBootIntegrationTest impl
         addServiceAuthStub(server);
         addRoleAssignmentQueryStub(server);
         addNotificationsApiTransformerStub(server);
+        addDocumentApiTransformerStub(server);
         String reason = "some reason";
         PreSubmitCallbackResponseForTest response = iaCaseApiClient.aboutToSubmit(callback()
                 .event(REMOVE_STATUTORY_TIMEFRAME_24_WEEKS)
