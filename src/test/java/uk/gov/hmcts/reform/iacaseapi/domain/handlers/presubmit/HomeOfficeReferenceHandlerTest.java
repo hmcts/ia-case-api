@@ -194,7 +194,7 @@ class HomeOfficeReferenceHandlerTest {
         Mockito.when(referenceService.getHomeOfficeReferenceData(VALID_GWF, callback))
             .thenReturn(Collections.singletonList(idValue));
 
-        try (MockedStatic<HandlerUtils> mockedStatic = Mockito.mockStatic(HandlerUtils.class)) {
+        try (MockedStatic<HandlerUtils> mockedStatic = Mockito.mockStatic(HandlerUtils.class, Mockito.CALLS_REAL_METHODS)) {
 
             PreSubmitCallbackResponse<AsylumCase> response =
                 handler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
@@ -699,7 +699,7 @@ class HomeOfficeReferenceHandlerTest {
         Mockito.when(referenceService.getHomeOfficeReferenceData(VALID_GWF, callback))
             .thenReturn(Collections.singletonList(idValue));
 
-        try (MockedStatic<HandlerUtils> mockedStatic = Mockito.mockStatic(HandlerUtils.class)) {
+        try (MockedStatic<HandlerUtils> mockedStatic = Mockito.mockStatic(HandlerUtils.class, Mockito.CALLS_REAL_METHODS)) {
 
             PreSubmitCallbackResponse<AsylumCase> response =
                 handler.handle(PreSubmitCallbackStage.MID_EVENT, callback);

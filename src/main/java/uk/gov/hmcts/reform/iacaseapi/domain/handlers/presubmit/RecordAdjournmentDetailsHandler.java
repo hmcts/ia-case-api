@@ -69,10 +69,10 @@ public class RecordAdjournmentDetailsHandler implements PreSubmitCallbackHandler
         asylumCase.read(CURRENT_ADJOURNMENT_DETAIL, AdjournmentDetail.class).ifPresent(detail -> {
             Optional<List<IdValue<AdjournmentDetail>>> optionalPreviousAdjournmentDetails = asylumCase
                     .read(PREVIOUS_ADJOURNMENT_DETAILS);
-            List<IdValue<AdjournmentDetail>> previousAdjournmentDetails = optionalPreviousAdjournmentDetails
-                    .orElseGet(ArrayList::new);
-            previousAdjournmentDetails.add(new IdValue<>(String.valueOf(previousAdjournmentDetails.size()), detail));
-            asylumCase.write(PREVIOUS_ADJOURNMENT_DETAILS, previousAdjournmentDetails);
+            List<IdValue<AdjournmentDetail>> updatedDetails = new ArrayList<>(
+                    optionalPreviousAdjournmentDetails.orElse(List.of()));
+            updatedDetails.add(new IdValue<>(String.valueOf(updatedDetails.size()), detail));
+            asylumCase.write(PREVIOUS_ADJOURNMENT_DETAILS, updatedDetails);
         });
 
     }

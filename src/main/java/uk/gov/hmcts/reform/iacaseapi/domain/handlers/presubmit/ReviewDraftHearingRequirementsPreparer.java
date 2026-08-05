@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsHelper;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.HoursMinutes;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
@@ -62,6 +63,17 @@ public class ReviewDraftHearingRequirementsPreparer implements PreSubmitCallback
                 .getCaseDetails()
                 .getCaseData();
 
+        PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
+
+        boolean is24WeeksCase = asylumCase.read(STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED, YesOrNo.class)
+            .map(flag -> flag.equals(YesOrNo.YES))
+            .orElse(false);
+
+        State currentState = callback.getCaseDetails().getState();
+        if ((is24WeeksCase && currentState != State.RESPONDENT_REVIEW) || (!is24WeeksCase && currentState != State.LISTING)) {
+            return response.withError("This event cannot be run on this case at this time");
+        }
+
         final Optional<YesOrNo> reviewedHearingRequirements =
             asylumCase.read(AsylumCaseFieldDefinition.REVIEWED_HEARING_REQUIREMENTS, YesOrNo.class);
 
@@ -71,15 +83,11 @@ public class ReviewDraftHearingRequirementsPreparer implements PreSubmitCallback
 
         // If Judge tries to trigger this for any non-ADA case, an error will be thrown on UI
         if (isJudgeAndNonAdaAppeal(asylumCase)) {
-            final PreSubmitCallbackResponse<AsylumCase> asylumCasePreSubmitCallbackResponse = new PreSubmitCallbackResponse<>(asylumCase);
-            asylumCasePreSubmitCallbackResponse.addError("This option is not available. You can only review hearing requirements for accelerated detained appeals.");
-            return asylumCasePreSubmitCallbackResponse;
+            return response.withError("This option is not available. You can only review hearing requirements for accelerated detained appeals.");
         }
 
         if (reviewedHearingRequirements.isEmpty()) {
-            final PreSubmitCallbackResponse<AsylumCase> asylumCasePreSubmitCallbackResponse = new PreSubmitCallbackResponse<>(asylumCase);
-            asylumCasePreSubmitCallbackResponse.addError("The case is already listed, you can't request hearing requirements");
-            return asylumCasePreSubmitCallbackResponse;
+            return response.withError("The case is already listed, you can't request hearing requirements");
         }
 
         // prevent triggering if hearing requirements already reviewed or if case has transferred out of ADA after having
@@ -87,9 +95,7 @@ public class ReviewDraftHearingRequirementsPreparer implements PreSubmitCallback
 
         if (callback.getEvent() == Event.REVIEW_HEARING_REQUIREMENTS
             && (reviewedHearingRequirements.get().equals(YesOrNo.YES) || exAdaWithSubmittedHearingRequirements)) {
-            final PreSubmitCallbackResponse<AsylumCase> asylumCasePreSubmitCallbackResponse = new PreSubmitCallbackResponse<>(asylumCase);
-            asylumCasePreSubmitCallbackResponse.addError("You've made an invalid request. The hearing requirements have already been reviewed.");
-            return asylumCasePreSubmitCallbackResponse;
+            return response.withError("You've made an invalid request. The hearing requirements have already been reviewed.");
         }
 
         if (locationBasedFeatureToggler.isAutoHearingRequestEnabled(asylumCase) == YES) {
@@ -107,7 +113,7 @@ public class ReviewDraftHearingRequirementsPreparer implements PreSubmitCallback
 
         HandlerUtils.setDefaultAutoListHearingValue(asylumCase);
 
-        return new PreSubmitCallbackResponse<>(asylumCase);
+        return response;
     }
 
 

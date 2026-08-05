@@ -189,7 +189,7 @@ public class MakeAnApplicationTypesProvider {
                     }
                 }
 
-                addValues(values, WITHDRAW, LINK_OR_UNLINK, CHANGE_DECISION_TYPE);
+                addValues(values, WITHDRAW, LINK_OR_UNLINK, CHANGE_DECISION_TYPE, OTHER);
                 break;
 
             case ADJOURNED:

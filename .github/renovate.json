@@ -9,6 +9,7 @@
   "ignoreDeps": [
     "org.owasp.dependencycheck"
   ],
+  "ignorePaths": ["**/charts/**"],
   "packageRules": [
     {
       "matchPackagePatterns": [

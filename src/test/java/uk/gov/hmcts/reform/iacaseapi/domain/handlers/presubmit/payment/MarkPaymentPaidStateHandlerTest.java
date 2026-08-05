@@ -13,6 +13,8 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PAID_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PAYMENT_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PAYMENT_STATUS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus.PAYMENT_PENDING;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -61,23 +63,46 @@ class MarkPaymentPaidStateHandlerTest {
 
 
     @ParameterizedTest
-    @ValueSource(strings = {"refusalOfEu", "refusalOfHumanRights", "euSettlementScheme", "ageAssessment"})
-    void should_mark_appeal_as_paid_and_state_change_for_ea_hu_eu_ag_appeals(String appealType) {
+    @ValueSource(strings = {"refusalOfEu", "refusalOfHumanRights", "euSettlementScheme", "ageAssessment", "protection"})
+    void should_mark_appeal_as_paid_and_state_change_for_ea_hu_eu_ag_pa_state_respondent_review_appeals(String appealType) {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.MARK_APPEAL_PAID);
+        when(caseDetails.getState()).thenReturn(RESPONDENT_REVIEW);
         when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(AppealType.from(appealType));
-        when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class))
-            .thenReturn(Optional.of(PaymentStatus.PAYMENT_PENDING));
-        when(asylumCase.read(PAID_DATE, String.class))
-            .thenReturn(Optional.of(paymentDate));
+        when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)).thenReturn(Optional.of(PAYMENT_PENDING));
+        when(asylumCase.read(PAID_DATE, String.class)).thenReturn(Optional.of(paymentDate));
 
         PreSubmitCallbackResponse<AsylumCase> returnedCallbackResponse =
             markPaymentPaidStateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse);
 
         assertNotNull(returnedCallbackResponse);
-        assertThat(returnedCallbackResponse.getState()).isEqualTo(State.APPEAL_SUBMITTED);
+        assertThat(returnedCallbackResponse.getState()).isEqualTo(RESPONDENT_REVIEW);
+
+        verify(asylumCase, times(1))
+            .write(PAYMENT_STATUS, PaymentStatus.PAID);
+        verify(asylumCase, times(1))
+            .write(PAYMENT_DATE, LocalDate.parse(paymentDate).format(DateTimeFormatter.ofPattern("d MMM yyyy")));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"refusalOfEu", "refusalOfHumanRights", "euSettlementScheme", "ageAssessment", "protection"})
+    void should_mark_appeal_as_paid_and_state_change_for_ea_hu_eu_ag_pa_state_pending_payment_appeals(String appealType) {
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.MARK_APPEAL_PAID);
+        when(caseDetails.getState()).thenReturn(PENDING_PAYMENT);
+        when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(AppealType.from(appealType));
+        when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)).thenReturn(Optional.of(PAYMENT_PENDING));
+        when(asylumCase.read(PAID_DATE, String.class)).thenReturn(Optional.of(paymentDate));
+
+        PreSubmitCallbackResponse<AsylumCase> returnedCallbackResponse =
+            markPaymentPaidStateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse);
+
+        assertNotNull(returnedCallbackResponse);
+        assertThat(returnedCallbackResponse.getState()).isEqualTo(APPEAL_SUBMITTED);
 
         verify(asylumCase, times(1))
             .write(PAYMENT_STATUS, PaymentStatus.PAID);
@@ -88,13 +113,13 @@ class MarkPaymentPaidStateHandlerTest {
     @Test
     void should_mark_appeal_as_paid_and_state_change_for_pa_appeals_only_in_pending_payment() {
 
-        when(caseDetails.getState()).thenReturn(State.PENDING_PAYMENT);
+        when(caseDetails.getState()).thenReturn(PENDING_PAYMENT);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.MARK_APPEAL_PAID);
         when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.PA));
         when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class))
-            .thenReturn(Optional.of(PaymentStatus.PAYMENT_PENDING));
+            .thenReturn(Optional.of(PAYMENT_PENDING));
         when(asylumCase.read(PAID_DATE, String.class))
             .thenReturn(Optional.of(paymentDate));
 
@@ -102,7 +127,7 @@ class MarkPaymentPaidStateHandlerTest {
             markPaymentPaidStateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse);
 
         assertNotNull(returnedCallbackResponse);
-        assertThat(returnedCallbackResponse.getState()).isEqualTo(State.APPEAL_SUBMITTED);
+        assertThat(returnedCallbackResponse.getState()).isEqualTo(APPEAL_SUBMITTED);
 
         verify(asylumCase, times(1))
             .write(PAYMENT_STATUS, PaymentStatus.PAID);
@@ -119,7 +144,7 @@ class MarkPaymentPaidStateHandlerTest {
         when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.PA));
         when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class))
-            .thenReturn(Optional.of(PaymentStatus.PAYMENT_PENDING));
+            .thenReturn(Optional.of(PAYMENT_PENDING));
         when(asylumCase.read(PAID_DATE, String.class))
             .thenReturn(Optional.of(paymentDate));
 
@@ -144,7 +169,7 @@ class MarkPaymentPaidStateHandlerTest {
         when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.PA));
         when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class))
-            .thenReturn(Optional.of(PaymentStatus.PAYMENT_PENDING));
+            .thenReturn(Optional.of(PAYMENT_PENDING));
         when(asylumCase.read(PAID_DATE, String.class))
             .thenReturn(Optional.of(paymentDate));
 

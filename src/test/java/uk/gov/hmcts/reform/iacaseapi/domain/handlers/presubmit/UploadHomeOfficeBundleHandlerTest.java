@@ -1,25 +1,5 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
-import static java.util.Collections.singletonList;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_BUNDLE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.RESPONDENT_DOCUMENTS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPLOAD_HOME_OFFICE_BUNDLE_ACTION_AVAILABLE;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -42,6 +22,16 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentReceiver;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+
+import static java.util.Collections.singletonList;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -130,6 +120,7 @@ class UploadHomeOfficeBundleHandlerTest {
 
         verify(asylumCase, times(1)).write(RESPONDENT_DOCUMENTS, allRespondentDocuments);
         verify(asylumCase, times(1)).write(UPLOAD_HOME_OFFICE_BUNDLE_ACTION_AVAILABLE, YesOrNo.NO);
+        verify(asylumCase, times(1)).write(SHOULD_HIDE_REQUEST_RESPONDENT_EVIDENCE, YesOrNo.YES);
     }
 
     @Test
@@ -173,6 +164,7 @@ class UploadHomeOfficeBundleHandlerTest {
 
         verify(asylumCase, times(1)).write(RESPONDENT_DOCUMENTS, allRespondentDocuments);
         verify(asylumCase, times(1)).write(UPLOAD_HOME_OFFICE_BUNDLE_ACTION_AVAILABLE, YesOrNo.NO);
+        verify(asylumCase, times(1)).write(SHOULD_HIDE_REQUEST_RESPONDENT_EVIDENCE, YesOrNo.YES);
     }
 
     @Test
@@ -188,6 +180,7 @@ class UploadHomeOfficeBundleHandlerTest {
             .hasMessage("respondentEvidence is not present")
             .isExactlyInstanceOf(IllegalStateException.class);
         verify(asylumCase, never()).write(UPLOAD_HOME_OFFICE_BUNDLE_ACTION_AVAILABLE, YesOrNo.NO);
+        verify(asylumCase, never()).write(SHOULD_HIDE_REQUEST_RESPONDENT_EVIDENCE, YesOrNo.YES);
     }
 
     @Test
@@ -202,6 +195,7 @@ class UploadHomeOfficeBundleHandlerTest {
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
         verify(asylumCase, never()).write(UPLOAD_HOME_OFFICE_BUNDLE_ACTION_AVAILABLE, YesOrNo.NO);
+        verify(asylumCase, never()).write(SHOULD_HIDE_REQUEST_RESPONDENT_EVIDENCE, YesOrNo.YES);
     }
 
     @Test

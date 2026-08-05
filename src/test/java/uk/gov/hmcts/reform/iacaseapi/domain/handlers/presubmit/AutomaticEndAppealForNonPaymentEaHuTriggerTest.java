@@ -76,6 +76,8 @@ class AutomaticEndAppealForNonPaymentEaHuTriggerTest {
     private final String jurisdiction = "IA";
     private final String caseType = "Asylum";
 
+    private static final int SCHEDULE_MINUTES = 14;
+
     private AutomaticEndAppealForNonPaymentEaHuTrigger automaticEndAppealForNonPaymentEaHuTrigger;
 
     @BeforeEach
@@ -85,7 +87,7 @@ class AutomaticEndAppealForNonPaymentEaHuTriggerTest {
             new AutomaticEndAppealForNonPaymentEaHuTrigger(
                 dateProvider,
                 scheduler,
-                    10
+                    SCHEDULE_MINUTES
             );
     }
 
@@ -324,6 +326,44 @@ class AutomaticEndAppealForNonPaymentEaHuTriggerTest {
         assertEquals("", result.getId());
     }
     
+    @ParameterizedTest
+    @EnumSource(value = AppealType.class, names = {"EA", "HU", "EU", "AG"})
+    void should_schedule_end_appeal_at_14_days_for_non_detained(AppealType appealType) {
+        dataSetUp();
+        when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
+        when(scheduler.schedule(any(TimedEvent.class))).thenReturn(
+            new TimedEvent(id, Event.END_APPEAL_AUTOMATICALLY, ZonedDateTime.now(), jurisdiction, caseType, caseId));
+
+        automaticEndAppealForNonPaymentEaHuTrigger.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        verify(scheduler).schedule(timedEventArgumentCaptor.capture());
+        TimedEvent result = timedEventArgumentCaptor.getValue();
+
+        ZonedDateTime expectedScheduledDate =
+            ZonedDateTime.of(now, ZoneId.systemDefault()).plusMinutes(SCHEDULE_MINUTES);
+        assertEquals(expectedScheduledDate, result.getScheduledDateTime());
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = AppealType.class, names = {"EA", "HU", "EU", "AG"})
+    void should_schedule_end_appeal_at_28_days_for_detained(AppealType appealType) {
+        dataSetUp();
+        when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
+        when(scheduler.schedule(any(TimedEvent.class))).thenReturn(
+            new TimedEvent(id, Event.END_APPEAL_AUTOMATICALLY, ZonedDateTime.now(), jurisdiction, caseType, caseId));
+
+        automaticEndAppealForNonPaymentEaHuTrigger.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        verify(scheduler).schedule(timedEventArgumentCaptor.capture());
+        TimedEvent result = timedEventArgumentCaptor.getValue();
+
+        ZonedDateTime expectedScheduledDate =
+            ZonedDateTime.of(now, ZoneId.systemDefault()).plusMinutes(SCHEDULE_MINUTES * 2);
+        assertEquals(expectedScheduledDate, result.getScheduledDateTime());
+    }
+
     @Test
     void handling_should_throw_if_can_not_handle() {
         when(callback.getEvent()).thenReturn(Event.RECORD_REMISSION_DECISION); // unqualified event

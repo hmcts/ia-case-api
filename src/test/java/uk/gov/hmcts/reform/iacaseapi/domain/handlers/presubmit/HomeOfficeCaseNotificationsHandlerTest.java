@@ -15,10 +15,15 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.EU;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.HU;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.PA;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.RP;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_REFERENCE_NUMBER;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_IN_UK;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DIRECTION_EDIT_PARTIES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.GWF_REFERENCE_NUMBER;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_NOTIFICATIONS_ELIGIBLE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_REFERENCE_NUMBER;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_SEARCH_STATUS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_NOTIFICATION_TURNED_OFF;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_REMOTE_HEARING;
@@ -162,6 +167,8 @@ class HomeOfficeCaseNotificationsHandlerTest {
         when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.empty());
         when(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class)).thenReturn(Optional.of("SUCCESS"));
         when(asylumCase.read(HOME_OFFICE_NOTIFICATIONS_ELIGIBLE, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, String.class))
+            .thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> homeOfficeCaseNotificationsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .isExactlyInstanceOf(IllegalStateException.class)
@@ -187,7 +194,8 @@ class HomeOfficeCaseNotificationsHandlerTest {
         when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.empty());
         when(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class)).thenReturn(Optional.of("SUCCESS"));
         when(asylumCase.read(HOME_OFFICE_NOTIFICATIONS_ELIGIBLE, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
-
+        when(asylumCase.read(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, String.class))
+            .thenReturn(Optional.empty());
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             homeOfficeCaseNotificationsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -214,6 +222,8 @@ class HomeOfficeCaseNotificationsHandlerTest {
         when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.empty());
         when(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class)).thenReturn(Optional.of("FAIL"));
         when(asylumCase.read(HOME_OFFICE_NOTIFICATIONS_ELIGIBLE, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, String.class))
+            .thenReturn(Optional.empty());
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             homeOfficeCaseNotificationsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -236,6 +246,8 @@ class HomeOfficeCaseNotificationsHandlerTest {
         when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.empty());
         when(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class)).thenReturn(Optional.of("SUCCESS"));
         when(asylumCase.read(HOME_OFFICE_NOTIFICATIONS_ELIGIBLE, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(asylumCase.read(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, String.class))
+            .thenReturn(Optional.empty());
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             homeOfficeCaseNotificationsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -333,6 +345,8 @@ class HomeOfficeCaseNotificationsHandlerTest {
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
         when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class))
             .thenReturn(Optional.of(YesOrNo.NO));
+        when(asylumCase.read(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, String.class))
+            .thenReturn(Optional.empty());
 
         if (hoUanfeatureFlag) {
             when(homeOfficeApi.aboutToSubmit(callback)).thenReturn(asylumCase);
@@ -395,6 +409,8 @@ class HomeOfficeCaseNotificationsHandlerTest {
         when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class)).thenReturn(Optional.of("SUCCESS"));
         when(asylumCase.read(HOME_OFFICE_NOTIFICATIONS_ELIGIBLE, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, String.class))
+            .thenReturn(Optional.empty());
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             homeOfficeCaseNotificationsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -667,4 +683,128 @@ class HomeOfficeCaseNotificationsHandlerTest {
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
     }
+
+    @Test
+    void should_call_home_office_api_when_new_home_office_endpoint_has_been_used() {
+
+        when(callback.getEvent()).thenReturn(LIST_CASE);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class))
+            .thenReturn(Optional.of(PA));
+
+        when(asylumCase.read(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, String.class))
+            .thenReturn(Optional.of("serialised-data"));
+
+        when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class))
+            .thenReturn(Optional.of("UAN123456"));
+
+        when(asylumCase.read(APPEAL_REFERENCE_NUMBER, String.class))
+            .thenReturn(Optional.of("PA/12345/2024"));
+
+        when(asylumCase.read(HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS, String.class))
+            .thenReturn(Optional.of("200"));
+
+        when(caseDetails.getId()).thenReturn(123L);
+
+        when(homeOfficeApi.aboutToSubmit(callback)).thenReturn(asylumCase);
+
+        PreSubmitCallbackResponse<AsylumCase> response =
+            homeOfficeCaseNotificationsHandler.handle(ABOUT_TO_SUBMIT, callback);
+
+        assertEquals(asylumCase, response.getData());
+
+        verify(homeOfficeApi).aboutToSubmit(callback);
+    }
+
+    @Test
+    void should_throw_when_new_endpoint_used_and_no_uan_or_gwf_present() {
+
+        when(callback.getEvent()).thenReturn(LIST_CASE);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class))
+            .thenReturn(Optional.of(PA));
+
+        when(asylumCase.read(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, String.class))
+            .thenReturn(Optional.of("serialised-data"));
+
+        when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class))
+            .thenReturn(Optional.empty());
+
+        // Add this if your project uses GWF_REFERENCE_NUMBER
+        when(asylumCase.read(GWF_REFERENCE_NUMBER, String.class))
+            .thenReturn(Optional.empty());
+
+        assertThatThrownBy(() ->
+            homeOfficeCaseNotificationsHandler.handle(ABOUT_TO_SUBMIT, callback))
+            .isExactlyInstanceOf(IllegalStateException.class)
+            .hasMessage(
+                "homeOfficeReferenceNumber and gwfReferenceNumber are both missing - one or other is needed"
+            );
+    }
+
+    @Test
+    void should_throw_when_new_endpoint_used_and_appeal_reference_number_missing() {
+
+        when(callback.getEvent()).thenReturn(LIST_CASE);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class))
+            .thenReturn(Optional.of(PA));
+
+        when(asylumCase.read(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, String.class))
+            .thenReturn(Optional.of("serialised-data"));
+
+        when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class))
+            .thenReturn(Optional.of("UAN123456"));
+
+        when(asylumCase.read(APPEAL_REFERENCE_NUMBER, String.class))
+            .thenReturn(Optional.empty());
+
+        assertThatThrownBy(() ->
+            homeOfficeCaseNotificationsHandler.handle(ABOUT_TO_SUBMIT, callback))
+            .isExactlyInstanceOf(IllegalStateException.class)
+            .hasMessage("Case ID for the appeal is not present");
+    }
+
+    @Test
+    void should_call_home_office_api_when_new_endpoint_used_even_if_old_validation_would_fail() {
+
+        when(callback.getEvent()).thenReturn(LIST_CASE);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class))
+            .thenReturn(Optional.of(PA));
+
+        when(asylumCase.read(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, String.class))
+            .thenReturn(Optional.of("serialised-data"));
+
+        when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class))
+            .thenReturn(Optional.of("UAN123456"));
+
+        when(asylumCase.read(APPEAL_REFERENCE_NUMBER, String.class))
+            .thenReturn(Optional.of("PA/12345/2024"));
+
+        // Values that would have prevented notification in the legacy path
+        when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class))
+            .thenReturn(Optional.of(YesOrNo.NO));
+
+        when(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class))
+            .thenReturn(Optional.of("FAIL"));
+
+        when(asylumCase.read(HOME_OFFICE_NOTIFICATIONS_ELIGIBLE, YesOrNo.class))
+            .thenReturn(Optional.of(YesOrNo.NO));
+
+        when(homeOfficeApi.aboutToSubmit(callback)).thenReturn(asylumCase);
+
+        homeOfficeCaseNotificationsHandler.handle(ABOUT_TO_SUBMIT, callback);
+
+        verify(homeOfficeApi).aboutToSubmit(callback);
+    }
+
 }
