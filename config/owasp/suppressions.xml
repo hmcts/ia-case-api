@@ -4,5 +4,6 @@
         <notes>behind ES </notes>
         <cve>CVE-2026-56149</cve>
         <cve>CVE-2026-56148</cve>
+        <cve>CVE-2026-63263</cve>
     </suppress>
 </suppressions>
