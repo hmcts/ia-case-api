@@ -16,7 +16,7 @@ To run the project you will need to have the following installed:
 
 For information about the software versions used to build this API and a complete list of its dependencies, see build.gradle
 
-### Building the application
+### Building the application.
 
 To compile (at the command-line):
 
