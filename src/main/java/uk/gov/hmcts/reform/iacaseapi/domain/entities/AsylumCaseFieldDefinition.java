@@ -2936,6 +2936,9 @@ public enum AsylumCaseFieldDefinition {
     IS_REMOVAL_OF_24W_APPLICATION_REFUSED(
         "isRemovalOf24wApplicationRefused", new TypeReference<YesOrNo>(){}),
 
+    REMOVAL_OF_24W_DECISION_JUDGE(
+        "removalOf24wDecisionJudge", new TypeReference<YesOrNo>(){}),
+
     SAVE_NOTIFICATIONS_TO_DATA_DATE(
         "saveNotificationsToDataDate", new TypeReference<String>(){}),
 

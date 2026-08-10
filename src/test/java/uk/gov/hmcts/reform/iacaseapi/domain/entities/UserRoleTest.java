@@ -1,12 +1,13 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.EnumSource;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class UserRoleTest {
 
@@ -85,5 +86,26 @@ class UserRoleTest {
     @Test
     void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes_ho_roles() {
         assertEquals(4, UserRole.getHomeOfficeRoles().size());
+    }
+
+    @Test
+    void get_judge_roles_correct_values() {
+        assertThat(UserRole.getJudgeRoles())
+            .contains("caseworker-ia-iacjudge")
+            .contains("caseworker-ia-judiciary")
+            .contains("judge")
+            .contains("senior-judge")
+            .contains("leadership-judge")
+            .contains("fee-paid-judge")
+            .contains("lead-judge")
+            .contains("hearing-judge")
+            .contains("ftpa-judge")
+            .contains("hearing-panel-judge")
+            .contains("challenged-access-judiciary");
+    }
+
+    @Test
+    void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes_judge_roles() {
+        assertEquals(11, UserRole.getJudgeRoles().size());
     }
 }
