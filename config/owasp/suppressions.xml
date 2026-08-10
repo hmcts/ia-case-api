@@ -11,5 +11,6 @@
         <cve>CVE-2026-63136</cve>
         <cve>CVE-2026-63140</cve>
         <cve>CVE-2026-63263</cve>
+        <cve>CVE-2026-66299</cve>
     </suppress>
 </suppressions>
