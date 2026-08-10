@@ -2930,6 +2930,12 @@ public enum AsylumCaseFieldDefinition {
     STF_24W_REMOVE_DATE(
             "stf24wRemoveDate", new TypeReference<String>(){}),
 
+    REMOVAL_OF_24W_DECISION_REASON(
+            "removalOf24wDecisionReason", new TypeReference<String>(){}),
+
+    IS_REMOVAL_OF_24W_APPLICATION_REFUSED(
+        "isRemovalOf24wApplicationRefused", new TypeReference<YesOrNo>(){}),
+
     SAVE_NOTIFICATIONS_TO_DATA_DATE(
         "saveNotificationsToDataDate", new TypeReference<String>(){}),
 
