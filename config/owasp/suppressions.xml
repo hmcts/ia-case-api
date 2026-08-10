@@ -6,5 +6,10 @@
         <cve>CVE-2026-56148</cve>
         <cve>CVE-2026-54399</cve>
         <cve>CVE-2026-54428</cve>
+        <cve>CVE-2026-56144</cve>
+        <cve>CVE-2026-56145</cve>
+        <cve>CVE-2026-63136</cve>
+        <cve>CVE-2026-63140</cve>
+        <cve>CVE-2026-63263</cve>
     </suppress>
 </suppressions>
