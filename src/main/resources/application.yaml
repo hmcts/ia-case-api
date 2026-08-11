@@ -382,6 +382,7 @@ security:
       - "turnOnNotificationsWATasks"
       - "addStatutoryTimeframe24Weeks"
       - "removeStatutoryTimeframe24Weeks"
+      - "forceCaseToPrepareForHearing"
       - "revokeCitizenAccess"
       - "sendInviteToNonLegalRep"
       - "sendPipToNonLegalRep"
@@ -475,6 +476,9 @@ security:
       - "generateListCmrTask"
       - "markAppealAsDetained"
       - "removeDetainedStatus"
+      - "addStatutoryTimeframe24Weeks"
+      - "removeStatutoryTimeframe24Weeks"
+      - "forceCaseToPrepareForHearing"
       - "revokeCitizenAccess"
       - "sendInviteToNonLegalRep"
       - "sendPipToNonLegalRep"
@@ -569,6 +573,8 @@ security:
       - "markAppealAsDetained"
       - "removeDetainedStatus"
       - "turnOnNotificationsWATasks"
+      - "forceCaseToPrepareForHearing"
+      - "addStatutoryTimeframe24Weeks"
       - "removeStatutoryTimeframe24Weeks"
       - "revokeCitizenAccess"
       - "sendInviteToNonLegalRep"
@@ -644,6 +650,7 @@ security:
       - "forceFtpaDecidedState"
       - "turnOnNotificationsWATasks"
       - "addStatutoryTimeframe24Weeks"
+      - "removeStatutoryTimeframe24Weeks"
       - "revokeCitizenAccess"
       - "sendInviteToNonLegalRep"
       - "sendPipToNonLegalRep"
@@ -716,6 +723,7 @@ security:
       - "turnOnNotificationsWATasks"
       - "editDocuments"
       - "addStatutoryTimeframe24Weeks"
+      - "removeStatutoryTimeframe24Weeks"
       - "revokeCitizenAccess"
       - "sendInviteToNonLegalRep"
       - "sendPipToNonLegalRep"
@@ -792,6 +800,7 @@ security:
       - "forceDecidedState"
       - "forceFtpaDecidedState"
       - "addStatutoryTimeframe24Weeks"
+      - "removeStatutoryTimeframe24Weeks"
       - "revokeCitizenAccess"
       - "sendInviteToNonLegalRep"
       - "sendPipToNonLegalRep"
@@ -865,6 +874,7 @@ security:
       - "forceDecidedState"
       - "forceFtpaDecidedState"
       - "addStatutoryTimeframe24Weeks"
+      - "removeStatutoryTimeframe24Weeks"
       - "revokeCitizenAccess"
       - "sendInviteToNonLegalRep"
       - "sendPipToNonLegalRep"
@@ -938,6 +948,7 @@ security:
       - "forceDecidedState"
       - "forceFtpaDecidedState"
       - "addStatutoryTimeframe24Weeks"
+      - "removeStatutoryTimeframe24Weeks"
       - "revokeCitizenAccess"
       - "sendInviteToNonLegalRep"
       - "sendPipToNonLegalRep"
@@ -1012,6 +1023,7 @@ security:
       - "forceDecidedState"
       - "forceFtpaDecidedState"
       - "addStatutoryTimeframe24Weeks"
+      - "removeStatutoryTimeframe24Weeks"
       - "revokeCitizenAccess"
       - "sendInviteToNonLegalRep"
       - "sendPipToNonLegalRep"
@@ -1142,6 +1154,8 @@ security:
       - "createFlag"
       - "decideCostsApplication"
       - "considerMakingCostsOrder"
+      - "addStatutoryTimeframe24Weeks"
+      - "removeStatutoryTimeframe24Weeks"
       - "updateTribunalDecision"
     senior-judge:
       - "generateDecisionAndReasons"
@@ -1173,6 +1187,8 @@ security:
       - "createFlag"
       - "decideCostsApplication"
       - "considerMakingCostsOrder"
+      - "addStatutoryTimeframe24Weeks"
+      - "removeStatutoryTimeframe24Weeks"
       - "updateTribunalDecision"
     leadership-judge:
       - "generateDecisionAndReasons"
@@ -1204,6 +1220,8 @@ security:
       - "createFlag"
       - "decideCostsApplication"
       - "considerMakingCostsOrder"
+      - "addStatutoryTimeframe24Weeks"
+      - "removeStatutoryTimeframe24Weeks"
       - "updateTribunalDecision"
     fee-paid-judge:
       - "generateDecisionAndReasons"
@@ -1235,6 +1253,8 @@ security:
       - "createFlag"
       - "decideCostsApplication"
       - "considerMakingCostsOrder"
+      - "addStatutoryTimeframe24Weeks"
+      - "removeStatutoryTimeframe24Weeks"
       - "updateTribunalDecision"
     lead-judge:
       - "generateDecisionAndReasons"
@@ -1266,6 +1286,8 @@ security:
       - "createFlag"
       - "decideCostsApplication"
       - "considerMakingCostsOrder"
+      - "addStatutoryTimeframe24Weeks"
+      - "removeStatutoryTimeframe24Weeks"
       - "updateTribunalDecision"
     hearing-judge:
       - "generateDecisionAndReasons"
@@ -1297,6 +1319,8 @@ security:
       - "createFlag"
       - "decideCostsApplication"
       - "considerMakingCostsOrder"
+      - "addStatutoryTimeframe24Weeks"
+      - "removeStatutoryTimeframe24Weeks"
       - "updateTribunalDecision"
     ftpa-judge:
       - "generateDecisionAndReasons"
@@ -1328,6 +1352,8 @@ security:
       - "createFlag"
       - "decideCostsApplication"
       - "considerMakingCostsOrder"
+      - "addStatutoryTimeframe24Weeks"
+      - "removeStatutoryTimeframe24Weeks"
       - "updateTribunalDecision"
     hearing-panel-judge:
       - "generateDecisionAndReasons"
@@ -1359,6 +1385,8 @@ security:
       - "createFlag"
       - "decideCostsApplication"
       - "considerMakingCostsOrder"
+      - "addStatutoryTimeframe24Weeks"
+      - "removeStatutoryTimeframe24Weeks"
       - "updateTribunalDecision"
     challenged-access-judiciary:
       - "generateDecisionAndReasons"
@@ -1390,6 +1418,8 @@ security:
       - "createFlag"
       - "decideCostsApplication"
       - "considerMakingCostsOrder"
+      - "addStatutoryTimeframe24Weeks"
+      - "removeStatutoryTimeframe24Weeks"
       - "updateTribunalDecision"
     caseworker-ia-system:
       - "requestHearingRequirementsFeature"
@@ -1537,4 +1567,4 @@ app:
   home-office-validation:
     enabled: ${HOME_OFFICE_VALIDATION_ENABLED:true}
   statutory-timeframe:
-    live-date: ${STATUTORY_TIMEFRAME_LIVE_DATE:2026-09-01}
+    live-date: ${STATUTORY_TIMEFRAME_LIVE_DATE:2026-08-12}

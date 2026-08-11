@@ -12,7 +12,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.Appender;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.service.notify.Notification;
 import uk.gov.service.notify.NotificationClient;
@@ -22,10 +21,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -39,18 +35,16 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 public class SaveNotificationsToDataHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final NotificationClient notificationClient;
-    private final Appender<StoredNotification> notificationAppender;
     private final boolean saveNotificationToDataEnabled;
     private final FeatureToggler featureToggler;
+    private final List<String> validReferences = List.of("_SOME_TEST_REFERENCE");
 
     public SaveNotificationsToDataHandler(
         NotificationClient notificationClient,
-        Appender<StoredNotification> notificationAppender,
         @Value("${saveNotificationsData.enabled}") boolean saveNotificationToDataEnabled,
         FeatureToggler featureToggler
     ) {
         this.notificationClient = notificationClient;
-        this.notificationAppender = notificationAppender;
         this.featureToggler = featureToggler;
         this.saveNotificationToDataEnabled = saveNotificationToDataEnabled;
     }
@@ -87,25 +81,54 @@ public class SaveNotificationsToDataHandler implements PreSubmitCallbackHandler<
         Optional<List<IdValue<String>>> notificationsSent =
             asylumCase.read(NOTIFICATIONS_SENT);
 
-        List<IdValue<StoredNotification>> allNotifications = maybeExistingNotifications.orElse(emptyList());
-        List<String> notificationIds = getUnstoredNotificationIds(allNotifications, notificationsSent.orElse(emptyList()));
+        ArrayList<IdValue<StoredNotification>> allNotifications =
+            new ArrayList<>(maybeExistingNotifications.orElse(emptyList()));
+        List<String> notificationIds = getUnstoredNotificationIds(allNotifications,
+            notificationsSent.orElse(emptyList()));
         if (!notificationIds.isEmpty()) {
-            for (String notificationId : notificationIds) {
-                try {
-                    Notification notification = notificationClient.getNotificationById(notificationId);
-                    StoredNotification storedNotification =
-                        getStoredNotification(notificationId, notification);
-                    allNotifications = notificationAppender.append(storedNotification, allNotifications);
-                } catch (NotificationClientException exception) {
-                    log.warn("Notification client error on case "
-                        + callback.getCaseDetails().getId() + ": ", exception);
-                }
-            }
-            allNotifications = sortNotificationsByDate(allNotifications);
-            asylumCase.write(NOTIFICATIONS, allNotifications);
+            notificationIds.forEach(notificationId ->
+                appendNotificationData(allNotifications, notificationId, callback));
+            asylumCase.write(NOTIFICATIONS, sortAndReindexNotificationsByDate(allNotifications));
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
+    }
+
+    private void appendNotificationData(ArrayList<IdValue<StoredNotification>> allNotifications,
+                                        String notificationId,
+                                        Callback<AsylumCase> callback) {
+        try {
+            Notification notification = notificationClient.getNotificationById(notificationId);
+            StoredNotification storedNotification =
+                getStoredNotification(notificationId, notification, callback);
+            allNotifications.addFirst(new IdValue<>("", storedNotification));
+        } catch (NotificationClientException exception) {
+            log.warn("Notification client error on case {}: ",
+                callback.getCaseDetails().getId(), exception);
+        }
+    }
+
+
+    public boolean isReferenceValidForLetterPdf(String notificationReference) {
+        return validReferences.stream().anyMatch(notificationReference::contains);
+    }
+
+    public String getLetterEncodedPdfFile(String method,
+                                          String notificationId,
+                                          String notificationReference,
+                                          Callback<AsylumCase> callback) {
+        if (method.equalsIgnoreCase("letter") && isReferenceValidForLetterPdf(notificationReference)) {
+            try {
+                byte[] pdfFile = notificationClient.getPdfForLetter(notificationId);
+                if (pdfFile != null && pdfFile.length > 0) {
+                    return Base64.getEncoder().encodeToString(pdfFile);
+                }
+            } catch (NotificationClientException exception) {
+                log.warn("Notification client getPdfForLetter failure on case {}: ",
+                    callback.getCaseDetails().getId(), exception);
+            }
+        }
+        return null;
     }
 
     private static void appendNonEmptyToString(String someString, StringBuilder stringBuilder, boolean withComma) {
@@ -131,12 +154,14 @@ public class SaveNotificationsToDataHandler implements PreSubmitCallbackHandler<
         return addressBuilder.toString();
     }
 
-    private static StoredNotification getStoredNotification(String notificationId, Notification notification) {
+    private StoredNotification getStoredNotification(String notificationId, Notification notification, Callback<AsylumCase> callback) {
         String reference = notification.getReference().orElse(notificationId);
         String notificationBody = "<div>" + notification.getBody()
             .replace("\r\n", "<br>")
             .replace("’", "'")
             .replace("‘", "'")
+            .replace("“", "\"")
+            .replace("”", "\"")
             .replace(" ", " ")
             .replace("&nbsp;", " ")
             + "</div>";
@@ -160,6 +185,7 @@ public class SaveNotificationsToDataHandler implements PreSubmitCallbackHandler<
             .notificationDateSent(sentAt)
             .notificationSentTo(sentTo)
             .notificationBody(notificationBody)
+            .notificationDocumentEncoded(getLetterEncodedPdfFile(method, notificationId, reference, callback))
             .notificationMethod(StringUtils.capitalize(method))
             .notificationStatus(status)
             .notificationReference(reference)
@@ -167,14 +193,16 @@ public class SaveNotificationsToDataHandler implements PreSubmitCallbackHandler<
             .build();
     }
 
+    private boolean isNotificationAlreadyStored(List<IdValue<StoredNotification>> storedNotifications, String notificationId) {
+        return storedNotifications.stream()
+            .anyMatch(idValue -> idValue.getValue().getNotificationId().equals(notificationId));
+    }
+
     private List<String> getUnstoredNotificationIds(List<IdValue<StoredNotification>> storedNotifications,
                                                     List<IdValue<String>> sentNotificationIds) {
-        List<String> storedNotificationIds = storedNotifications.stream()
-            .map(idValue -> idValue.getValue().getNotificationId())
-            .toList();
         return sentNotificationIds.stream()
-            .filter(idValue -> filterNotificationsSentInTheLastSevenDays(idValue)
-                && !storedNotificationIds.contains(idValue.getValue()))
+            .filter(this::filterNotificationsSentInTheLastSevenDays)
+            .filter(idValue -> !isNotificationAlreadyStored(storedNotifications, idValue.getValue()))
             .map(IdValue::getValue)
             .toList();
     }
@@ -198,13 +226,15 @@ public class SaveNotificationsToDataHandler implements PreSubmitCallbackHandler<
         return false;
     }
 
-    private List<IdValue<StoredNotification>> sortNotificationsByDate(List<IdValue<StoredNotification>> allNotifications) {
-        List<IdValue<StoredNotification>> mutableNotifications = new ArrayList<>(allNotifications);
-        mutableNotifications.sort(Comparator.comparing(notification ->
+    private List<IdValue<StoredNotification>> sortAndReindexNotificationsByDate(List<IdValue<StoredNotification>> allNotifications) {
+        allNotifications.sort(Comparator.comparing(notification ->
                 LocalDateTime.parse(notification.getValue().getNotificationDateSent()),
             Comparator.reverseOrder()
         ));
-        return mutableNotifications;
+        return allNotifications.stream()
+            .map(idValue ->
+                new IdValue<>(String.valueOf(allNotifications.indexOf(idValue) + 1), idValue.getValue()))
+            .toList();
     }
 
 }

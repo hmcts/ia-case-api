@@ -203,6 +203,7 @@ class EventTest {
             Arguments.of("removeNonLegalRep", Event.REMOVE_NON_LEGAL_REP.toString()),
             Arguments.of("completeCaseReview", Event.COMPLETE_CASE_REVIEW.toString()),
             Arguments.of("generatePinInPost", Event.GENERATE_PIN_IN_POST.toString()),
+            Arguments.of("forceCaseToPrepareForHearing", Event.FORCE_CASE_TO_PREPARE_FOR_HEARING.toString()),
             Arguments.of("unknown", Event.UNKNOWN.toString())
         );
     }

@@ -199,29 +199,29 @@ public class HandlerUtils {
     }
 
     public static boolean isAcceleratedDetainedAppeal(AsylumCase asylumCase) {
-        return (asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).orElse(NO) == YesOrNo.YES;
+        return (asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).orElse(NO) == YES;
     }
 
     public static boolean isAppellantInDetention(AsylumCase asylumCase) {
-        return (asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).orElse(NO) == YesOrNo.YES;
+        return (asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).orElse(NO) == YES;
     }
 
     public static boolean isAppealOutOfCountry(AsylumCase asylumCase) {
-        return (asylumCase.read(APPEAL_OUT_OF_COUNTRY, YesOrNo.class)).orElse(NO) == YesOrNo.YES;
+        return (asylumCase.read(APPEAL_OUT_OF_COUNTRY, YesOrNo.class)).orElse(NO) == YES;
     }
 
     public static boolean isAppellantsRepresentation(AsylumCase asylumCase) {
-        return (asylumCase.read(APPELLANTS_REPRESENTATION, YesOrNo.class)).orElse(NO) == YesOrNo.YES;
+        return (asylumCase.read(APPELLANTS_REPRESENTATION, YesOrNo.class)).orElse(NO) == YES;
     }
 
     public static boolean isInternalCase(AsylumCase asylumCase) {
-        return (asylumCase.read(IS_ADMIN, YesOrNo.class)).orElse(NO) == YesOrNo.YES;
+        return (asylumCase.read(IS_ADMIN, YesOrNo.class)).orElse(NO) == YES;
     }
 
     // This method uses the field isNotificationTurnedOff to check if
     // notification need to be sent, in scope of EJP transfer down cases.
     public static boolean isNotificationTurnedOff(AsylumCase asylumCase) {
-        return (asylumCase.read(IS_NOTIFICATION_TURNED_OFF, YesOrNo.class)).orElse(NO) == YesOrNo.YES;
+        return (asylumCase.read(IS_NOTIFICATION_TURNED_OFF, YesOrNo.class)).orElse(NO) == YES;
     }
 
     public static String getAdaSuffix() {
@@ -237,7 +237,7 @@ public class HandlerUtils {
     }
 
     public static boolean isNabaEnabled(AsylumCase asylumCase) {
-        return (asylumCase.read(IS_NABA_ENABLED, YesOrNo.class)).orElse(NO) == YesOrNo.YES;
+        return (asylumCase.read(IS_NABA_ENABLED, YesOrNo.class)).orElse(NO) == YES;
     }
 
     //Updated method to check if it is a LegalRep journey
@@ -258,17 +258,17 @@ public class HandlerUtils {
 
     // This method uses the isRehydratedAppeal field which is set yes for Rehydrated appeals when a case is saved or no if paper form
     public static boolean isRehydratedAppeal(AsylumCase asylumCase) {
-        return asylumCase.read(IS_REHYDRATED_APPEAL, YesOrNo.class).orElse(NO) == YesOrNo.YES;
+        return asylumCase.read(IS_REHYDRATED_APPEAL, YesOrNo.class).orElse(NO) == YES;
     }
 
     // This method uses the isEjp field which is set yes for EJP when a case is saved or no if paper form
     public static boolean isEjpCase(AsylumCase asylumCase) {
-        return asylumCase.read(IS_EJP, YesOrNo.class).orElse(NO) == YesOrNo.YES;
+        return asylumCase.read(IS_EJP, YesOrNo.class).orElse(NO) == YES;
     }
 
     // This method uses the isLegallyRepresentedEjp field to check for Legally Represented EJP cases
     public static boolean isLegallyRepresentedEjpCase(AsylumCase asylumCase) {
-        return asylumCase.read(IS_LEGALLY_REPRESENTED_EJP, YesOrNo.class).orElse(NO) == YesOrNo.YES;
+        return asylumCase.read(IS_LEGALLY_REPRESENTED_EJP, YesOrNo.class).orElse(NO) == YES;
     }
 
     public static List<String> readJsonFileList(String filePath, String key) throws IOException {
@@ -369,7 +369,7 @@ public class HandlerUtils {
     }
 
     public static boolean isAdmin(AsylumCase asylumCase) {
-        return (asylumCase.read(IS_ADMIN, YesOrNo.class)).orElse(NO) == YesOrNo.YES;
+        return (asylumCase.read(IS_ADMIN, YesOrNo.class)).orElse(NO) == YES;
     }
 
     public static boolean isAppellantInPersonManual(AsylumCase asylumCase) {
@@ -377,7 +377,7 @@ public class HandlerUtils {
     }
 
     public static boolean hasAddedLegalRepDetails(AsylumCase asylumCase) {
-        return (asylumCase.read(HAS_ADDED_LEGAL_REP_DETAILS, YesOrNo.class)).orElse(NO) == YesOrNo.YES;
+        return (asylumCase.read(HAS_ADDED_LEGAL_REP_DETAILS, YesOrNo.class)).orElse(NO) == YES;
     }
 
     public static void clearRequestRemissionFields(AsylumCase asylumCase) {
@@ -622,7 +622,7 @@ public class HandlerUtils {
     }
 
     public static boolean hasRepresentation(AsylumCase asylumCase) {
-        Optional<OrganisationPolicy> localAuthorityPolicy = asylumCase.read(AsylumCaseFieldDefinition.LOCAL_AUTHORITY_POLICY);
+        Optional<OrganisationPolicy> localAuthorityPolicy = asylumCase.read(LOCAL_AUTHORITY_POLICY);
         return isRepJourney(asylumCase)
             && localAuthorityPolicy.isPresent()
             && localAuthorityPolicy.get().getOrganisation() != null
@@ -853,5 +853,18 @@ public class HandlerUtils {
                 .orElse("");
         }
         return homeOfficeReferenceNumber;
+    }
+
+    public static boolean isDecisionWithHearing(AsylumCase asylumCase) {
+        AppealType appealType = asylumCase.read(APPEAL_TYPE, AppealType.class).orElse(null);
+        return switch (appealType) {
+            case PA, EA, EU, HU -> asylumCase.read(DECISION_HEARING_FEE_OPTION, String.class)
+                .orElse("")
+                .equals("decisionWithHearing");
+            case RP, DC -> asylumCase.read(RP_DC_APPEAL_HEARING_OPTION, String.class)
+                .orElse("")
+                .equals("decisionWithHearing");
+            case null, default -> throw new IllegalStateException("Appeal type is not present");
+        };
     }
 }

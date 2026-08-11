@@ -34,6 +34,18 @@ import java.util.stream.Stream;
 
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
@@ -1453,5 +1465,50 @@ class HandlerUtilsTest {
         String result = HandlerUtils.getUanOrGwf(asylumCase);
 
         assertEquals("", result);
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+        "PA, decisionWithHearing, decisionWithoutHearing, true",
+        "PA, decisionWithoutHearing, decisionWithHearing, false",
+        "PA, decisionWithHearing, decisionWithHearing, true",
+        "PA, decisionWithoutHearing, decisionWithoutHearing, false",
+        "HU, decisionWithHearing, decisionWithoutHearing, true",
+        "HU, decisionWithoutHearing, decisionWithHearing, false",
+        "HU, decisionWithHearing, decisionWithHearing, true",
+        "HU, decisionWithoutHearing, decisionWithoutHearing, false",
+        "EU, decisionWithHearing, decisionWithoutHearing, true",
+        "EU, decisionWithoutHearing, decisionWithHearing, false",
+        "EU, decisionWithHearing, decisionWithHearing, true",
+        "EU, decisionWithoutHearing, decisionWithoutHearing, false",
+        "EA, decisionWithHearing, decisionWithoutHearing, true",
+        "EA, decisionWithoutHearing, decisionWithHearing, false",
+        "EA, decisionWithHearing, decisionWithHearing, true",
+        "EA, decisionWithoutHearing, decisionWithoutHearing, false",
+        "DC, decisionWithHearing, decisionWithoutHearing, false",
+        "DC, decisionWithoutHearing, decisionWithHearing, true",
+        "DC, decisionWithHearing, decisionWithHearing, true",
+        "DC, decisionWithoutHearing, decisionWithoutHearing, false",
+        "RP, decisionWithHearing, decisionWithoutHearing, false",
+        "RP, decisionWithoutHearing, decisionWithHearing, true",
+        "RP, decisionWithHearing, decisionWithHearing, true",
+        "RP, decisionWithoutHearing, decisionWithoutHearing, false"
+    })
+    void isDecisionWithoutHearing_tests(AppealType appealType,
+                                        String feeDecision,
+                                        String nonFeeDecision,
+                                        boolean expected) {
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
+        when(asylumCase.read(DECISION_HEARING_FEE_OPTION, String.class)).thenReturn(Optional.of(feeDecision));
+        when(asylumCase.read(RP_DC_APPEAL_HEARING_OPTION, String.class)).thenReturn(Optional.of(nonFeeDecision));
+
+        assertEquals(expected, HandlerUtils.isDecisionWithHearing(asylumCase));
+    }
+
+    @Test
+    void isDecisionWithoutHearing_throws_if_no_appeal_type() {
+        IllegalStateException exception =
+            assertThrows(IllegalStateException.class, () -> HandlerUtils.isDecisionWithHearing(asylumCase));
+        assertEquals("Appeal type is not present", exception.getMessage());
     }
 }

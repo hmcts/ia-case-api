@@ -327,7 +327,7 @@ dependencyManagement {
             entry 'log4j-core'
         }
 
-        dependency group: 'org.apache.httpcomponents.client5', name: 'httpclient5', version: '5.6.2'
+        dependency group: 'org.apache.httpcomponents.client5', name: 'httpclient5', version: '5.6.3'
         dependency group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.14'
 
         dependencySet(group: 'org.apache.httpcomponents.core5', version: '5.4.3') {
@@ -335,7 +335,7 @@ dependencyManagement {
             entry 'httpcore5-h2'
         }
 
-        dependencySet(group: 'org.jetbrains.kotlin', version: '2.4.20-Beta1') {
+        dependencySet(group: 'org.jetbrains.kotlin', version: '2.4.20-Beta2') {
             entry 'kotlin-stdlib'
             entry 'kotlin-stdlib-jdk7'
             entry 'kotlin-stdlib-jdk8'
@@ -374,7 +374,7 @@ dependencies {
     implementation 'org.flywaydb:flyway-database-postgresql'
 
     implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: '8.0.0'
-    implementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '5.3.4'
+    implementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '5.3.5'
     implementation group: 'com.github.hmcts', name: 'core-case-data-store-client', version: '5.2.0'
     implementation group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '6.0.1-RELEASE'
 
@@ -391,7 +391,7 @@ dependencies {
 
     implementation group: 'org.javamoney.moneta', name: 'moneta-core', version: '1.4.5'
 
-    implementation group: 'org.elasticsearch', name: 'elasticsearch', version: '9.2.8'
+    implementation group: 'org.elasticsearch', name: 'elasticsearch', version: '9.3.8'
 
     implementation group: 'com.googlecode.libphonenumber', name: 'libphonenumber', version: '8.13.55'
 
