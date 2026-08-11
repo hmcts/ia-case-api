@@ -1,8 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
 import lombok.ToString;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
@@ -22,13 +20,9 @@ public class MakeAnApplication {
     private String date;
     private String decision;
     private String state;
-    @Setter
     private String applicantRole;
-    @Getter
     private String decisionReason;
-    @Getter
     private String decisionDate;
-    @Getter
     private String decisionMaker;
     private Document refusalOfRemoval24wDocument;
 
@@ -96,6 +90,10 @@ public class MakeAnApplication {
         return state;
     }
 
+    public void setApplicantRole(String applicantRole) {
+        this.applicantRole = applicantRole;
+    }
+
     public String getApplicantRole() {
         requireNonNull(applicantRole);
         return applicantRole;
@@ -119,5 +117,21 @@ public class MakeAnApplication {
     public void setDecisionMaker(String decisionMaker) {
         requireNonNull(decisionMaker);
         this.decisionMaker = decisionMaker;
+    }
+
+    public String getDecisionReason() {
+        return decisionReason;
+    }
+
+    public String getDecisionDate() {
+        return decisionDate;
+    }
+
+    public String getDecisionMaker() {
+        return decisionMaker;
+    }
+
+    public Document getRefusalOfRemoval24wDocument() {
+        return refusalOfRemoval24wDocument;
     }
 }
