@@ -6,7 +6,6 @@ import lombok.Setter;
 import lombok.ToString;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
 import java.util.List;
 
@@ -23,6 +22,7 @@ public class MakeAnApplication {
     private String date;
     private String decision;
     private String state;
+    @Setter
     private String applicantRole;
     @Getter
     private String decisionReason;
@@ -30,8 +30,7 @@ public class MakeAnApplication {
     private String decisionDate;
     @Getter
     private String decisionMaker;
-    @Setter
-    private YesOrNo applicationFor24w;
+    private Document refusalOfRemoval24wDocument;
 
     public MakeAnApplication() {
 
@@ -95,10 +94,6 @@ public class MakeAnApplication {
     public String getState() {
         requireNonNull(state);
         return state;
-    }
-
-    public void setApplicantRole(String applicantRole) {
-        this.applicantRole = applicantRole;
     }
 
     public String getApplicantRole() {
