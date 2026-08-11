@@ -327,7 +327,7 @@ dependencyManagement {
             entry 'log4j-core'
         }
 
-        dependency group: 'org.apache.httpcomponents.client5', name: 'httpclient5', version: '5.6.2'
+        dependency group: 'org.apache.httpcomponents.client5', name: 'httpclient5', version: '5.6.3'
         dependency group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.14'
 
         dependencySet(group: 'org.apache.httpcomponents.core5', version: '5.4.3') {
@@ -391,7 +391,7 @@ dependencies {
 
     implementation group: 'org.javamoney.moneta', name: 'moneta-core', version: '1.4.5'
 
-    implementation group: 'org.elasticsearch', name: 'elasticsearch', version: '9.2.8'
+    implementation group: 'org.elasticsearch', name: 'elasticsearch', version: '9.3.8'
 
     implementation group: 'com.googlecode.libphonenumber', name: 'libphonenumber', version: '8.13.55'
 
