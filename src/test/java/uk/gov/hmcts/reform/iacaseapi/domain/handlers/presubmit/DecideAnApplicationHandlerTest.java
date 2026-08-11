@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -319,6 +320,52 @@ class DecideAnApplicationHandlerTest {
 
         assertNotNull(callbackResponse);
         verify(asylumCase).write(REMOVAL_OF_24W_DECISION_REASON, decisionReason);
+    }
+
+    @Test
+    void should_not_clear_removal_24w_judge_field_if_judge_24w_decision() {
+        when(asylumCase.read(MAKE_AN_APPLICATIONS_LIST, DynamicList.class)).thenReturn(Optional.of(new DynamicList("")));
+        when(asylumCase.read(MAKE_AN_APPLICATION_DECISION, MakeAnApplicationDecision.class)).thenReturn(Optional.of(GRANTED));
+        when(asylumCase.read(MAKE_AN_APPLICATION_DECISION_REASON, String.class)).thenReturn(Optional.of(""));
+        when(asylumCase.read(IS_REMOVAL_OF_24W_APPLICATION_REFUSED, YesOrNo.class)).thenReturn(Optional.of(YES));
+
+        when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(UserRoleLabel.JUDGE);
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            decideAnApplicationHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        verify(asylumCase, never()).clear(REMOVAL_OF_24W_DECISION_JUDGE);
+    }
+
+    @Test
+    void should_clear_removal_24w_judge_field_if_judge_not_24w_decision() {
+        when(asylumCase.read(MAKE_AN_APPLICATIONS_LIST, DynamicList.class)).thenReturn(Optional.of(new DynamicList("")));
+        when(asylumCase.read(MAKE_AN_APPLICATION_DECISION, MakeAnApplicationDecision.class)).thenReturn(Optional.of(GRANTED));
+        when(asylumCase.read(MAKE_AN_APPLICATION_DECISION_REASON, String.class)).thenReturn(Optional.of(""));
+        when(asylumCase.read(IS_REMOVAL_OF_24W_APPLICATION_REFUSED, YesOrNo.class)).thenReturn(Optional.of(NO));
+
+        when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(UserRoleLabel.JUDGE);
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            decideAnApplicationHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        verify(asylumCase).clear(REMOVAL_OF_24W_DECISION_JUDGE);
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = UserRoleLabel.class, names = {"JUDGE"}, mode = EnumSource.Mode.EXCLUDE)
+    void should_clear_removal_24w_judge_field_if_not_judge_24w_decision(UserRoleLabel role) {
+        when(asylumCase.read(MAKE_AN_APPLICATIONS_LIST, DynamicList.class)).thenReturn(Optional.of(new DynamicList("")));
+        when(asylumCase.read(MAKE_AN_APPLICATION_DECISION, MakeAnApplicationDecision.class)).thenReturn(Optional.of(GRANTED));
+        when(asylumCase.read(MAKE_AN_APPLICATION_DECISION_REASON, String.class)).thenReturn(Optional.of(""));
+        when(asylumCase.read(IS_REMOVAL_OF_24W_APPLICATION_REFUSED, YesOrNo.class)).thenReturn(Optional.of(YES));
+
+        when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(role);
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            decideAnApplicationHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        verify(asylumCase).clear(REMOVAL_OF_24W_DECISION_JUDGE);
     }
 
     @Test

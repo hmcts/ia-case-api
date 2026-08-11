@@ -69,7 +69,7 @@ public class DecideAnApplicationHandler implements PreSubmitCallbackHandler<Asyl
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-               && callback.getEvent() == Event.DECIDE_AN_APPLICATION;
+            && callback.getEvent() == Event.DECIDE_AN_APPLICATION;
     }
 
     @Override
@@ -91,7 +91,8 @@ public class DecideAnApplicationHandler implements PreSubmitCallbackHandler<Asyl
             .orElseThrow(() -> new IllegalStateException("No application decision is present"));
         String decisionReason = asylumCase.read(MAKE_AN_APPLICATION_DECISION_REASON, String.class)
             .orElseThrow(() -> new IllegalStateException("No application decision reason is present"));
-        String decisionMakerRole = userDetailsHelper.getLoggedInUserRoleLabel(userDetails).toString();
+        UserRoleLabel decisionMakerRoleObj = userDetailsHelper.getLoggedInUserRoleLabel(userDetails);
+        String decisionMakerRole = decisionMakerRoleObj.toString();
         String updatedDecisionMakerRole = decisionMakerRole.equals(oldLegalOfficerDisplayName) ? newLegalOfficerDisplayName : decisionMakerRole;
 
         Optional<List<IdValue<MakeAnApplication>>> mayBeMakeAnApplications = asylumCase.read(MAKE_AN_APPLICATIONS);
@@ -133,6 +134,10 @@ public class DecideAnApplicationHandler implements PreSubmitCallbackHandler<Asyl
         asylumCase.clear(MAKE_AN_APPLICATION_DECISION);
         asylumCase.clear(MAKE_AN_APPLICATION_DECISION_REASON);
 
+        if (!isPertaining24wRemoval || !UserRoleLabel.JUDGE.equals(decisionMakerRoleObj)) {
+            asylumCase.clear(REMOVAL_OF_24W_DECISION_JUDGE);
+        }
+
         return response;
     }
 
@@ -158,8 +163,8 @@ public class DecideAnApplicationHandler implements PreSubmitCallbackHandler<Asyl
     private boolean isHearingDeletionNecessary(MakeAnApplication makeAnApplication, State state) {
 
         return makeAnApplication.getType().equals(CHANGE_DECISION_TYPE.toString())
-               && makeAnApplication.getDecision().equals(GRANTED.toString())
-               && STATES_FOR_HEARING_CANCELLATION.contains(state);
+            && makeAnApplication.getDecision().equals(GRANTED.toString())
+            && STATES_FOR_HEARING_CANCELLATION.contains(state);
     }
 
     private boolean isDeletionRequestSuccessful(AsylumCase asylumCase) {

@@ -2,9 +2,8 @@ package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
 import com.fasterxml.jackson.annotation.JsonEnumDefaultValue;
 import com.fasterxml.jackson.annotation.JsonValue;
-import lombok.Getter;
-
 import java.util.List;
+import lombok.Getter;
 
 @Getter
 public enum UserRole {
@@ -65,22 +64,6 @@ public enum UserRole {
             NATIONAL_BUSINESS_CENTRE.getId(),
             CHALLENGED_ACCESS_CTSC.getId(),
             CHALLENGED_ACCESS_ADMIN.getId()
-        );
-    }
-
-    public static List<String> getJudgeRoles() {
-        return List.of(
-            IDAM_JUDGE.getId(),
-            JUDICIARY.getId(),
-            JUDGE.getId(),
-            SENIOR_JUDGE.getId(),
-            LEADERSHIP_JUDGE.getId(),
-            FEE_PAID_JUDGE.getId(),
-            LEAD_JUDGE.getId(),
-            HEARING_JUDGE.getId(),
-            FTPA_JUDGE.getId(),
-            HEARING_PANEL_JUDGE.getId(),
-            CHALLENGED_ACCESS_JUDICIARY.getId()
         );
     }
 

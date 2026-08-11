@@ -1,17 +1,9 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
-import com.google.common.collect.ImmutableMap;
-import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsHelper;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
-import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
+import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
+import com.google.common.collect.ImmutableMap;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
@@ -19,21 +11,20 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
-
-import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
+import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplication;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.Value;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 @Component
 public class DecideAnApplicationMidEvent implements PreSubmitCallbackHandler<AsylumCase> {
-    private final UserDetails userDetails;
-    private final UserDetailsHelper userDetailsHelper;
-
-    public DecideAnApplicationMidEvent(UserDetails userDetails, UserDetailsHelper userDetailsHelper) {
-        this.userDetails = requireNonNull(userDetails, "userDetails must not be null");
-        this.userDetailsHelper = requireNonNull(userDetailsHelper, "userDetailsHelper must not be null");
-    }
 
     @Override
     public boolean canHandle(PreSubmitCallbackStage callbackStage,
@@ -54,16 +45,6 @@ public class DecideAnApplicationMidEvent implements PreSubmitCallbackHandler<Asy
         }
 
         final AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
-
-        if (callback.getPageId() != null && callback.getPageId().equals("remove24WeekRefusalDecision")) {
-            boolean isPertaining24wRemoval = asylumCase.read(IS_REMOVAL_OF_24W_APPLICATION_REFUSED, YesOrNo.class)
-                .orElse(NO).equals(YES);
-            UserRole userRole = userDetailsHelper.getLoggedInUserRole(userDetails);
-            if (isPertaining24wRemoval && UserRole.getJudgeRoles().contains(userRole.getId())) {
-                asylumCase.write(REMOVAL_OF_24W_DECISION_JUDGE, userDetails.getForenameAndSurname());
-            }
-            return new PreSubmitCallbackResponse<>(asylumCase);
-        }
 
         DynamicList maybeMakeAnApplicationsList = asylumCase.read(MAKE_AN_APPLICATIONS_LIST, DynamicList.class)
             .orElseThrow(() -> new IllegalStateException("Make an applications list not present"));

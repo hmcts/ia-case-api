@@ -1,5 +1,22 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MAKE_AN_APPLICATIONS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MAKE_AN_APPLICATIONS_LIST;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MAKE_AN_APPLICATION_FIELDS;
+
+import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -8,8 +25,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
-import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsHelper;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplication;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.Value;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
@@ -18,17 +37,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
-
-import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -44,17 +52,13 @@ class DecideAnApplicationMidEventTest {
 
     @Mock
     private DateProvider dateProvider;
-    @Mock
-    private UserDetails userDetails;
-    @Mock
-    private UserDetailsHelper userDetailsHelper;
 
     private DecideAnApplicationMidEvent decideAnApplicationMidEvent;
 
     @BeforeEach
     public void setUp() {
 
-        decideAnApplicationMidEvent = new DecideAnApplicationMidEvent(userDetails, userDetailsHelper);
+        decideAnApplicationMidEvent = new DecideAnApplicationMidEvent();
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.DECIDE_AN_APPLICATION);
@@ -162,57 +166,5 @@ class DecideAnApplicationMidEventTest {
 
             reset(callback);
         }
-    }
-
-    @Test
-    void should_end_early_if_page_id_remove24WeekRefusalDecision_not_pertaining24wRemoval() {
-        when(callback.getPageId()).thenReturn("remove24WeekRefusalDecision");
-        when(asylumCase.read(IS_REMOVAL_OF_24W_APPLICATION_REFUSED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
-
-        PreSubmitCallbackResponse<AsylumCase> response =
-            decideAnApplicationMidEvent.handle(PreSubmitCallbackStage.MID_EVENT, callback);
-
-        assertNotNull(response);
-        assertNotNull(response.getData());
-        verify(asylumCase).read(IS_REMOVAL_OF_24W_APPLICATION_REFUSED, YesOrNo.class);
-        verify(userDetailsHelper).getLoggedInUserRole(userDetails);
-        verify(asylumCase, never()).write(any(), any());
-        verify(asylumCase, never()).read(MAKE_AN_APPLICATIONS_LIST, DynamicList.class);
-    }
-
-    @Test
-    void should_end_early_if_page_id_remove24WeekRefusalDecision_not_judge() {
-        when(callback.getPageId()).thenReturn("remove24WeekRefusalDecision");
-        when(asylumCase.read(IS_REMOVAL_OF_24W_APPLICATION_REFUSED, YesOrNo.class))
-            .thenReturn(Optional.of(YesOrNo.YES));
-        when(userDetailsHelper.getLoggedInUserRole(userDetails)).thenReturn(UserRole.CASE_OFFICER);
-
-        PreSubmitCallbackResponse<AsylumCase> response =
-            decideAnApplicationMidEvent.handle(PreSubmitCallbackStage.MID_EVENT, callback);
-
-        assertNotNull(response);
-        assertNotNull(response.getData());
-        verify(asylumCase).read(IS_REMOVAL_OF_24W_APPLICATION_REFUSED, YesOrNo.class);
-        verify(userDetailsHelper).getLoggedInUserRole(userDetails);
-        verify(asylumCase, never()).write(any(), any());
-        verify(asylumCase, never()).read(MAKE_AN_APPLICATIONS_LIST, DynamicList.class);
-    }
-
-    @Test
-    void should_write_removalOf24wDecisionJudge_if_page_id_remove24WeekRefusalDecision_judge_user() {
-        when(callback.getPageId()).thenReturn("remove24WeekRefusalDecision");
-        when(asylumCase.read(IS_REMOVAL_OF_24W_APPLICATION_REFUSED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
-        when(userDetailsHelper.getLoggedInUserRole(userDetails)).thenReturn(UserRole.JUDGE);
-        String name = "Judge John Doe";
-        when(userDetails.getForenameAndSurname()).thenReturn(name);
-        PreSubmitCallbackResponse<AsylumCase> response =
-            decideAnApplicationMidEvent.handle(PreSubmitCallbackStage.MID_EVENT, callback);
-
-        assertNotNull(response);
-        assertNotNull(response.getData());
-        verify(asylumCase).read(IS_REMOVAL_OF_24W_APPLICATION_REFUSED, YesOrNo.class);
-        verify(userDetailsHelper).getLoggedInUserRole(userDetails);
-        verify(asylumCase).write(REMOVAL_OF_24W_DECISION_JUDGE, name);
-        verify(asylumCase, never()).read(MAKE_AN_APPLICATIONS_LIST, DynamicList.class);
     }
 }

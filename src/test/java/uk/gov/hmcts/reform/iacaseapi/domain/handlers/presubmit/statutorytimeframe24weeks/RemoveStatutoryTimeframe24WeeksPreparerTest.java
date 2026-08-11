@@ -7,8 +7,11 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsHelper;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserRoleLabel;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -23,13 +26,15 @@ class RemoveStatutoryTimeframe24WeeksPreparerTest {
 
     @Mock private Callback<AsylumCase> callback;
     @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock AsylumCase asylumCase;
+    @Mock private AsylumCase asylumCase;
+    @Mock private UserDetails userDetails;
+    @Mock private UserDetailsHelper userDetailsHelper;
 
     private RemoveStatutoryTimeframe24WeeksPreparer removeStatutoryTimeframe24WeeksPreparer;
 
     @BeforeEach
     void setUp() {
-        removeStatutoryTimeframe24WeeksPreparer = new RemoveStatutoryTimeframe24WeeksPreparer();
+        removeStatutoryTimeframe24WeeksPreparer = new RemoveStatutoryTimeframe24WeeksPreparer(userDetails, userDetailsHelper);
     }
 
     @Test
@@ -62,12 +67,26 @@ class RemoveStatutoryTimeframe24WeeksPreparerTest {
     }
 
     @Test
-    void handle_clears_removalOf24wDecisionReason() {
+    void handle_clears_fields() {
         when(callback.getEvent()).thenReturn(Event.REMOVE_STATUTORY_TIMEFRAME_24_WEEKS);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(UserRoleLabel.ADMIN_OFFICER);
         removeStatutoryTimeframe24WeeksPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
         verify(asylumCase).clear(AsylumCaseFieldDefinition.REMOVAL_OF_24W_DECISION_REASON);
+        verify(asylumCase).clear(AsylumCaseFieldDefinition.REMOVAL_OF_24W_DECISION_JUDGE);
+    }
+
+    @Test
+    void handle_sets_judge_if_judge_logged_in() {
+        when(callback.getEvent()).thenReturn(Event.REMOVE_STATUTORY_TIMEFRAME_24_WEEKS);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(UserRoleLabel.JUDGE);
+        when(userDetails.getForenameAndSurname()).thenReturn("Judge John Doe");
+        removeStatutoryTimeframe24WeeksPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+        verify(asylumCase).clear(AsylumCaseFieldDefinition.REMOVAL_OF_24W_DECISION_REASON);
+        verify(asylumCase).write(AsylumCaseFieldDefinition.REMOVAL_OF_24W_DECISION_JUDGE, "Judge John Doe");
     }
 
     @Test
