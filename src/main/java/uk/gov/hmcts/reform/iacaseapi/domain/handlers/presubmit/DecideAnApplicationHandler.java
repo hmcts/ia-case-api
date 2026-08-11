@@ -114,7 +114,6 @@ public class DecideAnApplicationHandler implements PreSubmitCallbackHandler<Asyl
                 }
                 if (isPertaining24wRemoval) {
                     asylumCase.write(REMOVAL_OF_24W_DECISION_REASON, decisionReason);
-                    makeAnApplication.setApplicationFor24w(YES);
                 }
                 asylumCase.write(HAS_APPLICATIONS_TO_DECIDE, NO);
                 asylumCase.write(AsylumCaseFieldDefinition.LAST_MODIFIED_APPLICATION, makeAnApplication);
