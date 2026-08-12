@@ -166,8 +166,7 @@ class AddStatutoryTimeframe24WeeksPreStartHandlerTest {
         "APPEAL_SUBMITTED",
         "AWAITING_RESPONDENT_EVIDENCE",
         "AWAITING_CLARIFYING_QUESTIONS_ANSWERS",
-        "CLARIFYING_QUESTIONS_ANSWERS_SUBMITTED",
-        "LISTING"
+        "CLARIFYING_QUESTIONS_ANSWERS_SUBMITTED"
     }, mode = EnumSource.Mode.EXCLUDE)
     void should_return_error_when_state_is_not_supported(State state) {
         when(callback.getCaseDetails().getState()).thenReturn(state);
@@ -177,19 +176,14 @@ class AddStatutoryTimeframe24WeeksPreStartHandlerTest {
 
         final Set<String> errors = callbackResponse.getErrors();
         assertThat(errors).isNotEmpty();
-        assertEquals(1, errors.size());
         assertTrue(errors.contains("This event cannot be run on this case"));
     }
-
 
     @ParameterizedTest
     @EnumSource(value = State.class, names = {
         "PENDING_PAYMENT",
         "APPEAL_SUBMITTED",
-        "AWAITING_RESPONDENT_EVIDENCE",
-        "AWAITING_CLARIFYING_QUESTIONS_ANSWERS",
-        "CLARIFYING_QUESTIONS_ANSWERS_SUBMITTED",
-        "LISTING"
+        "AWAITING_RESPONDENT_EVIDENCE"
     })
     void should_not_return_error_when_state_is_supported(State state) {
         when(callback.getCaseDetails().getState()).thenReturn(state);
@@ -199,6 +193,59 @@ class AddStatutoryTimeframe24WeeksPreStartHandlerTest {
 
         final Set<String> errors = callbackResponse.getErrors();
         assertThat(errors).isEmpty();
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = State.class, names = {
+        "AWAITING_CLARIFYING_QUESTIONS_ANSWERS",
+        "CLARIFYING_QUESTIONS_ANSWERS_SUBMITTED"
+    })
+    void should_not_return_error_when_clarifying_state_with_permitted_pre_clarifying_state(State state) {
+        when(callback.getCaseDetails().getState()).thenReturn(state);
+        when(asylumCase.read(AsylumCaseFieldDefinition.PRE_CLARIFYING_STATE, State.class))
+            .thenReturn(Optional.of(State.APPEAL_SUBMITTED));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            addStatutoryTimeframe24WeeksPreStartHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        final Set<String> errors = callbackResponse.getErrors();
+        assertThat(errors).isEmpty();
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = State.class, names = {
+        "AWAITING_CLARIFYING_QUESTIONS_ANSWERS",
+        "CLARIFYING_QUESTIONS_ANSWERS_SUBMITTED"
+    })
+    void should_return_error_when_clarifying_state_with_non_permitted_pre_clarifying_state(State state) {
+        when(callback.getCaseDetails().getState()).thenReturn(state);
+        when(asylumCase.read(AsylumCaseFieldDefinition.PRE_CLARIFYING_STATE, State.class))
+            .thenReturn(Optional.of(State.AWAITING_REASONS_FOR_APPEAL));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            addStatutoryTimeframe24WeeksPreStartHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        final Set<String> errors = callbackResponse.getErrors();
+        assertThat(errors).isNotEmpty();
+        assertTrue(errors.contains("This event cannot be run on this case at this time"));
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = State.class, names = {
+        "AWAITING_CLARIFYING_QUESTIONS_ANSWERS",
+        "CLARIFYING_QUESTIONS_ANSWERS_SUBMITTED"
+    })
+    void should_return_error_when_clarifying_state_with_no_pre_clarifying_state(State state) {
+        when(callback.getCaseDetails().getState()).thenReturn(state);
+        when(asylumCase.read(AsylumCaseFieldDefinition.PRE_CLARIFYING_STATE, State.class))
+            .thenReturn(Optional.empty());
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            addStatutoryTimeframe24WeeksPreStartHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        final Set<String> errors = callbackResponse.getErrors();
+        assertThat(errors).isNotEmpty();
+        assertTrue(errors.contains("This event cannot be run on this case at this time"));
     }
 
     @Test
