@@ -56,10 +56,10 @@ public enum DocumentTag {
     STF_24WEEKS_REMOVAL_DECISION_LETTER_LR("stf24WeeksRemovalDecisionLetterLr"),
     STF_24WEEKS_REMOVAL_DECISION_LETTER_LR_BUNDLE("stf24WeeksRemovalDecisionLetterLrBundle"),
     STF_24WEEKS_REMOVAL_REFUSED_DECISION_DOCUMENT("stf24WeeksRemovalRefusedDecisionDocument"),
-    STF_24WEEKS_REMOVAL_REFUSED_DECISION_LETTER("stf24WeeksRemovalRefusedDecisionDocumentLetter"),
-    STF_24WEEKS_REMOVAL_REFUSED_DECISION_LETTER_BUNDLE("stf24WeeksRemovalRefusedDecisionDocumentLetterBundle"),
-    STF_24WEEKS_REMOVAL_REFUSED_DECISION_LETTER_LR("stf24WeeksRemovalRefusedDecisionDocumentLetterLr"),
-    STF_24WEEKS_REMOVAL_REFUSED_DECISION_LETTER_LR_BUNDLE("stf24WeeksRemovalRefusedDecisionDocumentLetterLrBundle"),
+    STF_24WEEKS_REMOVAL_REFUSED_DECISION_LETTER("stf24WeeksRemovalRefusedDecisionLetter"),
+    STF_24WEEKS_REMOVAL_REFUSED_DECISION_LETTER_BUNDLE("stf24WeeksRemovalRefusedDecisionLetterBundle"),
+    STF_24WEEKS_REMOVAL_REFUSED_DECISION_LETTER_LR("stf24WeeksRemovalRefusedDecisionLetterLr"),
+    STF_24WEEKS_REMOVAL_REFUSED_DECISION_LETTER_LR_BUNDLE("stf24WeeksRemovalRefusedDecisionLetterLrBundle"),
 
 
 
