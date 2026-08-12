@@ -66,7 +66,7 @@ class SaveNotificationsToDataHandlerTest {
     private ArgumentCaptor<List<IdValue<StoredNotification>>> listCaptor;
 
     private final String reference = "someReference_" + Instant.now().toEpochMilli();
-    private final String validLetterReference = "_SOME_TEST_REFERENCE_" + Instant.now().toEpochMilli();
+    private final String validLetterReference = "_STATUTORY_TIMEFRAME_24WEEKS_CASE_REVIEW_APPELLANT_LETTER_" + Instant.now().toEpochMilli();
     private final String notificationId = "someNotificationId";
     private final String body = "someBody";
     private final String notificationTypeEmail = "email";
@@ -649,7 +649,7 @@ class SaveNotificationsToDataHandlerTest {
 
     @Test
     void isReferenceValidForLetterPdf_returnsTrueForValidReference() {
-        String validReference = "1233123412_SOME_TEST_REFERENCE_2132131233";
+        String validReference = "1233123412_STATUTORY_TIMEFRAME_24WEEKS_CASE_REVIEW_APPELLANT_LETTER_2132131233";
         assertTrue(saveNotificationsToDataHandler.isReferenceValidForLetterPdf(validReference));
     }
 
@@ -661,7 +661,7 @@ class SaveNotificationsToDataHandlerTest {
 
     @Test
     void getLetterEncodedPdfFile_returnsEncodedPdfFileForValidReference() throws NotificationClientException {
-        String validReference = "1233123412_SOME_TEST_REFERENCE_2132131233";
+        String validReference = "1233123412_STATUTORY_TIMEFRAME_24WEEKS_CASE_REVIEW_APPELLANT_LETTER_2132131233";
         byte[] pdfBytes = new byte[]{1, 2, 3, 4, 5};
         when(notificationClient.getPdfForLetter("id")).thenReturn(pdfBytes);
 
@@ -675,7 +675,7 @@ class SaveNotificationsToDataHandlerTest {
 
     @Test
     void getLetterEncodedPdfFile_returnsNullIfLetterFetchNull() throws NotificationClientException {
-        String validReference = "1233123412_SOME_TEST_REFERENCE_2132131233";
+        String validReference = "1233123412_STATUTORY_TIMEFRAME_24WEEKS_CASE_REVIEW_APPELLANT_LETTER_2132131233";
         when(notificationClient.getPdfForLetter("id")).thenReturn(null);
 
         String encodedPdfFile = saveNotificationsToDataHandler.getLetterEncodedPdfFile("letter",
@@ -687,7 +687,7 @@ class SaveNotificationsToDataHandlerTest {
 
     @Test
     void getLetterEncodedPdfFile_returnsNullIfLetterFetchEmpty() throws NotificationClientException {
-        String validReference = "1233123412_SOME_TEST_REFERENCE_2132131233";
+        String validReference = "1233123412_STATUTORY_TIMEFRAME_24WEEKS_CASE_REVIEW_APPELLANT_LETTER_2132131233";
         byte[] pdfBytes = new byte[]{};
         when(notificationClient.getPdfForLetter("id")).thenReturn(pdfBytes);
 
@@ -700,7 +700,7 @@ class SaveNotificationsToDataHandlerTest {
 
     @Test
     void getLetterEncodedPdfFile_returnsNullIfLetterFetchThrows() throws NotificationClientException {
-        String validReference = "1233123412_SOME_TEST_REFERENCE_2132131233";
+        String validReference = "1233123412_STATUTORY_TIMEFRAME_24WEEKS_CASE_REVIEW_APPELLANT_LETTER_2132131233";
         when(notificationClient.getPdfForLetter("id"))
             .thenThrow(new NotificationClientException("some-client-error"));
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -714,7 +714,7 @@ class SaveNotificationsToDataHandlerTest {
 
     @Test
     void getLetterEncodedPdfFile_doesNotFetchPdfForLetterIfNonLetter() throws NotificationClientException {
-        String validReference = "1233123412_SOME_TEST_REFERENCE_2132131233";
+        String validReference = "1233123412_STATUTORY_TIMEFRAME_24WEEKS_CASE_REVIEW_APPELLANT_LETTER_2132131233";
         String encodedPdfFile = saveNotificationsToDataHandler.getLetterEncodedPdfFile("email",
             "id", validReference, callback);
         assertNull(encodedPdfFile);
