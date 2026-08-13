@@ -13,7 +13,7 @@ def type = "java"
 def product = "ia"
 def component = "case-api"
 def dmnBranch = "DIAC-2750"
-def bpmnBranch = "master"
+def bpmnBranch = "DIAC-2750"
 
 def secrets = [
         'rpx-${env}': [
