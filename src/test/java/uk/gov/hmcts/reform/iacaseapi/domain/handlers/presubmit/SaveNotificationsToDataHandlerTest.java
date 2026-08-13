@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import org.apache.commons.lang3.StringUtils;
+import org.elasticsearch.common.Strings;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -76,7 +77,7 @@ class SaveNotificationsToDataHandlerTest {
     private final String notificationTypeEmail = "email";
     private final String notificationTypeSms = "sms";
     private final String notificationTypeLetter = "letter";
-    private final String status = "someStatus";
+    private final String status = "delivered";
     private final String email = "some-email@test.com";
     private final String phoneNumber = "07827000000";
     private final String subject = "someSubject";
@@ -391,6 +392,57 @@ class SaveNotificationsToDataHandlerTest {
                 .notificationSubject("N/A")
                 .build();
         assertEquals(storedNotification, listCaptor.getValue().getFirst().getValue());
+    }
+
+    @Test
+    void should_update_any_non_successful_notifications() throws NotificationClientException {
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        StoredNotification storedNotification =
+            StoredNotification.builder()
+                .notificationId(notificationId)
+                .notificationDateSent("2024-01-01T10:57")
+                .notificationSentTo(email)
+                .notificationBody("<div>" + body + "</div>")
+                .notificationMethod(notificationTypeEmail)
+                .notificationStatus("Pending")
+                .notificationReference(reference)
+                .notificationSubject(subject)
+                .build();
+        List<IdValue<StoredNotification>> storedNotifications =
+            List.of(new IdValue<>(reference, storedNotification));
+        List<IdValue<String>> notificationsSent =
+            List.of(new IdValue<>(reference, notificationId));
+        when(asylumCase.read(NOTIFICATIONS)).thenReturn(Optional.of(storedNotifications));
+        when(asylumCase.read(NOTIFICATIONS_SENT)).thenReturn(Optional.of(notificationsSent));
+        when(notificationClient.getNotificationById(notificationId)).thenReturn(notification);
+        when(notification.getBody()).thenReturn(body);
+        when(notification.getNotificationType()).thenReturn(notificationTypeEmail);
+        when(notification.getEmailAddress()).thenReturn(Optional.of(email));
+        when(notification.getSubject()).thenReturn(Optional.empty());
+        String dateString = "01-01-2024 10:57";
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
+        LocalDateTime localDateTime = LocalDateTime.parse(dateString, dateFormatter);
+        ZonedDateTime zonedDateTime = localDateTime.atZone(ZoneId.of("Europe/London"));
+        when(notification.getSentAt()).thenReturn(Optional.of(zonedDateTime));
+        when(notification.getStatus()).thenReturn(status);
+        saveNotificationsToDataHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+        verify(notificationClient, times(1)).getNotificationById(anyString());
+        verify(asylumCase, times(1)).write(eq(NOTIFICATIONS), listCaptor.capture());
+        List<IdValue<StoredNotification>> list = listCaptor.getValue();
+        assertEquals(1, list.size());
+        StoredNotification storedNotificationUpdated =
+            StoredNotification.builder()
+                .notificationId(notificationId)
+                .notificationDateSent("2024-01-01T10:57")
+                .notificationSentTo(email)
+                .notificationBody("<div>" + body + "</div>")
+                .notificationMethod(StringUtils.capitalize(notificationTypeEmail))
+                .notificationStatus(Strings.capitalize(status))
+                .notificationReference(notificationId)
+                .notificationSubject("N/A")
+                .build();
+        assertEquals(storedNotificationUpdated, list.getFirst().getValue());
     }
 
 
