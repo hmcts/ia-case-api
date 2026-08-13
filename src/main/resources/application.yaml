@@ -1,5 +1,6 @@
 server:
   port: ${PORT:8090}
+  max-http-request-header-size: 100KB
 
 management:
   endpoint:
@@ -1530,4 +1531,4 @@ app:
   home-office-validation:
     enabled: ${HOME_OFFICE_VALIDATION_ENABLED:true}
   statutory-timeframe:
-    live-date: ${STATUTORY_TIMEFRAME_LIVE_DATE:2026-09-01}
+    live-date: ${STATUTORY_TIMEFRAME_LIVE_DATE:2026-08-12}
