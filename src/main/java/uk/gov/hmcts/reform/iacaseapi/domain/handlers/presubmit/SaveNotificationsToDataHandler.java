@@ -37,7 +37,12 @@ public class SaveNotificationsToDataHandler implements PreSubmitCallbackHandler<
     private final NotificationClient notificationClient;
     private final boolean saveNotificationToDataEnabled;
     private final FeatureToggler featureToggler;
-    private final List<String> validReferences = List.of("_SOME_TEST_REFERENCE");
+    public static final List<String> validReferences = List.of(
+        "STF_24WEEKS_REMOVAL_DECISION_LETTER_BUNDLE",
+        "STF_24WEEKS_REMOVAL_DECISION_LETTER_LR_BUNDLE",
+        "STF_24WEEKS_REMOVAL_REFUSED_DECISION_LETTER_BUNDLE",
+        "STF_24WEEKS_REMOVAL_REFUSED_DECISION_LETTER_LR_BUNDLE"
+    );
 
     public SaveNotificationsToDataHandler(
         NotificationClient notificationClient,
