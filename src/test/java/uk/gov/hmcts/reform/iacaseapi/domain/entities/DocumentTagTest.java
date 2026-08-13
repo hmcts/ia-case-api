@@ -53,11 +53,15 @@ class DocumentTagTest {
         assertEquals("internalOutOfTimeDecisionLetter", DocumentTag.INTERNAL_OUT_OF_TIME_DECISION_LETTER.toString());
         assertEquals("cmrHearingCancelledLetter", DocumentTag.CMR_HEARING_CANCELLED_LETTER.toString());
         assertEquals("stf24WeeksCaseReviewAppeallantDocument", DocumentTag.STF_24WEEKS_CASE_REVIEW_APPELLANT_DOCUMENT.toString());
+        assertEquals("internalCmrReListingLetter", DocumentTag.INTERNAL_CMR_RE_LISTING_LETTER.toString());
+        assertEquals("internalCmrReListingLetterBundle", DocumentTag.INTERNAL_CMR_RE_LISTING_LETTER_BUNDLE.toString());
+        assertEquals("internalCmrReListingLrLetter", DocumentTag.INTERNAL_CMR_RE_LISTING_LR_LETTER.toString());
+        assertEquals("internalCmrReListingLrLetterBundle", DocumentTag.INTERNAL_CMR_RE_LISTING_LR_LETTER_BUNDLE.toString());
 
     }
 
     @Test
     void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(47, DocumentTag.values().length);
+        assertEquals(51, DocumentTag.values().length);
     }
 }
