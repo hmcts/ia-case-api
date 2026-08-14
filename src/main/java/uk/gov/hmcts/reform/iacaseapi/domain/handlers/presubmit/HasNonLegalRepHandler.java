@@ -2,16 +2,24 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.NonLegalRepDetails;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.Subscriber;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.SubscriberType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.PartyIdService;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NLR_DETAILS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SUBSCRIPTIONS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.EDIT_APPEAL_AFTER_SUBMIT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.NLR_DETAILS_UPDATED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SEND_PIP_TO_NON_LEGAL_REP;
@@ -45,8 +53,30 @@ public class HasNonLegalRepHandler implements PreSubmitCallbackHandler<AsylumCas
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
         PartyIdService.setNlrPartyId(asylumCase);
         setSponsorDetailsFromNlrIfSame(asylumCase);
-        updateSubscriptionsForNlr(asylumCase);
+
+        if (callback.getEvent() == NLR_DETAILS_UPDATED) {
+            if (hasNlrEmailChanged(asylumCase)) {
+                updateSubscriptionsForNlr(asylumCase);
+            }
+        } else {
+            updateSubscriptionsForNlr(asylumCase);
+        }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
+    }
+
+    private boolean hasNlrEmailChanged(AsylumCase asylumCase) {
+        String nlrEmail = asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class)
+            .map(NonLegalRepDetails::getEmailAddress)
+            .orElse(null);
+
+        Optional<List<IdValue<Subscriber>>> subscribers = asylumCase.read(SUBSCRIPTIONS);
+        String existingSubscriptionEmail = subscribers.orElse(List.of()).stream()
+            .filter(sub -> sub.getValue().getSubscriber() == SubscriberType.SUPPORTER)
+            .map(sub -> sub.getValue().getEmail())
+            .findFirst()
+            .orElse(null);
+
+        return !Objects.equals(nlrEmail, existingSubscriptionEmail);
     }
 }

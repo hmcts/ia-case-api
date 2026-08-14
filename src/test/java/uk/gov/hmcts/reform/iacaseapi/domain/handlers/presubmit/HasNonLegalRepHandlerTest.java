@@ -13,8 +13,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.NonLegalRepDetails;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.Subscriber;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.SubscriberType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
@@ -22,6 +26,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -39,7 +44,10 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAS_NON_LEGAL_REP;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOURNEY_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NLR_DETAILS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NLR_PARTY_ID;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SUBSCRIPTIONS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.NLR_DETAILS_UPDATED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SUBMIT_APPEAL;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -108,7 +116,7 @@ class HasNonLegalRepHandlerTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = Event.class, names = {"SUBMIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT", "SEND_PIP_TO_NON_LEGAL_REP", "NLR_DETAILS_UPDATED"})
+    @EnumSource(value = Event.class, names = {"SUBMIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT", "SEND_PIP_TO_NON_LEGAL_REP"})
     void should_handle_for_allowed_events(Event event) {
         when(callback.getEvent()).thenReturn(event);
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -120,6 +128,46 @@ class HasNonLegalRepHandlerTest {
             .verify(() -> HandlerUtils.setSponsorDetailsFromNlrIfSame(asylumCase), times(1));
         handlerUtils
             .verify(() -> HandlerUtils.updateSubscriptionsForNlr(asylumCase), times(1));
+    }
+
+    @Test
+    void should_update_subscription_for_nlr_details_updated_when_email_changed() {
+        when(callback.getEvent()).thenReturn(NLR_DETAILS_UPDATED);
+
+        NonLegalRepDetails nlrDetails = NonLegalRepDetails.builder()
+            .emailAddress("new@email.com")
+            .build();
+        when(asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class)).thenReturn(Optional.of(nlrDetails));
+
+        Subscriber existingSubscriber = new Subscriber(SubscriberType.SUPPORTER, "old@email.com", YesOrNo.YES, null, YesOrNo.NO);
+        when(asylumCase.read(SUBSCRIPTIONS)).thenReturn(Optional.of(List.of(new IdValue<>("1", existingSubscriber))));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            hasNonLegalRepHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+        handlerUtils.verify(() -> HandlerUtils.updateSubscriptionsForNlr(asylumCase), times(1));
+    }
+
+    @Test
+    void should_not_update_subscription_for_nlr_details_updated_when_email_unchanged() {
+        when(callback.getEvent()).thenReturn(NLR_DETAILS_UPDATED);
+
+        NonLegalRepDetails nlrDetails = NonLegalRepDetails.builder()
+            .emailAddress("same@email.com")
+            .build();
+        when(asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class)).thenReturn(Optional.of(nlrDetails));
+
+        Subscriber existingSubscriber = new Subscriber(SubscriberType.SUPPORTER, "same@email.com", YesOrNo.YES, null, YesOrNo.NO);
+        when(asylumCase.read(SUBSCRIPTIONS)).thenReturn(Optional.of(List.of(new IdValue<>("1", existingSubscriber))));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            hasNonLegalRepHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+        handlerUtils.verify(() -> HandlerUtils.updateSubscriptionsForNlr(asylumCase), never());
     }
 
     @Test
