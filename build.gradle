@@ -289,7 +289,7 @@ dependencyManagement {
         // CVE-2026-33870
         // CVE-2026-33871
         // CVE-2025-67735 - from spring-boot-starter-data-redis@3.5.14
-        mavenBom "io.netty:netty-bom:4.2.16.Final"
+        mavenBom "io.netty:netty-bom:4.2.17.Final"
     }
 
     dependencies {
@@ -327,7 +327,7 @@ dependencyManagement {
             entry 'log4j-core'
         }
 
-        dependency group: 'org.apache.httpcomponents.client5', name: 'httpclient5', version: '5.6.3'
+        dependency group: 'org.apache.httpcomponents.client5', name: 'httpclient5', version: '5.6.4'
         dependency group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.14'
 
         dependencySet(group: 'org.apache.httpcomponents.core5', version: '5.4.3') {
@@ -335,7 +335,7 @@ dependencyManagement {
             entry 'httpcore5-h2'
         }
 
-        dependencySet(group: 'org.jetbrains.kotlin', version: '2.4.20-Beta2') {
+        dependencySet(group: 'org.jetbrains.kotlin', version: '2.4.20-RC') {
             entry 'kotlin-stdlib'
             entry 'kotlin-stdlib-jdk7'
             entry 'kotlin-stdlib-jdk8'
