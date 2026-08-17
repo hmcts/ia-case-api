@@ -73,17 +73,12 @@ public class SubmitAppealFeeUpdateHandler implements PreSubmitCallbackHandler<As
         boolean isAda = isAcceleratedDetainedAppeal.isPresent() && isAcceleratedDetainedAppeal.get() == YES;
         boolean isEjp = sourceOfAppealEjp(asylumCase);
 
-        boolean canHandle = callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
+        return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
                 && callback.getEvent() == Event.SUBMIT_APPEAL
                 && isfeePaymentEnabled
                 && isPayableAppealType
                 && !isAda
                 && !isEjp;
-
-        log.info("SubmitAppealFeeUpdateHandler canHandle? : {}, isAda: {}, "
-                + "isEjp: {}, isfeePaymentEnabled: {}, isPayableAppealType: {} for caseId: {}",
-                canHandle, isAda, isEjp, isfeePaymentEnabled, isPayableAppealType, callback.getCaseDetails().getId());
-        return canHandle;
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
