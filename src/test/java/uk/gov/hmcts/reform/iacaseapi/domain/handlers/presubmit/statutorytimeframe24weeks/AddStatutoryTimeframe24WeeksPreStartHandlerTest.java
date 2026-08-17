@@ -164,11 +164,9 @@ class AddStatutoryTimeframe24WeeksPreStartHandlerTest {
     @EnumSource(value = State.class, names = {
         "PENDING_PAYMENT",
         "APPEAL_SUBMITTED",
-        "AWAITING_RESPONDENT_EVIDENCE",
-        "AWAITING_CLARIFYING_QUESTIONS_ANSWERS",
-        "CLARIFYING_QUESTIONS_ANSWERS_SUBMITTED"
+        "AWAITING_RESPONDENT_EVIDENCE"
     }, mode = EnumSource.Mode.EXCLUDE)
-    void should_return_error_when_state_is_not_supported(State state) {
+    void should_return_error_when_effective_state_is_not_permitted(State state) {
         when(callback.getCaseDetails().getState()).thenReturn(state);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -176,7 +174,7 @@ class AddStatutoryTimeframe24WeeksPreStartHandlerTest {
 
         final Set<String> errors = callbackResponse.getErrors();
         assertThat(errors).isNotEmpty();
-        assertTrue(errors.contains("This event cannot be run on this case"));
+        assertTrue(errors.contains("This event cannot be run on this case at this time"));
     }
 
     @ParameterizedTest

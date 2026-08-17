@@ -16,28 +16,20 @@ import java.util.Set;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_SUBMISSION_DATE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PRE_CLARIFYING_STATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.TRIBUNAL_RECEIVED_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.ADD_STATUTORY_TIMEFRAME_24_WEEKS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isAppealOutOfCountry;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isAppellantInDetention;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.statutorytimeframe24weeks.STF24WeeksUtils.getEffectiveState;
 
 @Component
 public class AddStatutoryTimeframe24WeeksPreStartHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final LocalDate stf24wLiveDate;
-    private static final Set<State> supportedStates = Set.of(
+    private static final Set<State> permittedStates = Set.of(
         State.PENDING_PAYMENT,
         State.APPEAL_SUBMITTED,
-        State.AWAITING_RESPONDENT_EVIDENCE,
-        State.AWAITING_CLARIFYING_QUESTIONS_ANSWERS,
-        State.CLARIFYING_QUESTIONS_ANSWERS_SUBMITTED
-    );
-
-    private static final Set<State> permittedPreClarifyingStates = Set.of(
-        State.APPEAL_SUBMITTED,
-        State.PENDING_PAYMENT,
         State.AWAITING_RESPONDENT_EVIDENCE
     );
 
@@ -70,23 +62,9 @@ public class AddStatutoryTimeframe24WeeksPreStartHandler implements PreSubmitCal
 
         PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
 
-        State currentState = callback.getCaseDetails().getState();
-        if (!supportedStates.contains(currentState)) {
-            String errorMessage = "This event cannot be run on this case";
-            response.addError(errorMessage);
-        }
-
-        boolean isClarifyingState = currentState == State.AWAITING_CLARIFYING_QUESTIONS_ANSWERS
-            || currentState == State.CLARIFYING_QUESTIONS_ANSWERS_SUBMITTED;
-
-        if (isClarifyingState) {
-            Optional<State> preClarifyingState = asylumCase.read(PRE_CLARIFYING_STATE, State.class);
-            boolean permitted = preClarifyingState
-                .map(permittedPreClarifyingStates::contains)
-                .orElse(false);
-            if (!permitted) {
-                response.addError("This event cannot be run on this case at this time");
-            }
+        State effectiveState = getEffectiveState(callback, asylumCase);
+        if (!permittedStates.contains(effectiveState)) {
+            response.addError("This event cannot be run on this case at this time");
         }
 
         if (!caseReceivedAfterLive(asylumCase)) {

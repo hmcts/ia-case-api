@@ -14,7 +14,6 @@ import java.util.EnumSet;
 import java.util.Set;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PRE_CLARIFYING_STATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
@@ -94,13 +93,7 @@ public class ValidEventStateFor24WeeksVerifier implements PreSubmitCallbackHandl
     }
 
     public State getEffectiveState(Callback<AsylumCase> callback, AsylumCase asylumCase) {
-        State currentState = callback.getCaseDetails().getState();
-        if (currentState == State.AWAITING_CLARIFYING_QUESTIONS_ANSWERS
-            || currentState == State.CLARIFYING_QUESTIONS_ANSWERS_SUBMITTED) {
-            return asylumCase.read(PRE_CLARIFYING_STATE, State.class)
-                .orElse(currentState);
-        }
-        return currentState;
+        return STF24WeeksUtils.getEffectiveState(callback, asylumCase);
     }
 
     public boolean isInvalidState(Event event, State state, boolean is24WeekCase) {
