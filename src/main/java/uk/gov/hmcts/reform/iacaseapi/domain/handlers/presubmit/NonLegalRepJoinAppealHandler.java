@@ -18,6 +18,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOIN_APPEAL_PIN;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NLR_DETAILS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.JOIN_APPEAL_CONFIRMATION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.updateSubscriptionsForNlr;
 
 @Component
 public class NonLegalRepJoinAppealHandler implements PreSubmitCallbackHandler<AsylumCase> {
@@ -80,6 +81,7 @@ public class NonLegalRepJoinAppealHandler implements PreSubmitCallbackHandler<As
             throw new IllegalStateException("Failed to assign case role to the new non legal rep: " + e.getMessage(), e);
         }
         asylumCase.write(HAS_NON_LEGAL_REP_JOINED, YesOrNo.YES);
+        updateSubscriptionsForNlr(asylumCase);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }

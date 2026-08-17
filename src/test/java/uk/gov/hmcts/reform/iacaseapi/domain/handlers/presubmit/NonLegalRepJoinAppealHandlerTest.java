@@ -1,11 +1,14 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
@@ -20,6 +23,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.Assignment;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.CcdDataService;
 
 import java.util.List;
@@ -35,6 +39,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOIN_APPEAL_PIN;
@@ -82,6 +87,7 @@ class NonLegalRepJoinAppealHandlerTest {
         .build();
 
     private NonLegalRepJoinAppealHandler nonLegalRepJoinAppealHandler;
+    private MockedStatic<HandlerUtils> handlerUtils;
 
     @BeforeEach
     public void setUp() {
@@ -90,6 +96,12 @@ class NonLegalRepJoinAppealHandlerTest {
         when(callback.getCaseDetailsBefore()).thenReturn(Optional.of(caseDetailsBefore));
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(caseDetailsBefore.getCaseData()).thenReturn(asylumCaseBefore);
+        handlerUtils = Mockito.mockStatic(HandlerUtils.class);
+    }
+
+    @AfterEach
+    public void tearDown() {
+        handlerUtils.close();
     }
 
     @Test
@@ -120,6 +132,7 @@ class NonLegalRepJoinAppealHandlerTest {
         verify(pinInPostDetails).setPinUsed(YesOrNo.YES);
         verify(asylumCase).write(JOIN_APPEAL_PIN, pinInPostDetails);
         verify(ccdDataService).giveUserAccessToCase(12345L, "someChangedIdamId");
+        handlerUtils.verify(() -> HandlerUtils.updateSubscriptionsForNlr(asylumCase), times(1));
     }
 
     @Test

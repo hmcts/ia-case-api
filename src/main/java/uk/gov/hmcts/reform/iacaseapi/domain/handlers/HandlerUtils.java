@@ -808,6 +808,10 @@ public class HandlerUtils {
     }
 
     public static void updateSubscriptionsForNlr(AsylumCase asylumCase) {
+        if (!hasNlrEmailChanged(asylumCase)) {
+            return;
+        }
+
         String nlrIdamId = asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class)
             .map(NonLegalRepDetails::getIdamId)
             .orElse(null);
@@ -822,6 +826,21 @@ public class HandlerUtils {
                 nlrDetails.getEmailAddress(), YES, nlrDetails.getPhoneNumber(), NO)));
         }
         asylumCase.write(SUBSCRIPTIONS, mutableSubscribers);
+    }
+
+    private static boolean hasNlrEmailChanged(AsylumCase asylumCase) {
+        String nlrEmail = asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class)
+            .map(NonLegalRepDetails::getEmailAddress)
+            .orElse(null);
+
+        Optional<List<IdValue<Subscriber>>> subscribers = asylumCase.read(SUBSCRIPTIONS);
+        String existingSubscriptionEmail = subscribers.orElse(List.of()).stream()
+            .filter(sub -> sub.getValue().getSubscriber() == SubscriberType.SUPPORTER)
+            .map(sub -> sub.getValue().getEmail())
+            .findFirst()
+            .orElse(null);
+
+        return !Objects.equals(nlrEmail, existingSubscriptionEmail);
     }
 
     public static boolean hasActiveNlr(AsylumCase asylumCase) {

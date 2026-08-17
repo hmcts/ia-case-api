@@ -32,7 +32,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -46,10 +45,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingAdjournmentDay.BEFORE_HEARING_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingAdjournmentDay.ON_HEARING_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre.GLASGOW;
@@ -1244,18 +1241,19 @@ class HandlerUtilsTest {
     }
 
     @Test
-    void updateSubscriptionsForNlr_writes_empty_to_subscriptions_if_no_nlr_and_empty() {
+    void updateSubscriptionsForNlr_does_not_write_if_no_nlr_and_no_existing_supporter() {
         updateSubscriptionsForNlr(asylumCase);
-        verify(asylumCase).write(SUBSCRIPTIONS, emptyList());
+        verify(asylumCase, never()).write(eq(SUBSCRIPTIONS), any());
     }
 
     @Test
-    void updateSubscriptionsForNlr_writes_non_supporters_to_subscriptions_if_no_nlr() {
+    void updateSubscriptionsForNlr_removes_supporter_if_no_nlr_but_existing_supporter() {
         Subscriber sub1 = mock(Subscriber.class);
         when(sub1.getSubscriber()).thenReturn(SubscriberType.APPELLANT);
         IdValue<Subscriber> sub1IdValue = new IdValue<>("1", sub1);
         Subscriber sub2 = mock(Subscriber.class);
         when(sub2.getSubscriber()).thenReturn(SubscriberType.SUPPORTER);
+        when(sub2.getEmail()).thenReturn("existing@email.com");
         IdValue<Subscriber> sub2IdValue = new IdValue<>("2", sub2);
         when(asylumCase.read(SUBSCRIPTIONS)).thenReturn(Optional.of(List.of(sub1IdValue, sub2IdValue)));
 
@@ -1307,12 +1305,14 @@ class HandlerUtilsTest {
         IdValue<Subscriber> sub1IdValue = new IdValue<>("1", sub1);
         Subscriber sub2 = mock(Subscriber.class);
         when(sub2.getSubscriber()).thenReturn(SubscriberType.SUPPORTER);
+        when(sub2.getEmail()).thenReturn("old-email");
         IdValue<Subscriber> sub2IdValue = new IdValue<>("2", sub2);
         Subscriber sub3 = mock(Subscriber.class);
         when(sub3.getSubscriber()).thenReturn(SubscriberType.APPELLANT);
         IdValue<Subscriber> sub3IdValue = new IdValue<>("3", sub3);
         Subscriber sub4 = mock(Subscriber.class);
         when(sub4.getSubscriber()).thenReturn(SubscriberType.SUPPORTER);
+        when(sub4.getEmail()).thenReturn("old-email");
         IdValue<Subscriber> sub4IdValue = new IdValue<>("4", sub4);
         when(asylumCase.read(SUBSCRIPTIONS))
             .thenReturn(Optional.of(List.of(sub1IdValue, sub2IdValue, sub3IdValue, sub4IdValue)));
@@ -1333,6 +1333,26 @@ class HandlerUtilsTest {
         assertEquals("some-phoneNumber", subscriber.getMobileNumber());
         assertEquals(YES, subscriber.getWantsEmail());
         assertEquals(NO, subscriber.getWantsSms());
+    }
+
+    @Test
+    void updateSubscriptionsForNlr_does_not_update_if_email_unchanged() {
+        when(asylumCase.read(HAS_NON_LEGAL_REP, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class)).thenReturn(Optional.of(NonLegalRepDetails.builder()
+            .emailAddress("same-email")
+            .phoneNumber("some-phoneNumber")
+            .idamId("some-idamId")
+            .build()
+        ));
+        Subscriber existingSupporter = mock(Subscriber.class);
+        when(existingSupporter.getSubscriber()).thenReturn(SubscriberType.SUPPORTER);
+        when(existingSupporter.getEmail()).thenReturn("same-email");
+        IdValue<Subscriber> supporterIdValue = new IdValue<>("1", existingSupporter);
+        when(asylumCase.read(SUBSCRIPTIONS)).thenReturn(Optional.of(List.of(supporterIdValue)));
+
+        updateSubscriptionsForNlr(asylumCase);
+
+        verify(asylumCase, never()).write(eq(SUBSCRIPTIONS), any());
     }
 
     @Test
