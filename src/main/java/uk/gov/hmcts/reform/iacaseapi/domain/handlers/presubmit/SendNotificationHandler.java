@@ -164,7 +164,7 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
             Event.REMOVE_STATUTORY_TIMEFRAME_24_WEEKS,
             Event.REVOKE_CITIZEN_ACCESS,
             Event.GENERATE_PIN_IN_POST,
-            Event.RESEND_TIMELINE_NOTICE,
+            Event.SEND_LATE_TIMELINE_NOTICE,
             Event.COMPLETE_CASE_REVIEW
         );
         if (!isSaveAndContinueEnabled) {
@@ -248,7 +248,7 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
             Event.REFUND_CONFIRMATION,
             Event.HEARING_CANCELLED,
             Event.REMOVE_STATUTORY_TIMEFRAME_24_WEEKS,
-            Event.RESEND_TIMELINE_NOTICE,
+            Event.SEND_LATE_TIMELINE_NOTICE,
             Event.COMPLETE_CASE_REVIEW
         );
 

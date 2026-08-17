@@ -478,7 +478,7 @@ class SendNotificationHandlerTest {
         Event.HEARING_CANCELLED,
         Event.REMOVE_STATUTORY_TIMEFRAME_24_WEEKS,
         Event.GENERATE_PIN_IN_POST,
-        Event.RESEND_TIMELINE_NOTICE,
+        Event.SEND_LATE_TIMELINE_NOTICE,
         Event.COMPLETE_CASE_REVIEW
     );
 
@@ -541,7 +541,7 @@ class SendNotificationHandlerTest {
         Event.REQUEST_RESPONDENT_EVIDENCE,
         Event.REMOVE_STATUTORY_TIMEFRAME_24_WEEKS,
         Event.CHANGE_DIRECTION_DUE_DATE,
-        Event.RESEND_TIMELINE_NOTICE,
+        Event.SEND_LATE_TIMELINE_NOTICE,
         Event.COMPLETE_CASE_REVIEW
     );
 
