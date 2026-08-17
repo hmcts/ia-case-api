@@ -334,7 +334,7 @@ class DecideAnApplicationHandlerTest {
             decideAnApplicationHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
-        verify(asylumCase, never()).clear(REMOVAL_OF_24W_DECISION_JUDGE);
+        verify(asylumCase, never()).clear(REMOVAL_OF_24W_DECISION_DECISION_MAKER);
     }
 
     @Test
@@ -349,7 +349,7 @@ class DecideAnApplicationHandlerTest {
             decideAnApplicationHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
-        verify(asylumCase).clear(REMOVAL_OF_24W_DECISION_JUDGE);
+        verify(asylumCase).clear(REMOVAL_OF_24W_DECISION_DECISION_MAKER);
     }
 
     @ParameterizedTest
@@ -365,7 +365,7 @@ class DecideAnApplicationHandlerTest {
             decideAnApplicationHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
-        verify(asylumCase).clear(REMOVAL_OF_24W_DECISION_JUDGE);
+        verify(asylumCase).clear(REMOVAL_OF_24W_DECISION_DECISION_MAKER);
     }
 
     @Test

@@ -74,7 +74,7 @@ class RemoveStatutoryTimeframe24WeeksPreparerTest {
         when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(UserRoleLabel.ADMIN_OFFICER);
         removeStatutoryTimeframe24WeeksPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
         verify(asylumCase).clear(AsylumCaseFieldDefinition.REMOVAL_OF_24W_DECISION_REASON);
-        verify(asylumCase).clear(AsylumCaseFieldDefinition.REMOVAL_OF_24W_DECISION_JUDGE);
+        verify(asylumCase).clear(AsylumCaseFieldDefinition.REMOVAL_OF_24W_DECISION_DECISION_MAKER);
     }
 
     @Test
@@ -86,7 +86,7 @@ class RemoveStatutoryTimeframe24WeeksPreparerTest {
         when(userDetails.getForenameAndSurname()).thenReturn("Judge John Doe");
         removeStatutoryTimeframe24WeeksPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
         verify(asylumCase).clear(AsylumCaseFieldDefinition.REMOVAL_OF_24W_DECISION_REASON);
-        verify(asylumCase).write(AsylumCaseFieldDefinition.REMOVAL_OF_24W_DECISION_JUDGE, "Judge John Doe");
+        verify(asylumCase).write(AsylumCaseFieldDefinition.REMOVAL_OF_24W_DECISION_DECISION_MAKER, "Judge John Doe");
     }
 
     @Test

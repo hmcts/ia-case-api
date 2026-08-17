@@ -88,8 +88,8 @@ class DecideAnApplicationPreparerTest {
             .write(MAKE_AN_APPLICATIONS_LIST,
                 new DynamicList(new Value("1", "Legal representative : Application 1"),
                     List.of(new Value("1", "Legal representative : Application 1"))));
-        verify(asylumCase, never()).write(eq(REMOVAL_OF_24W_DECISION_JUDGE), anyString());
-        verify(asylumCase).clear(REMOVAL_OF_24W_DECISION_JUDGE);
+        verify(asylumCase, never()).write(eq(REMOVAL_OF_24W_DECISION_DECISION_MAKER), anyString());
+        verify(asylumCase).clear(REMOVAL_OF_24W_DECISION_DECISION_MAKER);
     }
 
     @Test
@@ -120,8 +120,8 @@ class DecideAnApplicationPreparerTest {
             .write(MAKE_AN_APPLICATIONS_LIST,
                 new DynamicList(new Value("1", "Legal representative : Application 1"),
                     List.of(new Value("1", "Legal representative : Application 1"))));
-        verify(asylumCase).write(REMOVAL_OF_24W_DECISION_JUDGE, "Judge Judy");
-        verify(asylumCase, never()).clear(REMOVAL_OF_24W_DECISION_JUDGE);
+        verify(asylumCase).write(REMOVAL_OF_24W_DECISION_DECISION_MAKER, "Judge Judy");
+        verify(asylumCase, never()).clear(REMOVAL_OF_24W_DECISION_DECISION_MAKER);
     }
 
     @Test

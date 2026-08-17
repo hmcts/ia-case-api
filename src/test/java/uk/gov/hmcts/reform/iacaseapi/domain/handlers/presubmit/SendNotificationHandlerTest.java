@@ -398,7 +398,7 @@ class SendNotificationHandlerTest {
         sendNotificationHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         verify(expectedUpdatedCase).clear(IS_REMOVAL_OF_24W_APPLICATION_REFUSED);
-        verify(expectedUpdatedCase).clear(REMOVAL_OF_24W_DECISION_JUDGE);
+        verify(expectedUpdatedCase).clear(REMOVAL_OF_24W_DECISION_DECISION_MAKER);
     }
 
     @Test
@@ -414,7 +414,7 @@ class SendNotificationHandlerTest {
         sendNotificationHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         verify(expectedUpdatedCase).clear(IS_REMOVAL_OF_24W_APPLICATION_REFUSED);
-        verify(expectedUpdatedCase).clear(REMOVAL_OF_24W_DECISION_JUDGE);
+        verify(expectedUpdatedCase).clear(REMOVAL_OF_24W_DECISION_DECISION_MAKER);
     }
 
 
@@ -431,7 +431,7 @@ class SendNotificationHandlerTest {
         sendNotificationHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         verify(expectedUpdatedCase, never()).clear(IS_REMOVAL_OF_24W_APPLICATION_REFUSED);
-        verify(expectedUpdatedCase, never()).clear(REMOVAL_OF_24W_DECISION_JUDGE);
+        verify(expectedUpdatedCase, never()).clear(REMOVAL_OF_24W_DECISION_DECISION_MAKER);
     }
 
     private static final List<Event> allowedEventTypes = List.of(

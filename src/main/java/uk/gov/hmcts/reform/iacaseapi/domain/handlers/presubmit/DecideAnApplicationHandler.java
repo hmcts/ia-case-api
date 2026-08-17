@@ -135,7 +135,7 @@ public class DecideAnApplicationHandler implements PreSubmitCallbackHandler<Asyl
         asylumCase.clear(MAKE_AN_APPLICATION_DECISION_REASON);
 
         if (!isPertaining24wRemoval || !UserRoleLabel.JUDGE.equals(decisionMakerRoleObj)) {
-            asylumCase.clear(REMOVAL_OF_24W_DECISION_JUDGE);
+            asylumCase.clear(REMOVAL_OF_24W_DECISION_DECISION_MAKER);
         }
 
         return response;

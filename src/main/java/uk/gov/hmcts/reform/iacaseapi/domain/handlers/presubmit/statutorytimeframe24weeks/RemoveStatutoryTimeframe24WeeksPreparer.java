@@ -12,7 +12,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMOVAL_OF_24W_DECISION_JUDGE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMOVAL_OF_24W_DECISION_DECISION_MAKER;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.REMOVE_STATUTORY_TIMEFRAME_24_WEEKS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 
@@ -49,9 +49,9 @@ public class RemoveStatutoryTimeframe24WeeksPreparer implements PreSubmitCallbac
 
         UserRoleLabel userRole = userDetailsHelper.getLoggedInUserRoleLabel(userDetails);
         if (UserRoleLabel.JUDGE.equals(userRole)) {
-            asylumCase.write(REMOVAL_OF_24W_DECISION_JUDGE, userDetails.getForenameAndSurname());
+            asylumCase.write(REMOVAL_OF_24W_DECISION_DECISION_MAKER, userDetails.getForenameAndSurname());
         } else {
-            asylumCase.clear(REMOVAL_OF_24W_DECISION_JUDGE);
+            asylumCase.clear(REMOVAL_OF_24W_DECISION_DECISION_MAKER);
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);

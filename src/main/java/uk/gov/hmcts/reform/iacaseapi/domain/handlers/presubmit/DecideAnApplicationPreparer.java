@@ -76,9 +76,9 @@ public class DecideAnApplicationPreparer implements PreSubmitCallbackHandler<Asy
 
         UserRoleLabel userRole = userDetailsHelper.getLoggedInUserRoleLabel(userDetails);
         if (UserRoleLabel.JUDGE.equals(userRole)) {
-            asylumCase.write(REMOVAL_OF_24W_DECISION_JUDGE, userDetails.getForenameAndSurname());
+            asylumCase.write(REMOVAL_OF_24W_DECISION_DECISION_MAKER, userDetails.getForenameAndSurname());
         } else {
-            asylumCase.clear(REMOVAL_OF_24W_DECISION_JUDGE);
+            asylumCase.clear(REMOVAL_OF_24W_DECISION_DECISION_MAKER);
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
