@@ -5,9 +5,11 @@ import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.FORCE_CASE_TO_SUBMIT_HEARING_REQUIREMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import java.util.List;
 import java.util.Optional;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -61,6 +63,18 @@ public class ForceCaseToSubmitHearingRequirementsHandler implements PreSubmitCal
                 .getCaseDetails()
                 .getCaseData();
 
+        PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
+
+        boolean is24WeekCase = asylumCase
+            .read(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class)
+            .map(status -> status == YES)
+            .orElse(false);
+
+        if (is24WeekCase) {
+            response.addError("This event cannot be run on this case");
+            return response;
+        }
+
         String caseNoteDescription = asylumCase
             .read(REASON_TO_FORCE_CASE_TO_SUBMIT_HEARING_REQUIREMENTS, String.class)
             .orElseThrow(() -> new IllegalStateException("reasonToForceCaseToSubmitHearingRequirements is not present"));
@@ -82,7 +96,7 @@ public class ForceCaseToSubmitHearingRequirementsHandler implements PreSubmitCal
 
         asylumCase.clear(REASON_TO_FORCE_CASE_TO_SUBMIT_HEARING_REQUIREMENTS);
 
-        return new PreSubmitCallbackResponse<>(asylumCase);
+        return response;
     }
 
     private String buildFullName() {
