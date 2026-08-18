@@ -15,6 +15,7 @@
         <cve>CVE-2026-63263</cve>
         <cve>CVE-2026-66299</cve>
         <cve>CVE-2026-64607</cve>
+        <cve>CVE-2026-71290</cve>
     </suppress>
     <suppress>
         <notes>Awaiting tomcat 10.1.58</notes>
