@@ -3,6 +3,8 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -92,8 +94,9 @@ class DecideAnApplicationPreparerTest {
         verify(asylumCase).clear(REMOVAL_OF_24W_DECISION_DECISION_MAKER);
     }
 
-    @Test
-    void should_write_judge_name_if_logged_in() {
+    @ParameterizedTest
+    @EnumSource(value = UserRoleLabel.class, names = {"JUDGE", "TRIBUNAL_CASEWORKER"})
+    void should_write_user_name_if_logged_in_valid_user(UserRoleLabel userRoleLabel) {
 
         when(dateProvider.now()).thenReturn(LocalDate.MAX);
 
@@ -108,7 +111,7 @@ class DecideAnApplicationPreparerTest {
             List.of(new IdValue<>("1", makeAnApplication));
 
         when(asylumCase.read(MAKE_AN_APPLICATIONS)).thenReturn(Optional.of(makeAnApplications));
-        when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(UserRoleLabel.JUDGE);
+        when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(userRoleLabel);
         when(userDetails.getForenameAndSurname()).thenReturn("Judge Judy");
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             decideAnApplicationPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
@@ -122,6 +125,40 @@ class DecideAnApplicationPreparerTest {
                     List.of(new Value("1", "Legal representative : Application 1"))));
         verify(asylumCase).write(REMOVAL_OF_24W_DECISION_DECISION_MAKER, "Judge Judy");
         verify(asylumCase, never()).clear(REMOVAL_OF_24W_DECISION_DECISION_MAKER);
+    }
+
+
+    @ParameterizedTest
+    @EnumSource(value = UserRoleLabel.class, names = {"JUDGE", "TRIBUNAL_CASEWORKER"}, mode = EnumSource.Mode.EXCLUDE)
+    void should_clear_user_name_if_logged_in_non_valid_user(UserRoleLabel userRoleLabel) {
+
+        when(dateProvider.now()).thenReturn(LocalDate.MAX);
+
+        List<IdValue<Document>> evidence =
+            List.of(new IdValue<>("1", new Document("url", "url", "FileName")));
+        MakeAnApplication makeAnApplication =
+            new MakeAnApplication("Legal representative", "Update appeal details", "A reason to update appeal details",
+                evidence, dateProvider.now().toString(), "Pending",
+                State.LISTING.toString());
+        makeAnApplication.setApplicantRole("caseworker-ia-caseofficer");
+        final List<IdValue<MakeAnApplication>> makeAnApplications =
+            List.of(new IdValue<>("1", makeAnApplication));
+
+        when(asylumCase.read(MAKE_AN_APPLICATIONS)).thenReturn(Optional.of(makeAnApplications));
+        when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(userRoleLabel);
+        when(userDetails.getForenameAndSurname()).thenReturn("Judge Judy");
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            decideAnApplicationPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, times(1))
+            .write(MAKE_AN_APPLICATIONS_LIST,
+                new DynamicList(new Value("1", "Legal representative : Application 1"),
+                    List.of(new Value("1", "Legal representative : Application 1"))));
+        verify(asylumCase, never()).write(eq(REMOVAL_OF_24W_DECISION_DECISION_MAKER), any());
+        verify(asylumCase).clear(REMOVAL_OF_24W_DECISION_DECISION_MAKER);
     }
 
     @Test

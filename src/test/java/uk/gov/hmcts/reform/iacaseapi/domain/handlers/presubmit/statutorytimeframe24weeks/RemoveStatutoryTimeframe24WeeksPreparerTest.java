@@ -18,8 +18,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMOVAL_OF_24W_DECISION_DECISION_MAKER;
 
 @ExtendWith(MockitoExtension.class)
 class RemoveStatutoryTimeframe24WeeksPreparerTest {
@@ -74,19 +74,34 @@ class RemoveStatutoryTimeframe24WeeksPreparerTest {
         when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(UserRoleLabel.ADMIN_OFFICER);
         removeStatutoryTimeframe24WeeksPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
         verify(asylumCase).clear(AsylumCaseFieldDefinition.REMOVAL_OF_24W_DECISION_REASON);
-        verify(asylumCase).clear(AsylumCaseFieldDefinition.REMOVAL_OF_24W_DECISION_DECISION_MAKER);
+        verify(asylumCase).clear(REMOVAL_OF_24W_DECISION_DECISION_MAKER);
     }
 
-    @Test
-    void handle_sets_judge_if_judge_logged_in() {
+    @ParameterizedTest
+    @EnumSource(value = UserRoleLabel.class, names = {"JUDGE", "TRIBUNAL_CASEWORKER"})
+    void handle_sets_decision_maker_if_valid_user_logged_in(UserRoleLabel userRoleLabel) {
         when(callback.getEvent()).thenReturn(Event.REMOVE_STATUTORY_TIMEFRAME_24_WEEKS);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(UserRoleLabel.JUDGE);
+        when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(userRoleLabel);
         when(userDetails.getForenameAndSurname()).thenReturn("Judge John Doe");
         removeStatutoryTimeframe24WeeksPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
         verify(asylumCase).clear(AsylumCaseFieldDefinition.REMOVAL_OF_24W_DECISION_REASON);
-        verify(asylumCase).write(AsylumCaseFieldDefinition.REMOVAL_OF_24W_DECISION_DECISION_MAKER, "Judge John Doe");
+        verify(asylumCase).write(REMOVAL_OF_24W_DECISION_DECISION_MAKER, "Judge John Doe");
+        verify(asylumCase, never()).clear(REMOVAL_OF_24W_DECISION_DECISION_MAKER);
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = UserRoleLabel.class, names = {"JUDGE", "TRIBUNAL_CASEWORKER"}, mode = EnumSource.Mode.EXCLUDE)
+    void handle_clears_decision_maker_if_non_valid_user_logged_in(UserRoleLabel userRoleLabel) {
+        when(callback.getEvent()).thenReturn(Event.REMOVE_STATUTORY_TIMEFRAME_24_WEEKS);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(userRoleLabel);
+        removeStatutoryTimeframe24WeeksPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+        verify(asylumCase).clear(AsylumCaseFieldDefinition.REMOVAL_OF_24W_DECISION_REASON);
+        verify(asylumCase, never()).write(eq(REMOVAL_OF_24W_DECISION_DECISION_MAKER), anyString());
+        verify(asylumCase).clear(REMOVAL_OF_24W_DECISION_DECISION_MAKER);
     }
 
     @Test
