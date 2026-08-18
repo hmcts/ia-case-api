@@ -696,6 +696,147 @@ class HomeOfficeCaseNotificationsHandlerTest {
         assertTrue(selectedDirection.isEmpty());
     }
 
+    @ParameterizedTest
+    @EnumSource(Event.class)
+    void cannot_handle_if_invalid_callback_stage(Event event) {
+        when(callback.getEvent()).thenReturn(event);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        for (State state : State.values()) {
+            when(callback.getCaseDetails().getState()).thenReturn(state);
+            List<PreSubmitCallbackStage> invalidCallbackStages = Arrays.stream(PreSubmitCallbackStage.values())
+                .filter(callbackStage -> callbackStage != ABOUT_TO_SUBMIT).toList();
+            for (PreSubmitCallbackStage callbackStage : invalidCallbackStages) {
+                assertFalse(homeOfficeCaseNotificationsHandler.canHandle(callbackStage, callback));
+            }
+        }
+    }
+
+    @ParameterizedTest
+    @EnumSource(State.class)
+    void it_can_handle_callback_change_direction_due_date(State state) {
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(CHANGE_DIRECTION_DUE_DATE);
+        when(callback.getCaseDetails().getState()).thenReturn(state);
+        when(asylumCase.read(DIRECTION_EDIT_PARTIES, Parties.class)).thenReturn(Optional.of(Parties.RESPONDENT));
+
+        boolean canHandle = homeOfficeCaseNotificationsHandler.canHandle(ABOUT_TO_SUBMIT, callback);
+        if (List.of(AWAITING_RESPONDENT_EVIDENCE, RESPONDENT_REVIEW).contains(state)) {
+            assertTrue(canHandle);
+        } else {
+            assertFalse(canHandle);
+        }
+    }
+
+    @ParameterizedTest
+    @EnumSource(State.class)
+    void it_can_handle_callback_send_direction(State state) {
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(SEND_DIRECTION);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getCaseDetails().getState()).thenReturn(state);
+        when(asylumCase.read(DIRECTION_EDIT_PARTIES, Parties.class))
+            .thenReturn(Optional.of(Parties.RESPONDENT));
+        when(asylumCase.read(AsylumCaseFieldDefinition.DIRECTIONS))
+            .thenReturn(Optional.of(List.of(lrDirectionNoTag, respondentDirectionNoTag)));
+
+        boolean canHandle = homeOfficeCaseNotificationsHandler.canHandle(ABOUT_TO_SUBMIT, callback);
+        if (state.equals(AWAITING_RESPONDENT_EVIDENCE)) {
+            assertTrue(canHandle);
+        } else {
+            assertFalse(canHandle);
+        }
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {"SEND_DIRECTION", "CHANGE_DIRECTION_DUE_DATE", "ASYNC_STITCHING_COMPLETE"}, mode = EnumSource.Mode.EXCLUDE)
+    void it_can_handle_callback(Event event) {
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(event);
+        List<Event> validEvents = List.of(
+            REQUEST_RESPONDENT_EVIDENCE,
+            REQUEST_RESPONDENT_REVIEW,
+            LIST_CASE,
+            EDIT_CASE_LISTING,
+            ADJOURN_HEARING_WITHOUT_DATE,
+            SEND_DECISION_AND_REASONS,
+            APPLY_FOR_FTPA_APPELLANT,
+            APPLY_FOR_FTPA_RESPONDENT,
+            LEADERSHIP_JUDGE_FTPA_DECISION,
+            RESIDENT_JUDGE_FTPA_DECISION,
+            DECIDE_FTPA_APPLICATION,
+            END_APPEAL,
+            REQUEST_RESPONSE_AMEND);
+        for (State state : State.values()) {
+            when(callback.getCaseDetails()).thenReturn(caseDetails);
+            when(caseDetails.getCaseData()).thenReturn(asylumCase);
+            when(callback.getCaseDetails().getState()).thenReturn(state);
+            when(asylumCase.read(DIRECTION_EDIT_PARTIES, Parties.class))
+                .thenReturn(Optional.of(Parties.RESPONDENT));
+            when(asylumCase.read(AsylumCaseFieldDefinition.DIRECTIONS))
+                .thenReturn(Optional.of(Collections.singletonList(lrDirectionNoTag)));
+
+            boolean canHandle = homeOfficeCaseNotificationsHandler.canHandle(ABOUT_TO_SUBMIT, callback);
+
+            if (validEvents.contains(event)) {
+                assertTrue(canHandle);
+            } else {
+                assertFalse(canHandle);
+            }
+        }
+        reset(callback);
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {"SEND_DIRECTION", "CHANGE_DIRECTION_DUE_DATE"}, mode = EnumSource.Mode.EXCLUDE)
+    void it_can_not_handle_callback_isNotificationTurnedOff_yes(Event event) {
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(event);
+        for (State state : State.values()) {
+            when(callback.getCaseDetails()).thenReturn(caseDetails);
+            when(caseDetails.getCaseData()).thenReturn(asylumCase);
+            when(callback.getCaseDetails().getState()).thenReturn(state);
+            when(asylumCase.read(DIRECTION_EDIT_PARTIES, Parties.class))
+                .thenReturn(Optional.of(Parties.RESPONDENT));
+            when(asylumCase.read(AsylumCaseFieldDefinition.DIRECTIONS))
+                .thenReturn(Optional.of(Collections.singletonList(lrDirectionNoTag)));
+            when(asylumCase.read(IS_NOTIFICATION_TURNED_OFF, YesOrNo.class))
+                .thenReturn(Optional.of(YES));
+
+            boolean canHandle = homeOfficeCaseNotificationsHandler.canHandle(ABOUT_TO_SUBMIT, callback);
+
+            assertFalse(canHandle);
+        }
+        reset(callback);
+    }
+
+    @Test
+    void it_cannot_handle_if_edit_case_listing_for_remote_to_remote_hearing_channel_update() {
+
+        when(asylumCaseBefore.read(LIST_CASE_HEARING_CENTRE, HearingCentre.class))
+            .thenReturn(Optional.of(GLASGOW));
+        when(asylumCase.read(LIST_CASE_HEARING_CENTRE, HearingCentre.class))
+            .thenReturn(Optional.of(GLASGOW));
+        when(asylumCaseBefore.read(LIST_CASE_HEARING_DATE, String.class))
+            .thenReturn(Optional.of("01/02/2024"));
+        when(asylumCase.read(LIST_CASE_HEARING_DATE, String.class))
+            .thenReturn(Optional.of("01/02/2024"));
+        when(asylumCaseBefore.read(IS_REMOTE_HEARING, YesOrNo.class))
+            .thenReturn(Optional.of(YES));
+        when(asylumCase.read(IS_REMOTE_HEARING, YesOrNo.class)).thenReturn(Optional.of(YES));
+
+        when(callback.getEvent()).thenReturn(EDIT_CASE_LISTING);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getCaseDetailsBefore()).thenReturn(Optional.of(caseDetailsBefore));
+        when(caseDetailsBefore.getCaseData()).thenReturn(asylumCaseBefore);
+
+        for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
+
+            assertFalse(homeOfficeCaseNotificationsHandler.canHandle(callbackStage, callback));
+        }
+    }
+
     @Test
     void getLatestNonStandardRespondentDirection_throws_if_no_directions() {
         when(asylumCase.read(AsylumCaseFieldDefinition.DIRECTIONS)).thenReturn(Optional.empty());
