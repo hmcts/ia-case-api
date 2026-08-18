@@ -1,5 +1,33 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseFlagDetail;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseFlagValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterDetails;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.NonLegalRepDetails;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.PartyFlagIdValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlag;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.WitnessDetails;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -16,6 +44,8 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_NAME_FOR_DISPLAY;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.INTERPRETER_DETAILS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.INTERPRETER_LEVEL_FLAGS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NLR_DETAILS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NLR_LEVEL_FLAGS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_DETAILS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_LEVEL_FLAGS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
@@ -24,33 +54,8 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO
 import static uk.gov.hmcts.reform.iacaseapi.domain.service.StrategicCaseFlagService.ACTIVE_STATUS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.service.StrategicCaseFlagService.ROLE_ON_CASE_APPELLANT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.service.StrategicCaseFlagService.ROLE_ON_CASE_INTERPRETER;
+import static uk.gov.hmcts.reform.iacaseapi.domain.service.StrategicCaseFlagService.ROLE_ON_CASE_NLR;
 import static uk.gov.hmcts.reform.iacaseapi.domain.service.StrategicCaseFlagService.ROLE_ON_CASE_WITNESS;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseFlagDetail;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseFlagValue;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterDetails;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.PartyFlagIdValue;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlag;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.WitnessDetails;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -64,6 +69,8 @@ class CreateFlagHandlerTest {
     @Captor
     private ArgumentCaptor<StrategicCaseFlag> appellantFlagsCaptor;
     @Captor
+    private ArgumentCaptor<StrategicCaseFlag> nlrFlagsCaptor;
+    @Captor
     private ArgumentCaptor<StrategicCaseFlag> caseFlagsCaptor;
 
     @Mock
@@ -76,6 +83,9 @@ class CreateFlagHandlerTest {
     private CreateFlagHandler createFlagHandler;
 
     private final String appellantNameForDisplay = "some-name";
+    private final String nlrGivenName = "given";
+    private final String nlrFamilyName = "family";
+    private final String nlrFullName = nlrGivenName + " " + nlrFamilyName;
 
     private final String partyId1 = "witnessPartyId1";
     private final String interpreterPartyId1 = "interpreterPartyId1";
@@ -220,7 +230,7 @@ class CreateFlagHandlerTest {
         assertEquals(asylumCase, callbackResponse.getData());
 
         verify(asylumCase, times(1))
-                .write(eq(WITNESS_LEVEL_FLAGS), witnessFlagsCaptor.capture());
+            .write(eq(WITNESS_LEVEL_FLAGS), witnessFlagsCaptor.capture());
         assertNotNull(witnessFlagsCaptor.getValue());
         assertEquals(2, witnessFlagsCaptor.getValue().size());
         assertTrue(witnessFlagsCaptor.getValue().contains(expected.getFirst()));
@@ -233,21 +243,21 @@ class CreateFlagHandlerTest {
         final String fullName1 = interpreterName1 + " " + interpreterFamilyName1;
         final String fullName2 = interpreterName2 + " " + interpreterFamilyName2;
         final StrategicCaseFlag interpreterFlag1 = new StrategicCaseFlag(
-                fullName1, ROLE_ON_CASE_INTERPRETER, Collections.emptyList());
+            fullName1, ROLE_ON_CASE_INTERPRETER, Collections.emptyList());
         final StrategicCaseFlag interpreterFlag2 = new StrategicCaseFlag(
-                fullName2, ROLE_ON_CASE_INTERPRETER, Collections.emptyList());
+            fullName2, ROLE_ON_CASE_INTERPRETER, Collections.emptyList());
         final List<PartyFlagIdValue> expected = List.of(
-                new PartyFlagIdValue(interpreterPartyId1, interpreterFlag1),
-                new PartyFlagIdValue(interpreterPartyId2, interpreterFlag2));
+            new PartyFlagIdValue(interpreterPartyId1, interpreterFlag1),
+            new PartyFlagIdValue(interpreterPartyId2, interpreterFlag2));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                createFlagHandler.handle(ABOUT_TO_START, callback);
+            createFlagHandler.handle(ABOUT_TO_START, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
         verify(asylumCase, times(1))
-                .write(eq(INTERPRETER_LEVEL_FLAGS), interpreterFlagsCaptor.capture());
+            .write(eq(INTERPRETER_LEVEL_FLAGS), interpreterFlagsCaptor.capture());
         assertNotNull(interpreterFlagsCaptor.getValue());
         assertEquals(2, interpreterFlagsCaptor.getValue().size());
         assertTrue(interpreterFlagsCaptor.getValue().contains(expected.getFirst()));
@@ -258,22 +268,22 @@ class CreateFlagHandlerTest {
     void test_handle_interpreter_level_flags_when_some_interpreters_have_existing_flags() {
 
         final List<CaseFlagDetail> caseFlagDetails =
-                List.of(new CaseFlagDetail("flagId", CaseFlagValue.builder().status(ACTIVE_STATUS).build()));
+            List.of(new CaseFlagDetail("flagId", CaseFlagValue.builder().status(ACTIVE_STATUS).build()));
         final String fullName1 = interpreterName1 + " " + interpreterFamilyName1;
         final String fullName2 = interpreterName2 + " " + interpreterFamilyName2;
         final StrategicCaseFlag interpreterFlag1 = new StrategicCaseFlag(
-                fullName1, ROLE_ON_CASE_INTERPRETER, caseFlagDetails);
+            fullName1, ROLE_ON_CASE_INTERPRETER, caseFlagDetails);
         final StrategicCaseFlag interpreterFlag2 = new StrategicCaseFlag(
-                fullName2, ROLE_ON_CASE_INTERPRETER, Collections.emptyList());
+            fullName2, ROLE_ON_CASE_INTERPRETER, Collections.emptyList());
         final List<PartyFlagIdValue> expected = List.of(
-                new PartyFlagIdValue(interpreterPartyId1, interpreterFlag1),
-                new PartyFlagIdValue(interpreterPartyId2, interpreterFlag2));
+            new PartyFlagIdValue(interpreterPartyId1, interpreterFlag1),
+            new PartyFlagIdValue(interpreterPartyId2, interpreterFlag2));
 
         when(asylumCase.read(INTERPRETER_LEVEL_FLAGS))
-                .thenReturn(Optional.of(List.of(new PartyFlagIdValue(interpreterPartyId1, interpreterFlag1))));
+            .thenReturn(Optional.of(List.of(new PartyFlagIdValue(interpreterPartyId1, interpreterFlag1))));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                createFlagHandler.handle(ABOUT_TO_START, callback);
+            createFlagHandler.handle(ABOUT_TO_START, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
@@ -296,6 +306,74 @@ class CreateFlagHandlerTest {
 
         verify(asylumCase, times(1)).write(eq(APPELLANT_LEVEL_FLAGS), caseFlagsCaptor.capture());
         assertNotNull(caseFlagsCaptor.getValue());
+    }
+
+    @Test
+    void test_handle_nlr_level_flags() {
+        when(asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class)).thenReturn(Optional.of(NonLegalRepDetails.builder()
+            .idamId("someId")
+            .givenNames(nlrGivenName)
+            .familyName(nlrFamilyName)
+            .build()));
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse = createFlagHandler
+            .handle(ABOUT_TO_START, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, times(1)).write(eq(NLR_LEVEL_FLAGS), nlrFlagsCaptor.capture());
+        assertTrue(nlrFlagsCaptor.getValue().getDetails().isEmpty());
+        assertEquals(ROLE_ON_CASE_NLR, nlrFlagsCaptor.getValue().getRoleOnCase());
+        assertEquals(nlrFullName, nlrFlagsCaptor.getValue().getPartyName());
+    }
+
+    @Test
+    void test_handle_nlr_level_flags_when_appellant_has_existing_flags() {
+        when(asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class)).thenReturn(Optional.of(NonLegalRepDetails.builder()
+            .idamId("someId")
+            .givenNames(nlrGivenName)
+            .familyName(nlrFamilyName)
+            .build()));
+        List<CaseFlagDetail> caseFlagDetails =
+            List.of(new CaseFlagDetail("flagId", CaseFlagValue.builder().build()));
+        StrategicCaseFlag nlrFlag = new StrategicCaseFlag(
+            nlrFullName, ROLE_ON_CASE_NLR, caseFlagDetails);
+        when(asylumCase.read(NLR_LEVEL_FLAGS, StrategicCaseFlag.class))
+            .thenReturn(Optional.of(nlrFlag));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse = createFlagHandler
+            .handle(ABOUT_TO_START, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, never()).write(eq(NLR_LEVEL_FLAGS), any());
+    }
+
+    @Test
+    void should_update_nlr_name_in_existing_flags() {
+        when(asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class)).thenReturn(Optional.of(NonLegalRepDetails.builder()
+            .idamId("someId")
+            .givenNames(nlrGivenName)
+            .familyName(nlrFamilyName)
+            .build()));
+        List<CaseFlagDetail> caseFlagDetails =
+            List.of(new CaseFlagDetail("flagId", CaseFlagValue.builder().status(ACTIVE_STATUS).build()));
+        StrategicCaseFlag nlrFlag = new StrategicCaseFlag(
+            "nlrOldName", ROLE_ON_CASE_NLR, caseFlagDetails);
+        when(asylumCase.read(NLR_LEVEL_FLAGS, StrategicCaseFlag.class))
+            .thenReturn(Optional.of(nlrFlag));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse = createFlagHandler
+            .handle(ABOUT_TO_START, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, times(1)).write(eq(NLR_LEVEL_FLAGS), nlrFlagsCaptor.capture());
+        assertEquals("flagId", nlrFlagsCaptor.getValue().getDetails().getFirst().getId());
+        assertEquals(ROLE_ON_CASE_NLR, nlrFlagsCaptor.getValue().getRoleOnCase());
+        assertEquals(nlrFullName, nlrFlagsCaptor.getValue().getPartyName());
     }
 
     @Test
