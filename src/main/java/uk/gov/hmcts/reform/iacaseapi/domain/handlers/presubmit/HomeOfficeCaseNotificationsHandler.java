@@ -90,11 +90,13 @@ public class HomeOfficeCaseNotificationsHandler implements PreSubmitCallbackHand
 
     protected boolean canHandleChangeDirectionDueDate(Callback<AsylumCase> callback) {
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
+        if (!callback.getEvent().equals(Event.CHANGE_DIRECTION_DUE_DATE)) {
+            return false;
+        }
         Parties parties = asylumCase.read(AsylumCaseFieldDefinition.DIRECTION_EDIT_PARTIES, Parties.class)
             .orElseThrow(() -> new IllegalStateException("sendDirectionParties is not present"));
         boolean isDirectionForRespondentParties = parties.equals(Parties.RESPONDENT);
-        return callback.getEvent() == Event.CHANGE_DIRECTION_DUE_DATE
-            && List.of(State.AWAITING_RESPONDENT_EVIDENCE, State.RESPONDENT_REVIEW)
+        return List.of(State.AWAITING_RESPONDENT_EVIDENCE, State.RESPONDENT_REVIEW)
             .contains(callback.getCaseDetails().getState())
             && isDirectionForRespondentParties;
 

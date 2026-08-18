@@ -107,7 +107,6 @@ class HomeOfficeCaseNotificationsHandlerTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(IS_NOTIFICATION_TURNED_OFF, YesOrNo.class)).thenReturn(Optional.of(NO));
-        when(asylumCase.read(DIRECTION_EDIT_PARTIES, Parties.class)).thenReturn(Optional.of(Parties.RESPONDENT));
     }
 
     private void setIsOnlyRemoteToRemoteHearingChannelUpdate() {
@@ -162,6 +161,7 @@ class HomeOfficeCaseNotificationsHandlerTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getCaseDetails().getState()).thenReturn(state);
+        when(asylumCase.read(DIRECTION_EDIT_PARTIES, Parties.class)).thenReturn(Optional.of(Parties.RESPONDENT));
 
         assertTrue(homeOfficeCaseNotificationsHandler.canHandleChangeDirectionDueDate(callback));
     }
@@ -173,6 +173,7 @@ class HomeOfficeCaseNotificationsHandlerTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getCaseDetails().getState()).thenReturn(state);
+        when(asylumCase.read(DIRECTION_EDIT_PARTIES, Parties.class)).thenReturn(Optional.of(Parties.RESPONDENT));
 
         assertFalse(homeOfficeCaseNotificationsHandler.canHandleChangeDirectionDueDate(callback));
     }
@@ -184,6 +185,7 @@ class HomeOfficeCaseNotificationsHandlerTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getCaseDetails().getState()).thenReturn(AWAITING_RESPONDENT_EVIDENCE);
+        when(asylumCase.read(DIRECTION_EDIT_PARTIES, Parties.class)).thenReturn(Optional.of(Parties.RESPONDENT));
 
         assertFalse(homeOfficeCaseNotificationsHandler.canHandleChangeDirectionDueDate(callback));
     }
