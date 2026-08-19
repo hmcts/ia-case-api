@@ -1,18 +1,5 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
-import static java.util.Collections.emptyList;
-import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isNotificationTurnedOff;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isOnlyRemoteToRemoteHearingChannelUpdate;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.relistCaseImmediately;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isInternalCase;
-
-import java.time.LocalDate;
-import java.time.ZoneOffset;
-import java.util.List;
-import java.util.stream.Collectors;
 import com.google.common.collect.Lists;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -33,6 +20,17 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentGenerator;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DueDateService;
+
+import java.time.LocalDate;
+import java.time.ZoneOffset;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static java.util.Collections.emptyList;
+import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.*;
 
 @Component
 public class GenerateDocumentHandler implements PreSubmitCallbackHandler<AsylumCase> {
@@ -121,6 +119,7 @@ public class GenerateDocumentHandler implements PreSubmitCallbackHandler<AsylumC
             Event.REQUEST_HEARING_REQUIREMENTS_FEATURE,
             Event.MARK_APPEAL_AS_ADA,
             Event.DECIDE_AN_APPLICATION,
+            Event.REMOVE_STATUTORY_TIMEFRAME_24_WEEKS,
             Event.APPLY_FOR_FTPA_RESPONDENT,
             Event.TRANSFER_OUT_OF_ADA,
             Event.RESIDENT_JUDGE_FTPA_DECISION,
