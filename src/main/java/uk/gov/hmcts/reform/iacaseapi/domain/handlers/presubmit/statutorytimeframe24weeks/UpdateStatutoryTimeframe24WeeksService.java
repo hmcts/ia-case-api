@@ -60,13 +60,11 @@ public class UpdateStatutoryTimeframe24WeeksService {
             .orElseThrow(() -> new IllegalStateException("removalOf24wDecisionReason is not present"));
 
         Optional<YesOrNo> stf24wCurrentStatus = asylumCase
-            .read(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class);
-        log.debug("currentStatus: {}", stf24wCurrentStatus);
-        boolean isStatusPresent = stf24wCurrentStatus.isPresent();
-        boolean statusHasChanged = isStatusPresent && !stf24wCurrentStatus.get().equals(stf24wStatus);
-        log.debug("statusHasChanged: {}", statusHasChanged);
+                .read(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class);
+        boolean isStatusPresentAndUnchanged = stf24wCurrentStatus.map(value -> value.equals(stf24wStatus))
+            .orElse(false);
         // Check that status has actually changed before updating the case record
-        if (!isStatusPresent || statusHasChanged) {
+        if (!isStatusPresentAndUnchanged) {
             // Update auto-generated fields
             asylumCase.write(STF_24W_CURRENT_STATUS_AUTO_GENERATED, stf24wStatus);
             Optional<YesOrNo> previousStatusWasYes = asylumCase.read(STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED, YesOrNo.class);
