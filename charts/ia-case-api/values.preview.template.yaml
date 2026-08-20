@@ -1470,7 +1470,7 @@ ia-hearings-api:
   java:
     imagePullPolicy: Always
     # image: 'hmctsprod.azurecr.io/ia/hearings-api:latest'
-    image: 'hmctsprod.azurecr.io/ia/hearings-api:pr-572'
+    image: 'hmctsprod.azurecr.io/ia/hearings-api:pr-532'
     # image: 'hmctsprod.azurecr.io/ia/hearings-api:pr-580'
     releaseNameOverride: ${SERVICE_NAME}-hearings-api
     ingressHost: ${SERVICE_NAME}-hearings-api.preview.platform.hmcts.net
