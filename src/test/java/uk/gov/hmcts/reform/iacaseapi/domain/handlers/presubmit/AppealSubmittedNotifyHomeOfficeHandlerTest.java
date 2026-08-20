@@ -203,11 +203,11 @@ class AppealSubmittedNotifyHomeOfficeHandlerTest {
 
         PreSubmitCallbackResponse<AsylumCase> response = handler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
+        assertEquals(asylumCase, response.getData());
+
         verify(homeOfficeApi).aboutToSubmit(callback);
         verify(asylumCase).clear(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY);
         verify(asylumCase).write(HAS_BEEN_VALIDATED_BY_NEW_HOME_OFFICE_API, YesOrNo.YES);
-
-        assertEquals(asylumCase, response.getData());
     }
 
     @Test
@@ -234,10 +234,9 @@ class AppealSubmittedNotifyHomeOfficeHandlerTest {
         PreSubmitCallbackResponse<AsylumCase> response =
             handler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
+        assertEquals(asylumCase, response.getData());
         verify(homeOfficeApi).aboutToSubmit(callback);
         verify(asylumCase).clear(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY);
         verify(asylumCase).write(HAS_BEEN_VALIDATED_BY_NEW_HOME_OFFICE_API, YesOrNo.YES);
-
-        assertEquals(asylumCase, response.getData());
     }
 }
