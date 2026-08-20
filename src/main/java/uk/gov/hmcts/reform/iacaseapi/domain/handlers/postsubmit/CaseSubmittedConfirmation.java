@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DECISION_HEARING_FEE_OPTION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -43,9 +44,13 @@ public class CaseSubmittedConfirmation implements PostSubmitCallbackHandler<Asyl
             .orElse(YesOrNo.NO)
             .equals(YesOrNo.YES);
 
+        boolean isDecisionWithHearing = asylumCase.read(DECISION_HEARING_FEE_OPTION, String.class)
+            .map("decisionWithHearing"::equals)
+            .orElse(false);
+
         postSubmitResponse.setConfirmationHeader("# You have submitted your case");
 
-        if (is24WeekCase) {
+        if (is24WeekCase && isDecisionWithHearing) {
             postSubmitResponse.setConfirmationBody(
                 """
                 We have sent you a confirmation email
