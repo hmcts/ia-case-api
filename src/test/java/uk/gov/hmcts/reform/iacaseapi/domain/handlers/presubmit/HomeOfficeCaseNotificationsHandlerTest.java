@@ -1,63 +1,5 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.DC;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.EA;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.EU;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.HU;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.PA;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.RP;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_REFERENCE_NUMBER;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_IN_UK;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DIRECTION_EDIT_PARTIES;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.GWF_REFERENCE_NUMBER;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_NOTIFICATIONS_ELIGIBLE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_REFERENCE_NUMBER;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_SEARCH_STATUS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_NOTIFICATION_TURNED_OFF;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_REMOTE_HEARING;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LIST_CASE_HEARING_CENTRE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LIST_CASE_HEARING_DATE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre.GLASGOW;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.ADJOURN_HEARING_WITHOUT_DATE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.APPLY_FOR_FTPA_APPELLANT;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.APPLY_FOR_FTPA_RESPONDENT;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.CHANGE_DIRECTION_DUE_DATE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.DECIDE_FTPA_APPLICATION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.EDIT_CASE_LISTING;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.END_APPEAL;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.LEADERSHIP_JUDGE_FTPA_DECISION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.LIST_CASE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.REQUEST_RESPONDENT_EVIDENCE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.REQUEST_RESPONDENT_REVIEW;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.REQUEST_RESPONSE_AMEND;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.RESIDENT_JUDGE_FTPA_DECISION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SEND_DECISION_AND_REASONS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SEND_DIRECTION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.START_APPEAL;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.AWAITING_RESPONDENT_EVIDENCE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.RESPONDENT_REVIEW;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -69,13 +11,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.Direction;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.DirectionTag;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.Parties;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
@@ -86,6 +22,21 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.HomeOfficeApi;
+
+import java.util.*;
+import java.util.stream.Stream;
+
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre.GLASGOW;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -109,7 +60,7 @@ class HomeOfficeCaseNotificationsHandlerTest {
 
     private HomeOfficeCaseNotificationsHandler homeOfficeCaseNotificationsHandler;
 
-    private IdValue originalDirection8 = new IdValue(
+    private IdValue lrDirectionNoTag = new IdValue(
         "8",
         new Direction("explanation8", Parties.LEGAL_REPRESENTATIVE, "2020-01-02",
             "2020-01-01", DirectionTag.NONE, Collections.emptyList(),
@@ -119,7 +70,7 @@ class HomeOfficeCaseNotificationsHandlerTest {
         )
     );
 
-    private IdValue originalDirection9 = new IdValue(
+    private IdValue respondentDirectionNoTag = new IdValue(
         "9",
         new Direction("explanation9", Parties.RESPONDENT, "2020-01-02",
             "2020-01-01", DirectionTag.NONE, Collections.emptyList(),
@@ -129,7 +80,7 @@ class HomeOfficeCaseNotificationsHandlerTest {
         )
     );
 
-    private IdValue originalDirection10 = new IdValue(
+    private IdValue lrDirectionWithTag = new IdValue(
         "10",
         new Direction("explanation10", Parties.LEGAL_REPRESENTATIVE, "2020-01-02",
             "2020-01-01", DirectionTag.RESPONDENT_REVIEW, Collections.emptyList(),
@@ -139,7 +90,7 @@ class HomeOfficeCaseNotificationsHandlerTest {
         )
     );
 
-    private IdValue originalDirection11 = new IdValue(
+    private IdValue respondentDirectionNoTag2 = new IdValue(
         "11",
         new Direction("explanation11", Parties.RESPONDENT, "2020-01-02",
             "2020-01-01", DirectionTag.NONE, Collections.emptyList(),
@@ -155,6 +106,276 @@ class HomeOfficeCaseNotificationsHandlerTest {
             new HomeOfficeCaseNotificationsHandler(featureToggler, homeOfficeApi);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(IS_NOTIFICATION_TURNED_OFF, YesOrNo.class)).thenReturn(Optional.of(NO));
+    }
+
+    private void setIsOnlyRemoteToRemoteHearingChannelUpdate() {
+        when(callback.getCaseDetailsBefore()).thenReturn(Optional.of(caseDetailsBefore));
+        when(caseDetailsBefore.getCaseData()).thenReturn(asylumCaseBefore);
+        when(asylumCaseBefore.read(LIST_CASE_HEARING_CENTRE, HearingCentre.class))
+            .thenReturn(Optional.of(GLASGOW));
+        when(asylumCase.read(LIST_CASE_HEARING_CENTRE, HearingCentre.class))
+            .thenReturn(Optional.of(GLASGOW));
+        when(asylumCaseBefore.read(LIST_CASE_HEARING_DATE, String.class))
+            .thenReturn(Optional.of("01/02/2024"));
+        when(asylumCase.read(LIST_CASE_HEARING_DATE, String.class))
+            .thenReturn(Optional.of("01/02/2024"));
+        when(asylumCaseBefore.read(IS_REMOTE_HEARING, YesOrNo.class))
+            .thenReturn(Optional.of(YES));
+        when(asylumCase.read(IS_REMOTE_HEARING, YesOrNo.class)).thenReturn(Optional.of(YES));
+    }
+
+    @Test
+    void canHandleEditCaseListing_true_not_isOnlyRemoteToRemoteHearingChannelUpdate() {
+        when(callback.getEvent()).thenReturn(EDIT_CASE_LISTING);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        assertTrue(homeOfficeCaseNotificationsHandler.canHandleEditCaseListing(callback));
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {"EDIT_CASE_LISTING"}, mode = EnumSource.Mode.EXCLUDE)
+    void canHandleEditCaseListing_false_invalid_event(Event event) {
+        when(callback.getEvent()).thenReturn(event);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        assertFalse(homeOfficeCaseNotificationsHandler.canHandleEditCaseListing(callback));
+    }
+
+    @Test
+    void canHandleEditCaseListing_false_isOnlyRemoteToRemoteHearingChannelUpdate() {
+        when(callback.getEvent()).thenReturn(EDIT_CASE_LISTING);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        setIsOnlyRemoteToRemoteHearingChannelUpdate();
+
+        assertFalse(homeOfficeCaseNotificationsHandler.canHandleEditCaseListing(callback));
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = State.class, names = {"AWAITING_RESPONDENT_EVIDENCE", "RESPONDENT_REVIEW"})
+    void canHandleChangeDirectionDueDate_true(State state) {
+        when(callback.getEvent()).thenReturn(CHANGE_DIRECTION_DUE_DATE);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getCaseDetails().getState()).thenReturn(state);
+        when(asylumCase.read(DIRECTION_EDIT_PARTIES, Parties.class)).thenReturn(Optional.of(Parties.RESPONDENT));
+
+        assertTrue(homeOfficeCaseNotificationsHandler.canHandleChangeDirectionDueDate(callback));
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = State.class, names = {"AWAITING_RESPONDENT_EVIDENCE", "RESPONDENT_REVIEW"}, mode = EnumSource.Mode.EXCLUDE)
+    void canHandleChangeDirectionDueDate_false_invalid_state(State state) {
+        when(callback.getEvent()).thenReturn(CHANGE_DIRECTION_DUE_DATE);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getCaseDetails().getState()).thenReturn(state);
+        when(asylumCase.read(DIRECTION_EDIT_PARTIES, Parties.class)).thenReturn(Optional.of(Parties.RESPONDENT));
+
+        assertFalse(homeOfficeCaseNotificationsHandler.canHandleChangeDirectionDueDate(callback));
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {"CHANGE_DIRECTION_DUE_DATE"}, mode = EnumSource.Mode.EXCLUDE)
+    void canHandleChangeDirectionDueDate_false_invalid_event(Event event) {
+        when(callback.getEvent()).thenReturn(event);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getCaseDetails().getState()).thenReturn(AWAITING_RESPONDENT_EVIDENCE);
+        when(asylumCase.read(DIRECTION_EDIT_PARTIES, Parties.class)).thenReturn(Optional.of(Parties.RESPONDENT));
+
+        assertFalse(homeOfficeCaseNotificationsHandler.canHandleChangeDirectionDueDate(callback));
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = Parties.class, names = {"RESPONDENT"}, mode = EnumSource.Mode.EXCLUDE)
+    void canHandleChangeDirectionDueDate_false_non_respondent_direction(Parties parties) {
+        when(callback.getEvent()).thenReturn(CHANGE_DIRECTION_DUE_DATE);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getCaseDetails().getState()).thenReturn(AWAITING_RESPONDENT_EVIDENCE);
+        when(asylumCase.read(DIRECTION_EDIT_PARTIES, Parties.class)).thenReturn(Optional.of(parties));
+
+        assertFalse(homeOfficeCaseNotificationsHandler.canHandleChangeDirectionDueDate(callback));
+    }
+
+    @Test
+    void canHandleSendDirection_true() {
+        when(callback.getEvent()).thenReturn(SEND_DIRECTION);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getCaseDetails().getState()).thenReturn(AWAITING_RESPONDENT_EVIDENCE);
+        when(asylumCase.read(AsylumCaseFieldDefinition.DIRECTIONS)).thenReturn(Optional.of((List.of(respondentDirectionNoTag))));
+
+        assertTrue(homeOfficeCaseNotificationsHandler.canHandleSendDirection(callback));
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {"SEND_DIRECTION"}, mode = EnumSource.Mode.EXCLUDE)
+    void canHandleSendDirection_false_invalid_event(Event event) {
+        when(callback.getEvent()).thenReturn(event);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getCaseDetails().getState()).thenReturn(AWAITING_RESPONDENT_EVIDENCE);
+
+        assertFalse(homeOfficeCaseNotificationsHandler.canHandleSendDirection(callback));
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = State.class, names = {"AWAITING_RESPONDENT_EVIDENCE"}, mode = EnumSource.Mode.EXCLUDE)
+    void canHandleSendDirection_false_invalid_state(State state) {
+        when(callback.getEvent()).thenReturn(SEND_DIRECTION);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getCaseDetails().getState()).thenReturn(state);
+
+        assertFalse(homeOfficeCaseNotificationsHandler.canHandleSendDirection(callback));
+    }
+
+    @Test
+    void canHandleSendDirection_false_no_respondent_direction() {
+        when(callback.getEvent()).thenReturn(SEND_DIRECTION);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getCaseDetails().getState()).thenReturn(AWAITING_RESPONDENT_EVIDENCE);
+        when(asylumCase.read(AsylumCaseFieldDefinition.DIRECTIONS)).thenReturn(Optional.of((List.of(lrDirectionNoTag))));
+
+        assertFalse(homeOfficeCaseNotificationsHandler.canHandleSendDirection(callback));
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = State.class, names = {"FTPA_DECIDED"}, mode = EnumSource.Mode.EXCLUDE)
+    void canHandleStitchingComplete_true_valid_state(State state) {
+        when(callback.getEvent()).thenReturn(ASYNC_STITCHING_COMPLETE);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(caseDetails.getState()).thenReturn(state);
+
+        assertTrue(homeOfficeCaseNotificationsHandler.canHandleStitchingComplete(callback));
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {"ASYNC_STITCHING_COMPLETE"}, mode = EnumSource.Mode.EXCLUDE)
+    void canHandleStitchingComplete_false_invalid_event(Event event) {
+        when(callback.getEvent()).thenReturn(event);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        assertFalse(homeOfficeCaseNotificationsHandler.canHandleStitchingComplete(callback));
+    }
+
+    @Test
+    void canHandleStitchingComplete_false_invalid_state() {
+        when(callback.getEvent()).thenReturn(ASYNC_STITCHING_COMPLETE);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(caseDetails.getState()).thenReturn(FTPA_DECIDED);
+
+        assertFalse(homeOfficeCaseNotificationsHandler.canHandleStitchingComplete(callback));
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {
+        "REQUEST_RESPONDENT_EVIDENCE",
+        "REQUEST_RESPONDENT_REVIEW",
+        "LIST_CASE",
+        "ADJOURN_HEARING_WITHOUT_DATE",
+        "SEND_DECISION_AND_REASONS",
+        "APPLY_FOR_FTPA_APPELLANT",
+        "APPLY_FOR_FTPA_RESPONDENT",
+        "LEADERSHIP_JUDGE_FTPA_DECISION",
+        "RESIDENT_JUDGE_FTPA_DECISION",
+        "END_APPEAL",
+        "REQUEST_RESPONSE_AMEND",
+        "DECIDE_FTPA_APPLICATION",
+    })
+    void canHandle_true_valid_event(Event event) {
+        when(callback.getEvent()).thenReturn(event);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        assertTrue(homeOfficeCaseNotificationsHandler.canHandle(ABOUT_TO_SUBMIT, callback));
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {
+        "REQUEST_RESPONDENT_EVIDENCE",
+        "REQUEST_RESPONDENT_REVIEW",
+        "LIST_CASE",
+        "ADJOURN_HEARING_WITHOUT_DATE",
+        "SEND_DECISION_AND_REASONS",
+        "APPLY_FOR_FTPA_APPELLANT",
+        "APPLY_FOR_FTPA_RESPONDENT",
+        "LEADERSHIP_JUDGE_FTPA_DECISION",
+        "RESIDENT_JUDGE_FTPA_DECISION",
+        "END_APPEAL",
+        "REQUEST_RESPONSE_AMEND",
+        "DECIDE_FTPA_APPLICATION",
+        "CHANGE_DIRECTION_DUE_DATE",
+        "SEND_DIRECTION",
+        "ASYNC_STITCHING_COMPLETE",
+        "EDIT_CASE_LISTING"
+    }, mode = EnumSource.Mode.EXCLUDE)
+    void canHandle_false_invalid_event(Event event) {
+        when(callback.getEvent()).thenReturn(event);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        assertFalse(homeOfficeCaseNotificationsHandler.canHandle(ABOUT_TO_SUBMIT, callback));
+    }
+
+    @Test
+    void canHandle_false_notificationTurnedOff() {
+        when(callback.getEvent()).thenReturn(REQUEST_RESPONDENT_EVIDENCE);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(IS_NOTIFICATION_TURNED_OFF, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+
+        assertFalse(homeOfficeCaseNotificationsHandler.canHandle(ABOUT_TO_SUBMIT, callback));
+    }
+
+    @Test
+    void canHandle_true_canHandleEditCaseListing() {
+        when(callback.getEvent()).thenReturn(EDIT_CASE_LISTING);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        assertTrue(homeOfficeCaseNotificationsHandler.canHandle(ABOUT_TO_SUBMIT, callback));
+    }
+
+    @Test
+    void canHandle_true_canHandleSendDirection() {
+        when(callback.getEvent()).thenReturn(SEND_DIRECTION);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getCaseDetails().getState()).thenReturn(AWAITING_RESPONDENT_EVIDENCE);
+        when(asylumCase.read(AsylumCaseFieldDefinition.DIRECTIONS)).thenReturn(Optional.of((List.of(respondentDirectionNoTag))));
+
+        assertTrue(homeOfficeCaseNotificationsHandler.canHandle(ABOUT_TO_SUBMIT, callback));
+    }
+
+    @Test
+    void caneHandle_true_canHandleChangeDirectionDueDate() {
+        when(callback.getEvent()).thenReturn(CHANGE_DIRECTION_DUE_DATE);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getCaseDetails().getState()).thenReturn(AWAITING_RESPONDENT_EVIDENCE);
+        when(asylumCase.read(DIRECTION_EDIT_PARTIES, Parties.class)).thenReturn(Optional.of(Parties.RESPONDENT));
+
+        assertTrue(homeOfficeCaseNotificationsHandler.canHandle(ABOUT_TO_SUBMIT, callback));
+    }
+
+    @Test
+    void canHandle_true_canHandleStitchingComplete() {
+        when(callback.getEvent()).thenReturn(ASYNC_STITCHING_COMPLETE);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(caseDetails.getState()).thenReturn(AWAITING_RESPONDENT_EVIDENCE);
+
+        assertTrue(homeOfficeCaseNotificationsHandler.canHandle(ABOUT_TO_SUBMIT, callback));
     }
 
     @Test
@@ -245,7 +466,7 @@ class HomeOfficeCaseNotificationsHandlerTest {
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
         when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.empty());
         when(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class)).thenReturn(Optional.of("SUCCESS"));
-        when(asylumCase.read(HOME_OFFICE_NOTIFICATIONS_ELIGIBLE, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(asylumCase.read(HOME_OFFICE_NOTIFICATIONS_ELIGIBLE, YesOrNo.class)).thenReturn(Optional.of(NO));
         when(asylumCase.read(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, String.class))
             .thenReturn(Optional.empty());
 
@@ -344,7 +565,7 @@ class HomeOfficeCaseNotificationsHandlerTest {
         when(callback.getEvent()).thenReturn(REQUEST_RESPONDENT_EVIDENCE);
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
         when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class))
-            .thenReturn(Optional.of(YesOrNo.NO));
+            .thenReturn(Optional.of(NO));
         when(asylumCase.read(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, String.class))
             .thenReturn(Optional.empty());
 
@@ -446,35 +667,13 @@ class HomeOfficeCaseNotificationsHandlerTest {
     }
 
     @Test
-    void should_return_true_for_respondent_direction() {
-
-        when(asylumCase.read(DIRECTION_EDIT_PARTIES, Parties.class)).thenReturn(Optional.of(Parties.RESPONDENT));
-        assertTrue(homeOfficeCaseNotificationsHandler.isDirectionForRespondentParties(asylumCase));
-    }
-
-    @Test
-    void should_return_false_for_non_respondent_direction() {
-
-        when(asylumCase.read(DIRECTION_EDIT_PARTIES, Parties.class)).thenReturn(Optional.of(Parties.LEGAL_REPRESENTATIVE));
-        assertFalse(homeOfficeCaseNotificationsHandler.isDirectionForRespondentParties(asylumCase));
-    }
-
-    @Test
-    void should_return_error_for_missing_direction() {
-
-        assertThatThrownBy(() -> homeOfficeCaseNotificationsHandler.isDirectionForRespondentParties(asylumCase))
-            .hasMessage("sendDirectionParties is not present")
-            .isExactlyInstanceOf(IllegalStateException.class);
-    }
-
-    @Test
     void should_return_right_direction_for_multiple_send_direction() {
 
         List<IdValue<Direction>> directionList = new ArrayList<>();
-        directionList.add(originalDirection8);
-        directionList.add(originalDirection9);
-        directionList.add(originalDirection10);
-        directionList.add(originalDirection11);
+        directionList.add(lrDirectionNoTag);
+        directionList.add(respondentDirectionNoTag);
+        directionList.add(lrDirectionWithTag);
+        directionList.add(respondentDirectionNoTag2);
         when(asylumCase.read(AsylumCaseFieldDefinition.DIRECTIONS)).thenReturn(Optional.of((directionList)));
 
         Optional<Direction> selectedDirection = homeOfficeCaseNotificationsHandler.getLatestNonStandardRespondentDirection(asylumCase);
@@ -488,8 +687,8 @@ class HomeOfficeCaseNotificationsHandlerTest {
     void should_return_empty_direction_for_invalid_send_direction() {
 
         List<IdValue<Direction>> directionList = new ArrayList<>();
-        directionList.add(originalDirection9);
-        directionList.add(originalDirection10);
+        directionList.add(respondentDirectionNoTag);
+        directionList.add(lrDirectionWithTag);
         when(asylumCase.read(AsylumCaseFieldDefinition.DIRECTIONS)).thenReturn(Optional.of((directionList)));
 
         Optional<Direction> selectedDirection = homeOfficeCaseNotificationsHandler.getLatestNonStandardRespondentDirection(asylumCase);
@@ -539,7 +738,7 @@ class HomeOfficeCaseNotificationsHandlerTest {
         when(asylumCase.read(DIRECTION_EDIT_PARTIES, Parties.class))
             .thenReturn(Optional.of(Parties.RESPONDENT));
         when(asylumCase.read(AsylumCaseFieldDefinition.DIRECTIONS))
-            .thenReturn(Optional.of(List.of(originalDirection8, originalDirection9)));
+            .thenReturn(Optional.of(List.of(lrDirectionNoTag, respondentDirectionNoTag)));
 
         boolean canHandle = homeOfficeCaseNotificationsHandler.canHandle(ABOUT_TO_SUBMIT, callback);
         if (state.equals(AWAITING_RESPONDENT_EVIDENCE)) {
@@ -550,7 +749,7 @@ class HomeOfficeCaseNotificationsHandlerTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = Event.class, names = {"SEND_DIRECTION", "CHANGE_DIRECTION_DUE_DATE"}, mode = EnumSource.Mode.EXCLUDE)
+    @EnumSource(value = Event.class, names = {"SEND_DIRECTION", "CHANGE_DIRECTION_DUE_DATE", "ASYNC_STITCHING_COMPLETE"}, mode = EnumSource.Mode.EXCLUDE)
     void it_can_handle_callback(Event event) {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(event);
@@ -575,7 +774,7 @@ class HomeOfficeCaseNotificationsHandlerTest {
             when(asylumCase.read(DIRECTION_EDIT_PARTIES, Parties.class))
                 .thenReturn(Optional.of(Parties.RESPONDENT));
             when(asylumCase.read(AsylumCaseFieldDefinition.DIRECTIONS))
-                .thenReturn(Optional.of(Collections.singletonList(originalDirection8)));
+                .thenReturn(Optional.of(Collections.singletonList(lrDirectionNoTag)));
 
             boolean canHandle = homeOfficeCaseNotificationsHandler.canHandle(ABOUT_TO_SUBMIT, callback);
 
@@ -598,11 +797,11 @@ class HomeOfficeCaseNotificationsHandlerTest {
             when(caseDetails.getCaseData()).thenReturn(asylumCase);
             when(callback.getCaseDetails().getState()).thenReturn(state);
             when(asylumCase.read(DIRECTION_EDIT_PARTIES, Parties.class))
-                    .thenReturn(Optional.of(Parties.RESPONDENT));
+                .thenReturn(Optional.of(Parties.RESPONDENT));
             when(asylumCase.read(AsylumCaseFieldDefinition.DIRECTIONS))
-                    .thenReturn(Optional.of(Collections.singletonList(originalDirection8)));
+                .thenReturn(Optional.of(Collections.singletonList(lrDirectionNoTag)));
             when(asylumCase.read(IS_NOTIFICATION_TURNED_OFF, YesOrNo.class))
-                    .thenReturn(Optional.of(YES));
+                .thenReturn(Optional.of(YES));
 
             boolean canHandle = homeOfficeCaseNotificationsHandler.canHandle(ABOUT_TO_SUBMIT, callback);
 
@@ -636,6 +835,15 @@ class HomeOfficeCaseNotificationsHandlerTest {
 
             assertFalse(homeOfficeCaseNotificationsHandler.canHandle(callbackStage, callback));
         }
+    }
+
+    @Test
+    void getLatestNonStandardRespondentDirection_throws_if_no_directions() {
+        when(asylumCase.read(AsylumCaseFieldDefinition.DIRECTIONS)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> homeOfficeCaseNotificationsHandler.getLatestNonStandardRespondentDirection(asylumCase))
+            .isExactlyInstanceOf(IllegalStateException.class)
+            .hasMessage("directions not present");
     }
 
     @Test
@@ -792,13 +1000,13 @@ class HomeOfficeCaseNotificationsHandlerTest {
 
         // Values that would have prevented notification in the legacy path
         when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class))
-            .thenReturn(Optional.of(YesOrNo.NO));
+            .thenReturn(Optional.of(NO));
 
         when(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class))
             .thenReturn(Optional.of("FAIL"));
 
         when(asylumCase.read(HOME_OFFICE_NOTIFICATIONS_ELIGIBLE, YesOrNo.class))
-            .thenReturn(Optional.of(YesOrNo.NO));
+            .thenReturn(Optional.of(NO));
 
         when(homeOfficeApi.aboutToSubmit(callback)).thenReturn(asylumCase);
 
