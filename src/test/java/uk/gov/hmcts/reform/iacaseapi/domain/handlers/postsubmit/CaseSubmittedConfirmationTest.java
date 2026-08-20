@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DECISION_HEARING_FEE_OPTION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED;
 
 import java.util.ArrayList;
@@ -64,7 +65,7 @@ class CaseSubmittedConfirmationTest {
     }
 
     @Test
-    void should_return_24_week_confirmation_when_24_week_flag_is_yes() {
+    void should_return_24_week_confirmation_when_24_week_flag_is_yes_and_decision_with_hearing() {
         ReflectionTestUtils.setField(caseSubmittedConfirmation, "isSaveAndContinueEnabled", true);
 
         when(callback.getEvent()).thenReturn(Event.SUBMIT_CASE);
@@ -72,6 +73,8 @@ class CaseSubmittedConfirmationTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED, YesOrNo.class))
             .thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(DECISION_HEARING_FEE_OPTION, String.class))
+            .thenReturn(Optional.of("decisionWithHearing"));
 
         PostSubmitCallbackResponse callbackResponse =
             caseSubmittedConfirmation.handle(callback);
@@ -83,6 +86,27 @@ class CaseSubmittedConfirmationTest {
         assertTrue(callbackResponse.getConfirmationHeader().get().contains("You have submitted your case"));
         assertTrue(callbackResponse.getConfirmationBody().get().contains("The case officer will now review the appeal"));
         assertTrue(callbackResponse.getConfirmationBody().get().contains("you will be asked to provide any hearing requirements"));
+    }
+
+    @Test
+    void should_return_bau_confirmation_when_24_week_flag_is_yes_but_decision_without_hearing() {
+        ReflectionTestUtils.setField(caseSubmittedConfirmation, "isSaveAndContinueEnabled", true);
+
+        when(callback.getEvent()).thenReturn(Event.SUBMIT_CASE);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED, YesOrNo.class))
+            .thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(DECISION_HEARING_FEE_OPTION, String.class))
+            .thenReturn(Optional.of("decisionWithoutHearing"));
+
+        PostSubmitCallbackResponse callbackResponse =
+            caseSubmittedConfirmation.handle(callback);
+
+        assertNotNull(callbackResponse);
+        assertTrue(callbackResponse.getConfirmationBody().isPresent());
+        assertTrue(callbackResponse.getConfirmationBody().get().contains("The case officer will now review your appeal"));
+        assertTrue(callbackResponse.getConfirmationBody().get().contains("they will send it to the respondent for them to review"));
     }
 
     @Test
