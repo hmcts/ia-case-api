@@ -17,7 +17,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.HomeOfficeApi;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SUBMIT_APPEAL;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.hasBeenValidatedNewHoApi;
 
 @Slf4j
 @Component
@@ -65,7 +64,7 @@ public class AppealSubmittedNotifyHomeOfficeHandler implements PreSubmitCallback
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
         // Only proceed if the new  applications/v1/{id}  Home Office endpoint has already been called
-        if (!hasBeenValidatedNewHoApi(asylumCase)) {
+        if (asylumCase.read(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, String.class).isEmpty()) {
             return new PreSubmitCallbackResponse<>(asylumCase);
         }
 
