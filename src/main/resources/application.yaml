@@ -291,6 +291,9 @@ security:
       - "applyForCosts"
       - "respondToCosts"
       - "addEvidenceForCosts"
+      - "queryManagementRaiseQuery"
+    caseworker-ia-admofficer:
+      - "queryManagementRespondQuery"
     tribunal-caseworker:
       - "appellantInPersonManual"
       - "moveToPaymentPending"
@@ -716,6 +719,7 @@ security:
       - "revokeCitizenAccess"
       - "forceDecidedState"
       - "forceFtpaDecidedState"
+      - "queryManagementRespondQuery"
       - "requestRespondentEvidence"
     ctsc-team-leader:
       - "appellantInPersonManual"
