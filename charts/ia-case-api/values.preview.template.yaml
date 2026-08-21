@@ -168,7 +168,8 @@ ia-case-documents-api:
   java:
     imagePullPolicy: Always
     # image: hmctsprod.azurecr.io/ia/case-documents-api:latest
-    image: hmctsprod.azurecr.io/ia/case-documents-api:pr-1195
+    # image: hmctsprod.azurecr.io/ia/case-documents-api:pr-1195
+    image: hmctsprod.azurecr.io/ia/case-documents-api:pr-1254
     releaseNameOverride: ${SERVICE_NAME}-case-documents-api
     ingressHost: ${SERVICE_NAME}-documents-api.preview.platform.hmcts.net
     devcpuRequests: 500m
@@ -249,6 +250,7 @@ ia-case-notifications-api:
     imagePullPolicy: Always
     #image: hmctsprod.azurecr.io/ia/case-notifications-api:latest
     image: hmctsprod.azurecr.io/ia/case-notifications-api:pr-1704
+    # image: hmctsprod.azurecr.io/ia/case-notifications-api:pr-1773
     releaseNameOverride: ${SERVICE_NAME}-case-notifications-api
     ingressHost: ${SERVICE_NAME}-notifications-api.preview.platform.hmcts.net
     devcpuRequests: 500m
@@ -1467,8 +1469,9 @@ ia-hearings-api:
   enabled: true
   java:
     imagePullPolicy: Always
-#    image: 'hmctsprod.azurecr.io/ia/hearings-api:latest'
+    # image: 'hmctsprod.azurecr.io/ia/hearings-api:latest'
     image: 'hmctsprod.azurecr.io/ia/hearings-api:pr-532'
+    # image: 'hmctsprod.azurecr.io/ia/hearings-api:pr-580'
     releaseNameOverride: ${SERVICE_NAME}-hearings-api
     ingressHost: ${SERVICE_NAME}-hearings-api.preview.platform.hmcts.net
     devcpuRequests: 500m
