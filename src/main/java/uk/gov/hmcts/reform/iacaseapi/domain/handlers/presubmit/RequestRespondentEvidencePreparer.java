@@ -169,7 +169,11 @@ public class RequestRespondentEvidencePreparer implements PreSubmitCallbackHandl
     private LocalDate getDueDate(AsylumCase asylumCase) {
         LocalDate dueDate;
 
-        if (HandlerUtils.isAcceleratedDetainedAppeal(asylumCase)) {
+        if (is24WeekStfCase(asylumCase)) {
+            String completeCaseReviewDate = asylumCase.read(COMPLETE_CASE_REVIEW_DATE, String.class)
+                    .orElseThrow(() -> new IllegalStateException("completeCaseReviewDate is not present"));
+            dueDate = LocalDate.parse(completeCaseReviewDate).plusDays(requestRespondentEvidenceDueInDays);
+        } else if (HandlerUtils.isAcceleratedDetainedAppeal(asylumCase)) {
             dueDate = dueDateService.calculateDueDate(dateProvider.now().atStartOfDay(ZoneOffset.UTC), requestRespondentEvidenceDueInDaysAda).toLocalDate();
         } else if (HandlerUtils.isAppellantInDetention(asylumCase)) {
             dueDate = dateProvider.now().plusDays(requestRespondentEvidenceDueInDaysDetained);
@@ -180,16 +184,25 @@ public class RequestRespondentEvidencePreparer implements PreSubmitCallbackHandl
         return dueDate;
     }
 
+    private boolean is24WeekStfCase(AsylumCase asylumCase) {
+        if (stf24wLiveDate.isAfter(LocalDate.now())) {
+            return false;
+        }
+        return asylumCase.read(STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED, YesOrNo.class)
+                .map(status -> status == YES)
+                .orElse(false);
+    }
+
     private String getDirectionExplanation(AsylumCase asylumCase) {
         if (HandlerUtils.isAppellantInDetention(asylumCase)) {
             return """
                     A notice of appeal has been lodged against this decision.
-                    
+
                     You must now upload all documents to the Tribunal. The Tribunal will make them accessible to the other party. You have until the date indicated below to supply your bundle.
-                    
+
                     The bundle must comply with (i) Rule 24 of the Tribunal Procedure Rules 2014 and (ii) Practice Direction, Part 3, sections 7.1 - 7.4.
                     Specifically, the bundle must contain:
-                    
+
                     - The explanation for refusal;
                     - the deportation order and/or the notice of decision to make the order (if any);
                     - Interview record (if any);
@@ -200,20 +213,20 @@ public class RequestRespondentEvidencePreparer implements PreSubmitCallbackHandl
                     - a transcript of the Sentencing Judge's Remarks (if any).
                     - a copy of any Parole Report or other document relating to the appellant's period in custody and/or release (if any);
                     - a copy of any medical report (if any).
-                    
+
                     Parties must ensure they conduct proceedings with procedural rigour.
                     The Tribunal will not overlook breaches of the requirements of the Procedure Rules, Practice Statement or Practice Direction, \
                     nor failures to comply with directions issued by the Tribunal. Parties are reminded of the possible sanctions for \
                     non-compliance set out in paragraph 5.3 of the Practice Direction.""";
-        } else {
+        } else if (is24WeekStfCase(asylumCase)) {
             return """
                     A notice of appeal has been lodged against this decision.
-                    
+
                     By the date indicated below the respondent is directed to supply the documents:
-                    
-                    The bundle must comply with (i) Rule 23 or Rule 24 of the Tribunal Procedure Rules 2014 (as applicable) \
+
+                    The bundle must comply with (i) Rule 24 of the Tribunal Procedure Rules 2014 (as applicable) \
                     and (ii) Practice Direction (1.11.2024) Part 3, sections 7.1 - 7.4. Specifically, the bundle must contain:
-                    
+
                     - the notice of decision appealed against.
                     - any other document provided to the appellant giving reasons for that decision.
                     - any evidence or material relevant to the disputed issues.
@@ -223,9 +236,9 @@ public class RequestRespondentEvidencePreparer implements PreSubmitCallbackHandl
                     - any previous decision(s) of the Tribunal and Upper Tribunal (IAC) relating to the appellant.
                     - any other unpublished documents on which you rely.
                     - the notice of any other appealable decision made in relation to the appellant.
-                    
+
                     Where the appeal involves deportation, you must also include the following evidence:
-                    
+
                     - a copy of the Certificate of Conviction.
                     - a copy of any indictment/charge.
                     - a transcript of the Sentencing Judge's Remarks.
@@ -233,7 +246,40 @@ public class RequestRespondentEvidencePreparer implements PreSubmitCallbackHandl
                     - a copy of the appellant's criminal record.
                     - a copy of any Parole Report or other document relating to the appellant's period in custody and/or release.
                     - a copy of any mental health report.
-                    
+
+                    Parties must ensure they conduct proceedings with procedural rigour. \
+                    The Tribunal will not overlook breaches of the requirements of the Procedure Rules, Practice Statement or Practice Direction, \
+                    nor failures to comply with directions issued by the Tribunal. \
+                    Parties are reminded of the sanctions for non-compliance set out in paragraph 5.3 of the Practice Direction of 01.11.24.""";
+        } else {
+            return """
+                    A notice of appeal has been lodged against this decision.
+
+                    By the date indicated below the respondent is directed to supply the documents:
+
+                    The bundle must comply with (i) Rule 23 or Rule 24 of the Tribunal Procedure Rules 2014 (as applicable) \
+                    and (ii) Practice Direction (1.11.2024) Part 3, sections 7.1 - 7.4. Specifically, the bundle must contain:
+
+                    - the notice of decision appealed against.
+                    - any other document provided to the appellant giving reasons for that decision.
+                    - any evidence or material relevant to the disputed issues.
+                    - any statements of evidence.
+                    - the application form.
+                    - any record of interview with the appellant in relation to the decision being appealed.
+                    - any previous decision(s) of the Tribunal and Upper Tribunal (IAC) relating to the appellant.
+                    - any other unpublished documents on which you rely.
+                    - the notice of any other appealable decision made in relation to the appellant.
+
+                    Where the appeal involves deportation, you must also include the following evidence:
+
+                    - a copy of the Certificate of Conviction.
+                    - a copy of any indictment/charge.
+                    - a transcript of the Sentencing Judge's Remarks.
+                    - a copy of any Pre-Sentence Report.
+                    - a copy of the appellant's criminal record.
+                    - a copy of any Parole Report or other document relating to the appellant's period in custody and/or release.
+                    - a copy of any mental health report.
+
                     Parties must ensure they conduct proceedings with procedural rigour. \
                     The Tribunal will not overlook breaches of the requirements of the Procedure Rules, Practice Statement or Practice Direction, \
                     nor failures to comply with directions issued by the Tribunal. \
