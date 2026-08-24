@@ -1095,9 +1095,8 @@ class HandlerUtilsTest {
         verify(asylumCase).remove(HOME_OFFICE_APPELLANT_DECISION_LETTER_DATE);
         verify(asylumCase).remove(HOME_OFFICE_APPELLANTS);
         verify(asylumCase).remove(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY);
-        verify(asylumCase).remove(HAS_BEEN_VALIDATED_BY_NEW_HOME_OFFICE_API);
 
-        verify(asylumCase, times(7)).remove(any());
+        verify(asylumCase, times(6)).remove(any());
     }
 
     @Test

@@ -748,7 +748,6 @@ public class HandlerUtils {
         asylumCase.remove(HOME_OFFICE_APPELLANT_DECISION_LETTER_DATE);
         asylumCase.remove(HOME_OFFICE_APPELLANTS);
         asylumCase.remove(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY);
-        asylumCase.remove(HAS_BEEN_VALIDATED_BY_NEW_HOME_OFFICE_API);
     }
 
     public static boolean hasBeenValidatedNewHoApi(AsylumCase asylumCase) {
