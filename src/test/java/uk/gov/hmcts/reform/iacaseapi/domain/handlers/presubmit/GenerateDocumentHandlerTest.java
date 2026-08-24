@@ -363,8 +363,9 @@ class GenerateDocumentHandlerTest {
                     MARK_APPEAL_AS_REMITTED,
                     DECIDE_FTPA_APPLICATION,
                     DECISION_WITHOUT_HEARING,
-                    Event.COMPLETE_CASE_REVIEW,
-                    Event.REMOVE_STATUTORY_TIMEFRAME_24_WEEKS
+                    Event.REMOVE_STATUTORY_TIMEFRAME_24_WEEKS,
+                    Event.SEND_LATE_TIMELINE_NOTICE,
+                    Event.COMPLETE_CASE_REVIEW
                 ).contains(event)) {
 
                 assertTrue(canHandle);
@@ -538,8 +539,9 @@ class GenerateDocumentHandlerTest {
                     MARK_APPEAL_AS_REMITTED,
                     DECIDE_FTPA_APPLICATION,
                     DECISION_WITHOUT_HEARING,
-                    Event.COMPLETE_CASE_REVIEW,
-                    Event.REMOVE_STATUTORY_TIMEFRAME_24_WEEKS
+                    Event.REMOVE_STATUTORY_TIMEFRAME_24_WEEKS,
+                    Event.SEND_LATE_TIMELINE_NOTICE,
+                    Event.COMPLETE_CASE_REVIEW
                 );
 
             if (callbackStage.equals(PreSubmitCallbackStage.ABOUT_TO_SUBMIT)
