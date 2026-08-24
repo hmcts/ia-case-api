@@ -13,10 +13,16 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.HomeOfficeApi;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.HomeOfficeReferenceService;
+
+import java.util.HashSet;
+import java.util.Set;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SUBMIT_APPEAL;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.validateHomeOfficeReference;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.validateNameAndDateOfBirth;
 
 @Slf4j
 @Component
@@ -29,6 +35,7 @@ public class AppealSubmittedNotifyHomeOfficeHandler implements PreSubmitCallback
                                                          + "Home Office API response code: {}";
 
     private final HomeOfficeApi<AsylumCase> homeOfficeApi;
+    private final HomeOfficeReferenceService homeOfficeReferenceService;
 
     @Override
     public DispatchPriority getDispatchPriority() {
@@ -37,8 +44,10 @@ public class AppealSubmittedNotifyHomeOfficeHandler implements PreSubmitCallback
 
     public AppealSubmittedNotifyHomeOfficeHandler(
         @Value("${featureFlag.isHomeOfficeIntegrationEnabled}") boolean isHomeOfficeIntegrationEnabled,
+        HomeOfficeReferenceService homeOfficeReferenceService,
         HomeOfficeApi<AsylumCase> homeOfficeApi) {
         this.homeOfficeApi = homeOfficeApi;
+        this.homeOfficeReferenceService = homeOfficeReferenceService;
     }
 
     public boolean canHandle(
@@ -50,7 +59,7 @@ public class AppealSubmittedNotifyHomeOfficeHandler implements PreSubmitCallback
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
                // This handler must run once and only once for each appeal, ideally as soon as the appeal is first created (and no longer in DRAFT state)
-               && (callback.getEvent() == SUBMIT_APPEAL); // TODO: include logic to cover  callback.getEvent() == MARK_APPEAL_PAID
+               && (callback.getEvent() == SUBMIT_APPEAL);
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
@@ -76,6 +85,18 @@ public class AppealSubmittedNotifyHomeOfficeHandler implements PreSubmitCallback
         // Ensure this is present before calling the Home Office API (where it will be needed)
         final String appealReferenceNumber = asylumCase.read(APPEAL_REFERENCE_NUMBER, String.class)
             .orElseThrow(() -> new IllegalStateException("Case ID for the appeal is not present"));
+        // Re-validate the appeal with the Home Office API (in case anything has changed since the last time it was called)
+        asylumCase.clear(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY);
+        Set<String> referenceValidationErrors = validateHomeOfficeReference(callback, asylumCase, homeOfficeReferenceNumber, homeOfficeReferenceService).getErrors();
+        Set<String> nameDobValidationErrors = validateNameAndDateOfBirth(callback, asylumCase, homeOfficeReferenceNumber, false, homeOfficeReferenceService).getErrors();
+        Set<String> validationErrors = new HashSet<>(referenceValidationErrors);
+        validationErrors.addAll(nameDobValidationErrors);
+        if (!validationErrors.isEmpty()) {
+            PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
+            response.addErrors(validationErrors);
+            return response;
+        }
+
         // Details for logging purposes only
         final HomeOfficeApiResponseStatusType homeOfficeAppellantApiResponseStatus = asylumCase.read(
                             HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS, HomeOfficeApiResponseStatusType.class)
