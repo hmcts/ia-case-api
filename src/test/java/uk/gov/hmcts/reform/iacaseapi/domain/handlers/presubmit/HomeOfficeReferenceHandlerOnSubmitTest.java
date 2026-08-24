@@ -127,6 +127,7 @@ class HomeOfficeReferenceHandlerOnSubmitTest {
         assertEquals(asylumCase, response.getData());
         verifyLogsContainMessage(listAppender, "Writing previously retrieved Home Office appellant data to the case record in full for case with Home Office reference non-empty-reference.");
         verify(asylumCase).write(eq(HOME_OFFICE_APPELLANTS), appellantsCaptor.capture());
+        verify(asylumCase).clear(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY);
 
         List<IdValue<HomeOfficeAppellant>> actualList = appellantsCaptor.getValue();
         assertEquals(1, actualList.size());
@@ -164,6 +165,7 @@ class HomeOfficeReferenceHandlerOnSubmitTest {
         assertEquals(Level.INFO, loggingEvent.getLevel());
 
         verify(asylumCase).write(eq(HOME_OFFICE_APPELLANTS), appellantsCaptor.capture());
+        verify(asylumCase).clear(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY);
 
         List<IdValue<HomeOfficeAppellant>> actualList = appellantsCaptor.getValue();
         assertEquals(2, actualList.size());
