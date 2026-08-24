@@ -1,27 +1,17 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.getMismatchErrorMessage;
-
-import java.util.List;
-import java.util.Optional;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.HomeOfficeApiResponseStatusType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
@@ -34,8 +24,18 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.HomeOfficeApi;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.HomeOfficeReferenceService;
+
+import java.util.List;
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.getMismatchErrorMessage;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -46,6 +46,8 @@ class AppealSubmittedNotifyHomeOfficeHandlerTest {
     private static final String FIRST_NAME = "John";
     private static final String LAST_NAME = "Doe";
     private static final String DOB = "1990-01-01";
+    private final String decryptedData =
+        "[{\"id\":\"1\",\"value\":{\"familyName\":\"Smith\"}}]";
 
     @Mock
     private HomeOfficeApi<AsylumCase> homeOfficeApi;
@@ -65,12 +67,17 @@ class AppealSubmittedNotifyHomeOfficeHandlerTest {
     @Mock
     private HomeOfficeAppellant appellant;
 
+    @Captor
+    private ArgumentCaptor<List<IdValue<HomeOfficeAppellant>>> listCaptor;
+
     private AppealSubmittedNotifyHomeOfficeHandler handler;
+
+    private final String key = "0fbb3d6ce00b08209f24609a6766d50ef293419eb8362ea435bdd11994ba97e8";
 
     @BeforeEach
     void setup() {
 
-        handler = new AppealSubmittedNotifyHomeOfficeHandler(true, hoReferenceService, homeOfficeApi);
+        handler = new AppealSubmittedNotifyHomeOfficeHandler(true, hoReferenceService, homeOfficeApi, key);
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
 
@@ -139,24 +146,6 @@ class AppealSubmittedNotifyHomeOfficeHandlerTest {
 
         assertThrows(IllegalStateException.class, () ->
             handler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback));
-    }
-
-    @Test
-    void handle_should_return_without_calling_home_office_when_serialised_data_missing() {
-
-        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
-
-        when(caseDetails.getState()).thenReturn(State.APPEAL_STARTED);
-
-        when(asylumCase.read(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, String.class))
-            .thenReturn(Optional.empty());
-
-        PreSubmitCallbackResponse<AsylumCase> response =
-            handler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
-
-        verifyNoInteractions(homeOfficeApi);
-
-        assertEquals(asylumCase, response.getData());
     }
 
     @Test
@@ -309,5 +298,38 @@ class AppealSubmittedNotifyHomeOfficeHandlerTest {
         verify(homeOfficeApi).aboutToSubmit(callback);
         verify(asylumCase, times(2)).clear(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY);
         verify(asylumCase).write(HAS_BEEN_VALIDATED_BY_NEW_HOME_OFFICE_API, YesOrNo.YES);
+    }
+
+    @Test
+    void should_write_to_home_office_appellants_if_empty() {
+        MockedStatic<HandlerUtils> handlerUtilsMock = mockStatic(HandlerUtils.class);
+        handlerUtilsMock.when(
+                () -> HandlerUtils.decrypt(any(), eq(key)))
+            .thenReturn(decryptedData);
+        handlerUtilsMock.when(
+                () -> HandlerUtils.getUanOrGwf(asylumCase))
+            .thenReturn(VALID_GWF);
+        handlerUtilsMock.when(
+                () -> HandlerUtils.validateHomeOfficeReference(callback, asylumCase, VALID_GWF, hoReferenceService))
+            .thenReturn(new PreSubmitCallbackResponse<>(asylumCase));
+        handlerUtilsMock.when(
+                () -> HandlerUtils.validateNameAndDateOfBirth(callback, asylumCase, VALID_GWF, false, hoReferenceService))
+            .thenReturn(new PreSubmitCallbackResponse<>(asylumCase));
+        handler = new AppealSubmittedNotifyHomeOfficeHandler(true, hoReferenceService, homeOfficeApi, key);
+        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+        when(caseDetails.getState()).thenReturn(State.APPEAL_STARTED);
+        when(asylumCase.read(APPEAL_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of(APPEAL_REF));
+        when(hoReferenceService.getHomeOfficeReferenceData(VALID_GWF, callback)).thenReturn(List.of(new IdValue<>("id", appellant)));
+        when(asylumCase.read(HOME_OFFICE_APPELLANTS, List.class)).thenReturn(Optional.empty());
+        when(homeOfficeApi.aboutToSubmit(callback)).thenReturn(asylumCase);
+
+        handler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        verify(asylumCase).write(eq(HOME_OFFICE_APPELLANTS), listCaptor.capture());
+
+        List<IdValue<HomeOfficeAppellant>> valueList = listCaptor.getValue();
+        assertEquals(1, valueList.size());
+        assertEquals("1", valueList.getFirst().getId());
+        assertEquals("Smith", valueList.getFirst().getValue().getFamilyName());
     }
 }
