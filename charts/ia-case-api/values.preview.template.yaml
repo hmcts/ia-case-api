@@ -593,6 +593,7 @@ ia-home-office-integration-api:
       POSTGRES_NAME: "pr-${CHANGE_ID}-ia-case-api"
       POSTGRES_USERNAME: hmcts
       POSTGRES_PASSWORD: ${GENERIC_VALUES_PREVIEW_YAML_PASS}
+      HOME_OFFICE_ENDPOINT: "https://ia-home-office-mock-api-pr-187.preview.platform.hmcts.net"
     keyVaults:
       ia:
         resourceGroup: ia
