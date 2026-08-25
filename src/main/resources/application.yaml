@@ -1,5 +1,6 @@
 server:
   port: ${PORT:8090}
+  max-http-request-header-size: 100KB
 
 management:
   endpoint:
@@ -299,6 +300,7 @@ security:
       - "requestHearingRequirements"
       - "requestRespondentEvidence"
       - "completeCaseReview"
+      - "sendLateTimelineNotice"
       - "uploadRespondentEvidence"
       - "requestRespondentReview"
       - "addAppealResponse"
@@ -393,6 +395,7 @@ security:
       - "requestHearingRequirements"
       - "requestRespondentEvidence"
       - "completeCaseReview"
+      - "sendLateTimelineNotice"
       - "uploadRespondentEvidence"
       - "requestRespondentReview"
       - "addAppealResponse"
@@ -473,6 +476,8 @@ security:
       - "generateListCmrTask"
       - "markAppealAsDetained"
       - "removeDetainedStatus"
+      - "addStatutoryTimeframe24Weeks"
+      - "removeStatutoryTimeframe24Weeks"
       - "forceCaseToPrepareForHearing"
       - "revokeCitizenAccess"
     senior-tribunal-caseworker:
@@ -484,6 +489,7 @@ security:
       - "requestHearingRequirements"
       - "requestRespondentEvidence"
       - "completeCaseReview"
+      - "sendLateTimelineNotice"
       - "uploadRespondentEvidence"
       - "requestRespondentReview"
       - "addAppealResponse"
@@ -565,8 +571,9 @@ security:
       - "markAppealAsDetained"
       - "removeDetainedStatus"
       - "turnOnNotificationsWATasks"
-      - "removeStatutoryTimeframe24Weeks"
       - "forceCaseToPrepareForHearing"
+      - "addStatutoryTimeframe24Weeks"
+      - "removeStatutoryTimeframe24Weeks"
       - "revokeCitizenAccess"
     hearing-centre-admin:
       - "appellantInPersonManual"
@@ -638,6 +645,7 @@ security:
       - "forceFtpaDecidedState"
       - "turnOnNotificationsWATasks"
       - "addStatutoryTimeframe24Weeks"
+      - "removeStatutoryTimeframe24Weeks"
       - "revokeCitizenAccess"
       - "requestRespondentEvidence"
     ctsc:
@@ -707,6 +715,7 @@ security:
       - "turnOnNotificationsWATasks"
       - "editDocuments"
       - "addStatutoryTimeframe24Weeks"
+      - "removeStatutoryTimeframe24Weeks"
       - "revokeCitizenAccess"
       - "forceDecidedState"
       - "forceFtpaDecidedState"
@@ -780,6 +789,7 @@ security:
       - "forceDecidedState"
       - "forceFtpaDecidedState"
       - "addStatutoryTimeframe24Weeks"
+      - "removeStatutoryTimeframe24Weeks"
       - "revokeCitizenAccess"
       - "requestRespondentEvidence"
     national-business-centre:
@@ -850,6 +860,7 @@ security:
       - "forceDecidedState"
       - "forceFtpaDecidedState"
       - "addStatutoryTimeframe24Weeks"
+      - "removeStatutoryTimeframe24Weeks"
       - "revokeCitizenAccess"
       - "requestRespondentEvidence"
     challenged-access-ctsc:
@@ -920,6 +931,7 @@ security:
       - "forceDecidedState"
       - "forceFtpaDecidedState"
       - "addStatutoryTimeframe24Weeks"
+      - "removeStatutoryTimeframe24Weeks"
       - "revokeCitizenAccess"
       - "requestRespondentEvidence"
     challenged-access-admin:
@@ -991,6 +1003,7 @@ security:
       - "forceDecidedState"
       - "forceFtpaDecidedState"
       - "addStatutoryTimeframe24Weeks"
+      - "removeStatutoryTimeframe24Weeks"
       - "revokeCitizenAccess"
       - "requestRespondentEvidence"
     caseworker-ia-homeofficeapc:
@@ -1049,6 +1062,7 @@ security:
       - "pipActivation"
       - "applyForFTPAAppellant"
       - "requestFeeRemission"
+      - "deleteDraftAppeal"
     caseworker-ia-iacjudge:
       - "generateDecisionAndReasons"
       - "endAppeal"
@@ -1112,6 +1126,8 @@ security:
       - "createFlag"
       - "decideCostsApplication"
       - "considerMakingCostsOrder"
+      - "addStatutoryTimeframe24Weeks"
+      - "removeStatutoryTimeframe24Weeks"
       - "updateTribunalDecision"
     senior-judge:
       - "generateDecisionAndReasons"
@@ -1143,6 +1159,8 @@ security:
       - "createFlag"
       - "decideCostsApplication"
       - "considerMakingCostsOrder"
+      - "addStatutoryTimeframe24Weeks"
+      - "removeStatutoryTimeframe24Weeks"
       - "updateTribunalDecision"
     leadership-judge:
       - "generateDecisionAndReasons"
@@ -1174,6 +1192,8 @@ security:
       - "createFlag"
       - "decideCostsApplication"
       - "considerMakingCostsOrder"
+      - "addStatutoryTimeframe24Weeks"
+      - "removeStatutoryTimeframe24Weeks"
       - "updateTribunalDecision"
     fee-paid-judge:
       - "generateDecisionAndReasons"
@@ -1205,6 +1225,8 @@ security:
       - "createFlag"
       - "decideCostsApplication"
       - "considerMakingCostsOrder"
+      - "addStatutoryTimeframe24Weeks"
+      - "removeStatutoryTimeframe24Weeks"
       - "updateTribunalDecision"
     lead-judge:
       - "generateDecisionAndReasons"
@@ -1236,6 +1258,8 @@ security:
       - "createFlag"
       - "decideCostsApplication"
       - "considerMakingCostsOrder"
+      - "addStatutoryTimeframe24Weeks"
+      - "removeStatutoryTimeframe24Weeks"
       - "updateTribunalDecision"
     hearing-judge:
       - "generateDecisionAndReasons"
@@ -1267,6 +1291,8 @@ security:
       - "createFlag"
       - "decideCostsApplication"
       - "considerMakingCostsOrder"
+      - "addStatutoryTimeframe24Weeks"
+      - "removeStatutoryTimeframe24Weeks"
       - "updateTribunalDecision"
     ftpa-judge:
       - "generateDecisionAndReasons"
@@ -1298,6 +1324,8 @@ security:
       - "createFlag"
       - "decideCostsApplication"
       - "considerMakingCostsOrder"
+      - "addStatutoryTimeframe24Weeks"
+      - "removeStatutoryTimeframe24Weeks"
       - "updateTribunalDecision"
     hearing-panel-judge:
       - "generateDecisionAndReasons"
@@ -1329,6 +1357,8 @@ security:
       - "createFlag"
       - "decideCostsApplication"
       - "considerMakingCostsOrder"
+      - "addStatutoryTimeframe24Weeks"
+      - "removeStatutoryTimeframe24Weeks"
       - "updateTribunalDecision"
     challenged-access-judiciary:
       - "generateDecisionAndReasons"
@@ -1360,6 +1390,8 @@ security:
       - "createFlag"
       - "decideCostsApplication"
       - "considerMakingCostsOrder"
+      - "addStatutoryTimeframe24Weeks"
+      - "removeStatutoryTimeframe24Weeks"
       - "updateTribunalDecision"
     caseworker-ia-system:
       - "requestHearingRequirementsFeature"
@@ -1392,6 +1424,7 @@ security:
       - "rollbackMigration"
       - "addStatutoryTimeframe24Weeks"
       - "removeStatutoryTimeframe24Weeks"
+      - "deleteDraftAppeal"
       - "createCaseLink"
       - "maintainCaseLinks"
       - "revokeCitizenAccess"
@@ -1501,4 +1534,4 @@ app:
   home-office-validation:
     enabled: ${HOME_OFFICE_VALIDATION_ENABLED:true}
   statutory-timeframe:
-    live-date: ${STATUTORY_TIMEFRAME_LIVE_DATE:2026-09-01}
+    live-date: ${STATUTORY_TIMEFRAME_LIVE_DATE:2026-08-12}

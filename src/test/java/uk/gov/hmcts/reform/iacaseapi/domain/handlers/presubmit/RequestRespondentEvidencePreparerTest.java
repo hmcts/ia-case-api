@@ -161,7 +161,7 @@ class RequestRespondentEvidencePreparerTest {
     }
 
     @Test
-    void handler_should_return_error_if_list_case_not_done_on_24_week_case() {
+    void handler_should_return_error_if_list_case_not_done_on_24_week_case_with_hearing() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONDENT_EVIDENCE);
@@ -169,6 +169,8 @@ class RequestRespondentEvidencePreparerTest {
         when(asylumCase.read(COMPLETE_CASE_REVIEW_DATE, String.class)).thenReturn(Optional.of("2024-01-01"));
         when(asylumCase.read(STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(asylumCase.read(LIST_CASE_HEARING_DATE, String.class)).thenReturn(Optional.empty());
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.PA));
+        when(asylumCase.read(DECISION_HEARING_FEE_OPTION, String.class)).thenReturn(Optional.of("decisionWithHearing"));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             requestRespondentEvidencePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
@@ -177,6 +179,26 @@ class RequestRespondentEvidencePreparerTest {
         assertFalse(callbackResponse.getErrors().isEmpty());
         assertThat(callbackResponse.getErrors())
             .contains("You must list the case before running the 'Request respondent evidence' event");
+    }
+
+    @Test
+    void handler_should_not_return_error_if_list_case_not_done_on_24_week_case_with_hearing() {
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONDENT_EVIDENCE);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(COMPLETE_CASE_REVIEW_DATE, String.class)).thenReturn(Optional.of("2024-01-01"));
+        when(asylumCase.read(STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(LIST_CASE_HEARING_DATE, String.class)).thenReturn(Optional.empty());
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.PA));
+        when(asylumCase.read(DECISION_HEARING_FEE_OPTION, String.class)).thenReturn(Optional.of("decisionWithoutHearing"));
+        when(dateProvider.now()).thenReturn(LocalDate.parse("2024-01-01"));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            requestRespondentEvidencePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        assertNotNull(callbackResponse);
+        assertTrue(callbackResponse.getErrors().isEmpty());
     }
 
     @Test

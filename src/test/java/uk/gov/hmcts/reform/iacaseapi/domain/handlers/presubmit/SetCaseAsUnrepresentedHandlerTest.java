@@ -60,6 +60,7 @@ class SetCaseAsUnrepresentedHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
+        verify(asylumCase).write(HAS_ADDED_LEGAL_REP_DETAILS, YesOrNo.NO);
     }
 
     @Test
@@ -75,6 +76,7 @@ class SetCaseAsUnrepresentedHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
+        verify(asylumCase).write(HAS_ADDED_LEGAL_REP_DETAILS, YesOrNo.NO);
     }
 
     @Test
