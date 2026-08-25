@@ -20,7 +20,9 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.Appender;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.config.SaveNotificationsDataConfiguration;
 import uk.gov.service.notify.Notification;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
@@ -62,6 +64,9 @@ class SaveNotificationsToDataHandlerTest {
     private StoredNotification mockedStoredNotification2;
     @Mock
     private FeatureToggler featureToggler;
+
+    private Appender<StoredNotification> notificationAppender;
+    private SaveNotificationsDataConfiguration configuration;
     @Captor
     private ArgumentCaptor<List<IdValue<StoredNotification>>> listCaptor;
 
@@ -80,16 +85,21 @@ class SaveNotificationsToDataHandlerTest {
 
     @BeforeEach
     void setUp() {
+        notificationAppender = new Appender<>();
+        configuration = new SaveNotificationsDataConfiguration();
+        configuration.setEnabled(true);
+        configuration.setRetentionDays(7);
         when(featureToggler.getValue("save-notifications-feature", false)).thenReturn(true);
         when(callback.getEvent()).thenReturn(SAVE_NOTIFICATIONS_TO_DATA);
         saveNotificationsToDataHandler = new SaveNotificationsToDataHandler(
             notificationClient,
-            true,
-            featureToggler);
+            configuration,
+            featureToggler,
+            notificationAppender);
     }
 
     @Test
-    void should_access_notify_client_if_missing_email_notification_and_should_sort_notification_list() throws NotificationClientException {
+    void should_access_notify_client_if_missing_email_notification_and_reindex_notification_list() throws NotificationClientException {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         List<IdValue<String>> notificationsSent =
@@ -115,9 +125,7 @@ class SaveNotificationsToDataHandlerTest {
         when(notification.getSentAt()).thenReturn(Optional.of(zonedDateTime));
         when(notification.getStatus()).thenReturn(status);
         when(mockedStoredNotification.getNotificationId()).thenReturn("1");
-        when(mockedStoredNotification.getNotificationDateSent()).thenReturn("2024-01-01T00:00:00");
         when(mockedStoredNotification2.getNotificationId()).thenReturn("2");
-        when(mockedStoredNotification2.getNotificationDateSent()).thenReturn("2024-01-01T00:05:00");
         StoredNotification storedNotification =
             StoredNotification.builder()
                 .notificationId(notificationId)
@@ -131,13 +139,14 @@ class SaveNotificationsToDataHandlerTest {
                 .build();
         saveNotificationsToDataHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
         verify(notificationClient, times(1)).getNotificationById(anyString());
-        List<IdValue<StoredNotification>> sortedStoredNotifications =
+        // Appender assigns: new notification gets id=3 (size+1), existing get reindexed to 2, 1
+        List<IdValue<StoredNotification>> reindexedNotifications =
             List.of(
-                new IdValue<>("1", storedNotification),
-                new IdValue<>("2", mockedStoredNotification2),
-                new IdValue<>("3", mockedStoredNotification)
+                new IdValue<>("3", storedNotification),
+                new IdValue<>("2", mockedStoredNotification),
+                new IdValue<>("1", mockedStoredNotification2)
             );
-        verify(asylumCase, times(1)).write(eq(NOTIFICATIONS), eq(sortedStoredNotifications));
+        verify(asylumCase, times(1)).write(eq(NOTIFICATIONS), eq(reindexedNotifications));
     }
 
     @Test
@@ -449,7 +458,7 @@ class SaveNotificationsToDataHandlerTest {
 
         saveNotificationsToDataHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
         verify(notificationClient, never()).getNotificationById(anyString());
-        verify(asylumCase, never()).write(eq(NOTIFICATIONS), anyList());
+        verify(asylumCase, times(1)).write(eq(NOTIFICATIONS), eq(storedNotifications));
     }
 
     @Test
@@ -476,7 +485,7 @@ class SaveNotificationsToDataHandlerTest {
 
         saveNotificationsToDataHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
         verify(notificationClient, never()).getNotificationById(anyString());
-        verify(asylumCase, never()).write(eq(NOTIFICATIONS), anyList());
+        verify(asylumCase, times(1)).write(eq(NOTIFICATIONS), eq(storedNotifications));
     }
 
     @Test
@@ -561,7 +570,7 @@ class SaveNotificationsToDataHandlerTest {
 
         saveNotificationsToDataHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
         verify(notificationClient, never()).getNotificationById(anyString());
-        verify(asylumCase, never()).write(eq(NOTIFICATIONS), anyList());
+        verify(asylumCase, times(1)).write(NOTIFICATIONS, emptyList());
     }
 
     @Test
@@ -763,10 +772,15 @@ class SaveNotificationsToDataHandlerTest {
             .thenReturn(saveNotificationsFeatureEnabled);
         when(callback.getEvent()).thenReturn(SAVE_NOTIFICATIONS_TO_DATA);
 
+        SaveNotificationsDataConfiguration testConfig = new SaveNotificationsDataConfiguration();
+        testConfig.setEnabled(saveNotificationsToDataEnvVarEnabled);
+        testConfig.setRetentionDays(7);
+
         saveNotificationsToDataHandler = new SaveNotificationsToDataHandler(
             notificationClient,
-            saveNotificationsToDataEnvVarEnabled,
-            featureToggler);
+            testConfig,
+            featureToggler,
+            notificationAppender);
 
         boolean canHandle = saveNotificationsToDataHandler.canHandle(
             PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
