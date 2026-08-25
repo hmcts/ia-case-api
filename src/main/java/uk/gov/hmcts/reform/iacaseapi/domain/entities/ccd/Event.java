@@ -173,6 +173,7 @@ public enum Event {
     QUERY_MANAGEMENT_RAISE_QUERY("queryManagementRaiseQuery"),
     QUERY_MANAGEMENT_RESPOND_QUERY("queryManagementRespondQuery"),
     COMPLETE_CASE_REVIEW("completeCaseReview"),
+    SEND_LATE_TIMELINE_NOTICE("sendLateTimelineNotice"),
     FORCE_CASE_TO_PREPARE_FOR_HEARING("forceCaseToPrepareForHearing"),
     GENERATE_PIN_IN_POST("generatePinInPost"),
 
