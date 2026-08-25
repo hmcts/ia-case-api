@@ -69,6 +69,7 @@ class UpdateStatutoryTimeframe24WeeksServiceTest {
 
     @BeforeEach
     public void setUp() {
+        when(userDetails.getForenameAndSurname()).thenReturn(forename + " " + surname);
         when(userDetails.getForename()).thenReturn(forename);
         when(userDetails.getSurname()).thenReturn(surname);
 
@@ -149,6 +150,77 @@ class UpdateStatutoryTimeframe24WeeksServiceTest {
         assertThat(capturedCaseNotes.getCaseNoteSubject()).isEqualTo("Setting statutory timeframe 24 weeks to - " + newStatus);
         assertThat(capturedCaseNotes.getCaseNoteDescription()).isEqualTo(newStatutoryTimeframe24WeeksReason);
         assertThat(capturedCaseNotes.getUser()).isEqualTo(forename + " " + surname);
+        assertThat(capturedCaseNotes.getDateAdded()).isEqualTo(now.toString());
+
+        // Capture the object written to asylumCase
+        ArgumentCaptor<StatutoryTimeframe24Weeks> statutoryCaptor =
+            ArgumentCaptor.forClass(StatutoryTimeframe24Weeks.class);
+
+        verify(asylumCase).write(eq(STATUTORY_TIMEFRAME_24_WEEKS), statutoryCaptor.capture());
+
+        StatutoryTimeframe24Weeks writtenStatutoryTimeframe = statutoryCaptor.getValue();
+
+        assertThat(writtenStatutoryTimeframe.getHistory())
+            .isEqualTo(allAppendedStatutoryTimeframe24Weeks);
+
+        verify(bannerTextService, times(1)).updateBannerText(asylumCaseCaptor.capture());
+    }
+
+    @Test
+    void should_append_new_statutory_timeframe_24_weeks_to_existing_statutory_timeframe_24_weeks_with_decision_maker() {
+        YesOrNo currentStatus = YesOrNo.NO;
+        when(asylumCase.read(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class))
+            .thenReturn(Optional.of(currentStatus));
+        when(asylumCase.read(REMOVAL_OF_24W_DECISION_DECISION_MAKER, String.class))
+            .thenReturn(Optional.of("SomeName"));
+        StatutoryTimeframe24WeeksHistory statutoryTimeframe24WeeksHistory = new StatutoryTimeframe24WeeksHistory(currentStatus, newStatutoryTimeframe24WeeksReason, forename + " " + surname, nowWithTime.toString());
+        List<IdValue<StatutoryTimeframe24WeeksHistory>> existingStatutoryTimeframe24WeeksHistory = Arrays.asList(new IdValue<>("1", statutoryTimeframe24WeeksHistory));
+        HomeOfficeStatutoryTimeframe.Stf24WeekCohort cohort =
+            HomeOfficeStatutoryTimeframe.Stf24WeekCohort.builder()
+                .name("HU")
+                .included("true")
+                .build();
+        IdValue<HomeOfficeStatutoryTimeframe.Stf24WeekCohort> idValCohort = new IdValue<>("1", cohort);
+        homeOfficeStatutoryTimeframeDto = HomeOfficeStatutoryTimeframe.builder()
+            .hmctsReferenceNumber(hmctsReferenceNumber)
+            .uan(uan)
+            .familyName(familyName)
+            .givenNames(givenNames)
+            .dateOfBirth(dateOfBirth)
+            .stf24weekCohorts(List.of(idValCohort))
+            .timeStamp(timeStamp)
+            .build();
+        StatutoryTimeframe24Weeks existingStatutoryTimeframe24Weeks = new StatutoryTimeframe24Weeks(
+            existingStatutoryTimeframe24WeeksHistory,
+            homeOfficeStatutoryTimeframeDto);
+
+        when(asylumCase.read(STATUTORY_TIMEFRAME_24_WEEKS)).thenReturn(Optional.of(existingStatutoryTimeframe24Weeks));
+        when(asylumCase.read(STF_24W_CURRENT_REASON_AUTO_GENERATED, String.class)).thenReturn(Optional.of(newStatutoryTimeframe24WeeksReason));
+
+
+        YesOrNo newStatus = YesOrNo.YES;
+        updateStatutoryTimeframe24WeeksService.updateAsylumCase(asylumCase, newStatus);
+
+        verify(statutoryTimeframe24WeeksHistoryAppender, times(1)).append(
+            newStatutoryTimeframe24WeeksHistoryCaptor.capture(),
+            existingStatutoryTimeframe24WeeksHistoryCaptor.capture());
+
+        StatutoryTimeframe24WeeksHistory capturedStatutoryTimeframe24Weeks = newStatutoryTimeframe24WeeksHistoryCaptor.getValue();
+
+        assertThat(capturedStatutoryTimeframe24Weeks.getStatus()).isEqualTo(newStatus);
+        assertThat(capturedStatutoryTimeframe24Weeks.getReason()).isEqualTo(newStatutoryTimeframe24WeeksReason);
+        assertThat(capturedStatutoryTimeframe24Weeks.getUser()).isEqualTo("SomeName");
+        assertThat(capturedStatutoryTimeframe24Weeks.getDateTimeAdded()).isEqualTo(nowWithTime.toString());
+
+        verify(caseNoteAppender, times(1)).append(
+            newCaseNotesCaptor.capture(),
+            existingCaseNotesCaptor.capture());
+
+        CaseNote capturedCaseNotes = newCaseNotesCaptor.getValue();
+
+        assertThat(capturedCaseNotes.getCaseNoteSubject()).isEqualTo("Setting statutory timeframe 24 weeks to - " + newStatus);
+        assertThat(capturedCaseNotes.getCaseNoteDescription()).isEqualTo(newStatutoryTimeframe24WeeksReason);
+        assertThat(capturedCaseNotes.getUser()).isEqualTo("SomeName");
         assertThat(capturedCaseNotes.getDateAdded()).isEqualTo(now.toString());
 
         // Capture the object written to asylumCase

@@ -18,12 +18,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import static java.util.Collections.emptyList;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_NOTES;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMOVAL_OF_24W_DECISION_REASON;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STATUTORY_TIMEFRAME_24_WEEKS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STF_24W_CURRENT_REASON_AUTO_GENERATED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STF_24W_CURRENT_STATUS_AUTO_GENERATED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
 @Slf4j
 @Service
@@ -72,14 +67,14 @@ public class UpdateStatutoryTimeframe24WeeksService {
                 asylumCase.write(STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED, stf24wStatus);
             }
             // Update STF 24-week object containing history and original Home Office response information
-            String userDetails = buildFullName();
+            String decisionMaker = asylumCase.read(REMOVAL_OF_24W_DECISION_DECISION_MAKER, String.class).orElse(userDetails.getForenameAndSurname());
             Optional<StatutoryTimeframe24Weeks> existingStf24wObj = asylumCase.read(STATUTORY_TIMEFRAME_24_WEEKS, StatutoryTimeframe24Weeks.class);
             StatutoryTimeframe24Weeks updatedStf24wObj =
-                buildNewStatutoryTimeframe24Weeks(stf24wStatus, stf24wReason, userDetails, existingStf24wObj);
+                buildNewStatutoryTimeframe24Weeks(stf24wStatus, stf24wReason, decisionMaker, existingStf24wObj);
             asylumCase.write(STATUTORY_TIMEFRAME_24_WEEKS, updatedStf24wObj);
             // Update case notes
             Optional<List<IdValue<CaseNote>>> existingCaseNotes = asylumCase.read(CASE_NOTES);
-            List<IdValue<CaseNote>> allCaseNotes = caseNoteAppender.append(buildNewCaseNote(stf24wStatus, stf24wReason, userDetails), existingCaseNotes.orElse(Collections.emptyList()));
+            List<IdValue<CaseNote>> allCaseNotes = caseNoteAppender.append(buildNewCaseNote(stf24wStatus, stf24wReason, decisionMaker), existingCaseNotes.orElse(Collections.emptyList()));
             asylumCase.write(CASE_NOTES, allCaseNotes);
         } else {
             log.warn("The current 24-week status is already set to {}.  No changes have been made to the case record.", stf24wStatus);
@@ -88,12 +83,6 @@ public class UpdateStatutoryTimeframe24WeeksService {
         stf24WeeksBannerTextService.updateBannerText(asylumCase);
 
         return asylumCase;
-    }
-
-    private String buildFullName() {
-        return userDetails.getForename()
-            + " "
-            + userDetails.getSurname();
     }
 
     private StatutoryTimeframe24Weeks buildNewStatutoryTimeframe24Weeks(YesOrNo status, String reason, String user, Optional<StatutoryTimeframe24Weeks> existingStf24wObj) {
