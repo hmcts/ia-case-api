@@ -27,7 +27,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.statutoryt
 public class AddStatutoryTimeframe24WeeksPreStartHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final LocalDate stf24wLiveDate;
-    private static final Set<State> permittedStates = Set.of(
+    private static final Set<State> supportedStates = Set.of(
         State.PENDING_PAYMENT,
         State.APPEAL_SUBMITTED,
         State.AWAITING_RESPONDENT_EVIDENCE
@@ -63,7 +63,7 @@ public class AddStatutoryTimeframe24WeeksPreStartHandler implements PreSubmitCal
         PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
 
         State effectiveState = getEffectiveState(callback, asylumCase);
-        if (!permittedStates.contains(effectiveState)) {
+        if (!supportedStates.contains(effectiveState)) {
             response.addError("This event cannot be run on this case at this time");
         }
 

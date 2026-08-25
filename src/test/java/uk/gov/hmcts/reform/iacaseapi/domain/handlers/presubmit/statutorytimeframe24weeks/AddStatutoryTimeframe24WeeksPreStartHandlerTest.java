@@ -166,7 +166,7 @@ class AddStatutoryTimeframe24WeeksPreStartHandlerTest {
         "APPEAL_SUBMITTED",
         "AWAITING_RESPONDENT_EVIDENCE"
     }, mode = EnumSource.Mode.EXCLUDE)
-    void should_return_error_when_effective_state_is_not_permitted(State state) {
+    void should_return_error_when_state_is_not_supported(State state) {
         when(callback.getCaseDetails().getState()).thenReturn(state);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -198,7 +198,7 @@ class AddStatutoryTimeframe24WeeksPreStartHandlerTest {
         "AWAITING_CLARIFYING_QUESTIONS_ANSWERS",
         "CLARIFYING_QUESTIONS_ANSWERS_SUBMITTED"
     })
-    void should_not_return_error_when_clarifying_state_with_permitted_pre_clarifying_state(State state) {
+    void should_not_return_error_when_clarifying_state_with_supported_pre_clarifying_state(State state) {
         when(callback.getCaseDetails().getState()).thenReturn(state);
         when(asylumCase.read(AsylumCaseFieldDefinition.PRE_CLARIFYING_STATE, State.class))
             .thenReturn(Optional.of(State.APPEAL_SUBMITTED));
@@ -215,7 +215,7 @@ class AddStatutoryTimeframe24WeeksPreStartHandlerTest {
         "AWAITING_CLARIFYING_QUESTIONS_ANSWERS",
         "CLARIFYING_QUESTIONS_ANSWERS_SUBMITTED"
     })
-    void should_return_error_when_clarifying_state_with_non_permitted_pre_clarifying_state(State state) {
+    void should_return_error_when_clarifying_state_with_non_supported_pre_clarifying_state(State state) {
         when(callback.getCaseDetails().getState()).thenReturn(state);
         when(asylumCase.read(AsylumCaseFieldDefinition.PRE_CLARIFYING_STATE, State.class))
             .thenReturn(Optional.of(State.AWAITING_REASONS_FOR_APPEAL));
