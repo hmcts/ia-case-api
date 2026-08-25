@@ -22,7 +22,7 @@ import java.time.ZonedDateTime;
 @Setter
 @Component
 @EnableConfigurationProperties
-@ConfigurationProperties("saveNotificationsData")
+@ConfigurationProperties("save-notifications-data")
 public class SaveNotificationsDataConfiguration {
 
     private final SecureRandom random = new SecureRandom();
@@ -60,7 +60,7 @@ public class SaveNotificationsDataConfiguration {
             : currentTime.toLocalDate().plusDays(1);
 
         int windowSeconds = scheduling.getWindowDurationMinutes() * 60;
-        int randomOffsetSeconds = random.nextInt(windowSeconds);
+        int randomOffsetSeconds = windowSeconds > 0 ? random.nextInt(windowSeconds) : 0;
 
         return scheduleDate
             .atTime(targetTime)

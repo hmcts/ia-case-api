@@ -1508,12 +1508,12 @@ commonData:
 govUkHolidays:
   url: https://www.gov.uk/
 
-saveNotificationsData:
+save-notifications-data:
   enabled: ${SAVE_NOTIFICATIONS_TO_DATA_EVENT_ENABLED:true}
-  retentionDays: ${SAVE_NOTIFICATIONS_DATA_RETENTION_DAYS:21}
+  retention-days: ${SAVE_NOTIFICATIONS_DATA_RETENTION_DAYS:21}
   scheduling:
-    targetHour: ${SAVE_NOTIFICATIONS_DATA_TARGET_HOUR:23}
-    windowDurationMinutes: ${SAVE_NOTIFICATIONS_DATA_WINDOW_DURATION_MINUTES:50}
+    target-hour: ${SAVE_NOTIFICATIONS_DATA_TARGET_HOUR:23}
+    window-duration-minutes: ${SAVE_NOTIFICATIONS_DATA_WINDOW_DURATION_MINUTES:50}
 
 govnotify:
   baseUrl: "https://api.notifications.service.gov.uk"
