@@ -166,6 +166,15 @@ public class RequestRespondentEvidencePreparer implements PreSubmitCallbackHandl
         return !(HandlerUtils.isAgeAssessmentAppeal(asylumCase));
     }
 
+    private boolean is24WeekStfCase(AsylumCase asylumCase) {
+        if (stf24wLiveDate.isAfter(LocalDate.now())) {
+            return false;
+        }
+        return asylumCase.read(STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED, YesOrNo.class)
+                .map(status -> status == YES)
+                .orElse(false);
+    }
+
     private LocalDate getDueDate(AsylumCase asylumCase) {
         LocalDate dueDate;
 
@@ -182,15 +191,6 @@ public class RequestRespondentEvidencePreparer implements PreSubmitCallbackHandl
         }
 
         return dueDate;
-    }
-
-    private boolean is24WeekStfCase(AsylumCase asylumCase) {
-        if (stf24wLiveDate.isAfter(LocalDate.now())) {
-            return false;
-        }
-        return asylumCase.read(STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED, YesOrNo.class)
-                .map(status -> status == YES)
-                .orElse(false);
     }
 
     private String getDirectionExplanation(AsylumCase asylumCase) {
