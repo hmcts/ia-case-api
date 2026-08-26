@@ -8,6 +8,7 @@ import org.springframework.core.io.ClassPathResource;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.HomeOfficeAppellant;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
@@ -840,8 +841,9 @@ public class HandlerUtils {
                 asylumCase.read(HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS, HomeOfficeApiResponseStatusType.class)
                     .orElse(HomeOfficeApiResponseStatusType.UNKNOWN);
             String errorMessage = "";
+            boolean isOnSubmit = callback.getEvent() == Event.SUBMIT_APPEAL;
             if (responseStatus.equals(HomeOfficeApiResponseStatusType.OK)) {
-                errorMessage = getMismatchErrorMessage(homeOfficeReferenceNumber, shouldRevalidate);
+                errorMessage = getMismatchErrorMessage(homeOfficeReferenceNumber, shouldRevalidate, isOnSubmit);
                 // Log this - if it happens repeatedly, that's suspicious
                 log.info("The details provided did not match the Home Office biographic data retrieved for case with reference ID {}.", homeOfficeReferenceNumber);
             } else {
@@ -854,7 +856,14 @@ public class HandlerUtils {
         return response;
     }
 
-    public static String getMismatchErrorMessage(String homeOfficeReferenceNumber, boolean shouldRevalidate) {
+    public static String getMismatchErrorMessage(String homeOfficeReferenceNumber, boolean shouldRevalidate, boolean isOnSubmit) {
+        if (isOnSubmit) {
+            return "The information entered does not match the details held by the Home Office for reference number " +
+                homeOfficeReferenceNumber +
+                ".  The Home Office may have updated the appellant's details in their system. You should edit the appeal " +
+                "and make sure the appellant's details are correctly matched exactly as they appear on the decision letter, so that we can verify them." +
+                "  These details can often be found in the 'How to appeal' section.";
+        }
         return "The information entered does not match the details held by the Home Office for reference number " +
             homeOfficeReferenceNumber +
             ".  You should enter the " + (shouldRevalidate ? "" : "appellant's ") +

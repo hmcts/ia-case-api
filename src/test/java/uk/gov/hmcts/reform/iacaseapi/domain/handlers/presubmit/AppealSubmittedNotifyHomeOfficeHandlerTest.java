@@ -225,7 +225,7 @@ class AppealSubmittedNotifyHomeOfficeHandlerTest {
         assertEquals(asylumCase, response.getData());
         assertThat(response.getErrors())
             .hasSize(1)
-            .contains(getMismatchErrorMessage(VALID_GWF, false));
+            .contains(getMismatchErrorMessage(VALID_GWF, false, true));
     }
 
     @Test

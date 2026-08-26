@@ -31,6 +31,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.getMismatchErrorMessage;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -261,11 +262,7 @@ class HomeOfficeReferenceHandlerTest {
             handler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
 
         assertFalse(response.getErrors().isEmpty());
-        assertEquals(
-            "The information entered does not match the details held by the Home Office for reference number GWF123456789.  " +
-                "You should enter the details exactly as they appear on the decision letter, so that we can verify them.  " +
-                "These details can often be found in the 'How to appeal' section.  If you need help, please use the Home Office help form in the bullet points on this page.",
-            response.getErrors().iterator().next());
+        assertEquals(getMismatchErrorMessage(VALID_GWF, true , false), response.getErrors().iterator().next());
     }
 
     @Test
