@@ -716,7 +716,6 @@ class RequestRespondentEvidencePreparerTest {
     @Test
     void should_return_due_date_for_bau_case() {
         LocalDate today = LocalDate.of(2025, 5, 5);
-        String expectedDateDue = "2025-05-19"; // today + 14 days
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONDENT_EVIDENCE);
@@ -726,6 +725,7 @@ class RequestRespondentEvidencePreparerTest {
         when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         when(dateProvider.now()).thenReturn(today);
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(PA));
+        final String expectedDateDue = "2025-05-19"; // today + 14 days
         when(asylumCase.read(COMPLETE_CASE_REVIEW_DATE, String.class)).thenReturn(Optional.of("2024-01-01"));
 
         requestRespondentEvidencePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
