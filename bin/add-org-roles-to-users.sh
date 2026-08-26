@@ -55,7 +55,7 @@ echo "Setting up WA Users and role assignments..."
 ./bin/utils/organisational-role-assignment.sh "${IA_WA_ADMINOFFICER_NO_IDAM_USERNAME}" "${IA_WA_ADMINOFFICER_NO_IDAM_PASSWORD}" "PUBLIC" "case-allocator" '{"jurisdiction":"IA","primaryLocation":"765324"}' "ADMIN"
 ./bin/utils/organisational-role-assignment.sh "${IA_WA_ADMINOFFICER_NO_IDAM_USERNAME}" "${IA_WA_ADMINOFFICER_NO_IDAM_PASSWORD}" "PUBLIC" "task-supervisor" '{"jurisdiction":"IA","primaryLocation":"765324"}' "ADMIN"
 ./bin/utils/organisational-role-assignment.sh "${IA_WA_ADMINOFFICER_NO_IDAM_USERNAME}" "${IA_WA_ADMINOFFICER_NO_IDAM_PASSWORD}" "PUBLIC" "hearing-centre-admin" '{"jurisdiction":"IA","primaryLocation":"765324","workTypes":"hearing_work,upper_tribunal,routine_work,review_case,stf_24w_hearing_work,stf_24w_upper_tribunal,stf_24w_routine_work,stf_24w_review_case"}' "ADMIN"
-./bin/utils/organisational-role-assignment.sh "${IA_WA_ADMINOFFICER_NO_IDAM_USERNAME}" "${IA_WA_ADMINOFFICER_NO_IDAM_PASSWORD}" "PRIVATE" "hmcts-admin" '{"jurisdiction":"IA","primaryLocation":"765324","substantive":"N"}' "ADMIN"  "BASIC"
+./bin/utils/organisational-role-assignment.sh "${IA_WA_ADMINOFFICER_NO_IDAM_USERNAME}" "${IA_WA_ADMINOFFICER_NO_IDAM_PASSWORD}" "PRIVATE" "hmcts-admin" '{"jurisdiction":"IA","primaryLocation":"765324","substantive":"N"}' "ADMIN" "BASIC"
 
 ./bin/utils/organisational-role-assignment.sh "${IA_WA_CASEOFFICER_NO_IDAM_USERNAME}" "${IA_WA_CASEOFFICER_NO_IDAM_PASSWORD}" "PUBLIC" "case-allocator" '{"jurisdiction":"IA","primaryLocation":"765324"}' "LEGAL_OPERATIONS"
 ./bin/utils/organisational-role-assignment.sh "${IA_WA_CASEOFFICER_NO_IDAM_USERNAME}" "${IA_WA_CASEOFFICER_NO_IDAM_PASSWORD}" "PUBLIC" "task-supervisor" '{"jurisdiction":"IA","primaryLocation":"765324"}' "LEGAL_OPERATIONS"
