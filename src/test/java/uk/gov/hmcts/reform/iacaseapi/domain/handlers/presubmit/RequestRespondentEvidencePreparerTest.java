@@ -713,6 +713,59 @@ class RequestRespondentEvidencePreparerTest {
             .doesNotContain("The explanation for refusal");
     }
 
+    @Test
+    void should_return_due_date_for_bau_case() {
+        LocalDate today = LocalDate.of(2025, 5, 5);
+        String expectedDateDue = "2025-05-19"; // today + 14 days
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONDENT_EVIDENCE);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(dateProvider.now()).thenReturn(today);
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(PA));
+        when(asylumCase.read(COMPLETE_CASE_REVIEW_DATE, String.class)).thenReturn(Optional.of("2024-01-01"));
+
+        requestRespondentEvidencePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        verify(asylumCase).write(SEND_DIRECTION_DATE_DUE, expectedDateDue);
+    }
+
+    @Test
+    void should_use_bau_specific_explanation_text() {
+
+        when(featureToggler.getValue("home-office-uan-pa-feature", false)).thenReturn(true);
+
+        when(dateProvider.now()).thenReturn(LocalDate.parse("2018-11-23"));
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONDENT_EVIDENCE);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(PA));
+        when(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class)).thenReturn(Optional.of("SUCCESS"));
+        when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(asylumCase.read(STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(asylumCase.read(COMPLETE_CASE_REVIEW_DATE, String.class)).thenReturn(Optional.of("2024-01-01"));
+
+        requestRespondentEvidencePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        verify(asylumCase, times(1)).write(eq(SEND_DIRECTION_EXPLANATION), explanationCaptor.capture());
+
+        String actualExplanation = explanationCaptor.getValue();
+
+        assertThat(actualExplanation)
+            .contains("A notice of appeal has been lodged against this decision.")
+            .contains("directed to supply the documents")
+            // Rule 23 must be present for BAU
+            .contains("Rule 23 or Rule 24 of the Tribunal Procedure Rules 2014")
+            .contains("any record of interview with the appellant")
+            .contains("copy of the Certificate of Conviction")
+            // Must not be the detention text
+            .doesNotContain("You must now upload all documents to the Tribunal")
+            .doesNotContain("The explanation for refusal");
+    }
+
     @ParameterizedTest
     @EnumSource(value = AppealType.class, names = {"PA", "RP", "DC", "EA", "HU", "EU", "AG"})
     void should_prepare_detention_specific_direction_explanation_for_detained_appeals(AppealType appealType) {
