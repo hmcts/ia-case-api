@@ -141,7 +141,7 @@ public class SaveNotificationsToDataHandler implements PreSubmitCallbackHandler<
         }
     }
 
-     private void updateNotificationData(
+    private void updateNotificationData(
         List<IdValue<StoredNotification>> allNotifications,
         String notificationId,
         Callback<AsylumCase> callback
