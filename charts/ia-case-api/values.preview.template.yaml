@@ -574,7 +574,7 @@ ia-home-office-integration-api:
   enabled: true #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
-    image: hmctsprod.azurecr.io/ia/home-office-integration-api:latest
+    image: hmctsprod.azurecr.io/ia/home-office-integration-api:pr-522
     releaseNameOverride: ${SERVICE_NAME}-home-office-integration-api
     ingressHost: ${SERVICE_NAME}-home-office-integration-api.preview.platform.hmcts.net
     devcpuRequests: 500m
@@ -593,6 +593,7 @@ ia-home-office-integration-api:
       POSTGRES_NAME: "pr-${CHANGE_ID}-ia-case-api"
       POSTGRES_USERNAME: hmcts
       POSTGRES_PASSWORD: ${GENERIC_VALUES_PREVIEW_YAML_PASS}
+      HOME_OFFICE_ENDPOINT: "https://ia-home-office-mock-api-pr-187.preview.platform.hmcts.net"
     keyVaults:
       ia:
         resourceGroup: ia

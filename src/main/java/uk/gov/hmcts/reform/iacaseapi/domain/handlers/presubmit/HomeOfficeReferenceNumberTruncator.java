@@ -2,11 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_REFERENCE_NUMBER;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isInternalCase;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isEntryClearanceDecision;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.outOfCountryDecisionTypeIsRefusalOfHumanRightsOrPermit;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.HomeOfficeReferenceHandler.HOME_OFFICE_REF_PATTERN;
-
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.*;
 
 
 import java.util.Arrays;

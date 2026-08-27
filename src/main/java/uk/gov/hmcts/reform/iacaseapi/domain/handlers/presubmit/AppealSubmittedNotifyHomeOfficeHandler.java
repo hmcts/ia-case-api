@@ -1,25 +1,40 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.HomeOfficeApiResponseStatusType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.HomeOfficeAppellant;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.DispatchPriority;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValueMixin;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.HomeOfficeApi;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.HomeOfficeReferenceService;
+
+import java.util.List;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SUBMIT_APPEAL;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.validateAllDetails;
 
 @Slf4j
 @Component
+@ConditionalOnProperty(
+    name = "app.home-office-validation.enabled",
+    havingValue = "true",
+    matchIfMissing = true
+)
 public class AppealSubmittedNotifyHomeOfficeHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private static final String SUPPRESSION_LOG_FIELDS_NEW = "event: {}, "
@@ -29,6 +44,8 @@ public class AppealSubmittedNotifyHomeOfficeHandler implements PreSubmitCallback
                                                          + "Home Office API response code: {}";
 
     private final HomeOfficeApi<AsylumCase> homeOfficeApi;
+    private final HomeOfficeReferenceService homeOfficeReferenceService;
+    private final String homeOfficeSerialisedEncryptionKey;
 
     @Override
     public DispatchPriority getDispatchPriority() {
@@ -37,8 +54,13 @@ public class AppealSubmittedNotifyHomeOfficeHandler implements PreSubmitCallback
 
     public AppealSubmittedNotifyHomeOfficeHandler(
         @Value("${featureFlag.isHomeOfficeIntegrationEnabled}") boolean isHomeOfficeIntegrationEnabled,
-        HomeOfficeApi<AsylumCase> homeOfficeApi) {
+        HomeOfficeReferenceService homeOfficeReferenceService,
+        HomeOfficeApi<AsylumCase> homeOfficeApi,
+        @Value("${homeOfficeApi.serialisation.encryption.key}")
+        String homeOfficeSerialisedEncryptionKey) {
         this.homeOfficeApi = homeOfficeApi;
+        this.homeOfficeReferenceService = homeOfficeReferenceService;
+        this.homeOfficeSerialisedEncryptionKey = homeOfficeSerialisedEncryptionKey;
     }
 
     public boolean canHandle(
@@ -50,7 +72,7 @@ public class AppealSubmittedNotifyHomeOfficeHandler implements PreSubmitCallback
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
                // This handler must run once and only once for each appeal, ideally as soon as the appeal is first created (and no longer in DRAFT state)
-               && (callback.getEvent() == SUBMIT_APPEAL); // TODO: include logic to cover  callback.getEvent() == MARK_APPEAL_PAID
+               && (callback.getEvent() == SUBMIT_APPEAL);
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
@@ -63,11 +85,6 @@ public class AppealSubmittedNotifyHomeOfficeHandler implements PreSubmitCallback
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
-        // Only proceed if the new  applications/v1/{id}  Home Office endpoint has already been called
-        if (asylumCase.read(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, String.class).isEmpty()) {
-            return new PreSubmitCallbackResponse<>(asylumCase);
-        }
-
         // Retrieve the UAN or GWF from the case record
         final String homeOfficeReferenceNumber = HandlerUtils.getUanOrGwf(asylumCase);
         if (homeOfficeReferenceNumber.isEmpty()) {
@@ -76,6 +93,38 @@ public class AppealSubmittedNotifyHomeOfficeHandler implements PreSubmitCallback
         // Ensure this is present before calling the Home Office API (where it will be needed)
         final String appealReferenceNumber = asylumCase.read(APPEAL_REFERENCE_NUMBER, String.class)
             .orElseThrow(() -> new IllegalStateException("Case ID for the appeal is not present"));
+        // Re-validate the appeal with the Home Office API (in case anything has changed since the last time it was called)
+        asylumCase.clear(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY);
+        PreSubmitCallbackResponse<AsylumCase> validationResponse =
+            validateAllDetails(callback, asylumCase, homeOfficeReferenceNumber, homeOfficeReferenceService);
+        if (!validationResponse.getErrors().isEmpty()) {
+            return validationResponse;
+        }
+
+        // For draft appeals created before the new Home Office API was implemented
+        // we need to deserialise the list of newly validated Home Office appellants from the serialised string and
+        // write it back to the case record
+        if (asylumCase.read(HOME_OFFICE_APPELLANTS, List.class).isEmpty()) {
+            // We need the mapper and mix-in to overcome a CCD bug concerning collections during the mid-event (see comments below).
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.addMixIn(IdValue.class, IdValueMixin.class);
+            String encodedStr = asylumCase.read(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, String.class)
+                .orElse("");
+            try {
+                String homeOfficeAppellantsSerialised = HandlerUtils
+                    .decrypt(encodedStr, homeOfficeSerialisedEncryptionKey);
+                List<IdValue<HomeOfficeAppellant>> homeOfficeAppellants = mapper.readValue(
+                    homeOfficeAppellantsSerialised,
+                    new TypeReference<>() {
+                    }
+                );
+                asylumCase.write(HOME_OFFICE_APPELLANTS, homeOfficeAppellants);
+            } catch (Exception ex) {
+                log.error("Could not deserialise list of Home Office appellants from encrypted serialised string {} for case with Home Office reference {}:\n\n{}",
+                    encodedStr, homeOfficeReferenceNumber, ex.getMessage());
+            }
+        }
+
         // Details for logging purposes only
         final HomeOfficeApiResponseStatusType homeOfficeAppellantApiResponseStatus = asylumCase.read(
                             HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS, HomeOfficeApiResponseStatusType.class)
