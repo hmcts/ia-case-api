@@ -166,19 +166,10 @@ public class RequestRespondentEvidencePreparer implements PreSubmitCallbackHandl
         return !(HandlerUtils.isAgeAssessmentAppeal(asylumCase));
     }
 
-    private boolean is24WeekStfCase(AsylumCase asylumCase) {
-        if (stf24wLiveDate.isAfter(LocalDate.now())) {
-            return false;
-        }
-        return asylumCase.read(STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED, YesOrNo.class)
-                .map(status -> status == YES)
-                .orElse(false);
-    }
-
     private LocalDate getDueDate(AsylumCase asylumCase) {
         LocalDate dueDate;
 
-        if (is24WeekStfCase(asylumCase)) {
+        if (HandlerUtils.is24WeekStfCase(asylumCase, stf24wLiveDate)) {
             String completeCaseReviewDate = asylumCase.read(COMPLETE_CASE_REVIEW_DATE, String.class)
                     .orElseThrow(() -> new IllegalStateException("completeCaseReviewDate is not present"));
             dueDate = LocalDate.parse(completeCaseReviewDate).plusDays(requestRespondentEvidenceDueInDays);
@@ -218,7 +209,7 @@ public class RequestRespondentEvidencePreparer implements PreSubmitCallbackHandl
                     The Tribunal will not overlook breaches of the requirements of the Procedure Rules, Practice Statement or Practice Direction, \
                     nor failures to comply with directions issued by the Tribunal. Parties are reminded of the possible sanctions for \
                     non-compliance set out in paragraph 5.3 of the Practice Direction.""";
-        } else if (is24WeekStfCase(asylumCase)) {
+        } else if (HandlerUtils.is24WeekStfCase(asylumCase, stf24wLiveDate)) {
             return """
                     A notice of appeal has been lodged against this decision.
 
