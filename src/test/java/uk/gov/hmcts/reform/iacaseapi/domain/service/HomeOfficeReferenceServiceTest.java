@@ -196,48 +196,6 @@ class HomeOfficeReferenceServiceTest {
     }
 
     @Test
-    void should_call_api_and_store_data_when_status_ok_submit_appeal() {
-        when(asylumCase.read(
-            HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY,
-            String.class))
-            .thenReturn(Optional.empty());
-
-        when(homeOfficeApi.aboutToSubmit(callback))
-            .thenReturn(asylumCaseWithApiData);
-
-        when(asylumCaseWithApiData.read(
-            HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS,
-            HomeOfficeApiResponseStatusType.class))
-            .thenReturn(Optional.of(HomeOfficeApiResponseStatusType.OK));
-
-        when(asylumCaseWithApiData.read(HOME_OFFICE_APPELLANTS))
-            .thenReturn(Optional.of(appellants));
-
-        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
-        List<IdValue<HomeOfficeAppellant>> result =
-            service.getHomeOfficeReferenceData(HO_REFERENCE, callback);
-
-        assertFalse(result.isEmpty());
-        assertEquals(appellants, result);
-
-        verify(homeOfficeApi, never()).midEvent(callback);
-        verify(homeOfficeApi).aboutToSubmit(callback);
-        verify(asylumCaseWithApiData).read(HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS,
-            HomeOfficeApiResponseStatusType.class);
-
-        verify(asylumCase).write(
-            HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS,
-            HomeOfficeApiResponseStatusType.OK);
-
-        verify(asylumCaseWithApiData).read(HOME_OFFICE_APPELLANTS);
-        verify(asylumCase).write(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, encryptedData);
-        verify(asylumCase).write(eq(HOME_OFFICE_APPELLANT_CLAIM_DATE), any());
-        verify(asylumCase).write(eq(HOME_OFFICE_APPELLANT_DECISION_DATE), any());
-        verify(asylumCase).write(eq(HOME_OFFICE_APPELLANT_DECISION_LETTER_DATE), any());
-    }
-
-
-    @Test
     void should_call_api_and_not_store_data_when_serialisation_fails() {
         when(asylumCase.read(
                 HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY,

@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.HomeOfficeApiResponseStatusType;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.HomeOfficeAppellant;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
@@ -63,9 +62,7 @@ public class HomeOfficeReferenceService {
         // Home Office API has not been called yet (or was unavailable the last time we tried) - call it now
         log.info("Getting Home Office biographic data for case with reference ID {} ...", hoReference);
         // Raise an event in home-office-integration-api
-        AsylumCase asylumCaseWithHomeOfficeData = callback.getEvent().equals(Event.SUBMIT_APPEAL)
-            ? homeOfficeApi.aboutToSubmit(callback)
-            : homeOfficeApi.midEvent(callback);
+        AsylumCase asylumCaseWithHomeOfficeData = homeOfficeApi.midEvent(callback);
         // Check return status and store it in the case record
         HomeOfficeApiResponseStatusType responseStatus =
             asylumCaseWithHomeOfficeData.read(HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS, HomeOfficeApiResponseStatusType.class)
