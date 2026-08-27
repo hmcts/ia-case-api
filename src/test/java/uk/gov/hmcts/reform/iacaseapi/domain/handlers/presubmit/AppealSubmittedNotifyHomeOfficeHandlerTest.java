@@ -328,5 +328,6 @@ class AppealSubmittedNotifyHomeOfficeHandlerTest {
         assertEquals(1, valueList.size());
         assertEquals("1", valueList.getFirst().getId());
         assertEquals("Smith", valueList.getFirst().getValue().getFamilyName());
+        handlerUtilsMock.close();
     }
 }
