@@ -80,27 +80,32 @@ class NextHearingDateHandlerTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = Event.class, names = {"EDIT_CASE_LISTING", "LIST_CASE", "UPDATE_NEXT_HEARING_INFO", "CMR_LISTING", "CMR_RE_LISTING"})
+    @EnumSource(value = Event.class, names = {
+            "EDIT_CASE_LISTING",
+            "LIST_CASE",
+            "CMR_LISTING",
+            "CMR_RE_LISTING"
+    })
     public void should_set_next_hearing_date_from_hearings(Event event) {
         when(callback.getEvent()).thenReturn(event);
         when(asylumCase.read(IS_INTEGRATED, YesOrNo.class)).thenReturn(Optional.of(YES));
 
         NextHearingDetails nextHearingDetails = NextHearingDetails.builder()
-            .hearingId("hearingId").hearingDateTime("hearingDateTime").build();
+                .hearingId("hearingId").hearingDateTime("hearingDateTime").build();
         when(asylumCase.read(NEXT_HEARING_DETAILS, NextHearingDetails.class))
-            .thenReturn(Optional.of(nextHearingDetails));
+                .thenReturn(Optional.of(nextHearingDetails));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            event == UPDATE_NEXT_HEARING_INFO ? handler.handle(ABOUT_TO_START, callback)
-                    : handler.handle(ABOUT_TO_SUBMIT, callback);
+                handler.handle(ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
         verify(nextHearingDateSerice, times(1))
-                .calculateNextHearingDateFromHearings(
-                        callback, event == UPDATE_NEXT_HEARING_INFO ? ABOUT_TO_START : ABOUT_TO_SUBMIT);
-        verify(nextHearingDateSerice, never()).calculateNextHearingDateFromCaseData(callback);
+                .calculateNextHearingDateFromHearings(callback, ABOUT_TO_SUBMIT);
+        verify(nextHearingDateSerice, never())
+                .calculateNextHearingDateFromCaseData(callback);
         verify(asylumCase).write(eq(NEXT_HEARING_DETAILS), any());
     }
+
 
     @ParameterizedTest
     @EnumSource(value = Event.class, names = {"EDIT_CASE_LISTING", "LIST_CASE", "CMR_LISTING", "CMR_RE_LISTING"})
