@@ -49,8 +49,8 @@ public class NextHearingDateHandler implements PreSubmitCallbackHandler<AsylumCa
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
-            PreSubmitCallbackStage callbackStage,
-            Callback<AsylumCase> callback
+        PreSubmitCallbackStage callbackStage,
+        Callback<AsylumCase> callback
     ) {
         if (!canHandle(callbackStage, callback)) {
             throw new IllegalStateException("Cannot handle callback");
@@ -60,18 +60,12 @@ public class NextHearingDateHandler implements PreSubmitCallbackHandler<AsylumCa
 
         NextHearingDetails nextHearingDetails;
         if (callback.getEvent() == CMR_HEARING_CANCELLED) {
-            nextHearingDetails = NextHearingDetails.builder()
-                    .hearingId(null)
-                    .hearingDateTime(null)
-                    .build();
+            nextHearingDetails = NextHearingDetails.builder().hearingId(null).hearingDateTime(null).build();
         } else if (HandlerUtils.isIntegrated(asylumCase)) {
             nextHearingDetails = nextHearingDateService.calculateNextHearingDateFromHearings(
                     callback, callbackStage);
         } else if (callback.getEvent() == UPDATE_NEXT_HEARING_INFO) {
-            nextHearingDetails = NextHearingDetails.builder()
-                    .hearingId(null)
-                    .hearingDateTime(null)
-                    .build();
+            nextHearingDetails = NextHearingDetails.builder().hearingId(null).hearingDateTime(null).build();
         } else {
             nextHearingDetails = nextHearingDateService.calculateNextHearingDateFromCaseData(callback);
         }
@@ -79,5 +73,4 @@ public class NextHearingDateHandler implements PreSubmitCallbackHandler<AsylumCa
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
-
 }
