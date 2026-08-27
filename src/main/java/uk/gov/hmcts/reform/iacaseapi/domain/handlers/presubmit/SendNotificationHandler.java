@@ -285,6 +285,14 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
 
         AsylumCase asylumCaseWithNotificationMarker = notificationSender.send(callback);
 
+        boolean applicationRefused = callback.getEvent() == Event.DECIDE_AN_APPLICATION
+            && asylumCase.read(IS_REMOVAL_OF_24W_APPLICATION_REFUSED, YesOrNo.class).orElse(YesOrNo.NO)
+            .equals(YesOrNo.YES);
+        boolean stfRemoved = callback.getEvent() == Event.REMOVE_STATUTORY_TIMEFRAME_24_WEEKS;
+        if (applicationRefused || stfRemoved) {
+            asylumCaseWithNotificationMarker.clear(IS_REMOVAL_OF_24W_APPLICATION_REFUSED);
+            asylumCaseWithNotificationMarker.clear(REMOVAL_OF_24W_DECISION_DECISION_MAKER);
+        }
         return new PreSubmitCallbackResponse<>(asylumCaseWithNotificationMarker);
     }
 

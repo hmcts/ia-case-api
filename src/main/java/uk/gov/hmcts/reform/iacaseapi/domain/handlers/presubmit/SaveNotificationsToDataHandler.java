@@ -47,7 +47,15 @@ public class SaveNotificationsToDataHandler implements PreSubmitCallbackHandler<
     private static final List<String> FAILED_STATUSES = List.of(
         "permanent-failure", "temporary-failure", "technical-failure"
     );
-    private static final List<String> VALID_LETTER_REFERENCES = List.of("_SOME_TEST_REFERENCE");
+    public static final List<String> VALID_REFERENCES = List.of(
+        "STF_24WEEKS_REMOVAL_DECISION_LETTER_BUNDLE",
+        "STF_24WEEKS_REMOVAL_DECISION_LETTER_LR_BUNDLE",
+        "STF_24WEEKS_REMOVAL_REFUSED_DECISION_LETTER_BUNDLE",
+        "STF_24WEEKS_REMOVAL_REFUSED_DECISION_LETTER_LR_BUNDLE"
+    );
+    private static final List<String> SUCCESSFUL_STATUSES = List.of(
+        "Sent", "Delivered", "Returned-letter", "Received", "Failed"
+    );
 
     private final NotificationClient notificationClient;
     private final SaveNotificationsDataConfiguration configuration;
@@ -92,12 +100,18 @@ public class SaveNotificationsToDataHandler implements PreSubmitCallbackHandler<
         Optional<List<IdValue<String>>> maybeSentNotificationIds =
             asylumCase.read(NOTIFICATIONS_SENT);
 
-        List<IdValue<StoredNotification>> existingNotifications = maybeExistingNotifications.orElse(emptyList());
         List<IdValue<String>> sentNotificationIds = maybeSentNotificationIds.orElse(emptyList());
+        List<IdValue<StoredNotification>> existingNotifications = maybeExistingNotifications.orElse(emptyList());
 
-        List<IdValue<StoredNotification>> allNotifications = existingNotifications;
-        Set<String> unstoredIds = findUnstoredNotificationIds(existingNotifications, sentNotificationIds);
+        // Update existing notifications that haven't reached a successful status
+        List<String> notificationIdsToUpdate = getNotificationIdsToUpdate(existingNotifications, sentNotificationIds);
+        List<IdValue<StoredNotification>> allNotifications = new java.util.ArrayList<>(existingNotifications);
+        for (String id : notificationIdsToUpdate) {
+            updateNotificationData(allNotifications, id, callback);
+        }
 
+        // Append new notifications
+        Set<String> unstoredIds = findUnstoredNotificationIds(allNotifications, sentNotificationIds);
         for (String id : unstoredIds) {
             Optional<StoredNotification> notification = fetchNotification(id, callback);
             if (notification.isPresent()) {
@@ -124,6 +138,26 @@ public class SaveNotificationsToDataHandler implements PreSubmitCallbackHandler<
         } catch (NotificationClientException e) {
             log.warn("Notification client error on case {}: ", callback.getCaseDetails().getId(), e);
             return Optional.empty();
+        }
+    }
+
+     private void updateNotificationData(
+        List<IdValue<StoredNotification>> allNotifications,
+        String notificationId,
+        Callback<AsylumCase> callback
+    ) {
+        try {
+            Notification notification = notificationClient.getNotificationById(notificationId);
+            StoredNotification storedNotification = buildStoredNotification(notificationId, notification, callback);
+            allNotifications.stream()
+                .filter(n -> n.getValue().getNotificationId().equals(notificationId))
+                .findFirst()
+                .ifPresent(existing -> {
+                    allNotifications.remove(existing);
+                    allNotifications.add(new IdValue<>("", storedNotification));
+                });
+        } catch (NotificationClientException e) {
+            log.warn("Notification client error on case {}: ", callback.getCaseDetails().getId(), e);
         }
     }
 
@@ -200,7 +234,7 @@ public class SaveNotificationsToDataHandler implements PreSubmitCallbackHandler<
     // Letter PDF handling
 
     public boolean isReferenceValidForLetterPdf(String notificationReference) {
-        return VALID_LETTER_REFERENCES.stream().anyMatch(notificationReference::contains);
+        return VALID_REFERENCES.stream().anyMatch(notificationReference::contains);
     }
 
     public String getLetterEncodedPdfFile(
@@ -264,6 +298,26 @@ public class SaveNotificationsToDataHandler implements PreSubmitCallbackHandler<
         Duration retentionPeriod = Duration.ofDays(configuration.getRetentionDays());
         long retentionCutoff = Instant.now().minus(retentionPeriod).toEpochMilli();
         return notificationTimestamp >= retentionCutoff;
+    }
+
+    private List<String> getNotificationIdsToUpdate(
+        List<IdValue<StoredNotification>> storedNotifications,
+        List<IdValue<String>> sentNotificationIds
+    ) {
+        return sentNotificationIds.stream()
+            .filter(this::wasSentWithinRetentionPeriod)
+            .filter(idValue -> doesStoredNotificationNeedUpdating(storedNotifications, idValue.getValue()))
+            .map(IdValue::getValue)
+            .toList();
+    }
+
+    private boolean doesStoredNotificationNeedUpdating(
+        List<IdValue<StoredNotification>> storedNotifications,
+        String notificationId
+    ) {
+        return storedNotifications.stream()
+            .anyMatch(idValue -> idValue.getValue().getNotificationId().equals(notificationId)
+                && !SUCCESSFUL_STATUSES.contains(idValue.getValue().getNotificationStatus()));
     }
 
 }
