@@ -169,7 +169,7 @@ public class RequestRespondentEvidencePreparer implements PreSubmitCallbackHandl
     private LocalDate getDueDate(AsylumCase asylumCase) {
         LocalDate dueDate;
 
-        if (HandlerUtils.is24WeekStfCase(asylumCase, stf24wLiveDate)) {
+        if (HandlerUtils.is24WeekStfCase(asylumCase)) {
             String completeCaseReviewDate = asylumCase.read(COMPLETE_CASE_REVIEW_DATE, String.class)
                     .orElseThrow(() -> new IllegalStateException("completeCaseReviewDate is not present"));
             dueDate = LocalDate.parse(completeCaseReviewDate).plusDays(requestRespondentEvidenceDueInDays);
@@ -209,7 +209,7 @@ public class RequestRespondentEvidencePreparer implements PreSubmitCallbackHandl
                     The Tribunal will not overlook breaches of the requirements of the Procedure Rules, Practice Statement or Practice Direction, \
                     nor failures to comply with directions issued by the Tribunal. Parties are reminded of the possible sanctions for \
                     non-compliance set out in paragraph 5.3 of the Practice Direction.""";
-        } else if (HandlerUtils.is24WeekStfCase(asylumCase, stf24wLiveDate)) {
+        } else if (HandlerUtils.is24WeekStfCase(asylumCase)) {
             return """
                     A notice of appeal has been lodged against this decision.
 

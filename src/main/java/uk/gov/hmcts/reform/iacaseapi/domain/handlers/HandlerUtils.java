@@ -21,7 +21,6 @@ import javax.crypto.SecretKey;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -68,15 +67,6 @@ public class HandlerUtils {
     public static boolean isAipToRepJourney(AsylumCase asylumCase) {
         return (asylumCase.read(PREV_JOURNEY_TYPE, JourneyType.class).orElse(null) == JourneyType.AIP)
             && isRepJourney(asylumCase);
-    }
-
-    public static boolean is24WeekStfCase(AsylumCase asylumCase, LocalDate stf24wLiveDate) {
-        if (stf24wLiveDate.isAfter(LocalDate.now())) {
-            return false;
-        }
-        return asylumCase.read(STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED, YesOrNo.class)
-            .map(status -> status == YES)
-            .orElse(false);
     }
 
     public static boolean is24WeekStfCase(AsylumCase asylumCase) {

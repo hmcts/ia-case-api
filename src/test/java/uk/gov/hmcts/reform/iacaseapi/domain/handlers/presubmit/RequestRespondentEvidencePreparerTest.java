@@ -110,22 +110,6 @@ class RequestRespondentEvidencePreparerTest {
     }
 
     @Test
-    void handler_should_not_run_24w_code_if_go_live_is_in_future() {
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONDENT_EVIDENCE);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(PA));
-        when(dateProvider.now()).thenReturn(LocalDate.parse("2018-11-23"));
-
-        requestRespondentEvidencePreparer =
-                new RequestRespondentEvidencePreparer(DUE_IN_DAYS, DUE_IN_DAYS_ADA, DUE_IN_DAYS_DETAINED,
-                        LocalDate.now().plusDays(1).toString(), featureToggler, dateProvider, dueDateService, userDetails, userDetailsHelper);
-        requestRespondentEvidencePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
-
-        verify(asylumCase, never()).read(STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED, YesOrNo.class);
-    }
-
-    @Test
     void handler_should_return_error_if_complete_case_review_not_done() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
