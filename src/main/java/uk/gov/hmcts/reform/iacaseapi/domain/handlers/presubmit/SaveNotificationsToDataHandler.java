@@ -281,10 +281,11 @@ public class SaveNotificationsToDataHandler implements PreSubmitCallbackHandler<
                 LocalDateTime.parse(notification.getValue().getNotificationDateSent()),
             Comparator.reverseOrder()
         ));
-        return allNotifications.stream()
-            .map(idValue ->
-                new IdValue<>(String.valueOf(allNotifications.indexOf(idValue) + 1), idValue.getValue()))
-            .toList();
+        List<IdValue<StoredNotification>> updatedNotifications = new ArrayList<>();
+        for (int i = 0; i < allNotifications.size(); i++) {
+            updatedNotifications.add(new IdValue<>(String.valueOf(i + 1), allNotifications.get(i).getValue()));
+        }
+        return updatedNotifications;
     }
 
 }
