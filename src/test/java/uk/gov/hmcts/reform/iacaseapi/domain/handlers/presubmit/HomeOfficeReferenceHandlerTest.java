@@ -262,7 +262,7 @@ class HomeOfficeReferenceHandlerTest {
             handler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
 
         assertFalse(response.getErrors().isEmpty());
-        assertEquals(getMismatchErrorMessage(VALID_GWF, true , false), response.getErrors().iterator().next());
+        assertEquals(getMismatchErrorMessage(VALID_GWF, true, false), response.getErrors().iterator().next());
     }
 
     @Test

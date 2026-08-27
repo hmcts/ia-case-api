@@ -856,6 +856,13 @@ public class HandlerUtils {
         return response;
     }
 
+    public static PreSubmitCallbackResponse<AsylumCase> validateAllDetails(
+        Callback<AsylumCase> callback, AsylumCase asylumCase, String homeOfficeReferenceNumber, HomeOfficeReferenceService homeOfficeReferenceService) {
+        PreSubmitCallbackResponse<AsylumCase> response = validateHomeOfficeReference(callback, asylumCase, homeOfficeReferenceNumber, homeOfficeReferenceService);
+        response.addErrors(validateNameAndDateOfBirth(callback, asylumCase, homeOfficeReferenceNumber, false, homeOfficeReferenceService).getErrors());
+        return response;
+    }
+
     public static String getMismatchErrorMessage(String homeOfficeReferenceNumber, boolean shouldRevalidate, boolean isOnSubmit) {
         if (isOnSubmit) {
             return "The information entered does not match the details held by the Home Office for reference number " +

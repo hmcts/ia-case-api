@@ -310,10 +310,7 @@ class AppealSubmittedNotifyHomeOfficeHandlerTest {
                 () -> HandlerUtils.getUanOrGwf(asylumCase))
             .thenReturn(VALID_GWF);
         handlerUtilsMock.when(
-                () -> HandlerUtils.validateHomeOfficeReference(callback, asylumCase, VALID_GWF, hoReferenceService))
-            .thenReturn(new PreSubmitCallbackResponse<>(asylumCase));
-        handlerUtilsMock.when(
-                () -> HandlerUtils.validateNameAndDateOfBirth(callback, asylumCase, VALID_GWF, false, hoReferenceService))
+                () -> HandlerUtils.validateAllDetails(callback, asylumCase, VALID_GWF, hoReferenceService))
             .thenReturn(new PreSubmitCallbackResponse<>(asylumCase));
         handler = new AppealSubmittedNotifyHomeOfficeHandler(true, hoReferenceService, homeOfficeApi, key);
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);

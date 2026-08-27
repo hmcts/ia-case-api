@@ -19,6 +19,7 @@ import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.HomeOfficeApiResponseStatusType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.HomeOfficeAppellant;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
@@ -30,21 +31,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_APPELLANTS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_APPELLANT_CLAIM_DATE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_APPELLANT_DECISION_DATE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_APPELLANT_DECISION_LETTER_DATE;
+import static org.mockito.Mockito.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.utils.TestUtils.setupLogVerifier;
 import static uk.gov.hmcts.reform.iacaseapi.utils.TestUtils.verifyLogsContainMessage;
 
@@ -89,7 +80,7 @@ class HomeOfficeReferenceServiceTest {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-
+        when(callback.getEvent()).thenReturn(Event.START_APPEAL);
         when(asylumCase.read(
                 HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY,
                 String.class))
@@ -189,12 +180,54 @@ class HomeOfficeReferenceServiceTest {
         assertEquals(appellants, result);
 
         verify(homeOfficeApi).midEvent(callback);
+        verify(homeOfficeApi, never()).aboutToSubmit(callback);
         verify(asylumCaseWithApiData).read(HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS,
                 HomeOfficeApiResponseStatusType.class);
 
         verify(asylumCase).write(
                 HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS,
                 HomeOfficeApiResponseStatusType.OK);
+
+        verify(asylumCaseWithApiData).read(HOME_OFFICE_APPELLANTS);
+        verify(asylumCase).write(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, encryptedData);
+        verify(asylumCase).write(eq(HOME_OFFICE_APPELLANT_CLAIM_DATE), any());
+        verify(asylumCase).write(eq(HOME_OFFICE_APPELLANT_DECISION_DATE), any());
+        verify(asylumCase).write(eq(HOME_OFFICE_APPELLANT_DECISION_LETTER_DATE), any());
+    }
+
+    @Test
+    void should_call_api_and_store_data_when_status_ok_submit_appeal() {
+        when(asylumCase.read(
+            HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY,
+            String.class))
+            .thenReturn(Optional.empty());
+
+        when(homeOfficeApi.aboutToSubmit(callback))
+            .thenReturn(asylumCaseWithApiData);
+
+        when(asylumCaseWithApiData.read(
+            HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS,
+            HomeOfficeApiResponseStatusType.class))
+            .thenReturn(Optional.of(HomeOfficeApiResponseStatusType.OK));
+
+        when(asylumCaseWithApiData.read(HOME_OFFICE_APPELLANTS))
+            .thenReturn(Optional.of(appellants));
+
+        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+        List<IdValue<HomeOfficeAppellant>> result =
+            service.getHomeOfficeReferenceData(HO_REFERENCE, callback);
+
+        assertFalse(result.isEmpty());
+        assertEquals(appellants, result);
+
+        verify(homeOfficeApi, never()).midEvent(callback);
+        verify(homeOfficeApi).aboutToSubmit(callback);
+        verify(asylumCaseWithApiData).read(HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS,
+            HomeOfficeApiResponseStatusType.class);
+
+        verify(asylumCase).write(
+            HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS,
+            HomeOfficeApiResponseStatusType.OK);
 
         verify(asylumCaseWithApiData).read(HOME_OFFICE_APPELLANTS);
         verify(asylumCase).write(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, encryptedData);

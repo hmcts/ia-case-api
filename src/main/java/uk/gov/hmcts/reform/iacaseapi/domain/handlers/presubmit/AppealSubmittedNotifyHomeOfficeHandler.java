@@ -21,15 +21,12 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.HomeOfficeApi;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.HomeOfficeReferenceService;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SUBMIT_APPEAL;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.validateHomeOfficeReference;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.validateNameAndDateOfBirth;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.validateAllDetails;
 
 @Slf4j
 @Component
@@ -98,14 +95,10 @@ public class AppealSubmittedNotifyHomeOfficeHandler implements PreSubmitCallback
             .orElseThrow(() -> new IllegalStateException("Case ID for the appeal is not present"));
         // Re-validate the appeal with the Home Office API (in case anything has changed since the last time it was called)
         asylumCase.clear(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY);
-        Set<String> referenceValidationErrors = validateHomeOfficeReference(callback, asylumCase, homeOfficeReferenceNumber, homeOfficeReferenceService).getErrors();
-        Set<String> nameDobValidationErrors = validateNameAndDateOfBirth(callback, asylumCase, homeOfficeReferenceNumber, false, homeOfficeReferenceService).getErrors();
-        Set<String> validationErrors = new HashSet<>(referenceValidationErrors);
-        validationErrors.addAll(nameDobValidationErrors);
-        if (!validationErrors.isEmpty()) {
-            PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
-            response.addErrors(validationErrors);
-            return response;
+        PreSubmitCallbackResponse<AsylumCase> validationResponse =
+            validateAllDetails(callback, asylumCase, homeOfficeReferenceNumber, homeOfficeReferenceService);
+        if (!validationResponse.getErrors().isEmpty()) {
+            return validationResponse;
         }
 
         // For draft appeals created before the new Home Office API was implemented
