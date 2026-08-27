@@ -80,12 +80,7 @@ class NextHearingDateHandlerTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = Event.class, names = {
-            "EDIT_CASE_LISTING",
-            "LIST_CASE",
-            "CMR_LISTING",
-            "CMR_RE_LISTING"
-    })
+    @EnumSource(value = Event.class, names = {"EDIT_CASE_LISTING", "LIST_CASE", "CMR_LISTING", "CMR_RE_LISTING"})
     public void should_set_next_hearing_date_from_hearings(Event event) {
         when(callback.getEvent()).thenReturn(event);
         when(asylumCase.read(IS_INTEGRATED, YesOrNo.class)).thenReturn(Optional.of(YES));
