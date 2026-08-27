@@ -719,9 +719,10 @@ public class HandlerUtils {
     // Home Office endpoint or the old  applicationStatus/getBySearchParameters  Home Office endpoint
     public static boolean hasAppellantDataBeenValidated(AsylumCase asylumCase) {
         // Evidence from new validation endpoint
-        boolean validationDone = asylumCase.read(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, String.class).isPresent();
+        boolean validationDone = hasBeenValidatedNewHoApi(asylumCase);
         // Evidence from old validation endpoint
-        boolean homeOfficeSearchStatusSuccess = asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class).map(status -> status.equals("SUCCESS")).orElse(false);
+        boolean homeOfficeSearchStatusSuccess = asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class)
+            .map(status -> status.equals("SUCCESS")).orElse(false);
         return validationDone || homeOfficeSearchStatusSuccess;
     }
 
@@ -747,6 +748,11 @@ public class HandlerUtils {
         asylumCase.remove(HOME_OFFICE_APPELLANT_DECISION_LETTER_DATE);
         asylumCase.remove(HOME_OFFICE_APPELLANTS);
         asylumCase.remove(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY);
+    }
+
+    public static boolean hasBeenValidatedNewHoApi(AsylumCase asylumCase) {
+        return asylumCase.read(HAS_BEEN_VALIDATED_BY_NEW_HOME_OFFICE_API, YesOrNo.class)
+            .orElse(NO).equals(YES);
     }
 
     public static String getUanOrGwf(AsylumCase asylumCase) {
