@@ -42,6 +42,7 @@ java:
     # The mock HO validation API lives at http://ia-home-office-mock-api-aat.service.core-compute-aat.internal/ichallenge/applications/v1/1111-2222-3333-4444
     # (you can use any valid UAN at the end; but in ExUI you must enter the expected UAN, name and DOB in order to proceed past validation)
     HOME_OFFICE_VALIDATION_ENABLED: "true" # Do not remove this this environment variable!
+    HOME_OFFICE_MOCK_TURN_OFF_FOR_TEST: "true" # Remove this environment variable if you want to test something using the mock HO validation API
   keyVaults:
     ia:
       resourceGroup: ia
