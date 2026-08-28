@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
 <suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
-    <suppress until="2026-08-30">
+    <suppress until="2026-09-30">
         <notes>behind ES </notes>
         <cve>CVE-2026-56149</cve>
         <cve>CVE-2026-56148</cve>
@@ -19,5 +19,15 @@
         <cve>CVE-2026-63136</cve>
         <cve>CVE-2026-63140</cve>
         <cve>CVE-2026-64607</cve>
+        <cve>CVE-2026-65637</cve>
+        <cve>CVE-2026-65905</cve>
+        <cve>CVE-2026-65182</cve>
+        <cve>CVE-2026-68525</cve>
+        <cve>CVE-2026-65183</cve>
+        <cve>CVE-2026-66422</cve>
+        <cve>CVE-2026-68569</cve>
+        <cve>CVE-2026-65927</cve>
+        <cve>CVE-2026-68763</cve>
+        <cve>CVE-2026-73180</cve>
     </suppress>
 </suppressions>
