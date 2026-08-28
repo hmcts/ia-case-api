@@ -32,6 +32,10 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
         havingValue = "true",
         matchIfMissing = true
 )
+@ConditionalOnProperty(
+    name = "app.home-office-mock-turn-off-for-test.enabled",
+    havingValue = "false"
+)
 public class HomeOfficeReferenceHandlerOnSubmit implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final String homeOfficeSerialisedEncryptionKey;

@@ -35,6 +35,10 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.validat
     havingValue = "true",
     matchIfMissing = true
 )
+@ConditionalOnProperty(
+    name = "app.home-office-mock-turn-off-for-test.enabled",
+    havingValue = "false"
+)
 public class AppealSubmittedNotifyHomeOfficeHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private static final String SUPPRESSION_LOG_FIELDS_NEW = "event: {}, "

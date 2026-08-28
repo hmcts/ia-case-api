@@ -25,6 +25,10 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.*;
     havingValue = "true",
     matchIfMissing = true
 )
+@ConditionalOnProperty(
+    name = "app.home-office-mock-turn-off-for-test.enabled",
+    havingValue = "false"
+)
 public class HomeOfficeReferenceHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final HomeOfficeReferenceService homeOfficeReferenceService;
