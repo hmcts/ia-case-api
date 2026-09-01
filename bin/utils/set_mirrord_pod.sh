@@ -5,7 +5,7 @@ PREFIX="${1:-}"
 REPOSITORY="${2:-}"
 
 if [[ -z "$PREFIX" || -z "$REPOSITORY" ]]; then
-  echo "Usage: $0 <POD_PREFIX> <REPO_PATH>"
+  echo "Usage: $0 <POD_PREFIX> <REPOSITORY>"
   exit 1
 fi
 
@@ -23,7 +23,6 @@ get_latest_pod() {
 }
 
 POD_NAME=$(get_latest_pod)
-FULL_MESSAGE=1
 
 if [[ -z "$POD_NAME" ]]; then
   echo "No pods found for prefix $PREFIX"
@@ -45,22 +44,6 @@ while true; do
     continue
   fi
 
-  # Check readiness
-  PHASE=$(kubectl get pod "$POD_NAME" -n ia -o jsonpath='{.status.phase}')
-  READY=$(kubectl get pod "$POD_NAME" -n ia -o jsonpath='{.status.containerStatuses[0].ready}')
-
-  if [[ "$PHASE" != "Running" || "$READY" != "true" ]]; then
-    if (( FULL_MESSAGE )); then
-      echo -n "Pod $POD_NAME not ready (phase=$PHASE, ready=$READY)"
-      FULL_MESSAGE=0
-    else
-      echo -n "  ."
-    fi
-    sleep 3
-    continue
-  fi
-  echo
-
   NODE=$(kubectl get pod "$POD_NAME" -n ia -o jsonpath='{.spec.nodeName}')
 
   COUNT=$(kubectl get pods --all-namespaces \
@@ -69,7 +52,7 @@ while true; do
 
   echo "$COUNT pods on node $NODE (active pod: $POD_NAME)"
 
-  if (( COUNT > 28 )); then
+  if (( COUNT > 29 )); then
     echo "Node overloaded -> deleting $POD_NAME"
     kubectl delete pod -n ia "$POD_NAME"
 
@@ -80,7 +63,6 @@ while true; do
       if [[ -n "$NEW_POD" && "$NEW_POD" != "$POD_NAME" ]]; then
         POD_NAME="$NEW_POD"
         echo "Switched to new pod: $POD_NAME"
-        FULL_MESSAGE=1
         break
       fi
 
@@ -91,6 +73,15 @@ while true; do
   fi
 
   echo "Selected stable pod: $POD_NAME"
+    # Check readiness
+  PHASE=$(kubectl get pod "$POD_NAME" -n ia -o jsonpath='{.status.phase}')
+  READY=$(kubectl get pod "$POD_NAME" -n ia -o jsonpath='{.status.containerStatuses[0].ready}')
+
+  if [[ "$PHASE" != "Running" || "$READY" != "true" ]]; then
+    echo -n "."
+    sleep 3
+    continue
+  fi
   break
 done
 
