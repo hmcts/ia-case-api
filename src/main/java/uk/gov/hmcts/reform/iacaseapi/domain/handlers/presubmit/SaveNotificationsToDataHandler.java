@@ -20,8 +20,11 @@ import uk.gov.service.notify.NotificationClientException;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.Comparator;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashSet;
 import java.util.List;
@@ -105,7 +108,7 @@ public class SaveNotificationsToDataHandler implements PreSubmitCallbackHandler<
 
         // Update existing notifications that haven't reached a successful status
         List<String> notificationIdsToUpdate = getNotificationIdsToUpdate(existingNotifications, sentNotificationIds);
-        List<IdValue<StoredNotification>> allNotifications = new java.util.ArrayList<>(existingNotifications);
+        List<IdValue<StoredNotification>> allNotifications = new ArrayList<>(existingNotifications);
         for (String id : notificationIdsToUpdate) {
             updateNotificationData(allNotifications, id, callback);
         }
@@ -126,7 +129,7 @@ public class SaveNotificationsToDataHandler implements PreSubmitCallbackHandler<
                 callback.getCaseDetails().getId());
         }
 
-        asylumCase.write(NOTIFICATIONS, deduplicatedNotifications);
+        asylumCase.write(NOTIFICATIONS, sortAndReindexNotificationsByDate(deduplicatedNotifications));
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
@@ -318,6 +321,20 @@ public class SaveNotificationsToDataHandler implements PreSubmitCallbackHandler<
         return storedNotifications.stream()
             .anyMatch(idValue -> idValue.getValue().getNotificationId().equals(notificationId)
                 && !SUCCESSFUL_STATUSES.contains(idValue.getValue().getNotificationStatus()));
+    }
+
+    private List<IdValue<StoredNotification>> sortAndReindexNotificationsByDate(
+        List<IdValue<StoredNotification>> allNotifications
+    ) {
+        allNotifications.sort(Comparator.comparing(notification ->
+                LocalDateTime.parse(notification.getValue().getNotificationDateSent()),
+            Comparator.reverseOrder()
+        ));
+        List<IdValue<StoredNotification>> updatedNotifications = new ArrayList<>();
+        for (int i = 0; i < allNotifications.size(); i++) {
+            updatedNotifications.add(new IdValue<>(String.valueOf(i + 1), allNotifications.get(i).getValue()));
+        }
+        return updatedNotifications;
     }
 
 }

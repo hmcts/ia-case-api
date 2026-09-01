@@ -130,28 +130,30 @@ class SaveNotificationsToDataHandlerTest {
         when(notification.getSentAt()).thenReturn(Optional.of(zonedDateTime));
         when(notification.getStatus()).thenReturn(status);
         when(mockedStoredNotification.getNotificationId()).thenReturn("1");
+        when(mockedStoredNotification.getNotificationDateSent()).thenReturn("2023-01-01T10:57");
         when(mockedStoredNotification2.getNotificationId()).thenReturn("2");
-        StoredNotification storedNotification =
-            StoredNotification.builder()
-                .notificationId(notificationId)
-                .notificationDateSent("2024-01-01T10:57")
-                .notificationSentTo(email)
-                .notificationBody("<div>" + body + "</div>")
-                .notificationMethod(StringUtils.capitalize(notificationTypeEmail))
-                .notificationStatus(StringUtils.capitalize(status))
-                .notificationReference(reference)
-                .notificationSubject(subject)
-                .build();
+        when(mockedStoredNotification2.getNotificationDateSent()).thenReturn("2022-01-01T10:57");
         saveNotificationsToDataHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
         verify(notificationClient, times(1)).getNotificationById(anyString());
-        // Appender assigns: new notification gets id=3 (size+1), existing get reindexed to 2, 1
-        List<IdValue<StoredNotification>> reindexedNotifications =
-            List.of(
-                new IdValue<>("3", storedNotification),
-                new IdValue<>("2", mockedStoredNotification),
-                new IdValue<>("1", mockedStoredNotification2)
-            );
-        verify(asylumCase, times(1)).write(eq(NOTIFICATIONS), eq(reindexedNotifications));
+        verify(asylumCase, times(1)).write(eq(NOTIFICATIONS), listCaptor.capture());
+        final StoredNotification storedNotification =
+                StoredNotification.builder()
+                        .notificationId(notificationId)
+                        .notificationDateSent("2024-01-01T10:57")
+                        .notificationSentTo(email)
+                        .notificationBody("<div>" + body + "</div>")
+                        .notificationMethod(StringUtils.capitalize(notificationTypeEmail))
+                        .notificationStatus(StringUtils.capitalize(status))
+                        .notificationReference(reference)
+                        .notificationSubject(subject)
+                        .build();
+        List<IdValue<StoredNotification>> capturedNotifications = listCaptor.getValue();
+        // After sorting by date (newest first) and reindexing: newest=1, middle=2, oldest=3
+        assertEquals(3, capturedNotifications.size());
+        assertEquals("1", capturedNotifications.get(0).getId());
+        assertEquals(storedNotification, capturedNotifications.get(0).getValue());
+        assertEquals("2", capturedNotifications.get(1).getId());
+        assertEquals("3", capturedNotifications.get(2).getId());
     }
 
     @Test
@@ -514,7 +516,10 @@ class SaveNotificationsToDataHandlerTest {
 
         saveNotificationsToDataHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
         verify(notificationClient, never()).getNotificationById(anyString());
-        verify(asylumCase, times(1)).write(eq(NOTIFICATIONS), eq(storedNotifications));
+        // After sorting and reindexing, the ID becomes "1"
+        List<IdValue<StoredNotification>> expectedNotifications =
+            List.of(new IdValue<>("1", storedNotification));
+        verify(asylumCase, times(1)).write(eq(NOTIFICATIONS), eq(expectedNotifications));
     }
 
     @Test
@@ -541,7 +546,10 @@ class SaveNotificationsToDataHandlerTest {
 
         saveNotificationsToDataHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
         verify(notificationClient, never()).getNotificationById(anyString());
-        verify(asylumCase, times(1)).write(eq(NOTIFICATIONS), eq(storedNotifications));
+        // After sorting and reindexing, the ID becomes "1"
+        List<IdValue<StoredNotification>> expectedNotifications =
+            List.of(new IdValue<>("1", storedNotification));
+        verify(asylumCase, times(1)).write(eq(NOTIFICATIONS), eq(expectedNotifications));
     }
 
     @Test
