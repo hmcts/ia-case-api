@@ -15,10 +15,9 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.NotificationSender;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.Scheduler;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.TimedEvent;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.config.SaveNotificationsDataConfiguration;
 
-import java.security.SecureRandom;
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Optional;
@@ -31,36 +30,29 @@ public class AsylumCaseNotificationApiSender implements NotificationSender<Asylu
     private final String notificationsApiEndpoint;
     private final String aboutToSubmitPath;
     private final boolean timedEventServiceEnabled;
-    private final boolean saveNotificationToDataEnabled;
-    private final int saveNotificationScheduleAtHour;
-    private final int saveNotificationScheduleMaxMinutes;
     private final DateProvider dateProvider;
     private final Scheduler scheduler;
     private final FeatureToggler featureToggler;
-    SecureRandom random = new SecureRandom();
+    private final SaveNotificationsDataConfiguration saveNotificationsConfig;
 
     public AsylumCaseNotificationApiSender(
         AsylumCaseCallbackApiDelegator asylumCaseCallbackApiDelegator,
         @Value("${notificationsApi.endpoint}") String notificationsApiEndpoint,
         @Value("${notificationsApi.aboutToSubmitPath}") String aboutToSubmitPath,
         @Value("${featureFlag.timedEventServiceEnabled}") boolean timedEventServiceEnabled,
-        @Value("${saveNotificationsData.enabled}") boolean saveNotificationToDataEnabled,
-        @Value("${saveNotificationsData.scheduleAtHour}") int saveNotificationScheduleAtHour,
-        @Value("${saveNotificationsData.scheduleMaxMinutes}") int saveNotificationScheduleMaxMinutes,
         DateProvider dateProvider,
         Scheduler scheduler,
-        FeatureToggler featureToggler
+        FeatureToggler featureToggler,
+        SaveNotificationsDataConfiguration saveNotificationsConfig
     ) {
         this.asylumCaseCallbackApiDelegator = asylumCaseCallbackApiDelegator;
         this.notificationsApiEndpoint = notificationsApiEndpoint;
         this.aboutToSubmitPath = aboutToSubmitPath;
         this.timedEventServiceEnabled = timedEventServiceEnabled;
-        this.saveNotificationToDataEnabled = saveNotificationToDataEnabled;
-        this.saveNotificationScheduleAtHour = saveNotificationScheduleAtHour;
-        this.saveNotificationScheduleMaxMinutes = saveNotificationScheduleMaxMinutes;
         this.dateProvider = dateProvider;
         this.scheduler = scheduler;
         this.featureToggler = featureToggler;
+        this.saveNotificationsConfig = saveNotificationsConfig;
     }
 
     public AsylumCase send(
@@ -68,11 +60,10 @@ public class AsylumCaseNotificationApiSender implements NotificationSender<Asylu
     ) {
         requireNonNull(callback, "callback must not be null");
 
-        log.info("saveNotificationToDataEnabled env var value: {}", saveNotificationToDataEnabled);
+        boolean isEnabled = saveNotificationsConfig.isEnabled();
         boolean featureTogglerValue = featureToggler.getValue("save-notifications-feature", false);
-        log.info("save-notifications-feature LD flag value: {}", featureTogglerValue);
 
-        if (featureTogglerValue && saveNotificationToDataEnabled) {
+        if (featureTogglerValue && isEnabled) {
             AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
             Optional<String> saveNotificationToDataDateOpt = asylumCase.read(SAVE_NOTIFICATIONS_TO_DATA_DATE, String.class);
             if (saveNotificationToDataDateOpt.isEmpty()
@@ -85,7 +76,8 @@ public class AsylumCaseNotificationApiSender implements NotificationSender<Asylu
                 log.info("saveNotificationsToDataDate field already present: {}", saveNotificationToDataDateOpt.get());
             }
         } else {
-            log.info("Skipping saveNotificationsToData event schedule");
+            log.info("Skipping saveNotificationsToData event schedule. saveNotificationsConfig: {}, "
+                    + "save-notifications-feature: {}", isEnabled, featureTogglerValue);
         }
 
         return asylumCaseCallbackApiDelegator.delegate(
@@ -96,17 +88,19 @@ public class AsylumCaseNotificationApiSender implements NotificationSender<Asylu
 
     private void scheduleSaveNotificationToData(Callback<AsylumCase> callback) {
         if (timedEventServiceEnabled) {
-
             try {
+                ZonedDateTime currentTime = ZonedDateTime.of(dateProvider.nowWithTime(), ZoneId.systemDefault());
+                ZonedDateTime scheduledTime = saveNotificationsConfig.calculateScheduledTime(currentTime);
+
                 scheduler.schedule(
-                        new TimedEvent(
-                                "",
-                                Event.SAVE_NOTIFICATIONS_TO_DATA,
-                                determineScheduleTime(),
-                                "IA",
-                                "Asylum",
-                                callback.getCaseDetails().getId()
-                        )
+                    new TimedEvent(
+                        "",
+                        Event.SAVE_NOTIFICATIONS_TO_DATA,
+                        scheduledTime,
+                        "IA",
+                        "Asylum",
+                        callback.getCaseDetails().getId()
+                    )
                 );
             } catch (AsylumCaseServiceResponseException e) {
                 log.error("Scheduling SAVE_NOTIFICATIONS_TO_DATA event failed for case reference {}, event name: {}",
@@ -114,25 +108,4 @@ public class AsylumCaseNotificationApiSender implements NotificationSender<Asylu
             }
         }
     }
-
-    private ZonedDateTime determineScheduleTime() {
-        ZonedDateTime now = ZonedDateTime.of(dateProvider.nowWithTime(), ZoneId.systemDefault());
-        // Define saveNotificationScheduleAtHour eg:11:00 PM as the base time
-        LocalTime baseTime = LocalTime.of(saveNotificationScheduleAtHour, 0);
-
-        // Randomize minutes and seconds between 0-saveNotificationScheduleMaxMinutes minutes and 0-59 seconds
-        int randomMinutes = random.nextInt(0, saveNotificationScheduleMaxMinutes);
-        int randomSeconds = random.nextInt(0, 60);
-
-        // If notification sent time is before saveNotificationScheduleAtHour
-        if (now.toLocalTime().isBefore(baseTime)) {
-            return now.toLocalDate().atTime(baseTime).plusMinutes(randomMinutes).plusSeconds(randomSeconds)
-                    .atZone(now.getZone());
-        } else {
-            // If notification sent time is after saveNotificationScheduleAtHour eg: 11 PM, schedule for the next day
-            return now.toLocalDate().plusDays(1).atTime(baseTime).plusMinutes(randomMinutes).plusSeconds(randomSeconds)
-                    .atZone(now.getZone());
-        }
-    }
-
 }
