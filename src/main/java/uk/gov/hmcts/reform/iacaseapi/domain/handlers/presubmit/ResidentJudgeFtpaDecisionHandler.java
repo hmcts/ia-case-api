@@ -27,7 +27,9 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.statutorytimeframe24weeks.UpdateStatutoryTimeframe24WeeksService;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentReceiver;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
@@ -46,19 +48,22 @@ public class ResidentJudgeFtpaDecisionHandler implements PreSubmitCallbackHandle
     private final DocumentsAppender documentsAppender;
     private final FtpaDisplayService ftpaDisplayService;
     private final FeatureToggler featureToggler;
+    private final UpdateStatutoryTimeframe24WeeksService updateStatutoryTimeframe24WeeksService;
 
     public ResidentJudgeFtpaDecisionHandler(
         DateProvider dateProvider,
         DocumentReceiver documentReceiver,
         DocumentsAppender documentsAppender,
         FtpaDisplayService ftpaDisplayService,
-        FeatureToggler featureToggler
+        FeatureToggler featureToggler,
+        UpdateStatutoryTimeframe24WeeksService updateStatutoryTimeframe24WeeksService
     ) {
         this.dateProvider = dateProvider;
         this.documentReceiver = documentReceiver;
         this.documentsAppender = documentsAppender;
         this.ftpaDisplayService = ftpaDisplayService;
         this.featureToggler = featureToggler;
+        this.updateStatutoryTimeframe24WeeksService = updateStatutoryTimeframe24WeeksService;
     }
 
     public boolean canHandle(
@@ -170,6 +175,8 @@ public class ResidentJudgeFtpaDecisionHandler implements PreSubmitCallbackHandle
 
             asylumCase.write(valueOf("IS_FTPA_%s_DOCS_VISIBLE_IN_DECIDED".formatted(ftpaApplicantUpperCase)), YES);
             asylumCase.write(valueOf("IS_FTPA_%s_DOCS_VISIBLE_IN_SUBMITTED".formatted(ftpaApplicantUpperCase)), NO);
+
+            removeStatutoryTimeframe(asylumCase);
         }
 
         if (ftpaDecisionOutcomeType.equals("remadeRule31") || ftpaDecisionOutcomeType.equals("remadeRule32")) {
@@ -352,5 +359,11 @@ public class ResidentJudgeFtpaDecisionHandler implements PreSubmitCallbackHandle
 
             asylumCase.write(IS_FTPA_LIST_VISIBLE, YES);
         }
+    }
+
+    private void removeStatutoryTimeframe(AsylumCase asylumCase) {
+        YesOrNo status = YesOrNo.NO;
+        String reason = "Removed due to FTPA decision";
+        updateStatutoryTimeframe24WeeksService.updateAsylumCase(asylumCase, status, reason);
     }
 }

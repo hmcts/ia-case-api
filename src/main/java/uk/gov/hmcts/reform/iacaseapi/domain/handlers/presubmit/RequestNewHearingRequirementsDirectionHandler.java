@@ -110,6 +110,7 @@ public class RequestNewHearingRequirementsDirectionHandler implements PreSubmitC
         asylumCase.clear(SEND_DIRECTION_DATE_DUE);
 
         writePreviousHearingsToAsylumCase(asylumCase);
+        checkStatutoryTimeframeAndRemove(asylumCase);
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 
@@ -190,5 +191,12 @@ public class RequestNewHearingRequirementsDirectionHandler implements PreSubmitC
         asylumCase.write(PREVIOUS_HEARINGS, allPreviousHearings);
 
         asylumCase.write(REHEARD_CASE_LISTED_WITHOUT_HEARING_REQUIREMENTS, YesOrNo.NO);
+    }
+
+    private void checkStatutoryTimeframeAndRemove(AsylumCase asylumCase) {
+        Optional<YesOrNo> isCurrently24WeeksCase = asylumCase.read(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class);
+        if (isCurrently24WeeksCase.isPresent() && isCurrently24WeeksCase.get().equals(YesOrNo.NO)) {
+            asylumCase.write(STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED, YesOrNo.NO);
+        }
     }
 }
