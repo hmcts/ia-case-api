@@ -43,6 +43,8 @@ public class ResidentJudgeFtpaDecisionHandler implements PreSubmitCallbackHandle
     public static final String FTPA_DECISIONS_AND_REASONS_DOCUMENT_DESCRIPTION =
         "ftpaDecisionsAndReasonsDocumentDescription";
 
+    public static final String STF24W_REMOVAL_REASON = "Removed due to FTPA decision";
+
     private final DateProvider dateProvider;
     private final DocumentReceiver documentReceiver;
     private final DocumentsAppender documentsAppender;
@@ -175,8 +177,6 @@ public class ResidentJudgeFtpaDecisionHandler implements PreSubmitCallbackHandle
 
             asylumCase.write(valueOf("IS_FTPA_%s_DOCS_VISIBLE_IN_DECIDED".formatted(ftpaApplicantUpperCase)), YES);
             asylumCase.write(valueOf("IS_FTPA_%s_DOCS_VISIBLE_IN_SUBMITTED".formatted(ftpaApplicantUpperCase)), NO);
-
-            removeStatutoryTimeframe(asylumCase);
         }
 
         if (ftpaDecisionOutcomeType.equals("remadeRule31") || ftpaDecisionOutcomeType.equals("remadeRule32")) {
@@ -235,6 +235,11 @@ public class ResidentJudgeFtpaDecisionHandler implements PreSubmitCallbackHandle
         );
 
         addToFtpaList(asylumCase, ftpaApplicantType);
+
+        if (ftpaDecisionOutcomeType.equals("granted") || ftpaDecisionOutcomeType.equals("partiallyGranted")
+            || ftpaDecisionOutcomeType.equals("remadeRule32") || ftpaDecisionOutcomeType.equals("reheardRule35")) {
+            removeStatutoryTimeframe(asylumCase);
+        }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
@@ -363,7 +368,6 @@ public class ResidentJudgeFtpaDecisionHandler implements PreSubmitCallbackHandle
 
     private void removeStatutoryTimeframe(AsylumCase asylumCase) {
         YesOrNo status = YesOrNo.NO;
-        String reason = "Removed due to FTPA decision";
-        updateStatutoryTimeframe24WeeksService.updateAsylumCase(asylumCase, status, reason);
+        updateStatutoryTimeframe24WeeksService.updateAsylumCase(asylumCase, status, STF24W_REMOVAL_REASON);
     }
 }
