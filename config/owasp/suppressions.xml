@@ -4,4 +4,8 @@
         <notes>Awaiting tomcat 10.1.58</notes>
         <cve>CVE-2026-66299</cve>
     </suppress>
+    <suppress until="2026-09-30">
+        <cve>CVE-2026-59313</cve>
+        <cve>CVE-2026-59314</cve>
+    </suppress>
 </suppressions>
