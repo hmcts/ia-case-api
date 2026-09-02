@@ -239,7 +239,7 @@ public class ResidentJudgeFtpaDecisionHandler implements PreSubmitCallbackHandle
         if (callback.getEvent() == Event.DECIDE_FTPA_APPLICATION &&
             (ftpaDecisionOutcomeType.equals("granted") || ftpaDecisionOutcomeType.equals("partiallyGranted")
                 || ftpaDecisionOutcomeType.equals("remadeRule32") || ftpaDecisionOutcomeType.equals("reheardRule35"))) {
-            removeStatutoryTimeframe(asylumCase);
+            checkStatutoryTimeframeAndRemove(asylumCase);
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
@@ -367,8 +367,11 @@ public class ResidentJudgeFtpaDecisionHandler implements PreSubmitCallbackHandle
         }
     }
 
-    private void removeStatutoryTimeframe(AsylumCase asylumCase) {
-        YesOrNo status = YesOrNo.NO;
-        updateStatutoryTimeframe24WeeksService.updateAsylumCase(asylumCase, status, STF24W_REMOVAL_REASON);
+    private void checkStatutoryTimeframeAndRemove(AsylumCase asylumCase) {
+        asylumCase.read(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class).ifPresent(flag -> {
+            if (!flag.equals(NO)) {
+                updateStatutoryTimeframe24WeeksService.updateAsylumCase(asylumCase, NO, STF24W_REMOVAL_REASON);
+            }
+        });
     }
 }
