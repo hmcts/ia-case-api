@@ -236,8 +236,9 @@ public class ResidentJudgeFtpaDecisionHandler implements PreSubmitCallbackHandle
 
         addToFtpaList(asylumCase, ftpaApplicantType);
 
-        if (ftpaDecisionOutcomeType.equals("granted") || ftpaDecisionOutcomeType.equals("partiallyGranted")
-            || ftpaDecisionOutcomeType.equals("remadeRule32") || ftpaDecisionOutcomeType.equals("reheardRule35")) {
+        if (callback.getEvent() == Event.DECIDE_FTPA_APPLICATION &&
+            (ftpaDecisionOutcomeType.equals("granted") || ftpaDecisionOutcomeType.equals("partiallyGranted")
+                || ftpaDecisionOutcomeType.equals("remadeRule32") || ftpaDecisionOutcomeType.equals("reheardRule35"))) {
             removeStatutoryTimeframe(asylumCase);
         }
 
