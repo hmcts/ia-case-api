@@ -1,23 +1,11 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
-import static java.util.Objects.requireNonNull;
-import static org.apache.commons.lang3.StringUtils.isNotEmpty;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOURNEY_TYPE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PA_APPEAL_TYPE_AIP_PAYMENT_OPTION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PA_APPEAL_TYPE_PAYMENT_OPTION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PREV_JOURNEY_TYPE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PRE_CLARIFYING_STATE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMISSION_DECISION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMISSION_TYPE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
-
-import java.util.List;
-import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ContactPreference;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.NonLegalRepDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDecision;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Subscriber;
@@ -31,10 +19,36 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackStateHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.CcdDataService;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.IdamService;
+
+import java.util.List;
+import java.util.Optional;
+
+import static java.util.Objects.requireNonNull;
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAS_NON_LEGAL_REP;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOURNEY_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PA_APPEAL_TYPE_AIP_PAYMENT_OPTION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PA_APPEAL_TYPE_PAYMENT_OPTION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PREV_JOURNEY_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PRE_CLARIFYING_STATE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMISSION_DECISION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMISSION_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.clearNlrFields;
 
 @Slf4j
 @Service
 public class AipToLegalRepJourneyHandler implements PreSubmitCallbackStateHandler<AsylumCase> {
+    private final CcdDataService ccdDataService;
+    private final IdamService idamService;
+
+    public AipToLegalRepJourneyHandler(CcdDataService ccdDataService,
+                                       IdamService idamService) {
+        this.ccdDataService = ccdDataService;
+        this.idamService = idamService;
+    }
 
     @Override
     public boolean canHandle(PreSubmitCallbackStage callbackStage, Callback<AsylumCase> callback) {
@@ -56,7 +70,7 @@ public class AipToLegalRepJourneyHandler implements PreSubmitCallbackStateHandle
         }
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
-        asylumCase.remove(JOURNEY_TYPE.value());
+        asylumCase.clear(JOURNEY_TYPE);
         asylumCase.write(PREV_JOURNEY_TYPE, JourneyType.AIP);
         updateAppellantContactDetails(asylumCase);
 
@@ -78,7 +92,13 @@ public class AipToLegalRepJourneyHandler implements PreSubmitCallbackStateHandle
                 asylumCase.write(PA_APPEAL_TYPE_PAYMENT_OPTION, s);
                 asylumCase.clear(PA_APPEAL_TYPE_AIP_PAYMENT_OPTION);
             });
-
+        asylumCase.read(AsylumCaseFieldDefinition.NLR_DETAILS, NonLegalRepDetails.class)
+            .map(NonLegalRepDetails::getIdamId)
+            .ifPresent(nlrIdamId -> {
+                ccdDataService.revokeUserAccessToCase(callback.getCaseDetails().getId(), nlrIdamId);
+            });
+        asylumCase.clear(HAS_NON_LEGAL_REP);
+        clearNlrFields(asylumCase);
         return new PreSubmitCallbackResponse<>(asylumCase, currentState);
     }
 
