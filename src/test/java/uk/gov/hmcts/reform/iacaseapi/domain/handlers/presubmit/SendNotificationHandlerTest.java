@@ -342,6 +342,8 @@ class SendNotificationHandlerTest {
 
         verify(notificationSender, times(1)).send(callback);
         verify(asylumCase, times(1)).write(IS_DLRM_FEE_REMISSION_ENABLED, YesOrNo.YES);
+        verify(expectedUpdatedCase, never()).clear(IS_REMOVAL_OF_24W_APPLICATION_REFUSED);
+        verify(expectedUpdatedCase, never()).clear(DECIDE_AN_APPLICATION_ID);
     }
 
     @Test
@@ -383,6 +385,53 @@ class SendNotificationHandlerTest {
         when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
 
         assertTrue(sendNotificationHandler.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback));
+    }
+
+    @Test
+    void should_clear_24w_removal_temp_fields_when_event_is_remove_statutory_timeframe_24_weeks() {
+        when(callback.getEvent()).thenReturn(Event.REMOVE_STATUTORY_TIMEFRAME_24_WEEKS);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        AsylumCase expectedUpdatedCase = mock(AsylumCase.class);
+        when(notificationSender.send(callback)).thenReturn(expectedUpdatedCase);
+
+        sendNotificationHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        verify(expectedUpdatedCase).clear(IS_REMOVAL_OF_24W_APPLICATION_REFUSED);
+        verify(expectedUpdatedCase).clear(REMOVAL_OF_24W_DECISION_DECISION_MAKER);
+    }
+
+    @Test
+    void should_clear_24w_removal_temp_fields_when_decide_application_refusal_24w() {
+        when(callback.getEvent()).thenReturn(Event.DECIDE_AN_APPLICATION);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(IS_REMOVAL_OF_24W_APPLICATION_REFUSED, YesOrNo.class))
+            .thenReturn(Optional.of(YesOrNo.YES));
+        AsylumCase expectedUpdatedCase = mock(AsylumCase.class);
+        when(notificationSender.send(callback)).thenReturn(expectedUpdatedCase);
+
+        sendNotificationHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        verify(expectedUpdatedCase).clear(IS_REMOVAL_OF_24W_APPLICATION_REFUSED);
+        verify(expectedUpdatedCase).clear(REMOVAL_OF_24W_DECISION_DECISION_MAKER);
+    }
+
+
+    @Test
+    void should_not_clear_24w_removal_temp_fields_when_decide_application_not_refusal_24w() {
+        when(callback.getEvent()).thenReturn(Event.DECIDE_AN_APPLICATION);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(IS_REMOVAL_OF_24W_APPLICATION_REFUSED, YesOrNo.class))
+            .thenReturn(Optional.of(YesOrNo.NO));
+        AsylumCase expectedUpdatedCase = mock(AsylumCase.class);
+        when(notificationSender.send(callback)).thenReturn(expectedUpdatedCase);
+
+        sendNotificationHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        verify(expectedUpdatedCase, never()).clear(IS_REMOVAL_OF_24W_APPLICATION_REFUSED);
+        verify(expectedUpdatedCase, never()).clear(REMOVAL_OF_24W_DECISION_DECISION_MAKER);
     }
 
     private static final List<Event> allowedEventTypes = List.of(
@@ -479,6 +528,11 @@ class SendNotificationHandlerTest {
         Event.REVOKE_CITIZEN_ACCESS,
         Event.HEARING_CANCELLED,
         Event.CMR_HEARING_CANCELLED,
+        Event.SEND_INVITE_TO_NON_LEGAL_REP,
+        Event.SEND_PIP_TO_NON_LEGAL_REP,
+        Event.JOIN_APPEAL_CONFIRMATION,
+        Event.REMOVE_NON_LEGAL_REP,
+        Event.NLR_DETAILS_UPDATED,
         Event.REMOVE_STATUTORY_TIMEFRAME_24_WEEKS,
         Event.GENERATE_PIN_IN_POST,
         Event.SEND_LATE_TIMELINE_NOTICE,

@@ -122,6 +122,7 @@ public class GenerateDocumentHandler implements PreSubmitCallbackHandler<AsylumC
             Event.REQUEST_HEARING_REQUIREMENTS_FEATURE,
             Event.MARK_APPEAL_AS_ADA,
             Event.DECIDE_AN_APPLICATION,
+            Event.REMOVE_STATUTORY_TIMEFRAME_24_WEEKS,
             Event.APPLY_FOR_FTPA_RESPONDENT,
             Event.TRANSFER_OUT_OF_ADA,
             Event.RESIDENT_JUDGE_FTPA_DECISION,
