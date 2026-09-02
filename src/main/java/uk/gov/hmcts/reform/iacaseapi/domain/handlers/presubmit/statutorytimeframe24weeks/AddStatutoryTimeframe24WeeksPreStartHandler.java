@@ -21,6 +21,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.ADD_STATUT
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isAppealOutOfCountry;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isAppellantInDetention;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.statutorytimeframe24weeks.STF24WeeksUtils.getEffectiveState;
 
 @Component
 public class AddStatutoryTimeframe24WeeksPreStartHandler implements PreSubmitCallbackHandler<AsylumCase> {
@@ -29,10 +30,7 @@ public class AddStatutoryTimeframe24WeeksPreStartHandler implements PreSubmitCal
     private static final Set<State> supportedStates = Set.of(
         State.PENDING_PAYMENT,
         State.APPEAL_SUBMITTED,
-        State.AWAITING_RESPONDENT_EVIDENCE,
-        State.AWAITING_CLARIFYING_QUESTIONS_ANSWERS,
-        State.CLARIFYING_QUESTIONS_ANSWERS_SUBMITTED,
-        State.LISTING
+        State.AWAITING_RESPONDENT_EVIDENCE
     );
 
     public AddStatutoryTimeframe24WeeksPreStartHandler(@Value("${app.statutory-timeframe.live-date}") String stf24wLiveDate) {
@@ -64,10 +62,9 @@ public class AddStatutoryTimeframe24WeeksPreStartHandler implements PreSubmitCal
 
         PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
 
-        State currentState = callback.getCaseDetails().getState();
-        if (!supportedStates.contains(currentState)) {
-            String errorMessage = "This event cannot be run on this case";
-            response.addError(errorMessage);
+        State effectiveState = getEffectiveState(callback, asylumCase);
+        if (!supportedStates.contains(effectiveState)) {
+            response.addError("This event cannot be run on this case at this time");
         }
 
         if (!caseReceivedAfterLive(asylumCase)) {
