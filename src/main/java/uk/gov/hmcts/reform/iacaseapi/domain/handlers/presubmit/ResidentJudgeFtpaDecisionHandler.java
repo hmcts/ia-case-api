@@ -27,7 +27,9 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.statutorytimeframe24weeks.UpdateStatutoryTimeframe24WeeksService;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentReceiver;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
@@ -41,24 +43,29 @@ public class ResidentJudgeFtpaDecisionHandler implements PreSubmitCallbackHandle
     public static final String FTPA_DECISIONS_AND_REASONS_DOCUMENT_DESCRIPTION =
         "ftpaDecisionsAndReasonsDocumentDescription";
 
+    public static final String STF24W_REMOVAL_REASON = "Removed due to FTPA decision";
+
     private final DateProvider dateProvider;
     private final DocumentReceiver documentReceiver;
     private final DocumentsAppender documentsAppender;
     private final FtpaDisplayService ftpaDisplayService;
     private final FeatureToggler featureToggler;
+    private final UpdateStatutoryTimeframe24WeeksService updateStatutoryTimeframe24WeeksService;
 
     public ResidentJudgeFtpaDecisionHandler(
         DateProvider dateProvider,
         DocumentReceiver documentReceiver,
         DocumentsAppender documentsAppender,
         FtpaDisplayService ftpaDisplayService,
-        FeatureToggler featureToggler
+        FeatureToggler featureToggler,
+        UpdateStatutoryTimeframe24WeeksService updateStatutoryTimeframe24WeeksService
     ) {
         this.dateProvider = dateProvider;
         this.documentReceiver = documentReceiver;
         this.documentsAppender = documentsAppender;
         this.ftpaDisplayService = ftpaDisplayService;
         this.featureToggler = featureToggler;
+        this.updateStatutoryTimeframe24WeeksService = updateStatutoryTimeframe24WeeksService;
     }
 
     public boolean canHandle(
@@ -229,6 +236,12 @@ public class ResidentJudgeFtpaDecisionHandler implements PreSubmitCallbackHandle
 
         addToFtpaList(asylumCase, ftpaApplicantType);
 
+        if (callback.getEvent() == Event.DECIDE_FTPA_APPLICATION &&
+            (ftpaDecisionOutcomeType.equals("granted") || ftpaDecisionOutcomeType.equals("partiallyGranted")
+                || ftpaDecisionOutcomeType.equals("remadeRule32") || ftpaDecisionOutcomeType.equals("reheardRule35"))) {
+            checkStatutoryTimeframeAndRemove(asylumCase);
+        }
+
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 
@@ -352,5 +365,13 @@ public class ResidentJudgeFtpaDecisionHandler implements PreSubmitCallbackHandle
 
             asylumCase.write(IS_FTPA_LIST_VISIBLE, YES);
         }
+    }
+
+    private void checkStatutoryTimeframeAndRemove(AsylumCase asylumCase) {
+        asylumCase.read(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class).ifPresent(flag -> {
+            if (!flag.equals(NO)) {
+                updateStatutoryTimeframe24WeeksService.updateAsylumCase(asylumCase, NO, STF24W_REMOVAL_REASON);
+            }
+        });
     }
 }
