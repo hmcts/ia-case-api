@@ -2,11 +2,11 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_HOME_OFFICE_INTEGRATION_ENABLED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.MARK_APPEAL_PAID;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.REQUEST_HOME_OFFICE_DATA;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SUBMIT_APPEAL;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.hasBeenValidatedNewHoApi;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -88,8 +88,8 @@ public class HomeOfficeCaseValidatePreparer implements PreSubmitCallbackHandler<
             boolean isNotificationTurnedOff = HandlerUtils.isNotificationTurnedOff(asylumCase);
             // Don't invoke the old  applicationStatus/getBySearchParameters  Home Office endpoint if the new  applications/v1/{id}  endpoint
             // has already been called
-            boolean validationDone = asylumCase.read(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, String.class).isPresent();
-            if (appealTypeEnabled && !isAgeAssessmentAppeal && !isEjpCase && !isNotificationTurnedOff && !validationDone) {
+            boolean validationDone = hasBeenValidatedNewHoApi(asylumCase);
+            if (!isAgeAssessmentAppeal && !isEjpCase && !isNotificationTurnedOff && !validationDone) {
                 asylumCase = homeOfficeApi.aboutToStart(callback);
             }
         } else {
