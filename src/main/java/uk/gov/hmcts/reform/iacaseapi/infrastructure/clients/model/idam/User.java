@@ -21,9 +21,8 @@ public class User {
     private boolean active;
     private List<String> roles;
 
-    @Override
-    public String toString() {
-        return email + " - " + forename + " " + surname;
+    public String toRevokeAccessDlString(String nlrIdamId) {
+        return email + " - " + forename + " " + surname + (this.id.equals(nlrIdamId) ? " (Non Legal Rep)" : " (Citizen)");
     }
 
     public String toValueId() {
