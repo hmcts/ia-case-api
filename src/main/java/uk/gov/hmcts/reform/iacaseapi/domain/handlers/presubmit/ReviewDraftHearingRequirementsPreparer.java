@@ -65,9 +65,7 @@ public class ReviewDraftHearingRequirementsPreparer implements PreSubmitCallback
 
         PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
 
-        boolean is24WeeksCase = asylumCase.read(STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED, YesOrNo.class)
-            .map(flag -> flag.equals(YesOrNo.YES))
-            .orElse(false);
+        boolean is24WeeksCase = HandlerUtils.is24WeekStfCase(asylumCase);
 
         State currentState = callback.getCaseDetails().getState();
         if ((is24WeeksCase && currentState != State.RESPONDENT_REVIEW) || (!is24WeeksCase && currentState != State.LISTING)) {
