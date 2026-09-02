@@ -19,5 +19,9 @@
         <cve>CVE-2026-72686</cve>
         <cve>CVE-2026-72687</cve>
         <cve>CVE-2026-72685</cve>
+        <cve>CVE-2026-47892</cve>
+        <cve>CVE-2026-59283</cve>
+        <cve>CVE-2026-47893</cve>
+        <cve>CVE-2026-59280</cve>
     </suppress>
 </suppressions>
