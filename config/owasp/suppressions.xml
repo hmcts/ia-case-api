@@ -4,5 +4,11 @@
         <notes>Awaiting tomcat spring dependencies 6.2.20 (should be updated with springboot/cloud dependencies pom)</notes>
         <cve>CVE-2026-59313</cve>
         <cve>CVE-2026-59314</cve>
+        <cve>CVE-2026-47892</cve>
+        <cve>CVE-2026-59283</cve>
+        <cve>CVE-2026-47893</cve>
+        <cve>CVE-2026-59280</cve>
+        <cve>CVE-2026-59284</cve>
+        <cve>CVE-2026-59270</cve>
     </suppress>
 </suppressions>
