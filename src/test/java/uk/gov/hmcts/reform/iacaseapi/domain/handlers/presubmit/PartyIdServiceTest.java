@@ -12,9 +12,11 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_IN_UK;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_PARTY_ID;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAS_SPONSOR;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_SPONSOR_SAME_AS_NLR;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOURNEY_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LEGAL_REP_INDIVIDUAL_PARTY_ID;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LEGAL_REP_ORGANISATION_PARTY_ID;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NLR_DETAILS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SPONSOR_PARTY_ID;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_DETAILS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
@@ -34,6 +36,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.NonLegalRepDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.WitnessDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -44,7 +47,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.PartyIdService;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
-@SuppressWarnings("unchecked")
 class PartyIdServiceTest {
 
     private static final String WITNESS_1_PARTY_ID = "111222333";
@@ -206,6 +208,29 @@ class PartyIdServiceTest {
         verify(asylumCase).write(eq(SPONSOR_PARTY_ID), partyId.capture());
         assertTrue(partyIdRegexPattern.matcher(partyId.getValue()).matches());
 
+    }
+
+    @Test
+    void should_clear_sponsor_partyId_when_isSponsorSameAsNlr_yes_nlr() {
+        when(asylumCase.read(HAS_SPONSOR, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(asylumCase.read(IS_SPONSOR_SAME_AS_NLR, YesOrNo.class)).thenReturn(Optional.of(YES));
+
+        PartyIdService.setSponsorPartyId(asylumCase);
+
+        verify(asylumCase).clear(SPONSOR_PARTY_ID);
+    }
+
+    @Test
+    void should_set_sponsor_partyId_when_isSponsorSameAsNlr_no_nlr() {
+        when(asylumCase.read(HAS_SPONSOR, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(asylumCase.read(IS_SPONSOR_SAME_AS_NLR, YesOrNo.class)).thenReturn(Optional.of(NO));
+        when(asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class)).thenReturn(Optional.of(NonLegalRepDetails.builder()
+            .idamId("someId").build()));
+
+        PartyIdService.setSponsorPartyId(asylumCase);
+
+        verify(asylumCase).write(eq(SPONSOR_PARTY_ID), partyId.capture());
+        assertTrue(partyIdRegexPattern.matcher(partyId.getValue()).matches());
     }
 
     @Test

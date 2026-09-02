@@ -164,7 +164,13 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
             Event.REMOVE_STATUTORY_TIMEFRAME_24_WEEKS,
             Event.REVOKE_CITIZEN_ACCESS,
             Event.GENERATE_PIN_IN_POST,
-            Event.SEND_LATE_TIMELINE_NOTICE,
+            Event.SEND_LATE_TIMELINE_NOTICE,          
+            Event.SEND_INVITE_TO_NON_LEGAL_REP,
+            Event.SEND_PIP_TO_NON_LEGAL_REP,
+            Event.JOIN_APPEAL_CONFIRMATION,
+            Event.REMOVE_NON_LEGAL_REP,
+            Event.NLR_DETAILS_UPDATED,
+            Event.HEARING_CANCELLED,
             Event.COMPLETE_CASE_REVIEW
         );
         if (!isSaveAndContinueEnabled) {
