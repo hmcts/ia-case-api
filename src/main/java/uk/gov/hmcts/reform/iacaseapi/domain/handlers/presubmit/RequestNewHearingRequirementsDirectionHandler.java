@@ -194,9 +194,9 @@ public class RequestNewHearingRequirementsDirectionHandler implements PreSubmitC
     }
 
     private void checkStatutoryTimeframeAndRemove(AsylumCase asylumCase) {
-        Optional<YesOrNo> isCurrently24WeeksCase = asylumCase.read(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class);
-        if (isCurrently24WeeksCase.isPresent() && isCurrently24WeeksCase.get().equals(YesOrNo.NO)) {
-            asylumCase.write(STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED, YesOrNo.NO);
+        YesOrNo isCurrently24WeeksCase = asylumCase.read(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class).orElse(YesOrNo.NO);
+        if (isCurrently24WeeksCase.equals(YesOrNo.NO)) {
+            asylumCase.clear(STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED);
         }
     }
 }

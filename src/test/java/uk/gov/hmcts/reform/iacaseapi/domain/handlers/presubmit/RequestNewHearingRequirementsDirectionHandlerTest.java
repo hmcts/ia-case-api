@@ -236,7 +236,7 @@ class RequestNewHearingRequirementsDirectionHandlerTest {
 
     @ParameterizedTest
     @MethodSource("hearingCentersScenarios")
-    void should_append_new_direction_to_existing_directions_for_the_case_and_removes_stf24w(
+    void should_append_new_direction_to_existing_directions_for_the_case_and_clears_stf24w(
             YesOrNo isIntegrated, HearingCentre listCaseHearingCentre, YesOrNo decisionWithoutHearingFlag
     ) {
         final List<IdValue<Direction>> existingDirections = new ArrayList<>();
@@ -341,7 +341,7 @@ class RequestNewHearingRequirementsDirectionHandlerTest {
         verify(asylumCase, times(1)).write(PREVIOUS_HEARINGS, Collections.EMPTY_LIST);
         verify(asylumCase, times(1)).write(REHEARD_CASE_LISTED_WITHOUT_HEARING_REQUIREMENTS, NO);
         verify(asylumCase, times(1)).read(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class);
-        verify(asylumCase, times(1)).write(STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED, NO);
+        verify(asylumCase, times(1)).clear(STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED);
     }
 
     static Stream<Arguments> hearingCentersScenarios() {
