@@ -2,15 +2,17 @@
 <suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
     <suppress until="2026-09-30">
         <notes>Awaiting tomcat 10.1.58</notes>
+        <cve>CVE-2026-66299</cve>
         <cve>CVE-2026-59313</cve>
         <cve>CVE-2026-59314</cve>
+    </suppress>
+    <suppress>
+        <cve>CVE-2026-72649</cve>
+        <cve>CVE-2026-78605</cve>
         <cve>CVE-2026-47890</cve>
         <cve>CVE-2026-47891</cve>
-        <cve>CVE-2026-47892</cve>
-        <cve>CVE-2026-59283</cve>
-        <cve>CVE-2026-47893</cve>
         <cve>CVE-2026-59282</cve>
         <cve>CVE-2026-59281</cve>
-        <cve>CVE-2026-59280</cve>
+        <cve>CVE-2026-59276</cve>
     </suppress>
 </suppressions>
