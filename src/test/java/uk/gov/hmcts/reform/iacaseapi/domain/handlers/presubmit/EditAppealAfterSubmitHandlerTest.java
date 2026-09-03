@@ -17,6 +17,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_NOT_SUBMITTED_REASON_DOCUMENTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_SUBMISSION_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_WAS_NOT_SUBMITTED_REASON;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANTS_REPRESENTATION;
@@ -203,6 +204,7 @@ class EditAppealAfterSubmitHandlerTest {
 
         when(dateProvider.now()).thenReturn(LocalDate.parse("2020-04-08"));
         when(asylumCase.read(HOME_OFFICE_DECISION_DATE)).thenReturn(Optional.of("2020-04-08"));
+        when(asylumCase.read(APPEAL_SUBMISSION_DATE)).thenReturn(Optional.of("2020-04-08"));
 
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.empty());
         when(asylumCase.read(LOCAL_AUTHORITY_POLICY))
@@ -243,6 +245,7 @@ class EditAppealAfterSubmitHandlerTest {
 
         when(dateProvider.now()).thenReturn(LocalDate.parse("2020-04-08"));
         when(asylumCase.read(HOME_OFFICE_DECISION_DATE)).thenReturn(Optional.of("2020-04-08"));
+        when(asylumCase.read(APPEAL_SUBMISSION_DATE)).thenReturn(Optional.of("2020-04-08"));
         when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.of(NO));
         when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YES));
 
@@ -274,6 +277,7 @@ class EditAppealAfterSubmitHandlerTest {
         when(dateProvider.now()).thenReturn(LocalDate.parse("2020-04-08"));
         when(asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class)).thenReturn(Optional.of(OutOfCountryDecisionType.REMOVAL_OF_CLIENT));
         when(asylumCase.read(DECISION_LETTER_RECEIVED_DATE)).thenReturn(Optional.of("2020-04-08"));
+        when(asylumCase.read(APPEAL_SUBMISSION_DATE)).thenReturn(Optional.of("2020-04-08"));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             editAppealAfterSubmitHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -323,6 +327,7 @@ class EditAppealAfterSubmitHandlerTest {
 
         when(dateProvider.now()).thenReturn(LocalDate.parse("2020-04-08"));
         when(asylumCase.read(HOME_OFFICE_DECISION_DATE)).thenReturn(Optional.of("2020-04-08"));
+        when(asylumCase.read(APPEAL_SUBMISSION_DATE)).thenReturn(Optional.of("2020-04-08"));
 
         PreSubmitCallbackResponse<AsylumCase> response =
             editAppealAfterSubmitHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -338,6 +343,7 @@ class EditAppealAfterSubmitHandlerTest {
 
         when(dateProvider.now()).thenReturn(LocalDate.parse("2020-04-08"));
         when(asylumCase.read(HOME_OFFICE_DECISION_DATE)).thenReturn(Optional.of("2020-03-08"));
+        when(asylumCase.read(APPEAL_SUBMISSION_DATE)).thenReturn(Optional.of("2020-04-08"));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             editAppealAfterSubmitHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -364,6 +370,7 @@ class EditAppealAfterSubmitHandlerTest {
         when(dateProvider.now()).thenReturn(LocalDate.parse("2020-04-08"));
         when(asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class)).thenReturn(Optional.of(OutOfCountryDecisionType.REMOVAL_OF_CLIENT));
         when(asylumCase.read(DECISION_LETTER_RECEIVED_DATE)).thenReturn(Optional.of("2020-03-08"));
+        when(asylumCase.read(APPEAL_SUBMISSION_DATE)).thenReturn(Optional.of("2020-04-08"));
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             editAppealAfterSubmitHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
@@ -389,6 +396,7 @@ class EditAppealAfterSubmitHandlerTest {
         when(dateProvider.now()).thenReturn(LocalDate.parse("2020-04-08"));
         when(asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class)).thenReturn(Optional.of(OutOfCountryDecisionType.REFUSAL_OF_HUMAN_RIGHTS));
         when(asylumCase.read(DATE_ENTRY_CLEARANCE_DECISION)).thenReturn(Optional.of("2020-03-08"));
+        when(asylumCase.read(APPEAL_SUBMISSION_DATE)).thenReturn(Optional.of("2020-04-08"));
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             editAppealAfterSubmitHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
@@ -414,6 +422,7 @@ class EditAppealAfterSubmitHandlerTest {
         when(dateProvider.now()).thenReturn(LocalDate.parse("2020-04-08"));
         when(asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class)).thenReturn(Optional.of(OutOfCountryDecisionType.REFUSAL_OF_PROTECTION));
         when(asylumCase.read(DATE_CLIENT_LEAVE_UK)).thenReturn(Optional.of("2020-03-08"));
+        when(asylumCase.read(APPEAL_SUBMISSION_DATE)).thenReturn(Optional.of("2020-04-08"));
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             editAppealAfterSubmitHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
@@ -443,6 +452,7 @@ class EditAppealAfterSubmitHandlerTest {
         when(dateProvider.now()).thenReturn(LocalDate.parse("2020-04-08"));
         when(asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class)).thenReturn(Optional.of(OutOfCountryDecisionType.REFUSAL_OF_PROTECTION));
         when(asylumCase.read(DATE_CLIENT_LEAVE_UK)).thenReturn(Optional.of("2020-03-08"));
+        when(asylumCase.read(APPEAL_SUBMISSION_DATE)).thenReturn(Optional.of("2020-04-08"));
 
         when(asylumCase.read(IS_ADMIN)).thenReturn(Optional.of(YES));
         when(asylumCase.read(APPELLANTS_REPRESENTATION)).thenReturn(Optional.of(YES));
@@ -467,6 +477,7 @@ class EditAppealAfterSubmitHandlerTest {
 
         when(dateProvider.now()).thenReturn(LocalDate.parse("2020-04-08"));
         when(asylumCase.read(HOME_OFFICE_DECISION_DATE)).thenReturn(Optional.of("2020-03-08"));
+        when(asylumCase.read(APPEAL_SUBMISSION_DATE)).thenReturn(Optional.of("2020-04-08"));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             editAppealAfterSubmitHandler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
@@ -483,6 +494,7 @@ class EditAppealAfterSubmitHandlerTest {
         when(dateProvider.now()).thenReturn(LocalDate.parse("2020-04-08"));
         when(asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class)).thenReturn(Optional.of(OutOfCountryDecisionType.REMOVAL_OF_CLIENT));
         when(asylumCase.read(DECISION_LETTER_RECEIVED_DATE)).thenReturn(Optional.of("2020-03-08"));
+        when(asylumCase.read(APPEAL_SUBMISSION_DATE)).thenReturn(Optional.of("2020-04-08"));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             editAppealAfterSubmitHandler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
@@ -498,6 +510,7 @@ class EditAppealAfterSubmitHandlerTest {
 
         when(dateProvider.now()).thenReturn(LocalDate.parse("2020-04-08"));
         when(asylumCase.read(HOME_OFFICE_DECISION_DATE)).thenReturn(Optional.of("2020-04-08"));
+        when(asylumCase.read(APPEAL_SUBMISSION_DATE)).thenReturn(Optional.of("2020-04-08"));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             editAppealAfterSubmitHandler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
@@ -515,6 +528,7 @@ class EditAppealAfterSubmitHandlerTest {
 
         when(dateProvider.now()).thenReturn(LocalDate.parse("2020-04-08"));
         when(asylumCase.read(DATE_ENTRY_CLEARANCE_DECISION)).thenReturn(Optional.of("2020-04-08"));
+        when(asylumCase.read(APPEAL_SUBMISSION_DATE)).thenReturn(Optional.of("2020-04-08"));
 
         when(asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class))
             .thenReturn(Optional.of(OutOfCountryDecisionType.REFUSAL_OF_HUMAN_RIGHTS));
@@ -537,6 +551,7 @@ class EditAppealAfterSubmitHandlerTest {
         when(dateProvider.now()).thenReturn(LocalDate.parse("2020-04-08"));
         when(asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class)).thenReturn(Optional.of(OutOfCountryDecisionType.REMOVAL_OF_CLIENT));
         when(asylumCase.read(DECISION_LETTER_RECEIVED_DATE)).thenReturn(Optional.of("2020-04-08"));
+        when(asylumCase.read(APPEAL_SUBMISSION_DATE)).thenReturn(Optional.of("2020-04-08"));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             editAppealAfterSubmitHandler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
@@ -554,6 +569,7 @@ class EditAppealAfterSubmitHandlerTest {
         when(asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class)).thenReturn(Optional.of(OutOfCountryDecisionType.REMOVAL_OF_CLIENT));
         when(dateProvider.now()).thenReturn(LocalDate.parse("2020-04-08"));
         when(asylumCase.read(DECISION_LETTER_RECEIVED_DATE)).thenReturn(Optional.of("2020-04-08"));
+        when(asylumCase.read(APPEAL_SUBMISSION_DATE)).thenReturn(Optional.of("2020-04-08"));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             editAppealAfterSubmitHandler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
@@ -678,6 +694,7 @@ class EditAppealAfterSubmitHandlerTest {
         when(asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class)).thenReturn(Optional.of(outOfCountryDecisionType));
         when(dateProvider.now()).thenReturn(LocalDate.parse(decisionDate));
         when(asylumCase.read(DATE_ENTRY_CLEARANCE_DECISION)).thenReturn(Optional.of(decisionDate));
+        when(asylumCase.read(APPEAL_SUBMISSION_DATE)).thenReturn(Optional.of(decisionDate));
         when(asylumCase.read(GWF_REFERENCE_NUMBER)).thenReturn(Optional.of(gwfRefNumber));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -695,6 +712,7 @@ class EditAppealAfterSubmitHandlerTest {
         final String receivedLetterDate = "2022-11-18";
         final String dueDate = "2022-11-23";
         final String nowDate = "2022-11-20";
+        final String appealSubmissionDate = "2022-11-20";
         final ZonedDateTime zonedDateTime = LocalDate.parse(receivedLetterDate).atStartOfDay(ZoneOffset.UTC);
         final ZonedDateTime zonedDueDateTime = LocalDate.parse(dueDate).atStartOfDay(ZoneOffset.UTC);
 
@@ -705,6 +723,7 @@ class EditAppealAfterSubmitHandlerTest {
 
         when(dateProvider.now()).thenReturn(LocalDate.parse(nowDate));
         when(asylumCase.read(DECISION_LETTER_RECEIVED_DATE)).thenReturn(Optional.of(receivedLetterDate));
+        when(asylumCase.read(APPEAL_SUBMISSION_DATE)).thenReturn(Optional.of(appealSubmissionDate));
         when(dueDateService.calculateDueDate(zonedDateTime, APPEAL_OUT_OF_TIME_ADA_WORKING_DAYS)).thenReturn(zonedDueDateTime);
         when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
 
@@ -727,11 +746,13 @@ class EditAppealAfterSubmitHandlerTest {
         final String receivedLetterDate = "2022-11-10";
         final String dueDate = "2022-11-15";
         final String nowDate = "2022-11-20";
+        final String appealSubmissionDate = "2022-11-20";
         final ZonedDateTime zonedDateTime = LocalDate.parse(receivedLetterDate).atStartOfDay(ZoneOffset.UTC);
         final ZonedDateTime zonedDueDateTime = LocalDate.parse(dueDate).atStartOfDay(ZoneOffset.UTC);
 
         when(dateProvider.now()).thenReturn(LocalDate.parse(nowDate));
         when(asylumCase.read(DECISION_LETTER_RECEIVED_DATE)).thenReturn(Optional.of(receivedLetterDate));
+        when(asylumCase.read(APPEAL_SUBMISSION_DATE)).thenReturn(Optional.of(appealSubmissionDate));
         when(dueDateService.calculateDueDate(zonedDateTime, APPEAL_OUT_OF_TIME_ADA_WORKING_DAYS)).thenReturn(zonedDueDateTime);
         when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
 
@@ -761,9 +782,11 @@ class EditAppealAfterSubmitHandlerTest {
 
         final String dateOnDecisionLetterOptional = "2022-11-18";
         final String nowDate = "2022-11-20";
+        final String appealSubmissionDate = "2022-11-20";
 
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.AG));
         when(asylumCase.read(DATE_ON_DECISION_LETTER, String.class)).thenReturn(Optional.of(dateOnDecisionLetterOptional));
+        when(asylumCase.read(APPEAL_SUBMISSION_DATE)).thenReturn(Optional.of(appealSubmissionDate));
         when(dateProvider.now()).thenReturn(LocalDate.parse(nowDate));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -783,9 +806,11 @@ class EditAppealAfterSubmitHandlerTest {
 
         final String dateOnDecisionLetterOptional = "2022-09-18";
         final String nowDate = "2022-11-20";
+        final String appealSubmissionDate = "2022-11-20";
 
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.AG));
         when(asylumCase.read(DATE_ON_DECISION_LETTER, String.class)).thenReturn(Optional.of(dateOnDecisionLetterOptional));
+        when(asylumCase.read(APPEAL_SUBMISSION_DATE)).thenReturn(Optional.of(appealSubmissionDate));
         when(dateProvider.now()).thenReturn(LocalDate.parse(nowDate));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -801,10 +826,12 @@ class EditAppealAfterSubmitHandlerTest {
 
         final String dateOnDecisionLetterOptional = "2022-11-18";
         final String nowDate = "2022-11-20";
+        final String appealSubmissionDate = "2022-11-20";
 
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.AG));
         when(asylumCase.read(LITIGATION_FRIEND, YesOrNo.class)).thenReturn(Optional.of(NO));
         when(asylumCase.read(DATE_ON_DECISION_LETTER, String.class)).thenReturn(Optional.of(dateOnDecisionLetterOptional));
+        when(asylumCase.read(APPEAL_SUBMISSION_DATE)).thenReturn(Optional.of(appealSubmissionDate));
         when(dateProvider.now()).thenReturn(LocalDate.parse(nowDate));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -824,10 +851,12 @@ class EditAppealAfterSubmitHandlerTest {
     void should_remove_litigation_friend_phone_number_if_now_wants_email() {
         final String dateOnDecisionLetterOptional = "2022-11-18";
         final String nowDate = "2022-11-20";
+        final String appealSubmissionDate = "2022-11-20";
 
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.AG));
         when(asylumCase.read(LITIGATION_FRIEND, YesOrNo.class)).thenReturn(Optional.of(YES));
         when(asylumCase.read(DATE_ON_DECISION_LETTER, String.class)).thenReturn(Optional.of(dateOnDecisionLetterOptional));
+        when(asylumCase.read(APPEAL_SUBMISSION_DATE)).thenReturn(Optional.of(appealSubmissionDate));
         when(dateProvider.now()).thenReturn(LocalDate.parse(nowDate));
         when(asylumCase.read(AsylumCaseFieldDefinition.LITIGATION_FRIEND_CONTACT_PREFERENCE, ContactPreference.class))
             .thenReturn(Optional.of(ContactPreference.WANTS_EMAIL));
@@ -840,10 +869,12 @@ class EditAppealAfterSubmitHandlerTest {
     void should_remove_litigation_friend_phone_number_if_now_wants_sms() {
         final String dateOnDecisionLetterOptional = "2022-11-18";
         final String nowDate = "2022-11-20";
+        final String appealSubmissionDate = "2022-11-20";
 
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.AG));
         when(asylumCase.read(LITIGATION_FRIEND, YesOrNo.class)).thenReturn(Optional.of(YES));
         when(asylumCase.read(DATE_ON_DECISION_LETTER, String.class)).thenReturn(Optional.of(dateOnDecisionLetterOptional));
+        when(asylumCase.read(APPEAL_SUBMISSION_DATE)).thenReturn(Optional.of(appealSubmissionDate));
         when(dateProvider.now()).thenReturn(LocalDate.parse(nowDate));
         when(asylumCase.read(AsylumCaseFieldDefinition.LITIGATION_FRIEND_CONTACT_PREFERENCE, ContactPreference.class))
             .thenReturn(Optional.of(ContactPreference.WANTS_SMS));
@@ -859,6 +890,7 @@ class EditAppealAfterSubmitHandlerTest {
         when(asylumCase.read(SUITABILITY_APPELLANT_ATTENDANCE_YES_OR_NO_1, YesOrNo.class)).thenReturn(Optional.of(NO));
         when(asylumCase.read(SUITABILITY_APPELLANT_ATTENDANCE_YES_OR_NO_2, YesOrNo.class)).thenReturn(Optional.of(NO));
         when(asylumCase.read(DECISION_LETTER_RECEIVED_DATE)).thenReturn(Optional.of("2020-04-08"));
+        when(asylumCase.read(APPEAL_SUBMISSION_DATE)).thenReturn(Optional.of("2020-04-08"));
         PreSubmitCallbackResponse<AsylumCase> response = editAppealAfterSubmitHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(response);
@@ -885,6 +917,7 @@ class EditAppealAfterSubmitHandlerTest {
     void should_clear_LR_when_appellants_representation_is_yes() {
         when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YES));
         when(asylumCase.read(APPELLANTS_REPRESENTATION, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(asylumCase.read(APPEAL_SUBMISSION_DATE)).thenReturn(Optional.of("2020-04-08"));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             editAppealAfterSubmitHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
