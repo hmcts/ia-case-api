@@ -1,5 +1,6 @@
 server:
   port: ${PORT:8090}
+  max-http-request-header-size: 100KB
 
 management:
   endpoint:
@@ -299,6 +300,7 @@ security:
       - "requestHearingRequirements"
       - "requestRespondentEvidence"
       - "completeCaseReview"
+      - "sendLateTimelineNotice"
       - "uploadRespondentEvidence"
       - "requestRespondentReview"
       - "addAppealResponse"
@@ -384,6 +386,9 @@ security:
       - "removeStatutoryTimeframe24Weeks"
       - "forceCaseToPrepareForHearing"
       - "revokeCitizenAccess"
+      - "sendInviteToNonLegalRep"
+      - "sendPipToNonLegalRep"
+      - "joinAppealConfirmation"
     challenged-access-legal-operations:
       - "appellantInPersonManual"
       - "moveToPaymentPending"
@@ -393,6 +398,7 @@ security:
       - "requestHearingRequirements"
       - "requestRespondentEvidence"
       - "completeCaseReview"
+      - "sendLateTimelineNotice"
       - "uploadRespondentEvidence"
       - "requestRespondentReview"
       - "addAppealResponse"
@@ -477,6 +483,9 @@ security:
       - "removeStatutoryTimeframe24Weeks"
       - "forceCaseToPrepareForHearing"
       - "revokeCitizenAccess"
+      - "sendInviteToNonLegalRep"
+      - "sendPipToNonLegalRep"
+      - "joinAppealConfirmation"
     senior-tribunal-caseworker:
       - "appellantInPersonManual"
       - "moveToPaymentPending"
@@ -486,6 +495,7 @@ security:
       - "requestHearingRequirements"
       - "requestRespondentEvidence"
       - "completeCaseReview"
+      - "sendLateTimelineNotice"
       - "uploadRespondentEvidence"
       - "requestRespondentReview"
       - "addAppealResponse"
@@ -571,6 +581,9 @@ security:
       - "addStatutoryTimeframe24Weeks"
       - "removeStatutoryTimeframe24Weeks"
       - "revokeCitizenAccess"
+      - "sendInviteToNonLegalRep"
+      - "sendPipToNonLegalRep"
+      - "joinAppealConfirmation"
     hearing-centre-admin:
       - "appellantInPersonManual"
       - "startAppeal"
@@ -643,6 +656,9 @@ security:
       - "addStatutoryTimeframe24Weeks"
       - "removeStatutoryTimeframe24Weeks"
       - "revokeCitizenAccess"
+      - "sendInviteToNonLegalRep"
+      - "sendPipToNonLegalRep"
+      - "joinAppealConfirmation"
       - "requestRespondentEvidence"
     ctsc:
       - "appellantInPersonManual"
@@ -713,6 +729,9 @@ security:
       - "addStatutoryTimeframe24Weeks"
       - "removeStatutoryTimeframe24Weeks"
       - "revokeCitizenAccess"
+      - "sendInviteToNonLegalRep"
+      - "sendPipToNonLegalRep"
+      - "joinAppealConfirmation"
       - "forceDecidedState"
       - "forceFtpaDecidedState"
       - "requestRespondentEvidence"
@@ -787,6 +806,9 @@ security:
       - "addStatutoryTimeframe24Weeks"
       - "removeStatutoryTimeframe24Weeks"
       - "revokeCitizenAccess"
+      - "sendInviteToNonLegalRep"
+      - "sendPipToNonLegalRep"
+      - "joinAppealConfirmation"
       - "requestRespondentEvidence"
     national-business-centre:
       - "appellantInPersonManual"
@@ -858,6 +880,9 @@ security:
       - "addStatutoryTimeframe24Weeks"
       - "removeStatutoryTimeframe24Weeks"
       - "revokeCitizenAccess"
+      - "sendInviteToNonLegalRep"
+      - "sendPipToNonLegalRep"
+      - "joinAppealConfirmation"
       - "requestRespondentEvidence"
     challenged-access-ctsc:
       - "appellantInPersonManual"
@@ -929,6 +954,9 @@ security:
       - "addStatutoryTimeframe24Weeks"
       - "removeStatutoryTimeframe24Weeks"
       - "revokeCitizenAccess"
+      - "sendInviteToNonLegalRep"
+      - "sendPipToNonLegalRep"
+      - "joinAppealConfirmation"
       - "requestRespondentEvidence"
     challenged-access-admin:
       - "appellantInPersonManual"
@@ -1001,6 +1029,9 @@ security:
       - "addStatutoryTimeframe24Weeks"
       - "removeStatutoryTimeframe24Weeks"
       - "revokeCitizenAccess"
+      - "sendInviteToNonLegalRep"
+      - "sendPipToNonLegalRep"
+      - "joinAppealConfirmation"
       - "requestRespondentEvidence"
     caseworker-ia-homeofficeapc:
       - "uploadHomeOfficeBundle"
@@ -1059,6 +1090,11 @@ security:
       - "applyForFTPAAppellant"
       - "requestFeeRemission"
       - "deleteDraftAppeal"
+      - "sendInviteToNonLegalRep"
+      - "sendPipToNonLegalRep"
+      - "joinAppealConfirmation"
+      - "nlrDetailsUpdated"
+      - "removeNonLegalRep"
     caseworker-ia-iacjudge:
       - "generateDecisionAndReasons"
       - "endAppeal"
@@ -1425,6 +1461,11 @@ security:
       - "maintainCaseLinks"
       - "revokeCitizenAccess"
       - "generatePinInPost"
+      - "sendInviteToNonLegalRep"
+      - "sendPipToNonLegalRep"
+      - "joinAppealConfirmation"
+      - "nlrDetailsUpdated"
+      - "removeNonLegalRep"
     caseworker-ia-internal:
       - "revokeCaseAccess"
       - "removeCaseManagerBulk"
@@ -1530,4 +1571,4 @@ app:
   home-office-validation:
     enabled: ${HOME_OFFICE_VALIDATION_ENABLED:true}
   statutory-timeframe:
-    live-date: ${STATUTORY_TIMEFRAME_LIVE_DATE:2026-09-01}
+    live-date: ${STATUTORY_TIMEFRAME_LIVE_DATE:2026-08-12}

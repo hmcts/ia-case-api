@@ -37,7 +37,13 @@ public class SaveNotificationsToDataHandler implements PreSubmitCallbackHandler<
     private final NotificationClient notificationClient;
     private final boolean saveNotificationToDataEnabled;
     private final FeatureToggler featureToggler;
-    private final List<String> validReferences = List.of("_SOME_TEST_REFERENCE");
+    public static final List<String> validReferences = List.of(
+        "STF_24WEEKS_REMOVAL_DECISION_LETTER_BUNDLE",
+        "STF_24WEEKS_REMOVAL_DECISION_LETTER_LR_BUNDLE",
+        "STF_24WEEKS_REMOVAL_REFUSED_DECISION_LETTER_BUNDLE",
+        "STF_24WEEKS_REMOVAL_REFUSED_DECISION_LETTER_LR_BUNDLE"
+    );
+    private static final List<String> successfulStatuses = List.of("Sent", "Delivered", "Returned-letter", "Received", "Failed");
 
     public SaveNotificationsToDataHandler(
         NotificationClient notificationClient,
@@ -83,6 +89,14 @@ public class SaveNotificationsToDataHandler implements PreSubmitCallbackHandler<
 
         ArrayList<IdValue<StoredNotification>> allNotifications =
             new ArrayList<>(maybeExistingNotifications.orElse(emptyList()));
+        List<String> notificationIdsToUpdate = getNotificationIdsToUpdate(allNotifications,
+            notificationsSent.orElse(emptyList()));
+        if (!notificationIdsToUpdate.isEmpty()) {
+            notificationIdsToUpdate.forEach(notificationId ->
+                amendNotificationData(allNotifications, notificationId, callback));
+            asylumCase.write(NOTIFICATIONS, allNotifications);
+        }
+
         List<String> notificationIds = getUnstoredNotificationIds(allNotifications,
             notificationsSent.orElse(emptyList()));
         if (!notificationIds.isEmpty()) {
@@ -102,6 +116,27 @@ public class SaveNotificationsToDataHandler implements PreSubmitCallbackHandler<
             StoredNotification storedNotification =
                 getStoredNotification(notificationId, notification, callback);
             allNotifications.addFirst(new IdValue<>("", storedNotification));
+        } catch (NotificationClientException exception) {
+            log.warn("Notification client error on case {}: ",
+                callback.getCaseDetails().getId(), exception);
+        }
+    }
+
+
+    private void amendNotificationData(ArrayList<IdValue<StoredNotification>> allNotifications,
+                                       String notificationId,
+                                       Callback<AsylumCase> callback) {
+        try {
+            Notification notification = notificationClient.getNotificationById(notificationId);
+            StoredNotification storedNotification =
+                getStoredNotification(notificationId, notification, callback);
+            allNotifications.stream()
+                .filter(someNotification -> someNotification.getValue().getNotificationId().equals(notificationId))
+                .findFirst()
+                .ifPresent(notificationToUpdate -> {
+                    allNotifications.remove(notificationToUpdate);
+                    allNotifications.add(new IdValue<>("", storedNotification));
+                });
         } catch (NotificationClientException exception) {
             log.warn("Notification client error on case {}: ",
                 callback.getCaseDetails().getId(), exception);
@@ -174,7 +209,7 @@ public class SaveNotificationsToDataHandler implements PreSubmitCallbackHandler<
             default -> "N/A";
         };
         String status = notification.getStatus();
-        List<String> failedStatus = List.of("permanent-failure", "temporary-failure", "technical-failure");
+        List<String> failedStatus = List.of("permanent-failure", "temporary-failure", "technical-failure", "validation-failed", "virus-scan-failed");
         status = failedStatus.contains(status) ? "Failed" : StringUtils.capitalize(status);
         ZonedDateTime zonedSentAt = notification.getSentAt().orElse(ZonedDateTime.now())
             .withZoneSameInstant(ZoneId.of("Europe/London"));
@@ -198,11 +233,26 @@ public class SaveNotificationsToDataHandler implements PreSubmitCallbackHandler<
             .anyMatch(idValue -> idValue.getValue().getNotificationId().equals(notificationId));
     }
 
+    private boolean doesStoredNotificationNeedUpdating(List<IdValue<StoredNotification>> storedNotifications, String notificationId) {
+        return storedNotifications.stream()
+            .anyMatch(idValue -> idValue.getValue().getNotificationId().equals(notificationId)
+                && !successfulStatuses.contains(idValue.getValue().getNotificationStatus()));
+    }
+
     private List<String> getUnstoredNotificationIds(List<IdValue<StoredNotification>> storedNotifications,
                                                     List<IdValue<String>> sentNotificationIds) {
         return sentNotificationIds.stream()
             .filter(this::filterNotificationsSentInTheLastSevenDays)
             .filter(idValue -> !isNotificationAlreadyStored(storedNotifications, idValue.getValue()))
+            .map(IdValue::getValue)
+            .toList();
+    }
+
+    private List<String> getNotificationIdsToUpdate(List<IdValue<StoredNotification>> storedNotifications,
+                                                    List<IdValue<String>> sentNotificationIds) {
+        return sentNotificationIds.stream()
+            .filter(this::filterNotificationsSentInTheLastSevenDays)
+            .filter(idValue -> doesStoredNotificationNeedUpdating(storedNotifications, idValue.getValue()))
             .map(IdValue::getValue)
             .toList();
     }
@@ -231,10 +281,11 @@ public class SaveNotificationsToDataHandler implements PreSubmitCallbackHandler<
                 LocalDateTime.parse(notification.getValue().getNotificationDateSent()),
             Comparator.reverseOrder()
         ));
-        return allNotifications.stream()
-            .map(idValue ->
-                new IdValue<>(String.valueOf(allNotifications.indexOf(idValue) + 1), idValue.getValue()))
-            .toList();
+        List<IdValue<StoredNotification>> updatedNotifications = new ArrayList<>();
+        for (int i = 0; i < allNotifications.size(); i++) {
+            updatedNotifications.add(new IdValue<>(String.valueOf(i + 1), allNotifications.get(i).getValue()));
+        }
+        return updatedNotifications;
     }
 
 }
