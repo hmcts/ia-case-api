@@ -4,6 +4,8 @@ import static java.util.Objects.requireNonNull;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class AddressUk {
 
@@ -83,5 +85,20 @@ public class AddressUk {
     public Optional<String> getCountry() {
         requireNonNull(country);
         return country;
+    }
+
+    public String toDisplay() {
+        return Stream.of(
+                getAddressLine1(),
+                getAddressLine2(),
+                getAddressLine3(),
+                getPostTown(),
+                getCounty(),
+                getPostCode(),
+                getCountry()
+            )
+            .flatMap(Optional::stream)
+            .filter(line -> line != null && !line.isBlank())
+            .collect(Collectors.joining("\r\n"));
     }
 }
