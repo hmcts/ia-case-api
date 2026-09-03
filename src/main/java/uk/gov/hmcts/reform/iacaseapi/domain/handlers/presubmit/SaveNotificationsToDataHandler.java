@@ -41,7 +41,8 @@ public class SaveNotificationsToDataHandler implements PreSubmitCallbackHandler<
         "STF_24WEEKS_REMOVAL_DECISION_LETTER_BUNDLE",
         "STF_24WEEKS_REMOVAL_DECISION_LETTER_LR_BUNDLE",
         "STF_24WEEKS_REMOVAL_REFUSED_DECISION_LETTER_BUNDLE",
-        "STF_24WEEKS_REMOVAL_REFUSED_DECISION_LETTER_LR_BUNDLE"
+        "STF_24WEEKS_REMOVAL_REFUSED_DECISION_LETTER_LR_BUNDLE",
+        "_STATUTORY_TIMEFRAME_24WEEKS_CASE_REVIEW_APPELLANT_LETTER"
     );
     private static final List<String> successfulStatuses = List.of("Sent", "Delivered", "Returned-letter", "Received", "Failed");
 
