@@ -666,7 +666,7 @@ ia-aip-frontend:
   enabled: true
   nodejs:
     imagePullPolicy: Always
-    image: hmctsprod.azurecr.io/ia/aip-frontend:latest
+    image: hmctsprod.azurecr.io/ia/aip-frontend:pr-1572
     ingressHost: ${SERVICE_NAME}-aip-frontend.preview.platform.hmcts.net # override in public facing environments
     applicationPort: 3000
     devcpuRequests: 500m
@@ -696,6 +696,7 @@ ia-aip-frontend:
       TRACKING_SCRIPTS: false
       TIMELINE_ENABLED: true
       ASK_FOR_MORE_TIME_ENABLED: true
+      HOME_OFFICE_VALIDATION_ENABLED: true
       MAX_DRAFT_APPEALS: 5
     keyVaults:
       ia:
