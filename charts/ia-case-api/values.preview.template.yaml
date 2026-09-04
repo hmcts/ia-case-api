@@ -167,7 +167,8 @@ ia-case-documents-api:
   enabled: true #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
-    image: hmctsprod.azurecr.io/ia/case-documents-api:latest
+    # image: hmctsprod.azurecr.io/ia/case-documents-api:latest
+    image: hmctsprod.azurecr.io/ia/case-documents-api:pr-1195
     releaseNameOverride: ${SERVICE_NAME}-case-documents-api
     ingressHost: ${SERVICE_NAME}-documents-api.preview.platform.hmcts.net
     devcpuRequests: 500m
@@ -246,7 +247,8 @@ ia-case-notifications-api:
   enabled: true #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
-    image: hmctsprod.azurecr.io/ia/case-notifications-api:latest
+    #image: hmctsprod.azurecr.io/ia/case-notifications-api:latest
+    image: hmctsprod.azurecr.io/ia/case-notifications-api:pr-1704
     releaseNameOverride: ${SERVICE_NAME}-case-notifications-api
     ingressHost: ${SERVICE_NAME}-notifications-api.preview.platform.hmcts.net
     devcpuRequests: 500m
@@ -1467,7 +1469,8 @@ ia-hearings-api:
   enabled: true
   java:
     imagePullPolicy: Always
-    image: hmctsprod.azurecr.io/ia/hearings-api:latest
+#    image: 'hmctsprod.azurecr.io/ia/hearings-api:latest'
+    image: 'hmctsprod.azurecr.io/ia/hearings-api:pr-532'
     releaseNameOverride: ${SERVICE_NAME}-hearings-api
     ingressHost: ${SERVICE_NAME}-hearings-api.preview.platform.hmcts.net
     devcpuRequests: 500m
@@ -1641,4 +1644,3 @@ postgresql:
       - name: "pr-${CHANGE_ID}-org_role_mapping"
       - name: "pr-${CHANGE_ID}-ia_timed_event_service"
       - name: "pr-${CHANGE_ID}-hmc-cft-hearing-service"
-
