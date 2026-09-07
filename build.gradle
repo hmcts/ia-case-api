@@ -15,11 +15,22 @@ plugins {
     id 'uk.gov.hmcts.java' version '0.12.70'
     id 'org.gradle.test-retry' version '1.6.5'
     id 'net.serenity-bdd.serenity-gradle-plugin' version '5.3.9'
+    id "org.openrewrite.rewrite" version '7.39.0'
+
+
+
 }
 
 apply plugin: 'java'
 apply plugin: 'project-report'
 apply plugin: 'idea'
+
+rewrite {
+    activeRecipe("org.openrewrite.java.spring.boot4.UpgradeSpringBoot_4_0")
+    setExportDatatables(true)
+}
+
+
 
 mainClassName = 'uk.gov.hmcts.reform.iacaseapi.Application'
 def jarName = 'ia-case-api.jar'
@@ -262,8 +273,15 @@ tasks.named('sonarqube') {
 }
 
 repositories {
-    mavenLocal()
     mavenCentral()
+    maven {
+        url = uri("https://artifacts.codegenomeproject.org/maven")
+        credentials {
+            username = "EMAIL"
+            password = "TOKEN"
+        }
+    }
+    mavenLocal()
     maven {
         url 'https://pkgs.dev.azure.com/hmcts/Artifacts/_packaging/hmcts-lib/maven/v1'
     }
@@ -383,6 +401,8 @@ dependencies {
     implementation group: 'commons-io', name: 'commons-io', version: '2.21.0'
     implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.8.17'
     implementation group: 'org.postgresql', name: 'postgresql', version: '42.7.13'
+    rewrite("org.openrewrite.recipe:rewrite-spring:6.37.0")
+
 
     implementation group: 'com.google.guava', name: 'guava', version: '32.1.3-jre'
     implementation group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '7.13.2'
