@@ -1,12 +1,13 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
-import static java.util.Objects.requireNonNull;
-
-import java.util.List;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
+
+import java.util.List;
+
+import static java.util.Objects.requireNonNull;
 
 @EqualsAndHashCode
 @ToString
@@ -23,6 +24,7 @@ public class MakeAnApplication {
     private String decisionReason;
     private String decisionDate;
     private String decisionMaker;
+    private Document refusalOfRemoval24wDocument;
 
     public MakeAnApplication() {
 
@@ -127,5 +129,9 @@ public class MakeAnApplication {
 
     public String getDecisionMaker() {
         return decisionMaker;
+    }
+
+    public Document getRefusalOfRemoval24wDocument() {
+        return refusalOfRemoval24wDocument;
     }
 }
