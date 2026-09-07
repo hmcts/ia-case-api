@@ -1,8 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseData;
 
 import java.util.HashMap;
@@ -10,11 +9,9 @@ import java.util.Optional;
 
 public class AsylumCase extends HashMap<String, Object> implements CaseData {
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new JsonMapper();
 
     public AsylumCase() {
-        objectMapper.registerModule(new Jdk8Module());
-        objectMapper.registerModule(new JavaTimeModule());
     }
 
     public <T> Optional<T> read(AsylumCaseFieldDefinition extractor, Class<T> type) {

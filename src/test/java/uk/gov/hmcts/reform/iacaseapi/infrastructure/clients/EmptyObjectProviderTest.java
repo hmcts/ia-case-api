@@ -3,7 +3,8 @@ package uk.gov.hmcts.reform.iacaseapi.infrastructure.clients;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 import java.util.Arrays;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,7 +21,7 @@ class EmptyObjectProviderTest {
 
     @Test
     void should_return_message_converter_unchanged() {
-        ObjectMapper objectMapper = new ObjectMapper();
+        ObjectMapper objectMapper = new JsonMapper();
         HttpMessageConverter jacksonConverter1 = new MappingJackson2HttpMessageConverter(objectMapper);
         HttpMessageConverter jacksonConverter2 = new MappingJackson2HttpMessageConverter(objectMapper);
         emptyObjectProvider.forEach(t -> t.accept(Arrays.asList(jacksonConverter1)));

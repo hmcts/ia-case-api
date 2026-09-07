@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonEnumDefaultValue;
 import com.fasterxml.jackson.annotation.JsonValue;
 
@@ -31,6 +32,7 @@ public enum HomeOfficeApiResponseStatusType {
 
     private static final String REPLACEMENT_STRING = "XYZYX";
 
+    @JsonCreator
     HomeOfficeApiResponseStatusType(int statusCode, String name, String userFacingErrorText, String hoIntegrationErrorText) {
         this.statusCode = statusCode;
         this.name = name;
