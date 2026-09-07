@@ -13,7 +13,7 @@ plugins {
     id 'org.flywaydb.flyway' version '9.22.3'
     id 'au.com.dius.pact' version '4.6.20'
     id 'uk.gov.hmcts.java' version '0.12.70'
-    id 'org.gradle.test-retry' version '1.6.5'
+    id 'org.gradle.test-retry' version '1.6.6'
     id 'net.serenity-bdd.serenity-gradle-plugin' version '5.3.9'
 }
 
@@ -269,7 +269,7 @@ repositories {
     }
 }
 
-ext["tomcat.version"] = "10.1.57"
+ext["tomcat.version"] = "10.1.59"
 
 dependencyManagement {
     imports {
@@ -320,7 +320,7 @@ dependencyManagement {
         // CVE-2026-34480
         // CVE-2026-34481
         // CVE-2026-34477
-        // CVE-2025-68161 - from spring-boot-starter-logging@3.5.16 and elasticsearch@9.2.8
+        // CVE-2025-68161 - from spring-boot-starter-logging@3.5.16 and elasticsearch@9.4.6
         dependencySet(group: 'org.apache.logging.log4j', version: '2.25.5') {
             entry 'log4j-to-slf4j'
             entry 'log4j-api'
@@ -335,7 +335,7 @@ dependencyManagement {
             entry 'httpcore5-h2'
         }
 
-        dependencySet(group: 'org.jetbrains.kotlin', version: '2.4.20-RC') {
+        dependencySet(group: 'org.jetbrains.kotlin', version: '2.4.20') {
             entry 'kotlin-stdlib'
             entry 'kotlin-stdlib-jdk7'
             entry 'kotlin-stdlib-jdk8'
@@ -391,7 +391,7 @@ dependencies {
 
     implementation group: 'org.javamoney.moneta', name: 'moneta-core', version: '1.4.5'
 
-    implementation group: 'org.elasticsearch', name: 'elasticsearch', version: '9.3.8'
+    implementation group: 'org.elasticsearch', name: 'elasticsearch', version: '9.4.6'
 
     implementation group: 'com.googlecode.libphonenumber', name: 'libphonenumber', version: '8.13.55'
 

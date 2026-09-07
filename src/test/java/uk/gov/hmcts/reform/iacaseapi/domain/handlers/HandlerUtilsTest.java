@@ -7,32 +7,22 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseFlagDetail;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseFlagValue;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.FeeRemissionType;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingAdjournmentDay;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.HelpWithFeesOption;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfCountryCircumstances;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfCountryDecisionType;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionOption;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.SourceOfAppeal;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlag;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.Value;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.AddressUk;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationBasedFeatureToggler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.PartyIdService;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.Organisation;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.OrganisationPolicy;
 
@@ -55,34 +45,19 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingAdjournmentDay.BEFORE_HEARING_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingAdjournmentDay.ON_HEARING_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre.GLASGOW;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HelpWithFeesOption.ALREADY_APPLIED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HelpWithFeesOption.WANT_TO_APPLY;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HelpWithFeesOption.WILL_PAY_FOR_APPEAL;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HelpWithFeesOption.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfCountryCircumstances.ENTRY_CLEARANCE_DECISION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionOption.ASYLUM_SUPPORT_FROM_HOME_OFFICE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionOption.I_WANT_TO_GET_HELP_WITH_FEES;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType.EXCEPTIONAL_CIRCUMSTANCES_REMISSION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType.HELP_WITH_FEES;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType.HO_WAIVER_REMISSION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType.NO_REMISSION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.adjournedBeforeHearingDay;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.adjournedOnHearingDay;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.appealHasRemissionOptionOrType;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.hasAddedLegalRepDetails;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.hasRepresentation;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.hasUpdatedLegalRepFields;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isAdmin;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isCaseUsingLocationRefData;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isEntryClearanceDecision;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isIntegrated;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isOnlyRemoteToRemoteHearingChannelUpdate;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isPanelRequired;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.outOfCountryDecisionTypeIsRefusalOfHumanRightsOrPermit;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.relistCaseImmediately;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.*;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -101,6 +76,12 @@ class HandlerUtilsTest {
     private AsylumCase asylumCaseBefore;
     @Mock
     private LocationBasedFeatureToggler locationBasedFeatureToggler;
+    @Mock
+    private List<IdValue<Subscriber>> mockSubscribers;
+    @Mock
+    private NonLegalRepDetails mockNlrDetails;
+    @Captor
+    private ArgumentCaptor<List<IdValue<Subscriber>>> subscribersCaptor;
 
     @Test
     void given_journey_type_aip_returns_true() {
@@ -167,7 +148,7 @@ class HandlerUtilsTest {
 
     @Test
     void isInternalCase_should_return_false() {
-        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(NO));
         assertFalse(HandlerUtils.isInternalCase(asylumCase));
     }
 
@@ -191,7 +172,7 @@ class HandlerUtilsTest {
 
     @Test
     void isEjpCase_should_return_false() {
-        when(asylumCase.read(IS_EJP, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(asylumCase.read(IS_EJP, YesOrNo.class)).thenReturn(Optional.of(NO));
         assertFalse(HandlerUtils.isEjpCase(asylumCase));
     }
 
@@ -203,7 +184,7 @@ class HandlerUtilsTest {
 
     @Test
     void isNotificationTurnedOff_should_return_false() {
-        when(asylumCase.read(IS_NOTIFICATION_TURNED_OFF, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(asylumCase.read(IS_NOTIFICATION_TURNED_OFF, YesOrNo.class)).thenReturn(Optional.of(NO));
         assertFalse(HandlerUtils.isNotificationTurnedOff(asylumCase));
     }
 
@@ -215,7 +196,7 @@ class HandlerUtilsTest {
 
     @Test
     void isLegallyRepresentedEjpCase_should_return_false() {
-        when(asylumCase.read(IS_LEGALLY_REPRESENTED_EJP, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(asylumCase.read(IS_LEGALLY_REPRESENTED_EJP, YesOrNo.class)).thenReturn(Optional.of(NO));
         assertFalse(HandlerUtils.isLegallyRepresentedEjpCase(asylumCase));
     }
 
@@ -1099,6 +1080,368 @@ class HandlerUtilsTest {
         verify(asylumCase).remove(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY);
 
         verify(asylumCase, times(6)).remove(any());
+    }
+
+    @Test
+    void test_clearNlrFields_clears_nlr_fields() {
+        HandlerUtils.clearNlrFields(asylumCase);
+        verify(asylumCase).clear(NLR_DETAILS);
+        verify(asylumCase).clear(JOIN_APPEAL_PIN);
+        verify(asylumCase).clear(IS_SPONSOR_SAME_AS_NLR);
+        verify(asylumCase).clear(HAS_NON_LEGAL_REP_JOINED);
+    }
+
+    @Test
+    void setSponsorDetailsFromNlrIfSame_clears_addressUk_if_not_same_and_has_nlr() {
+        try (MockedStatic<PartyIdService> partyIdService = mockStatic(PartyIdService.class)) {
+            when(asylumCase.read(HAS_NON_LEGAL_REP, YesOrNo.class)).thenReturn(Optional.of(YES));
+            when(asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class)).thenReturn(Optional.of(mockNlrDetails));
+
+            setSponsorDetailsFromNlrIfSame(asylumCase);
+            partyIdService.verify(
+                () -> PartyIdService.setSponsorPartyId(asylumCase),
+                times(1)
+            );
+            verify(mockNlrDetails).setAddressUk(null);
+            verify(asylumCase).write(NLR_DETAILS, mockNlrDetails);
+        }
+    }
+
+    @Test
+    void setSponsorDetailsFromNlrIfSame_throws_if_if_not_same_and_has_nlr_without_nlr_details() {
+        when(asylumCase.read(HAS_NON_LEGAL_REP, YesOrNo.class)).thenReturn(Optional.of(YES));
+        IllegalStateException exception =
+            assertThrows(IllegalStateException.class, () -> setSponsorDetailsFromNlrIfSame(asylumCase));
+        assertEquals("Non-legal representative details are not present", exception.getMessage());
+    }
+
+    @Test
+    void setSponsorDetailsFromNlrIfSame_clear_nlr_fields_if_not_same_and_has_no_nlr() {
+        try (MockedStatic<PartyIdService> partyIdService = mockStatic(PartyIdService.class)) {
+
+            setSponsorDetailsFromNlrIfSame(asylumCase);
+            partyIdService.verify(
+                () -> PartyIdService.setSponsorPartyId(asylumCase),
+                times(1)
+            );
+            verify(asylumCase).clear(NLR_DETAILS);
+            verify(asylumCase).clear(JOIN_APPEAL_PIN);
+            verify(asylumCase).clear(IS_SPONSOR_SAME_AS_NLR);
+            verify(asylumCase).clear(HAS_NON_LEGAL_REP_JOINED);
+        }
+    }
+
+    @Test
+    void setSponsorDetailsFromNlrIfSame_throws_if_yes_and_no_nlr_details() {
+        when(asylumCase.read(IS_SPONSOR_SAME_AS_NLR, YesOrNo.class)).thenReturn(Optional.of(YES));
+
+        IllegalStateException exception =
+            assertThrows(IllegalStateException.class, () -> setSponsorDetailsFromNlrIfSame(asylumCase));
+        assertEquals("Non-legal representative details are not present", exception.getMessage());
+    }
+
+    @Test
+    void setSponsorDetailsFromNlrIfSame_sets_correctly_if_yes() {
+        try (MockedStatic<PartyIdService> partyIdService = mockStatic(PartyIdService.class)) {
+            String expectedEmailAddress = "someEmailAddress";
+            String expectedIdamId = "someIdamId";
+            String expectedFamilyName = "someFamilyName";
+            String expectedAddress = "someAddress";
+            AddressUk expectedAddressUk = new AddressUk("someLine1", null, null,
+                "someTown", null, "somePostcode", null);
+            String expectedPhoneNumber = "somePhoneNumber";
+            String expectedGivenNames = "someGivenNames";
+            when(asylumCase.read(IS_SPONSOR_SAME_AS_NLR, YesOrNo.class)).thenReturn(Optional.of(YES));
+            when(asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class))
+                .thenReturn(Optional.of(NonLegalRepDetails.builder()
+                    .emailAddress(expectedEmailAddress)
+                    .idamId(expectedIdamId)
+                    .familyName(expectedFamilyName)
+                    .address(expectedAddress)
+                    .addressUk(expectedAddressUk)
+                    .phoneNumber(expectedPhoneNumber)
+                    .givenNames(expectedGivenNames)
+                    .build()));
+
+            setSponsorDetailsFromNlrIfSame(asylumCase);
+            partyIdService.verify(
+                () -> PartyIdService.setSponsorPartyId(asylumCase),
+                times(1)
+            );
+            verify(asylumCase).write(SPONSOR_GIVEN_NAMES, expectedGivenNames);
+            verify(asylumCase).write(SPONSOR_FAMILY_NAME, expectedFamilyName);
+            verify(asylumCase).write(SPONSOR_ADDRESS, expectedAddressUk);
+            verify(asylumCase).write(SPONSOR_ADDRESS_FOR_DISPLAY, expectedAddressUk.toDisplay());
+            verify(asylumCase).write(SPONSOR_NAME_FOR_DISPLAY, expectedGivenNames + " " + expectedFamilyName);
+            verify(asylumCase).write(SPONSOR_CONTACT_PREFERENCE, ContactPreference.WANTS_EMAIL);
+            verify(asylumCase).write(SPONSOR_EMAIL, expectedEmailAddress);
+            verify(asylumCase).write(SPONSOR_MOBILE_NUMBER, expectedPhoneNumber);
+            verify(asylumCase).write(SPONSOR_AUTHORISATION, YES);
+            verify(asylumCase).write(eq(SPONSOR_SUBSCRIPTIONS), anyList());
+        }
+    }
+
+    @Test
+    void setSponsorDetailsFromNlrIfSame_sets_correctly_if_yes_empty_nlr_details() {
+        try (MockedStatic<PartyIdService> partyIdService = mockStatic(PartyIdService.class)) {
+            when(asylumCase.read(IS_SPONSOR_SAME_AS_NLR, YesOrNo.class)).thenReturn(Optional.of(YES));
+            when(asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class))
+                .thenReturn(Optional.of(NonLegalRepDetails.builder().build()));
+
+            setSponsorDetailsFromNlrIfSame(asylumCase);
+            partyIdService.verify(
+                () -> PartyIdService.setSponsorPartyId(asylumCase),
+                times(1)
+            );
+            verify(asylumCase, never()).write(SPONSOR_GIVEN_NAMES, null);
+            verify(asylumCase, never()).write(SPONSOR_FAMILY_NAME, null);
+            verify(asylumCase, never()).write(SPONSOR_ADDRESS, null);
+            verify(asylumCase, never()).write(SPONSOR_ADDRESS_FOR_DISPLAY, null);
+            verify(asylumCase, never()).write(SPONSOR_NAME_FOR_DISPLAY, null);
+            verify(asylumCase, never()).write(SPONSOR_CONTACT_PREFERENCE, ContactPreference.WANTS_EMAIL);
+            verify(asylumCase, never()).write(SPONSOR_EMAIL, null);
+            verify(asylumCase, never()).write(SPONSOR_MOBILE_NUMBER, null);
+            verify(asylumCase).write(SPONSOR_AUTHORISATION, YES);
+            verify(asylumCase, never()).write(eq(SPONSOR_SUBSCRIPTIONS), anyList());
+        }
+    }
+
+    @Test
+    void setSponsorDetailsFromNlrIfSame_sets_sponsor_subscription_correctly() {
+        try (MockedStatic<PartyIdService> partyIdService = mockStatic(PartyIdService.class)) {
+            String email = "some-email";
+            String phoneNumber = "some-phoneNumber";
+            String idamId = "some-idamId";
+            when(asylumCase.read(IS_SPONSOR_SAME_AS_NLR, YesOrNo.class)).thenReturn(Optional.of(YES));
+            when(asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class))
+                .thenReturn(Optional.of(NonLegalRepDetails.builder()
+                    .emailAddress(email)
+                    .phoneNumber(phoneNumber)
+                    .idamId(idamId)
+                    .build()
+                ));
+            when(asylumCase.read(SPONSOR_SUBSCRIPTIONS)).thenReturn(Optional.of(mockSubscribers));
+            when(mockSubscribers.isEmpty()).thenReturn(false);
+            setSponsorDetailsFromNlrIfSame(asylumCase);
+            partyIdService.verify(
+                () -> PartyIdService.setSponsorPartyId(asylumCase),
+                times(1)
+            );
+            verify(asylumCase).write(eq(SPONSOR_SUBSCRIPTIONS), subscribersCaptor.capture());
+            List<IdValue<Subscriber>> capturedSubscribers = subscribersCaptor.getValue();
+            assertFalse(capturedSubscribers.isEmpty());
+            assertEquals(1, capturedSubscribers.size());
+            Subscriber subscriber = capturedSubscribers.getFirst().getValue();
+            assertEquals(SubscriberType.SUPPORTER, subscriber.getSubscriber());
+            assertEquals(email, subscriber.getEmail());
+            assertEquals(phoneNumber, subscriber.getMobileNumber());
+            assertEquals(YES, subscriber.getWantsEmail());
+            assertEquals(NO, subscriber.getWantsSms());
+        }
+    }
+
+    @Test
+    void updateSubscriptionsForNlr_does_not_write_if_no_nlr_and_no_existing_supporter() {
+        updateSubscriptionsForNlr(asylumCase);
+        verify(asylumCase, never()).write(eq(SUBSCRIPTIONS), any());
+    }
+
+    @Test
+    void updateSubscriptionsForNlr_removes_supporter_if_no_nlr_but_existing_supporter() {
+        Subscriber sub1 = mock(Subscriber.class);
+        when(sub1.getSubscriber()).thenReturn(SubscriberType.APPELLANT);
+        IdValue<Subscriber> sub1IdValue = new IdValue<>("1", sub1);
+        Subscriber sub2 = mock(Subscriber.class);
+        when(sub2.getSubscriber()).thenReturn(SubscriberType.SUPPORTER);
+        when(sub2.getEmail()).thenReturn("existing@email.com");
+        IdValue<Subscriber> sub2IdValue = new IdValue<>("2", sub2);
+        when(asylumCase.read(SUBSCRIPTIONS)).thenReturn(Optional.of(List.of(sub1IdValue, sub2IdValue)));
+
+        updateSubscriptionsForNlr(asylumCase);
+
+        verify(asylumCase, times(1)).write(eq(SUBSCRIPTIONS), subscribersCaptor.capture());
+        List<IdValue<Subscriber>> capturedSubscribers = subscribersCaptor.getValue();
+        assertFalse(capturedSubscribers.isEmpty());
+        assertEquals(1, capturedSubscribers.size());
+        Subscriber subscriber = capturedSubscribers.getFirst().getValue();
+        assertEquals(sub1, subscriber);
+    }
+
+    @Test
+    void updateSubscriptionsForNlr_updates_subs_for_nlr_none_existing() {
+        when(asylumCase.read(HAS_NON_LEGAL_REP, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class)).thenReturn(Optional.of(NonLegalRepDetails.builder()
+            .emailAddress("some-email")
+            .phoneNumber("some-phoneNumber")
+            .idamId("some-idamId")
+            .build()
+        ));
+
+        updateSubscriptionsForNlr(asylumCase);
+
+        verify(asylumCase, times(1)).write(eq(SUBSCRIPTIONS), subscribersCaptor.capture());
+        List<IdValue<Subscriber>> capturedSubscribers = subscribersCaptor.getValue();
+        assertFalse(capturedSubscribers.isEmpty());
+        assertEquals(1, capturedSubscribers.size());
+        Subscriber subscriber = capturedSubscribers.getFirst().getValue();
+        assertEquals(SubscriberType.SUPPORTER, subscriber.getSubscriber());
+        assertEquals("some-email", subscriber.getEmail());
+        assertEquals("some-phoneNumber", subscriber.getMobileNumber());
+        assertEquals(YES, subscriber.getWantsEmail());
+        assertEquals(NO, subscriber.getWantsSms());
+    }
+
+    @Test
+    void updateSubscriptionsForNlr_updates_subs_for_nlr_supporters_existing() {
+        when(asylumCase.read(HAS_NON_LEGAL_REP, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class)).thenReturn(Optional.of(NonLegalRepDetails.builder()
+            .emailAddress("some-email")
+            .phoneNumber("some-phoneNumber")
+            .idamId("some-idamId")
+            .build()
+        ));
+        Subscriber sub1 = mock(Subscriber.class);
+        when(sub1.getSubscriber()).thenReturn(SubscriberType.APPELLANT);
+        IdValue<Subscriber> sub1IdValue = new IdValue<>("1", sub1);
+        Subscriber sub2 = mock(Subscriber.class);
+        when(sub2.getSubscriber()).thenReturn(SubscriberType.SUPPORTER);
+        when(sub2.getEmail()).thenReturn("old-email");
+        IdValue<Subscriber> sub2IdValue = new IdValue<>("2", sub2);
+        Subscriber sub3 = mock(Subscriber.class);
+        when(sub3.getSubscriber()).thenReturn(SubscriberType.APPELLANT);
+        IdValue<Subscriber> sub3IdValue = new IdValue<>("3", sub3);
+        Subscriber sub4 = mock(Subscriber.class);
+        when(sub4.getSubscriber()).thenReturn(SubscriberType.SUPPORTER);
+        when(sub4.getEmail()).thenReturn("old-email");
+        IdValue<Subscriber> sub4IdValue = new IdValue<>("4", sub4);
+        when(asylumCase.read(SUBSCRIPTIONS))
+            .thenReturn(Optional.of(List.of(sub1IdValue, sub2IdValue, sub3IdValue, sub4IdValue)));
+
+        updateSubscriptionsForNlr(asylumCase);
+
+        verify(asylumCase, times(1)).write(eq(SUBSCRIPTIONS), subscribersCaptor.capture());
+        List<IdValue<Subscriber>> capturedSubscribers = subscribersCaptor.getValue();
+        assertFalse(capturedSubscribers.isEmpty());
+        assertEquals(3, capturedSubscribers.size());
+        assertTrue(capturedSubscribers.contains(sub1IdValue));
+        assertFalse(capturedSubscribers.contains(sub2IdValue));
+        assertTrue(capturedSubscribers.contains(sub3IdValue));
+        assertFalse(capturedSubscribers.contains(sub4IdValue));
+        Subscriber subscriber = capturedSubscribers.getLast().getValue();
+        assertEquals(SubscriberType.SUPPORTER, subscriber.getSubscriber());
+        assertEquals("some-email", subscriber.getEmail());
+        assertEquals("some-phoneNumber", subscriber.getMobileNumber());
+        assertEquals(YES, subscriber.getWantsEmail());
+        assertEquals(NO, subscriber.getWantsSms());
+    }
+
+    @Test
+    void updateSubscriptionsForNlr_does_not_update_if_email_unchanged() {
+        when(asylumCase.read(HAS_NON_LEGAL_REP, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class)).thenReturn(Optional.of(NonLegalRepDetails.builder()
+            .emailAddress("same-email")
+            .phoneNumber("some-phoneNumber")
+            .idamId("some-idamId")
+            .build()
+        ));
+        Subscriber existingSupporter = mock(Subscriber.class);
+        when(existingSupporter.getSubscriber()).thenReturn(SubscriberType.SUPPORTER);
+        when(existingSupporter.getEmail()).thenReturn("same-email");
+        IdValue<Subscriber> supporterIdValue = new IdValue<>("1", existingSupporter);
+        when(asylumCase.read(SUBSCRIPTIONS)).thenReturn(Optional.of(List.of(supporterIdValue)));
+
+        updateSubscriptionsForNlr(asylumCase);
+
+        verify(asylumCase, never()).write(eq(SUBSCRIPTIONS), any());
+    }
+
+    @Test
+    void get_nlr_full_name_should_return_nlr_given_plus_family_name() {
+        String givenName = "FirstName";
+        String familyName = "FamilyName";
+
+        when(asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class)).thenReturn(Optional.of(NonLegalRepDetails.builder()
+            .givenNames(givenName)
+            .familyName(familyName)
+            .build())
+        );
+
+        assertEquals("FirstName FamilyName", HandlerUtils.getNlrFullName(asylumCase));
+    }
+
+    @Test
+    void get_nlr_full_name_should_throw_if_empty_fields_or_empty_details() {
+        String expectedErrorMessage = "Non-legal representative name is not present";
+        IllegalStateException exception = assertThrows(IllegalStateException.class,
+            () -> HandlerUtils.getNlrFullName(asylumCase));
+        assertEquals(expectedErrorMessage, exception.getMessage());
+
+        when(asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class)).thenReturn(Optional.of(NonLegalRepDetails.builder().build()));
+        exception = assertThrows(IllegalStateException.class,
+            () -> HandlerUtils.getNlrFullName(asylumCase));
+        assertEquals(expectedErrorMessage, exception.getMessage());
+
+        when(asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class)).thenReturn(Optional.of(NonLegalRepDetails.builder()
+            .givenNames("something").build()));
+        exception = assertThrows(IllegalStateException.class,
+            () -> HandlerUtils.getNlrFullName(asylumCase));
+        assertEquals(expectedErrorMessage, exception.getMessage());
+
+        when(asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class)).thenReturn(Optional.of(NonLegalRepDetails.builder()
+            .familyName("something").build()));
+        exception = assertThrows(IllegalStateException.class,
+            () -> HandlerUtils.getNlrFullName(asylumCase));
+        assertEquals(expectedErrorMessage, exception.getMessage());
+    }
+
+
+    @ParameterizedTest
+    @CsvSource(nullValues = {"null"}, value = {
+        "NO,NO",
+        "null,NO",
+        "NO,null",
+        "null,null"
+    })
+    void nlrAttendingHearing_should_return_false_correctly(YesOrNo isNlrAttending, YesOrNo isOutsideUk) {
+        when(asylumCase.read(NLR_ATTENDING, YesOrNo.class)).thenReturn(Optional.ofNullable(isNlrAttending));
+        when(asylumCase.read(NLR_ATTENDING_OUTSIDE_UK, YesOrNo.class)).thenReturn(Optional.ofNullable(isOutsideUk));
+        assertFalse(HandlerUtils.nlrAttendingHearing(asylumCase));
+    }
+
+    @ParameterizedTest
+    @CsvSource(nullValues = {"null"}, value = {
+        "YES,YES",
+        "null,YES",
+        "YES,null",
+        "null,YES",
+        "YES,null"
+    })
+    void nlrAttendingHearing_should_return_true_correctly(YesOrNo isNlrAttending, YesOrNo isOutsideUk) {
+        when(asylumCase.read(NLR_ATTENDING, YesOrNo.class)).thenReturn(Optional.ofNullable(isNlrAttending));
+        when(asylumCase.read(NLR_ATTENDING_OUTSIDE_UK, YesOrNo.class)).thenReturn(Optional.ofNullable(isOutsideUk));
+        assertTrue(HandlerUtils.nlrAttendingHearing(asylumCase));
+    }
+
+    @Test
+    void hasActiveNlr_should_return_true_if_nlr_details_present_with_idam_id() {
+        when(asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class)).thenReturn(Optional.of(NonLegalRepDetails.builder()
+            .idamId("some-idamId")
+            .build())
+        );
+        assertTrue(HandlerUtils.hasActiveNlr(asylumCase));
+    }
+
+    @Test
+    void hasActiveNlr_should_return_false_if_nlr_details_present_without_idam_id() {
+        when(asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class)).thenReturn(Optional.of(NonLegalRepDetails.builder()
+            .build())
+        );
+        assertFalse(HandlerUtils.hasActiveNlr(asylumCase));
+    }
+
+    @Test
+    void hasActiveNlr_should_return_false_if_nlr_details_not_present() {
+        assertFalse(HandlerUtils.hasActiveNlr(asylumCase));
     }
 
     @Test
