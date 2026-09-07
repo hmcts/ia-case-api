@@ -696,7 +696,7 @@ ia-aip-frontend:
       TRACKING_SCRIPTS: false
       TIMELINE_ENABLED: true
       ASK_FOR_MORE_TIME_ENABLED: true
-      HOME_OFFICE_VALIDATION_ENABLED: true
+      HOME_OFFICE_VALIDATION_ENABLED: false
       MAX_DRAFT_APPEALS: 5
     keyVaults:
       ia:
