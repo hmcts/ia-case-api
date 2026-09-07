@@ -696,6 +696,7 @@ ia-aip-frontend:
       TRACKING_SCRIPTS: false
       TIMELINE_ENABLED: true
       ASK_FOR_MORE_TIME_ENABLED: true
+      MAX_DRAFT_APPEALS: 5
     keyVaults:
       ia:
         resourceGroup: ia
