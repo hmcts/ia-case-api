@@ -1,14 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
-import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.concurrent.atomic.AtomicInteger;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsHelper;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -17,8 +10,24 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+
 @Component
 public class DecideAnApplicationPreparer implements PreSubmitCallbackHandler<AsylumCase> {
+    private final UserDetails userDetails;
+    private final UserDetailsHelper userDetailsHelper;
+
+    public DecideAnApplicationPreparer(UserDetails userDetails, UserDetailsHelper userDetailsHelper) {
+        this.userDetails = requireNonNull(userDetails, "userDetails must not be null");
+        this.userDetailsHelper = requireNonNull(userDetailsHelper, "userDetailsHelper must not be null");
+    }
 
     @Override
     public boolean canHandle(PreSubmitCallbackStage callbackStage,
@@ -64,6 +73,13 @@ public class DecideAnApplicationPreparer implements PreSubmitCallbackHandler<Asy
         DynamicList dynamicList = new DynamicList(makeAnApplicationsListElements.getFirst(), makeAnApplicationsListElements);
 
         asylumCase.write(MAKE_AN_APPLICATIONS_LIST, dynamicList);
+
+        UserRoleLabel userRole = userDetailsHelper.getLoggedInUserRoleLabel(userDetails);
+        if (List.of(UserRoleLabel.JUDGE, UserRoleLabel.TRIBUNAL_CASEWORKER).contains(userRole)) {
+            asylumCase.write(REMOVAL_OF_24W_DECISION_DECISION_MAKER, userDetails.getForenameAndSurname());
+        } else {
+            asylumCase.clear(REMOVAL_OF_24W_DECISION_DECISION_MAKER);
+        }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }

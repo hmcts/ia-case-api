@@ -269,7 +269,7 @@ repositories {
     }
 }
 
-ext["tomcat.version"] = "10.1.57"
+ext["tomcat.version"] = "10.1.59"
 
 dependencyManagement {
     imports {
@@ -335,7 +335,7 @@ dependencyManagement {
             entry 'httpcore5-h2'
         }
 
-        dependencySet(group: 'org.jetbrains.kotlin', version: '2.4.20-RC') {
+        dependencySet(group: 'org.jetbrains.kotlin', version: '2.4.20-RC2') {
             entry 'kotlin-stdlib'
             entry 'kotlin-stdlib-jdk7'
             entry 'kotlin-stdlib-jdk8'
