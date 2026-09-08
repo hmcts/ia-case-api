@@ -4,7 +4,6 @@ import static org.mockito.Mockito.when;
 
 import au.com.dius.pact.consumer.junit5.PactConsumerTestExt;
 import au.com.dius.pact.core.model.annotations.PactFolder;
-import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.json.JsonMapper;
 import java.io.IOException;
 import org.junit.jupiter.api.BeforeEach;

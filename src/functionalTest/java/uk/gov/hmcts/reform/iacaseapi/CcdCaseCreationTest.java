@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.iacaseapi;
 
 import tools.jackson.core.type.TypeReference;
 import tools.jackson.databind.JsonNode;
-import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.json.JsonMapper;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.specification.RequestSpecification;

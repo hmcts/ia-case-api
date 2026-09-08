@@ -9,7 +9,6 @@ import au.com.dius.pact.consumer.junit5.PactTestFor;
 import au.com.dius.pact.core.model.V4Pact;
 import au.com.dius.pact.core.model.annotations.Pact;
 import au.com.dius.pact.core.model.annotations.PactFolder;
-import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.json.JsonMapper;
 import org.json.JSONException;
 import org.junit.jupiter.api.BeforeEach;
@@ -89,7 +88,7 @@ public class RoleAssignmentApiConsumerTest {
             .matchHeader(SERVICE_AUTHORIZATION, SERVICE_AUTH_TOKEN)
             .body(new JsonMapper()
                 .writeValueAsString(roleAssignmentService.getRoleAssignment(caseId, assigneeId, userId)))
-            .willRespondWith()            
+            .willRespondWith()
             .status(201)
             .toPact(V4Pact.class);
     }

@@ -3,10 +3,12 @@ package uk.gov.hmcts.reform.iacaseapi.infrastructure.health;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.stream.Stream;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.health.contributor.CompositeHealthContributor;
 import org.springframework.boot.health.contributor.HealthContributor;
-import org.springframework.boot.health.contributor.NamedContributor;
+import org.springframework.boot.health.contributor.HealthContributors;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.config.HealthCheckConfiguration;
@@ -53,6 +55,15 @@ public class DownStreamHealthIndicator implements CompositeHealthContributor {
     @Override
     public Iterator<Entry> iterator() {
         return contributors.entrySet().stream()
-            .map((entry) -> NamedContributor.of(entry.getKey(), entry.getValue())).iterator();
+            .map((entry) -> new HealthContributors.Entry(entry.getKey(), entry.getValue())).iterator();
     }
+
+    @Override
+    public Stream<Entry> stream() {
+        return this.contributors.entrySet()
+            .stream()
+            .map(entry -> new HealthContributors.Entry(entry.getKey(), entry.getValue()));
+    }
+
+
 }
