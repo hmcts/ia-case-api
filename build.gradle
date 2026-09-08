@@ -21,7 +21,14 @@ apply plugin: 'java'
 apply plugin: 'project-report'
 apply plugin: 'idea'
 
-mainClassName = 'uk.gov.hmcts.reform.iacaseapi.Application'
+application {
+  mainClass = 'uk.gov.hmcts.reform.iacaseapi.Application'
+  // this is required to force Java running on the Azure Windows Server OS into using
+  // UTF-8 as the default character set instead of windows-1252 which causes issues.
+  // this setting only applies when running via gradle bootRun -- see web.config for the
+  // java flag that configures the deployed appllications
+  applicationDefaultJvmArgs = ["-Dfile.encoding=UTF-8"]
+}
 def jarName = 'ia-case-api.jar'
 
 group = 'uk.gov.hmcts.reform'
@@ -491,12 +498,6 @@ bootJar {
         attributes('Implementation-Version': project.version.toString())
     }
 }
-
-// this is required to force Java running on the Azure Windows Server OS into using
-// UTF-8 as the default character set instead of windows-1252 which causes issues.
-// this setting only applies when running via gradle bootRun -- see web.config for the
-// java flag that configures the deployed appllications
-applicationDefaultJvmArgs = ["-Dfile.encoding=UTF-8"]
 
 wrapper {
     distributionType = Wrapper.DistributionType.ALL
