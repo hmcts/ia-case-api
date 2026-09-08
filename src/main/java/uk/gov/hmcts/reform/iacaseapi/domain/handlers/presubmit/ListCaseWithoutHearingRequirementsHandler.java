@@ -12,7 +12,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
-import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackStateHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.AutoRequestHearingService;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.PreviousRequirementsAndRequestsAppender;
 
@@ -28,7 +28,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isPanel
 @Component
 @Slf4j
 @RequiredArgsConstructor
-public class ListCaseWithoutHearingRequirementsHandler implements PreSubmitCallbackHandler<AsylumCase> {
+public class ListCaseWithoutHearingRequirementsHandler implements PreSubmitCallbackStateHandler<AsylumCase> {
 
     private final PreviousRequirementsAndRequestsAppender previousRequirementsAndRequestsAppender;
     private final AutoRequestHearingService autoRequestHearingService;
@@ -46,7 +46,8 @@ public class ListCaseWithoutHearingRequirementsHandler implements PreSubmitCallb
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
         PreSubmitCallbackStage callbackStage,
-        Callback<AsylumCase> callback
+        Callback<AsylumCase> callback,
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse
     ) {
         if (!canHandle(callbackStage, callback)) {
             throw new IllegalStateException("Cannot handle callback");

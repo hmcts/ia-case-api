@@ -42,6 +42,8 @@ class ListCaseWithoutHearingRequirementsHandlerTest {
     private PreviousRequirementsAndRequestsAppender previousRequirementsAndRequestsAppender;
     @Mock
     private AutoRequestHearingService autoRequestHearingService;
+    @Mock
+    private PreSubmitCallbackResponse<AsylumCase> preSubmitCallbackResponse;
 
     private ListCaseWithoutHearingRequirementsHandler listCaseWithoutHearingRequirementsHandler;
 
@@ -62,7 +64,7 @@ class ListCaseWithoutHearingRequirementsHandlerTest {
     void should_set_witness_count_and_available_fields() {
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            listCaseWithoutHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+            listCaseWithoutHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, preSubmitCallbackResponse);
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
@@ -79,7 +81,7 @@ class ListCaseWithoutHearingRequirementsHandlerTest {
     void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(
-            () -> listCaseWithoutHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
+            () -> listCaseWithoutHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback, preSubmitCallbackResponse))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
     }
@@ -89,7 +91,7 @@ class ListCaseWithoutHearingRequirementsHandlerTest {
 
         when(asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
 
-        listCaseWithoutHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+        listCaseWithoutHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, preSubmitCallbackResponse);
 
         verify(asylumCase, times(1)).write(REHEARD_CASE_LISTED_WITHOUT_HEARING_REQUIREMENTS, YesOrNo.YES);
         verify(asylumCase, times(1)).write(CURRENT_HEARING_DETAILS_VISIBLE, YesOrNo.YES);
@@ -112,7 +114,7 @@ class ListCaseWithoutHearingRequirementsHandlerTest {
 
         when(asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
 
-        listCaseWithoutHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+        listCaseWithoutHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, preSubmitCallbackResponse);
 
         verify(asylumCase, times(0)).write(REHEARD_CASE_LISTED_WITHOUT_HEARING_REQUIREMENTS, YesOrNo.YES);
         verify(asylumCase, times(0)).write(CURRENT_HEARING_DETAILS_VISIBLE, YesOrNo.YES);
@@ -133,7 +135,7 @@ class ListCaseWithoutHearingRequirementsHandlerTest {
     @Test
     void should_hold_on_to_previous_attendance_and_duration_fields_when_feature_flag_disabled() {
 
-        listCaseWithoutHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+        listCaseWithoutHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, preSubmitCallbackResponse);
 
         verify(asylumCase, times(0)).write(REHEARD_CASE_LISTED_WITHOUT_HEARING_REQUIREMENTS, YesOrNo.YES);
         verify(asylumCase, times(0)).write(CURRENT_HEARING_DETAILS_VISIBLE, YesOrNo.YES);
@@ -158,7 +160,7 @@ class ListCaseWithoutHearingRequirementsHandlerTest {
         when(autoRequestHearingService.autoCreateHearing(callback))
             .thenReturn(asylumCase);
 
-        listCaseWithoutHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+        listCaseWithoutHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, preSubmitCallbackResponse);
 
         verify(autoRequestHearingService, times(1))
             .autoCreateHearing(callback);
@@ -169,7 +171,7 @@ class ListCaseWithoutHearingRequirementsHandlerTest {
         when(autoRequestHearingService.shouldAutoRequestHearing(asylumCase, true))
             .thenReturn(false);
 
-        listCaseWithoutHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+        listCaseWithoutHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, preSubmitCallbackResponse);
 
         verify(autoRequestHearingService, never())
             .autoCreateHearing(callback);
@@ -205,12 +207,12 @@ class ListCaseWithoutHearingRequirementsHandlerTest {
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> listCaseWithoutHearingRequirementsHandler.handle(null, callback))
+        assertThatThrownBy(() -> listCaseWithoutHearingRequirementsHandler.handle(null, callback, preSubmitCallbackResponse))
             .hasMessage("callbackStage must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(
-            () -> listCaseWithoutHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, null))
+            () -> listCaseWithoutHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, null, preSubmitCallbackResponse))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
     }
@@ -221,7 +223,7 @@ class ListCaseWithoutHearingRequirementsHandlerTest {
             .thenReturn(false);
 
         PreSubmitCallbackResponse<AsylumCase> response =
-            listCaseWithoutHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+            listCaseWithoutHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, preSubmitCallbackResponse);
 
         assertNotNull(response);
         assertEquals(State.LISTING, response.getState());
@@ -234,7 +236,7 @@ class ListCaseWithoutHearingRequirementsHandlerTest {
         when(asylumCase.read(STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED, YesOrNo.class))
             .thenReturn(Optional.of(YesOrNo.YES));
         PreSubmitCallbackResponse<AsylumCase> response =
-            listCaseWithoutHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+            listCaseWithoutHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, preSubmitCallbackResponse);
 
         assertNotNull(response);
         assertEquals(State.RESPONDENT_REVIEW, response.getState());
