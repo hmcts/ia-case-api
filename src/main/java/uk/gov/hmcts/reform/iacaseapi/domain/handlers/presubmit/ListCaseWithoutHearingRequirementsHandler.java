@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.is24WeekStfCase;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isPanelRequired;
 
 import java.util.List;
@@ -56,6 +57,10 @@ public class ListCaseWithoutHearingRequirementsHandler implements PreSubmitCallb
             callback
                 .getCaseDetails()
                 .getCaseData();
+
+        if (is24WeekStfCase(asylumCase)) {
+            return new PreSubmitCallbackResponse<>(asylumCase).withError("This event cannot be run on this case");
+        }
 
         // bringing the status as it would have gone the normal way and differentiating with CASE_LISTED_WITHOUT_HEARING_REQUIREMENTS
         // this ensures all the functionality using the flags work as expected

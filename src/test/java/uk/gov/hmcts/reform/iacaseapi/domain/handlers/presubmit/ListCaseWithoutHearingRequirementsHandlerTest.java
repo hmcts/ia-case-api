@@ -25,6 +25,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_RECORDING_DOCUMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_REQUIREMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REHEARD_CASE_LISTED_WITHOUT_HEARING_REQUIREMENTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED;
 
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -78,6 +79,8 @@ class ListCaseWithoutHearingRequirementsHandlerTest {
         when(callback.getEvent()).thenReturn(Event.LIST_CASE_WITHOUT_HEARING_REQUIREMENTS);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED, YesOrNo.class))
+            .thenReturn(Optional.of(YesOrNo.NO));
     }
 
     @Test
@@ -195,6 +198,21 @@ class ListCaseWithoutHearingRequirementsHandlerTest {
 
         verify(autoRequestHearingService, never())
             .autoCreateHearing(callback);
+    }
+
+    @Test
+    void should_return_error_when_case_is_24_week_case() {
+        when(asylumCase.read(STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED, YesOrNo.class))
+            .thenReturn(Optional.of(YesOrNo.YES));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            listCaseWithoutHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(1, callbackResponse.getErrors().size());
+        assertTrue(callbackResponse.getErrors().contains("This event cannot be run on this case"));
+        verify(asylumCase, never()).write(eq(AsylumCaseFieldDefinition.SUBMIT_HEARING_REQUIREMENTS_AVAILABLE), eq(YesOrNo.YES));
+        verify(asylumCase, never()).write(eq(AsylumCaseFieldDefinition.REVIEWED_HEARING_REQUIREMENTS), eq(YesOrNo.YES));
     }
 
     @Test
