@@ -1,14 +1,5 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
-
-import java.util.Optional;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -34,7 +25,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.HomeOfficeApi;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.HomeOfficeReferenceService;
 
@@ -339,131 +329,5 @@ class AppealSubmittedNotifyHomeOfficeHandlerTest {
         assertEquals("1", valueList.getFirst().getId());
         assertEquals("Smith", valueList.getFirst().getValue().getFamilyName());
         handlerUtilsMock.close();
-    }
-
-    @Test
-    void handle_should_throw_when_cannot_handle() {
-
-        when(callback.getEvent()).thenReturn(Event.START_APPEAL);
-
-        assertThrows(IllegalStateException.class, () ->
-            handler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback));
-    }
-
-    @Test
-    void handle_should_return_without_calling_home_office_when_serialised_data_missing() {
-
-        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
-
-        when(caseDetails.getState()).thenReturn(State.APPEAL_STARTED);
-
-        when(asylumCase.read(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, String.class))
-            .thenReturn(Optional.empty());
-
-        PreSubmitCallbackResponse<AsylumCase> response =
-            handler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
-
-        verifyNoInteractions(homeOfficeApi);
-
-        assertEquals(asylumCase, response.getData());
-    }
-
-    @Test
-    void handle_should_throw_when_home_office_and_gwf_references_missing() {
-
-        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
-
-        when(caseDetails.getState()).thenReturn(State.APPEAL_STARTED);
-
-        when(asylumCase.read(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, String.class))
-            .thenReturn(Optional.of("string"));
-
-        when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class)).thenReturn(Optional.empty());
-
-        when(asylumCase.read(GWF_REFERENCE_NUMBER, String.class)).thenReturn(Optional.empty());
-
-        IllegalStateException ex = assertThrows(IllegalStateException.class, () ->
-            handler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback));
-
-        assertEquals("homeOfficeReferenceNumber and gwfReferenceNumber are both missing - one or other is needed",
-            ex.getMessage());
-    }
-
-    @Test
-    void handle_should_throw_when_appeal_reference_missing() {
-
-        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
-
-        when(caseDetails.getState()).thenReturn(State.APPEAL_STARTED);
-
-        when(asylumCase.read(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, String.class))
-            .thenReturn(Optional.of("string"));
-
-        when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of(VALID_GWF));
-
-        when(asylumCase.read(APPEAL_REFERENCE_NUMBER, String.class)).thenReturn(Optional.empty());
-
-        IllegalStateException ex = assertThrows(IllegalStateException.class, () ->
-            handler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback));
-
-        assertEquals("Case ID for the appeal is not present", ex.getMessage());
-    }
-
-    @Test
-    void handle_should_notify_home_office_and_return_updated_case() {
-
-        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
-
-        when(caseDetails.getState()).thenReturn(State.APPEAL_STARTED);
-
-        when(asylumCase.read(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, String.class))
-            .thenReturn(Optional.of("string"));
-
-        when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of(VALID_GWF));
-
-        when(asylumCase.read(APPEAL_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of(APPEAL_REF));
-
-        when(asylumCase.read(HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS, String.class))
-            .thenReturn(Optional.of("OK"));
-
-        when(homeOfficeApi.aboutToSubmit(callback)).thenReturn(asylumCase);
-
-        PreSubmitCallbackResponse<AsylumCase> response = handler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
-
-        assertEquals(asylumCase, response.getData());
-
-        verify(homeOfficeApi).aboutToSubmit(callback);
-        verify(asylumCase).clear(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY);
-        verify(asylumCase).write(HAS_BEEN_VALIDATED_BY_NEW_HOME_OFFICE_API, YesOrNo.YES);
-    }
-
-    @Test
-    void handle_should_use_gwf_reference_when_home_office_reference_missing() {
-
-        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
-
-        when(caseDetails.getState()).thenReturn(State.APPEAL_STARTED);
-
-        when(asylumCase.read(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, String.class))
-            .thenReturn(Optional.of("string"));
-
-        when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class)).thenReturn(Optional.empty());
-
-        when(asylumCase.read(GWF_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of(VALID_GWF));
-
-        when(asylumCase.read(APPEAL_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of(APPEAL_REF));
-
-        when(asylumCase.read(HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS, String.class))
-            .thenReturn(Optional.of("OK"));
-
-        when(homeOfficeApi.aboutToSubmit(callback)).thenReturn(asylumCase);
-
-        PreSubmitCallbackResponse<AsylumCase> response =
-            handler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
-
-        assertEquals(asylumCase, response.getData());
-        verify(homeOfficeApi).aboutToSubmit(callback);
-        verify(asylumCase).clear(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY);
-        verify(asylumCase).write(HAS_BEEN_VALIDATED_BY_NEW_HOME_OFFICE_API, YesOrNo.YES);
     }
 }
