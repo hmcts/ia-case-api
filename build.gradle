@@ -29,7 +29,7 @@ version = '0.0.1'
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
+        languageVersion = JavaLanguageVersion.of(25)
     }
 }
 
@@ -364,7 +364,7 @@ dependencies {
     implementation 'org.flywaydb:flyway-database-postgresql'
 
     implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: '8.0.0'
-    implementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '5.3.5'
+    implementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '6.1.0'
     implementation group: 'com.github.hmcts', name: 'core-case-data-store-client', version: '6.0.0'
     implementation group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '6.0.1-RELEASE'
 
@@ -388,6 +388,7 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.cloud:spring-cloud-contract-wiremock:5.0.3'
     testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-actuator'
 
 
   testImplementation group: 'com.github.hmcts', name: 'fortify-client', version: '1.4.10', classifier: 'all', {

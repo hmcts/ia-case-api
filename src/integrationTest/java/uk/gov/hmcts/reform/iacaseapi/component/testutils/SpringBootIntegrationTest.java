@@ -1,8 +1,5 @@
 package uk.gov.hmcts.reform.iacaseapi.component.testutils;
 
-import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
-
-import tools.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.common.Slf4jNotifier;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
@@ -18,6 +15,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.context.WebApplicationContext;
+import tools.jackson.databind.json.JsonMapper;
 import uk.gov.hmcts.reform.iacaseapi.Application;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.wiremock.DocumentsApiCallbackTransformer;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.wiremock.HomeOfficeIntegrationApiCallbackTransformer;
@@ -54,7 +52,7 @@ public abstract class SpringBootIntegrationTest {
     protected MockMvc mockMvc;
 
     @Autowired
-    protected ObjectMapper objectMapper;
+    protected JsonMapper objectMapper;
 
     @Autowired
     private WebApplicationContext wac;
@@ -71,11 +69,6 @@ public abstract class SpringBootIntegrationTest {
                 new HomeOfficeIntegrationApiCallbackTransformer()
             ).port(8990));
         server.start();
-    }
-
-    @BeforeEach
-    void setUp() {
-        mockMvc = webAppContextSetup(wac).build();
     }
 
     protected IaCaseApiClient iaCaseApiClient;
