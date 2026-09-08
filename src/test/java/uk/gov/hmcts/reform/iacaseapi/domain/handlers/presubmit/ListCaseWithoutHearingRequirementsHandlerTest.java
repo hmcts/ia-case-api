@@ -1,35 +1,10 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ACTUAL_CASE_HEARING_LENGTH;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ATTENDING_APPELLANT;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ATTENDING_APPELLANTS_LEGAL_REPRESENTATIVE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ATTENDING_HOME_OFFICE_LEGAL_REPRESENTATIVE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ATTENDING_JUDGE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ATTENDING_TCW;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_FLAG_SET_ASIDE_REHEARD_EXISTS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_LISTED_WITHOUT_HEARING_REQUIREMENTS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CURRENT_HEARING_DETAILS_VISIBLE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAVE_HEARING_ATTENDEES_AND_DURATION_BEEN_RECORDED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_CONDUCTION_OPTIONS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_RECORDING_DOCUMENTS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_REQUIREMENTS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REHEARD_CASE_LISTED_WITHOUT_HEARING_REQUIREMENTS;
-
-import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -38,17 +13,23 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.AutoRequestHearingService;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.PreviousRequirementsAndRequestsAppender;
+
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
-@SuppressWarnings("unchecked")
 class ListCaseWithoutHearingRequirementsHandlerTest {
 
     @Mock
@@ -60,8 +41,6 @@ class ListCaseWithoutHearingRequirementsHandlerTest {
     @Mock
     private PreviousRequirementsAndRequestsAppender previousRequirementsAndRequestsAppender;
     @Mock
-    private FeatureToggler featureToggler;
-    @Mock
     private AutoRequestHearingService autoRequestHearingService;
 
     private ListCaseWithoutHearingRequirementsHandler listCaseWithoutHearingRequirementsHandler;
@@ -71,7 +50,6 @@ class ListCaseWithoutHearingRequirementsHandlerTest {
         listCaseWithoutHearingRequirementsHandler =
             new ListCaseWithoutHearingRequirementsHandler(
                 previousRequirementsAndRequestsAppender,
-                featureToggler,
                 autoRequestHearingService
             );
 
@@ -199,26 +177,20 @@ class ListCaseWithoutHearingRequirementsHandlerTest {
 
     @Test
     void it_can_handle_callback() {
+        assertTrue(listCaseWithoutHearingRequirementsHandler.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback));
+    }
 
-        for (Event event : Event.values()) {
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = "LIST_CASE_WITHOUT_HEARING_REQUIREMENTS", mode = EnumSource.Mode.EXCLUDE)
+    void cannot_handle_callback_invalid_event(Event event) {
+        when(callback.getEvent()).thenReturn(event);
+        assertFalse(listCaseWithoutHearingRequirementsHandler.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback));
+    }
 
-            when(callback.getEvent()).thenReturn(event);
-
-            for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
-
-                boolean canHandle = listCaseWithoutHearingRequirementsHandler.canHandle(callbackStage, callback);
-
-                if (event == Event.LIST_CASE_WITHOUT_HEARING_REQUIREMENTS
-                    && callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT) {
-
-                    assertTrue(canHandle);
-                } else {
-                    assertFalse(canHandle);
-                }
-            }
-
-            reset(callback);
-        }
+    @ParameterizedTest
+    @EnumSource(value = PreSubmitCallbackStage.class, names = "ABOUT_TO_SUBMIT", mode = EnumSource.Mode.EXCLUDE)
+    void cannot_handle_callback_invalid_stage(PreSubmitCallbackStage stage) {
+        assertFalse(listCaseWithoutHearingRequirementsHandler.canHandle(stage, callback));
     }
 
     @Test
@@ -241,5 +213,30 @@ class ListCaseWithoutHearingRequirementsHandlerTest {
             () -> listCaseWithoutHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
+    }
+
+    @Test
+    void state_should_be_set_to_listing_for_non_24w() {
+        when(autoRequestHearingService.shouldAutoRequestHearing(asylumCase, true))
+            .thenReturn(false);
+
+        PreSubmitCallbackResponse<AsylumCase> response =
+            listCaseWithoutHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(response);
+        assertEquals(State.LISTING, response.getState());
+    }
+
+    @Test
+    void state_should_be_set_to_respondent_review_for_24w() {
+        when(autoRequestHearingService.shouldAutoRequestHearing(asylumCase, true))
+            .thenReturn(false);
+        when(asylumCase.read(STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED, YesOrNo.class))
+            .thenReturn(Optional.of(YesOrNo.YES));
+        PreSubmitCallbackResponse<AsylumCase> response =
+            listCaseWithoutHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(response);
+        assertEquals(State.RESPONDENT_REVIEW, response.getState());
     }
 }
