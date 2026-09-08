@@ -64,7 +64,7 @@ public class AppealSubmittedNotifyHomeOfficeHandler implements PreSubmitCallback
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
         // Only proceed if the new  applications/v1/{id}  Home Office endpoint has already been called
-        if (asylumCase.read(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, String.class).isEmpty()) {
+        if (asylumCase.read(HAS_BEEN_VALIDATED_BY_NEW_HOME_OFFICE_API, String.class).isEmpty()) {
             return new PreSubmitCallbackResponse<>(asylumCase);
         }
 
@@ -89,9 +89,6 @@ public class AppealSubmittedNotifyHomeOfficeHandler implements PreSubmitCallback
 
         log.info("Finish: Sending Home Office notification - " + SUPPRESSION_LOG_FIELDS_NEW,
             callback.getEvent(), caseId, appealReferenceNumber, homeOfficeReferenceNumber, homeOfficeAppellantApiResponseStatus.getStatusCode());
-
-        asylumCase.clear(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY);
-        asylumCase.write(HAS_BEEN_VALIDATED_BY_NEW_HOME_OFFICE_API, YesOrNo.YES);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
