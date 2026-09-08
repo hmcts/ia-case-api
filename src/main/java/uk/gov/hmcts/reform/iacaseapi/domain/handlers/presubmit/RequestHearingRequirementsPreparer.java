@@ -8,11 +8,11 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REVIEW_HOME_OFFICE_RESPONSE_BY_LEGAL_REP;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED;
 
 @Component
 public class RequestHearingRequirementsPreparer implements PreSubmitCallbackHandler<AsylumCase> {
@@ -43,9 +43,7 @@ public class RequestHearingRequirementsPreparer implements PreSubmitCallbackHand
 
         PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
 
-        boolean is24WeeksCase = asylumCase.read(STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED, YesOrNo.class)
-            .map(flag -> flag.equals(YesOrNo.YES))
-            .orElse(false);
+        boolean is24WeeksCase = HandlerUtils.is24WeekStfCase(asylumCase);
 
         State currentState = callback.getCaseDetails().getState();
         if ((is24WeeksCase && currentState != State.CASE_UNDER_REVIEW && currentState != State.REASONS_FOR_APPEAL_SUBMITTED) || (!is24WeeksCase && currentState != State.RESPONDENT_REVIEW)) {
