@@ -466,7 +466,7 @@ dependencies {
     testImplementation group: 'net.serenity-bdd', name: 'serenity-spring', version: '5.3.11'
 
     functionalTestImplementation group: 'com.github.hmcts', name: 'core-case-data-store-client', version: '5.2.0'
-
+    functionalTestImplementation 'org.springframework.boot:spring-boot-autoconfigure'
     //pact contract testing
     contractTestImplementation group: 'au.com.dius.pact.consumer', name: 'junit5', version: '4.6.20'
 
