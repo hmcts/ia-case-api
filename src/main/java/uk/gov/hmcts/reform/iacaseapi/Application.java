@@ -4,8 +4,6 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.retry.annotation.EnableRetry;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.config.FeignConfiguration;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.config.LegacyFeignConfiguration;
 
 @SpringBootApplication
 @EnableRetry
@@ -15,10 +13,6 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.config.LegacyFeignConfigurat
     "uk.gov.hmcts.reform.authorisation",
     "uk.gov.hmcts.reform.iacaseapi",
     "uk.gov.hmcts.reform.ccd"
-    },
-    defaultConfiguration = {
-        FeignConfiguration.class,
-        LegacyFeignConfiguration.class
     })
 @SuppressWarnings("HideUtilityClassConstructor") // Spring needs a constructor, its not a utility class
 public class Application {
