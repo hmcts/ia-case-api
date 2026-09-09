@@ -155,7 +155,7 @@ class AppealSubmittedNotifyHomeOfficeHandlerTest {
 
         when(caseDetails.getState()).thenReturn(State.APPEAL_STARTED);
 
-        when(asylumCase.read(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, String.class))
+        when(asylumCase.read(HAS_BEEN_VALIDATED_BY_NEW_HOME_OFFICE_API, String.class))
             .thenReturn(Optional.of("string"));
 
         when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class)).thenReturn(Optional.empty());
@@ -176,7 +176,7 @@ class AppealSubmittedNotifyHomeOfficeHandlerTest {
 
         when(caseDetails.getState()).thenReturn(State.APPEAL_STARTED);
 
-        when(asylumCase.read(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, String.class))
+        when(asylumCase.read(HAS_BEEN_VALIDATED_BY_NEW_HOME_OFFICE_API, String.class))
             .thenReturn(Optional.of("string"));
 
         when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of(VALID_GWF));
@@ -235,7 +235,7 @@ class AppealSubmittedNotifyHomeOfficeHandlerTest {
 
         when(caseDetails.getState()).thenReturn(State.APPEAL_STARTED);
 
-        when(asylumCase.read(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, String.class))
+        when(asylumCase.read(HAS_BEEN_VALIDATED_BY_NEW_HOME_OFFICE_API, String.class))
             .thenReturn(Optional.of("string"));
 
         when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of(VALID_GWF));
@@ -259,8 +259,6 @@ class AppealSubmittedNotifyHomeOfficeHandlerTest {
         assertEquals(asylumCase, response.getData());
 
         verify(homeOfficeApi).aboutToSubmit(callback);
-        verify(asylumCase, times(2)).clear(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY);
-        verify(asylumCase).write(HAS_BEEN_VALIDATED_BY_NEW_HOME_OFFICE_API, YesOrNo.YES);
     }
 
     @Test
@@ -270,7 +268,7 @@ class AppealSubmittedNotifyHomeOfficeHandlerTest {
 
         when(caseDetails.getState()).thenReturn(State.APPEAL_STARTED);
 
-        when(asylumCase.read(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, String.class))
+        when(asylumCase.read(HAS_BEEN_VALIDATED_BY_NEW_HOME_OFFICE_API, String.class))
             .thenReturn(Optional.of("string"));
 
         when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class)).thenReturn(Optional.empty());
@@ -296,8 +294,6 @@ class AppealSubmittedNotifyHomeOfficeHandlerTest {
 
         assertEquals(asylumCase, response.getData());
         verify(homeOfficeApi).aboutToSubmit(callback);
-        verify(asylumCase, times(2)).clear(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY);
-        verify(asylumCase).write(HAS_BEEN_VALIDATED_BY_NEW_HOME_OFFICE_API, YesOrNo.YES);
     }
 
     @Test

@@ -143,9 +143,6 @@ public class AppealSubmittedNotifyHomeOfficeHandler implements PreSubmitCallback
         log.info("Finish: Sending Home Office notification - " + SUPPRESSION_LOG_FIELDS_NEW,
             callback.getEvent(), caseId, appealReferenceNumber, homeOfficeReferenceNumber, homeOfficeAppellantApiResponseStatus.getStatusCode());
 
-        asylumCase.clear(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY);
-        asylumCase.write(HAS_BEEN_VALIDATED_BY_NEW_HOME_OFFICE_API, YesOrNo.YES);
-
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 }
