@@ -369,7 +369,7 @@ public class ResidentJudgeFtpaDecisionHandler implements PreSubmitCallbackHandle
 
     private void checkStatutoryTimeframeAndRemove(AsylumCase asylumCase) {
         asylumCase.read(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class).ifPresent(flag -> {
-            if (!flag.equals(NO)) {
+            if (flag.equals(YES)) {
                 updateStatutoryTimeframe24WeeksService.updateAsylumCase(asylumCase, NO, STF24W_REMOVAL_REASON);
             }
         });
