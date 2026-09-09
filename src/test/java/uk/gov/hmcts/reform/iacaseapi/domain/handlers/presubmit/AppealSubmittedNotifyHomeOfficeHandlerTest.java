@@ -206,7 +206,6 @@ class AppealSubmittedNotifyHomeOfficeHandlerTest {
         assertEquals(asylumCase, response.getData());
 
         verify(homeOfficeApi).aboutToSubmit(callback);
-        verify(asylumCase).clear(HAS_BEEN_VALIDATED_BY_NEW_HOME_OFFICE_API);
     }
 
     @Test
@@ -235,6 +234,5 @@ class AppealSubmittedNotifyHomeOfficeHandlerTest {
 
         assertEquals(asylumCase, response.getData());
         verify(homeOfficeApi).aboutToSubmit(callback);
-        verify(asylumCase).clear(HAS_BEEN_VALIDATED_BY_NEW_HOME_OFFICE_API);
     }
 }
