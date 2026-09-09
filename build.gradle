@@ -420,7 +420,6 @@ dependencies {
     implementation 'tools.jackson.core:jackson-databind'
     implementation 'tools.jackson.core:jackson-databind'
     implementation 'tools.jackson.dataformat:jackson-dataformat-csv'
-    implementation 'com.fasterxml.jackson.core:jackson-annotations'
 
     implementation 'org.springframework.boot:spring-boot-starter-flyway'
     implementation 'org.flywaydb:flyway-database-postgresql'
