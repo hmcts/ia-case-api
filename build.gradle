@@ -144,6 +144,14 @@ configurations {
     contractTestRuntime.extendsFrom testRuntime
 }
 
+configurations.all {
+  resolutionStrategy {
+    force 'org.apache.groovy:groovy:4.0.28'
+    force 'org.apache.groovy:groovy-xml:4.0.28'
+    force 'org.apache.groovy:groovy-json:4.0.28'
+  }
+}
+
 checkstyle {
     maxWarnings = 0
     toolVersion = '13.4.2'
