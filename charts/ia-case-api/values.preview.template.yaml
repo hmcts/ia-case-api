@@ -42,7 +42,6 @@ java:
     # The mock HO validation API lives at http://ia-home-office-mock-api-aat.service.core-compute-aat.internal/ichallenge/applications/v1/1111-2222-3333-4444
     # (you can use any valid UAN at the end; but in ExUI you must enter the expected UAN, name and DOB in order to proceed past validation)
     HOME_OFFICE_VALIDATION_ENABLED: "false" # Do not remove this this environment variable!
-    STATUTORY_TIMEFRAME_LIVE_DATE: "2000-01-01" # This must be in the past in order to test the add/remove 24-week timeframe events in Preview
   keyVaults:
     ia:
       resourceGroup: ia
@@ -697,6 +696,7 @@ ia-aip-frontend:
       TRACKING_SCRIPTS: false
       TIMELINE_ENABLED: true
       ASK_FOR_MORE_TIME_ENABLED: true
+      MAX_DRAFT_APPEALS: 5
     keyVaults:
       ia:
         resourceGroup: ia
@@ -961,6 +961,7 @@ ccd:
       devmemoryRequests: 1Gi
       devcpuLimits: 1
       devmemoryLimits: 4Gi
+      startupFailureThreshold: 20
       environment:
         CCD_DATA_STORE_URL: http://{{ .Release.Name }}-ccd-data-store-api
         ROLE_ASSIGNMENT_S2S_AUTHORISED_SERVICES: ccd_gw,am_role_assignment_service,am_org_role_mapping_service,wa_task_management_api,wa_task_configuration_api,xui_webapp,aac_manage_case_assignment,ccd_data,wa_workflow_api,wa_task_monitor,wa_case_event_handler,iac,hmc_cft_hearing_service,ccd_case_disposer,sscs,fis_hmc_api,et_cos

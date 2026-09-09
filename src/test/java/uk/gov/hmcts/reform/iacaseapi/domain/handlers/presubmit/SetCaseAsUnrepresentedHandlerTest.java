@@ -9,7 +9,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_OUT_OF_COUNTRY;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANTS_REPRESENTATION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_IN_DETENTION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAS_ADDED_LEGAL_REP_DETAILS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ADMIN;
@@ -62,7 +61,6 @@ class SetCaseAsUnrepresentedHandlerTest {
         assertEquals(asylumCase, callbackResponse.getData());
 
         verify(asylumCase).write(HAS_ADDED_LEGAL_REP_DETAILS, YesOrNo.NO);
-        verify(asylumCase).write(APPELLANTS_REPRESENTATION, YesOrNo.NO);
     }
 
     @Test
@@ -79,7 +77,6 @@ class SetCaseAsUnrepresentedHandlerTest {
         assertEquals(asylumCase, callbackResponse.getData());
 
         verify(asylumCase).write(HAS_ADDED_LEGAL_REP_DETAILS, YesOrNo.NO);
-        verify(asylumCase).write(APPELLANTS_REPRESENTATION, YesOrNo.NO);
     }
 
     @Test
