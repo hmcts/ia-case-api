@@ -1477,6 +1477,10 @@ security:
       - "addCaseNote"
     next-hearing-date-admin:
       - "UpdateNextHearingInfo"
+    caseworker-ia-admofficer:
+        - "generatePinInPost"
+    caseworker-ia-caseofficer:
+        - "generatePinInPost"
 
 ### dependency configuration
 ccdGatewayUrl: ${CCD_GW_URL:http://localhost:3453}
