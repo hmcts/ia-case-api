@@ -14,6 +14,7 @@ public class StoredNotification {
     @NonNull private String notificationSentTo;
     @NonNull private String notificationBody;
     @Setter private Document notificationDocument;
+    @Setter private String notificationDocumentEncoded;
     @NonNull private String notificationMethod;
     @NonNull private String notificationStatus;
     @NonNull private String notificationReference;

@@ -1,12 +1,12 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.mock;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.mock;
 
 class StoredNotificationTest {
 
@@ -18,6 +18,7 @@ class StoredNotificationTest {
     private final String notificationBody = "someBody";
     private final String notificationReference = "someReference";
     private final String notificationSubject = "someSubject";
+    private final String notificationPdfEncoded = "somePdfEncoded";
     private final Document document = mock(Document.class);
 
     private StoredNotification storedNotification;
@@ -31,6 +32,7 @@ class StoredNotificationTest {
                 .notificationSentTo(notificationSentTo)
                 .notificationBody(notificationBody)
                 .notificationMethod(notificationMethod)
+                .notificationDocumentEncoded(notificationPdfEncoded)
                 .notificationStatus(notificationStatus)
                 .notificationReference(notificationReference)
                 .notificationSubject(notificationSubject)
@@ -47,6 +49,7 @@ class StoredNotificationTest {
         assertThat(storedNotification.getNotificationDateSent()).isEqualTo(notificationDateSent);
         assertThat(storedNotification.getNotificationReference()).isEqualTo(notificationReference);
         assertThat(storedNotification.getNotificationSubject()).isEqualTo(notificationSubject);
+        assertThat(storedNotification.getNotificationDocumentEncoded()).isEqualTo(notificationPdfEncoded);
         assertThat(storedNotification.getNotificationDocument()).isNull();
         storedNotification.setNotificationDocument(document);
         assertThat(storedNotification.getNotificationDocument()).isEqualTo(document);

@@ -1,35 +1,5 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.lenient;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ADA_HEARING_REQUIREMENTS_SUBMITTED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_APPLICANT_TYPE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAS_TRANSFERRED_OUT_OF_ADA;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ADMIN;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_DLRM_FEE_REMISSION_ENABLED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_DLRM_SET_ASIDE_ENABLED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_NOTIFICATION_TURNED_OFF;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_REMOTE_HEARING;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOURNEY_TYPE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LIST_CASE_HEARING_CENTRE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LIST_CASE_HEARING_DATE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PAYMENT_STATUS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre.GLASGOW;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.EDIT_CASE_LISTING;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -55,6 +25,19 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.NotificationSender;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Stream;
+
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre.GLASGOW;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.EDIT_CASE_LISTING;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -359,6 +342,8 @@ class SendNotificationHandlerTest {
 
         verify(notificationSender, times(1)).send(callback);
         verify(asylumCase, times(1)).write(IS_DLRM_FEE_REMISSION_ENABLED, YesOrNo.YES);
+        verify(expectedUpdatedCase, never()).clear(IS_REMOVAL_OF_24W_APPLICATION_REFUSED);
+        verify(expectedUpdatedCase, never()).clear(DECIDE_AN_APPLICATION_ID);
     }
 
     @Test
@@ -400,6 +385,53 @@ class SendNotificationHandlerTest {
         when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
 
         assertTrue(sendNotificationHandler.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback));
+    }
+
+    @Test
+    void should_clear_24w_removal_temp_fields_when_event_is_remove_statutory_timeframe_24_weeks() {
+        when(callback.getEvent()).thenReturn(Event.REMOVE_STATUTORY_TIMEFRAME_24_WEEKS);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        AsylumCase expectedUpdatedCase = mock(AsylumCase.class);
+        when(notificationSender.send(callback)).thenReturn(expectedUpdatedCase);
+
+        sendNotificationHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        verify(expectedUpdatedCase).clear(IS_REMOVAL_OF_24W_APPLICATION_REFUSED);
+        verify(expectedUpdatedCase).clear(REMOVAL_OF_24W_DECISION_DECISION_MAKER);
+    }
+
+    @Test
+    void should_clear_24w_removal_temp_fields_when_decide_application_refusal_24w() {
+        when(callback.getEvent()).thenReturn(Event.DECIDE_AN_APPLICATION);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(IS_REMOVAL_OF_24W_APPLICATION_REFUSED, YesOrNo.class))
+            .thenReturn(Optional.of(YesOrNo.YES));
+        AsylumCase expectedUpdatedCase = mock(AsylumCase.class);
+        when(notificationSender.send(callback)).thenReturn(expectedUpdatedCase);
+
+        sendNotificationHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        verify(expectedUpdatedCase).clear(IS_REMOVAL_OF_24W_APPLICATION_REFUSED);
+        verify(expectedUpdatedCase).clear(REMOVAL_OF_24W_DECISION_DECISION_MAKER);
+    }
+
+
+    @Test
+    void should_not_clear_24w_removal_temp_fields_when_decide_application_not_refusal_24w() {
+        when(callback.getEvent()).thenReturn(Event.DECIDE_AN_APPLICATION);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(IS_REMOVAL_OF_24W_APPLICATION_REFUSED, YesOrNo.class))
+            .thenReturn(Optional.of(YesOrNo.NO));
+        AsylumCase expectedUpdatedCase = mock(AsylumCase.class);
+        when(notificationSender.send(callback)).thenReturn(expectedUpdatedCase);
+
+        sendNotificationHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        verify(expectedUpdatedCase, never()).clear(IS_REMOVAL_OF_24W_APPLICATION_REFUSED);
+        verify(expectedUpdatedCase, never()).clear(REMOVAL_OF_24W_DECISION_DECISION_MAKER);
     }
 
     private static final List<Event> allowedEventTypes = List.of(
@@ -493,8 +525,14 @@ class SendNotificationHandlerTest {
         Event.REFUND_CONFIRMATION,
         Event.REVOKE_CITIZEN_ACCESS,
         Event.HEARING_CANCELLED,
+        Event.SEND_INVITE_TO_NON_LEGAL_REP,
+        Event.SEND_PIP_TO_NON_LEGAL_REP,
+        Event.JOIN_APPEAL_CONFIRMATION,
+        Event.REMOVE_NON_LEGAL_REP,
+        Event.NLR_DETAILS_UPDATED,
         Event.REMOVE_STATUTORY_TIMEFRAME_24_WEEKS,
         Event.GENERATE_PIN_IN_POST,
+        Event.SEND_LATE_TIMELINE_NOTICE,
         Event.COMPLETE_CASE_REVIEW
     );
 
@@ -557,6 +595,7 @@ class SendNotificationHandlerTest {
         Event.REQUEST_RESPONDENT_EVIDENCE,
         Event.REMOVE_STATUTORY_TIMEFRAME_24_WEEKS,
         Event.CHANGE_DIRECTION_DUE_DATE,
+        Event.SEND_LATE_TIMELINE_NOTICE,
         Event.COMPLETE_CASE_REVIEW
     );
 

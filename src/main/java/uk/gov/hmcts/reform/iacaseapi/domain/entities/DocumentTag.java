@@ -50,6 +50,17 @@ public enum DocumentTag {
     APPEAL_WAS_NOT_SUBMITTED_SUPPORTING_DOCUMENT("appealWasNotSubmittedSupportingDocument"),
     INTERNAL_OUT_OF_TIME_DECISION_LETTER("internalOutOfTimeDecisionLetter"),
     STF_24WEEKS_CASE_REVIEW_APPELLANT_DOCUMENT("stf24WeeksCaseReviewAppeallantDocument"),
+    STF_24WEEKS_REMOVAL_DECISION_DOCUMENT("stf24WeeksRemovalDecisionDocument"),
+    STF_24WEEKS_REMOVAL_DECISION_LETTER("stf24WeeksRemovalDecisionLetter"),
+    STF_24WEEKS_REMOVAL_DECISION_LETTER_BUNDLE("stf24WeeksRemovalDecisionLetterBundle"),
+    STF_24WEEKS_REMOVAL_DECISION_LETTER_LR("stf24WeeksRemovalDecisionLetterLr"),
+    STF_24WEEKS_REMOVAL_DECISION_LETTER_LR_BUNDLE("stf24WeeksRemovalDecisionLetterLrBundle"),
+    STF_24WEEKS_REMOVAL_REFUSED_DECISION_DOCUMENT("stf24WeeksRemovalRefusedDecisionDocument"),
+    STF_24WEEKS_REMOVAL_REFUSED_DECISION_LETTER("stf24WeeksRemovalRefusedDecisionLetter"),
+    STF_24WEEKS_REMOVAL_REFUSED_DECISION_LETTER_BUNDLE("stf24WeeksRemovalRefusedDecisionLetterBundle"),
+    STF_24WEEKS_REMOVAL_REFUSED_DECISION_LETTER_LR("stf24WeeksRemovalRefusedDecisionLetterLr"),
+    STF_24WEEKS_REMOVAL_REFUSED_DECISION_LETTER_LR_BUNDLE("stf24WeeksRemovalRefusedDecisionLetterLrBundle"),
+
 
 
     @JsonEnumDefaultValue

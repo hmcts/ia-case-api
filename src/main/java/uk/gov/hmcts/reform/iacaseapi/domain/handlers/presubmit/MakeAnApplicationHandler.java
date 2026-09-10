@@ -1,14 +1,12 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
-import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsHelper;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplication;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserRole;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -20,6 +18,19 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.MakeAnApplicationAppender;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.WaFieldsPublisher;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+
+import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAS_APPLICATIONS_TO_DECIDE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAS_NLR_SUBMITTED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MAKE_AN_APPLICATIONS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MAKE_AN_APPLICATION_DETAILS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MAKE_AN_APPLICATION_DETAILS_LABEL;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MAKE_AN_APPLICATION_EVIDENCE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MAKE_AN_APPLICATION_TYPES;
 
 @Component
 public class MakeAnApplicationHandler implements PreSubmitCallbackHandler<AsylumCase>  {
@@ -70,7 +81,9 @@ public class MakeAnApplicationHandler implements PreSubmitCallbackHandler<Asylum
 
         String applicationReason = asylumCase.read(MAKE_AN_APPLICATION_DETAILS, String.class)
             .orElseThrow(() -> new IllegalStateException("MakeAnApplication details is not present"));
-
+        if (asylumCase.read(HAS_NLR_SUBMITTED, YesOrNo.class).orElse(YesOrNo.NO).equals(YesOrNo.YES)) {
+            applicationReason = "Non-legal representative submitted on behalf of the appellant.\n" + applicationReason;
+        }
         Optional<List<IdValue<Document>>> applicationEvidence = asylumCase.read(MAKE_AN_APPLICATION_EVIDENCE);
 
         Optional<List<IdValue<MakeAnApplication>>> maybeExistingMakeAnApplications =
