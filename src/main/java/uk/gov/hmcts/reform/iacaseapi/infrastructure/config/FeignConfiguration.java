@@ -46,18 +46,15 @@ public class FeignConfiguration {
 
     @Bean
     @Primary
-    public Encoder feignEncoder(ObjectProvider<FeignHttpMessageConverters> feignHttpMessageConverters) {
-        return new SpringEncoder(feignHttpMessageConverters);
-    }
-
-    @Bean(name = "multipartFormEncoder")
-    public Encoder multipartFormEncoder(ObjectProvider<FeignHttpMessageConverters> feignHttpMessageConverters) {
+    public Encoder feignFormEncoder(
+        ObjectProvider<FeignHttpMessageConverters> feignHttpMessageConverters
+    ) {
         return new SpringFormEncoder(new SpringEncoder(feignHttpMessageConverters));
     }
 
     @Bean
     @Primary
-    public Decoder feignDecoder(ObjectProvider<FeignHttpMessageConverters> feignHttpMessageConverters) {
+    public Decoder decoder(ObjectProvider<FeignHttpMessageConverters> feignHttpMessageConverters) {
         return new ResponseEntityDecoder(new SpringDecoder(feignHttpMessageConverters));
     }
 }
