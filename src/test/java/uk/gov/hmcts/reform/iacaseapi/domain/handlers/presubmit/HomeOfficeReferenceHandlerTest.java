@@ -297,7 +297,7 @@ class HomeOfficeReferenceHandlerTest {
 
         assertFalse(response.getErrors().isEmpty());
         assertEquals(
-            "An error occurred.  Please report this to HMCTS using the following contact details: Email contactia@justice.gov.uk or Telephone: 0300 123 1711.",
+            "An error occurred. Please report this to HMCTS using the following contact details: Email contactia@justice.gov.uk or Telephone: 0300 123 1711.",
             response.getErrors().iterator().next());
     }
 
