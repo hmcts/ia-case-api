@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import java.time.LocalDate;
 import java.time.ZoneOffset;
@@ -11,6 +12,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Parties;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
@@ -65,6 +67,14 @@ public class RequestRespondentReviewPreparer implements PreSubmitCallbackHandler
             callback
                 .getCaseDetails()
                 .getCaseData();
+
+        boolean is24WeekStfCase = asylumCase.read(STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED, YesOrNo.class)
+            .map(status -> status == YES)
+            .orElse(false);
+
+        if (State.RESPONDENT_REVIEW.equals(callback.getCaseDetails().getState()) && !is24WeekStfCase) {
+            return new PreSubmitCallbackResponse<>(asylumCase).withError("This event cannot be run on this case at this time");
+        }
 
         asylumCase.write(SEND_DIRECTION_EXPLANATION, getDirectionExplanation(asylumCase));
 
