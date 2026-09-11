@@ -1,5 +1,40 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
+import static com.google.common.collect.Lists.newArrayList;
+import static com.google.common.collect.Sets.immutableEnumSet;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_DATE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_DECISION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_OUT_OF_COUNTRY;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPLICATIONS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPLICATION_EDIT_LISTING_EXISTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPLICATION_WITHDRAW_EXISTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CURRENT_CASE_STATE_VISIBLE_TO_CASE_OFFICER;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DISABLE_OVERVIEW_PAGE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_APPLICATION_DEADLINE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ACCELERATED_DETAINED_APPEAL;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ADMIN;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_DECISION_ALLOWED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_NOTIFICATION_TURNED_OFF;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_REMOTE_HEARING;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LIST_CASE_HEARING_CENTRE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LIST_CASE_HEARING_DATE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.RELIST_CASE_IMMEDIATELY;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre.GLASGOW;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
+
 import com.google.common.collect.ImmutableSet;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -306,11 +341,14 @@ class GenerateDocumentHandlerTest {
                     UPDATE_HEARING_ADJUSTMENTS,
                     ADA_SUITABILITY_REVIEW,
                     LIST_CASE,
+                    CMR_LISTING,
+                    CMR_RE_LISTING,
+                    CMR_HEARING_CANCELLED,
                     EDIT_CASE_LISTING,
                     GENERATE_DECISION_AND_REASONS,
                     GENERATE_HEARING_BUNDLE,
                     CUSTOMISE_HEARING_BUNDLE,
-                        GENERATE_UPDATED_HEARING_BUNDLE,
+                    GENERATE_UPDATED_HEARING_BUNDLE,
                     SEND_DECISION_AND_REASONS,
                     ADJOURN_HEARING_WITHOUT_DATE,
                     END_APPEAL,
@@ -484,10 +522,13 @@ class GenerateDocumentHandlerTest {
                     UPDATE_HEARING_ADJUSTMENTS,
                     ADA_SUITABILITY_REVIEW,
                     LIST_CASE,
+                    CMR_LISTING,
+                    CMR_RE_LISTING,
+                    CMR_HEARING_CANCELLED,
                     GENERATE_DECISION_AND_REASONS,
                     GENERATE_HEARING_BUNDLE,
                     CUSTOMISE_HEARING_BUNDLE,
-                        GENERATE_UPDATED_HEARING_BUNDLE,
+                    GENERATE_UPDATED_HEARING_BUNDLE,
                     EDIT_CASE_LISTING,
                     SEND_DECISION_AND_REASONS,
                     ADJOURN_HEARING_WITHOUT_DATE,
