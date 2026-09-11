@@ -16,11 +16,13 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.HomeOfficeAppellant;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.AddressUk;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.HomeOfficeReferenceService;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationBasedFeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.PartyIdService;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.Organisation;
@@ -28,25 +30,16 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.Organisati
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingAdjournmentDay.BEFORE_HEARING_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingAdjournmentDay.ON_HEARING_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre.GLASGOW;
@@ -63,6 +56,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.*;
 @MockitoSettings(strictness = Strictness.LENIENT)
 class HandlerUtilsTest {
     private static final String ON_THE_PAPERS = "ONPPRS";
+    private static final String VALID_GWF = "GWF123456789";
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -76,6 +70,12 @@ class HandlerUtilsTest {
     private AsylumCase asylumCaseBefore;
     @Mock
     private LocationBasedFeatureToggler locationBasedFeatureToggler;
+    @Mock
+    private HomeOfficeReferenceService hoReferenceService;
+    @Mock
+    private IdValue<HomeOfficeAppellant> idValue;
+    @Mock
+    private HomeOfficeAppellant appellant;
     @Mock
     private List<IdValue<Subscriber>> mockSubscribers;
     @Mock
@@ -1528,5 +1528,178 @@ class HandlerUtilsTest {
         IllegalStateException exception =
             assertThrows(IllegalStateException.class, () -> HandlerUtils.isDecisionWithHearing(asylumCase));
         assertEquals("Appeal type is not present", exception.getMessage());
+    }
+
+
+    @Test
+    void isWellFormedHomeOfficeReference_should_validate_patterns() {
+
+        assertTrue(HandlerUtils.isWellFormedHomeOfficeReference("1234-1234-1234-1234"));
+        assertTrue(HandlerUtils.isWellFormedHomeOfficeReference("GWF123456789"));
+
+        assertFalse(HandlerUtils.isWellFormedHomeOfficeReference("BADREF"));
+        assertFalse(HandlerUtils.isWellFormedHomeOfficeReference(null));
+    }
+
+    @Test
+    void isRealHomeOfficeCaseNumber_should_return_false_when_null() {
+
+        assertFalse(HandlerUtils.isRealHomeOfficeCaseNumber(null, callback, hoReferenceService));
+    }
+
+    @Test
+    void isRealHomeOfficeCaseNumber_should_return_false_when_empty_response() {
+
+        when(hoReferenceService.getHomeOfficeReferenceData(VALID_GWF, callback))
+            .thenReturn(List.of());
+
+        assertFalse(HandlerUtils.isRealHomeOfficeCaseNumber(VALID_GWF, callback, hoReferenceService));
+    }
+
+    @Test
+    void isRealHomeOfficeCaseNumber_should_return_true_when_appellants_exist() {
+
+        when(hoReferenceService.getHomeOfficeReferenceData(VALID_GWF, callback))
+            .thenReturn(Collections.singletonList(idValue));
+
+        assertTrue(HandlerUtils.isRealHomeOfficeCaseNumber(VALID_GWF, callback, hoReferenceService));
+    }
+
+    @Test
+    void normaliseName_should_return_empty_string_on_null() {
+
+        String result = HandlerUtils.normaliseName(null, false);
+
+        assertEquals("", result);
+    }
+
+    @Test
+    void normaliseName_should_remove_accents_and_spaces() {
+
+        String result = HandlerUtils.normaliseName(" José   García ", false);
+
+        assertEquals("jose garcia", result);
+    }
+
+    @Test
+    void isMatchingNameAndDob_should_match() {
+
+        when(hoReferenceService.getHomeOfficeReferenceData(VALID_GWF, callback))
+            .thenReturn(Collections.singletonList(idValue));
+
+        when(idValue.getValue()).thenReturn(appellant);
+
+        when(appellant.getFamilyName()).thenReturn("Smith");
+        when(appellant.getGivenNames()).thenReturn("John");
+        when(appellant.getDateOfBirth()).thenReturn("1990-01-01");
+
+        when(asylumCase.read(APPELLANT_FAMILY_NAME, String.class))
+            .thenReturn(Optional.of("Smith"));
+
+        when(asylumCase.read(APPELLANT_GIVEN_NAMES, String.class))
+            .thenReturn(Optional.of("John"));
+
+        when(asylumCase.read(APPELLANT_DATE_OF_BIRTH, String.class))
+            .thenReturn(Optional.of("1990-01-01"));
+
+        boolean result = HandlerUtils.isMatchingNameAndDob(VALID_GWF, asylumCase, callback, hoReferenceService);
+
+        assertTrue(result);
+    }
+
+    @Test
+    void isMatchingNameAndDob_should_not_match() {
+
+        when(hoReferenceService.getHomeOfficeReferenceData(VALID_GWF, callback))
+            .thenReturn(Collections.singletonList(idValue));
+
+        when(idValue.getValue()).thenReturn(appellant);
+
+        when(appellant.getFamilyName()).thenReturn("Different");
+        when(appellant.getGivenNames()).thenReturn("Person");
+        when(appellant.getDateOfBirth()).thenReturn("1980-01-01");
+
+        when(asylumCase.read(APPELLANT_FAMILY_NAME, String.class))
+            .thenReturn(Optional.of("Smith"));
+
+        when(asylumCase.read(APPELLANT_GIVEN_NAMES, String.class))
+            .thenReturn(Optional.of("John"));
+
+        when(asylumCase.read(APPELLANT_DATE_OF_BIRTH, String.class))
+            .thenReturn(Optional.of("1990-01-01"));
+
+        boolean result = HandlerUtils.isMatchingNameAndDob(VALID_GWF, asylumCase, callback, hoReferenceService);
+
+        assertFalse(result);
+    }
+
+    @Test
+    void isMatchingName_should_match_when_given_names_have_different_second_words() {
+
+        when(hoReferenceService.getHomeOfficeReferenceData(VALID_GWF, callback))
+            .thenReturn(Collections.singletonList(idValue));
+
+        when(idValue.getValue()).thenReturn(appellant);
+
+        when(appellant.getFamilyName()).thenReturn("Smith");
+        when(appellant.getGivenNames()).thenReturn("John Boy");
+
+        when(asylumCase.read(APPELLANT_FAMILY_NAME, String.class))
+            .thenReturn(Optional.of("Smith"));
+
+        when(asylumCase.read(APPELLANT_GIVEN_NAMES, String.class))
+            .thenReturn(Optional.of("John James"));
+
+        boolean result = HandlerUtils.isMatchingName(VALID_GWF, asylumCase, callback, hoReferenceService);
+
+        assertTrue(result);
+    }
+
+    @Test
+    void isMatchingName_should_return_false_when_family_name_has_different_second_word() {
+
+        when(hoReferenceService.getHomeOfficeReferenceData(VALID_GWF, callback))
+            .thenReturn(Collections.singletonList(idValue));
+
+        when(idValue.getValue()).thenReturn(appellant);
+
+        when(appellant.getFamilyName()).thenReturn("Smithsonian Institute");
+        when(appellant.getGivenNames()).thenReturn("John");
+
+        when(asylumCase.read(APPELLANT_FAMILY_NAME, String.class))
+            .thenReturn(Optional.of("Smithsonian"));
+
+        when(asylumCase.read(APPELLANT_GIVEN_NAMES, String.class))
+            .thenReturn(Optional.of("John"));
+
+        boolean result = HandlerUtils.isMatchingName(VALID_GWF, asylumCase, callback, hoReferenceService);
+
+        assertFalse(result);
+    }
+
+    @Test
+    void isMatchingNameAndDob_should_return_false_when_family_name_is_null() {
+
+        when(hoReferenceService.getHomeOfficeReferenceData(VALID_GWF, callback))
+            .thenReturn(Collections.singletonList(idValue));
+
+        when(idValue.getValue()).thenReturn(appellant);
+
+        when(appellant.getFamilyName()).thenReturn(null);
+        when(appellant.getGivenNames()).thenReturn(null);
+        when(appellant.getDateOfBirth()).thenReturn(null);
+
+        when(asylumCase.read(APPELLANT_FAMILY_NAME, String.class))
+            .thenReturn(Optional.of("Smithsonian"));
+
+        when(asylumCase.read(APPELLANT_GIVEN_NAMES, String.class))
+            .thenReturn(Optional.of("John"));
+
+        when(asylumCase.read(APPELLANT_DATE_OF_BIRTH, String.class))
+            .thenReturn(Optional.of("1990-01-01"));
+
+        boolean result = HandlerUtils.isMatchingNameAndDob(VALID_GWF, asylumCase, callback, hoReferenceService);
+
+        assertFalse(result);
     }
 }
