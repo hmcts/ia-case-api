@@ -3,8 +3,8 @@ package uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field;
 import static java.util.Objects.requireNonNull;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import tools.jackson.databind.PropertyNamingStrategies;
+import tools.jackson.databind.annotation.JsonNaming;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 

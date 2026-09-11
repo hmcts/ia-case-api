@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
 import static java.util.Arrays.stream;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum DetentionFacility {
@@ -13,6 +14,7 @@ public enum DetentionFacility {
     @JsonValue
     private String value;
 
+    @JsonCreator
     DetentionFacility(String value) {
         this.value = value;
     }

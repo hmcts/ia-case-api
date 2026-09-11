@@ -3,15 +3,13 @@ package uk.gov.hmcts.reform.iacaseapi.component.testutils;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.util.MimeTypeUtils.APPLICATION_JSON_VALUE;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultMatcher;
+import tools.jackson.databind.json.JsonMapper;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.CallbackForTest;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.PostSubmitCallbackResponseForTest;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.PreSubmitCallbackResponseForTest;
@@ -42,20 +40,18 @@ public class IaCaseApiClient {
 
     public static final String USER_ID = "49154ae9-47be-4469-9edd-d43f68d245f0";
 
-    private final ObjectMapper objectMapper;
+    private final JsonMapper objectMapper;
     private final MockMvc mockMvc;
     private final String aboutToSubmitUrl;
     private final String aboutToStartUrl;
     private final String ccdSubmittedUrl;
 
-    public IaCaseApiClient(ObjectMapper objectMapper, MockMvc mockMvc) {
+    public IaCaseApiClient(JsonMapper objectMapper, MockMvc mockMvc) {
         this.objectMapper = objectMapper;
         this.mockMvc = mockMvc;
         this.aboutToSubmitUrl = "/asylum/ccdAboutToSubmit";
         this.aboutToStartUrl = "/asylum/ccdAboutToStart";
         this.ccdSubmittedUrl = "/asylum/ccdSubmitted";
-        objectMapper.registerModule(new Jdk8Module());
-        objectMapper.registerModule(new JavaTimeModule());
     }
 
     public PreSubmitCallbackResponseForTest aboutToSubmit(CallbackForTest.CallbackForTestBuilder callback) {
