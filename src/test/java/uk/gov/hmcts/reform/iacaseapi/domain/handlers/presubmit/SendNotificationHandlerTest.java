@@ -531,6 +531,8 @@ class SendNotificationHandlerTest {
         Event.REMOVE_NON_LEGAL_REP,
         Event.NLR_DETAILS_UPDATED,
         Event.REMOVE_STATUTORY_TIMEFRAME_24_WEEKS,
+        Event.QUERY_MANAGEMENT_RAISE_QUERY,
+        Event.QUERY_MANAGEMENT_RESPOND_QUERY,
         Event.GENERATE_PIN_IN_POST,
         Event.SEND_LATE_TIMELINE_NOTICE,
         Event.COMPLETE_CASE_REVIEW

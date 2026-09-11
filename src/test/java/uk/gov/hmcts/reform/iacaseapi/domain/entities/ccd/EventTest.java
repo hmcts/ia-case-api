@@ -202,6 +202,8 @@ class EventTest {
             Arguments.of("nlrDetailsUpdated", Event.NLR_DETAILS_UPDATED.toString()),
             Arguments.of("removeNonLegalRep", Event.REMOVE_NON_LEGAL_REP.toString()),
             Arguments.of("completeCaseReview", Event.COMPLETE_CASE_REVIEW.toString()),
+            Arguments.of("queryManagementRaiseQuery", Event.QUERY_MANAGEMENT_RAISE_QUERY.toString()),
+            Arguments.of("queryManagementRespondQuery", Event.QUERY_MANAGEMENT_RESPOND_QUERY.toString()),
             Arguments.of("generatePinInPost", Event.GENERATE_PIN_IN_POST.toString()),
             Arguments.of("forceCaseToPrepareForHearing", Event.FORCE_CASE_TO_PREPARE_FOR_HEARING.toString()),
             Arguments.of("sendLateTimelineNotice", Event.SEND_LATE_TIMELINE_NOTICE.toString()),
