@@ -983,17 +983,17 @@ public class HandlerUtils {
 
     public static String getMismatchErrorMessage(String homeOfficeReferenceNumber, boolean shouldRevalidate, boolean isOnSubmit) {
         if (isOnSubmit) {
-            return "The information entered does not match the details held by the Home Office for reference number " +
+            return "The information given does not match the details held by the Home Office for reference number " +
                 homeOfficeReferenceNumber +
-                ".  The Home Office may have updated the appellant's details in their system. You should edit the appeal " +
-                "and make sure the appellant's details are correctly matched exactly as they appear on the decision letter, so that we can verify them." +
-                "  These details can often be found in the 'How to appeal' section.";
+                ". You should edit the appeal and enter the HO reference and appellant's name exactly as they appear" +
+                " on the decision letter so that we can verify them. These can often be found in the 'How to appeal' " +
+                "section. Please also check if the appellant's date of birth is correct.";
         }
         return "The information entered does not match the details held by the Home Office for reference number " +
             homeOfficeReferenceNumber +
-            ".  You should enter the " + (shouldRevalidate ? "" : "appellant's ") +
+            ". You should enter the " + (shouldRevalidate ? "" : "appellant's ") +
             "details exactly as they appear on the decision letter, so that we can verify them." +
-            "  These details can often be found in the 'How to appeal' section." + USER_ERROR_HELP_TEXT;
+            " These details can often be found in the 'How to appeal' section." + USER_ERROR_HELP_TEXT;
     }
 
     public static boolean isWellFormedHomeOfficeReference(String hoReference) {
