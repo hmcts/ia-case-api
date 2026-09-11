@@ -15,11 +15,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.EU;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.HU;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.PA;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.RP;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_IN_DETENTION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_EJP;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_HOME_OFFICE_INTEGRATION_ENABLED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_NOTIFICATION_TURNED_OFF;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.MARK_APPEAL_PAID;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.REQUEST_HOME_OFFICE_DATA;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.START_APPEAL;
@@ -204,6 +200,28 @@ class HomeOfficeCaseValidatePreparerTest {
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
         when(homeOfficeApi.aboutToStart(callback)).thenReturn(asylumCase);
         when(asylumCase.read(IS_EJP, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+
+        homeOfficeCaseValidatePreparer.handle(ABOUT_TO_START, callback);
+
+        verify(homeOfficeApi, times(0)).aboutToStart(callback);
+    }
+
+    @ParameterizedTest
+    @MethodSource("eventAndAppealTypesData")
+    void handler_should_not_invoke_homeoffice_api_if_validated(Event event, AppealType appealType) {
+
+        when(featureToggler.getValue("home-office-uan-pa-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-rp-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-ea-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-hu-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-dc-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-eu-feature", false)).thenReturn(true);
+
+        when(callback.getEvent()).thenReturn(event);
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
+        when(homeOfficeApi.aboutToStart(callback)).thenReturn(asylumCase);
+        when(asylumCase.read(IS_EJP, YesOrNo.class)).thenReturn(Optional.empty());
+        when(asylumCase.read(HAS_BEEN_VALIDATED_BY_NEW_HOME_OFFICE_API, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
 
         homeOfficeCaseValidatePreparer.handle(ABOUT_TO_START, callback);
 
