@@ -455,6 +455,43 @@ class AutomaticEndAppealForNonPaymentEaHuTriggerTest {
         assertTrue(result);
     }
 
+    @Test
+    void should_schedule_end_appeal_for_reinstate_appeal() {
+        when(callback.getEvent()).thenReturn(Event.REINSTATE_APPEAL);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(caseDetails.getId()).thenReturn(caseId);
+        when(dateProvider.nowWithTime()).thenReturn(now);
 
+        TimedEvent timedEvent = new TimedEvent(
+            id,
+            Event.END_APPEAL_AUTOMATICALLY,
+            ZonedDateTime.of(now, ZoneId.systemDefault()).plusMinutes(SCHEDULE_MINUTES),
+            jurisdiction,
+            caseType,
+            caseId
+        );
+        when(scheduler.schedule(any(TimedEvent.class))).thenReturn(timedEvent);
+
+        automaticEndAppealForNonPaymentEaHuTrigger.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        verify(scheduler).schedule(timedEventArgumentCaptor.capture());
+        TimedEvent result = timedEventArgumentCaptor.getValue();
+
+        assertEquals(Event.END_APPEAL_AUTOMATICALLY, result.getEvent());
+        assertEquals(caseId, result.getCaseId());
+    }
+
+    @Test
+    void canHandle_should_return_true_for_reinstate_appeal() {
+        when(callback.getEvent()).thenReturn(Event.REINSTATE_APPEAL);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        boolean result = automaticEndAppealForNonPaymentEaHuTrigger
+            .canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertTrue(result);
+    }
 
 }

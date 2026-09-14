@@ -67,11 +67,12 @@ public class AutomaticEndAppealForNonPaymentEaHuTrigger implements PreSubmitCall
         boolean lrAppealWithNoRemission = remissionType.map(
                 remission -> remission.equals(RemissionType.NO_REMISSION)).orElse(true);
 
-        return  callback.getEvent() == Event.SUBMIT_APPEAL
-                && callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
+        return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
+                && ((callback.getEvent() == Event.REINSTATE_APPEAL)
+                || (callback.getEvent() == Event.SUBMIT_APPEAL
                 && !isAcceleratedDetainedAppeal(asylumCase)
                 && (isAipJourney(asylumCase) ? !aipAppealHasRemission(asylumCase) : lrAppealWithNoRemission)
-                && (appealType.isPresent() && Set.of(EA, HU, EU, AG).contains(appealType.get()));
+                && (appealType.isPresent() && Set.of(EA, HU, EU, AG).contains(appealType.get()))));
 
     }
 
