@@ -107,25 +107,24 @@ public class AppealSubmittedNotifyHomeOfficeHandler implements PreSubmitCallback
         // For draft appeals created before the new Home Office API was implemented
         // we need to deserialise the list of newly validated Home Office appellants from the serialised string and
         // write it back to the case record
-        if (asylumCase.read(HOME_OFFICE_APPELLANTS, List.class).isEmpty()) {
-            // We need the mapper and mix-in to overcome a CCD bug concerning collections during the mid-event (see comments below).
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.addMixIn(IdValue.class, IdValueMixin.class);
-            String encodedStr = asylumCase.read(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, String.class)
-                .orElse("");
-            try {
-                String homeOfficeAppellantsSerialised = HandlerUtils
-                    .decrypt(encodedStr, homeOfficeSerialisedEncryptionKey);
-                List<IdValue<HomeOfficeAppellant>> homeOfficeAppellants = mapper.readValue(
-                    homeOfficeAppellantsSerialised,
-                    new TypeReference<>() {
-                    }
-                );
-                asylumCase.write(HOME_OFFICE_APPELLANTS, homeOfficeAppellants);
-            } catch (Exception ex) {
-                log.error("Could not deserialise list of Home Office appellants from encrypted serialised string {} for case with Home Office reference {}:\n\n{}",
-                    encodedStr, homeOfficeReferenceNumber, ex.getMessage());
-            }
+        // We need the mapper and mix-in to overcome a CCD bug concerning collections during the mid-event (see comments below).
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.addMixIn(IdValue.class, IdValueMixin.class);
+        String encodedStr = asylumCase.read(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, String.class)
+            .orElse("");
+        try {
+            String homeOfficeAppellantsSerialised = HandlerUtils
+                .decrypt(encodedStr, homeOfficeSerialisedEncryptionKey);
+            List<IdValue<HomeOfficeAppellant>> homeOfficeAppellants = mapper.readValue(
+                homeOfficeAppellantsSerialised,
+                new TypeReference<>() {
+                }
+            );
+            asylumCase.write(HOME_OFFICE_APPELLANTS, homeOfficeAppellants);
+            asylumCase.write(HOME_OFFICE_APPELLANT_PP_NUMBER, HandlerUtils.getPpNumberFromHomeOfficeAppellants(asylumCase));
+        } catch (Exception ex) {
+            log.error("Could not deserialise list of Home Office appellants from encrypted serialised string {} for case with Home Office reference {}:\n\n{}",
+                encodedStr, homeOfficeReferenceNumber, ex.getMessage());
         }
 
         // Details for logging purposes only

@@ -11,6 +11,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -27,12 +29,12 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_APPELLANTS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.utils.TestUtils.setupLogVerifier;
 import static uk.gov.hmcts.reform.iacaseapi.utils.TestUtils.verifyLogsContainMessage;
 
 @ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 class HomeOfficeReferenceHandlerOnSubmitTest {
     private final String homeOfficeSerialisedEncryptionKey = "test-encryption-key";
     private final String encryptedData = "someData";
@@ -55,6 +57,9 @@ class HomeOfficeReferenceHandlerOnSubmitTest {
     @BeforeEach
     void setUp() {
         handler = new HomeOfficeReferenceHandlerOnSubmit(homeOfficeSerialisedEncryptionKey);
+        handlerUtilsMock
+            .when(() -> HandlerUtils.getPpNumberFromHomeOfficeAppellants(asylumCase))
+            .thenReturn("ppNumber");
     }
 
     @AfterEach
@@ -128,6 +133,7 @@ class HomeOfficeReferenceHandlerOnSubmitTest {
         verifyLogsContainMessage(listAppender, "Writing previously retrieved Home Office appellant data to the case record in full for case with Home Office reference non-empty-reference.");
         verify(asylumCase).write(eq(HOME_OFFICE_APPELLANTS), appellantsCaptor.capture());
         verify(asylumCase).clear(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY);
+        verify(asylumCase).write(HOME_OFFICE_APPELLANT_PP_NUMBER, "ppNumber");
 
         List<IdValue<HomeOfficeAppellant>> actualList = appellantsCaptor.getValue();
         assertEquals(1, actualList.size());
@@ -166,6 +172,7 @@ class HomeOfficeReferenceHandlerOnSubmitTest {
 
         verify(asylumCase).write(eq(HOME_OFFICE_APPELLANTS), appellantsCaptor.capture());
         verify(asylumCase).clear(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY);
+        verify(asylumCase).write(HOME_OFFICE_APPELLANT_PP_NUMBER, "ppNumber");
 
         List<IdValue<HomeOfficeAppellant>> actualList = appellantsCaptor.getValue();
         assertEquals(2, actualList.size());

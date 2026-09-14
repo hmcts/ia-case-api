@@ -1099,4 +1099,19 @@ public class HandlerUtils {
         return homeOfficeDob.trim().equals(appellantDob.trim());
     }
 
+    public static String getPpNumberFromHomeOfficeAppellants(AsylumCase asylumCase) {
+        Optional<List<IdValue<HomeOfficeAppellant>>> homeOfficeAppellants = asylumCase.read(HOME_OFFICE_APPELLANTS);
+        String appellantGivenNames = asylumCase.read(APPELLANT_GIVEN_NAMES, String.class).orElse("");
+        String appellantFamilyName = asylumCase.read(APPELLANT_FAMILY_NAME, String.class).orElse("");
+        String appellantDateOfBirth = asylumCase.read(APPELLANT_DATE_OF_BIRTH, String.class).orElse("");
+        return homeOfficeAppellants.orElse(emptyList()).stream()
+            .map(IdValue::getValue)
+            .filter(appellant -> matchesName(appellant.getGivenNames(), appellantGivenNames, true)
+                && matchesName(appellant.getFamilyName(), appellantFamilyName, false)
+                && matchesDateOfBirth(appellant.getDateOfBirth(), appellantDateOfBirth))
+            .findFirst()
+            .map(HomeOfficeAppellant::getPp)
+            .orElse(null);
+    }
+
 }
