@@ -121,7 +121,7 @@ public class AppealSubmittedNotifyHomeOfficeHandler implements PreSubmitCallback
                 }
             );
             asylumCase.write(HOME_OFFICE_APPELLANTS, homeOfficeAppellants);
-            asylumCase.write(HOME_OFFICE_APPELLANT_PP_NUMBER, HandlerUtils.getPpNumberFromHomeOfficeAppellants(asylumCase));
+            asylumCase.write(HOME_OFFICE_APPELLANTS_PP_NUMBER, HandlerUtils.getPpNumberFromHomeOfficeAppellants(asylumCase));
         } catch (Exception ex) {
             log.error("Could not deserialise list of Home Office appellants from encrypted serialised string {} for case with Home Office reference {}:\n\n{}",
                 encodedStr, homeOfficeReferenceNumber, ex.getMessage());
