@@ -300,6 +300,7 @@ security:
       - "requestHearingRequirements"
       - "requestRespondentEvidence"
       - "completeCaseReview"
+      - "sendLateTimelineNotice"
       - "uploadRespondentEvidence"
       - "requestRespondentReview"
       - "addAppealResponse"
@@ -385,6 +386,9 @@ security:
       - "removeStatutoryTimeframe24Weeks"
       - "forceCaseToPrepareForHearing"
       - "revokeCitizenAccess"
+      - "sendInviteToNonLegalRep"
+      - "sendPipToNonLegalRep"
+      - "joinAppealConfirmation"
     challenged-access-legal-operations:
       - "appellantInPersonManual"
       - "moveToPaymentPending"
@@ -394,6 +398,7 @@ security:
       - "requestHearingRequirements"
       - "requestRespondentEvidence"
       - "completeCaseReview"
+      - "sendLateTimelineNotice"
       - "uploadRespondentEvidence"
       - "requestRespondentReview"
       - "addAppealResponse"
@@ -478,6 +483,9 @@ security:
       - "removeStatutoryTimeframe24Weeks"
       - "forceCaseToPrepareForHearing"
       - "revokeCitizenAccess"
+      - "sendInviteToNonLegalRep"
+      - "sendPipToNonLegalRep"
+      - "joinAppealConfirmation"
     senior-tribunal-caseworker:
       - "appellantInPersonManual"
       - "moveToPaymentPending"
@@ -487,6 +495,7 @@ security:
       - "requestHearingRequirements"
       - "requestRespondentEvidence"
       - "completeCaseReview"
+      - "sendLateTimelineNotice"
       - "uploadRespondentEvidence"
       - "requestRespondentReview"
       - "addAppealResponse"
@@ -572,6 +581,9 @@ security:
       - "addStatutoryTimeframe24Weeks"
       - "removeStatutoryTimeframe24Weeks"
       - "revokeCitizenAccess"
+      - "sendInviteToNonLegalRep"
+      - "sendPipToNonLegalRep"
+      - "joinAppealConfirmation"
     hearing-centre-admin:
       - "appellantInPersonManual"
       - "startAppeal"
@@ -644,6 +656,9 @@ security:
       - "addStatutoryTimeframe24Weeks"
       - "removeStatutoryTimeframe24Weeks"
       - "revokeCitizenAccess"
+      - "sendInviteToNonLegalRep"
+      - "sendPipToNonLegalRep"
+      - "joinAppealConfirmation"
       - "requestRespondentEvidence"
     ctsc:
       - "appellantInPersonManual"
@@ -714,6 +729,9 @@ security:
       - "addStatutoryTimeframe24Weeks"
       - "removeStatutoryTimeframe24Weeks"
       - "revokeCitizenAccess"
+      - "sendInviteToNonLegalRep"
+      - "sendPipToNonLegalRep"
+      - "joinAppealConfirmation"
       - "forceDecidedState"
       - "forceFtpaDecidedState"
       - "requestRespondentEvidence"
@@ -788,6 +806,9 @@ security:
       - "addStatutoryTimeframe24Weeks"
       - "removeStatutoryTimeframe24Weeks"
       - "revokeCitizenAccess"
+      - "sendInviteToNonLegalRep"
+      - "sendPipToNonLegalRep"
+      - "joinAppealConfirmation"
       - "requestRespondentEvidence"
     national-business-centre:
       - "appellantInPersonManual"
@@ -859,6 +880,9 @@ security:
       - "addStatutoryTimeframe24Weeks"
       - "removeStatutoryTimeframe24Weeks"
       - "revokeCitizenAccess"
+      - "sendInviteToNonLegalRep"
+      - "sendPipToNonLegalRep"
+      - "joinAppealConfirmation"
       - "requestRespondentEvidence"
     challenged-access-ctsc:
       - "appellantInPersonManual"
@@ -930,6 +954,9 @@ security:
       - "addStatutoryTimeframe24Weeks"
       - "removeStatutoryTimeframe24Weeks"
       - "revokeCitizenAccess"
+      - "sendInviteToNonLegalRep"
+      - "sendPipToNonLegalRep"
+      - "joinAppealConfirmation"
       - "requestRespondentEvidence"
     challenged-access-admin:
       - "appellantInPersonManual"
@@ -1002,6 +1029,9 @@ security:
       - "addStatutoryTimeframe24Weeks"
       - "removeStatutoryTimeframe24Weeks"
       - "revokeCitizenAccess"
+      - "sendInviteToNonLegalRep"
+      - "sendPipToNonLegalRep"
+      - "joinAppealConfirmation"
       - "requestRespondentEvidence"
     caseworker-ia-homeofficeapc:
       - "uploadHomeOfficeBundle"
@@ -1060,6 +1090,11 @@ security:
       - "applyForFTPAAppellant"
       - "requestFeeRemission"
       - "deleteDraftAppeal"
+      - "sendInviteToNonLegalRep"
+      - "sendPipToNonLegalRep"
+      - "joinAppealConfirmation"
+      - "nlrDetailsUpdated"
+      - "removeNonLegalRep"
     caseworker-ia-iacjudge:
       - "generateDecisionAndReasons"
       - "endAppeal"
@@ -1426,6 +1461,11 @@ security:
       - "maintainCaseLinks"
       - "revokeCitizenAccess"
       - "generatePinInPost"
+      - "sendInviteToNonLegalRep"
+      - "sendPipToNonLegalRep"
+      - "joinAppealConfirmation"
+      - "nlrDetailsUpdated"
+      - "removeNonLegalRep"
     caseworker-ia-internal:
       - "revokeCaseAccess"
       - "removeCaseManagerBulk"
@@ -1508,10 +1548,12 @@ commonData:
 govUkHolidays:
   url: https://www.gov.uk/
 
-saveNotificationsData:
+save-notifications-data:
   enabled: ${SAVE_NOTIFICATIONS_TO_DATA_EVENT_ENABLED:true}
-  scheduleAtHour: ${SAVE_NOTIFICATIONS_DATA_SCHEDULE_HOUR:23}
-  scheduleMaxMinutes: ${SAVE_NOTIFICATIONS_DATA_SCHEDULE_MAX_MINUTES:50}
+  retention-days: ${SAVE_NOTIFICATIONS_DATA_RETENTION_DAYS:21}
+  scheduling:
+    target-hour: ${SAVE_NOTIFICATIONS_DATA_TARGET_HOUR:23}
+    window-duration-minutes: ${SAVE_NOTIFICATIONS_DATA_WINDOW_DURATION_MINUTES:50}
 
 govnotify:
   baseUrl: "https://api.notifications.service.gov.uk"
