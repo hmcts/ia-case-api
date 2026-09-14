@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.HelpWithFeesOption;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionOption;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
@@ -62,13 +63,15 @@ public class AutomaticEndAppealForNonPaymentEaHuTrigger implements PreSubmitCall
 
         Optional<RemissionType> remissionType = asylumCase.read(REMISSION_TYPE, RemissionType.class);
         Optional<AppealType> appealType = asylumCase.read(APPEAL_TYPE, AppealType.class);
-
+        PaymentStatus paymentStatus = asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)
+                .orElse(PaymentStatus.PAYMENT_PENDING);
 
         boolean lrAppealWithNoRemission = remissionType.map(
                 remission -> remission.equals(RemissionType.NO_REMISSION)).orElse(true);
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-                && ((callback.getEvent() == Event.REINSTATE_APPEAL)
+                && ((callback.getEvent() == Event.REINSTATE_APPEAL
+                        && paymentStatus != PaymentStatus.PAID)
                 || (callback.getEvent() == Event.SUBMIT_APPEAL
                 && !isAcceleratedDetainedAppeal(asylumCase)
                 && (isAipJourney(asylumCase) ? !aipAppealHasRemission(asylumCase) : lrAppealWithNoRemission)
