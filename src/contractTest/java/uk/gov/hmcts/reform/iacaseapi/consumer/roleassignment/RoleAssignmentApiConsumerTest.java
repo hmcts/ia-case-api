@@ -9,8 +9,7 @@ import au.com.dius.pact.consumer.junit5.PactTestFor;
 import au.com.dius.pact.core.model.V4Pact;
 import au.com.dius.pact.core.model.annotations.Pact;
 import au.com.dius.pact.core.model.annotations.PactFolder;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 import org.json.JSONException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -79,7 +78,7 @@ public class RoleAssignmentApiConsumerTest {
 
     @Pact(provider = "am_roleAssignment_createAssignment", consumer = "ia_caseApi")
     public V4Pact generatePactFragment(PactDslWithProvider builder)
-        throws JSONException, JsonProcessingException {
+        throws JSONException {
         return builder
             .given("The assignment request is valid with one requested role and replaceExisting flag as true")
             .uponReceiving("A request to add a role")
@@ -87,9 +86,9 @@ public class RoleAssignmentApiConsumerTest {
             .method("POST")
             .matchHeader(AUTHORIZATION, AUTH_TOKEN)
             .matchHeader(SERVICE_AUTHORIZATION, SERVICE_AUTH_TOKEN)
-            .body(new ObjectMapper()
+            .body(new JsonMapper()
                 .writeValueAsString(roleAssignmentService.getRoleAssignment(caseId, assigneeId, userId)))
-            .willRespondWith()            
+            .willRespondWith()
             .status(201)
             .toPact(V4Pact.class);
     }

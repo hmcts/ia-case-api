@@ -2,6 +2,8 @@ server:
   port: ${PORT:8090}
   max-http-request-header-size: 100KB
 
+debug: true
+
 management:
   endpoint:
     health:
