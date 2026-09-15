@@ -8,7 +8,7 @@ import java.util.Map;
 
 public final class MapSerializer {
 
-    private static ObjectMapper MAPPER = new JsonMapper();
+    private static volatile ObjectMapper MAPPER = JsonMapper.builder().build();
 
     private MapSerializer() {
         // noop

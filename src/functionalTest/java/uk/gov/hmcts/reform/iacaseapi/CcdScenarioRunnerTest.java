@@ -139,6 +139,9 @@ public class CcdScenarioRunnerTest {
         log.info(AnsiOutput.toString(AnsiColor.CYAN, separator, AnsiColor.DEFAULT));
         log.info(AnsiOutput.toString(AnsiColor.YELLOW, "RUNNING " + scenarioSources.size() + " SCENARIOS", AnsiColor.DEFAULT));
         log.info(AnsiOutput.toString(AnsiColor.CYAN, separator, AnsiColor.DEFAULT));
+
+
+        System.out.println(objectMapper.getClass());
     }
 
     public Stream<Arguments> scenarioSources() {
