@@ -32,6 +32,10 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
         havingValue = "true",
         matchIfMissing = true
 )
+@ConditionalOnProperty(
+    name = "app.home-office-mock-turn-off-for-test.enabled",
+    havingValue = "false"
+)
 public class HomeOfficeReferenceHandlerOnSubmit implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final String homeOfficeSerialisedEncryptionKey;
@@ -82,6 +86,7 @@ public class HomeOfficeReferenceHandlerOnSubmit implements PreSubmitCallbackHand
                         }
                 );
                 asylumCase.write(HOME_OFFICE_APPELLANTS, homeOfficeAppellants); // this will now work because we are no longer in the mid-event
+                asylumCase.write(HOME_OFFICE_APPELLANTS_PP_NUMBER, HandlerUtils.getPpNumberFromHomeOfficeAppellants(asylumCase));
                 asylumCase.clear(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY);
                 asylumCase.write(HAS_BEEN_VALIDATED_BY_NEW_HOME_OFFICE_API, YesOrNo.YES);
             } catch (Exception ex) {

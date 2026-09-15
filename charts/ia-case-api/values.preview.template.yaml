@@ -42,6 +42,7 @@ java:
     # The mock HO validation API lives at http://ia-home-office-mock-api-aat.service.core-compute-aat.internal/ichallenge/applications/v1/1111-2222-3333-4444
     # (you can use any valid UAN at the end; but in ExUI you must enter the expected UAN, name and DOB in order to proceed past validation)
     HOME_OFFICE_VALIDATION_ENABLED: "true" # Do not remove this this environment variable!
+    HOME_OFFICE_MOCK_TURN_OFF_FOR_TEST: "false" # Set this environment variable to false if you want to test something using the mock HO validation API
   keyVaults:
     ia:
       resourceGroup: ia
@@ -574,7 +575,7 @@ ia-home-office-integration-api:
   enabled: true #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
-    image: hmctsprod.azurecr.io/ia/home-office-integration-api:latest
+    image: hmctsprod.azurecr.io/ia/home-office-integration-api:pr-522
     releaseNameOverride: ${SERVICE_NAME}-home-office-integration-api
     ingressHost: ${SERVICE_NAME}-home-office-integration-api.preview.platform.hmcts.net
     devcpuRequests: 500m
@@ -593,6 +594,7 @@ ia-home-office-integration-api:
       POSTGRES_NAME: "pr-${CHANGE_ID}-ia-case-api"
       POSTGRES_USERNAME: hmcts
       POSTGRES_PASSWORD: ${GENERIC_VALUES_PREVIEW_YAML_PASS}
+      HOME_OFFICE_ENDPOINT: "https://ia-home-office-mock-api-pr-187.preview.platform.hmcts.net"
     keyVaults:
       ia:
         resourceGroup: ia
@@ -666,7 +668,7 @@ ia-aip-frontend:
   enabled: true
   nodejs:
     imagePullPolicy: Always
-    image: hmctsprod.azurecr.io/ia/aip-frontend:latest
+    image: hmctsprod.azurecr.io/ia/aip-frontend:pr-1581
     ingressHost: ${SERVICE_NAME}-aip-frontend.preview.platform.hmcts.net # override in public facing environments
     applicationPort: 3000
     devcpuRequests: 500m
