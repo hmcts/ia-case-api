@@ -1,9 +1,5 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;

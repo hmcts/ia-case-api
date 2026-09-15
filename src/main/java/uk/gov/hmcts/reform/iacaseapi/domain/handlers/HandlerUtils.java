@@ -924,7 +924,7 @@ public class HandlerUtils {
             response.addError(
                 asylumCase.read(HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS, HomeOfficeApiResponseStatusType.class)
                     .orElse(HomeOfficeApiResponseStatusType.UNKNOWN)
-                    .getUserFacingErrorText(homeOfficeReferenceNumber, false)
+                    .getUserFacingErrorText(homeOfficeReferenceNumber, callback.getEvent().equals(Event.SUBMIT_APPEAL))
             );
         }
         return response;
