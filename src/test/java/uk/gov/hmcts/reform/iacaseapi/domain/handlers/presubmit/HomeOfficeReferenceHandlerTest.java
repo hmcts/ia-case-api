@@ -457,7 +457,7 @@ class HomeOfficeReferenceHandlerTest {
         assertTrue(
             response.getErrors()
                 .stream()
-                .anyMatch(error -> error.contains(HomeOfficeApiResponseStatusType.NOT_FOUND.getUserFacingErrorText(VALID_GWF)))
+                .anyMatch(error -> error.contains(HomeOfficeApiResponseStatusType.NOT_FOUND.getUserFacingErrorText(VALID_GWF, false)))
         );
     }
 
@@ -497,7 +497,7 @@ class HomeOfficeReferenceHandlerTest {
         assertTrue(
             response.getErrors()
                 .stream()
-                .anyMatch(error -> error.contains(HomeOfficeApiResponseStatusType.UNKNOWN.getUserFacingErrorText(VALID_GWF)))
+                .anyMatch(error -> error.contains(HomeOfficeApiResponseStatusType.UNKNOWN.getUserFacingErrorText(VALID_GWF, false)))
         );
     }
 
@@ -542,7 +542,7 @@ class HomeOfficeReferenceHandlerTest {
         assertEquals(1, response.getErrors().size());
         assertTrue(
             response.getErrors().contains(
-                HomeOfficeApiResponseStatusType.UNKNOWN.getUserFacingErrorText(VALID_GWF)
+                HomeOfficeApiResponseStatusType.UNKNOWN.getUserFacingErrorText(VALID_GWF, false)
             )
         );
     }
@@ -563,7 +563,7 @@ class HomeOfficeReferenceHandlerTest {
             handler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
 
         assertEquals(
-            HomeOfficeApiResponseStatusType.UNKNOWN.getUserFacingErrorText(VALID_GWF),
+            HomeOfficeApiResponseStatusType.UNKNOWN.getUserFacingErrorText(VALID_GWF, false),
             response.getErrors().iterator().next()
         );
     }
@@ -587,7 +587,7 @@ class HomeOfficeReferenceHandlerTest {
 
         assertTrue(
             response.getErrors()
-                .contains(HomeOfficeApiResponseStatusType.UNKNOWN.getUserFacingErrorText(VALID_GWF))
+                .contains(HomeOfficeApiResponseStatusType.UNKNOWN.getUserFacingErrorText(VALID_GWF, false))
         );
     }
 

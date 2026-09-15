@@ -205,7 +205,7 @@ class AppealSubmittedNotifyHomeOfficeHandlerTest {
         assertEquals(asylumCase, response.getData());
         assertThat(response.getErrors())
             .hasSize(1)
-            .contains(status.getUserFacingErrorText(VALID_GWF));
+            .contains(status.getUserFacingErrorText(VALID_GWF, false));
     }
 
     @Test

@@ -3,6 +3,8 @@ package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 import com.fasterxml.jackson.annotation.JsonEnumDefaultValue;
 import com.fasterxml.jackson.annotation.JsonValue;
 
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.USER_ERROR_HELP_TEXT;
+
 public enum HomeOfficeApiResponseStatusType {
 
     BADLY_FORMATTED_DATA(-4, "badlyFormattedData", UserFacingErrorText.SERVER, "The Home Office validation API's response contained data that did not match the expected format."),
@@ -42,7 +44,12 @@ public enum HomeOfficeApiResponseStatusType {
         return statusCode;
     }
 
-    public String getUserFacingErrorText(String hoReference) {
+    public String getUserFacingErrorText(String hoReference, boolean isOnSubmit) {
+        if (isOnSubmit) {
+            return userFacingErrorText.replace(REPLACEMENT_STRING, hoReference)
+                .replace("You should", "You should edit the appeal and")
+                .replace(USER_ERROR_HELP_TEXT, "");
+        }
         return userFacingErrorText.replace(REPLACEMENT_STRING, hoReference);
     }
 
@@ -60,7 +67,7 @@ public enum HomeOfficeApiResponseStatusType {
         private static final String SERVER = "An error occurred. Please try again in 15-20 minutes. If it occurs again, please report this to HMCTS using the following contact details: Email contactia@justice.gov.uk or Telephone: 0300 123 1711.";
         private static final String USER = "The reference XYZYX cannot be matched to a Home Office record. " +
             "You should enter the UAN or GWF reference exactly as it appears on the decision letter. This can often be found in the 'How to appeal' section. " +
-            "If you need help, please use the Home Office help form in the bullet points on this page.";
+            USER_ERROR_HELP_TEXT;
     }    
 }
 
