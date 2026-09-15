@@ -3,10 +3,13 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
+import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsHelper;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfTimeDecisionType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Parties;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserRole;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
@@ -24,6 +27,7 @@ import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isDecisionWithHearing;
 
 @Component
 public class RequestRespondentEvidencePreparer implements PreSubmitCallbackHandler<AsylumCase> {
@@ -35,6 +39,8 @@ public class RequestRespondentEvidencePreparer implements PreSubmitCallbackHandl
     private final FeatureToggler featureToggler;
     private final DateProvider dateProvider;
     private final DueDateService dueDateService;
+    private final UserDetails userDetails;
+    private final UserDetailsHelper userDetailsHelper;
 
     public RequestRespondentEvidencePreparer(
             @Value("${requestRespondentEvidence.dueInDays}") int requestRespondentEvidenceDueInDays,
@@ -43,7 +49,9 @@ public class RequestRespondentEvidencePreparer implements PreSubmitCallbackHandl
             @Value("${app.statutory-timeframe.live-date}") String stf24wLiveDate,
             FeatureToggler featureToggler,
             DateProvider dateProvider,
-            DueDateService dueDateService
+            DueDateService dueDateService,
+            UserDetails userDetails,
+            UserDetailsHelper userDetailsHelper
     ) {
         this.requestRespondentEvidenceDueInDays = requestRespondentEvidenceDueInDays;
         this.requestRespondentEvidenceDueInDaysAda = requestRespondentEvidenceDueInDaysAda;
@@ -52,6 +60,8 @@ public class RequestRespondentEvidencePreparer implements PreSubmitCallbackHandl
         this.featureToggler = featureToggler;
         this.dateProvider = dateProvider;
         this.dueDateService = dueDateService;
+        this.userDetails = requireNonNull(userDetails, "userDetails must not be null");
+        this.userDetailsHelper = requireNonNull(userDetailsHelper, "userDetailsHelper must not be null");
     }
 
     public boolean canHandle(
@@ -88,11 +98,20 @@ public class RequestRespondentEvidencePreparer implements PreSubmitCallbackHandl
                 if (completeCaseReviewDateEmpty) {
                     return callbackResponse.withError("You must run the Complete case review and list the case before running the 'Request respondent evidence' event");
                 }
-                if (asylumCase.read(LIST_CASE_HEARING_DATE, String.class).isEmpty()) {
+                if (isDecisionWithHearing(asylumCase) && asylumCase.read(LIST_CASE_HEARING_DATE, String.class).isEmpty()) {
                     return callbackResponse.withError("You must list the case before running the 'Request respondent evidence' event");
                 }
             } else if (completeCaseReviewDateEmpty) {
                 return callbackResponse.withError("You must run the Complete case review before running the 'Request respondent evidence' event");
+            }
+        }
+
+        UserRole userRole = userDetailsHelper.getLoggedInUserRole(userDetails);
+        if (UserRole.getAdminRoles().contains(userRole.getId())) {
+            YesOrNo stf24wStatus = asylumCase.read(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class).orElse(NO);
+            if (stf24wStatus != YES) {
+                callbackResponse.addError("You can only request respondent evidence on a 24 week case.");
+                return callbackResponse;
             }
         }
 
@@ -150,7 +169,11 @@ public class RequestRespondentEvidencePreparer implements PreSubmitCallbackHandl
     private LocalDate getDueDate(AsylumCase asylumCase) {
         LocalDate dueDate;
 
-        if (HandlerUtils.isAcceleratedDetainedAppeal(asylumCase)) {
+        if (HandlerUtils.is24WeekStfCase(asylumCase)) {
+            String completeCaseReviewDate = asylumCase.read(COMPLETE_CASE_REVIEW_DATE, String.class)
+                    .orElseThrow(() -> new IllegalStateException("completeCaseReviewDate is not present"));
+            dueDate = LocalDate.parse(completeCaseReviewDate).plusDays(requestRespondentEvidenceDueInDays);
+        } else if (HandlerUtils.isAcceleratedDetainedAppeal(asylumCase)) {
             dueDate = dueDateService.calculateDueDate(dateProvider.now().atStartOfDay(ZoneOffset.UTC), requestRespondentEvidenceDueInDaysAda).toLocalDate();
         } else if (HandlerUtils.isAppellantInDetention(asylumCase)) {
             dueDate = dateProvider.now().plusDays(requestRespondentEvidenceDueInDaysDetained);
@@ -165,12 +188,12 @@ public class RequestRespondentEvidencePreparer implements PreSubmitCallbackHandl
         if (HandlerUtils.isAppellantInDetention(asylumCase)) {
             return """
                     A notice of appeal has been lodged against this decision.
-                    
+
                     You must now upload all documents to the Tribunal. The Tribunal will make them accessible to the other party. You have until the date indicated below to supply your bundle.
-                    
+
                     The bundle must comply with (i) Rule 24 of the Tribunal Procedure Rules 2014 and (ii) Practice Direction, Part 3, sections 7.1 - 7.4.
                     Specifically, the bundle must contain:
-                    
+
                     - The explanation for refusal;
                     - the deportation order and/or the notice of decision to make the order (if any);
                     - Interview record (if any);
@@ -181,20 +204,20 @@ public class RequestRespondentEvidencePreparer implements PreSubmitCallbackHandl
                     - a transcript of the Sentencing Judge's Remarks (if any).
                     - a copy of any Parole Report or other document relating to the appellant's period in custody and/or release (if any);
                     - a copy of any medical report (if any).
-                    
+
                     Parties must ensure they conduct proceedings with procedural rigour.
                     The Tribunal will not overlook breaches of the requirements of the Procedure Rules, Practice Statement or Practice Direction, \
                     nor failures to comply with directions issued by the Tribunal. Parties are reminded of the possible sanctions for \
                     non-compliance set out in paragraph 5.3 of the Practice Direction.""";
-        } else {
+        } else if (HandlerUtils.is24WeekStfCase(asylumCase)) {
             return """
                     A notice of appeal has been lodged against this decision.
-                    
+
                     By the date indicated below the respondent is directed to supply the documents:
-                    
-                    The bundle must comply with (i) Rule 23 or Rule 24 of the Tribunal Procedure Rules 2014 (as applicable) \
+
+                    The bundle must comply with (i) Rule 24 of the Tribunal Procedure Rules 2014 (as applicable) \
                     and (ii) Practice Direction (1.11.2024) Part 3, sections 7.1 - 7.4. Specifically, the bundle must contain:
-                    
+
                     - the notice of decision appealed against.
                     - any other document provided to the appellant giving reasons for that decision.
                     - any evidence or material relevant to the disputed issues.
@@ -204,9 +227,9 @@ public class RequestRespondentEvidencePreparer implements PreSubmitCallbackHandl
                     - any previous decision(s) of the Tribunal and Upper Tribunal (IAC) relating to the appellant.
                     - any other unpublished documents on which you rely.
                     - the notice of any other appealable decision made in relation to the appellant.
-                    
+
                     Where the appeal involves deportation, you must also include the following evidence:
-                    
+
                     - a copy of the Certificate of Conviction.
                     - a copy of any indictment/charge.
                     - a transcript of the Sentencing Judge's Remarks.
@@ -214,7 +237,40 @@ public class RequestRespondentEvidencePreparer implements PreSubmitCallbackHandl
                     - a copy of the appellant's criminal record.
                     - a copy of any Parole Report or other document relating to the appellant's period in custody and/or release.
                     - a copy of any mental health report.
-                    
+
+                    Parties must ensure they conduct proceedings with procedural rigour. \
+                    The Tribunal will not overlook breaches of the requirements of the Procedure Rules, Practice Statement or Practice Direction, \
+                    nor failures to comply with directions issued by the Tribunal. \
+                    Parties are reminded of the sanctions for non-compliance set out in paragraph 5.3 of the Practice Direction of 01.11.24.""";
+        } else {
+            return """
+                    A notice of appeal has been lodged against this decision.
+
+                    By the date indicated below the respondent is directed to supply the documents:
+
+                    The bundle must comply with (i) Rule 23 or Rule 24 of the Tribunal Procedure Rules 2014 (as applicable) \
+                    and (ii) Practice Direction (1.11.2024) Part 3, sections 7.1 - 7.4. Specifically, the bundle must contain:
+
+                    - the notice of decision appealed against.
+                    - any other document provided to the appellant giving reasons for that decision.
+                    - any evidence or material relevant to the disputed issues.
+                    - any statements of evidence.
+                    - the application form.
+                    - any record of interview with the appellant in relation to the decision being appealed.
+                    - any previous decision(s) of the Tribunal and Upper Tribunal (IAC) relating to the appellant.
+                    - any other unpublished documents on which you rely.
+                    - the notice of any other appealable decision made in relation to the appellant.
+
+                    Where the appeal involves deportation, you must also include the following evidence:
+
+                    - a copy of the Certificate of Conviction.
+                    - a copy of any indictment/charge.
+                    - a transcript of the Sentencing Judge's Remarks.
+                    - a copy of any Pre-Sentence Report.
+                    - a copy of the appellant's criminal record.
+                    - a copy of any Parole Report or other document relating to the appellant's period in custody and/or release.
+                    - a copy of any mental health report.
+
                     Parties must ensure they conduct proceedings with procedural rigour. \
                     The Tribunal will not overlook breaches of the requirements of the Procedure Rules, Practice Statement or Practice Direction, \
                     nor failures to comply with directions issued by the Tribunal. \

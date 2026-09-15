@@ -8,12 +8,10 @@ import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DirectionAppender;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationBasedFeatureToggler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.PartyIdService;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.CryptoUtils;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.OrganisationPolicy;
 
@@ -67,6 +65,12 @@ public class HandlerUtils {
     public static boolean isAipToRepJourney(AsylumCase asylumCase) {
         return (asylumCase.read(PREV_JOURNEY_TYPE, JourneyType.class).orElse(null) == JourneyType.AIP)
             && isRepJourney(asylumCase);
+    }
+
+    public static boolean is24WeekStfCase(AsylumCase asylumCase) {
+        return asylumCase.read(STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED, YesOrNo.class)
+            .map(status -> status == YES)
+            .orElse(false);
     }
 
     public static void formatHearingAdjustmentResponses(AsylumCase asylumCase) {
@@ -201,29 +205,29 @@ public class HandlerUtils {
     }
 
     public static boolean isAcceleratedDetainedAppeal(AsylumCase asylumCase) {
-        return (asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).orElse(NO) == YesOrNo.YES;
+        return (asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).orElse(NO) == YES;
     }
 
     public static boolean isAppellantInDetention(AsylumCase asylumCase) {
-        return (asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).orElse(NO) == YesOrNo.YES;
+        return (asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).orElse(NO) == YES;
     }
 
     public static boolean isAppealOutOfCountry(AsylumCase asylumCase) {
-        return (asylumCase.read(APPEAL_OUT_OF_COUNTRY, YesOrNo.class)).orElse(NO) == YesOrNo.YES;
+        return (asylumCase.read(APPEAL_OUT_OF_COUNTRY, YesOrNo.class)).orElse(NO) == YES;
     }
 
     public static boolean isAppellantsRepresentation(AsylumCase asylumCase) {
-        return (asylumCase.read(APPELLANTS_REPRESENTATION, YesOrNo.class)).orElse(NO) == YesOrNo.YES;
+        return (asylumCase.read(APPELLANTS_REPRESENTATION, YesOrNo.class)).orElse(NO) == YES;
     }
 
     public static boolean isInternalCase(AsylumCase asylumCase) {
-        return (asylumCase.read(IS_ADMIN, YesOrNo.class)).orElse(NO) == YesOrNo.YES;
+        return (asylumCase.read(IS_ADMIN, YesOrNo.class)).orElse(NO) == YES;
     }
 
     // This method uses the field isNotificationTurnedOff to check if
     // notification need to be sent, in scope of EJP transfer down cases.
     public static boolean isNotificationTurnedOff(AsylumCase asylumCase) {
-        return (asylumCase.read(IS_NOTIFICATION_TURNED_OFF, YesOrNo.class)).orElse(NO) == YesOrNo.YES;
+        return (asylumCase.read(IS_NOTIFICATION_TURNED_OFF, YesOrNo.class)).orElse(NO) == YES;
     }
 
     public static String getAdaSuffix() {
@@ -239,7 +243,7 @@ public class HandlerUtils {
     }
 
     public static boolean isNabaEnabled(AsylumCase asylumCase) {
-        return (asylumCase.read(IS_NABA_ENABLED, YesOrNo.class)).orElse(NO) == YesOrNo.YES;
+        return (asylumCase.read(IS_NABA_ENABLED, YesOrNo.class)).orElse(NO) == YES;
     }
 
     //Updated method to check if it is a LegalRep journey
@@ -260,17 +264,17 @@ public class HandlerUtils {
 
     // This method uses the isRehydratedAppeal field which is set yes for Rehydrated appeals when a case is saved or no if paper form
     public static boolean isRehydratedAppeal(AsylumCase asylumCase) {
-        return asylumCase.read(IS_REHYDRATED_APPEAL, YesOrNo.class).orElse(NO) == YesOrNo.YES;
+        return asylumCase.read(IS_REHYDRATED_APPEAL, YesOrNo.class).orElse(NO) == YES;
     }
 
     // This method uses the isEjp field which is set yes for EJP when a case is saved or no if paper form
     public static boolean isEjpCase(AsylumCase asylumCase) {
-        return asylumCase.read(IS_EJP, YesOrNo.class).orElse(NO) == YesOrNo.YES;
+        return asylumCase.read(IS_EJP, YesOrNo.class).orElse(NO) == YES;
     }
 
     // This method uses the isLegallyRepresentedEjp field to check for Legally Represented EJP cases
     public static boolean isLegallyRepresentedEjpCase(AsylumCase asylumCase) {
-        return asylumCase.read(IS_LEGALLY_REPRESENTED_EJP, YesOrNo.class).orElse(NO) == YesOrNo.YES;
+        return asylumCase.read(IS_LEGALLY_REPRESENTED_EJP, YesOrNo.class).orElse(NO) == YES;
     }
 
     public static List<String> readJsonFileList(String filePath, String key) throws IOException {
@@ -371,7 +375,7 @@ public class HandlerUtils {
     }
 
     public static boolean isAdmin(AsylumCase asylumCase) {
-        return (asylumCase.read(IS_ADMIN, YesOrNo.class)).orElse(NO) == YesOrNo.YES;
+        return (asylumCase.read(IS_ADMIN, YesOrNo.class)).orElse(NO) == YES;
     }
 
     public static boolean isAppellantInPersonManual(AsylumCase asylumCase) {
@@ -379,7 +383,7 @@ public class HandlerUtils {
     }
 
     public static boolean hasAddedLegalRepDetails(AsylumCase asylumCase) {
-        return (asylumCase.read(HAS_ADDED_LEGAL_REP_DETAILS, YesOrNo.class)).orElse(NO) == YesOrNo.YES;
+        return (asylumCase.read(HAS_ADDED_LEGAL_REP_DETAILS, YesOrNo.class)).orElse(NO) == YES;
     }
 
     public static void clearRequestRemissionFields(AsylumCase asylumCase) {
@@ -624,7 +628,7 @@ public class HandlerUtils {
     }
 
     public static boolean hasRepresentation(AsylumCase asylumCase) {
-        Optional<OrganisationPolicy> localAuthorityPolicy = asylumCase.read(AsylumCaseFieldDefinition.LOCAL_AUTHORITY_POLICY);
+        Optional<OrganisationPolicy> localAuthorityPolicy = asylumCase.read(LOCAL_AUTHORITY_POLICY);
         return isRepJourney(asylumCase)
             && localAuthorityPolicy.isPresent()
             && localAuthorityPolicy.get().getOrganisation() != null
@@ -749,6 +753,120 @@ public class HandlerUtils {
         asylumCase.remove(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY);
     }
 
+    public static void setSponsorDetailsFromNlrIfSame(AsylumCase asylumCase) {
+        boolean isSponsorSameAsNlr = asylumCase.read(IS_SPONSOR_SAME_AS_NLR, YesOrNo.class).orElse(YesOrNo.NO)
+            .equals(YesOrNo.YES);
+        PartyIdService.setSponsorPartyId(asylumCase);
+        if (isSponsorSameAsNlr) {
+            NonLegalRepDetails nlrDetails = asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class)
+                .orElseThrow(() -> new IllegalStateException("Non-legal representative details are not present"));
+            nlrDetails.setAddress(null);
+            asylumCase.write(NLR_DETAILS, nlrDetails);
+            String givenNames = nlrDetails.getGivenNames();
+            if (givenNames != null) {
+                asylumCase.write(SPONSOR_GIVEN_NAMES, givenNames);
+            }
+            String familyName = nlrDetails.getFamilyName();
+            if (familyName != null) {
+                asylumCase.write(SPONSOR_FAMILY_NAME, familyName);
+            }
+            AddressUk addressUk = nlrDetails.getAddressUk();
+            if (addressUk != null) {
+                asylumCase.write(SPONSOR_ADDRESS, addressUk);
+                asylumCase.write(SPONSOR_ADDRESS_FOR_DISPLAY, addressUk.toDisplay());
+            }
+            String nameForDisplay = givenNames != null && familyName != null ? (givenNames + " " + familyName).replaceAll("\\s+", " ").trim() : null;
+            if (nameForDisplay != null) {
+                asylumCase.write(SPONSOR_NAME_FOR_DISPLAY, nameForDisplay);
+            }
+            String email = nlrDetails.getEmailAddress();
+            if (email != null) {
+                asylumCase.write(SPONSOR_EMAIL, email);
+                asylumCase.write(SPONSOR_CONTACT_PREFERENCE, ContactPreference.WANTS_EMAIL);
+            }
+            String phoneNumber = nlrDetails.getPhoneNumber();
+            if (phoneNumber != null) {
+                asylumCase.write(SPONSOR_MOBILE_NUMBER, phoneNumber);
+            }
+            if (email != null && phoneNumber != null) {
+                String idamId = nlrDetails.getIdamId();
+                Subscriber newSubscriber = new Subscriber(SubscriberType.SUPPORTER, email, YES, phoneNumber, NO);
+                asylumCase.write(SPONSOR_SUBSCRIPTIONS, List.of(new IdValue<>(idamId == null
+                    ? UUID.randomUUID().toString() : idamId, newSubscriber)));
+            }
+            asylumCase.write(SPONSOR_AUTHORISATION, YesOrNo.YES);
+        } else if (asylumCase.read(HAS_NON_LEGAL_REP, YesOrNo.class).orElse(YesOrNo.NO).equals(YES)) {
+            NonLegalRepDetails nlrDetails = asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class)
+                .orElseThrow(() -> new IllegalStateException("Non-legal representative details are not present"));
+            nlrDetails.setAddressUk(null);
+            asylumCase.write(NLR_DETAILS, nlrDetails);
+        } else {
+            clearNlrFields(asylumCase);
+        }
+    }
+
+    public static void clearNlrFields(AsylumCase asylumCase) {
+        asylumCase.clear(NLR_DETAILS);
+        asylumCase.clear(JOIN_APPEAL_PIN);
+        asylumCase.clear(IS_SPONSOR_SAME_AS_NLR);
+        asylumCase.clear(HAS_NON_LEGAL_REP_JOINED);
+        updateSubscriptionsForNlr(asylumCase);
+    }
+
+    public static void updateSubscriptionsForNlr(AsylumCase asylumCase) {
+        if (!hasNlrEmailChanged(asylumCase)) {
+            return;
+        }
+
+        String nlrIdamId = asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class)
+            .map(NonLegalRepDetails::getIdamId)
+            .orElse(null);
+        Optional<List<IdValue<Subscriber>>> subscribers = asylumCase.read(SUBSCRIPTIONS);
+        List<IdValue<Subscriber>> mutableSubscribers = new ArrayList<>(subscribers.orElse(emptyList()).stream()
+            .filter(subscriber -> subscriber.getValue().getSubscriber() != SubscriberType.SUPPORTER)
+            .toList());
+        if (nlrIdamId != null && asylumCase.read(HAS_NON_LEGAL_REP, YesOrNo.class).orElse(YesOrNo.NO).equals(YES)) {
+            NonLegalRepDetails nlrDetails = asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class)
+                .orElseThrow(() -> new IllegalStateException("Non-legal representative details are not present"));
+            mutableSubscribers.add(new IdValue<>(nlrIdamId, new Subscriber(SubscriberType.SUPPORTER,
+                nlrDetails.getEmailAddress(), YES, nlrDetails.getPhoneNumber(), NO)));
+        }
+        asylumCase.write(SUBSCRIPTIONS, mutableSubscribers);
+    }
+
+    private static boolean hasNlrEmailChanged(AsylumCase asylumCase) {
+        String nlrEmail = asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class)
+            .map(NonLegalRepDetails::getEmailAddress)
+            .orElse(null);
+
+        Optional<List<IdValue<Subscriber>>> subscribers = asylumCase.read(SUBSCRIPTIONS);
+        String existingSubscriptionEmail = subscribers.orElse(List.of()).stream()
+            .filter(sub -> sub.getValue().getSubscriber() == SubscriberType.SUPPORTER)
+            .map(sub -> sub.getValue().getEmail())
+            .findFirst()
+            .orElse(null);
+
+        return !Objects.equals(nlrEmail, existingSubscriptionEmail);
+    }
+
+    public static boolean hasActiveNlr(AsylumCase asylumCase) {
+        return asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class)
+            .map(NonLegalRepDetails::getIdamId)
+            .isPresent();
+    }
+
+    public static boolean nlrAttendingHearing(AsylumCase asylumCase) {
+        return asylumCase.read(NLR_ATTENDING, YesOrNo.class).orElse(NO).equals(YES)
+            || asylumCase.read(NLR_ATTENDING_OUTSIDE_UK, YesOrNo.class).orElse(NO).equals(YES);
+    }
+
+    public static String getNlrFullName(AsylumCase asylumCase) {
+        return asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class)
+            .filter(nlr -> nlr.getGivenNames() != null && nlr.getFamilyName() != null)
+            .map(nlr -> nlr.getGivenNames() + " " + nlr.getFamilyName())
+            .orElseThrow(() -> new IllegalStateException("Non-legal representative name is not present"));
+    }
+
     public static String getUanOrGwf(AsylumCase asylumCase) {
         // Retrieve the UAN or GWF from the case record
         String homeOfficeReferenceNumber = asylumCase
@@ -760,5 +878,18 @@ public class HandlerUtils {
                 .orElse("");
         }
         return homeOfficeReferenceNumber;
+    }
+
+    public static boolean isDecisionWithHearing(AsylumCase asylumCase) {
+        AppealType appealType = asylumCase.read(APPEAL_TYPE, AppealType.class).orElse(null);
+        return switch (appealType) {
+            case PA, EA, EU, HU -> asylumCase.read(DECISION_HEARING_FEE_OPTION, String.class)
+                .orElse("")
+                .equals("decisionWithHearing");
+            case RP, DC -> asylumCase.read(RP_DC_APPEAL_HEARING_OPTION, String.class)
+                .orElse("")
+                .equals("decisionWithHearing");
+            case null, default -> throw new IllegalStateException("Appeal type is not present");
+        };
     }
 }

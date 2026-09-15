@@ -85,3 +85,10 @@ resource "azurerm_key_vault_secret" "local_ia_config_validator_secret" {
   value        = "ok"
   key_vault_id = data.azurerm_key_vault.ia_key_vault.id
 }
+
+resource "random_password" "password" {
+  length           = 16
+  special          = true
+  override_special = "!#$%&*()-_=+[]{}<>:?"
+}
+
