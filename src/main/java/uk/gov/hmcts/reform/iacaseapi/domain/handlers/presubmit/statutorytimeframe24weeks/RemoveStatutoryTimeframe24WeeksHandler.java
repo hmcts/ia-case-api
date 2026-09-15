@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import java.time.LocalDate;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMOVAL_OF_24W_DECISION_REASON;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.REMOVE_STATUTORY_TIMEFRAME_24_WEEKS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 
@@ -41,8 +42,13 @@ public class RemoveStatutoryTimeframe24WeeksHandler implements PreSubmitCallback
         }
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
+
         YesOrNo status = YesOrNo.NO;
-        AsylumCase updatedAsylum = updateStatutoryTimeframe24WeeksService.updateAsylumCase(asylumCase, status);
+        String reason = asylumCase
+            .read(REMOVAL_OF_24W_DECISION_REASON, String.class)
+            .orElseThrow(() -> new IllegalStateException("removalOf24wDecisionReason is not present"));
+
+        AsylumCase updatedAsylum = updateStatutoryTimeframe24WeeksService.updateAsylumCase(asylumCase, status, reason);
         asylumCase.writeIfEmpty(AsylumCaseFieldDefinition.STF_24W_REMOVE_DATE, LocalDate.now().toString());
 
         return new PreSubmitCallbackResponse<>(updatedAsylum);
