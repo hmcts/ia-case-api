@@ -39,7 +39,7 @@ module "ia-case-api-db-v15" {
   providers = {
     azurerm.postgres_network = azurerm.cft_vnet
   }
-  source        = "git@github.com:hmcts/terraform-module-postgresql-flexible?ref=master"
+  source        = "git@github.com:hmcts/terraform-module-postgresql-flexible?ref=DTSPO-30107-additional-postgres-admins"
   env           = var.env
   product       = var.product
   component     = var.component
