@@ -52,7 +52,7 @@ public class HomeOfficeReferenceHandlerOnSubmit implements PreSubmitCallbackHand
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-                && List.of(Event.START_APPEAL, Event.EDIT_APPEAL, Event.EDIT_APPEAL_AFTER_SUBMIT).contains(callback.getEvent());
+                && List.of(Event.START_APPEAL, Event.EDIT_APPEAL, Event.EDIT_APPELLANT_PERSONAL_DATA).contains(callback.getEvent());
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(

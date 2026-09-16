@@ -1,20 +1,19 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.when;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
+
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.when;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -51,30 +50,24 @@ class EditAppealAfterSubmitConfirmationTest {
 
     @Test
     void handling_should_throw_if_cannot_actually_handle() {
-
+        when(callback.getEvent()).thenReturn(Event.START_APPEAL);
         assertThatThrownBy(() -> editAppealAfterSubmitConfirmation.handle(callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
     }
 
-    @Test
-    void it_can_handle_callback() {
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {"EDIT_APPEAL_AFTER_SUBMIT", "EDIT_APPELLANT_PERSONAL_DATA"})
+    void it_can_handle_callback(Event event) {
+        when(callback.getEvent()).thenReturn(event);
+        assertTrue(editAppealAfterSubmitConfirmation.canHandle(callback));
+    }
 
-        for (Event event : Event.values()) {
-
-            when(callback.getEvent()).thenReturn(event);
-
-            boolean canHandle = editAppealAfterSubmitConfirmation.canHandle(callback);
-
-            if (event == Event.EDIT_APPEAL_AFTER_SUBMIT) {
-
-                assertTrue(canHandle);
-            } else {
-                assertFalse(canHandle);
-            }
-
-            reset(callback);
-        }
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {"EDIT_APPEAL_AFTER_SUBMIT", "EDIT_APPELLANT_PERSONAL_DATA"}, mode = EnumSource.Mode.EXCLUDE)
+    void it_cannot_handle_callback_invalid_event(Event event) {
+        when(callback.getEvent()).thenReturn(event);
+        assertFalse(editAppealAfterSubmitConfirmation.canHandle(callback));
     }
 
     @Test

@@ -68,7 +68,7 @@ class HomeOfficeReferenceHandlerOnSubmitTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = Event.class, names = {"START_APPEAL", "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT"})
+    @EnumSource(value = Event.class, names = {"START_APPEAL", "EDIT_APPEAL", "EDIT_APPELLANT_PERSONAL_DATA"})
     void canHandle_true_for_correct_stage_and_event(Event event) {
         when(callback.getEvent()).thenReturn(event);
 
@@ -76,7 +76,7 @@ class HomeOfficeReferenceHandlerOnSubmitTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = Event.class, names = {"START_APPEAL", "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT"}, mode = EnumSource.Mode.EXCLUDE)
+    @EnumSource(value = Event.class, names = {"START_APPEAL", "EDIT_APPEAL", "EDIT_APPELLANT_PERSONAL_DATA"}, mode = EnumSource.Mode.EXCLUDE)
     void canHandle_false_for_correct_stage_incorrect_event(Event event) {
         when(callback.getEvent()).thenReturn(event);
 
