@@ -457,13 +457,15 @@ class AutomaticEndAppealForNonPaymentEaHuTriggerTest {
         assertTrue(result);
     }
 
-    @Test
-    void should_schedule_end_appeal_for_reinstate_appeal_when_payment_not_paid() {
+    @ParameterizedTest
+    @EnumSource(value = AppealType.class, names = {"EA", "HU", "EU", "AG"})
+    void should_schedule_end_appeal_for_reinstate_appeal_when_payment_not_paid(AppealType appealType) {
         when(callback.getEvent()).thenReturn(Event.REINSTATE_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(caseDetails.getId()).thenReturn(caseId);
         when(dateProvider.nowWithTime()).thenReturn(now);
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
         when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class))
             .thenReturn(Optional.of(PaymentStatus.PAYMENT_PENDING));
 
@@ -486,11 +488,13 @@ class AutomaticEndAppealForNonPaymentEaHuTriggerTest {
         assertEquals(caseId, result.getCaseId());
     }
 
-    @Test
-    void canHandle_should_return_true_for_reinstate_appeal_when_payment_not_paid() {
+    @ParameterizedTest
+    @EnumSource(value = AppealType.class, names = {"EA", "HU", "EU", "AG"})
+    void canHandle_should_return_true_for_reinstate_appeal_when_payment_not_paid(AppealType appealType) {
         when(callback.getEvent()).thenReturn(Event.REINSTATE_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
         when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class))
             .thenReturn(Optional.of(PaymentStatus.PAYMENT_PENDING));
 
@@ -500,13 +504,31 @@ class AutomaticEndAppealForNonPaymentEaHuTriggerTest {
         assertTrue(result);
     }
 
-    @Test
-    void canHandle_should_return_false_for_reinstate_appeal_when_payment_paid() {
+    @ParameterizedTest
+    @EnumSource(value = AppealType.class, names = {"EA", "HU", "EU", "AG"})
+    void canHandle_should_return_false_for_reinstate_appeal_when_payment_paid(AppealType appealType) {
         when(callback.getEvent()).thenReturn(Event.REINSTATE_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
         when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class))
             .thenReturn(Optional.of(PaymentStatus.PAID));
+
+        assertThatThrownBy(() -> automaticEndAppealForNonPaymentEaHuTrigger
+            .handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
+            .hasMessage("Cannot handle callback for auto end appeal for remission rejection")
+            .isExactlyInstanceOf(IllegalStateException.class);
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = AppealType.class, names = {"PA", "RP", "DC"})
+    void canHandle_should_return_false_for_reinstate_appeal_when_appeal_type_not_ea_hu_eu_ag(AppealType appealType) {
+        when(callback.getEvent()).thenReturn(Event.REINSTATE_APPEAL);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
+        when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class))
+            .thenReturn(Optional.of(PaymentStatus.PAYMENT_PENDING));
 
         assertThatThrownBy(() -> automaticEndAppealForNonPaymentEaHuTrigger
             .handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))

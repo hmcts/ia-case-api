@@ -52,31 +52,42 @@ public class AutomaticEndAppealForNonPaymentEaHuTrigger implements PreSubmitCall
             PreSubmitCallbackStage callbackStage,
             Callback<AsylumCase> callback
     ) {
-
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
-        AsylumCase asylumCase =
-            callback
-                .getCaseDetails()
-                .getCaseData();
+        if (callbackStage != PreSubmitCallbackStage.ABOUT_TO_SUBMIT) {
+            return false;
+        }
 
-        Optional<RemissionType> remissionType = asylumCase.read(REMISSION_TYPE, RemissionType.class);
+        AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
+        Event event = callback.getEvent();
+
         Optional<AppealType> appealType = asylumCase.read(APPEAL_TYPE, AppealType.class);
-        PaymentStatus paymentStatus = asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)
-                .orElse(PaymentStatus.PAYMENT_PENDING);
+        boolean isEaHuEuAppeal = appealType.isPresent() && Set.of(EA, HU, EU, AG).contains(appealType.get());
 
-        boolean lrAppealWithNoRemission = remissionType.map(
-                remission -> remission.equals(RemissionType.NO_REMISSION)).orElse(true);
+        if (!isEaHuEuAppeal) {
+            return false;
+        }
 
-        return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-                && ((callback.getEvent() == Event.REINSTATE_APPEAL
-                        && paymentStatus != PaymentStatus.PAID)
-                || (callback.getEvent() == Event.SUBMIT_APPEAL
-                && !isAcceleratedDetainedAppeal(asylumCase)
-                && (isAipJourney(asylumCase) ? !aipAppealHasRemission(asylumCase) : lrAppealWithNoRemission)
-                && (appealType.isPresent() && Set.of(EA, HU, EU, AG).contains(appealType.get()))));
+        if (event == Event.REINSTATE_APPEAL) {
+            PaymentStatus paymentStatus = asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)
+                    .orElse(PaymentStatus.PAYMENT_PENDING);
+            return paymentStatus != PaymentStatus.PAID;
+        }
 
+        if (event == Event.SUBMIT_APPEAL) {
+            Optional<RemissionType> remissionType = asylumCase.read(REMISSION_TYPE, RemissionType.class);
+            boolean lrAppealWithNoRemission = remissionType
+                    .map(remission -> remission == RemissionType.NO_REMISSION)
+                    .orElse(true);
+            boolean hasNoRemission = isAipJourney(asylumCase)
+                    ? !aipAppealHasRemission(asylumCase)
+                    : lrAppealWithNoRemission;
+
+            return !isAcceleratedDetainedAppeal(asylumCase) && hasNoRemission;
+        }
+
+        return false;
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
