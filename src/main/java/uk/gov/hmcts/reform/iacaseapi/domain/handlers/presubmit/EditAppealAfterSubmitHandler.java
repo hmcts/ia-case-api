@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static java.time.LocalDate.parse;
 import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_SUBMISSION_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_IN_UK;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPLICATIONS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPLICATION_EDIT_APPEAL_AFTER_SUBMIT_EXISTS;
@@ -280,9 +281,14 @@ public class EditAppealAfterSubmitHandler implements PreSubmitCallbackHandler<As
             parse(homeOfficeDecisionLetterDateOptional
                 .orElseThrow(() -> new RequiredFieldMissingException("decisionLetterReceivedDate is not present")));
 
+        Optional<String> appealSubmissionDateOptional = asylumCase.read(APPEAL_SUBMISSION_DATE);
+        LocalDate appealSubmissionDate =
+            parse(appealSubmissionDateOptional
+                .orElseThrow(() -> new RequiredFieldMissingException("appealSubmissionDate is missing")));
+
         ZonedDateTime dueDateTime = dueDateService.calculateDueDate(decisionDate.atStartOfDay(ZoneOffset.UTC), appealOutOfTimeAcceleratedDetainedWorkingDays);
 
-        if (dueDateTime != null && dueDateTime.toLocalDate().isBefore(dateProvider.now())) {
+        if (dueDateTime != null && dueDateTime.toLocalDate().isBefore(appealSubmissionDate)) {
             asylumCase.write(SUBMISSION_OUT_OF_TIME, YES);
             asylumCase.write(RECORDED_OUT_OF_TIME_DECISION, NO);
         } else {
@@ -325,8 +331,13 @@ public class EditAppealAfterSubmitHandler implements PreSubmitCallbackHandler<As
             asylumCase.write(HOME_OFFICE_REFERENCE_NUMBER, asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER).orElse(asylumCase.read(GWF_REFERENCE_NUMBER).orElse(null)));
         }
 
+        Optional<String> appealSubmissionDateOptional = asylumCase.read(APPEAL_SUBMISSION_DATE);
+        LocalDate appealSubmissionDate =
+            parse(appealSubmissionDateOptional
+                .orElseThrow(() -> new RequiredFieldMissingException("appealSubmissionDate is missing")));
+
         if (decisionDate != null
-            && decisionDate.isBefore(dateProvider.now().minusDays(appealOutOfTimeDaysOoc))) {
+            && decisionDate.isBefore(appealSubmissionDate.minusDays(appealOutOfTimeDaysOoc))) {
             asylumCase.write(SUBMISSION_OUT_OF_TIME, YES);
         } else {
             asylumCase.write(SUBMISSION_OUT_OF_TIME, NO);
@@ -341,7 +352,12 @@ public class EditAppealAfterSubmitHandler implements PreSubmitCallbackHandler<As
         Optional<String> dateOnDecisionLetterOptional = asylumCase.read(DATE_ON_DECISION_LETTER, String.class);
         LocalDate decisionDate = parse(dateOnDecisionLetterOptional.orElseThrow(() -> new RequiredFieldMissingException("dateOnDecisionLetter is not present")));
 
-        if (decisionDate.isBefore(dateProvider.now().minusDays(appealOutOfTimeDaysUk))) {
+        Optional<String> appealSubmissionDateOptional = asylumCase.read(APPEAL_SUBMISSION_DATE);
+        LocalDate appealSubmissionDate =
+            parse(appealSubmissionDateOptional
+                .orElseThrow(() -> new RequiredFieldMissingException("appealSubmissionDate is missing")));
+
+        if (decisionDate.isBefore(appealSubmissionDate.minusDays(appealOutOfTimeDaysUk))) {
             asylumCase.write(SUBMISSION_OUT_OF_TIME, YES);
         } else {
             asylumCase.write(SUBMISSION_OUT_OF_TIME, NO);
@@ -354,12 +370,16 @@ public class EditAppealAfterSubmitHandler implements PreSubmitCallbackHandler<As
     private void handleInCountryAppeal(AsylumCase asylumCase) {
 
         Optional<String> homeOfficeDecisionDateOptional = asylumCase.read(HOME_OFFICE_DECISION_DATE);
+        Optional<String> appealSubmissionDateOptional = asylumCase.read(APPEAL_SUBMISSION_DATE);
 
         if (!isEjpCase(asylumCase)) {
             LocalDate decisionDate =
                 parse(homeOfficeDecisionDateOptional
                     .orElseThrow(() -> new RequiredFieldMissingException("homeOfficeDecisionDate is missing")));
-            if (decisionDate.isBefore(dateProvider.now().minusDays(appealOutOfTimeDaysUk))) {
+            LocalDate appealSubmissionDate =
+                parse(appealSubmissionDateOptional
+                    .orElseThrow(() -> new RequiredFieldMissingException("appealSubmissionDateOptional is missing")));
+            if (decisionDate.isBefore(appealSubmissionDate.minusDays(appealOutOfTimeDaysUk))) {
                 asylumCase.write(SUBMISSION_OUT_OF_TIME, YES);
             } else {
                 asylumCase.write(SUBMISSION_OUT_OF_TIME, NO);
