@@ -360,9 +360,7 @@ class HandlerUtilsTest {
     @Test
     public void read_json_file_list_invalid_file_path_throws_io() {
         String filePath = "/missingCaseIdList.json";
-        assertThrows(IOException.class, () -> {
-            HandlerUtils.readJsonFileList(filePath, "key");
-        });
+        assertThrows(IOException.class, () -> HandlerUtils.readJsonFileList(filePath, "key"));
     }
 
     @Test
@@ -1009,7 +1007,7 @@ class HandlerUtilsTest {
 
     @Test
     void hasAppellantDataBeenValidated_returns_true_1() {
-        when(asylumCase.read(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, String.class)).thenReturn(Optional.of("ABCDE"));
+        when(asylumCase.read(HAS_BEEN_VALIDATED_BY_NEW_HOME_OFFICE_API, YesOrNo.class)).thenReturn(Optional.of(YES));
         when(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class)).thenReturn(Optional.of(""));
         when(asylumCase.read(HOME_OFFICE_SEARCH_NO_MATCH, String.class)).thenReturn(Optional.of("NO_MATCH"));
         assertTrue(HandlerUtils.hasAppellantDataBeenValidated(asylumCase));
@@ -1017,7 +1015,7 @@ class HandlerUtilsTest {
 
     @Test
     void hasAppellantDataBeenValidated_returns_true_2() {
-        when(asylumCase.read(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, String.class)).thenReturn(Optional.empty());
+        when(asylumCase.read(HAS_BEEN_VALIDATED_BY_NEW_HOME_OFFICE_API, YesOrNo.class)).thenReturn(Optional.empty());
         when(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class)).thenReturn(Optional.of("SUCCESS"));
         when(asylumCase.read(HOME_OFFICE_SEARCH_NO_MATCH, String.class)).thenReturn(Optional.of(""));
         assertTrue(HandlerUtils.hasAppellantDataBeenValidated(asylumCase));
@@ -1025,7 +1023,7 @@ class HandlerUtilsTest {
 
     @Test
     void hasAppellantDataBeenValidated_returns_true_3() {
-        when(asylumCase.read(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, String.class)).thenReturn(Optional.empty());
+        when(asylumCase.read(HAS_BEEN_VALIDATED_BY_NEW_HOME_OFFICE_API, YesOrNo.class)).thenReturn(Optional.empty());
         when(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class)).thenReturn(Optional.of("SUCCESS"));
         when(asylumCase.read(HOME_OFFICE_SEARCH_NO_MATCH, String.class)).thenReturn(Optional.of("NO_MATCH"));
         assertTrue(HandlerUtils.hasAppellantDataBeenValidated(asylumCase));
@@ -1033,21 +1031,21 @@ class HandlerUtilsTest {
 
     @Test
     void hasAppellantDataBeenValidated_returns_false_1() {
-        when(asylumCase.read(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, String.class)).thenReturn(Optional.empty());
+        when(asylumCase.read(HAS_BEEN_VALIDATED_BY_NEW_HOME_OFFICE_API, YesOrNo.class)).thenReturn(Optional.empty());
         when(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class)).thenReturn(Optional.of(""));
         assertFalse(HandlerUtils.hasAppellantDataBeenValidated(asylumCase));
     }
 
     @Test
     void hasAppellantDataBeenValidated_returns_false_2() {
-        when(asylumCase.read(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, String.class)).thenReturn(Optional.empty());
+        when(asylumCase.read(HAS_BEEN_VALIDATED_BY_NEW_HOME_OFFICE_API, YesOrNo.class)).thenReturn(Optional.empty());
         when(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class)).thenReturn(Optional.of("FAIL"));
         assertFalse(HandlerUtils.hasAppellantDataBeenValidated(asylumCase));
     }
 
     @Test
     void hasAppellantDataBeenValidated_returns_false_3() {
-        when(asylumCase.read(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, String.class)).thenReturn(Optional.empty());
+        when(asylumCase.read(HAS_BEEN_VALIDATED_BY_NEW_HOME_OFFICE_API, YesOrNo.class)).thenReturn(Optional.empty());
         when(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class)).thenReturn(Optional.of("MULTIPLE"));
         assertFalse(HandlerUtils.hasAppellantDataBeenValidated(asylumCase));
     }
