@@ -10,6 +10,7 @@
         "template": "minimal-appeal-submitted.json",
         "replacements": {
           "isNotificationTurnedOff": "No",
+          "completeCaseReviewDate": "{$TODAY-1}",
           "sendDirectionExplanation": null,
           "sendDirectionParties": null,
           "sendDirectionDateDue": null
@@ -26,6 +27,7 @@
       "template": "minimal-appeal-submitted.json",
       "replacements": {
         "isNotificationTurnedOff": "No",
+        "completeCaseReviewDate": "{$TODAY-1}",
         "sendDirectionExplanation": null,
         "sendDirectionParties": null,
         "sendDirectionDateDue": null

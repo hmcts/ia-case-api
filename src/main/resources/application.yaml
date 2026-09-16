@@ -1,5 +1,6 @@
 server:
   port: ${PORT:8090}
+  max-http-request-header-size: 100KB
 
 management:
   endpoint:
@@ -72,6 +73,8 @@ files:
 logging:
   level:
     io.lettuce.core: WARN
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] [%X{correlationId}] [%X{ccdCaseId}] %-5level %logger{36} - %msg%n"
 
 spring:
   retry:
@@ -237,6 +240,9 @@ homeOfficeApi:
   aboutToStartPath: "/asylum/ccdAboutToStart"
   aboutToSubmitPath: "/asylum/ccdAboutToSubmit"
   midEventPath: "/asylum/ccdMidEvent"
+  serialisation:
+    encryption:
+      key: ${IA_HOME_OFFICE_INTEGRATION_ENCRYPTION_KEY:}
 
 security:
   anonymousPaths:
@@ -294,6 +300,7 @@ security:
       - "requestHearingRequirements"
       - "requestRespondentEvidence"
       - "completeCaseReview"
+      - "sendLateTimelineNotice"
       - "uploadRespondentEvidence"
       - "requestRespondentReview"
       - "addAppealResponse"
@@ -377,7 +384,12 @@ security:
       - "turnOnNotificationsWATasks"
       - "addStatutoryTimeframe24Weeks"
       - "removeStatutoryTimeframe24Weeks"
+      - "forceCaseToPrepareForHearing"
       - "revokeCitizenAccess"
+      - "sendInviteToNonLegalRep"
+      - "sendPipToNonLegalRep"
+      - "joinAppealConfirmation"
+      - "generatePinInPost"
     challenged-access-legal-operations:
       - "appellantInPersonManual"
       - "moveToPaymentPending"
@@ -387,6 +399,7 @@ security:
       - "requestHearingRequirements"
       - "requestRespondentEvidence"
       - "completeCaseReview"
+      - "sendLateTimelineNotice"
       - "uploadRespondentEvidence"
       - "requestRespondentReview"
       - "addAppealResponse"
@@ -467,7 +480,14 @@ security:
       - "generateListCmrTask"
       - "markAppealAsDetained"
       - "removeDetainedStatus"
+      - "addStatutoryTimeframe24Weeks"
+      - "removeStatutoryTimeframe24Weeks"
+      - "forceCaseToPrepareForHearing"
       - "revokeCitizenAccess"
+      - "sendInviteToNonLegalRep"
+      - "sendPipToNonLegalRep"
+      - "joinAppealConfirmation"
+      - "generatePinInPost"
     senior-tribunal-caseworker:
       - "appellantInPersonManual"
       - "moveToPaymentPending"
@@ -477,6 +497,7 @@ security:
       - "requestHearingRequirements"
       - "requestRespondentEvidence"
       - "completeCaseReview"
+      - "sendLateTimelineNotice"
       - "uploadRespondentEvidence"
       - "requestRespondentReview"
       - "addAppealResponse"
@@ -558,8 +579,14 @@ security:
       - "markAppealAsDetained"
       - "removeDetainedStatus"
       - "turnOnNotificationsWATasks"
+      - "forceCaseToPrepareForHearing"
+      - "addStatutoryTimeframe24Weeks"
       - "removeStatutoryTimeframe24Weeks"
       - "revokeCitizenAccess"
+      - "sendInviteToNonLegalRep"
+      - "sendPipToNonLegalRep"
+      - "joinAppealConfirmation"
+      - "generatePinInPost"
     hearing-centre-admin:
       - "appellantInPersonManual"
       - "startAppeal"
@@ -630,7 +657,13 @@ security:
       - "forceFtpaDecidedState"
       - "turnOnNotificationsWATasks"
       - "addStatutoryTimeframe24Weeks"
+      - "removeStatutoryTimeframe24Weeks"
       - "revokeCitizenAccess"
+      - "sendInviteToNonLegalRep"
+      - "sendPipToNonLegalRep"
+      - "joinAppealConfirmation"
+      - "requestRespondentEvidence"
+      - "generatePinInPost"
     ctsc:
       - "appellantInPersonManual"
       - "startAppeal"
@@ -698,9 +731,15 @@ security:
       - "turnOnNotificationsWATasks"
       - "editDocuments"
       - "addStatutoryTimeframe24Weeks"
+      - "removeStatutoryTimeframe24Weeks"
       - "revokeCitizenAccess"
+      - "sendInviteToNonLegalRep"
+      - "sendPipToNonLegalRep"
+      - "joinAppealConfirmation"
       - "forceDecidedState"
       - "forceFtpaDecidedState"
+      - "requestRespondentEvidence"
+      - "generatePinInPost"
     ctsc-team-leader:
       - "appellantInPersonManual"
       - "startAppeal"
@@ -770,7 +809,13 @@ security:
       - "forceDecidedState"
       - "forceFtpaDecidedState"
       - "addStatutoryTimeframe24Weeks"
+      - "removeStatutoryTimeframe24Weeks"
       - "revokeCitizenAccess"
+      - "sendInviteToNonLegalRep"
+      - "sendPipToNonLegalRep"
+      - "joinAppealConfirmation"
+      - "requestRespondentEvidence"
+      - "generatePinInPost"
     national-business-centre:
       - "appellantInPersonManual"
       - "startAppeal"
@@ -839,7 +884,13 @@ security:
       - "forceDecidedState"
       - "forceFtpaDecidedState"
       - "addStatutoryTimeframe24Weeks"
+      - "removeStatutoryTimeframe24Weeks"
       - "revokeCitizenAccess"
+      - "sendInviteToNonLegalRep"
+      - "sendPipToNonLegalRep"
+      - "joinAppealConfirmation"
+      - "requestRespondentEvidence"
+      - "generatePinInPost"
     challenged-access-ctsc:
       - "appellantInPersonManual"
       - "startAppeal"
@@ -908,7 +959,13 @@ security:
       - "forceDecidedState"
       - "forceFtpaDecidedState"
       - "addStatutoryTimeframe24Weeks"
+      - "removeStatutoryTimeframe24Weeks"
       - "revokeCitizenAccess"
+      - "sendInviteToNonLegalRep"
+      - "sendPipToNonLegalRep"
+      - "joinAppealConfirmation"
+      - "requestRespondentEvidence"
+      - "generatePinInPost"
     challenged-access-admin:
       - "appellantInPersonManual"
       - "startAppeal"
@@ -978,7 +1035,13 @@ security:
       - "forceDecidedState"
       - "forceFtpaDecidedState"
       - "addStatutoryTimeframe24Weeks"
+      - "removeStatutoryTimeframe24Weeks"
       - "revokeCitizenAccess"
+      - "sendInviteToNonLegalRep"
+      - "sendPipToNonLegalRep"
+      - "joinAppealConfirmation"
+      - "requestRespondentEvidence"
+      - "generatePinInPost"
     caseworker-ia-homeofficeapc:
       - "uploadHomeOfficeBundle"
       - "uploadAdditionalEvidenceHomeOffice"
@@ -1035,6 +1098,12 @@ security:
       - "pipActivation"
       - "applyForFTPAAppellant"
       - "requestFeeRemission"
+      - "deleteDraftAppeal"
+      - "sendInviteToNonLegalRep"
+      - "sendPipToNonLegalRep"
+      - "joinAppealConfirmation"
+      - "nlrDetailsUpdated"
+      - "removeNonLegalRep"
     caseworker-ia-iacjudge:
       - "generateDecisionAndReasons"
       - "endAppeal"
@@ -1098,6 +1167,8 @@ security:
       - "createFlag"
       - "decideCostsApplication"
       - "considerMakingCostsOrder"
+      - "addStatutoryTimeframe24Weeks"
+      - "removeStatutoryTimeframe24Weeks"
       - "updateTribunalDecision"
     senior-judge:
       - "generateDecisionAndReasons"
@@ -1129,6 +1200,8 @@ security:
       - "createFlag"
       - "decideCostsApplication"
       - "considerMakingCostsOrder"
+      - "addStatutoryTimeframe24Weeks"
+      - "removeStatutoryTimeframe24Weeks"
       - "updateTribunalDecision"
     leadership-judge:
       - "generateDecisionAndReasons"
@@ -1160,6 +1233,8 @@ security:
       - "createFlag"
       - "decideCostsApplication"
       - "considerMakingCostsOrder"
+      - "addStatutoryTimeframe24Weeks"
+      - "removeStatutoryTimeframe24Weeks"
       - "updateTribunalDecision"
     fee-paid-judge:
       - "generateDecisionAndReasons"
@@ -1191,6 +1266,8 @@ security:
       - "createFlag"
       - "decideCostsApplication"
       - "considerMakingCostsOrder"
+      - "addStatutoryTimeframe24Weeks"
+      - "removeStatutoryTimeframe24Weeks"
       - "updateTribunalDecision"
     lead-judge:
       - "generateDecisionAndReasons"
@@ -1222,6 +1299,8 @@ security:
       - "createFlag"
       - "decideCostsApplication"
       - "considerMakingCostsOrder"
+      - "addStatutoryTimeframe24Weeks"
+      - "removeStatutoryTimeframe24Weeks"
       - "updateTribunalDecision"
     hearing-judge:
       - "generateDecisionAndReasons"
@@ -1253,6 +1332,8 @@ security:
       - "createFlag"
       - "decideCostsApplication"
       - "considerMakingCostsOrder"
+      - "addStatutoryTimeframe24Weeks"
+      - "removeStatutoryTimeframe24Weeks"
       - "updateTribunalDecision"
     ftpa-judge:
       - "generateDecisionAndReasons"
@@ -1284,6 +1365,8 @@ security:
       - "createFlag"
       - "decideCostsApplication"
       - "considerMakingCostsOrder"
+      - "addStatutoryTimeframe24Weeks"
+      - "removeStatutoryTimeframe24Weeks"
       - "updateTribunalDecision"
     hearing-panel-judge:
       - "generateDecisionAndReasons"
@@ -1315,6 +1398,8 @@ security:
       - "createFlag"
       - "decideCostsApplication"
       - "considerMakingCostsOrder"
+      - "addStatutoryTimeframe24Weeks"
+      - "removeStatutoryTimeframe24Weeks"
       - "updateTribunalDecision"
     challenged-access-judiciary:
       - "generateDecisionAndReasons"
@@ -1346,6 +1431,8 @@ security:
       - "createFlag"
       - "decideCostsApplication"
       - "considerMakingCostsOrder"
+      - "addStatutoryTimeframe24Weeks"
+      - "removeStatutoryTimeframe24Weeks"
       - "updateTribunalDecision"
     caseworker-ia-system:
       - "requestHearingRequirementsFeature"
@@ -1378,10 +1465,16 @@ security:
       - "rollbackMigration"
       - "addStatutoryTimeframe24Weeks"
       - "removeStatutoryTimeframe24Weeks"
+      - "deleteDraftAppeal"
       - "createCaseLink"
       - "maintainCaseLinks"
       - "revokeCitizenAccess"
       - "generatePinInPost"
+      - "sendInviteToNonLegalRep"
+      - "sendPipToNonLegalRep"
+      - "joinAppealConfirmation"
+      - "nlrDetailsUpdated"
+      - "removeNonLegalRep"
     caseworker-ia-internal:
       - "revokeCaseAccess"
       - "removeCaseManagerBulk"
@@ -1464,10 +1557,12 @@ commonData:
 govUkHolidays:
   url: https://www.gov.uk/
 
-saveNotificationsData:
+save-notifications-data:
   enabled: ${SAVE_NOTIFICATIONS_TO_DATA_EVENT_ENABLED:true}
-  scheduleAtHour: ${SAVE_NOTIFICATIONS_DATA_SCHEDULE_HOUR:23}
-  scheduleMaxMinutes: ${SAVE_NOTIFICATIONS_DATA_SCHEDULE_MAX_MINUTES:50}
+  retention-days: ${SAVE_NOTIFICATIONS_DATA_RETENTION_DAYS:21}
+  scheduling:
+    target-hour: ${SAVE_NOTIFICATIONS_DATA_TARGET_HOUR:23}
+    window-duration-minutes: ${SAVE_NOTIFICATIONS_DATA_WINDOW_DURATION_MINUTES:50}
 
 govnotify:
   baseUrl: "https://api.notifications.service.gov.uk"
@@ -1487,4 +1582,4 @@ app:
   home-office-validation:
     enabled: ${HOME_OFFICE_VALIDATION_ENABLED:true}
   statutory-timeframe:
-    live-date: ${STATUTORY_TIMEFRAME_LIVE_DATE:2026-09-01}
+    live-date: ${STATUTORY_TIMEFRAME_LIVE_DATE:2026-08-12}

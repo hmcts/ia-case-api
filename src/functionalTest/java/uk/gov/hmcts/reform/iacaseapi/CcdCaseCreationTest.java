@@ -260,7 +260,8 @@ public class CcdCaseCreationTest {
 
         try {
             data = new ObjectMapper()
-                .readValue(asString(appealJson), new TypeReference<>(){});
+                .readValue(asString(appealJson), new TypeReference<>() {
+                });
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
@@ -315,22 +316,26 @@ public class CcdCaseCreationTest {
     }
 
 
-
     @NotNull
     protected Case createAndGetCase(boolean isAipJourney) {
-        AsylumCase caseData;
-        if (isAipJourney) {
-            setupForAip();
-            caseData = getAipCase();
-            caseId = parseLong(getAipCaseId());
-        } else {
-            setupForLegalRep();
-            caseData = getLegalRepCase();
-            caseId = parseLong(getLegalRepCaseId());
+        for (int i = 0; i < 3; i++) {
+            try {
+                AsylumCase caseData;
+                if (isAipJourney) {
+                    setupForAip();
+                    caseData = getAipCase();
+                    caseId = parseLong(getAipCaseId());
+                } else {
+                    setupForLegalRep();
+                    caseData = getLegalRepCase();
+                    caseId = parseLong(getLegalRepCaseId());
+                }
+
+                return new Case(caseId, caseData);
+            } catch (Exception e) {
+                log.error("Error creating and getting case: " + e.getMessage(), e);
+            }
         }
-
-        Case result = new Case(caseId, caseData);
-
-        return result;
+        throw new RuntimeException("Failed to create and get case after 3 attempts");
     }
 }

@@ -1,40 +1,11 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.ADJOURNED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.APPEAL_STARTED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.APPEAL_STARTED_BY_ADMIN;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.APPEAL_SUBMITTED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.APPEAL_SUBMITTED_OUT_OF_TIME;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.APPEAL_TAKEN_OFFLINE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.AWAITING_CLARIFYING_QUESTIONS_ANSWERS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.AWAITING_CMA_REQUIREMENTS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.AWAITING_REASONS_FOR_APPEAL;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.AWAITING_RESPONDENT_EVIDENCE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.CASE_BUILDING;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.CASE_UNDER_REVIEW;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.CLARIFYING_QUESTIONS_ANSWERS_SUBMITTED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.CMA_ADJUSTMENTS_AGREED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.CMA_LISTED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.CMA_REQUIREMENTS_SUBMITTED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.DECIDED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.DECISION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.ENDED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.FINAL_BUNDLING;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.FTPA_DECIDED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.FTPA_SUBMITTED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.LISTING;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.MIGRATED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.PENDING_PAYMENT;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.PREPARE_FOR_HEARING;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.PRE_HEARING;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.REASONS_FOR_APPEAL_SUBMITTED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.REMITTED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.RESPONDENT_REVIEW;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.SUBMIT_HEARING_REQUIREMENTS;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
-import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.*;
 
 class StateTest {
 
@@ -43,7 +14,6 @@ class StateTest {
         assertEquals("appealStarted", APPEAL_STARTED.toString());
         assertEquals("appealStartedByAdmin", APPEAL_STARTED_BY_ADMIN.toString());
         assertEquals("appealSubmitted", APPEAL_SUBMITTED.toString());
-        assertEquals("appealSubmittedOutOfTime", APPEAL_SUBMITTED_OUT_OF_TIME.toString());
         assertEquals("pendingPayment", PENDING_PAYMENT.toString());
         assertEquals("awaitingRespondentEvidence", AWAITING_RESPONDENT_EVIDENCE.toString());
         assertEquals("caseBuilding", CASE_BUILDING.toString());
@@ -74,7 +44,6 @@ class StateTest {
         assertEquals("Appeal started", APPEAL_STARTED.getDescription());
         assertEquals("Appeal started by admin", APPEAL_STARTED_BY_ADMIN.getDescription());
         assertEquals("Appeal submitted", APPEAL_SUBMITTED.getDescription());
-        assertEquals("Appeal submitted out of time", APPEAL_SUBMITTED_OUT_OF_TIME.getDescription());
         assertEquals("Payment pending", PENDING_PAYMENT.getDescription());
         assertEquals("Awaiting respondent evidence", AWAITING_RESPONDENT_EVIDENCE.getDescription());
         assertEquals("Case building", CASE_BUILDING.getDescription());
@@ -106,7 +75,7 @@ class StateTest {
 
     @Test
     void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(32, State.values().length);
+        assertEquals(31, State.values().length);
     }
 
     @Test

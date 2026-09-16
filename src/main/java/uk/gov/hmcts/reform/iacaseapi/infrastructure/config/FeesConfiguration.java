@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.config;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -11,10 +12,14 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties("fees-register")
 public class FeesConfiguration {
 
-    private final Map<String, LookupReferenceData> fees = new HashMap<>();
+    private Map<String, LookupReferenceData> fees = new HashMap<>();
 
     public Map<String, LookupReferenceData> getFees() {
-        return fees;
+        return Collections.unmodifiableMap(fees);
+    }
+
+    public void setFees(Map<String, LookupReferenceData> fees) {
+        this.fees = fees;
     }
 
     public static class LookupReferenceData {

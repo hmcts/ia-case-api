@@ -41,6 +41,7 @@ class HearingCentreTest extends SpringBootIntegrationTest {
         assertEquals(HearingCentre.NEWPORT, hearingCentreFinder.find("CF1 1AA"));
         assertEquals(HearingCentre.NEWPORT, hearingCentreFinder.find("DT1 1AA"));
         assertEquals(HearingCentre.NEWPORT, hearingCentreFinder.find("EX1 1AA"));
+        assertEquals(HearingCentre.NEWPORT, hearingCentreFinder.find("GL1 1AA"));
         assertEquals(HearingCentre.NEWPORT, hearingCentreFinder.find("HR1 1AA"));
         assertEquals(HearingCentre.NEWPORT, hearingCentreFinder.find("LD1 1AA"));
         assertEquals(HearingCentre.NEWPORT, hearingCentreFinder.find("NP1 1AA"));
@@ -48,9 +49,11 @@ class HearingCentreTest extends SpringBootIntegrationTest {
         assertEquals(HearingCentre.NEWPORT, hearingCentreFinder.find("SA1 1AA"));
         assertEquals(HearingCentre.NEWPORT, hearingCentreFinder.find("SN1 1AA"));
         assertEquals(HearingCentre.NEWPORT, hearingCentreFinder.find("SP1 1AA"));
+        assertEquals(HearingCentre.NEWPORT, hearingCentreFinder.find("SY1 1AA"));
         assertEquals(HearingCentre.NEWPORT, hearingCentreFinder.find("TA1 1AA"));
         assertEquals(HearingCentre.NEWPORT, hearingCentreFinder.find("TQ1 1AA"));
         assertEquals(HearingCentre.NEWPORT, hearingCentreFinder.find("TR1 1AA"));
+        assertEquals(HearingCentre.NEWPORT, hearingCentreFinder.find("WR1 1AA"));
 
         assertEquals(HearingCentre.TAYLOR_HOUSE, hearingCentreFinder.find("BN1 1AA"));
         assertEquals(HearingCentre.TAYLOR_HOUSE, hearingCentreFinder.find("CB1 1AA"));
@@ -75,7 +78,6 @@ class HearingCentreTest extends SpringBootIntegrationTest {
         assertEquals(HearingCentre.BIRMINGHAM, hearingCentreFinder.find("CV1 1AA"));
         assertEquals(HearingCentre.BIRMINGHAM, hearingCentreFinder.find("DE1 1AA"));
         assertEquals(HearingCentre.BIRMINGHAM, hearingCentreFinder.find("DY1 1AA"));
-        assertEquals(HearingCentre.BIRMINGHAM, hearingCentreFinder.find("GL1 1AA"));
         assertEquals(HearingCentre.BIRMINGHAM, hearingCentreFinder.find("HP1 1AA"));
         assertEquals(HearingCentre.BIRMINGHAM, hearingCentreFinder.find("LE1 1AA"));
         assertEquals(HearingCentre.BIRMINGHAM, hearingCentreFinder.find("LN1 1AA"));
@@ -86,10 +88,8 @@ class HearingCentreTest extends SpringBootIntegrationTest {
         assertEquals(HearingCentre.BIRMINGHAM, hearingCentreFinder.find("OX1 1AA"));
         assertEquals(HearingCentre.BIRMINGHAM, hearingCentreFinder.find("PE1 1AA"));
         assertEquals(HearingCentre.BIRMINGHAM, hearingCentreFinder.find("RG1 1AA"));
-        assertEquals(HearingCentre.BIRMINGHAM, hearingCentreFinder.find("SY1 1AA"));
         assertEquals(HearingCentre.BIRMINGHAM, hearingCentreFinder.find("TF1 1AA"));
         assertEquals(HearingCentre.BIRMINGHAM, hearingCentreFinder.find("WD1 1AA"));
-        assertEquals(HearingCentre.BIRMINGHAM, hearingCentreFinder.find("WR1 1AA"));
         assertEquals(HearingCentre.BIRMINGHAM, hearingCentreFinder.find("WS1 1AA"));
         assertEquals(HearingCentre.BIRMINGHAM, hearingCentreFinder.find("WV1 1AA"));
 
