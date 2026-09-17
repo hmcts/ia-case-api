@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isInternalCase;
 
 @Component
@@ -51,21 +51,20 @@ public class EditAppellantPersonalDataHandler implements PreSubmitCallbackHandle
             callback
                 .getCaseDetails()
                 .getCaseData();
-
         Optional<OutOfCountryDecisionType> outOfCountryDecisionTypeOptional =
             asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class);
-        YesOrNo appellantInUk = asylumCase.read(APPELLANT_IN_UK, YesOrNo.class).orElse(NO);
-        boolean isRefusalOfHuOrPermit = outOfCountryDecisionTypeOptional
-            .map(outOfCountryDecisionType ->
+        boolean appellantInUk = asylumCase.read(APPELLANT_IN_UK, YesOrNo.class).orElse(YES).equals(YES);
+        boolean gwfIfDecisionType = outOfCountryDecisionTypeOptional.map(decision ->
                 Set.of(
                     OutOfCountryDecisionType.REFUSAL_OF_HUMAN_RIGHTS,
                     OutOfCountryDecisionType.REFUSE_PERMIT
-                ).contains(outOfCountryDecisionType))
+                ).contains(decision))
             .orElse(false);
-        boolean isInternalOocCase = isInternalCase(asylumCase) && appellantInUk.equals(NO);
-        if (isRefusalOfHuOrPermit || isInternalOocCase) {
-            asylumCase.write(HOME_OFFICE_REFERENCE_NUMBER, asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER)
-                .orElse(asylumCase.read(GWF_REFERENCE_NUMBER).orElse(null)));
+        boolean gwfIfNoOocDecisionType = outOfCountryDecisionTypeOptional.isEmpty() && isInternalCase(asylumCase)
+            && !appellantInUk;
+        if (gwfIfDecisionType || gwfIfNoOocDecisionType) {
+            asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class)
+                .ifPresent(referenceNumber -> asylumCase.write(GWF_REFERENCE_NUMBER, referenceNumber));
         }
 
         changeEditAppealApplicationsToCompleted(asylumCase);

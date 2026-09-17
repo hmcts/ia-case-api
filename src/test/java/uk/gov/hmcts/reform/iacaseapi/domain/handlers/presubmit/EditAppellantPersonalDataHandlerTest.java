@@ -167,49 +167,47 @@ class EditAppellantPersonalDataHandlerTest {
 
     @ParameterizedTest
     @EnumSource(value = OutOfCountryDecisionType.class, names = {"REFUSAL_OF_HUMAN_RIGHTS", "REFUSE_PERMIT"})
-    void should_write_home_office_reference_number_if_refusal_of_hu_or_permit(OutOfCountryDecisionType outOfCountryDecisionType) {
+    void should_write_gwf_reference_number_if_ooc_refusal_of_hu_or_permit(OutOfCountryDecisionType outOfCountryDecisionType) {
         when(asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class))
             .thenReturn(Optional.of(outOfCountryDecisionType));
         when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.of(NO));
-        when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER)).thenReturn(Optional.of("homeOfficeReferenceNumber"));
+        when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of("homeOfficeReferenceNumber"));
 
         PreSubmitCallbackResponse<AsylumCase> response =
             editAppellantPersonalData.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertEquals(asylumCase, response.getData());
-        verify(asylumCase).write(HOME_OFFICE_REFERENCE_NUMBER, "homeOfficeReferenceNumber");
+        verify(asylumCase).write(GWF_REFERENCE_NUMBER, "homeOfficeReferenceNumber");
     }
 
     @ParameterizedTest
     @EnumSource(value = OutOfCountryDecisionType.class, names = {"REFUSAL_OF_HUMAN_RIGHTS", "REFUSE_PERMIT"}, mode = EnumSource.Mode.EXCLUDE)
-    void should_not_write_home_office_reference_number_if_not_refusal_of_hu_or_permit(OutOfCountryDecisionType outOfCountryDecisionType) {
+    void should_not_write_gwf_reference_number_if_ooc_not_refusal_of_hu_or_permit(OutOfCountryDecisionType outOfCountryDecisionType) {
         when(asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class))
             .thenReturn(Optional.of(outOfCountryDecisionType));
         when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.of(NO));
-        when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER)).thenReturn(Optional.of("homeOfficeReferenceNumber"));
+        when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of("homeOfficeReferenceNumber"));
 
         PreSubmitCallbackResponse<AsylumCase> response =
             editAppellantPersonalData.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertEquals(asylumCase, response.getData());
-        verify(asylumCase, never()).write(eq(HOME_OFFICE_REFERENCE_NUMBER), any());
+        verify(asylumCase, never()).write(eq(GWF_REFERENCE_NUMBER), any());
     }
 
-    @ParameterizedTest
-    @EnumSource(value = OutOfCountryDecisionType.class, names = {"REFUSAL_OF_HUMAN_RIGHTS", "REFUSE_PERMIT"}, mode = EnumSource.Mode.EXCLUDE)
-    void should_write_home_office_reference_number_if_not_refusal_of_hu_or_permit_but_internalOocCase(OutOfCountryDecisionType outOfCountryDecisionType) {
+    @Test
+    void should_write_gwf_reference_number_if_no_ooc_decision_type_internal_ooc() {
         when(asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class))
-            .thenReturn(Optional.of(outOfCountryDecisionType));
+            .thenReturn(Optional.empty());
         when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.of(NO));
         when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YES));
-        when(asylumCase.read(GWF_REFERENCE_NUMBER)).thenReturn(Optional.of("gwfReferenceNumber"));
-        when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER)).thenReturn(Optional.empty());
+        when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of("gwfReferenceNumber"));
 
         PreSubmitCallbackResponse<AsylumCase> response =
             editAppellantPersonalData.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertEquals(asylumCase, response.getData());
-        verify(asylumCase).write(eq(HOME_OFFICE_REFERENCE_NUMBER), eq("gwfReferenceNumber"));
+        verify(asylumCase).write(eq(GWF_REFERENCE_NUMBER), eq("gwfReferenceNumber"));
     }
 
     @Test
@@ -218,8 +216,7 @@ class EditAppellantPersonalDataHandlerTest {
             .thenReturn(Optional.of(OutOfCountryDecisionType.REFUSAL_OF_HUMAN_RIGHTS));
         when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.of(NO));
         when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YES));
-        when(asylumCase.read(GWF_REFERENCE_NUMBER)).thenReturn(Optional.of("gwfReferenceNumber"));
-        when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER)).thenReturn(Optional.empty());
+        when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of("gwfReferenceNumber"));
 
         PreSubmitCallbackResponse<AsylumCase> response =
             editAppellantPersonalData.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
