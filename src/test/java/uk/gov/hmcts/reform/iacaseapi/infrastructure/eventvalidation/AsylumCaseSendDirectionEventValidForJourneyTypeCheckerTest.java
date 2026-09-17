@@ -128,13 +128,12 @@ class AsylumCaseSendDirectionEventValidForJourneyTypeCheckerTest {
 
         assertThat(eventValid).isEqualTo(
                 new EventValid(
-                        "Due to a system error you cannot select Legal representative as a recipient on a manual appeal. "
-                                + "The direction will need to be issued to the appellant."));
+                        "Due to a system error you cannot select Legal representative as a recipient on a manual appeal. The direction will need to be issued to the appellant."));
 
         Assertions.assertThat(loggingEventListAppender.list)
                 .extracting(ILoggingEvent::getMessage, ILoggingEvent::getLevel)
                 .contains(Tuple.tuple(
-                        "Cannot select Legal representative as a recipient on a manual appeal.",
+                        "Due to a system error you cannot select Legal representative as a recipient on a manual appeal. The direction will need to be issued to the appellant.",
                         Level.ERROR));
     }
 
@@ -147,13 +146,12 @@ class AsylumCaseSendDirectionEventValidForJourneyTypeCheckerTest {
 
         assertThat(eventValid).isEqualTo(
                 new EventValid(
-                        "You cannot select Legal representative and respondent as joint recipients on a manual appeal. "
-                                + "The direction will need to be issued to the recipients individually."));
+                        "You cannot select Legal representative and respondent as joint recipients on a manual appeal. The direction will need to be issued to the recipients individually."));
 
         Assertions.assertThat(loggingEventListAppender.list)
                 .extracting(ILoggingEvent::getMessage, ILoggingEvent::getLevel)
                 .contains(Tuple.tuple(
-                        "Cannot select Legal representative and respondent as joint recipients on a manual appeal.",
+                        "You cannot select Legal representative and respondent as joint recipients on a manual appeal. The direction will need to be issued to the recipients individually.",
                         Level.ERROR));
     }
 
@@ -176,7 +174,7 @@ class AsylumCaseSendDirectionEventValidForJourneyTypeCheckerTest {
                 .contains(Tuple.tuple(
                         "Due to a system error you cannot select Legal representative as a recipient on a manual appeal. The direction will need to be issued to the appellant.",
                         Level.ERROR));
-   }
+    }
 
     @ParameterizedTest
     @EnumSource(value = Parties.class, names = {
@@ -208,7 +206,6 @@ class AsylumCaseSendDirectionEventValidForJourneyTypeCheckerTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(AsylumCaseFieldDefinition.JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.empty());
         when(asylumCase.read(AsylumCaseFieldDefinition.IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
-        when(asylumCase.read(AsylumCaseFieldDefinition.APPELLANTS_REPRESENTATION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(asylumCase.read(AsylumCaseFieldDefinition.SEND_DIRECTION_PARTIES, Parties.class))
                 .thenReturn(Optional.of(party));
     }
@@ -219,7 +216,7 @@ class AsylumCaseSendDirectionEventValidForJourneyTypeCheckerTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
         when(asylumCase.read(AsylumCaseFieldDefinition.JOURNEY_TYPE, JourneyType.class))
-                .thenReturn(Optional.of(JourneyType.AIP));
+                .thenReturn(Optional.empty());
 
         when(asylumCase.read(AsylumCaseFieldDefinition.IS_ADMIN, YesOrNo.class))
                 .thenReturn(Optional.of(YesOrNo.YES));

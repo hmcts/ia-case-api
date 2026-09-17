@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.eventvalidation;
 
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SEND_DIRECTION_PARTIES;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isAppellantsRepresentation;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isInternalCase;
 
 import java.util.Arrays;
