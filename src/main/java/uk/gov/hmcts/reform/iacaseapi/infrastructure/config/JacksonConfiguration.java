@@ -27,7 +27,9 @@ public class JacksonConfiguration {
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
             .configure(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES, false)
             .changeDefaultPropertyInclusion(inclusion ->
-                                                inclusion.withValueInclusion(JsonInclude.Include.NON_NULL));
+                                                inclusion
+                                                    .withValueInclusion(JsonInclude.Include.NON_NULL)
+                                                    .withContentInclusion(JsonInclude.Include.NON_NULL));
     }
 
 }
