@@ -1,7 +1,8 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -72,8 +73,9 @@ public class HomeOfficeReferenceHandlerOnSubmit implements PreSubmitCallbackHand
 
             log.info("Writing previously retrieved Home Office appellant data to the case record in full for case with Home Office reference {}.", homeOfficeReferenceNumber);
             // We need the mapper and mix-in to overcome a CCD bug concerning collections during the mid-event (see comments below).
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.addMixIn(IdValue.class, IdValueMixin.class);
+            ObjectMapper mapper = JsonMapper.builder()
+                .addMixIn(IdValue.class, IdValueMixin.class)
+                .build();
             try {
                 String homeOfficeAppellantsSerialised = HandlerUtils.decrypt(homeOfficeAppellantsSerialisedEncrypted, homeOfficeSerialisedEncryptionKey);
                 homeOfficeAppellants = mapper.readValue(

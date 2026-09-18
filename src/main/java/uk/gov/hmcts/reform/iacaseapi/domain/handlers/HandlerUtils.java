@@ -1,7 +1,8 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.io.ClassPathResource;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
@@ -278,7 +279,7 @@ public class HandlerUtils {
     }
 
     public static List<String> readJsonFileList(String filePath, String key) throws IOException {
-        ObjectMapper objectMapper = new ObjectMapper();
+        ObjectMapper objectMapper = new JsonMapper();
         ClassPathResource fileResource = new ClassPathResource(filePath);
         InputStream file = fileResource.getInputStream();
 
@@ -288,10 +289,10 @@ public class HandlerUtils {
         List<String> valueList = new ArrayList<>();
 
         if (listNode != null && listNode.isArray()) {
-            Iterator<JsonNode> elements = listNode.elements();
+            Iterator<JsonNode> elements = listNode.values().iterator();
             while (elements.hasNext()) {
                 JsonNode element = elements.next();
-                valueList.add(element.asText());
+                valueList.add(element.asString());
             }
         }
 
