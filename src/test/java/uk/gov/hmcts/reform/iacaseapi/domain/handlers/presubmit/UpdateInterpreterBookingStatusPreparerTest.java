@@ -1,5 +1,31 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
+import org.jetbrains.annotations.NotNull;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterLanguageRefData;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.NonLegalRepDetails;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.Value;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.WitnessDetails;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
@@ -13,6 +39,14 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_INTERPRETER_SPOKEN_LANGUAGE_BOOKING;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_STATUS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_NAME_FOR_DISPLAY;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NLR_DETAILS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NLR_INTERPRETER_LANGUAGE_CATEGORY;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NLR_INTERPRETER_SIGN_LANGUAGE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NLR_INTERPRETER_SIGN_LANGUAGE_BOOKING;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NLR_INTERPRETER_SIGN_LANGUAGE_BOOKING_STATUS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NLR_INTERPRETER_SPOKEN_LANGUAGE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NLR_INTERPRETER_SPOKEN_LANGUAGE_BOOKING;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NLR_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_STATUS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_DETAILS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterBookingStatus.BOOKED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterBookingStatus.NOT_REQUESTED;
@@ -24,30 +58,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguages
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_STATUSES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_N_INTERPRETER_SIGN_LANGUAGE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_N_INTERPRETER_SPOKEN_LANGUAGE;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.concurrent.atomic.AtomicInteger;
-import org.jetbrains.annotations.NotNull;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterLanguageRefData;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.Value;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.WitnessDetails;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -263,5 +273,85 @@ class UpdateInterpreterBookingStatusPreparerTest {
         );
     }
 
+    @Test
+    void should_set_nlr_interpreter_booking_fields_if_nlr_requires_interpreters() {
+        InterpreterLanguageRefData nlrSpokenRefData = new InterpreterLanguageRefData(
+            new DynamicList(new Value("english", "english"), Collections.emptyList()),
+            Collections.emptyList(),
+            null);
+
+        InterpreterLanguageRefData nlrSignRefData = new InterpreterLanguageRefData(
+            new DynamicList(new Value("", ""), Collections.emptyList()),
+            Collections.emptyList(),
+            "test manual language");
+
+        List<String> languageCategories = Arrays.asList("spokenLanguageInterpreter", "signLanguageInterpreter");
+
+        when(asylumCase.read(NLR_INTERPRETER_LANGUAGE_CATEGORY)).thenReturn(Optional.of(languageCategories));
+        when(asylumCase.read(NLR_INTERPRETER_SPOKEN_LANGUAGE, InterpreterLanguageRefData.class))
+            .thenReturn(Optional.of(nlrSpokenRefData));
+        when(asylumCase.read(NLR_INTERPRETER_SIGN_LANGUAGE, InterpreterLanguageRefData.class))
+            .thenReturn(Optional.of(nlrSignRefData));
+        when(asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class))
+            .thenReturn(Optional.of(NonLegalRepDetails.builder().givenNames("Test").familyName("Nlr").idamId("id").build()));
+
+        updateInterpreterBookingStatusPreparer.handle(ABOUT_TO_START, callback);
+
+        verify(asylumCase).write(eq(NLR_INTERPRETER_SPOKEN_LANGUAGE_BOOKING), eq("Test Nlr - Non-legal representative - english"));
+        verify(asylumCase).write(eq(NLR_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_STATUS), eq(NOT_REQUESTED));
+
+        verify(asylumCase).write(eq(NLR_INTERPRETER_SIGN_LANGUAGE_BOOKING), eq("Test Nlr - Non-legal representative - test manual language"));
+        verify(asylumCase).write(eq(NLR_INTERPRETER_SIGN_LANGUAGE_BOOKING_STATUS), eq(NOT_REQUESTED));
+    }
+
+    @Test
+    void should_not_set_nlr_interpreter_booking_status_fields_if_they_already_exist() {
+        InterpreterLanguageRefData nlrRefData = new InterpreterLanguageRefData(
+            new DynamicList(new Value("english", "english"), Collections.emptyList()),
+            Collections.emptyList(),
+            null);
+
+        when(asylumCase.read(NLR_INTERPRETER_SPOKEN_LANGUAGE)).thenReturn(Optional.of(nlrRefData));
+        when(asylumCase.read(NLR_INTERPRETER_SIGN_LANGUAGE)).thenReturn(Optional.of(nlrRefData));
+        when(asylumCase.read(NLR_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_STATUS)).thenReturn(Optional.of(REQUESTED));
+        when(asylumCase.read(NLR_INTERPRETER_SIGN_LANGUAGE_BOOKING_STATUS)).thenReturn(Optional.of(BOOKED));
+        when(asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class))
+            .thenReturn(Optional.of(NonLegalRepDetails.builder().givenNames("Test").familyName("Nlr").idamId("id").build()));
+
+        updateInterpreterBookingStatusPreparer.handle(ABOUT_TO_START, callback);
+
+        verify(asylumCase, never()).write(eq(NLR_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_STATUS), any());
+        verify(asylumCase, never()).write(eq(NLR_INTERPRETER_SIGN_LANGUAGE_BOOKING_STATUS), any());
+    }
+
+    @Test
+    void should_clear_nlr_interpreter_booking_status_fields_if_language_fields_not_set() {
+        when(asylumCase.read(NLR_INTERPRETER_LANGUAGE_CATEGORY)).thenReturn(Optional.of(new ArrayList<>()));
+        when(asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class))
+            .thenReturn(Optional.of(NonLegalRepDetails.builder().idamId("id").build()));
+        updateInterpreterBookingStatusPreparer.handle(ABOUT_TO_START, callback);
+
+        verify(asylumCase).clear(eq(NLR_INTERPRETER_SPOKEN_LANGUAGE_BOOKING));
+        verify(asylumCase).clear(eq(NLR_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_STATUS));
+        verify(asylumCase).clear(eq(NLR_INTERPRETER_SPOKEN_LANGUAGE_BOOKING));
+        verify(asylumCase).clear(eq(NLR_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_STATUS));
+    }
+
+    @Test
+    void should_do_nothing_with_nlr_if_no_active() {
+        when(asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class))
+            .thenReturn(Optional.of(NonLegalRepDetails.builder().build()));
+
+        updateInterpreterBookingStatusPreparer.handle(ABOUT_TO_START, callback);
+
+        verify(asylumCase, never()).clear(eq(NLR_INTERPRETER_SPOKEN_LANGUAGE_BOOKING));
+        verify(asylumCase, never()).clear(eq(NLR_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_STATUS));
+        verify(asylumCase, never()).clear(eq(NLR_INTERPRETER_SPOKEN_LANGUAGE_BOOKING));
+        verify(asylumCase, never()).clear(eq(NLR_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_STATUS));
+        verify(asylumCase, never()).write(eq(NLR_INTERPRETER_SPOKEN_LANGUAGE_BOOKING), any());
+        verify(asylumCase, never()).write(eq(NLR_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_STATUS), any());
+        verify(asylumCase, never()).write(eq(NLR_INTERPRETER_SIGN_LANGUAGE_BOOKING), any());
+        verify(asylumCase, never()).write(eq(NLR_INTERPRETER_SIGN_LANGUAGE_BOOKING_STATUS), any());
+    }
 
 }

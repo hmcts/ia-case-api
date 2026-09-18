@@ -36,6 +36,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.Scheduler;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.TimedEvent;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.config.SaveNotificationsDataConfiguration;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -70,24 +71,33 @@ class AsylumCaseNotificationApiSenderTest {
 
     @BeforeEach
     public void setUp() {
+        SaveNotificationsDataConfiguration config = createConfig(true, SAVE_NOTIFICATIONS_DATA_SCHEDULE_HOUR, SAVE_NOTIFICATIONS_DATA_SCHEDULE_MAX_MINUTES);
         asylumCaseNotificationApiSender =
             new AsylumCaseNotificationApiSender(
                 asylumCaseCallbackApiDelegator,
                 ENDPOINT,
                 CCD_SUBMITTED_PATH,
                 false,
-                true,
-                SAVE_NOTIFICATIONS_DATA_SCHEDULE_HOUR,
-                SAVE_NOTIFICATIONS_DATA_SCHEDULE_MAX_MINUTES,
                 dateProvider,
                 scheduler,
-                featureToggler
+                featureToggler,
+                config
             );
         when(featureToggler.getValue("save-notifications-feature", false)).thenReturn(true);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
     }
-    
+
+    private SaveNotificationsDataConfiguration createConfig(boolean enabled, int targetHour, int jitterMinutes) {
+        SaveNotificationsDataConfiguration config = new SaveNotificationsDataConfiguration();
+        config.setEnabled(enabled);
+        SaveNotificationsDataConfiguration.Scheduling scheduling = new SaveNotificationsDataConfiguration.Scheduling();
+        scheduling.setTargetHour(targetHour);
+        scheduling.setWindowDurationMinutes(jitterMinutes);
+        config.setScheduling(scheduling);
+        return config;
+    }
+
     @Test
     void should_delegate_callback_to_downstream_api_when_previous_scheduled_time_empty() {
         final AsylumCase notifiedAsylumCase = mock(AsylumCase.class);
@@ -170,25 +180,25 @@ class AsylumCaseNotificationApiSenderTest {
 
     @Test
     void schedules_save_notification_to_data_event_if_tes_enabled_and_previous_scheduled_time_empty() {
+        SaveNotificationsDataConfiguration config = createConfig(true, SAVE_NOTIFICATIONS_DATA_SCHEDULE_HOUR, SAVE_NOTIFICATIONS_DATA_SCHEDULE_MAX_MINUTES);
         asylumCaseNotificationApiSender =
             new AsylumCaseNotificationApiSender(
                 asylumCaseCallbackApiDelegator,
                 ENDPOINT,
                 CCD_SUBMITTED_PATH,
                 true,
-                true,
-                SAVE_NOTIFICATIONS_DATA_SCHEDULE_HOUR,
-                SAVE_NOTIFICATIONS_DATA_SCHEDULE_MAX_MINUTES,
                 dateProvider,
                 scheduler,
-                featureToggler
+                featureToggler,
+                config
             );
         final AsylumCase notifiedAsylumCase = mock(AsylumCase.class);
 
         when(asylumCaseCallbackApiDelegator.delegate(callback, ENDPOINT + CCD_SUBMITTED_PATH))
             .thenReturn(notifiedAsylumCase);
-        LocalDateTime localDateTime = LocalDateTime.now();
-        when(dateProvider.nowWithTime()).thenReturn(localDateTime);
+        // Use a fixed time before the target hour to ensure scheduling for today
+        LocalDateTime beforeTargetHour = LocalDate.now().atTime(10, 0);
+        when(dateProvider.nowWithTime()).thenReturn(beforeTargetHour);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getId()).thenReturn(1L);
 
@@ -199,7 +209,7 @@ class AsylumCaseNotificationApiSenderTest {
         verify(scheduler).schedule(timedEventCaptor.capture());
         TimedEvent scheduledTimedEventValue = timedEventCaptor.getValue();
         verifyTimedEventSchedule(scheduledTimedEventValue);
-        assertEquals(scheduledTimedEventValue.getScheduledDateTime().toLocalDate(), LocalDate.now());
+        assertEquals(LocalDate.now(), scheduledTimedEventValue.getScheduledDateTime().toLocalDate());
 
         verify(asylumCaseCallbackApiDelegator, times(1))
             .delegate(callback, ENDPOINT + CCD_SUBMITTED_PATH);
@@ -211,18 +221,17 @@ class AsylumCaseNotificationApiSenderTest {
 
     @Test
     void schedules_not_save_notification_to_data_event_if_tes_enabled_and_previous_scheduled_time_today() {
+        SaveNotificationsDataConfiguration config = createConfig(true, SAVE_NOTIFICATIONS_DATA_SCHEDULE_HOUR, SAVE_NOTIFICATIONS_DATA_SCHEDULE_MAX_MINUTES);
         asylumCaseNotificationApiSender =
             new AsylumCaseNotificationApiSender(
                 asylumCaseCallbackApiDelegator,
                 ENDPOINT,
                 CCD_SUBMITTED_PATH,
                 true,
-                true,
-                SAVE_NOTIFICATIONS_DATA_SCHEDULE_HOUR,
-                SAVE_NOTIFICATIONS_DATA_SCHEDULE_MAX_MINUTES,
                 dateProvider,
                 scheduler,
-                featureToggler
+                featureToggler,
+                config
             );
         final AsylumCase notifiedAsylumCase = mock(AsylumCase.class);
 
@@ -247,25 +256,25 @@ class AsylumCaseNotificationApiSenderTest {
 
     @Test
     void schedules_save_notification_to_data_event_if_tes_enabled_and_previous_scheduled_time_yesterday() {
+        SaveNotificationsDataConfiguration config = createConfig(true, SAVE_NOTIFICATIONS_DATA_SCHEDULE_HOUR, SAVE_NOTIFICATIONS_DATA_SCHEDULE_MAX_MINUTES);
         asylumCaseNotificationApiSender =
             new AsylumCaseNotificationApiSender(
                 asylumCaseCallbackApiDelegator,
                 ENDPOINT,
                 CCD_SUBMITTED_PATH,
                 true,
-                true,
-                SAVE_NOTIFICATIONS_DATA_SCHEDULE_HOUR,
-                SAVE_NOTIFICATIONS_DATA_SCHEDULE_MAX_MINUTES,
                 dateProvider,
                 scheduler,
-                featureToggler
+                featureToggler,
+                config
             );
         final AsylumCase notifiedAsylumCase = mock(AsylumCase.class);
 
         when(asylumCaseCallbackApiDelegator.delegate(callback, ENDPOINT + CCD_SUBMITTED_PATH))
             .thenReturn(notifiedAsylumCase);
-        LocalDateTime localDateTime = LocalDateTime.now();
-        when(dateProvider.nowWithTime()).thenReturn(localDateTime);
+        // Use a fixed time before the target hour to ensure scheduling for today
+        LocalDateTime beforeTargetHour = LocalDate.now().atTime(10, 0);
+        when(dateProvider.nowWithTime()).thenReturn(beforeTargetHour);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getId()).thenReturn(1L);
 
@@ -276,7 +285,7 @@ class AsylumCaseNotificationApiSenderTest {
         verify(scheduler).schedule(timedEventCaptor.capture());
         TimedEvent scheduledTimedEventValue = timedEventCaptor.getValue();
         verifyTimedEventSchedule(scheduledTimedEventValue);
-        assertEquals(scheduledTimedEventValue.getScheduledDateTime().toLocalDate(), LocalDate.now());
+        assertEquals(LocalDate.now(), scheduledTimedEventValue.getScheduledDateTime().toLocalDate());
 
         verify(asylumCase).write(SAVE_NOTIFICATIONS_TO_DATA_DATE, LocalDate.now().toString());
 
@@ -288,18 +297,17 @@ class AsylumCaseNotificationApiSenderTest {
 
     @Test
     void should_schedule_to_next_day_when_tes_enabled_and_previous_scheduled_time_empty_and_current_time_is_past_the_schedule_hour() {
+        SaveNotificationsDataConfiguration config = createConfig(true, SAVE_NOTIFICATIONS_DATA_SCHEDULE_HOUR, SAVE_NOTIFICATIONS_DATA_SCHEDULE_HOUR);
         asylumCaseNotificationApiSender =
                 new AsylumCaseNotificationApiSender(
                         asylumCaseCallbackApiDelegator,
                         ENDPOINT,
                         CCD_SUBMITTED_PATH,
                         true,
-                        true,
-                        SAVE_NOTIFICATIONS_DATA_SCHEDULE_HOUR,
-                        SAVE_NOTIFICATIONS_DATA_SCHEDULE_HOUR,
                         dateProvider,
                         scheduler,
-                        featureToggler
+                        featureToggler,
+                        config
                 );
         final AsylumCase notifiedAsylumCase = mock(AsylumCase.class);
 
@@ -329,18 +337,17 @@ class AsylumCaseNotificationApiSenderTest {
 
     @Test
     void should_schedule_to_next_day_when_tes_enabled_and_current_time_is_past_the_schedule_hour_previous_scheduled_time_yesterday() {
+        SaveNotificationsDataConfiguration config = createConfig(true, SAVE_NOTIFICATIONS_DATA_SCHEDULE_HOUR, SAVE_NOTIFICATIONS_DATA_SCHEDULE_HOUR);
         asylumCaseNotificationApiSender =
                 new AsylumCaseNotificationApiSender(
                         asylumCaseCallbackApiDelegator,
                         ENDPOINT,
                         CCD_SUBMITTED_PATH,
                         true,
-                        true,
-                        SAVE_NOTIFICATIONS_DATA_SCHEDULE_HOUR,
-                        SAVE_NOTIFICATIONS_DATA_SCHEDULE_HOUR,
                         dateProvider,
                         scheduler,
-                        featureToggler
+                        featureToggler,
+                        config
                 );
         final AsylumCase notifiedAsylumCase = mock(AsylumCase.class);
 
@@ -370,18 +377,17 @@ class AsylumCaseNotificationApiSenderTest {
 
     @Test
     void should_not_schedule_when_tes_enabled_and_current_time_is_past_the_schedule_hour_previous_scheduled_time_today() {
+        SaveNotificationsDataConfiguration config = createConfig(true, SAVE_NOTIFICATIONS_DATA_SCHEDULE_HOUR, SAVE_NOTIFICATIONS_DATA_SCHEDULE_HOUR);
         asylumCaseNotificationApiSender =
                 new AsylumCaseNotificationApiSender(
                         asylumCaseCallbackApiDelegator,
                         ENDPOINT,
                         CCD_SUBMITTED_PATH,
                         true,
-                        true,
-                        SAVE_NOTIFICATIONS_DATA_SCHEDULE_HOUR,
-                        SAVE_NOTIFICATIONS_DATA_SCHEDULE_HOUR,
                         dateProvider,
                         scheduler,
-                        featureToggler
+                        featureToggler,
+                        config
                 );
         final AsylumCase notifiedAsylumCase = mock(AsylumCase.class);
 
@@ -422,18 +428,17 @@ class AsylumCaseNotificationApiSenderTest {
             boolean saveNotificationFeatureEnabled,
             boolean saveNotificationToDataEnvVarEnabled
     ) {
+        SaveNotificationsDataConfiguration config = createConfig(saveNotificationToDataEnvVarEnabled, SAVE_NOTIFICATIONS_DATA_SCHEDULE_HOUR, SAVE_NOTIFICATIONS_DATA_SCHEDULE_MAX_MINUTES);
         asylumCaseNotificationApiSender =
                 new AsylumCaseNotificationApiSender(
                         asylumCaseCallbackApiDelegator,
                         ENDPOINT,
                         CCD_SUBMITTED_PATH,
                         timedEventEnabled,
-                        saveNotificationToDataEnvVarEnabled,
-                        SAVE_NOTIFICATIONS_DATA_SCHEDULE_HOUR,
-                        SAVE_NOTIFICATIONS_DATA_SCHEDULE_MAX_MINUTES,
                         dateProvider,
                         scheduler,
-                        featureToggler
+                        featureToggler,
+                        config
                 );
         final AsylumCase notifiedAsylumCase = mock(AsylumCase.class);
 

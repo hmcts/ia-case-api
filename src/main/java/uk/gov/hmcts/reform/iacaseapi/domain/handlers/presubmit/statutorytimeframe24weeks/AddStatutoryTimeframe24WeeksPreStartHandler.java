@@ -21,26 +21,17 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.ADD_STATUT
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isAppealOutOfCountry;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isAppellantInDetention;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.statutorytimeframe24weeks.STF24WeeksUtils.getEffectiveState;
 
 @Component
 public class AddStatutoryTimeframe24WeeksPreStartHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final LocalDate stf24wLiveDate;
-    private static final Set<State> unsupportedStates = Set.of(
-        State.APPEAL_STARTED,
+    private static final Set<State> supportedStates = Set.of(
         State.PENDING_PAYMENT,
-        State.CASE_BUILDING,
-        State.CASE_UNDER_REVIEW,
-        State.SUBMIT_HEARING_REQUIREMENTS,
-        State.RESPONDENT_REVIEW,
-        State.PREPARE_FOR_HEARING,
-        State.FINAL_BUNDLING,
-        State.PRE_HEARING,
-        State.DECISION,
-        State.ADJOURNED,
-        State.REMITTED,
-        State.AWAITING_REASONS_FOR_APPEAL,
-        State.REASONS_FOR_APPEAL_SUBMITTED);
+        State.APPEAL_SUBMITTED,
+        State.AWAITING_RESPONDENT_EVIDENCE
+    );
 
     public AddStatutoryTimeframe24WeeksPreStartHandler(@Value("${app.statutory-timeframe.live-date}") String stf24wLiveDate) {
         this.stf24wLiveDate = LocalDate.parse(stf24wLiveDate);
@@ -71,10 +62,9 @@ public class AddStatutoryTimeframe24WeeksPreStartHandler implements PreSubmitCal
 
         PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
 
-        State currentState = callback.getCaseDetails().getState();
-        if (unsupportedStates.contains(currentState)) {
-            String errorMessage = "This event cannot be run on this case";
-            response.addError(errorMessage);
+        State effectiveState = getEffectiveState(callback, asylumCase);
+        if (!supportedStates.contains(effectiveState)) {
+            response.addError("This event cannot be run on this case at this time");
         }
 
         if (!caseReceivedAfterLive(asylumCase)) {

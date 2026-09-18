@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -16,7 +17,11 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.RECORDED_OUT_OF_TIME_DECISION;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
+import org.mockito.ArgumentCaptor;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfTimeDecisionDetails;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -134,7 +139,10 @@ class RecordOutOfTimeDecisionPreparerTest {
 
         assertNotNull(callbackResponse);
         assertEquals(callbackResponse.getData(), asylumCase);
-        assertEquals(1, outOfTimeDecisionDetailsAppender.getAllOutOfTimeDecisionDetails().size());
+
+        ArgumentCaptor<List<IdValue<OutOfTimeDecisionDetails>>> captor = ArgumentCaptor.forClass(List.class);
+        verify(asylumCase, times(1)).write(eq(PREVIOUS_OUT_OF_TIME_DECISION_DETAILS), captor.capture());
+        assertEquals(1, captor.getValue().size());
 
         verify(asylumCase, times(1)).clear(OUT_OF_TIME_DECISION_TYPE);
         verify(asylumCase, times(1)).clear(OUT_OF_TIME_DECISION_MAKER);

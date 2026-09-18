@@ -19,11 +19,9 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentReceiver;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.OutOfTimeDecisionDetailsAppender;
 
 @Component
 public class RecordOutOfTimeDecisionHandler implements PreSubmitCallbackHandler<AsylumCase> {
@@ -32,16 +30,13 @@ public class RecordOutOfTimeDecisionHandler implements PreSubmitCallbackHandler<
     private DocumentsAppender documentsAppender;
     private UserDetails userDetails;
     private UserDetailsHelper userDetailsHelper;
-    private OutOfTimeDecisionDetailsAppender outOfTimeDecisionDetailsAppender;
 
     public RecordOutOfTimeDecisionHandler(
-        OutOfTimeDecisionDetailsAppender outOfTimeDecisionDetailsAppender,
         UserDetailsHelper userDetailsHelper,
         UserDetails userDetails,
         DocumentsAppender documentsAppender,
         DocumentReceiver documentReceiver
     ) {
-        this.outOfTimeDecisionDetailsAppender = outOfTimeDecisionDetailsAppender;
         this.userDetailsHelper = userDetailsHelper;
         this.userDetails = userDetails;
         this.documentsAppender = documentsAppender;
@@ -68,9 +63,6 @@ public class RecordOutOfTimeDecisionHandler implements PreSubmitCallbackHandler<
         }
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
-
-        YesOrNo recordedOutOfTimeDecision = asylumCase.read(RECORDED_OUT_OF_TIME_DECISION, YesOrNo.class).orElse(NO);
-
 
         final Document outOfTimeDecisionDocument = asylumCase.read(OUT_OF_TIME_DECISION_DOCUMENT, Document.class)
             .orElseThrow(() -> new IllegalStateException("Out of time decision document is not present"));
@@ -115,15 +107,6 @@ public class RecordOutOfTimeDecisionHandler implements PreSubmitCallbackHandler<
 
         asylumCase.write(TRIBUNAL_DOCUMENTS, allTribunalDocuments);
 
-        if (recordedOutOfTimeDecision == YES) {
-
-            List<IdValue<OutOfTimeDecisionDetails>> allOutOfTimeDecisionDetails =
-                outOfTimeDecisionDetailsAppender.getAllOutOfTimeDecisionDetails();
-
-            asylumCase.write(PREVIOUS_OUT_OF_TIME_DECISION_DETAILS, allOutOfTimeDecisionDetails);
-            outOfTimeDecisionDetailsAppender.setAllOutOfTimeDecisionDetails(null);
-        }
-
         asylumCase.write(RECORDED_OUT_OF_TIME_DECISION, YES);
         asylumCase.write(OUT_OF_TIME_DECISION_MAKER,
             userDetailsHelper.getLoggedInUserRoleLabel(userDetails).toString());
@@ -133,7 +116,7 @@ public class RecordOutOfTimeDecisionHandler implements PreSubmitCallbackHandler<
 
     private boolean isOutOfTimeDecisionRejected(AsylumCase asylumCase) {
         return asylumCase.read(OUT_OF_TIME_DECISION_TYPE, OutOfTimeDecisionType.class)
-            .map(OutOfTimeDecisionType -> OutOfTimeDecisionType.equals(OutOfTimeDecisionType.REJECTED))
+            .map(decisionType -> decisionType.equals(OutOfTimeDecisionType.REJECTED))
             .orElse(false);
     }
 

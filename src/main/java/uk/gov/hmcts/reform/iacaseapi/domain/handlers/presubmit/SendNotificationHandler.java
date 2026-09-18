@@ -1,21 +1,5 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
-import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ADA_HEARING_REQUIREMENTS_SUBMITTED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_APPLICANT_TYPE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAS_TRANSFERRED_OUT_OF_ADA;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_DLRM_FEE_REFUND_ENABLED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_DLRM_FEE_REMISSION_ENABLED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_DLRM_SET_ASIDE_ENABLED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PAYMENT_STATUS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isAipJourney;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isInternalCase;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isNotificationTurnedOff;
-
-import java.util.List;
-import java.util.Set;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
@@ -33,6 +17,15 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.NotificationSender;
+
+import java.util.List;
+import java.util.Set;
+
+import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.*;
 
 @Component
 @Slf4j
@@ -171,6 +164,13 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
             Event.REMOVE_STATUTORY_TIMEFRAME_24_WEEKS,
             Event.REVOKE_CITIZEN_ACCESS,
             Event.GENERATE_PIN_IN_POST,
+            Event.SEND_LATE_TIMELINE_NOTICE,          
+            Event.SEND_INVITE_TO_NON_LEGAL_REP,
+            Event.SEND_PIP_TO_NON_LEGAL_REP,
+            Event.JOIN_APPEAL_CONFIRMATION,
+            Event.REMOVE_NON_LEGAL_REP,
+            Event.NLR_DETAILS_UPDATED,
+            Event.HEARING_CANCELLED,
             Event.COMPLETE_CASE_REVIEW
         );
         if (!isSaveAndContinueEnabled) {
@@ -254,6 +254,7 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
             Event.REFUND_CONFIRMATION,
             Event.HEARING_CANCELLED,
             Event.REMOVE_STATUTORY_TIMEFRAME_24_WEEKS,
+            Event.SEND_LATE_TIMELINE_NOTICE,
             Event.COMPLETE_CASE_REVIEW
         );
 
@@ -290,6 +291,14 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
 
         AsylumCase asylumCaseWithNotificationMarker = notificationSender.send(callback);
 
+        boolean applicationRefused = callback.getEvent() == Event.DECIDE_AN_APPLICATION
+            && asylumCase.read(IS_REMOVAL_OF_24W_APPLICATION_REFUSED, YesOrNo.class).orElse(YesOrNo.NO)
+            .equals(YesOrNo.YES);
+        boolean stfRemoved = callback.getEvent() == Event.REMOVE_STATUTORY_TIMEFRAME_24_WEEKS;
+        if (applicationRefused || stfRemoved) {
+            asylumCaseWithNotificationMarker.clear(IS_REMOVAL_OF_24W_APPLICATION_REFUSED);
+            asylumCaseWithNotificationMarker.clear(REMOVAL_OF_24W_DECISION_DECISION_MAKER);
+        }
         return new PreSubmitCallbackResponse<>(asylumCaseWithNotificationMarker);
     }
 

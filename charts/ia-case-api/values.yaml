@@ -52,9 +52,10 @@ java:
     SAVE_NOTIFICATIONS_TO_DATA_EVENT_ENABLED: true
     SAVE_NOTIFICATIONS_DATA_SCHEDULE_HOUR: 19
     SAVE_NOTIFICATIONS_DATA_SCHEDULE_MAX_MINUTES: 600
+    SAVE_NOTIFICATIONS_DATA_RETENTION_DAYS: 21
     PA_PAY_LATER_DUE_DATE: 14
     HOME_OFFICE_VALIDATION_ENABLED: "false"
-    STATUTORY_TIMEFRAME_LIVE_DATE: "2027-12-31"
+    STATUTORY_TIMEFRAME_LIVE_DATE: "2026-08-12"
   postgresql:
     auth:
       username: ia_case_api
@@ -114,6 +115,8 @@ java:
           alias: IA_REDIS_ACCESS_KEY
         - name: ia-redis-encryption-key
           alias: IA_REDIS_ENCRYPTION_KEY
+        - name: home-office-serialised-encryption-key
+          alias: IA_HOME_OFFICE_INTEGRATION_ENCRYPTION_KEY
 
 ia-case-payments-api:
   enabled: false
