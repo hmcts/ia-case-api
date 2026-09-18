@@ -56,6 +56,21 @@ public enum AsylumCaseFieldDefinition {
     HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY(
         "homeOfficeAppellantsSerialisedInternalUseOnly", new TypeReference<String>(){}),
 
+    HO_RIGHT_OF_APPEAL(
+        "hoRightOfAppeal", new TypeReference<YesOrNo>(){}),
+
+    HO_ASYLUM_SUPPORT(
+        "hoAsylumSupport", new TypeReference<YesOrNo>(){}),
+
+    HO_FEE_WAIVER(
+        "hoFeeWaiver", new TypeReference<YesOrNo>(){}),
+
+    HOME_OFFICE_APPELLANT_LANGUAGE(
+        "homeOfficeAppellantLanguage", new TypeReference<String>(){}),
+
+    HO_INTERPRETER_REQUIRED(
+        "hoInterpreterRequired", new TypeReference<YesOrNo>(){}),
+
     APPELLANT_GIVEN_NAMES(
         "appellantGivenNames", new TypeReference<String>(){}),
 
