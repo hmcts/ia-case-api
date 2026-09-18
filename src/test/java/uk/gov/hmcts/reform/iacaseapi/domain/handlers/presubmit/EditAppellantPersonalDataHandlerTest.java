@@ -195,6 +195,58 @@ class EditAppellantPersonalDataHandlerTest {
         verify(asylumCase, never()).write(eq(GWF_REFERENCE_NUMBER), any());
     }
 
+    @ParameterizedTest
+    @EnumSource(value = AppealType.class, names = {"HU", "EA"})
+    void should_write_gwf_reference_number_if_hu_ea_outsideUkWhenApplicationMade(AppealType appealType) {
+        when(asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class))
+            .thenReturn(Optional.empty());
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
+        when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.of(NO));
+        when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of("homeOfficeReferenceNumber"));
+        when(asylumCase.read(OUTSIDE_UK_WHEN_APPLICATION_MADE, YesOrNo.class)).thenReturn(Optional.of(YES));
+
+        PreSubmitCallbackResponse<AsylumCase> response =
+            editAppellantPersonalData.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertEquals(asylumCase, response.getData());
+        verify(asylumCase).write(GWF_REFERENCE_NUMBER, "homeOfficeReferenceNumber");
+    }
+
+
+    @ParameterizedTest
+    @EnumSource(value = AppealType.class, names = {"HU", "EA"})
+    void should_not_write_gwf_reference_number_if_hu_ea_not_outsideUkWhenApplicationMade(AppealType appealType) {
+        when(asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class))
+            .thenReturn(Optional.empty());
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
+        when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.of(NO));
+        when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of("homeOfficeReferenceNumber"));
+        when(asylumCase.read(OUTSIDE_UK_WHEN_APPLICATION_MADE, YesOrNo.class)).thenReturn(Optional.of(NO));
+
+        PreSubmitCallbackResponse<AsylumCase> response =
+            editAppellantPersonalData.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertEquals(asylumCase, response.getData());
+        verify(asylumCase, never()).write(eq(GWF_REFERENCE_NUMBER), any());
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = AppealType.class, names = {"HU", "EA"}, mode = EnumSource.Mode.EXCLUDE)
+    void should_not_write_gwf_reference_number_if_not_hu_ea_outsideUkWhenApplicationMade(AppealType appealType) {
+        when(asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class))
+            .thenReturn(Optional.empty());
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
+        when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.of(NO));
+        when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of("homeOfficeReferenceNumber"));
+        when(asylumCase.read(OUTSIDE_UK_WHEN_APPLICATION_MADE, YesOrNo.class)).thenReturn(Optional.of(YES));
+
+        PreSubmitCallbackResponse<AsylumCase> response =
+            editAppellantPersonalData.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertEquals(asylumCase, response.getData());
+        verify(asylumCase, never()).write(eq(GWF_REFERENCE_NUMBER), any());
+    }
+
     @Test
     void should_write_gwf_reference_number_if_no_ooc_decision_type_internal_ooc() {
         when(asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class))
