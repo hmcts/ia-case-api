@@ -11,7 +11,8 @@
         "replacements": {
           "endAppealOutcome": "Abandoned",
           "endAppealOutcomeReason": "some reason",
-          "stateBeforeEndAppeal": "appealSubmitted"
+          "stateBeforeEndAppeal": "pendingPayment",
+          "paymentStatus": "Paid"
         }
       }
     }

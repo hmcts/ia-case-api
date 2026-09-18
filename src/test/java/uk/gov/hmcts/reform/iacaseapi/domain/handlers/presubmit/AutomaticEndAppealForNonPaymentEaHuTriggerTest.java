@@ -17,6 +17,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ACCELERATED_DETAINED_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_NOTIFICATION_TURNED_OFF;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOURNEY_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PAYMENT_STATUS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMISSION_OPTION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMISSION_TYPE;
 
@@ -49,6 +50,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.Scheduler;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.AsylumCaseServiceResponseException;
@@ -455,6 +457,83 @@ class AutomaticEndAppealForNonPaymentEaHuTriggerTest {
         assertTrue(result);
     }
 
+    @ParameterizedTest
+    @EnumSource(value = AppealType.class, names = {"EA", "HU", "EU", "AG"})
+    void should_schedule_end_appeal_for_reinstate_appeal_when_payment_not_paid(AppealType appealType) {
+        when(callback.getEvent()).thenReturn(Event.REINSTATE_APPEAL);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(caseDetails.getId()).thenReturn(caseId);
+        when(dateProvider.nowWithTime()).thenReturn(now);
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
+        when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class))
+            .thenReturn(Optional.of(PaymentStatus.PAYMENT_PENDING));
 
+        TimedEvent timedEvent = new TimedEvent(
+            id,
+            Event.END_APPEAL_AUTOMATICALLY,
+            ZonedDateTime.of(now, ZoneId.systemDefault()).plusMinutes(SCHEDULE_MINUTES),
+            jurisdiction,
+            caseType,
+            caseId
+        );
+        when(scheduler.schedule(any(TimedEvent.class))).thenReturn(timedEvent);
+
+        automaticEndAppealForNonPaymentEaHuTrigger.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        verify(scheduler).schedule(timedEventArgumentCaptor.capture());
+        TimedEvent result = timedEventArgumentCaptor.getValue();
+
+        assertEquals(Event.END_APPEAL_AUTOMATICALLY, result.getEvent());
+        assertEquals(caseId, result.getCaseId());
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = AppealType.class, names = {"EA", "HU", "EU", "AG"})
+    void canHandle_should_return_true_for_reinstate_appeal_when_payment_not_paid(AppealType appealType) {
+        when(callback.getEvent()).thenReturn(Event.REINSTATE_APPEAL);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
+        when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class))
+            .thenReturn(Optional.of(PaymentStatus.PAYMENT_PENDING));
+
+        boolean result = automaticEndAppealForNonPaymentEaHuTrigger
+            .canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertTrue(result);
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = AppealType.class, names = {"EA", "HU", "EU", "AG"})
+    void canHandle_should_return_false_for_reinstate_appeal_when_payment_paid(AppealType appealType) {
+        when(callback.getEvent()).thenReturn(Event.REINSTATE_APPEAL);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
+        when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class))
+            .thenReturn(Optional.of(PaymentStatus.PAID));
+
+        assertThatThrownBy(() -> automaticEndAppealForNonPaymentEaHuTrigger
+            .handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
+            .hasMessage("Cannot handle callback for auto end appeal for remission rejection")
+            .isExactlyInstanceOf(IllegalStateException.class);
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = AppealType.class, names = {"PA", "RP", "DC"})
+    void canHandle_should_return_false_for_reinstate_appeal_when_appeal_type_not_ea_hu_eu_ag(AppealType appealType) {
+        when(callback.getEvent()).thenReturn(Event.REINSTATE_APPEAL);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
+        when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class))
+            .thenReturn(Optional.of(PaymentStatus.PAYMENT_PENDING));
+
+        assertThatThrownBy(() -> automaticEndAppealForNonPaymentEaHuTrigger
+            .handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
+            .hasMessage("Cannot handle callback for auto end appeal for remission rejection")
+            .isExactlyInstanceOf(IllegalStateException.class);
+    }
 
 }

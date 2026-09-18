@@ -5,6 +5,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.APPEAL_STARTED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.APPEAL_STARTED_BY_ADMIN;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.APPEAL_SUBMITTED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.ENDED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.PENDING_PAYMENT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus.FAILED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus.PAID;
@@ -71,6 +72,11 @@ public class PaymentStateHandler implements PreSubmitCallbackStateHandler<Asylum
         }
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
+        State currentState = callback.getCaseDetails().getState();
+
+        if (currentState == ENDED) {
+            return new PreSubmitCallbackResponse<>(asylumCase, currentState);
+        }
 
         Optional<PaymentStatus> paymentStatus = asylumCase.read(PAYMENT_STATUS, PaymentStatus.class);
         Optional<RemissionType> remissionType = asylumCase.read(REMISSION_TYPE, RemissionType.class);
@@ -85,7 +91,6 @@ public class PaymentStateHandler implements PreSubmitCallbackStateHandler<Asylum
             .read(AsylumCaseFieldDefinition.JOURNEY_TYPE, JourneyType.class)
             .map(journeyType -> journeyType == JourneyType.AIP)
             .orElse(false);
-        State currentState = callback.getCaseDetails().getState();
 
         if (isAipJourney) {
             return decideAiPAppealState(callback, appealType, currentState);
