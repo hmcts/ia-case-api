@@ -92,6 +92,8 @@ public class HomeOfficeReferenceHandlerOnSubmit implements PreSubmitCallbackHand
                         homeOfficeAppellantsSerialisedEncrypted, homeOfficeReferenceNumber, ex.getMessage());
             }
         }
+        // TODO: hardcoded to pp=01 (primary appellant); will not write fields if the case appellant is a different pp.
+        //       Use the appellant's actual pp once available: see ia-case-api#3379.
         homeOfficeAppellants.stream()
             .map(IdValue::getValue)
             .filter(a -> "01".equals(a.getPp()))
