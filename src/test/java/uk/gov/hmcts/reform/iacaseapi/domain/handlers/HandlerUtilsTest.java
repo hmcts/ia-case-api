@@ -1458,7 +1458,7 @@ class HandlerUtilsTest {
     @Test
     void should_return_gwf_reference_number_when_home_office_reference_is_empty() {
 
-        when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of(""));
+        when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class)).thenReturn(Optional.empty());
         when(asylumCase.read(GWF_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of("GWF123456789"));
 
         String result = HandlerUtils.getUanOrGwf(asylumCase);
@@ -1764,7 +1764,6 @@ class HandlerUtilsTest {
         assertNull(HandlerUtils.getPpNumberFromHomeOfficeAppellants(asylumCase));
     }
 
-
     @Test
     void getPpNumberFromHomeOfficeAppellants_should_return_null_when_no_matching_dob() {
         when(asylumCase.read(HOME_OFFICE_APPELLANTS)).thenReturn(Optional.of(List.of(
@@ -1783,6 +1782,45 @@ class HandlerUtilsTest {
 
         assertNull(HandlerUtils.getPpNumberFromHomeOfficeAppellants(asylumCase));
     }
+
+    @Test
+    void getPpNumberFromHomeOfficeAppellants_should_return_null_when_pp_null() {
+        when(asylumCase.read(HOME_OFFICE_APPELLANTS)).thenReturn(Optional.of(List.of(
+            new IdValue<>("2", appellant2),
+            new IdValue<>("1", appellant)
+        )));
+        when(appellant.getGivenNames()).thenReturn("givenName");
+        when(appellant2.getGivenNames()).thenReturn("givenName2");
+        when(appellant.getFamilyName()).thenReturn("familyName");
+        when(appellant2.getFamilyName()).thenReturn("familyName2");
+        when(appellant.getDateOfBirth()).thenReturn("1990-01-01");
+        when(appellant2.getDateOfBirth()).thenReturn("1990-01-02");
+        when(asylumCase.read(APPELLANT_GIVEN_NAMES, String.class)).thenReturn(Optional.of("givenName"));
+        when(asylumCase.read(APPELLANT_FAMILY_NAME, String.class)).thenReturn(Optional.of("familyName"));
+        when(asylumCase.read(APPELLANT_DATE_OF_BIRTH, String.class)).thenReturn(Optional.of("1990-01-01"));
+        when(appellant.getPp()).thenReturn(null);
+
+        assertNull(HandlerUtils.getPpNumberFromHomeOfficeAppellants(asylumCase));
+    }
+
+    @Test
+    void getPpNumberFromHomeOfficeAppellants_should_return_null_when_pp_blank() {
+        when(asylumCase.read(HOME_OFFICE_APPELLANTS)).thenReturn(Optional.of(List.of(
+            new IdValue<>("2", appellant2),
+            new IdValue<>("1", appellant)
+        )));
+        when(appellant.getGivenNames()).thenReturn("givenName");
+        when(appellant2.getGivenNames()).thenReturn("givenName2");
+        when(appellant.getFamilyName()).thenReturn("familyName");
+        when(appellant2.getFamilyName()).thenReturn("familyName2");
+        when(appellant.getDateOfBirth()).thenReturn("1990-01-01");
+        when(appellant2.getDateOfBirth()).thenReturn("1990-01-02");
+        when(asylumCase.read(APPELLANT_GIVEN_NAMES, String.class)).thenReturn(Optional.of("givenName"));
+        when(asylumCase.read(APPELLANT_FAMILY_NAME, String.class)).thenReturn(Optional.of("familyName"));
+        when(asylumCase.read(APPELLANT_DATE_OF_BIRTH, String.class)).thenReturn(Optional.of("1990-01-01"));
+        when(appellant.getPp()).thenReturn(" ");
+
+        assertNull(HandlerUtils.getPpNumberFromHomeOfficeAppellants(asylumCase));
 
     @ParameterizedTest
     @EnumSource(value = OutOfCountryDecisionType.class, names = {"REFUSAL_OF_HUMAN_RIGHTS", "REFUSE_PERMIT"})
