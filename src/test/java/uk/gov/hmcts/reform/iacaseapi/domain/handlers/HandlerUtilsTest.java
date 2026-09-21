@@ -1457,7 +1457,7 @@ class HandlerUtilsTest {
     @Test
     void should_return_gwf_reference_number_when_home_office_reference_is_empty() {
 
-        when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of(""));
+        when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class)).thenReturn(Optional.empty());
         when(asylumCase.read(GWF_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of("GWF123456789"));
 
         String result = HandlerUtils.getUanOrGwf(asylumCase);

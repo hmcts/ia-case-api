@@ -888,15 +888,9 @@ public class HandlerUtils {
 
     public static String getUanOrGwf(AsylumCase asylumCase) {
         // Retrieve the UAN or GWF from the case record
-        String homeOfficeReferenceNumber = asylumCase
+        return asylumCase
             .read(HOME_OFFICE_REFERENCE_NUMBER, String.class)
-            .orElse("");
-        if (homeOfficeReferenceNumber.isEmpty()) {
-            homeOfficeReferenceNumber = asylumCase
-                .read(GWF_REFERENCE_NUMBER, String.class)
-                .orElse("");
-        }
-        return homeOfficeReferenceNumber;
+            .orElse(asylumCase.read(GWF_REFERENCE_NUMBER, String.class).orElse(""));
     }
 
     public static boolean isDecisionWithHearing(AsylumCase asylumCase) {
