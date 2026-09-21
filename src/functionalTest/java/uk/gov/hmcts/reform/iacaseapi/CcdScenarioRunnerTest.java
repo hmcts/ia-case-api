@@ -140,7 +140,7 @@ public class CcdScenarioRunnerTest {
         log.info(AnsiOutput.toString(AnsiColor.YELLOW, "RUNNING " + scenarioSources.size() + " SCENARIOS", AnsiColor.DEFAULT));
         log.info(AnsiOutput.toString(AnsiColor.CYAN, separator, AnsiColor.DEFAULT));
 
-
+        System.out.println("Default property includsion: " + objectMapper.serializationConfig().getDefaultPropertyInclusion());
         System.out.println(objectMapper.getClass());
     }
 
