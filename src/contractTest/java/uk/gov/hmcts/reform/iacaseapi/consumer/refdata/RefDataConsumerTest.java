@@ -11,8 +11,8 @@ import au.com.dius.pact.consumer.junit5.PactTestFor;
 import au.com.dius.pact.core.model.V4Pact;
 import au.com.dius.pact.core.model.annotations.Pact;
 import au.com.dius.pact.core.model.annotations.PactFolder;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
@@ -45,7 +45,7 @@ public class RefDataConsumerTest {
     CommonDataRefApi commonDataRefApi;
 
     @Pact(provider = "referenceData_caseworkerRefUsers", consumer = "ia_caseApi")
-    public V4Pact generatePactFragment(PactDslWithProvider builder) throws JSONException, JsonProcessingException {
+    public V4Pact generatePactFragment(PactDslWithProvider builder) throws JSONException {
 
         return builder
             .given("A list of users for CRD request")
@@ -54,7 +54,7 @@ public class RefDataConsumerTest {
             .method("POST")
             .matchHeader(AUTHORIZATION, AUTH_TOKEN)
             .matchHeader(SERVICE_AUTHORIZATION, SERVICE_AUTH_TOKEN)
-            .body(new ObjectMapper().writeValueAsString(getUserIds()))
+            .body(new JsonMapper().writeValueAsString(getUserIds()))
             .willRespondWith()
             .status(200)
             .body(buildCaseworkerListResponsePactDsl())

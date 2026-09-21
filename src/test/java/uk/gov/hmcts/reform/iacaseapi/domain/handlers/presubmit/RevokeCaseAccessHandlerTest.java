@@ -8,7 +8,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -93,8 +92,6 @@ class RevokeCaseAccessHandlerTest {
                         .actorIdType(ActorIdType.IDAM)
                         .build()));
 
-        doNothing().when(ccdCaseAssignment).revokeLegalRepAccessToCase(caseId, userId, orgId);
-
         // when
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
                 revokeCaseAccessHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -129,8 +126,6 @@ class RevokeCaseAccessHandlerTest {
                         .roleType(RoleType.CASE)
                         .actorIdType(ActorIdType.IDAM)
                         .build()));
-
-        doNothing().when(roleAssignmentService).deleteRoleAssignment(eq("1"), any());
 
         // when
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =

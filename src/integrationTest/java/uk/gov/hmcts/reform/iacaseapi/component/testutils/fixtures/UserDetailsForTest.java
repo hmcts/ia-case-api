@@ -1,8 +1,9 @@
 package uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import tools.jackson.databind.PropertyNamingStrategies;
+import tools.jackson.databind.annotation.JsonNaming;
 import java.util.Set;
 import lombok.Data;
 
@@ -19,6 +20,7 @@ public class UserDetailsForTest {
     @JsonProperty("family_name")
     private String familyName;
 
+    @JsonCreator
     UserDetailsForTest(String uid, Set<String> roles, String sub, String givenName, String familyName) {
         this.uid = uid;
         this.roles = roles;
