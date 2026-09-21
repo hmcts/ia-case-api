@@ -389,6 +389,7 @@ security:
       - "sendInviteToNonLegalRep"
       - "sendPipToNonLegalRep"
       - "joinAppealConfirmation"
+      - "generatePinInPost"
     challenged-access-legal-operations:
       - "appellantInPersonManual"
       - "moveToPaymentPending"
@@ -486,6 +487,7 @@ security:
       - "sendInviteToNonLegalRep"
       - "sendPipToNonLegalRep"
       - "joinAppealConfirmation"
+      - "generatePinInPost"
     senior-tribunal-caseworker:
       - "appellantInPersonManual"
       - "moveToPaymentPending"
@@ -584,6 +586,7 @@ security:
       - "sendInviteToNonLegalRep"
       - "sendPipToNonLegalRep"
       - "joinAppealConfirmation"
+      - "generatePinInPost"
     hearing-centre-admin:
       - "appellantInPersonManual"
       - "startAppeal"
@@ -660,6 +663,7 @@ security:
       - "sendPipToNonLegalRep"
       - "joinAppealConfirmation"
       - "requestRespondentEvidence"
+      - "generatePinInPost"
     ctsc:
       - "appellantInPersonManual"
       - "startAppeal"
@@ -735,6 +739,7 @@ security:
       - "forceDecidedState"
       - "forceFtpaDecidedState"
       - "requestRespondentEvidence"
+      - "generatePinInPost"
     ctsc-team-leader:
       - "appellantInPersonManual"
       - "startAppeal"
@@ -810,6 +815,7 @@ security:
       - "sendPipToNonLegalRep"
       - "joinAppealConfirmation"
       - "requestRespondentEvidence"
+      - "generatePinInPost"
     national-business-centre:
       - "appellantInPersonManual"
       - "startAppeal"
@@ -884,6 +890,7 @@ security:
       - "sendPipToNonLegalRep"
       - "joinAppealConfirmation"
       - "requestRespondentEvidence"
+      - "generatePinInPost"
     challenged-access-ctsc:
       - "appellantInPersonManual"
       - "startAppeal"
@@ -958,6 +965,7 @@ security:
       - "sendPipToNonLegalRep"
       - "joinAppealConfirmation"
       - "requestRespondentEvidence"
+      - "generatePinInPost"
     challenged-access-admin:
       - "appellantInPersonManual"
       - "startAppeal"
@@ -1033,6 +1041,7 @@ security:
       - "sendPipToNonLegalRep"
       - "joinAppealConfirmation"
       - "requestRespondentEvidence"
+      - "generatePinInPost"
     caseworker-ia-homeofficeapc:
       - "uploadHomeOfficeBundle"
       - "uploadAdditionalEvidenceHomeOffice"
