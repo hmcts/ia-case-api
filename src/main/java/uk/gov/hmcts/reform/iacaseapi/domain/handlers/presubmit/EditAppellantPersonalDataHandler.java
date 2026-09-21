@@ -49,7 +49,11 @@ public class EditAppellantPersonalDataHandler implements PreSubmitCallbackHandle
 
         if (shouldHaveGwfReference(asylumCase)) {
             asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class)
-                .ifPresent(referenceNumber -> asylumCase.write(GWF_REFERENCE_NUMBER, referenceNumber));
+                .ifPresent(referenceNumber -> {
+                    if (referenceNumber.toLowerCase().startsWith("gwf")) {
+                        asylumCase.write(GWF_REFERENCE_NUMBER, referenceNumber);
+                    }
+                });
         }
 
         changeEditAppealApplicationsToCompleted(asylumCase);

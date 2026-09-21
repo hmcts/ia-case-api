@@ -64,6 +64,7 @@ class EditAppellantPersonalDataHandlerTest {
     @Mock
     private DocumentWithDescription appealWasNotSubmitted;
 
+    private final String validGwf = "GWF-123-456-789";
     private String applicationSupplier = "Legal representative";
     private String applicationReason = "applicationReason";
     private String applicationDate = "30/01/2019";
@@ -171,13 +172,29 @@ class EditAppellantPersonalDataHandlerTest {
         when(asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class))
             .thenReturn(Optional.of(outOfCountryDecisionType));
         when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.of(NO));
+        when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of(validGwf));
+
+        PreSubmitCallbackResponse<AsylumCase> response =
+            editAppellantPersonalData.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertEquals(asylumCase, response.getData());
+        verify(asylumCase).write(GWF_REFERENCE_NUMBER, validGwf);
+    }
+
+
+    @ParameterizedTest
+    @EnumSource(value = OutOfCountryDecisionType.class, names = {"REFUSAL_OF_HUMAN_RIGHTS", "REFUSE_PERMIT"})
+    void should_not_write_gwf_reference_number_if_not_beginning_with_gwf(OutOfCountryDecisionType outOfCountryDecisionType) {
+        when(asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class))
+            .thenReturn(Optional.of(outOfCountryDecisionType));
+        when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.of(NO));
         when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of("homeOfficeReferenceNumber"));
 
         PreSubmitCallbackResponse<AsylumCase> response =
             editAppellantPersonalData.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertEquals(asylumCase, response.getData());
-        verify(asylumCase).write(GWF_REFERENCE_NUMBER, "homeOfficeReferenceNumber");
+        verify(asylumCase, never()).write(eq(GWF_REFERENCE_NUMBER), anyString());
     }
 
     @ParameterizedTest
@@ -186,7 +203,7 @@ class EditAppellantPersonalDataHandlerTest {
         when(asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class))
             .thenReturn(Optional.of(outOfCountryDecisionType));
         when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.of(NO));
-        when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of("homeOfficeReferenceNumber"));
+        when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of(validGwf));
 
         PreSubmitCallbackResponse<AsylumCase> response =
             editAppellantPersonalData.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -202,14 +219,14 @@ class EditAppellantPersonalDataHandlerTest {
             .thenReturn(Optional.empty());
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
         when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.of(NO));
-        when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of("homeOfficeReferenceNumber"));
+        when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of(validGwf));
         when(asylumCase.read(OUTSIDE_UK_WHEN_APPLICATION_MADE, YesOrNo.class)).thenReturn(Optional.of(YES));
 
         PreSubmitCallbackResponse<AsylumCase> response =
             editAppellantPersonalData.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertEquals(asylumCase, response.getData());
-        verify(asylumCase).write(GWF_REFERENCE_NUMBER, "homeOfficeReferenceNumber");
+        verify(asylumCase).write(GWF_REFERENCE_NUMBER, validGwf);
     }
 
     @ParameterizedTest
@@ -219,7 +236,7 @@ class EditAppellantPersonalDataHandlerTest {
             .thenReturn(Optional.empty());
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
         when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.of(NO));
-        when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of("homeOfficeReferenceNumber"));
+        when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of(validGwf));
         when(asylumCase.read(OUTSIDE_UK_WHEN_APPLICATION_MADE, YesOrNo.class)).thenReturn(Optional.of(YES));
 
         PreSubmitCallbackResponse<AsylumCase> response =
