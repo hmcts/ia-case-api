@@ -1108,7 +1108,8 @@ public class HandlerUtils {
             .map(IdValue::getValue)
             .filter(appellant -> matchesName(appellant.getGivenNames(), appellantGivenNames, true)
                 && matchesName(appellant.getFamilyName(), appellantFamilyName, false)
-                && matchesDateOfBirth(appellant.getDateOfBirth(), appellantDateOfBirth))
+                && matchesDateOfBirth(appellant.getDateOfBirth(), appellantDateOfBirth)
+                && appellant.getPp() != null && !appellant.getPp().isBlank())
             .findFirst()
             .map(HomeOfficeAppellant::getPp)
             .orElse(null);
