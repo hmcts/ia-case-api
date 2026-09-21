@@ -1859,6 +1859,7 @@ class HandlerUtilsTest {
 
         assertFalse(HandlerUtils.shouldHaveGwfReference(asylumCase));
     }
+
     @ParameterizedTest
     @EnumSource(AppealType.class)
     void shouldHaveGwfReference_should_return_false_in_uk_any_appeal_type(AppealType appealType) {
