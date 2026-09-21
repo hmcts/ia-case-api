@@ -1,27 +1,24 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.Application;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ApplicationType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isInternalCase;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.shouldHaveGwfReference;
 
 @Component
 public class EditAppellantPersonalDataHandler implements PreSubmitCallbackHandler<AsylumCase> {
@@ -49,23 +46,8 @@ public class EditAppellantPersonalDataHandler implements PreSubmitCallbackHandle
             callback
                 .getCaseDetails()
                 .getCaseData();
-        Optional<OutOfCountryDecisionType> outOfCountryDecisionTypeOptional =
-            asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class);
-        boolean appellantInUk = asylumCase.read(APPELLANT_IN_UK, YesOrNo.class).orElse(YES).equals(YES);
-        boolean gwfIfDecisionType = outOfCountryDecisionTypeOptional.map(decision ->
-                Set.of(
-                    OutOfCountryDecisionType.REFUSAL_OF_HUMAN_RIGHTS,
-                    OutOfCountryDecisionType.REFUSE_PERMIT
-                ).contains(decision))
-            .orElse(false);
-        boolean gwfIfNoOocDecisionType = outOfCountryDecisionTypeOptional.isEmpty() && isInternalCase(asylumCase);
-        boolean outsideUkWhenApplicationMade = asylumCase.read(OUTSIDE_UK_WHEN_APPLICATION_MADE, YesOrNo.class)
-            .orElse(NO).equals(YES);
-        boolean humanRightsOrEEA = asylumCase.read(APPEAL_TYPE, AppealType.class)
-            .map(appealType -> Set.of(AppealType.HU, AppealType.EA).contains(appealType))
-            .orElse(false);
-        if (!appellantInUk
-            && (gwfIfDecisionType || gwfIfNoOocDecisionType || (outsideUkWhenApplicationMade && humanRightsOrEEA))) {
+
+        if (shouldHaveGwfReference(asylumCase)) {
             asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class)
                 .ifPresent(referenceNumber -> asylumCase.write(GWF_REFERENCE_NUMBER, referenceNumber));
         }

@@ -1784,4 +1784,88 @@ class HandlerUtilsTest {
         assertNull(HandlerUtils.getPpNumberFromHomeOfficeAppellants(asylumCase));
     }
 
+    @ParameterizedTest
+    @EnumSource(value = OutOfCountryDecisionType.class, names = {"REFUSAL_OF_HUMAN_RIGHTS", "REFUSE_PERMIT"})
+    void shouldHaveGwfReference_should_return_true_OutOfCountryDecisionType_valid(OutOfCountryDecisionType decisionType) {
+        when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.of(NO));
+        when(asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class))
+            .thenReturn(Optional.of(decisionType));
+
+        assertTrue(HandlerUtils.shouldHaveGwfReference(asylumCase));
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = OutOfCountryDecisionType.class, names = {"REFUSAL_OF_HUMAN_RIGHTS", "REFUSE_PERMIT"}, mode = EnumSource.Mode.EXCLUDE)
+    void shouldHaveGwfReference_should_return_false_OutOfCountryDecisionType_invalid(OutOfCountryDecisionType decisionType) {
+        when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.of(NO));
+        when(asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class))
+            .thenReturn(Optional.of(decisionType));
+
+        assertFalse(HandlerUtils.shouldHaveGwfReference(asylumCase));
+    }
+
+    @Test
+    void shouldHaveGwfReference_should_return_true_OutOfCountryDecisionType_empty_internal_case() {
+        when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.of(NO));
+        when(asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class))
+            .thenReturn(Optional.empty());
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YES));
+
+        assertTrue(HandlerUtils.shouldHaveGwfReference(asylumCase));
+    }
+
+    @Test
+    void shouldHaveGwfReference_should_return_true_OutOfCountryDecisionType_empty_non_internal_case() {
+        when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.of(NO));
+        when(asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class))
+            .thenReturn(Optional.empty());
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(NO));
+
+        assertFalse(HandlerUtils.shouldHaveGwfReference(asylumCase));
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = AppealType.class, names = {"HU", "EA"})
+    void shouldHaveGwfReference_should_return_true_AppealType_valid(AppealType appealType) {
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
+        when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.of(NO));
+
+        assertTrue(HandlerUtils.shouldHaveGwfReference(asylumCase));
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = AppealType.class, names = {"HU", "EA"}, mode = EnumSource.Mode.EXCLUDE)
+    void shouldHaveGwfReference_should_return_false_AppealType_invalid(AppealType appealType) {
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
+        when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.of(NO));
+
+        assertFalse(HandlerUtils.shouldHaveGwfReference(asylumCase));
+    }
+
+    @ParameterizedTest
+    @EnumSource(OutOfCountryDecisionType.class)
+    void shouldHaveGwfReference_should_return_false_in_uk_any_outOfCountryDecisionType(OutOfCountryDecisionType outOfCountryDecisionType) {
+        when(asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class)).thenReturn(Optional.of(outOfCountryDecisionType));
+        when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.of(YES));
+
+        assertFalse(HandlerUtils.shouldHaveGwfReference(asylumCase));
+    }
+
+    @ParameterizedTest
+    @EnumSource(YesOrNo.class)
+    void shouldHaveGwfReference_should_return_false_in_uk_internal_or_not(YesOrNo isAdmin) {
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(isAdmin));
+        when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.of(YES));
+
+        assertFalse(HandlerUtils.shouldHaveGwfReference(asylumCase));
+    }
+    @ParameterizedTest
+    @EnumSource(AppealType.class)
+    void shouldHaveGwfReference_should_return_false_in_uk_any_appeal_type(AppealType appealType) {
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
+        when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.of(YES));
+
+        assertFalse(HandlerUtils.shouldHaveGwfReference(asylumCase));
+    }
+
 }

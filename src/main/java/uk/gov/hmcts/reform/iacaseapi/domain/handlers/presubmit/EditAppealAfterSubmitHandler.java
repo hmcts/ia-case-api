@@ -33,8 +33,8 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfCountryDecisionType.REFUSE_PERMIT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isEjpCase;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isInternalCase;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.shouldHaveGwfReference;
 
 @Component
 public class EditAppealAfterSubmitHandler implements PreSubmitCallbackHandler<AsylumCase> {
@@ -172,6 +172,7 @@ public class EditAppealAfterSubmitHandler implements PreSubmitCallbackHandler<As
             if (!HandlerUtils.hasRepresentation(asylumCase)) {
                 asylumCase.write(HAS_ADDED_LEGAL_REP_DETAILS, NO);
             }
+            handleReferenceNumber(callback);
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
@@ -342,6 +343,20 @@ public class EditAppealAfterSubmitHandler implements PreSubmitCallbackHandler<As
         if ((suitabilityAppellantAttendanceYesOrNo1.equals(NO) && suitabilityAppellantAttendanceYesOrNo2.equals(NO))) {
             asylumCase.clear(SUITABILITY_INTERPRETER_SERVICES_YES_OR_NO);
             asylumCase.clear(SUITABILITY_INTERPRETER_SERVICES_LANGUAGE);
+        }
+    }
+
+    private void handleReferenceNumber(Callback<AsylumCase> callback) {
+        AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
+        asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class)
+            .ifPresent(referenceNumber -> asylumCase.write(HOME_OFFICE_REFERENCE_NUMBER_BEFORE_EDIT, referenceNumber));
+
+        AsylumCase asylumCaseBefore = callback.getCaseDetailsBefore().map(CaseDetails::getCaseData).orElse(asylumCase);
+        boolean shouldHaveGwfReferenceBefore = shouldHaveGwfReference(asylumCaseBefore);
+        boolean shouldHaveGwfReference = shouldHaveGwfReference(asylumCase);
+        if (shouldHaveGwfReference != shouldHaveGwfReferenceBefore) {
+            asylumCase.clear(HOME_OFFICE_REFERENCE_NUMBER);
+            asylumCase.clear(GWF_REFERENCE_NUMBER);
         }
     }
 }

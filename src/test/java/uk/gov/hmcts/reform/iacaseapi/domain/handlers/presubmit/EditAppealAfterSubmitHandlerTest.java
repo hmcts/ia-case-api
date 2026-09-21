@@ -5,9 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.mockito.Mock;
+import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
@@ -23,6 +21,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentReceiver;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DueDateService;
@@ -816,5 +815,83 @@ class EditAppealAfterSubmitHandlerTest {
         verify(asylumCase, times(1)).clear(OOC_COUNTRY_LINE);
         verify(asylumCase, times(1)).clear(OOC_LR_COUNTRY_GOV_UK_ADMIN_J);
         verify(asylumCase, times(1)).clear(LEGAL_REP_HAS_ADDRESS);
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void should_just_write_before_edit_ho_ref_if_about_to_submit_with_no_shouldHaveGwfReference_change(boolean bool) {
+        final MockedStatic<HandlerUtils> handlerUtilsMock = Mockito.mockStatic(HandlerUtils.class);
+        handlerUtilsMock.when(
+                () -> HandlerUtils.shouldHaveGwfReference(asylumCase))
+            .thenReturn(bool);
+        handlerUtilsMock.when(
+                () -> HandlerUtils.shouldHaveGwfReference(asylumCaseBefore))
+            .thenReturn(bool);
+        when(callback.getEvent()).thenReturn(Event.EDIT_APPEAL_AFTER_SUBMIT);
+        when(callback.getCaseDetailsBefore()).thenReturn(Optional.of(caseDetailsBefore));
+        when(caseDetailsBefore.getCaseData()).thenReturn(asylumCaseBefore);
+        when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of("HORef"));
+        when(asylumCase.read(HOME_OFFICE_DECISION_DATE)).thenReturn(Optional.of("2020-04-08"));
+        when(dateProvider.now()).thenReturn(LocalDate.parse("2020-04-08"));
+
+        editAppealAfterSubmitHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        verify(asylumCase).read(HOME_OFFICE_REFERENCE_NUMBER, String.class);
+        verify(asylumCase).write(HOME_OFFICE_REFERENCE_NUMBER_BEFORE_EDIT, "HORef");
+        verify(asylumCase, never()).clear(HOME_OFFICE_REFERENCE_NUMBER);
+        verify(asylumCase, never()).clear(GWF_REFERENCE_NUMBER);
+        handlerUtilsMock.verify(() -> HandlerUtils.shouldHaveGwfReference(asylumCase), times(1));
+        handlerUtilsMock.verify(() -> HandlerUtils.shouldHaveGwfReference(asylumCaseBefore), times(1));
+        handlerUtilsMock.verify(() -> HandlerUtils.shouldHaveGwfReference(any()), times(2));
+        handlerUtilsMock.close();
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void should_clear_refs_if_about_to_submit_with_shouldHaveGwfReference_change(boolean bool) {
+        final MockedStatic<HandlerUtils> handlerUtilsMock = Mockito.mockStatic(HandlerUtils.class);
+        handlerUtilsMock.when(
+                () -> HandlerUtils.shouldHaveGwfReference(asylumCase))
+            .thenReturn(bool);
+        handlerUtilsMock.when(
+                () -> HandlerUtils.shouldHaveGwfReference(asylumCaseBefore))
+            .thenReturn(!bool);
+        when(callback.getEvent()).thenReturn(Event.EDIT_APPEAL_AFTER_SUBMIT);
+        when(callback.getCaseDetailsBefore()).thenReturn(Optional.of(caseDetailsBefore));
+        when(caseDetailsBefore.getCaseData()).thenReturn(asylumCaseBefore);
+        when(asylumCase.read(HOME_OFFICE_DECISION_DATE)).thenReturn(Optional.of("2020-04-08"));
+        when(dateProvider.now()).thenReturn(LocalDate.parse("2020-04-08"));
+
+        editAppealAfterSubmitHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        verify(asylumCase).read(HOME_OFFICE_REFERENCE_NUMBER, String.class);
+        verify(asylumCase, never()).write(HOME_OFFICE_REFERENCE_NUMBER_BEFORE_EDIT, "HORef");
+        verify(asylumCase).clear(HOME_OFFICE_REFERENCE_NUMBER);
+        verify(asylumCase).clear(GWF_REFERENCE_NUMBER);
+        handlerUtilsMock.verify(() -> HandlerUtils.shouldHaveGwfReference(asylumCase), times(1));
+        handlerUtilsMock.verify(() -> HandlerUtils.shouldHaveGwfReference(asylumCaseBefore), times(1));
+        handlerUtilsMock.verify(() -> HandlerUtils.shouldHaveGwfReference(any()), times(2));
+        handlerUtilsMock.close();
+    }
+
+    @Test
+    void should_do_nothing_with_shouldHaveGwfReference_if_mid_event() {
+        final MockedStatic<HandlerUtils> handlerUtilsMock = Mockito.mockStatic(HandlerUtils.class);
+        when(callback.getEvent()).thenReturn(Event.EDIT_APPEAL_AFTER_SUBMIT);
+        when(callback.getCaseDetailsBefore()).thenReturn(Optional.of(caseDetailsBefore));
+        when(caseDetailsBefore.getCaseData()).thenReturn(asylumCaseBefore);
+        when(asylumCase.read(HOME_OFFICE_DECISION_DATE)).thenReturn(Optional.of("2020-04-08"));
+        when(dateProvider.now()).thenReturn(LocalDate.parse("2020-04-08"));
+
+        editAppealAfterSubmitHandler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+
+        verify(asylumCase, never()).read(HOME_OFFICE_REFERENCE_NUMBER, String.class);
+        verify(asylumCase, never()).write(HOME_OFFICE_REFERENCE_NUMBER_BEFORE_EDIT, "HORef");
+        verify(asylumCase, never()).clear(HOME_OFFICE_REFERENCE_NUMBER);
+        verify(asylumCase, never()).clear(GWF_REFERENCE_NUMBER);
+        handlerUtilsMock.verify(() -> HandlerUtils.shouldHaveGwfReference(asylumCase), never());
+        handlerUtilsMock.verify(() -> HandlerUtils.shouldHaveGwfReference(asylumCaseBefore), never());
+        handlerUtilsMock.verify(() -> HandlerUtils.shouldHaveGwfReference(any()), never());
+        handlerUtilsMock.close();
     }
 }
