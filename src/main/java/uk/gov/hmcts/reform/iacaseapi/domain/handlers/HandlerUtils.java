@@ -1111,21 +1111,27 @@ public class HandlerUtils {
     }
 
     public static boolean shouldHaveGwfReference(AsylumCase asylumCase) {
-        Optional<OutOfCountryDecisionType> outOfCountryDecisionTypeOptional =
-            asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class);
         boolean appellantInUk = asylumCase.read(APPELLANT_IN_UK, YesOrNo.class).orElse(YES).equals(YES);
-        boolean gwfIfDecisionType = outOfCountryDecisionTypeOptional.map(decision ->
-                Set.of(
-                    OutOfCountryDecisionType.REFUSAL_OF_HUMAN_RIGHTS,
-                    OutOfCountryDecisionType.REFUSE_PERMIT
-                ).contains(decision))
-            .orElse(false);
-        boolean gwfIfNoOocDecisionType = outOfCountryDecisionTypeOptional.isEmpty() && isInternalCase(asylumCase);
-        boolean humanRightsOrEEA = asylumCase.read(APPEAL_TYPE, AppealType.class)
-            .map(appealType -> Set.of(AppealType.HU, AppealType.EA).contains(appealType))
-            .orElse(false);
-        return !appellantInUk
-            && (gwfIfDecisionType || gwfIfNoOocDecisionType || humanRightsOrEEA);
+        if (!appellantInUk) {
+            Optional<OutOfCountryDecisionType> outOfCountryDecisionTypeOptional =
+                asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class);
+            if (outOfCountryDecisionTypeOptional.isPresent()) {
+                return outOfCountryDecisionTypeOptional.map(decision ->
+                        Set.of(
+                            OutOfCountryDecisionType.REFUSAL_OF_HUMAN_RIGHTS,
+                            OutOfCountryDecisionType.REFUSE_PERMIT
+                        ).contains(decision))
+                    .orElse(false);
+            } else if (isInternalCase(asylumCase)) {
+                return asylumCase.read(OOC_APPEAL_ADMIN_J, OutOfCountryCircumstances.class)
+                    .map(d -> d.equals(ENTRY_CLEARANCE_DECISION)).orElse(false);
+            } else {
+                return asylumCase.read(APPEAL_TYPE, AppealType.class)
+                    .map(appealType -> Set.of(AppealType.HU, AppealType.EA).contains(appealType))
+                    .orElse(false);
+            }
+        }
+        return false;
     }
 
 }
