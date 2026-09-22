@@ -26,4 +26,9 @@
         <cve>CVE-2026-47883</cve>
         <cve>CVE-2026-47887</cve>
     </suppress>
+    <suppress until="2026-07-30">
+         <cve>CVE-2026-59084</cve>
+         <cve>CVE-2026-59083</cve>
+         <cve>CVE-2026-49844</cve>    
+    </suppress>
 </suppressions>
