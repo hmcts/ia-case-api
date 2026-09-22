@@ -1,22 +1,5 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
-import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_LEVEL_FLAGS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_LEVEL_FLAGS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.INTERPRETER_DETAILS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.INTERPRETER_LEVEL_FLAGS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_LEVEL_FLAGS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_DETAILS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.service.StrategicCaseFlagService.ROLE_ON_CASE_APPELLANT;
-import static uk.gov.hmcts.reform.iacaseapi.domain.service.StrategicCaseFlagService.ROLE_ON_CASE_INTERPRETER;
-import static uk.gov.hmcts.reform.iacaseapi.domain.service.StrategicCaseFlagService.ROLE_ON_CASE_WITNESS;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -33,6 +16,27 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.StrategicCaseFlagService;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_LEVEL_FLAGS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_LEVEL_FLAGS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.INTERPRETER_DETAILS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.INTERPRETER_LEVEL_FLAGS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NLR_LEVEL_FLAGS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_DETAILS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_LEVEL_FLAGS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.hasActiveNlr;
+import static uk.gov.hmcts.reform.iacaseapi.domain.service.StrategicCaseFlagService.ROLE_ON_CASE_APPELLANT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.service.StrategicCaseFlagService.ROLE_ON_CASE_INTERPRETER;
+import static uk.gov.hmcts.reform.iacaseapi.domain.service.StrategicCaseFlagService.ROLE_ON_CASE_NLR;
+import static uk.gov.hmcts.reform.iacaseapi.domain.service.StrategicCaseFlagService.ROLE_ON_CASE_WITNESS;
 
 @Slf4j
 @Component
@@ -64,6 +68,9 @@ class CreateFlagHandler implements PreSubmitCallbackHandler<AsylumCase> {
         handleCaseLevelFlags(asylumCase);
         handleWitnessLevelFlags(asylumCase);
         handleInterpreterLevelFlags(asylumCase);
+        if (hasActiveNlr(asylumCase)) {
+            handleNlrLevelFlags(asylumCase);
+        }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
@@ -81,6 +88,22 @@ class CreateFlagHandler implements PreSubmitCallbackHandler<AsylumCase> {
                     }
                 }, () -> asylumCase.write(APPELLANT_LEVEL_FLAGS, new StrategicCaseFlagService(
                     appellantFullName, ROLE_ON_CASE_APPELLANT).getStrategicCaseFlag())
+            );
+    }
+
+    private void handleNlrLevelFlags(AsylumCase asylumCase) {
+        final String nlrFullName = HandlerUtils.getNlrFullName(asylumCase);
+        asylumCase.read(NLR_LEVEL_FLAGS, StrategicCaseFlag.class)
+            .ifPresentOrElse(existingNlrLevelFlags -> {
+                    if (!Objects.equals(existingNlrLevelFlags.getPartyName(), nlrFullName)) {
+                        StrategicCaseFlag updatedAppellantLevelFlags = new StrategicCaseFlagService(
+                            nlrFullName,
+                            ROLE_ON_CASE_NLR,
+                            existingNlrLevelFlags.getDetails()).getStrategicCaseFlag();
+                        asylumCase.write(NLR_LEVEL_FLAGS, updatedAppellantLevelFlags);
+                    }
+                }, () -> asylumCase.write(NLR_LEVEL_FLAGS, new StrategicCaseFlagService(
+                    nlrFullName, ROLE_ON_CASE_NLR).getStrategicCaseFlag())
             );
     }
 

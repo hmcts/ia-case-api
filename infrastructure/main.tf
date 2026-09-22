@@ -39,7 +39,7 @@ module "ia-case-api-db-v15" {
   providers = {
     azurerm.postgres_network = azurerm.cft_vnet
   }
-  source        = "git@github.com:hmcts/terraform-module-postgresql-flexible?ref=master"
+  source        = "git@github.com:hmcts/terraform-module-postgresql-flexible?ref=DTSPO-30107-additional-postgres-admins"
   env           = var.env
   product       = var.product
   component     = var.component
@@ -85,3 +85,10 @@ resource "azurerm_key_vault_secret" "local_ia_config_validator_secret" {
   value        = "ok"
   key_vault_id = data.azurerm_key_vault.ia_key_vault.id
 }
+
+resource "random_password" "password" {
+  length           = 16
+  special          = true
+  override_special = "!#$%&*()-_=+[]{}<>:?"
+}
+
