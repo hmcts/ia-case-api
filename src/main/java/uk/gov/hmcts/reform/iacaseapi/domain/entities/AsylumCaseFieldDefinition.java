@@ -70,6 +70,8 @@ public enum AsylumCaseFieldDefinition {
 
     HO_INTERPRETER_REQUIRED(
         "hoInterpreterRequired", new TypeReference<YesOrNo>(){}),
+    HAS_BEEN_VALIDATED_BY_NEW_HOME_OFFICE_API(
+        "hasBeenValidatedByNewHomeOfficeApi", new TypeReference<YesOrNo>(){}),
 
     APPELLANT_GIVEN_NAMES(
         "appellantGivenNames", new TypeReference<String>(){}),
