@@ -43,7 +43,8 @@ public class DirectionDueDateValidator implements PreSubmitCallbackHandler<Asylu
                 Event.REQUEST_CASE_BUILDING,
                 Event.FORCE_REQUEST_CASE_BUILDING,
                 Event.REQUEST_REASONS_FOR_APPEAL,
-                Event.REQUEST_RESPONSE_AMEND);
+                Event.REQUEST_RESPONSE_AMEND,
+                Event.CHANGE_DIRECTION_DUE_DATE);
 
         return callbackStage == PreSubmitCallbackStage.MID_EVENT
                 && eligibleEvents.contains(callback.getEvent())
@@ -51,7 +52,8 @@ public class DirectionDueDateValidator implements PreSubmitCallbackHandler<Asylu
                     || callback.getPageId().equals("requestRespondentEvidence")
                     || callback.getPageId().equals("requestCaseEdit")
                     || callback.getPageId().equals("requestRespondentReview")
-                    || callback.getPageId().equals("requestCaseBuilding"));
+                    || callback.getPageId().equals("requestCaseBuilding")
+                    || callback.getPageId().equals("changeDirectionDueDate"));
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
