@@ -47,7 +47,8 @@ public class HomeOfficeReferenceHandler implements PreSubmitCallbackHandler<Asyl
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.MID_EVENT
-            && Set.of(Event.START_APPEAL, Event.EDIT_APPEAL, Event.EDIT_APPELLANT_PERSONAL_DATA).contains(callback.getEvent())
+            && (Set.of(Event.START_APPEAL, Event.EDIT_APPEAL).contains(callback.getEvent())
+            || shouldValidateEditPersonalData(callback))
             && validPages.contains(callback.getPageId());
     }
 

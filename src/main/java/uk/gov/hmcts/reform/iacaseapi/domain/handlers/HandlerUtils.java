@@ -1134,4 +1134,11 @@ public class HandlerUtils {
         return false;
     }
 
+    public static boolean shouldValidateEditPersonalData(Callback<AsylumCase> callback) {
+        AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
+        return callback.getEvent().equals(Event.EDIT_APPELLANT_PERSONAL_DATA)
+            && asylumCase.read(HAS_BEEN_VALIDATED_BY_NEW_HOME_OFFICE_API, YesOrNo.class)
+            .orElse(YesOrNo.NO) == YesOrNo.YES;
+    }
+
 }
