@@ -23,6 +23,8 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseResource;
 import uk.gov.hmcts.reform.ccd.client.model.Event;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseData;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.util.IdamAuthProvider;
 import uk.gov.hmcts.reform.iacaseapi.util.MapValueExpander;
 
@@ -87,6 +89,15 @@ public class CcdCaseCreationTest {
 
     @Autowired
     private MapValueExpander mapValueExpander;
+
+    // Jackson 3 mapper matching the app's own config, used instead of
+    // REST Assured's internal Jackson 2 Jackson2Mapper, which has no
+    // Optional support registered.
+    private static final JsonMapper JSON_MAPPER = JsonMapper.builder().build();
+
+    protected static String toJson(Callback<CaseData> callback) {
+        return JSON_MAPPER.writeValueAsString(callback);
+    }
 
     protected void setupForLegalRep() {
         startAppealAsLegalRep();

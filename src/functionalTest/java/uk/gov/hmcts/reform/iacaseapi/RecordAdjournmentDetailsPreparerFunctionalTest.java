@@ -49,13 +49,13 @@ public class RecordAdjournmentDetailsPreparerFunctionalTest extends CcdCaseCreat
             null
         );
 
-        Callback callback = new Callback<>(caseDetails, Optional.of(caseDetails), RECORD_ADJOURNMENT_DETAILS);
+        Callback<CaseData> callback = new Callback<>(caseDetails, Optional.of(caseDetails), RECORD_ADJOURNMENT_DETAILS);
         given(caseApiSpecification)
             .when()
             .contentType("application/json")
             .header(new Header(AUTHORIZATION, caseOfficerToken))
             .header(new Header(SERVICE_AUTHORIZATION, s2sToken))
-            .body(callback)
+            .body(toJson(callback))
             .post("/asylum/ccdMidEvent")
             .then()
             .statusCode(HttpStatus.SC_OK)
@@ -80,13 +80,13 @@ public class RecordAdjournmentDetailsPreparerFunctionalTest extends CcdCaseCreat
             null
         );
 
-        Callback callback = new Callback<>(caseDetails, Optional.of(caseDetails), RECORD_ADJOURNMENT_DETAILS);
+        Callback<CaseData> callback = new Callback<>(caseDetails, Optional.of(caseDetails), RECORD_ADJOURNMENT_DETAILS);
         Response response = given(caseApiSpecification)
             .when()
             .contentType("application/json")
             .header(new Header(AUTHORIZATION, "invalidToken"))
             .header(new Header(SERVICE_AUTHORIZATION, s2sToken))
-            .body(callback)
+            .body(toJson(callback))
             .post("/asylum/ccdMidEvent")
             .then()
             .log().all(true)
