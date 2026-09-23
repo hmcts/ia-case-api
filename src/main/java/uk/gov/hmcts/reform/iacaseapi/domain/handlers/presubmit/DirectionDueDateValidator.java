@@ -72,7 +72,7 @@ public class DirectionDueDateValidator implements PreSubmitCallbackHandler<Asylu
         if (callback.getEvent() == Event.CHANGE_DIRECTION_DUE_DATE) {
             Optional<String> directionEditDueDate =
                     asylumCase.read(DIRECTION_EDIT_DATE_DUE, String.class);
-
+            log.info("Direction edit due date: {}", directionEditDueDate.orElse("not present"));
             validateDueDate(directionEditDueDate, response);
         } else {
             Optional<String> sendDirectionDueDate =
