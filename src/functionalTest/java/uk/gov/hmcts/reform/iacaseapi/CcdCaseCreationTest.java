@@ -1,9 +1,8 @@
 package uk.gov.hmcts.reform.iacaseapi;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.json.JsonMapper;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.specification.RequestSpecification;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +14,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.util.FileCopyUtils;
+import tools.jackson.core.JacksonException;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDataContent;
@@ -23,6 +23,8 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseResource;
 import uk.gov.hmcts.reform.ccd.client.model.Event;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseData;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.util.IdamAuthProvider;
 import uk.gov.hmcts.reform.iacaseapi.util.MapValueExpander;
 
@@ -87,6 +89,15 @@ public class CcdCaseCreationTest {
 
     @Autowired
     private MapValueExpander mapValueExpander;
+
+    // Jackson 3 mapper matching the app's own config, used instead of
+    // REST Assured's internal Jackson 2 Jackson2Mapper, which has no
+    // Optional support registered.
+    private static final JsonMapper JSON_MAPPER = JsonMapper.builder().build();
+
+    protected static String toJson(Callback<CaseData> callback) {
+        return JSON_MAPPER.writeValueAsString(callback);
+    }
 
     protected void setupForLegalRep() {
         startAppealAsLegalRep();
@@ -259,10 +270,10 @@ public class CcdCaseCreationTest {
         Map<String, Object> data = Collections.emptyMap();
 
         try {
-            data = new ObjectMapper()
+            data = new JsonMapper()
                 .readValue(asString(appealJson), new TypeReference<>() {
                 });
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             e.printStackTrace();
         }
 

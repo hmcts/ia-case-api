@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
@@ -26,6 +27,7 @@ public class MakeAnApplication {
     private String decisionMaker;
     private Document refusalOfRemoval24wDocument;
 
+    @JsonCreator
     public MakeAnApplication() {
 
     }

@@ -2,7 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.entities;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.Collections;
 import org.junit.jupiter.api.Test;

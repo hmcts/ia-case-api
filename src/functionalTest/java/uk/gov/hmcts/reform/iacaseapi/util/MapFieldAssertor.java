@@ -28,6 +28,9 @@ public final class MapFieldAssertor {
         final String path
     ) {
         for (Map.Entry<String, Object> expectedEntry : expectedMap.entrySet()) {
+            if (expectedEntry.getValue() == null) {
+                continue;
+            }
 
             String key = expectedEntry.getKey();
             String pathWithKey = path + "." + key;

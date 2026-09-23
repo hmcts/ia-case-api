@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.ObjectMapper;
 import feign.RetryableException;
 import io.restassured.RestAssured;
 import io.restassured.http.Headers;
@@ -139,6 +139,9 @@ public class CcdScenarioRunnerTest {
         log.info(AnsiOutput.toString(AnsiColor.CYAN, separator, AnsiColor.DEFAULT));
         log.info(AnsiOutput.toString(AnsiColor.YELLOW, "RUNNING " + scenarioSources.size() + " SCENARIOS", AnsiColor.DEFAULT));
         log.info(AnsiOutput.toString(AnsiColor.CYAN, separator, AnsiColor.DEFAULT));
+
+        System.out.println("Default property includsion: " + objectMapper.serializationConfig().getDefaultPropertyInclusion());
+        System.out.println(objectMapper.getClass());
     }
 
     public Stream<Arguments> scenarioSources() {

@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonEnumDefaultValue;
 import com.fasterxml.jackson.annotation.JsonValue;
 
@@ -69,6 +70,7 @@ public enum DocumentTag {
     @JsonValue
     private final String id;
 
+    @JsonCreator
     DocumentTag(String id) {
         this.id = id;
     }

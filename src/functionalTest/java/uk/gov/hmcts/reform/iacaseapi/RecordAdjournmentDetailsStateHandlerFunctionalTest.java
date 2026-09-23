@@ -64,13 +64,13 @@ public class RecordAdjournmentDetailsStateHandlerFunctionalTest extends CcdCaseC
             null
         );
 
-        Callback callback = new Callback<>(caseDetails, Optional.of(caseDetails), RECORD_ADJOURNMENT_DETAILS);
+        Callback<CaseData> callback = new Callback<>(caseDetails, Optional.of(caseDetails), RECORD_ADJOURNMENT_DETAILS);
         given(caseApiSpecification)
             .when()
             .contentType("application/json")
             .header(new Header(AUTHORIZATION, caseOfficerToken))
             .header(new Header(SERVICE_AUTHORIZATION, s2sToken))
-            .body(callback)
+            .body(toJson(callback))
             .post("/asylum/ccdAboutToSubmit")
             .then()
             .statusCode(HttpStatus.SC_OK)
@@ -110,13 +110,13 @@ public class RecordAdjournmentDetailsStateHandlerFunctionalTest extends CcdCaseC
             null
         );
 
-        Callback callback = new Callback<>(caseDetails, Optional.of(caseDetails), RECORD_ADJOURNMENT_DETAILS);
+        Callback<CaseData> callback = new Callback<>(caseDetails, Optional.of(caseDetails), RECORD_ADJOURNMENT_DETAILS);
         given(caseApiSpecification)
             .when()
             .contentType("application/json")
             .header(new Header(AUTHORIZATION, caseOfficerToken))
             .header(new Header(SERVICE_AUTHORIZATION, s2sToken))
-            .body(callback)
+            .body(toJson(callback))
             .post("/asylum/ccdAboutToSubmit")
             .then()
             .statusCode(HttpStatus.SC_OK)
@@ -142,13 +142,13 @@ public class RecordAdjournmentDetailsStateHandlerFunctionalTest extends CcdCaseC
             null
         );
 
-        Callback callback = new Callback<>(caseDetails, Optional.of(caseDetails), RECORD_ADJOURNMENT_DETAILS);
+        Callback<CaseData> callback = new Callback<>(caseDetails, Optional.of(caseDetails), RECORD_ADJOURNMENT_DETAILS);
         Response response = given(caseApiSpecification)
             .when()
             .contentType("application/json")
             .header(new Header(AUTHORIZATION, caseOfficerToken))
             .header(new Header(SERVICE_AUTHORIZATION, s2sToken))
-            .body(callback)
+            .body(toJson(callback))
             .post("/asylum/ccdAboutToSubmit")
             .then()
             .log().all(true)
