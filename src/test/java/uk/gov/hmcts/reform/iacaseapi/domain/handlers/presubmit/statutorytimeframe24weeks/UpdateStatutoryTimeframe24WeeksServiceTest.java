@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.*;
@@ -133,6 +134,8 @@ class UpdateStatutoryTimeframe24WeeksServiceTest {
         verify(statutoryTimeframe24WeeksHistoryAppender, times(1)).append(
             newStatutoryTimeframe24WeeksHistoryCaptor.capture(),
             existingStatutoryTimeframe24WeeksHistoryCaptor.capture());
+        verify(asylumCase).writeIfEmpty(STF_24W_SET_DATE, dateProvider.now());
+        verify(asylumCase, never()).writeIfEmpty(STF_24W_REMOVE_DATE, dateProvider.now());
 
         StatutoryTimeframe24WeeksHistory capturedStatutoryTimeframe24Weeks = newStatutoryTimeframe24WeeksHistoryCaptor.getValue();
 
@@ -274,6 +277,9 @@ class UpdateStatutoryTimeframe24WeeksServiceTest {
             newStatutoryTimeframe24WeeksHistoryCaptor.capture(),
             existingStatutoryTimeframe24WeeksHistoryCaptor.capture());
 
+        verify(asylumCase, never()).writeIfEmpty(STF_24W_SET_DATE, dateProvider.now());
+        verify(asylumCase).writeIfEmpty(STF_24W_REMOVE_DATE, dateProvider.now());
+
         StatutoryTimeframe24WeeksHistory capturedStatutoryTimeframe24Weeks = newStatutoryTimeframe24WeeksHistoryCaptor.getValue();
 
         assertThat(capturedStatutoryTimeframe24Weeks.getStatus()).isEqualTo(newStatus);
@@ -354,4 +360,22 @@ class UpdateStatutoryTimeframe24WeeksServiceTest {
         verify(asylumCase, times(1)).write(eq(CASE_NOTES), anyList());
     }
 
+    @Test
+    void should_not_set_remove_date_if_status_changed_to_no_system_user() {
+        YesOrNo currentStatus = YesOrNo.YES;
+        when(asylumCase.read(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class))
+            .thenReturn(Optional.of(currentStatus));
+        when(userDetails.getRoles()).thenReturn(singletonList(UserRole.SYSTEM.getId()));
+
+        when(asylumCase.read(REMOVAL_OF_24W_DECISION_REASON, String.class)).thenReturn(Optional.of(newStatutoryTimeframe24WeeksReason));
+
+        updateStatutoryTimeframe24WeeksService.updateAsylumCase(asylumCase, YesOrNo.NO);
+
+        verify(statutoryTimeframe24WeeksHistoryAppender, times(1)).append(
+            newStatutoryTimeframe24WeeksHistoryCaptor.capture(),
+            existingStatutoryTimeframe24WeeksHistoryCaptor.capture());
+
+        verify(asylumCase, never()).writeIfEmpty(STF_24W_SET_DATE, dateProvider.now());
+        verify(asylumCase, never()).writeIfEmpty(STF_24W_REMOVE_DATE, dateProvider.now());
+    }
 }
