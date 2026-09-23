@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DIRECTION_EDIT_DATE_DUE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SEND_DIRECTION_DATE_DUE;
 
 import java.time.LocalDate;
@@ -68,17 +69,33 @@ public class DirectionDueDateValidator implements PreSubmitCallbackHandler<Asylu
         PreSubmitCallbackResponse<AsylumCase> response =
                 new PreSubmitCallbackResponse<>(asylumCase);
 
-        Optional<String> dueDate =
-                asylumCase.read(SEND_DIRECTION_DATE_DUE, String.class);
+        if (callback.getEvent() == Event.CHANGE_DIRECTION_DUE_DATE) {
+            Optional<String> directionEditDueDate =
+                    asylumCase.read(DIRECTION_EDIT_DATE_DUE, String.class);
 
+            validateDueDate(directionEditDueDate, response);
+        } else {
+            Optional<String> sendDirectionDueDate =
+                    asylumCase.read(SEND_DIRECTION_DATE_DUE, String.class);
+
+            validateDueDate(sendDirectionDueDate, response);
+        }
+
+        return response;
+    }
+
+    private void validateDueDate(
+            Optional<String> dueDate,
+            PreSubmitCallbackResponse<AsylumCase> response
+    ) {
         if (dueDate.isPresent()) {
             LocalDate parsedDate = LocalDate.parse(dueDate.get());
 
             if (parsedDate.isBefore(dateProvider.now())) {
-                response.addError("The date entered is not valid - this must be today or a date in the future");
+                response.addError(
+                        "The date entered is not valid - this must be today or a date in the future"
+                );
             }
         }
-
-        return response;
     }
 }

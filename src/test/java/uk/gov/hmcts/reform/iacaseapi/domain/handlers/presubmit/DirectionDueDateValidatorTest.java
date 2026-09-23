@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DIRECTION_EDIT_DATE_DUE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SEND_DIRECTION_DATE_DUE;
 
 import java.time.LocalDate;
@@ -94,6 +95,27 @@ class DirectionDueDateValidatorTest {
     }
 
     @Test
+    void should_add_error_when_direction_edit_due_date_is_in_the_past() {
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getEvent()).thenReturn(Event.CHANGE_DIRECTION_DUE_DATE);
+        when(callback.getPageId()).thenReturn("changeDirectionDueDate");
+        when(dateProvider.now()).thenReturn(LocalDate.of(2025, 1, 10));
+
+        when(asylumCase.read(DIRECTION_EDIT_DATE_DUE, String.class))
+                .thenReturn(Optional.of("2025-01-09"));
+
+        PreSubmitCallbackResponse<AsylumCase> response =
+                handler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+
+        assertThat(response.getErrors())
+                .containsExactly(
+                        "The date entered is not valid - this must be today or a date in the future"
+                );
+    }
+
+    @Test
     void should_not_add_error_when_due_date_is_today() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -108,6 +130,59 @@ class DirectionDueDateValidatorTest {
                 handler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
 
         assertTrue(response.getErrors().isEmpty());
+    }
+
+    @Test
+    void should_not_add_error_when_direction_edit_due_date_is_today() {
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getEvent()).thenReturn(Event.CHANGE_DIRECTION_DUE_DATE);
+        when(callback.getPageId()).thenReturn("changeDirectionDueDate");
+        when(dateProvider.now()).thenReturn(LocalDate.of(2025, 1, 10));
+
+        when(asylumCase.read(DIRECTION_EDIT_DATE_DUE, String.class))
+                .thenReturn(Optional.of("2025-01-10"));
+
+        PreSubmitCallbackResponse<AsylumCase> response =
+                handler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+
+        assertThat(response.getErrors()).isEmpty();
+    }
+
+    @Test
+    void should_not_add_error_when_direction_edit_due_date_is_in_the_future() {
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getEvent()).thenReturn(Event.CHANGE_DIRECTION_DUE_DATE);
+        when(callback.getPageId()).thenReturn("changeDirectionDueDate");
+        when(dateProvider.now()).thenReturn(LocalDate.of(2025, 1, 10));
+
+        when(asylumCase.read(DIRECTION_EDIT_DATE_DUE, String.class))
+                .thenReturn(Optional.of("2025-01-11"));
+
+        PreSubmitCallbackResponse<AsylumCase> response =
+                handler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+
+        assertThat(response.getErrors()).isEmpty();
+    }
+
+    @Test
+    void should_not_add_error_when_direction_edit_due_date_not_present() {
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getEvent()).thenReturn(Event.CHANGE_DIRECTION_DUE_DATE);
+        when(callback.getPageId()).thenReturn("changeDirectionDueDate");
+
+        when(asylumCase.read(DIRECTION_EDIT_DATE_DUE, String.class))
+                .thenReturn(Optional.empty());
+
+        PreSubmitCallbackResponse<AsylumCase> response =
+                handler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+
+        assertThat(response.getErrors()).isEmpty();
     }
 
     @Test
@@ -161,6 +236,18 @@ class DirectionDueDateValidatorTest {
         when(callback.getPageId()).thenReturn("someOtherPage");
 
         assertFalse(handler.canHandle(
+                PreSubmitCallbackStage.MID_EVENT,
+                callback
+        ));
+    }
+
+    @Test
+    void should_handle_change_direction_due_date_mid_event() {
+
+        when(callback.getEvent()).thenReturn(Event.CHANGE_DIRECTION_DUE_DATE);
+        when(callback.getPageId()).thenReturn("changeDirectionDueDate");
+
+        assertTrue(handler.canHandle(
                 PreSubmitCallbackStage.MID_EVENT,
                 callback
         ));
