@@ -22,6 +22,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.HomeOfficeReferenceService;
 
@@ -72,10 +73,24 @@ class HomeOfficeReferenceHandlerTest {
     @EnumSource(value = Event.class, names = {"START_APPEAL", "EDIT_APPEAL", "EDIT_APPELLANT_PERSONAL_DATA"})
     void canHandle_should_return_true_for_valid_inputs(Event event) {
         when(callback.getEvent()).thenReturn(event);
-
+        if (event == Event.EDIT_APPELLANT_PERSONAL_DATA) {
+            when(asylumCase.read(HAS_BEEN_VALIDATED_BY_NEW_HOME_OFFICE_API, YesOrNo.class))
+                .thenReturn(Optional.of(YesOrNo.YES));
+        }
         for (String page : handler.validPages) {
             when(callback.getPageId()).thenReturn(page);
             assertTrue(handler.canHandle(PreSubmitCallbackStage.MID_EVENT, callback));
+        }
+    }
+
+    @Test
+    void canHandle_should_return_true_for_unvalidated() {
+        when(callback.getEvent()).thenReturn(Event.EDIT_APPELLANT_PERSONAL_DATA);
+        when(asylumCase.read(HAS_BEEN_VALIDATED_BY_NEW_HOME_OFFICE_API, YesOrNo.class))
+            .thenReturn(Optional.empty());
+        for (String page : handler.validPages) {
+            when(callback.getPageId()).thenReturn(page);
+            assertFalse(handler.canHandle(PreSubmitCallbackStage.MID_EVENT, callback));
         }
     }
 

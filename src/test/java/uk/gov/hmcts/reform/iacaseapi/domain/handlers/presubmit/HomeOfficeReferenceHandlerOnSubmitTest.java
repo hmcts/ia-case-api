@@ -68,7 +68,7 @@ class HomeOfficeReferenceHandlerOnSubmitTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = Event.class, names = {"START_APPEAL", "EDIT_APPEAL", "EDIT_APPELLANT_PERSONAL_DATA"})
+    @EnumSource(value = Event.class, names = {"START_APPEAL", "EDIT_APPEAL"})
     void canHandle_true_for_correct_stage_and_event(Event event) {
         when(callback.getEvent()).thenReturn(event);
 
@@ -76,18 +76,35 @@ class HomeOfficeReferenceHandlerOnSubmitTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = Event.class, names = {"START_APPEAL", "EDIT_APPEAL", "EDIT_APPELLANT_PERSONAL_DATA"}, mode = EnumSource.Mode.EXCLUDE)
+    @EnumSource(value = Event.class, names = {"START_APPEAL", "EDIT_APPEAL"}, mode = EnumSource.Mode.EXCLUDE)
     void canHandle_false_for_correct_stage_incorrect_event(Event event) {
         when(callback.getEvent()).thenReturn(event);
 
         assertFalse(handler.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback));
     }
 
-
     @ParameterizedTest
     @EnumSource(value = PreSubmitCallbackStage.class, names = {"ABOUT_TO_SUBMIT"}, mode = EnumSource.Mode.EXCLUDE)
-    void canHandle_false_for_incorrect_stage_correct_event(PreSubmitCallbackStage stage) {
+    void canHandle_false_for_incorrect_stage(PreSubmitCallbackStage stage) {
         assertFalse(handler.canHandle(stage, callback));
+    }
+
+    @Test
+    void canHandle_true_for_edit_personal_info_validated() {
+        when(callback.getEvent()).thenReturn(Event.EDIT_APPELLANT_PERSONAL_DATA);
+        handlerUtilsMock
+            .when(() -> HandlerUtils.shouldValidateEditPersonalData(callback))
+            .thenReturn(true);
+        assertTrue(handler.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback));
+    }
+
+    @Test
+    void canHandle_false_for_edit_personal_info_unvalidated() {
+        when(callback.getEvent()).thenReturn(Event.EDIT_APPELLANT_PERSONAL_DATA);
+        handlerUtilsMock
+            .when(() -> HandlerUtils.shouldValidateEditPersonalData(callback))
+            .thenReturn(false);
+        assertFalse(handler.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback));
     }
 
     @Test

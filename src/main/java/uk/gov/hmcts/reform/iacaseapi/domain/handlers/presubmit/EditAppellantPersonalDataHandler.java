@@ -18,7 +18,6 @@ import java.util.stream.Collectors;
 import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.shouldHaveGwfReference;
 
 @Component
 public class EditAppellantPersonalDataHandler implements PreSubmitCallbackHandler<AsylumCase> {
@@ -47,13 +46,8 @@ public class EditAppellantPersonalDataHandler implements PreSubmitCallbackHandle
                 .getCaseDetails()
                 .getCaseData();
 
-        if (shouldHaveGwfReference(asylumCase)) {
-            asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class)
-                .ifPresent(referenceNumber -> {
-                    if (referenceNumber.toLowerCase().startsWith("gwf")) {
-                        asylumCase.write(GWF_REFERENCE_NUMBER, referenceNumber);
-                    }
-                });
+        if (asylumCase.read(GWF_REFERENCE_NUMBER, String.class).isPresent()) {
+            asylumCase.write(GWF_REFERENCE_NUMBER, asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class).orElse(""));
         }
 
         changeEditAppealApplicationsToCompleted(asylumCase);

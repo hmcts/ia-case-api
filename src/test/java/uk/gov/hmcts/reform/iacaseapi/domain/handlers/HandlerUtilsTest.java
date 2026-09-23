@@ -16,6 +16,7 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.HomeOfficeAppellant;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.AddressUk;
@@ -1823,101 +1824,32 @@ class HandlerUtilsTest {
         assertNull(HandlerUtils.getPpNumberFromHomeOfficeAppellants(asylumCase));
     }
 
-    @ParameterizedTest
-    @EnumSource(value = OutOfCountryDecisionType.class, names = {"REFUSAL_OF_HUMAN_RIGHTS", "REFUSE_PERMIT"})
-    void shouldHaveGwfReference_should_return_true_OutOfCountryDecisionType_valid(OutOfCountryDecisionType decisionType) {
-        when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.of(NO));
-        when(asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class))
-            .thenReturn(Optional.of(decisionType));
+    @Test
+    void shouldValidateEditPersonalData_return_true() {
+        when(callback.getEvent()).thenReturn(Event.EDIT_APPELLANT_PERSONAL_DATA);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(HAS_BEEN_VALIDATED_BY_NEW_HOME_OFFICE_API, YesOrNo.class)).thenReturn(Optional.of(YES));
 
-        assertTrue(HandlerUtils.shouldHaveGwfReference(asylumCase));
-        verify(asylumCase).read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class);
-        verify(asylumCase, never()).read(OOC_APPEAL_ADMIN_J, OutOfCountryCircumstances.class);
-        verify(asylumCase, never()).read(APPEAL_TYPE, AppealType.class);
-    }
-
-    @ParameterizedTest
-    @EnumSource(value = OutOfCountryDecisionType.class, names = {"REFUSAL_OF_HUMAN_RIGHTS", "REFUSE_PERMIT"}, mode = EnumSource.Mode.EXCLUDE)
-    void shouldHaveGwfReference_should_return_false_OutOfCountryDecisionType_invalid(OutOfCountryDecisionType decisionType) {
-        when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.of(NO));
-        when(asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class))
-            .thenReturn(Optional.of(decisionType));
-
-        assertFalse(HandlerUtils.shouldHaveGwfReference(asylumCase));
-        verify(asylumCase).read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class);
-        verify(asylumCase, never()).read(OOC_APPEAL_ADMIN_J, OutOfCountryCircumstances.class);
-        verify(asylumCase, never()).read(APPEAL_TYPE, AppealType.class);
-    }
-
-    @ParameterizedTest
-    @EnumSource(value = OutOfCountryCircumstances.class, names = {"ENTRY_CLEARANCE_DECISION"})
-    void shouldHaveGwfReference_should_return_true_OutOfCountryCircumstances_valid_icc(OutOfCountryCircumstances decision) {
-        when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.of(NO));
-        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YES));
-        when(asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class))
-            .thenReturn(Optional.empty());
-        when(asylumCase.read(OOC_APPEAL_ADMIN_J, OutOfCountryCircumstances.class))
-            .thenReturn(Optional.of(decision));
-
-        assertTrue(HandlerUtils.shouldHaveGwfReference(asylumCase));
-        verify(asylumCase).read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class);
-        verify(asylumCase).read(OOC_APPEAL_ADMIN_J, OutOfCountryCircumstances.class);
-        verify(asylumCase, never()).read(APPEAL_TYPE, AppealType.class);
-    }
-
-    @ParameterizedTest
-    @EnumSource(value = OutOfCountryCircumstances.class, names = {"ENTRY_CLEARANCE_DECISION"}, mode = EnumSource.Mode.EXCLUDE)
-    void shouldHaveGwfReference_should_return_false_OutOfCountryCircumstances_invalid_icc(OutOfCountryCircumstances decision) {
-        when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.of(NO));
-        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YES));
-        when(asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class))
-            .thenReturn(Optional.empty());
-        when(asylumCase.read(OOC_APPEAL_ADMIN_J, OutOfCountryCircumstances.class))
-            .thenReturn(Optional.of(decision));
-
-        assertFalse(HandlerUtils.shouldHaveGwfReference(asylumCase));
-        verify(asylumCase).read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class);
-        verify(asylumCase).read(OOC_APPEAL_ADMIN_J, OutOfCountryCircumstances.class);
-        verify(asylumCase, never()).read(APPEAL_TYPE, AppealType.class);
-    }
-
-    @ParameterizedTest
-    @EnumSource(value = AppealType.class, names = {"HU", "EA"})
-    void shouldHaveGwfReference_should_return_true_AppealType_valid(AppealType appealType) {
-        when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.of(NO));
-        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(NO));
-        when(asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class))
-            .thenReturn(Optional.empty());
-        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
-
-        assertTrue(HandlerUtils.shouldHaveGwfReference(asylumCase));
-        verify(asylumCase).read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class);
-        verify(asylumCase, never()).read(OOC_APPEAL_ADMIN_J, OutOfCountryCircumstances.class);
-        verify(asylumCase).read(APPEAL_TYPE, AppealType.class);
-    }
-
-    @ParameterizedTest
-    @EnumSource(value = AppealType.class, names = {"HU", "EA"}, mode = EnumSource.Mode.EXCLUDE)
-    void shouldHaveGwfReference_should_return_false_AppealType_invalid(AppealType appealType) {
-        when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.of(NO));
-        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(NO));
-        when(asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class))
-            .thenReturn(Optional.empty());
-        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
-
-        assertFalse(HandlerUtils.shouldHaveGwfReference(asylumCase));
-        verify(asylumCase).read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class);
-        verify(asylumCase, never()).read(OOC_APPEAL_ADMIN_J, OutOfCountryCircumstances.class);
-        verify(asylumCase).read(APPEAL_TYPE, AppealType.class);
+        assertTrue(shouldValidateEditPersonalData(callback));
     }
 
     @Test
-    void shouldHaveGwfReference_should_return_false_in_uk() {
-        when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.of(YES));
+    void shouldValidateEditPersonalData_return_false_bad_event() {
+        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
-        assertFalse(HandlerUtils.shouldHaveGwfReference(asylumCase));
-        verify(asylumCase, never()).read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class);
-        verify(asylumCase, never()).read(OOC_APPEAL_ADMIN_J, OutOfCountryCircumstances.class);
-        verify(asylumCase, never()).read(APPEAL_TYPE, AppealType.class);
+        assertFalse(shouldValidateEditPersonalData(callback));
+    }
+
+    @Test
+    void shouldValidateEditPersonalData_return_false_unvalidated() {
+        when(callback.getEvent()).thenReturn(Event.EDIT_APPELLANT_PERSONAL_DATA);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(HAS_BEEN_VALIDATED_BY_NEW_HOME_OFFICE_API, YesOrNo.class)).thenReturn(Optional.empty());
+
+        assertFalse(shouldValidateEditPersonalData(callback));
     }
 }
