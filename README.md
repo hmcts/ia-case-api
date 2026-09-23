@@ -296,6 +296,7 @@ Then run `zsh ./create-test-user.zsh <environment> <email (optional)>` where `<e
 NB. The token will expire every 8 hours, so if the create-test-user doesn't return an email address, it's likely that the first step will need to be re-run.
 NB2. Use aat env variable for preview environment user creation as it uses aat's IDAM instance.
 
+
 ### Copy over case data script
 copy_over_data.zsh is a script that can be used to overwrite case data and event history from one appeal to another.
 Main use case is if an appeal is inaccessible by AIP or LR in a preview env (likely due to the test user being torn down), one can create a new test user, create a new appeal for it (as a baseline) and copy over all the data and events into this appeal so it'll be as if it was the original (with a different ccd reference number)
