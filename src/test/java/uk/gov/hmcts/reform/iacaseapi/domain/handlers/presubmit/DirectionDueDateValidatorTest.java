@@ -112,7 +112,7 @@ class DirectionDueDateValidatorTest {
         assertThat(response.getErrors())
                 .containsExactly(
                         "The date entered is not valid - this must be today or a date in the future"
-                );
+            );
     }
 
     @Test
