@@ -207,6 +207,7 @@ class EventTest {
             Arguments.of("generatePinInPost", Event.GENERATE_PIN_IN_POST.toString()),
             Arguments.of("forceCaseToPrepareForHearing", Event.FORCE_CASE_TO_PREPARE_FOR_HEARING.toString()),
             Arguments.of("sendLateTimelineNotice", Event.SEND_LATE_TIMELINE_NOTICE.toString()),
+            Arguments.of("stf24wDetermination", Event.STF_24W_DETERMINATION.toString()),
             Arguments.of("unknown", Event.UNKNOWN.toString())
         );
     }
