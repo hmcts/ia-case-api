@@ -993,7 +993,7 @@ ccd:
 
   ccd-admin-web:
     nodejs:
-      image: hmctsprod.azurecr.io/ccd/admin-web:latest
+      image: hmctsprod.azurecr.io/ccd/admin-web:pr-1024
       ingressHost: admin-web-${SERVICE_FQDN}
       environment:
         IDAM_ADMIN_WEB_SERVICE_KEY: ${ADMIN_S2S_KEY}
