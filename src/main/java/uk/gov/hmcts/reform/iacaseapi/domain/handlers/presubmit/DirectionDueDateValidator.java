@@ -73,12 +73,12 @@ public class DirectionDueDateValidator implements PreSubmitCallbackHandler<Asylu
             Optional<String> directionEditDueDate =
                     asylumCase.read(DIRECTION_EDIT_DATE_DUE, String.class);
             log.info("Direction edit due date: {}", directionEditDueDate.orElse("not present"));
-            validateDueDate(directionEditDueDate, response);
+            validateDueDate(directionEditDueDate, response, callback);
         } else {
             Optional<String> sendDirectionDueDate =
                     asylumCase.read(SEND_DIRECTION_DATE_DUE, String.class);
 
-            validateDueDate(sendDirectionDueDate, response);
+            validateDueDate(sendDirectionDueDate, response, callback);
         }
 
         return response;
@@ -86,11 +86,15 @@ public class DirectionDueDateValidator implements PreSubmitCallbackHandler<Asylu
 
     private void validateDueDate(
             Optional<String> dueDate,
-            PreSubmitCallbackResponse<AsylumCase> response
+            PreSubmitCallbackResponse<AsylumCase> response,
+            Callback<AsylumCase> callback
     ) {
         if (dueDate.isPresent()) {
+            AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
             LocalDate parsedDate = LocalDate.parse(dueDate.get());
-
+            Optional<String> directionEditDueDate =
+                    asylumCase.read(DIRECTION_EDIT_DATE_DUE, String.class);
+            log.info("Direction edit due date, validator: {}", directionEditDueDate.orElse("not present"));
             if (parsedDate.isBefore(dateProvider.now())) {
                 response.addError(
                         "The date entered is not valid - this must be today or a date in the future"
