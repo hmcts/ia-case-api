@@ -3,7 +3,12 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.statutorytimefra
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseNote;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.HomeOfficeStatutoryTimeframe;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.StatutoryTimeframe24Weeks;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.StatutoryTimeframe24WeeksHistory;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.Appender;
@@ -12,7 +17,6 @@ import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-
 import static java.util.Collections.emptyList;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
@@ -51,7 +55,7 @@ public class UpdateStatutoryTimeframe24WeeksService {
             .orElseThrow(() -> new IllegalStateException("removalOf24wDecisionReason is not present"));
 
         Optional<YesOrNo> stf24wCurrentStatus = asylumCase
-            .read(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class);
+                .read(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class);
         boolean isStatusPresentAndUnchanged = stf24wCurrentStatus.map(value -> value.equals(stf24wStatus))
             .orElse(false);
         // Check that status has actually changed before updating the case record
@@ -64,11 +68,6 @@ public class UpdateStatutoryTimeframe24WeeksService {
             }
             // Update STF 24-week object containing history and original Home Office response information
             String decisionMaker = asylumCase.read(REMOVAL_OF_24W_DECISION_DECISION_MAKER, String.class).orElse(userDetails.getForenameAndSurname());
-            if (stf24wStatus.isYes()) {
-                asylumCase.writeIfEmpty(AsylumCaseFieldDefinition.STF_24W_SET_DATE, dateProvider.now());
-            } else if (!userDetails.getRoles().contains(UserRole.SYSTEM.getId())) {
-                asylumCase.writeIfEmpty(AsylumCaseFieldDefinition.STF_24W_REMOVE_DATE, dateProvider.now());
-            }
             Optional<StatutoryTimeframe24Weeks> existingStf24wObj = asylumCase.read(STATUTORY_TIMEFRAME_24_WEEKS, StatutoryTimeframe24Weeks.class);
             StatutoryTimeframe24Weeks updatedStf24wObj =
                 buildNewStatutoryTimeframe24Weeks(stf24wStatus, stf24wReason, decisionMaker, existingStf24wObj);
