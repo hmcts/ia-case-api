@@ -134,7 +134,9 @@ ia-hearings-api:
   enabled: false
 xui-webapp:
   enabled: false
-ccd:
+ccd-core:
+  enabled: false
+ccd-definition-store-api:
   enabled: false
 ia-aip-frontend:
   enabled: false

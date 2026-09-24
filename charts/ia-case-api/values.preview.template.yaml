@@ -844,7 +844,7 @@ xui-webapp:
           - name: mc-session-secret
             alias: mc-session-secret
 
-ccd:
+ccd-core:
   enabled: true
   ccd:
     adminWeb:
@@ -1002,31 +1002,6 @@ ccd:
         ADMINWEB_ELASTIC_CASE_TYPES_URL: https://ccd-definition-store-${SERVICE_FQDN}/elastic-support/case-types
         ADMINWEB_GLOBAL_SEARCH_INDEX_URL: https://ccd-definition-store-${SERVICE_FQDN}/elastic-support/global-search/index
       keyVaults: []
-
-  ccd-definition-store-api:
-    java:
-      image: hmctsprod.azurecr.io/ccd/definition-store-api:latest
-      imagePullPolicy: Always
-      devcpuRequests: 500m
-      devmemoryRequests: 1Gi
-      devcpuLimits: 2
-      devmemoryLimits: 4Gi
-      autoscaling:
-        enabled: false
-      environment:
-        DEFINITION_STORE_DB_HOST: ia-preview.postgres.database.azure.com
-        DEFINITION_STORE_DB_NAME: "pr-${CHANGE_ID}-definition-store"
-        DEFINITION_STORE_IDAM_KEY: ${DEFINITION_STORE_S2S_KEY}
-        IDAM_USER_URL: https://idam-web-public.aat.platform.hmcts.net
-        DATA_STORE_S2S_AUTHORISED_SERVICES: ccd_gw,ccd_admin,ccd_gateway,ccd_data,ccd_ps,aac_manage_case_assignment,xui_webapp,iac,em_ccd_orchestrator,ccd_case_document_am_api,am_role_assignment_service
-        OIDC_ISSUER: https://forgerock-am.service.core-compute-idam-aat2.internal:8443/openam/oauth2/hmcts
-        ELASTIC_SEARCH_ENABLED: true
-        ELASTIC_SEARCH_HOST: ${SERVICE_NAME}-es-master
-        ELASTIC_SEARCH_SCHEME: http
-        ELASTIC_SEARCH_FAIL_ON_IMPORT: false
-        USER_PROFILE_HOST: https://ccd-user-profile-api-${SERVICE_FQDN}
-      keyVaults: [ ]
-      ingressHost: ccd-definition-store-${SERVICE_FQDN}
 
   elasticsearch:
     image: hmctsprod.azurecr.io/imported/elastic/elasticsearch
@@ -1218,6 +1193,32 @@ ccd:
                 timeout => 60
             }
         }
+
+  ccd-definition-store-api:
+    java:
+      releaseNameOverride: "{{ .Release.Name }}-ccd-definition-store"
+      image: hmctsprod.azurecr.io/ccd/definition-store-api:latest
+      imagePullPolicy: Always
+      devcpuRequests: 500m
+      devmemoryRequests: 1Gi
+      devcpuLimits: 2
+      devmemoryLimits: 4Gi
+      autoscaling:
+        enabled: false
+      environment:
+        DEFINITION_STORE_DB_HOST: ia-preview.postgres.database.azure.com
+        DEFINITION_STORE_DB_NAME: "pr-${CHANGE_ID}-definition-store"
+        DEFINITION_STORE_IDAM_KEY: ${DEFINITION_STORE_S2S_KEY}
+        IDAM_USER_URL: https://idam-web-public.aat.platform.hmcts.net
+        DATA_STORE_S2S_AUTHORISED_SERVICES: ccd_gw,ccd_admin,ccd_gateway,ccd_data,ccd_ps,aac_manage_case_assignment,xui_webapp,iac,em_ccd_orchestrator,ccd_case_document_am_api,am_role_assignment_service
+        OIDC_ISSUER: https://forgerock-am.service.core-compute-idam-aat2.internal:8443/openam/oauth2/hmcts
+        ELASTIC_SEARCH_ENABLED: true
+        ELASTIC_SEARCH_HOST: ${SERVICE_NAME}-es-master
+        ELASTIC_SEARCH_SCHEME: http
+        ELASTIC_SEARCH_FAIL_ON_IMPORT: false
+        USER_PROFILE_HOST: https://ccd-user-profile-api-${SERVICE_FQDN}
+      keyVaults: [ ]
+      ingressHost: ccd-definition-store-${SERVICE_FQDN}
 
 em-ccdorc:
   enabled: true

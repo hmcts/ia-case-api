@@ -1,19 +1,23 @@
 apiVersion: v2
 name: ia-case-api
 home: https://github.com/hmcts/ia-case-api
-version: 0.0.89
+version: 0.0.90
 description: Immigration & Asylum Case API
 maintainers:
   - name: HMCTS Immigration & Asylum Team
     email: ImmigrationandAsylum@HMCTS.NET
 dependencies:
   - name: java
-    version: 5.3.0
+    version: 6.1.1
     repository: 'oci://hmctsprod.azurecr.io/helm'
-  - name: ccd
-    version: ~9.2.1
+  - name: ccd-core
+    version: 9.3.0
     repository: 'oci://hmctsprod.azurecr.io/helm'
-    condition: ccd.enabled
+    condition: ccd-core.enabled
+  - name: ccd-definition-store-api
+    version: 1.6.29
+    repository: 'oci://hmctsprod.azurecr.io/helm'
+    condition: ccd-core.enabled
   - name: xui-webapp
     version: ~1.0.18
     repository: 'oci://hmctsprod.azurecr.io/helm'
@@ -76,7 +80,7 @@ dependencies:
     repository: 'oci://hmctsprod.azurecr.io/helm'
     condition: wa.enabled
   - name: servicebus
-    version: 1.2.2
+    version: 1.3.0
     repository: 'oci://hmctsprod.azurecr.io/helm'
     condition: servicebus.enabled
   - name: servicebus
@@ -97,7 +101,7 @@ dependencies:
     repository: 'oci://hmctsprod.azurecr.io/helm'
     condition: am-org-role-mapping-service.enabled
   - name: postgresql
-    version: 1.1.1
+    version: 1.1.3
     repository: 'oci://hmctsprod.azurecr.io/helm'
     condition: postgresql.enabled
 
