@@ -19,6 +19,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.json.JsonMapper;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.SupplementaryInfo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.IdamService;
@@ -71,7 +73,7 @@ class CcdSupplementaryDetailsSearchServiceTest {
         when(s2sAuthTokenGenerator.generate()).thenReturn(serviceToken);
 
         when(coreCaseDataApi.searchCases(authorisation, serviceToken, caseType,
-                                         searchSourceBuilder.toString()
+                                         getQueryMapFromString(searchSourceBuilder.toString())
         )).thenReturn(searchResult);
 
         ccdSupplementaryDetailsSearchService = new CcdSupplementaryDetailsSearchService(
@@ -97,7 +99,7 @@ class CcdSupplementaryDetailsSearchServiceTest {
         assertEquals("Johnson", supplementaryInfoList.getFirst().getSupplementaryDetails().getSurname());
 
         verify(idamService).getServiceUserToken();
-        verify(coreCaseDataApi).searchCases(authorisation, serviceToken, caseType, searchSourceBuilder.toString());
+        verify(coreCaseDataApi).searchCases(authorisation, serviceToken, caseType, getQueryMapFromString(searchSourceBuilder.toString()));
     }
 
     @Test
@@ -108,6 +110,11 @@ class CcdSupplementaryDetailsSearchServiceTest {
 
         assertEquals(0, supplementaryInfoList.size());
         verify(idamService).getServiceUserToken();
-        verify(coreCaseDataApi).searchCases(authorisation, serviceToken, caseType, searchSourceBuilder.toString());
+        verify(coreCaseDataApi).searchCases(authorisation, serviceToken, caseType, getQueryMapFromString(searchSourceBuilder.toString()));
+    }
+
+    private Map<String, Object> getQueryMapFromString(String query) {
+        return new JsonMapper()
+            .readValue(searchSourceBuilder.toString(), new TypeReference<>() {});
     }
 }

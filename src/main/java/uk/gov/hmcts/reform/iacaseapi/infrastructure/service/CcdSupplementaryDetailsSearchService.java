@@ -1,9 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.service;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -16,6 +13,8 @@ import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.json.JsonMapper;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.SupplementaryDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.SupplementaryInfo;
@@ -89,8 +88,9 @@ public class CcdSupplementaryDetailsSearchService implements SupplementaryDetail
                     searchSourceBuilder.sort("created_date", SortOrder.DESC);
                     searchSourceBuilder.query(termQueryBuilder);
 
-                    return search(userToken, s2sToken, searchSourceBuilder.toString());
-                },
+                    Map<String, Object> queryMap = new JsonMapper()
+                        .readValue(searchSourceBuilder.toString(), new TypeReference<>() {});
+                    return search(userToken, s2sToken, queryMap);                },
                 executorService
             );
             completableFutureList.add(completableFuture);
@@ -110,7 +110,7 @@ public class CcdSupplementaryDetailsSearchService implements SupplementaryDetail
         return allResults;
     }
 
-    private List<SupplementaryInfo> search(String userAuthorisation, String serviceAuthToken, String query) {
+    private List<SupplementaryInfo> search(String userAuthorisation, String serviceAuthToken, Map<String, Object> query) {
 
         SearchResult searchResult = ccdDataCaseAccessApi.searchCases(
             userAuthorisation,

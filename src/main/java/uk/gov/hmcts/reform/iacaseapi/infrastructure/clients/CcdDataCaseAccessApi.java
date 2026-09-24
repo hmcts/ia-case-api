@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.SearchResult;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.config.FeignConfiguration;
 
+import java.util.Map;
+
 @FeignClient(
     name = "case-access-core-case-data-api",
     url = "${case_access.core_case_data_api_url}",
@@ -29,7 +31,7 @@ public interface CcdDataCaseAccessApi extends CcdDataApi {
         @RequestHeader(AUTHORIZATION) String authorisation,
         @RequestHeader(SERVICE_AUTHORIZATION) String serviceAuthorisation,
         @PathVariable("caseType") String caseType,
-        @RequestBody String searchString
+        @RequestBody Map<String, Object> searchQuery
     );
 }
 
