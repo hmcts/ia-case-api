@@ -1001,12 +1001,8 @@ ccd:
         ADMINWEB_ELASTIC_INDEX_URL: https://ccd-definition-store-${SERVICE_FQDN}/elastic-support/index
         ADMINWEB_ELASTIC_CASE_TYPES_URL: https://ccd-definition-store-${SERVICE_FQDN}/elastic-support/case-types
         ADMINWEB_GLOBAL_SEARCH_INDEX_URL: https://ccd-definition-store-${SERVICE_FQDN}/elastic-support/global-search/index
-      keyVaults:
-        ccd:
-          resourceGroup: ccd
-          secrets:
-            - name: session-keys
-              alias: SESSION_KEYS
+        SESSION_KEYS: '["preview-session-key-1-placeholder", "preview-session-key-2-placeholder"]'
+      keyVaults: []
 
   ccd-definition-store-api:
     java:
