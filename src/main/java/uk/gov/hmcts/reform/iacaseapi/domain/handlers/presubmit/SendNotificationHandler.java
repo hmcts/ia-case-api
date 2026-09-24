@@ -274,6 +274,10 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
             eventsToHandle.add(Event.EDIT_CASE_LISTING);
         }
 
+        if (isCurrently24WeekStfCase(callback.getCaseDetails().getCaseData())) {
+            eventsToHandle.add(Event.REVIEW_HEARING_REQUIREMENTS);
+        }
+
         return eventsToHandle;
     }
 
