@@ -143,33 +143,30 @@ class EditAppellantPersonalDataHandlerTest {
     }
 
     @Test
-    void should_write_gwf_if_existing() {
+    void should_write_gwf_if_ho_is_valid_gwf() {
         String gwfRef = "GWF-123-456-789";
-        when(asylumCase.read(GWF_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of(gwfRef));
-        String hoRef = "someUan";
-        when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of(hoRef));
+        when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of(gwfRef));
 
         PreSubmitCallbackResponse<AsylumCase> response =
             editAppellantPersonalData.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertEquals(asylumCase, response.getData());
-        verify(asylumCase).read(GWF_REFERENCE_NUMBER, String.class);
         verify(asylumCase).read(HOME_OFFICE_REFERENCE_NUMBER, String.class);
-        verify(asylumCase).write(GWF_REFERENCE_NUMBER, hoRef);
+        verify(asylumCase).write(GWF_REFERENCE_NUMBER, gwfRef);
+        verify(asylumCase, never()).clear(GWF_REFERENCE_NUMBER);
     }
 
     @Test
     void should_not_write_gwf_if_no_existing() {
-        when(asylumCase.read(GWF_REFERENCE_NUMBER, String.class)).thenReturn(Optional.empty());
         when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of("hoRef"));
 
         PreSubmitCallbackResponse<AsylumCase> response =
             editAppellantPersonalData.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertEquals(asylumCase, response.getData());
-        verify(asylumCase).read(GWF_REFERENCE_NUMBER, String.class);
-        verify(asylumCase, never()).read(HOME_OFFICE_REFERENCE_NUMBER, String.class);
+        verify(asylumCase).read(HOME_OFFICE_REFERENCE_NUMBER, String.class);
         verify(asylumCase, never()).write(eq(GWF_REFERENCE_NUMBER), anyString());
+        verify(asylumCase).clear(GWF_REFERENCE_NUMBER);
     }
 
     @Test
