@@ -993,7 +993,7 @@ ccd:
 
   ccd-admin-web:
     nodejs:
-      image: hmctsprod.azurecr.io/ccd/admin-web:pr-1024
+      image: hmctsprod.azurecr.io/ccd/admin-web:latest
       ingressHost: admin-web-${SERVICE_FQDN}
       environment:
         IDAM_ADMIN_WEB_SERVICE_KEY: ${ADMIN_S2S_KEY}
@@ -1001,7 +1001,12 @@ ccd:
         ADMINWEB_ELASTIC_INDEX_URL: https://ccd-definition-store-${SERVICE_FQDN}/elastic-support/index
         ADMINWEB_ELASTIC_CASE_TYPES_URL: https://ccd-definition-store-${SERVICE_FQDN}/elastic-support/case-types
         ADMINWEB_GLOBAL_SEARCH_INDEX_URL: https://ccd-definition-store-${SERVICE_FQDN}/elastic-support/global-search/index
-      keyVaults: []
+      keyVaults:
+        ccd:
+          resourceGroup: ccd
+          secrets:
+            - name: session-keys
+              alias: SESSION_KEYS
 
   ccd-definition-store-api:
     java:
