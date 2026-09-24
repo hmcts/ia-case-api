@@ -19,16 +19,18 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 import java.util.List;
+import java.util.Set;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.shouldValidateEditPersonalData;
 
 @Slf4j
 @Component
 @ConditionalOnProperty(
-        name = "app.home-office-validation.enabled",
-        havingValue = "true",
-        matchIfMissing = true
+    name = "app.home-office-validation.enabled",
+    havingValue = "true",
+    matchIfMissing = true
 )
 @ConditionalOnProperty(
     name = "app.home-office-mock-turn-off-for-test.enabled",
@@ -44,18 +46,20 @@ public class HomeOfficeReferenceHandlerOnSubmit implements PreSubmitCallbackHand
     }
 
     public boolean canHandle(
-            PreSubmitCallbackStage callbackStage,
-            Callback<AsylumCase> callback) {
+        PreSubmitCallbackStage callbackStage,
+        Callback<AsylumCase> callback) {
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-                && List.of(Event.START_APPEAL, Event.EDIT_APPEAL, Event.EDIT_APPEAL_AFTER_SUBMIT).contains(callback.getEvent());
+            && (Set.of(Event.START_APPEAL, Event.EDIT_APPEAL).contains(callback.getEvent())
+            || shouldValidateEditPersonalData(callback));
+
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
-            PreSubmitCallbackStage callbackStage,
-            Callback<AsylumCase> callback) {
+        PreSubmitCallbackStage callbackStage,
+        Callback<AsylumCase> callback) {
         if (!canHandle(callbackStage, callback)) {
             throw new IllegalStateException("Cannot handle callback");
         }
@@ -77,9 +81,9 @@ public class HomeOfficeReferenceHandlerOnSubmit implements PreSubmitCallbackHand
             try {
                 String homeOfficeAppellantsSerialised = HandlerUtils.decrypt(homeOfficeAppellantsSerialisedEncrypted, homeOfficeSerialisedEncryptionKey);
                 List<IdValue<HomeOfficeAppellant>> homeOfficeAppellants = mapper.readValue(
-                        homeOfficeAppellantsSerialised,
-                        new TypeReference<List<IdValue<HomeOfficeAppellant>>>() {
-                        }
+                    homeOfficeAppellantsSerialised,
+                    new TypeReference<List<IdValue<HomeOfficeAppellant>>>() {
+                    }
                 );
                 asylumCase.write(HOME_OFFICE_APPELLANTS, homeOfficeAppellants); // this will now work because we are no longer in the mid-event
                 asylumCase.write(HOME_OFFICE_APPELLANTS_PP_NUMBER, HandlerUtils.getPpNumberFromHomeOfficeAppellants(asylumCase));
@@ -87,7 +91,7 @@ public class HomeOfficeReferenceHandlerOnSubmit implements PreSubmitCallbackHand
                 asylumCase.write(HAS_BEEN_VALIDATED_BY_NEW_HOME_OFFICE_API, YesOrNo.YES);
             } catch (Exception ex) {
                 log.error("Could not deserialise list of Home Office appellants from encrypted serialised string {} for case with Home Office reference {}:\n\n{}",
-                        homeOfficeAppellantsSerialisedEncrypted, homeOfficeReferenceNumber, ex.getMessage());
+                    homeOfficeAppellantsSerialisedEncrypted, homeOfficeReferenceNumber, ex.getMessage());
             }
         }
         return new PreSubmitCallbackResponse<>(asylumCase);

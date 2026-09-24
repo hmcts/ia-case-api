@@ -16,6 +16,7 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.HomeOfficeAppellant;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.AddressUk;
@@ -1078,8 +1079,9 @@ class HandlerUtilsTest {
         verify(asylumCase).remove(HOME_OFFICE_APPELLANT_DECISION_LETTER_DATE);
         verify(asylumCase).remove(HOME_OFFICE_APPELLANTS);
         verify(asylumCase).remove(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY);
+        verify(asylumCase).remove(HAS_BEEN_VALIDATED_BY_NEW_HOME_OFFICE_API);
 
-        verify(asylumCase, times(6)).remove(any());
+        verify(asylumCase, times(7)).remove(any());
     }
 
     @Test
@@ -1822,4 +1824,32 @@ class HandlerUtilsTest {
         assertNull(HandlerUtils.getPpNumberFromHomeOfficeAppellants(asylumCase));
     }
 
+    @Test
+    void shouldValidateEditPersonalData_return_true() {
+        when(callback.getEvent()).thenReturn(Event.EDIT_APPELLANT_PERSONAL_DATA);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(HAS_BEEN_VALIDATED_BY_NEW_HOME_OFFICE_API, YesOrNo.class)).thenReturn(Optional.of(YES));
+
+        assertTrue(shouldValidateEditPersonalData(callback));
+    }
+
+    @Test
+    void shouldValidateEditPersonalData_return_false_bad_event() {
+        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        assertFalse(shouldValidateEditPersonalData(callback));
+    }
+
+    @Test
+    void shouldValidateEditPersonalData_return_false_unvalidated() {
+        when(callback.getEvent()).thenReturn(Event.EDIT_APPELLANT_PERSONAL_DATA);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(HAS_BEEN_VALIDATED_BY_NEW_HOME_OFFICE_API, YesOrNo.class)).thenReturn(Optional.empty());
+
+        assertFalse(shouldValidateEditPersonalData(callback));
+    }
 }

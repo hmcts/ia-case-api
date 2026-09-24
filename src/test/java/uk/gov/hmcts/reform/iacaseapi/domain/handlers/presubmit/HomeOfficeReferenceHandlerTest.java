@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -21,6 +22,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.HomeOfficeReferenceService;
 
@@ -67,48 +69,60 @@ class HomeOfficeReferenceHandlerTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
     }
 
-    @Test
-    void canHandle_should_return_true_for_valid_inputs() {
-
-        when(callback.getEvent()).thenReturn(Event.START_APPEAL);
-        when(callback.getPageId()).thenReturn("homeOfficeReferenceNumber");
-
-        boolean result = handler.canHandle(PreSubmitCallbackStage.MID_EVENT, callback);
-
-        assertTrue(result);
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {"START_APPEAL", "EDIT_APPEAL", "EDIT_APPELLANT_PERSONAL_DATA"})
+    void canHandle_should_return_true_for_valid_inputs(Event event) {
+        when(callback.getEvent()).thenReturn(event);
+        if (event == Event.EDIT_APPELLANT_PERSONAL_DATA) {
+            when(asylumCase.read(HAS_BEEN_VALIDATED_BY_NEW_HOME_OFFICE_API, YesOrNo.class))
+                .thenReturn(Optional.of(YesOrNo.YES));
+        }
+        for (String page : handler.validPages) {
+            when(callback.getPageId()).thenReturn(page);
+            assertTrue(handler.canHandle(PreSubmitCallbackStage.MID_EVENT, callback));
+        }
     }
 
     @Test
-    void canHandle_should_return_false_for_wrong_stage() {
-
-        when(callback.getEvent()).thenReturn(Event.START_APPEAL);
-        when(callback.getPageId()).thenReturn("oocHomeOfficeReferenceNumber");
-
-        boolean result = handler.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
-
-        assertFalse(result);
+    void canHandle_should_return_true_for_unvalidated() {
+        when(callback.getEvent()).thenReturn(Event.EDIT_APPELLANT_PERSONAL_DATA);
+        when(asylumCase.read(HAS_BEEN_VALIDATED_BY_NEW_HOME_OFFICE_API, YesOrNo.class))
+            .thenReturn(Optional.empty());
+        for (String page : handler.validPages) {
+            when(callback.getPageId()).thenReturn(page);
+            assertFalse(handler.canHandle(PreSubmitCallbackStage.MID_EVENT, callback));
+        }
     }
 
-    @Test
-    void canHandle_should_return_false_for_wrong_page() {
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {"START_APPEAL", "EDIT_APPEAL", "EDIT_APPELLANT_PERSONAL_DATA"}, mode = EnumSource.Mode.EXCLUDE)
+    void canHandle_should_return_false_for_invalid_event(Event event) {
+        when(callback.getEvent()).thenReturn(event);
 
-        when(callback.getEvent()).thenReturn(Event.START_APPEAL);
-        when(callback.getPageId()).thenReturn("clearlyTheWrongPage");
-
-        boolean result = handler.canHandle(PreSubmitCallbackStage.MID_EVENT, callback);
-
-        assertFalse(result);
+        for (String page : handler.validPages) {
+            when(callback.getPageId()).thenReturn(page);
+            assertFalse(handler.canHandle(PreSubmitCallbackStage.MID_EVENT, callback));
+        }
     }
 
-    @Test
-    void canHandle_should_return_false_for_wrong_event() {
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {"START_APPEAL", "EDIT_APPEAL", "EDIT_APPELLANT_PERSONAL_DATA"})
+    void canHandle_should_return_false_for_invalid_page(Event event) {
+        when(callback.getEvent()).thenReturn(event);
+        when(callback.getPageId()).thenReturn("invalidPage");
 
-        when(callback.getEvent()).thenReturn(Event.UPLOAD_SENSITIVE_DOCUMENTS);
-        when(callback.getPageId()).thenReturn("cuiHomeOfficeReferenceNumber");
+        assertFalse(handler.canHandle(PreSubmitCallbackStage.MID_EVENT, callback));
+    }
 
-        boolean result = handler.canHandle(PreSubmitCallbackStage.MID_EVENT, callback);
+    @ParameterizedTest
+    @EnumSource(value = PreSubmitCallbackStage.class, names = {"MID_EVENT"}, mode = EnumSource.Mode.EXCLUDE)
+    void canHandle_should_return_false_for_invalid_stage(PreSubmitCallbackStage stage) {
+        when(callback.getEvent()).thenReturn(Event.START_APPEAL);
 
-        assertFalse(result);
+        for (String page : handler.validPages) {
+            when(callback.getPageId()).thenReturn(page);
+            assertFalse(handler.canHandle(stage, callback));
+        }
     }
 
     @Test

@@ -13,7 +13,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.HomeOfficeReferenceService;
 
-import java.util.List;
+import java.util.Set;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.*;
@@ -32,6 +32,9 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.*;
 public class HomeOfficeReferenceHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final HomeOfficeReferenceService homeOfficeReferenceService;
+    public final Set<String> validPages = Set.of(
+        "homeOfficeReferenceNumber", "oocHomeOfficeReferenceNumber", "appellantBasicDetails", // ExUI pages
+        "cuiHomeOfficeReferenceNumber", "cuiGwfReferenceNumber", "cuiAppellantName", "cuiAppellantDob"); // CUI pages
 
     public HomeOfficeReferenceHandler(HomeOfficeReferenceService homeOfficeReferenceService) {
         this.homeOfficeReferenceService = homeOfficeReferenceService;
@@ -44,11 +47,9 @@ public class HomeOfficeReferenceHandler implements PreSubmitCallbackHandler<Asyl
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.MID_EVENT
-            && List.of(Event.START_APPEAL, Event.EDIT_APPEAL, Event.EDIT_APPEAL_AFTER_SUBMIT).contains(callback.getEvent())
-            && List.of(
-                "homeOfficeReferenceNumber", "oocHomeOfficeReferenceNumber", "appellantBasicDetails", // ExUI pages
-                "cuiHomeOfficeReferenceNumber", "cuiGwfReferenceNumber", "cuiAppellantName", "cuiAppellantDob") // CUI pages
-            .contains(callback.getPageId());
+            && (Set.of(Event.START_APPEAL, Event.EDIT_APPEAL).contains(callback.getEvent())
+            || shouldValidateEditPersonalData(callback))
+            && validPages.contains(callback.getPageId());
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
@@ -82,7 +83,8 @@ public class HomeOfficeReferenceHandler implements PreSubmitCallbackHandler<Asyl
                     yield validateNameAndDateOfBirth(callback, asylumCase, homeOfficeReferenceNumber, isCUICallback, homeOfficeReferenceService);
                 }
 
-                case "cuiAppellantName" -> validateName(callback, asylumCase, homeOfficeReferenceNumber,  homeOfficeReferenceService);
+                case "cuiAppellantName" ->
+                    validateName(callback, asylumCase, homeOfficeReferenceNumber, homeOfficeReferenceService);
 
                 default -> new PreSubmitCallbackResponse<>(asylumCase);
             };
