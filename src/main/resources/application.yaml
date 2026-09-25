@@ -1479,6 +1479,7 @@ security:
       - "joinAppealConfirmation"
       - "nlrDetailsUpdated"
       - "removeNonLegalRep"
+      - "stf24wDetermination"
     caseworker-ia-internal:
       - "revokeCaseAccess"
       - "removeCaseManagerBulk"
