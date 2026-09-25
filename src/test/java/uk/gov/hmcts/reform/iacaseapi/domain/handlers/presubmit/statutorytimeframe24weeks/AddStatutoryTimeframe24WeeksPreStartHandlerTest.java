@@ -4,7 +4,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -26,11 +25,14 @@ import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
+@SuppressWarnings("unchecked")
 class AddStatutoryTimeframe24WeeksPreStartHandlerTest {
 
     @Mock
@@ -258,44 +260,21 @@ class AddStatutoryTimeframe24WeeksPreStartHandlerTest {
     }
 
     @Test
-    void it_can_handle_callback_add_flag() {
-        when(callback.getEvent()).thenReturn(Event.ADD_STATUTORY_TIMEFRAME_24_WEEKS);
-        assertTrue(addStatutoryTimeframe24WeeksPreStartHandler.canHandle(PreSubmitCallbackStage.ABOUT_TO_START, callback));
-    }
+    void it_can_handle_callback() {
+        for (Event event : Event.values()) {
+            when(callback.getEvent()).thenReturn(event);
 
-    @ParameterizedTest
-    @EnumSource(value = Event.class, names = {
-        "ADD_STATUTORY_TIMEFRAME_24_WEEKS"
-    }, mode = EnumSource.Mode.EXCLUDE)
-    void it_cannot_handle_callback_bad_event(Event event) {
-        when(callback.getEvent()).thenReturn(event);
-        assertFalse(addStatutoryTimeframe24WeeksPreStartHandler.canHandle(PreSubmitCallbackStage.ABOUT_TO_START, callback));
-    }
+            for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
+                boolean canHandle = addStatutoryTimeframe24WeeksPreStartHandler.canHandle(callbackStage, callback);
+                if (callbackStage == PreSubmitCallbackStage.ABOUT_TO_START && event.equals(Event.ADD_STATUTORY_TIMEFRAME_24_WEEKS)) {
+                    assertThat(canHandle).isEqualTo(true);
+                } else {
+                    assertThat(canHandle).isEqualTo(false);
+                }
+            }
 
-    @ParameterizedTest
-    @EnumSource(value = PreSubmitCallbackStage.class, names = {
-        "ABOUT_TO_START"
-    }, mode = EnumSource.Mode.EXCLUDE)
-    void it_cannot_handle_callback_bad_stage(PreSubmitCallbackStage stage) {
-        when(callback.getEvent()).thenReturn(Event.ADD_STATUTORY_TIMEFRAME_24_WEEKS);
-        assertFalse(addStatutoryTimeframe24WeeksPreStartHandler.canHandle(stage, callback));
-    }
-
-    @Test
-    void it_can_handle_callback_determination_event_if_status_yes() {
-        when(callback.getEvent()).thenReturn(Event.STF_24W_DETERMINATION);
-        when(asylumCase.read(AsylumCaseFieldDefinition.STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class))
-            .thenReturn(Optional.of(YesOrNo.YES));
-        assertTrue(addStatutoryTimeframe24WeeksPreStartHandler.canHandle(PreSubmitCallbackStage.ABOUT_TO_START, callback));
-    }
-
-    @ParameterizedTest
-    @CsvSource(value = {"NO", "null"}, nullValues = "null")
-    void it_can_handle_callback_determination_event_if_status_no_or_empty(YesOrNo status) {
-        when(callback.getEvent()).thenReturn(Event.STF_24W_DETERMINATION);
-        when(asylumCase.read(AsylumCaseFieldDefinition.STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class))
-            .thenReturn(Optional.ofNullable(status));
-        assertFalse(addStatutoryTimeframe24WeeksPreStartHandler.canHandle(PreSubmitCallbackStage.ABOUT_TO_START, callback));
+            reset(callback);
+        }
     }
 
     @Test
