@@ -829,7 +829,6 @@ xui-webapp:
       ENABLE_HEARING_DATA_SOURCE_HEADERS: "true"
       SERVICES_HEARINGS_COMPONENT_API_IAC: https://ia-case-api-pr-${CHANGE_ID}-hearings-api.preview.platform.hmcts.net
 
-
 ccd:
   enabled: true
   ccd:
@@ -988,12 +987,7 @@ ccd:
         ADMINWEB_ELASTIC_CASE_TYPES_URL: https://ccd-definition-store-${SERVICE_FQDN}/elastic-support/case-types
         ADMINWEB_GLOBAL_SEARCH_INDEX_URL: https://ccd-definition-store-${SERVICE_FQDN}/elastic-support/global-search/index
         SESSION_KEYS: '${SESSION_KEYS}'
-      keyVaults:
-        ccd:
-          resourceGroup: ccd
-          secrets:
-            - name: session-keys
-              alias: SESSION_KEYS
+      keyVaults: []
 
   ccd-definition-store-api:
     java:
