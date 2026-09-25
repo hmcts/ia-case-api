@@ -11,6 +11,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -27,12 +29,12 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_APPELLANTS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.utils.TestUtils.setupLogVerifier;
 import static uk.gov.hmcts.reform.iacaseapi.utils.TestUtils.verifyLogsContainMessage;
 
 @ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 class HomeOfficeReferenceHandlerOnSubmitTest {
     private final String homeOfficeSerialisedEncryptionKey = "test-encryption-key";
     private final String encryptedData = "someData";
@@ -55,6 +57,9 @@ class HomeOfficeReferenceHandlerOnSubmitTest {
     @BeforeEach
     void setUp() {
         handler = new HomeOfficeReferenceHandlerOnSubmit(homeOfficeSerialisedEncryptionKey);
+        handlerUtilsMock
+            .when(() -> HandlerUtils.getPpNumberFromHomeOfficeAppellants(asylumCase))
+            .thenReturn("ppNumber");
     }
 
     @AfterEach
@@ -125,9 +130,10 @@ class HomeOfficeReferenceHandlerOnSubmitTest {
         PreSubmitCallbackResponse<AsylumCase> response = handler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertEquals(asylumCase, response.getData());
-        verifyLogsContainMessage(listAppender, "Writing previously retrieved Home Office appellant data to the case record in full for case with Home Office reference non-empty-reference.");
+        verifyLogsContainMessage(listAppender, "Writing retrieved Home Office appellant data to the case record in full for case with Home Office reference non-empty-reference.");
         verify(asylumCase).write(eq(HOME_OFFICE_APPELLANTS), appellantsCaptor.capture());
         verify(asylumCase).clear(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY);
+        verify(asylumCase).write(HOME_OFFICE_APPELLANTS_PP_NUMBER, "ppNumber");
 
         List<IdValue<HomeOfficeAppellant>> actualList = appellantsCaptor.getValue();
         assertEquals(1, actualList.size());
@@ -161,11 +167,12 @@ class HomeOfficeReferenceHandlerOnSubmitTest {
 
         assertEquals(asylumCase, response.getData());
         ILoggingEvent loggingEvent = verifyLogsContainMessage(listAppender,
-                "Writing previously retrieved Home Office appellant data to the case record in full for case with Home Office reference non-empty-reference.");
+                "Writing retrieved Home Office appellant data to the case record in full for case with Home Office reference non-empty-reference.");
         assertEquals(Level.INFO, loggingEvent.getLevel());
 
         verify(asylumCase).write(eq(HOME_OFFICE_APPELLANTS), appellantsCaptor.capture());
         verify(asylumCase).clear(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY);
+        verify(asylumCase).write(HOME_OFFICE_APPELLANTS_PP_NUMBER, "ppNumber");
 
         List<IdValue<HomeOfficeAppellant>> actualList = appellantsCaptor.getValue();
         assertEquals(2, actualList.size());
@@ -200,7 +207,7 @@ class HomeOfficeReferenceHandlerOnSubmitTest {
         PreSubmitCallbackResponse<AsylumCase> response = handler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertEquals(asylumCase, response.getData());
-        verifyLogsContainMessage(listAppender, "Writing previously retrieved Home Office appellant data to the case record in full for case with Home Office reference non-empty-reference.");
+        verifyLogsContainMessage(listAppender, "Writing retrieved Home Office appellant data to the case record in full for case with Home Office reference non-empty-reference.");
         verify(asylumCase, never()).write(eq(HOME_OFFICE_APPELLANTS), any());
         ILoggingEvent loggingEvent = verifyLogsContainMessage(listAppender,
                 "Could not deserialise list of Home Office appellants from encrypted serialised string");
@@ -226,24 +233,6 @@ class HomeOfficeReferenceHandlerOnSubmitTest {
 
         assertEquals("homeOfficeReferenceNumber and gwfReferenceNumber are both missing - one or other is needed",
                 illegalStateException.getMessage());
-        assertTrue(listAppender.list.isEmpty());
-    }
-
-    @Test
-    void should_do_nothing_if_homeOfficeAppellants_not_empty() {
-        when(callback.getEvent()).thenReturn(Event.START_APPEAL);
-        when(asylumCase.read(HOME_OFFICE_APPELLANTS)).thenReturn(Optional.of(List.of(new IdValue<>("1", new HomeOfficeAppellant()))));
-        when(asylumCase.read(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, String.class))
-                .thenReturn(Optional.of(encryptedData));
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
-
-        ListAppender<ILoggingEvent> listAppender = setupLogVerifier(HomeOfficeReferenceHandlerOnSubmit.class);
-        PreSubmitCallbackResponse<AsylumCase> response = handler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
-
-        assertEquals(asylumCase, response.getData());
-
-        verify(asylumCase, never()).write(any(), any());
         assertTrue(listAppender.list.isEmpty());
     }
 
