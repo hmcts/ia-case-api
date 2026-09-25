@@ -376,14 +376,14 @@ class UpdateStatutoryTimeframe24WeeksServiceTest {
     }
 
     @Test
-    void updateAsylumCaseFromDetermination_should_write_case_note_and_not_stf24w_set_date_when_status_is_no() {
+    void updateAsylumCaseFromDetermination_should_not_write_case_note_or_set_date_when_status_is_no() {
         when(asylumCase.read(STF_24W_CURRENT_REASON_AUTO_GENERATED, String.class)).thenReturn(Optional.of(newStatutoryTimeframe24WeeksReason));
         when(caseNoteAppender.append(any(), anyList())).thenReturn(allAppendedCaseNotes);
         LocalDate now = LocalDate.now();
         when(dateProvider.now()).thenReturn(now);
         updateStatutoryTimeframe24WeeksService.updateAsylumCaseFromDetermination(asylumCase, YesOrNo.NO);
 
-        verify(asylumCase).write(CASE_NOTES, allAppendedCaseNotes);
+        verify(asylumCase, never()).write(CASE_NOTES, allAppendedCaseNotes);
         verify(asylumCase, never()).write(AsylumCaseFieldDefinition.STF_24W_SET_DATE, now.toString());
         verify(bannerTextService).updateBannerText(asylumCase);
     }
