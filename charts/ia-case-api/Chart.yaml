@@ -85,7 +85,7 @@ dependencies:
     condition: servicebus.enabled
     alias: hmcsb
   - name: ccd-message-publisher
-    version: ~0.1.20
+    version: ~0.1.28
     repository: 'oci://hmctsprod.azurecr.io/helm'
     condition: ccd-message-publisher.enabled
   - name: redis
