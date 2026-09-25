@@ -15,6 +15,7 @@ ROLE_CLASSIFICATION="${3:-PUBLIC}"
 ROLE_NAME="${4:-"tribunal-caseworker"}"
 ROLE_ATTRIBUTES="${5:-'{"jurisdiction":"IA"}'}"
 ROLE_CATEGORY="${6:-"LEGAL_OPERATIONS"}"
+GRANT_TYPE="${7:-"STANDARD"}"
 
 BASEDIR=$(dirname "$0")
 
@@ -44,7 +45,7 @@ curl --silent --show-error -X POST "${ROLE_ASSIGNMENT_URL}/am/role-assignments" 
             "roleType": "ORGANISATION",
             "roleName": "'"${ROLE_NAME}"'",
             "classification": "'"${ROLE_CLASSIFICATION}"'",
-            "grantType": "STANDARD",
+            "grantType": "'"${GRANT_TYPE}"'",
             "roleCategory": "'"${ROLE_CATEGORY}"'",
             "readOnly": false,
             "attributes": '${ROLE_ATTRIBUTES}'

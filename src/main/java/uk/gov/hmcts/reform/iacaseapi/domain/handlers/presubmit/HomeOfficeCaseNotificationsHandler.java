@@ -22,6 +22,7 @@ import java.util.Optional;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.hasBeenValidatedNewHoApi;
 
 @Component
 @Slf4j
@@ -127,7 +128,7 @@ public class HomeOfficeCaseNotificationsHandler implements PreSubmitCallbackHand
             .orElseThrow(() -> new IllegalStateException("AppealType is not present."));
 
         // Check whether the new  applications/v1/{id}  Home Office endpoint has already been called
-        if (asylumCaseWithHomeOfficeData.read(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, String.class).isPresent()) {
+        if (hasBeenValidatedNewHoApi(asylumCaseWithHomeOfficeData)) {
             // Always proceed if the new  applications/v1/{id}  Home Office endpoint has already been called
 
             // Retrieve the UAN or GWF from the case record
