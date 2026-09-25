@@ -845,6 +845,10 @@ xui-webapp:
             alias: system-user-password
           - name: mc-session-secret
             alias: mc-session-secret
+          - name: appinsights-instrumentationkey-mc
+            alias: appinsights-instrumentationkey-mc
+          - name: appinsights-connection-string-mc
+            alias: appinsights-connection-string-mc
 
 ccd:
   enabled: true
