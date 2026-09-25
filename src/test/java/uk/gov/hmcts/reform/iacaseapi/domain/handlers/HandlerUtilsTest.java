@@ -1529,4 +1529,16 @@ class HandlerUtilsTest {
             assertThrows(IllegalStateException.class, () -> HandlerUtils.isDecisionWithHearing(asylumCase));
         assertEquals("Appeal type is not present", exception.getMessage());
     }
+
+    @Test
+    void given_currently_stf24_returns_true() {
+        when(asylumCase.read(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        assertTrue(HandlerUtils.isCurrently24WeekStfCase(asylumCase));
+    }
+
+    @Test
+    void given_not_currently_stf24_returns_false() {
+        when(asylumCase.read(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        assertFalse(HandlerUtils.isCurrently24WeekStfCase(asylumCase));
+    }
 }
