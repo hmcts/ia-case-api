@@ -827,59 +827,6 @@ xui-webapp:
       PREVIEW_DEPLOYMENT_ID: "ia-${CHANGE_ID}"
       ENABLE_HEARING_DATA_SOURCE_HEADERS: "true"
       SERVICES_HEARINGS_COMPONENT_API_IAC: https://ia-case-api-pr-${CHANGE_ID}-hearings-api.preview.platform.hmcts.net
-    keyVaults:
-      rpx:
-        resourceGroup: rpx
-        secrets:
-          - name: mc-s2s-client-secret
-            alias: mc-s2s-client-secret
-          - name: mc-idam-client-secret
-            alias: mc-idam-client-secret
-          - name: mc-session-secret
-            alias: mc-session-secret
-          - name: system-user-name
-            alias: system-user-name
-          - name: system-user-password
-            alias: system-user-password
-          - name: mc-session-secret
-            alias: mc-session-secret
-          - name: appinsights-instrumentationkey-mc
-            alias: appinsights-instrumentationkey-mc
-          - name: appinsights-connection-string-mc
-            alias: appinsights-connection-string-mc
-ccd:
-  enabled: true
-  ccd:
-    adminWeb:
-      enabled: true
-    managementWeb:
-      enabled: false
-    definitionImporter:
-      enabled: false
-    userProfileImporter:
-      enabled: false
-    apiGatewayWeb:
-      enabled: true
-    postgresql:
-      enabled: false
-    s2s:
-      enabled: false
-    elastic:
-      enabled: true
-    ras:
-      enabled: true
-  global:
-    ccdApiGatewayIngress: http://{{ .Release.Name }}-ccd-api-gw
-    ccdAdminWebIngress: admin-web-${SERVICE_FQDN}
-    ccdDataStoreUrl: http://{{ .Release.Name }}-ccd-data-store-api
-    ccdDefinitionStoreUrl: http://{{ .Release.Name }}-ccd-definition-store
-    ccdUserProfileUrl: https://ccd-user-profile-api-${SERVICE_FQDN}
-    dmStoreUrl: http://dm-store-aat.service.core-compute-aat.internal
-    idamApiUrl: https://idam-api.aat.platform.hmcts.net
-    idamWebUrl: https://idam-web-public.aat.platform.hmcts.net
-    s2sUrl: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
-    enableKeyVaults: true
-    devMode: true
 
   ccd-api-gateway-web:
     nodejs:
