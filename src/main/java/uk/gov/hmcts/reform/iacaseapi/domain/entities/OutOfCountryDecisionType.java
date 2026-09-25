@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
 import static java.util.Arrays.stream;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.Optional;
 
@@ -17,6 +18,7 @@ public enum OutOfCountryDecisionType {
 
     private String description;
 
+    @JsonCreator
     OutOfCountryDecisionType(String id,String description) {
         this.value = id;
         this.description = description;

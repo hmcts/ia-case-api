@@ -4,7 +4,7 @@ import static org.mockito.Mockito.when;
 
 import au.com.dius.pact.consumer.junit5.PactConsumerTestExt;
 import au.com.dius.pact.core.model.annotations.PactFolder;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 import java.io.IOException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestInstance;
@@ -78,6 +78,6 @@ public class CcdCaseAssignmentProviderBaseTest {
     }
 
     protected String createJsonObject(Object obj) throws IOException {
-        return new ObjectMapper().writeValueAsString(obj);
+        return new JsonMapper().writeValueAsString(obj);
     }
 }

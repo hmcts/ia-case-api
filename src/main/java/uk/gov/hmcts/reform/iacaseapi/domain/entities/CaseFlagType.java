@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonEnumDefaultValue;
 import com.fasterxml.jackson.annotation.JsonValue;
 
@@ -24,6 +25,7 @@ public enum CaseFlagType {
     private final String id;
     private final String readableText;
 
+    @JsonCreator
     CaseFlagType(String id, String readableText) {
         this.id = id;
         this.readableText = readableText;
