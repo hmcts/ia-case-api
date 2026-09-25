@@ -246,7 +246,7 @@ ia-case-notifications-api:
   enabled: true #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
-    image: hmctsprod.azurecr.io/ia/case-notifications-api:latest
+    image: hmctsprod.azurecr.io/ia/case-notifications-api:pr-1815
     releaseNameOverride: ${SERVICE_NAME}-case-notifications-api
     ingressHost: ${SERVICE_NAME}-notifications-api.preview.platform.hmcts.net
     devcpuRequests: 500m
@@ -827,22 +827,6 @@ xui-webapp:
       PREVIEW_DEPLOYMENT_ID: "ia-${CHANGE_ID}"
       ENABLE_HEARING_DATA_SOURCE_HEADERS: "true"
       SERVICES_HEARINGS_COMPONENT_API_IAC: https://ia-case-api-pr-${CHANGE_ID}-hearings-api.preview.platform.hmcts.net
-    keyVaults:
-      rpx:
-        resourceGroup: rpx
-        secrets:
-          - name: mc-s2s-client-secret
-            alias: mc-s2s-client-secret
-          - name: mc-idam-client-secret
-            alias: mc-idam-client-secret
-          - name: mc-session-secret
-            alias: mc-session-secret
-          - name: system-user-name
-            alias: system-user-name
-          - name: system-user-password
-            alias: system-user-password
-          - name: mc-session-secret
-            alias: mc-session-secret
 
 ccd:
   enabled: true
@@ -1001,6 +985,7 @@ ccd:
         ADMINWEB_ELASTIC_INDEX_URL: https://ccd-definition-store-${SERVICE_FQDN}/elastic-support/index
         ADMINWEB_ELASTIC_CASE_TYPES_URL: https://ccd-definition-store-${SERVICE_FQDN}/elastic-support/case-types
         ADMINWEB_GLOBAL_SEARCH_INDEX_URL: https://ccd-definition-store-${SERVICE_FQDN}/elastic-support/global-search/index
+        SESSION_KEYS: '${SESSION_KEYS}'
       keyVaults: []
 
   ccd-definition-store-api:
