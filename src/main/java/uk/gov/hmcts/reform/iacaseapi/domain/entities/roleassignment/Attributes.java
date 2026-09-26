@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum Attributes {
@@ -16,6 +17,7 @@ public enum Attributes {
         return value;
     }
 
+    @JsonCreator
     Attributes(String value) {
         this.value = value;
     }

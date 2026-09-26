@@ -758,7 +758,7 @@ public class HandlerUtils {
         return asylumCase.read(HAS_BEEN_VALIDATED_BY_NEW_HOME_OFFICE_API, YesOrNo.class)
             .orElse(NO).equals(YES);
     }
-  
+
     public static void setSponsorDetailsFromNlrIfSame(AsylumCase asylumCase) {
         boolean isSponsorSameAsNlr = asylumCase.read(IS_SPONSOR_SAME_AS_NLR, YesOrNo.class).orElse(YesOrNo.NO)
             .equals(YesOrNo.YES);

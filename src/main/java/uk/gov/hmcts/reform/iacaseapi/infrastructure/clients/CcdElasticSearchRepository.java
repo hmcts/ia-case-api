@@ -60,7 +60,7 @@ public class CcdElasticSearchRepository {
     public CcdSearchResult searchCases(CcdSearchQuery query) {
         try {
             final String url = ccdUrl + SEARCH_CASES_ENDPOINT + CASE_TYPE_PARAM;
-            
+
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
             headers.set(AUTHORIZATION, userDetails.getAccessToken());
@@ -84,7 +84,7 @@ public class CcdElasticSearchRepository {
             );
 
             CcdSearchResult result = response.getBody();
-            
+
             if (result != null) {
                 log.info("Elasticsearch query returned {} results", result.getTotal());
                 log.info("Elasticsearch result {}", result.toString());
