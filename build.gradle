@@ -358,7 +358,7 @@ dependencies {
     implementation ('org.springframework.boot:spring-boot-starter-webmvc') {
       exclude group: 'org.springframework.boot', module: 'spring-boot-jackson'
     }
-    implementation 'org.springframework.security:spring-security-oauth2-client'
+    implementation 'org.springframework.boot:spring-boot-starter-security-oauth2-client'
     implementation 'org.springframework.security:spring-security-oauth2-resource-server'
     implementation 'org.springframework.security:spring-security-oauth2-jose'
 
@@ -403,6 +403,7 @@ dependencies {
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.cloud:spring-cloud-contract-wiremock:5.0.3'
+    testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
 
     testImplementation group: 'com.github.hmcts', name: 'fortify-client', version: '1.4.10', classifier: 'all', {
         exclude group: 'commons-io', module: 'commons-io'
