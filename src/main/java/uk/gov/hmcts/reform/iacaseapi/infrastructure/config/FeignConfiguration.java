@@ -9,7 +9,6 @@ import org.springframework.boot.http.converter.autoconfigure.ClientHttpMessageCo
 import org.springframework.cloud.openfeign.support.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 
 @Configuration
 @SuppressWarnings("removal")
