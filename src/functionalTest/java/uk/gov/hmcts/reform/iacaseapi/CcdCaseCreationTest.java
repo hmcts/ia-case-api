@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.iacaseapi;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.specification.RequestSpecification;
@@ -61,8 +60,8 @@ public class CcdCaseCreationTest {
     private static long caseId;
     protected static long legalRepCaseId;
     protected static long aipCaseId;
-    protected static Map<String, JsonNode> legalRepAppealCaseData;
-    protected static Map<String, JsonNode> aipAppealCaseData;
+    protected static Map<String, tools.jackson.databind.JsonNode> legalRepAppealCaseData;
+    protected static Map<String, tools.jackson.databind.JsonNode> aipAppealCaseData;
 
     protected Map<String, Object> caseData;
 
@@ -288,7 +287,7 @@ public class CcdCaseCreationTest {
     private AsylumCase getLegalRepCase() {
         AsylumCase asylumCase = new AsylumCase();
 
-        for (Map.Entry<String, JsonNode> entry : legalRepAppealCaseData.entrySet()) {
+        for (Map.Entry<String, tools.jackson.databind.JsonNode> entry : legalRepAppealCaseData.entrySet()) {
             asylumCase.put(entry.getKey(), entry.getValue());
         }
 
@@ -298,7 +297,7 @@ public class CcdCaseCreationTest {
     private AsylumCase getAipCase() {
         AsylumCase asylumCase = new AsylumCase();
 
-        for (Map.Entry<String, JsonNode> entry : aipAppealCaseData.entrySet()) {
+        for (Map.Entry<String, tools.jackson.databind.JsonNode> entry : aipAppealCaseData.entrySet()) {
             asylumCase.put(entry.getKey(), entry.getValue());
         }
 
