@@ -10,7 +10,6 @@ public enum State {
     APPEAL_STARTED("appealStarted", "Appeal started"),
     APPEAL_STARTED_BY_ADMIN("appealStartedByAdmin", "Appeal started by admin"),
     APPEAL_SUBMITTED("appealSubmitted", "Appeal submitted"),
-    APPEAL_SUBMITTED_OUT_OF_TIME("appealSubmittedOutOfTime", "Appeal submitted out of time"),
     PENDING_PAYMENT("pendingPayment", "Payment pending"),
     AWAITING_RESPONDENT_EVIDENCE("awaitingRespondentEvidence", "Awaiting respondent evidence"),
     CASE_BUILDING("caseBuilding", "Case building"),

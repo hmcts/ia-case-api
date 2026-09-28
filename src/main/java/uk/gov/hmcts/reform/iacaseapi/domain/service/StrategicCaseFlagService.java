@@ -1,12 +1,5 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
 import lombok.NonNull;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseFlagDetail;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseFlagValue;
@@ -15,11 +8,19 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlag;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
 public class StrategicCaseFlagService {
 
     public static String ROLE_ON_CASE_APPELLANT = "Appellant";
     public static String ROLE_ON_CASE_WITNESS = "Witness";
     public static String ROLE_ON_CASE_INTERPRETER = "Interpreter";
+    public static String ROLE_ON_CASE_NLR = "Non-legal representative";
     public static String ACTIVE_STATUS = "Active";
     public static String INACTIVE_STATUS = "Inactive";
 

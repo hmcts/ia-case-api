@@ -8,7 +8,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_NATIONALITIES_DESCRIPTION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CONTACT_PREFERENCE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CONTACT_PREFERENCE_DESCRIPTION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_CASE_STATUS_DATA;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_NOTIFICATIONS_ELIGIBLE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_HOME_OFFICE_INTEGRATION_ENABLED;
@@ -88,12 +87,11 @@ public class HomeOfficeCaseValidateHandler implements PreSubmitCallbackHandler<A
             asylumCase.write(IS_HOME_OFFICE_INTEGRATION_ENABLED, YesOrNo.YES);
             // Don't invoke the old  applicationStatus/getBySearchParameters  Home Office endpoint if the new  applications/v1/{id}  endpoint
             // has already been called
-            boolean validationDone = asylumCase.read(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, String.class).isPresent();
 
             if (HandlerUtils.isAgeAssessmentAppeal(asylumCase) || 
                 HandlerUtils.isEjpCase(asylumCase) || 
                 HandlerUtils.isNotificationTurnedOff(asylumCase) ||
-                validationDone) {
+                HandlerUtils.hasBeenValidatedNewHoApi(asylumCase)) {
                 return new PreSubmitCallbackResponse<>(asylumCase);
             }
 

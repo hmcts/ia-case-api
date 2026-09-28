@@ -24,8 +24,8 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMISSION_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HelpWithFeesOption.WILL_PAY_FOR_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionOption.NO_REMISSION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.APPEAL_SUBMITTED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.PENDING_PAYMENT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SUBMIT_APPEAL;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType.AIP;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType.REP;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.payment.PaymentStateHandler.PAY_LATER;
@@ -88,13 +88,13 @@ class PaymentStateHandlerTest {
     public void setUp() {
         paymentStateHandler = new PaymentStateHandler(true, featureToggler);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getState()).thenReturn(State.APPEAL_STARTED);
+        when(caseDetails.getState()).thenReturn(APPEAL_STARTED);
     }
 
     @Test
     void should_return_updated_state_for_pa_payment_pending_submit_as_submitted_state() {
 
-        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+        when(callback.getEvent()).thenReturn(SUBMIT_APPEAL);
 
         AsylumCase asylumCase = new AsylumCase();
         asylumCase.write(PAYMENT_STATUS, Optional.of(PaymentStatus.PAYMENT_PENDING));
@@ -216,15 +216,15 @@ class PaymentStateHandlerTest {
 
     @ParameterizedTest
     @CsvSource({
-        "payLater, PAYMENT_APPEAL, APPEAL_STARTED",
-        "payLater, SUBMIT_APPEAL, RESPONDENT_REVIEW",
-        "payNow, PAYMENT_APPEAL, RESPONDENT_REVIEW",
-        "payLater, SUBMIT_APPEAL, APPEAL_STARTED",
-        "payNow, PAYMENT_APPEAL, APPEAL_STARTED",
-        "payNow, SUBMIT_APPEAL, RESPONDENT_REVIEW",
-        "payNow, SUBMIT_APPEAL, APPEAL_STARTED",
+        "payLater, PAYMENT_APPEAL, APPEAL_STARTED, APPEAL_SUBMITTED",
+        "payLater, SUBMIT_APPEAL, RESPONDENT_REVIEW, RESPONDENT_REVIEW",
+        "payNow, PAYMENT_APPEAL, RESPONDENT_REVIEW, RESPONDENT_REVIEW",
+        "payLater, SUBMIT_APPEAL, APPEAL_STARTED, APPEAL_SUBMITTED",
+        "payNow, PAYMENT_APPEAL, APPEAL_STARTED, APPEAL_SUBMITTED",
+        "payNow, SUBMIT_APPEAL, RESPONDENT_REVIEW, RESPONDENT_REVIEW",
+        "payNow, SUBMIT_APPEAL, APPEAL_STARTED, APPEAL_SUBMITTED",
     })
-    void should_not_return_base_state_for_false_isValidPayLaterPaymentEvent(String paPayOption, Event event, State state) {
+    void should_not_return_base_state_for_false_isValidPayLaterPaymentEvent(String paPayOption, Event event, State state, State newState) {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(caseDetails.getState()).thenReturn(state);
         when(callback.getEvent()).thenReturn(event);
@@ -237,7 +237,7 @@ class PaymentStateHandlerTest {
             paymentStateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse);
 
         assertNotNull(returnedCallbackResponse);
-        Assertions.assertThat(returnedCallbackResponse.getState()).isEqualTo(APPEAL_SUBMITTED);
+        Assertions.assertThat(returnedCallbackResponse.getState()).isEqualTo(newState);
         assertEquals(asylumCase, returnedCallbackResponse.getData());
     }
 
@@ -245,7 +245,7 @@ class PaymentStateHandlerTest {
     @EnumSource(value = RemissionType.class, names = { "NO_REMISSION", "HO_WAIVER_REMISSION", "HELP_WITH_FEES", "EXCEPTIONAL_CIRCUMSTANCES_REMISSION" })
     void should_return_updated_state_for_hu_remission_submit_as_payment_pending_state(RemissionType remissionType) {
 
-        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+        when(callback.getEvent()).thenReturn(SUBMIT_APPEAL);
 
         AsylumCase asylumCase = new AsylumCase();
         asylumCase.write(APPEAL_TYPE, Optional.of(AppealType.HU));
@@ -265,7 +265,7 @@ class PaymentStateHandlerTest {
     @EnumSource(value = RemissionType.class, names = { "NO_REMISSION", "HO_WAIVER_REMISSION", "HELP_WITH_FEES", "EXCEPTIONAL_CIRCUMSTANCES_REMISSION" })
     void should_return_updated_state_for_ea_remission_submit_as_payment_pending_state(RemissionType remissionType) {
 
-        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+        when(callback.getEvent()).thenReturn(SUBMIT_APPEAL);
 
         AsylumCase asylumCase = new AsylumCase();
         asylumCase.write(APPEAL_TYPE, Optional.of(AppealType.EA));
@@ -285,7 +285,7 @@ class PaymentStateHandlerTest {
     @EnumSource(value = RemissionType.class, names = { "NO_REMISSION", "HO_WAIVER_REMISSION", "HELP_WITH_FEES", "EXCEPTIONAL_CIRCUMSTANCES_REMISSION" })
     void should_return_updated_state_for_eu_remission_submit_as_payment_pending_state(RemissionType remissionType) {
 
-        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+        when(callback.getEvent()).thenReturn(SUBMIT_APPEAL);
 
         AsylumCase asylumCase = new AsylumCase();
         asylumCase.write(APPEAL_TYPE, Optional.of(EU));
@@ -305,7 +305,7 @@ class PaymentStateHandlerTest {
     @EnumSource(value = AppealType.class, names = { "EA", "HU", "EU", "AG" })
     void should_return_ea_submit_as_appeal_submitted_state(AppealType appealType) {
 
-        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+        when(callback.getEvent()).thenReturn(SUBMIT_APPEAL);
 
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(AsylumCaseFieldDefinition.APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
@@ -323,7 +323,7 @@ class PaymentStateHandlerTest {
     @Test
     void should_return_updated_state_for_hu_payment_pending_submit_as_pending_payment_state() {
 
-        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+        when(callback.getEvent()).thenReturn(SUBMIT_APPEAL);
 
         AsylumCase asylumCase = new AsylumCase();
         asylumCase.write(PAYMENT_STATUS, Optional.of(PaymentStatus.PAYMENT_PENDING));
@@ -342,7 +342,7 @@ class PaymentStateHandlerTest {
     @Test
     void should_return_updated_state_for_ea_payment_pending_submit_as_pending_payment_state() {
 
-        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+        when(callback.getEvent()).thenReturn(SUBMIT_APPEAL);
 
         AsylumCase asylumCase = new AsylumCase();
         asylumCase.write(PAYMENT_STATUS, Optional.of(PaymentStatus.PAYMENT_PENDING));
@@ -361,7 +361,7 @@ class PaymentStateHandlerTest {
     @Test
     void should_return_updated_state_for_eu_payment_pending_submit_as_pending_payment_state() {
 
-        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+        when(callback.getEvent()).thenReturn(SUBMIT_APPEAL);
 
         AsylumCase asylumCase = new AsylumCase();
         asylumCase.write(PAYMENT_STATUS, Optional.of(PaymentStatus.PAYMENT_PENDING));
@@ -381,7 +381,7 @@ class PaymentStateHandlerTest {
     @ValueSource(strings = {"EA", "HU", "PA", "EU", "AG"})
     void should_return_valid_state_on_having_remissions_for_given_appeal_types(String type) {
 
-        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+        when(callback.getEvent()).thenReturn(SUBMIT_APPEAL);
 
         AsylumCase asylumCase = new AsylumCase();
         asylumCase.write(PAYMENT_STATUS, Optional.of(PaymentStatus.PAYMENT_PENDING));
@@ -410,7 +410,7 @@ class PaymentStateHandlerTest {
     @ValueSource(strings = {"EA", "HU", "PA", "EU", "AG"})
     void should_return_valid_state_on_having_remissions_for_given_appeal_types_payment_failed(String type) {
 
-        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+        when(callback.getEvent()).thenReturn(SUBMIT_APPEAL);
 
         AsylumCase asylumCase = new AsylumCase();
         asylumCase.write(PAYMENT_STATUS, Optional.of(PaymentStatus.FAILED));
@@ -436,7 +436,7 @@ class PaymentStateHandlerTest {
     @ValueSource(strings = {"EA", "HU", "PA", "EU"})
     void should_return_valid_state_on_help_with_fees_for_given_appeal_types(String type) {
 
-        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+        when(callback.getEvent()).thenReturn(SUBMIT_APPEAL);
 
         AsylumCase asylumCase = new AsylumCase();
         asylumCase.write(PAYMENT_STATUS, Optional.of(PaymentStatus.PAYMENT_PENDING));
@@ -460,9 +460,16 @@ class PaymentStateHandlerTest {
 
     @ParameterizedTest
     @MethodSource("typeRemissionOptionAndHelpWithFees")
-    void should_return_valid_state_on_help_with_fees_remissions_and_dlrm_fee_support_enabled_for_given_appeal_types(AppealType type, RemissionOption remissionOption, HelpWithFeesOption helpWithFeesOption, String  payLater) {
+    void should_return_valid_state_on_help_with_fees_remissions_and_dlrm_fee_support_enabled_for_given_appeal_types(
+        AppealType type,
+        RemissionOption remissionOption,
+        HelpWithFeesOption helpWithFeesOption,
+        String  payLater,
+        State state,
+        State newState
+    ) {
 
-        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+        when(callback.getEvent()).thenReturn(SUBMIT_APPEAL);
         when(featureToggler.getValue("dlrm-fee-remission-feature-flag", false)).thenReturn(true);
 
         AsylumCase asylumCase = new AsylumCase();
@@ -475,6 +482,7 @@ class PaymentStateHandlerTest {
         asylumCase.write(PA_APPEAL_TYPE_AIP_PAYMENT_OPTION, Optional.of(payLater));
 
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(caseDetails.getState()).thenReturn(state);
 
         PreSubmitCallbackResponse<AsylumCase> returnedCallbackResponse =
             paymentStateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse);
@@ -482,18 +490,13 @@ class PaymentStateHandlerTest {
         assertNotNull(returnedCallbackResponse);
         assertEquals(asylumCase, returnedCallbackResponse.getData());
 
-        if ((hasRemission(remissionOption, helpWithFeesOption) && !payLater.equals(PAY_LATER) && type != PA)
-                || (type == EA || type == HU || type == EU)) {
-            Assertions.assertThat(returnedCallbackResponse.getState()).isEqualTo(State.PENDING_PAYMENT);
-        } else {
-            Assertions.assertThat(returnedCallbackResponse.getState()).isEqualTo(APPEAL_SUBMITTED);
-        }
+        Assertions.assertThat(returnedCallbackResponse.getState()).isEqualTo(newState);
     }
 
     @ParameterizedTest
     @ValueSource(strings = {"EA", "HU", "PA", "EU"})
     void should_return_appeal_submitted_state_with_no_remission(String type) {
-        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+        when(callback.getEvent()).thenReturn(SUBMIT_APPEAL);
 
         AsylumCase asylumCase = new AsylumCase();
         asylumCase.write(PAYMENT_STATUS, Optional.of(PaymentStatus.PAYMENT_PENDING));
@@ -518,7 +521,7 @@ class PaymentStateHandlerTest {
     @Test
     void should_return_updated_state_for_dc_submit_as_submitted_state() {
 
-        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+        when(callback.getEvent()).thenReturn(SUBMIT_APPEAL);
 
         AsylumCase asylumCase = new AsylumCase();
         asylumCase.write(PAYMENT_STATUS, Optional.of(PaymentStatus.PAYMENT_PENDING));
@@ -537,7 +540,7 @@ class PaymentStateHandlerTest {
     @Test
     void should_return_updated_state_for_non_payment_rp_submit_as_submitted_state() {
 
-        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+        when(callback.getEvent()).thenReturn(SUBMIT_APPEAL);
 
         AsylumCase asylumCase = new AsylumCase();
         asylumCase.write(APPEAL_TYPE, Optional.of(AppealType.RP));
@@ -555,7 +558,7 @@ class PaymentStateHandlerTest {
     @Test
     void should_return_current_state_for_empty_appeal_type() {
 
-        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+        when(callback.getEvent()).thenReturn(SUBMIT_APPEAL);
 
         AsylumCase asylumCase = new AsylumCase();
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -601,7 +604,7 @@ class PaymentStateHandlerTest {
 
                 boolean canHandle = paymentStateHandler.canHandle(callbackStage, callback);
 
-                if ((Event.SUBMIT_APPEAL == event || Event.PAYMENT_APPEAL == event)
+                if ((SUBMIT_APPEAL == event || Event.PAYMENT_APPEAL == event)
                     && callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT) {
 
                     assertTrue(canHandle);
@@ -654,7 +657,7 @@ class PaymentStateHandlerTest {
     @Test
     void should_return_updated_state_for_pa_pay_now_payment_pending_submit_as_appeal_submitted_state() {
 
-        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+        when(callback.getEvent()).thenReturn(SUBMIT_APPEAL);
 
         AsylumCase asylumCase = new AsylumCase();
         asylumCase.write(PAYMENT_STATUS, Optional.of(PaymentStatus.PAYMENT_PENDING));
@@ -675,7 +678,7 @@ class PaymentStateHandlerTest {
     @EnumSource(value = RemissionType.class, names = { "NO_REMISSION", "HO_WAIVER_REMISSION", "HELP_WITH_FEES", "EXCEPTIONAL_CIRCUMSTANCES_REMISSION" })
     void should_return_updated_state_for_pa_pay_now_remission_submit_as_appeal_submitted_state(RemissionType remissionType) {
 
-        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+        when(callback.getEvent()).thenReturn(SUBMIT_APPEAL);
 
         AsylumCase asylumCase = new AsylumCase();
         asylumCase.write(APPEAL_TYPE, Optional.of(AppealType.PA));
@@ -694,34 +697,35 @@ class PaymentStateHandlerTest {
 
     private static Stream<Arguments> typeRemissionOptionAndHelpWithFees() {
         return Stream.of(
-            Arguments.of(EA, RemissionOption.ASYLUM_SUPPORT_FROM_HOME_OFFICE, HelpWithFeesOption.WANT_TO_APPLY, ""),
-            Arguments.of(EA, RemissionOption.FEE_WAIVER_FROM_HOME_OFFICE, HelpWithFeesOption.ALREADY_APPLIED, ""),
-            Arguments.of(EA, RemissionOption.UNDER_18_GET_SUPPORT, HelpWithFeesOption.WANT_TO_APPLY, ""),
-            Arguments.of(EA, RemissionOption.PARENT_GET_SUPPORT, HelpWithFeesOption.ALREADY_APPLIED, ""),
-            Arguments.of(EA, NO_REMISSION, WILL_PAY_FOR_APPEAL, ""),
+            Arguments.of(EA, RemissionOption.ASYLUM_SUPPORT_FROM_HOME_OFFICE, HelpWithFeesOption.WANT_TO_APPLY, "", APPEAL_STARTED, PENDING_PAYMENT),
+            Arguments.of(EA, RemissionOption.FEE_WAIVER_FROM_HOME_OFFICE, HelpWithFeesOption.ALREADY_APPLIED, "", APPEAL_STARTED, PENDING_PAYMENT),
+            Arguments.of(EA, RemissionOption.UNDER_18_GET_SUPPORT, HelpWithFeesOption.WANT_TO_APPLY, "", APPEAL_STARTED, PENDING_PAYMENT),
+            Arguments.of(EA, RemissionOption.PARENT_GET_SUPPORT, HelpWithFeesOption.ALREADY_APPLIED, "", APPEAL_STARTED, PENDING_PAYMENT),
+            Arguments.of(EA, NO_REMISSION, WILL_PAY_FOR_APPEAL, "", APPEAL_STARTED, PENDING_PAYMENT),
 
-            Arguments.of(HU, RemissionOption.ASYLUM_SUPPORT_FROM_HOME_OFFICE, HelpWithFeesOption.WANT_TO_APPLY, ""),
-            Arguments.of(HU, RemissionOption.FEE_WAIVER_FROM_HOME_OFFICE, HelpWithFeesOption.ALREADY_APPLIED, ""),
-            Arguments.of(HU, RemissionOption.UNDER_18_GET_SUPPORT, HelpWithFeesOption.WANT_TO_APPLY, ""),
-            Arguments.of(HU, RemissionOption.PARENT_GET_SUPPORT, HelpWithFeesOption.ALREADY_APPLIED, ""),
-            Arguments.of(HU, NO_REMISSION, WILL_PAY_FOR_APPEAL, ""),
+            Arguments.of(HU, RemissionOption.ASYLUM_SUPPORT_FROM_HOME_OFFICE, HelpWithFeesOption.WANT_TO_APPLY, "", APPEAL_STARTED, PENDING_PAYMENT),
+            Arguments.of(HU, RemissionOption.FEE_WAIVER_FROM_HOME_OFFICE, HelpWithFeesOption.ALREADY_APPLIED, "", APPEAL_STARTED, PENDING_PAYMENT),
+            Arguments.of(HU, RemissionOption.UNDER_18_GET_SUPPORT, HelpWithFeesOption.WANT_TO_APPLY, "", APPEAL_STARTED, PENDING_PAYMENT),
+            Arguments.of(HU, RemissionOption.PARENT_GET_SUPPORT, HelpWithFeesOption.ALREADY_APPLIED, "", APPEAL_STARTED, PENDING_PAYMENT),
+            Arguments.of(HU, NO_REMISSION, WILL_PAY_FOR_APPEAL, "", APPEAL_STARTED, PENDING_PAYMENT),
 
-            Arguments.of(PA, RemissionOption.ASYLUM_SUPPORT_FROM_HOME_OFFICE, HelpWithFeesOption.WANT_TO_APPLY, PAY_LATER),
-            Arguments.of(PA, RemissionOption.FEE_WAIVER_FROM_HOME_OFFICE, HelpWithFeesOption.ALREADY_APPLIED, PAY_LATER),
-            Arguments.of(PA, RemissionOption.UNDER_18_GET_SUPPORT, HelpWithFeesOption.WANT_TO_APPLY, ""),
-            Arguments.of(PA, RemissionOption.PARENT_GET_SUPPORT, HelpWithFeesOption.ALREADY_APPLIED, ""),
-            Arguments.of(PA, NO_REMISSION, WILL_PAY_FOR_APPEAL, PAY_LATER),
+            Arguments.of(PA, RemissionOption.ASYLUM_SUPPORT_FROM_HOME_OFFICE, HelpWithFeesOption.WANT_TO_APPLY, PAY_LATER, APPEAL_STARTED, APPEAL_SUBMITTED),
+            Arguments.of(PA, RemissionOption.FEE_WAIVER_FROM_HOME_OFFICE, HelpWithFeesOption.ALREADY_APPLIED, PAY_LATER, APPEAL_STARTED, APPEAL_SUBMITTED),
+            Arguments.of(PA, RemissionOption.UNDER_18_GET_SUPPORT, HelpWithFeesOption.WANT_TO_APPLY, "", APPEAL_STARTED, APPEAL_SUBMITTED),
+            Arguments.of(PA, RemissionOption.PARENT_GET_SUPPORT, HelpWithFeesOption.ALREADY_APPLIED, "", APPEAL_STARTED, APPEAL_SUBMITTED),
+            Arguments.of(PA, NO_REMISSION, WILL_PAY_FOR_APPEAL, PAY_LATER, APPEAL_STARTED, APPEAL_SUBMITTED),
 
-            Arguments.of(EU, RemissionOption.ASYLUM_SUPPORT_FROM_HOME_OFFICE, HelpWithFeesOption.WANT_TO_APPLY, ""),
-            Arguments.of(EU, RemissionOption.FEE_WAIVER_FROM_HOME_OFFICE, HelpWithFeesOption.ALREADY_APPLIED, ""),
-            Arguments.of(EU, RemissionOption.UNDER_18_GET_SUPPORT, HelpWithFeesOption.WANT_TO_APPLY, ""),
-            Arguments.of(EU, RemissionOption.PARENT_GET_SUPPORT, HelpWithFeesOption.ALREADY_APPLIED, ""),
-            Arguments.of(EU, NO_REMISSION, WILL_PAY_FOR_APPEAL, "")
+            Arguments.of(PA, RemissionOption.ASYLUM_SUPPORT_FROM_HOME_OFFICE, HelpWithFeesOption.WANT_TO_APPLY, PAY_LATER, DECISION, DECISION),
+            Arguments.of(PA, RemissionOption.FEE_WAIVER_FROM_HOME_OFFICE, HelpWithFeesOption.ALREADY_APPLIED, PAY_LATER, DECISION, DECISION),
+            Arguments.of(PA, RemissionOption.UNDER_18_GET_SUPPORT, HelpWithFeesOption.WANT_TO_APPLY, "", DECISION, DECISION),
+            Arguments.of(PA, RemissionOption.PARENT_GET_SUPPORT, HelpWithFeesOption.ALREADY_APPLIED, "", DECISION, DECISION),
+            Arguments.of(PA, NO_REMISSION, WILL_PAY_FOR_APPEAL, PAY_LATER, DECISION, DECISION),
+
+            Arguments.of(EU, RemissionOption.ASYLUM_SUPPORT_FROM_HOME_OFFICE, HelpWithFeesOption.WANT_TO_APPLY, "", APPEAL_STARTED, PENDING_PAYMENT),
+            Arguments.of(EU, RemissionOption.FEE_WAIVER_FROM_HOME_OFFICE, HelpWithFeesOption.ALREADY_APPLIED, "", APPEAL_STARTED, PENDING_PAYMENT),
+            Arguments.of(EU, RemissionOption.UNDER_18_GET_SUPPORT, HelpWithFeesOption.WANT_TO_APPLY, "", APPEAL_STARTED, PENDING_PAYMENT),
+            Arguments.of(EU, RemissionOption.PARENT_GET_SUPPORT, HelpWithFeesOption.ALREADY_APPLIED, "", APPEAL_STARTED, PENDING_PAYMENT),
+            Arguments.of(EU, NO_REMISSION, WILL_PAY_FOR_APPEAL, "", APPEAL_STARTED, PENDING_PAYMENT)
         );
-    }
-
-    private boolean hasRemission(RemissionOption remissionOption, HelpWithFeesOption helpWithFeesOption) {
-        return remissionOption != RemissionOption.NO_REMISSION
-            || helpWithFeesOption != WILL_PAY_FOR_APPEAL;
     }
 }

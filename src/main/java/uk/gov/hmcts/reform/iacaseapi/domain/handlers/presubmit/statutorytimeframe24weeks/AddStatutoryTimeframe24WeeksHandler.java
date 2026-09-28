@@ -3,11 +3,14 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.statutorytimefra
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
+
+import java.time.LocalDate;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.ADD_STATUTORY_TIMEFRAME_24_WEEKS;
@@ -40,7 +43,7 @@ public class AddStatutoryTimeframe24WeeksHandler implements PreSubmitCallbackHan
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
         YesOrNo status = YesOrNo.YES;
         AsylumCase updatedAsylum = updateStatutoryTimeframe24WeeksService.updateAsylumCase(asylumCase, status);
-
+        asylumCase.writeIfEmpty(AsylumCaseFieldDefinition.STF_24W_SET_DATE, LocalDate.now().toString());
         return new PreSubmitCallbackResponse<>(updatedAsylum);
     }
 }

@@ -49,12 +49,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOURNEY_TYPE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LEGAL_REPRESENTATIVE_DOCUMENTS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PREV_JOURNEY_TYPE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REASONS_FOR_APPEAL_DATE_UPLOADED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REASONS_FOR_APPEAL_DECISION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REASONS_FOR_APPEAL_DOCUMENTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
 @ExtendWith(MockitoExtension.class)
 public class PinInPostActivatedTest {
@@ -135,6 +130,8 @@ public class PinInPostActivatedTest {
     void verifyTimesJourneyTypeUpdated(int times) {
         verify(asylumCase, times(times)).write(JOURNEY_TYPE, JourneyType.AIP);
         verify(asylumCase, times(times)).write(PREV_JOURNEY_TYPE, JourneyType.REP);
+        verify(asylumCase, times(times)).write(IS_ADMIN, YesOrNo.NO);
+
     }
 
     void verifyTimesLrDetailsCleared(int times) {

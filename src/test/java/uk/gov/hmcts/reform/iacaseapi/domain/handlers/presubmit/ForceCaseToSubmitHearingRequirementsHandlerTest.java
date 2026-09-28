@@ -11,10 +11,14 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_NOTES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REASON_TO_FORCE_CASE_TO_SUBMIT_HEARING_REQUIREMENTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STF_24W_CURRENT_STATUS_AUTO_GENERATED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -78,6 +82,8 @@ class ForceCaseToSubmitHearingRequirementsHandlerTest {
         when(asylumCase.read(CASE_NOTES)).thenReturn(Optional.of(existingCaseNotes));
         when(asylumCase.read(REASON_TO_FORCE_CASE_TO_SUBMIT_HEARING_REQUIREMENTS, String.class))
             .thenReturn(Optional.of(newCaseNoteDescription));
+        when(asylumCase.read(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class))
+            .thenReturn(Optional.of(NO));
 
         when(caseNoteAppender.append(any(CaseNote.class), anyList()))
             .thenReturn(allAppendedCaseNotes);
@@ -115,6 +121,33 @@ class ForceCaseToSubmitHearingRequirementsHandlerTest {
         verify(asylumCase, times(1)).clear(REASON_TO_FORCE_CASE_TO_SUBMIT_HEARING_REQUIREMENTS);
 
         assertThat(callbackResponse.getData()).isEqualTo(callbackResponse.getData());
+    }
+
+    @Test
+    void should_return_error_when_case_is_24_week_case() {
+
+        when(asylumCase.read(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class))
+            .thenReturn(Optional.of(YES));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            forceCaseToSubmitHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertThat(callbackResponse.getErrors()).containsExactly("This event cannot be run on this case");
+        verify(caseNoteAppender, times(0)).append(any(), anyList());
+        verify(asylumCase, times(0)).write(any(), any());
+    }
+
+    @Test
+    void should_allow_event_when_case_is_not_24_week_case() {
+
+        when(asylumCase.read(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class))
+            .thenReturn(Optional.of(NO));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            forceCaseToSubmitHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertThat(callbackResponse.getErrors()).isEmpty();
+        verify(caseNoteAppender, times(1)).append(any(CaseNote.class), anyList());
     }
 
     @Test

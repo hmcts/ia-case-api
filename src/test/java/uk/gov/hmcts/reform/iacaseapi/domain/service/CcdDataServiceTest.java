@@ -1,25 +1,16 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.service;
 
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import feign.FeignException;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
+import uk.gov.hmcts.reform.ccd.client.model.UserId;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDataContent;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
@@ -31,6 +22,19 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CcdDataApi;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.idam.UserInfo;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.idam.IdentityManagerResponseException;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -141,6 +145,26 @@ class CcdDataServiceTest {
         assertThatThrownBy(() -> ccdDataService.raiseEvent(caseReference, Event.RE_TRIGGER_WA_TASKS))
             .isExactlyInstanceOf(FeignException.class);
 
+    }
+
+    @Test
+    void should_give_user_access_to_case() {
+        ArgumentCaptor<UserId> userIdCaptor = ArgumentCaptor.forClass(UserId.class);
+        ccdDataService.giveUserAccessToCase(caseId, "someUserId");
+
+        verify(ccdDataApi, times(1)).grantAccessToCase(
+            eq(token), eq(serviceToken), eq(userId), eq(jurisdiction),
+            eq(caseType), eq(caseReference), userIdCaptor.capture());
+        assertEquals("someUserId", userIdCaptor.getValue().getId());
+    }
+
+    @Test
+    void should_revoke_user_access_to_case() {
+        ccdDataService.revokeUserAccessToCase(caseId, "someUserId");
+
+        verify(ccdDataApi, times(1)).revokeAccessToCase(
+            token, serviceToken, userId, jurisdiction,
+            caseType, caseReference, "someUserId");
     }
 
     private StartEventDetails getStartEventResponse() {

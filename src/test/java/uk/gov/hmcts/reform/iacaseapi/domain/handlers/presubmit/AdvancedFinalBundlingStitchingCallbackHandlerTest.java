@@ -4,18 +4,11 @@ import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithMetadata;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ReheardHearingDocuments;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
@@ -29,8 +22,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.em.Bundle;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentReceiver;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.HomeOfficeApi;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.NotificationSender;
 
 import java.util.ArrayList;
@@ -40,29 +31,11 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.refEq;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.RP;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_BUNDLES;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_FLAG_SET_ASIDE_REHEARD_EXISTS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_DOCUMENTS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_HEARING_BUNDLE_READY_INSTRUCT_STATUS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_NOTIFICATIONS_ELIGIBLE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_SEARCH_STATUS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_HEARING_BUNDLE_UPDATED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_NOTIFICATION_TURNED_OFF;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REHEARD_HEARING_DOCUMENTS_COLLECTION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STITCHING_STATUS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 
@@ -81,8 +54,6 @@ class AdvancedFinalBundlingStitchingCallbackHandlerTest {
     @Mock private List<IdValue<DocumentWithMetadata>> maybeHearingDocuments;
     @Mock private List<IdValue<DocumentWithMetadata>> allHearingDocuments;
     @Mock private DocumentWithMetadata stitchedDocumentWithMetadata;
-    @Mock private HomeOfficeApi<AsylumCase> homeOfficeApi;
-    @Mock private FeatureToggler featureToggler;
 
     private List<IdValue<Bundle>> caseBundles = new ArrayList<>();
     private AdvancedFinalBundlingStitchingCallbackHandler advancedFinalBundlingStitchingCallbackHandler;
@@ -90,7 +61,7 @@ class AdvancedFinalBundlingStitchingCallbackHandlerTest {
     @BeforeEach
     public void setUp() {
         advancedFinalBundlingStitchingCallbackHandler =
-            new AdvancedFinalBundlingStitchingCallbackHandler(documentReceiver, documentsAppender, notificationSender, featureToggler, homeOfficeApi);
+            new AdvancedFinalBundlingStitchingCallbackHandler(documentReceiver, documentsAppender, notificationSender);
 
         when(callback.getEvent()).thenReturn(Event.ASYNC_STITCHING_COMPLETE);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -109,19 +80,8 @@ class AdvancedFinalBundlingStitchingCallbackHandlerTest {
         assertEquals(DispatchPriority.LAST, advancedFinalBundlingStitchingCallbackHandler.getDispatchPriority());
     }
 
-    @ParameterizedTest
-    @EnumSource(value = AppealType.class, names = { "PA", "RP", "DC", "EA", "HU", "EU", "AG" })
-    void should_successfully_handle_the_callback(AppealType appealType) {
-
-        when(featureToggler.getValue("home-office-uan-pa-feature", false)).thenReturn(true);
-        when(featureToggler.getValue("home-office-uan-rp-feature", false)).thenReturn(true);
-        when(featureToggler.getValue("home-office-uan-ea-feature", false)).thenReturn(true);
-        when(featureToggler.getValue("home-office-uan-hu-feature", false)).thenReturn(true);
-        when(featureToggler.getValue("home-office-uan-dc-feature", false)).thenReturn(true);
-        when(featureToggler.getValue("home-office-uan-eu-feature", false)).thenReturn(true);
-        when(featureToggler.getValue("home-office-uan-ag-feature", false)).thenReturn(true);
-
-        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
+    @Test
+    void should_successfully_handle_the_callback() {
         when(asylumCase.read(HEARING_DOCUMENTS)).thenReturn(Optional.of(maybeHearingDocuments));
         when(documentReceiver
             .receive(
@@ -150,19 +110,8 @@ class AdvancedFinalBundlingStitchingCallbackHandlerTest {
         verify(asylumCase, times(1)).clear(IS_HEARING_BUNDLE_UPDATED);
     }
 
-    @ParameterizedTest
-    @EnumSource(value = AppealType.class, names = { "PA", "RP", "DC", "EA", "HU", "EU", "AG" })
-    void should_not_remove_existing_bundle_when_updated(AppealType appealType) {
-
-        when(featureToggler.getValue("home-office-uan-pa-feature", false)).thenReturn(true);
-        when(featureToggler.getValue("home-office-uan-rp-feature", false)).thenReturn(true);
-        when(featureToggler.getValue("home-office-uan-ea-feature", false)).thenReturn(true);
-        when(featureToggler.getValue("home-office-uan-hu-feature", false)).thenReturn(true);
-        when(featureToggler.getValue("home-office-uan-dc-feature", false)).thenReturn(true);
-        when(featureToggler.getValue("home-office-uan-eu-feature", false)).thenReturn(true);
-        when(featureToggler.getValue("home-office-uan-ag-feature", false)).thenReturn(true);
-
-        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
+    @Test
+    void should_not_remove_existing_bundle_when_updated() {
         when(asylumCase.read(HEARING_DOCUMENTS)).thenReturn(Optional.of(maybeHearingDocuments));
         when(documentReceiver
             .receive(
@@ -194,150 +143,14 @@ class AdvancedFinalBundlingStitchingCallbackHandlerTest {
         advancedFinalBundlingStitchingCallbackHandler.handle(ABOUT_TO_SUBMIT, callback);
     }
 
-    @ParameterizedTest
-    @EnumSource(value = AppealType.class, names = { "PA", "RP", "DC", "EA", "HU", "EU", "AG" })
-    void should_write_instruct_status_when_ho_notification_feature_on(AppealType appealType) {
-
-        when(featureToggler.getValue("home-office-uan-pa-feature", false)).thenReturn(true);
-        when(featureToggler.getValue("home-office-uan-rp-feature", false)).thenReturn(true);
-        when(featureToggler.getValue("home-office-uan-ea-feature", false)).thenReturn(true);
-        when(featureToggler.getValue("home-office-uan-hu-feature", false)).thenReturn(true);
-        when(featureToggler.getValue("home-office-uan-dc-feature", false)).thenReturn(true);
-        when(featureToggler.getValue("home-office-uan-eu-feature", false)).thenReturn(true);
-        when(featureToggler.getValue("home-office-uan-ag-feature", false)).thenReturn(true);
-
-        when(homeOfficeApi.aboutToSubmit(callback)).thenReturn(asylumCase);
-        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
-        when(asylumCase.read(HOME_OFFICE_HEARING_BUNDLE_READY_INSTRUCT_STATUS, String.class)).thenReturn(Optional.of("OK"));
-        when(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class)).thenReturn(Optional.of("SUCCESS"));
-        when(asylumCase.read(HOME_OFFICE_NOTIFICATIONS_ELIGIBLE, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
-        when(documentReceiver
-            .receive(
-                stitchedDocument,
-                "",
-                DocumentTag.HEARING_BUNDLE
-            )).thenReturn(stitchedDocumentWithMetadata);
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            advancedFinalBundlingStitchingCallbackHandler.handle(ABOUT_TO_SUBMIT, callback);
-
-        assertNotNull(callbackResponse);
-        assertEquals(asylumCase, callbackResponse.getData());
-
-        verify(asylumCase, times(1)).write(HOME_OFFICE_HEARING_BUNDLE_READY_INSTRUCT_STATUS, "OK");
-        verify(homeOfficeApi, times(1)).aboutToSubmit(callback);
-        verify(notificationSender, times(1)).send(callback);
-    }
-
-    @ParameterizedTest
-    @EnumSource(value = AppealType.class, names = { "PA", "RP", "DC", "EA", "HU", "EU", "AG" })
-    void should_not_call_home_office_notification_when_ho_validation_has_failed(AppealType appealType) {
-
-        when(featureToggler.getValue("home-office-uan-pa-feature", false)).thenReturn(true);
-        when(featureToggler.getValue("home-office-uan-rp-feature", false)).thenReturn(true);
-        when(featureToggler.getValue("home-office-uan-ea-feature", false)).thenReturn(true);
-        when(featureToggler.getValue("home-office-uan-hu-feature", false)).thenReturn(true);
-        when(featureToggler.getValue("home-office-uan-dc-feature", false)).thenReturn(true);
-        when(featureToggler.getValue("home-office-uan-eu-feature", false)).thenReturn(true);
-        when(featureToggler.getValue("home-office-uan-ag-feature", false)).thenReturn(true);
-        
-        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
-        when(homeOfficeApi.aboutToSubmit(callback)).thenReturn(asylumCase);
-        when(asylumCase.read(HOME_OFFICE_HEARING_BUNDLE_READY_INSTRUCT_STATUS, String.class)).thenReturn(Optional.of("OK"));
-        when(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class)).thenReturn(Optional.of("FAIL"));
-        when(documentReceiver
-            .receive(
-                stitchedDocument,
-                "",
-                DocumentTag.HEARING_BUNDLE
-            )).thenReturn(stitchedDocumentWithMetadata);
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            advancedFinalBundlingStitchingCallbackHandler.handle(ABOUT_TO_SUBMIT, callback);
-
-        assertNotNull(callbackResponse);
-        assertEquals(asylumCase, callbackResponse.getData());
-
-        //verify(asylumCase, times(1)).write(HOME_OFFICE_HEARING_BUNDLE_READY_INSTRUCT_STATUS, "OK");
-        verify(homeOfficeApi, times(0)).aboutToSubmit(callback);
-        verify(notificationSender, times(1)).send(callback);
-        verify(asylumCase, times(1)).clear(IS_HEARING_BUNDLE_UPDATED);
-    }
-
-    @ParameterizedTest
-    @EnumSource(value = AppealType.class, names = { "PA", "RP", "DC", "EA", "HU", "EU", "AG" })
-    void should_not_call_home_office_notification_when_ho_validation_success_but_for_in_progress_case(AppealType appealType) {
-
-        when(featureToggler.getValue("home-office-uan-pa-feature", false)).thenReturn(true);
-        when(featureToggler.getValue("home-office-uan-rp-feature", false)).thenReturn(true);
-        when(featureToggler.getValue("home-office-uan-ea-feature", false)).thenReturn(true);
-        when(featureToggler.getValue("home-office-uan-hu-feature", false)).thenReturn(true);
-        when(featureToggler.getValue("home-office-uan-dc-feature", false)).thenReturn(true);
-        when(featureToggler.getValue("home-office-uan-eu-feature", false)).thenReturn(true);
-        when(featureToggler.getValue("home-office-uan-ag-feature", false)).thenReturn(true);
-
-        when(documentReceiver
-            .receive(
-                stitchedDocument,
-                "",
-                DocumentTag.HEARING_BUNDLE
-            )).thenReturn(stitchedDocumentWithMetadata);
-        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
-        when(homeOfficeApi.aboutToSubmit(callback)).thenReturn(asylumCase);
-        when(asylumCase.read(HOME_OFFICE_HEARING_BUNDLE_READY_INSTRUCT_STATUS, String.class)).thenReturn(Optional.of("OK"));
-        when(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class)).thenReturn(Optional.of("SUCCESS"));
-        when(asylumCase.read(HOME_OFFICE_NOTIFICATIONS_ELIGIBLE, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
-
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            advancedFinalBundlingStitchingCallbackHandler.handle(ABOUT_TO_SUBMIT, callback);
-
-        assertNotNull(callbackResponse);
-        assertEquals(asylumCase, callbackResponse.getData());
-
-        verify(homeOfficeApi, times(0)).aboutToSubmit(callback);
-        verify(notificationSender, times(1)).send(callback);
-    }
-
-    @ParameterizedTest
-    @EnumSource(value = AppealType.class, names = { "PA", "RP", "DC", "EA", "HU", "EU", "AG" })
-    void should_not_write_instruct_status_when_ho_notification_feature_missing(AppealType appealType) {
-
-        when(featureToggler.getValue("home-office-uan-pa-feature", false)).thenReturn(true);
-        when(featureToggler.getValue("home-office-uan-rp-feature", false)).thenReturn(true);
-        when(featureToggler.getValue("home-office-uan-ea-feature", false)).thenReturn(true);
-        when(featureToggler.getValue("home-office-uan-hu-feature", false)).thenReturn(true);
-        when(featureToggler.getValue("home-office-uan-dc-feature", false)).thenReturn(true);
-        when(featureToggler.getValue("home-office-uan-eu-feature", false)).thenReturn(true);
-        when(featureToggler.getValue("home-office-uan-ag-feature", false)).thenReturn(true);
-
-        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
-        when(documentReceiver
-            .receive(
-                stitchedDocument,
-                "",
-                DocumentTag.HEARING_BUNDLE
-            )).thenReturn(stitchedDocumentWithMetadata);
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            advancedFinalBundlingStitchingCallbackHandler.handle(ABOUT_TO_SUBMIT, callback);
-
-        assertNotNull(callbackResponse);
-        assertEquals(asylumCase, callbackResponse.getData());
-
-        verify(asylumCase, times(0)).write(HOME_OFFICE_HEARING_BUNDLE_READY_INSTRUCT_STATUS, "OK");
-    }
-
-    @ParameterizedTest
-    @EnumSource(value = AppealType.class, names = { "PA", "RP", "DC", "EA", "HU", "EU", "AG" })
-    void should_successfully_handle_the_callback_in_remitted_reheard_case(AppealType appealType) {
+    @Test
+    void should_successfully_handle_the_callback_in_remitted_reheard_case() {
 
         final List<IdValue<DocumentWithMetadata>> listOfDocumentsWithMetadata = Lists.newArrayList(allHearingDocuments);
         IdValue<ReheardHearingDocuments> reheardHearingDocuments =
                 new IdValue<>("1", new ReheardHearingDocuments(listOfDocumentsWithMetadata));
         final List<IdValue<ReheardHearingDocuments>> listOfReheardDocs = Lists.newArrayList(reheardHearingDocuments);
 
-        when(homeOfficeApi.aboutToSubmit(callback)).thenReturn(asylumCase);
-        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
-        when(asylumCase.read(HOME_OFFICE_HEARING_BUNDLE_READY_INSTRUCT_STATUS, String.class)).thenReturn(Optional.of("OK"));
-        when(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class)).thenReturn(Optional.of("SUCCESS"));
-        when(asylumCase.read(HOME_OFFICE_NOTIFICATIONS_ELIGIBLE, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(asylumCase.read(REHEARD_HEARING_DOCUMENTS_COLLECTION)).thenReturn(Optional.of(listOfReheardDocs));
         when(documentReceiver
@@ -365,20 +178,14 @@ class AdvancedFinalBundlingStitchingCallbackHandlerTest {
         verify(documentsAppender).append(anyList(), anyList(), eq(DocumentTag.HEARING_BUNDLE));
     }
 
-    @ParameterizedTest
-    @EnumSource(value = AppealType.class, names = { "PA", "RP", "DC", "EA", "HU", "EU", "AG" })
-    void should_successfully_handle_the_callback_in_remitted_reheard_case_when_collection_empty(AppealType appealType) {
+    @Test
+    void should_successfully_handle_the_callback_in_remitted_reheard_case_when_collection_empty() {
 
         final List<IdValue<DocumentWithMetadata>> listOfDocumentsWithMetadata = Lists.newArrayList(allHearingDocuments);
         IdValue<ReheardHearingDocuments> reheardHearingDocuments =
             new IdValue<>("1", new ReheardHearingDocuments(listOfDocumentsWithMetadata));
         final List<IdValue<ReheardHearingDocuments>> listOfReheardDocs = Lists.newArrayList(reheardHearingDocuments);
 
-        when(homeOfficeApi.aboutToSubmit(callback)).thenReturn(asylumCase);
-        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
-        when(asylumCase.read(HOME_OFFICE_HEARING_BUNDLE_READY_INSTRUCT_STATUS, String.class)).thenReturn(Optional.of("OK"));
-        when(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class)).thenReturn(Optional.of("SUCCESS"));
-        when(asylumCase.read(HOME_OFFICE_NOTIFICATIONS_ELIGIBLE, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(asylumCase.read(REHEARD_HEARING_DOCUMENTS_COLLECTION)).thenReturn(Optional.empty());
         when(documentReceiver
