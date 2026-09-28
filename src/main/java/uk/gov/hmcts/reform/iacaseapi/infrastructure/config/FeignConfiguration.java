@@ -16,7 +16,6 @@ import org.springframework.context.annotation.Primary;
 public class FeignConfiguration {
 
     @Bean
-    @Qualifier("feign")
     public HttpMessageConverterCustomizer feignJacksonConverterCustomizer(@Qualifier("feign") ObjectMapper objectMapper) {
         return converters -> {
             converters.removeIf(c -> c instanceof org.springframework.http.converter.json.MappingJackson2HttpMessageConverter);
@@ -30,8 +29,8 @@ public class FeignConfiguration {
     }
 
     @Bean
-    @Primary
-    public ObjectMapper objectMapper(org.springframework.http.converter.json.Jackson2ObjectMapperBuilder builder) {
+    @Qualifier("feign")
+    public ObjectMapper feignObjectMapper(org.springframework.http.converter.json.Jackson2ObjectMapperBuilder builder) {
         return builder
             .featuresToDisable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
             .featuresToEnable(DeserializationFeature.READ_UNKNOWN_ENUM_VALUES_USING_DEFAULT_VALUE)
