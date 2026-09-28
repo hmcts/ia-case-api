@@ -3,7 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 import com.fasterxml.jackson.annotation.JsonEnumDefaultValue;
 import com.fasterxml.jackson.annotation.JsonValue;
 
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.USER_ERROR_HELP_TEXT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.getUserErrorHelpText;
 
 public enum HomeOfficeApiResponseStatusType {
 
@@ -11,7 +11,7 @@ public enum HomeOfficeApiResponseStatusType {
     OTHER_APPLICATION_DATA(-3, "otherApplicationData", UserFacingErrorText.SERVER, "The Home Office validation API's response contained data from a different application."),
     NO_DATA(-2, "noData", UserFacingErrorText.SERVER, "The Home Office validation API's response contained no data."),
     DID_NOT_RESPOND(-1, "didNotRespond", UserFacingErrorText.SERVER, "The Home Office validation API did not respond."),
-    OK(200, "ok", "", ""),
+    OK(200, "ok", UserFacingErrorText.NONE, ""),
     BAD_REQUEST(400, "badRequest", UserFacingErrorText.CLIENT, "The request to the Home Office validation API was not correctly formed."),
     NOT_AUTHENTICATED(401, "notAuthenticated", UserFacingErrorText.CLIENT, "The request to the Home Office validation API could not be authenticated."),
     NOT_AUTHORISED(403, "notAuthorised", UserFacingErrorText.CLIENT, "The request to the Home Office validation API was authenticated but not authorised."),
@@ -28,12 +28,12 @@ public enum HomeOfficeApiResponseStatusType {
     @JsonValue
     private final int statusCode;
     private final String name;
-    private final String userFacingErrorText;
+    private final UserFacingErrorText userFacingErrorText;
     private final String hoIntegrationErrorText;
 
     private static final String REPLACEMENT_STRING = "XYZYX";
 
-    HomeOfficeApiResponseStatusType(int statusCode, String name, String userFacingErrorText, String hoIntegrationErrorText) {
+    HomeOfficeApiResponseStatusType(int statusCode, String name, UserFacingErrorText userFacingErrorText, String hoIntegrationErrorText) {
         this.statusCode = statusCode;
         this.name = name;
         this.userFacingErrorText = userFacingErrorText;
@@ -44,13 +44,13 @@ public enum HomeOfficeApiResponseStatusType {
         return statusCode;
     }
 
-    public String getUserFacingErrorText(String hoReference, boolean isOnSubmit) {
-        if (isOnSubmit) {
-            return userFacingErrorText.replace(REPLACEMENT_STRING, hoReference)
-                .replace("You should", "You should edit the appeal and")
-                .replace(USER_ERROR_HELP_TEXT, "");
-        }
-        return userFacingErrorText.replace(REPLACEMENT_STRING, hoReference);
+    public String getUserFacingErrorText(String hoReference, boolean isOnSubmit, boolean isAdmin) {
+        return switch (this.userFacingErrorText) {
+            case CLIENT -> getClientText(isAdmin);
+            case SERVER -> getServerText(isAdmin);
+            case USER -> getUserText(hoReference, isOnSubmit, isAdmin);
+            case NONE -> "";
+        };
     }
 
     public String getHoIntegrationErrorText(String hoReference) {
@@ -62,12 +62,35 @@ public enum HomeOfficeApiResponseStatusType {
         return name;
     }
 
-    private final class UserFacingErrorText {
-        private static final String CLIENT = "An error occurred. Please report this to HMCTS using the following contact details: Email contactia@justice.gov.uk or Telephone: 0300 123 1711.";
-        private static final String SERVER = "An error occurred. Please try again in 15-20 minutes. If it occurs again, please report this to HMCTS using the following contact details: Email contactia@justice.gov.uk or Telephone: 0300 123 1711.";
-        private static final String USER = "The reference XYZYX cannot be matched to a Home Office record. " +
-            "You should enter the UAN or GWF reference exactly as it appears on the decision letter. This can often be found in the 'How to appeal' section. " +
-            USER_ERROR_HELP_TEXT;
-    }    
+    private enum UserFacingErrorText {
+        CLIENT, SERVER, USER, NONE
+    }
+
+    private static String getUserText(String hoReference, boolean isOnSubmit, boolean isAdmin) {
+        String text;
+        if (isOnSubmit) {
+            text = "The reference XYZYX cannot be matched to a Home Office record. " +
+                "You should edit the appeal and enter the UAN or GWF reference exactly as it appears on the decision letter. This can often be found in the 'How to appeal' section.";
+        } else {
+            text = "The reference XYZYX cannot be matched to a Home Office record. " +
+                "You should enter the UAN or GWF reference exactly as it appears on the decision letter. This can often be found in the 'How to appeal' section. " +
+                getUserErrorHelpText(isAdmin);
+        }
+        return text.replace(REPLACEMENT_STRING, hoReference);
+    }
+
+    private static String getClientText(boolean isAdmin) {
+        if (isAdmin) {
+            return "An error occurred. Please report this by raising a Halo ticket.";
+        }
+        return "An error occurred. Please report this to HMCTS using the following contact details: Email contactia@justice.gov.uk or Telephone: 0300 123 1711.";
+    }
+
+    private static String getServerText(boolean isAdmin) {
+        if (isAdmin) {
+            return "An error occurred. Please try again in 15-20 minutes. If it occurs again, please report this by raising a Halo ticket.";
+        }
+        return "An error occurred. Please try again in 15-20 minutes. If it occurs again, please report this to HMCTS using the following contact details: Email contactia@justice.gov.uk or Telephone: 0300 123 1711.";
+    }
 }
 
