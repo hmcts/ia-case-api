@@ -50,12 +50,21 @@ public class HandlerUtils {
     public static final String ON_THE_PAPERS = "ONPPRS";
     public static final Pattern HOME_OFFICE_REF_PATTERN = Pattern
         .compile("^(([0-9]{4}\\-[0-9]{4}\\-[0-9]{4}\\-[0-9]{4})|(GWF[0-9]{9}))$");
-    public static final String USER_ERROR_HELP_TEXT = "If you need help, please use the Home Office help form in the bullet points on this page.";
-    private static final String INVALID_HOME_OFFICE_REFERENCE = "You should enter the UAN or GWF reference exactly as it appears on the decision letter.  " +
-        "This can often be found in the 'How to appeal' section.  The UAN is 16 digits with dashes.  " +
-        "The GWF starts with the letters \"GWF\" and then has 9 digits. " + USER_ERROR_HELP_TEXT;
 
     private HandlerUtils() {
+    }
+
+    public static String getUserErrorHelpText(boolean isAdmin) {
+        String adminError = "If you need help, please contact the Home Office 'HMCTS Portal Validation Team' at HO_HMCTS_Portal@homeoffice.gov.uk.";
+        String userError = "If you need help, please use the Home Office help form in the bullet points on this page.";
+        return isAdmin ? adminError : userError;
+    }
+
+    public static String getInvalidHomeOfficeReference(boolean isAdmin) {
+        String error = "You should enter the UAN or GWF reference exactly as it appears on the decision letter. " +
+            "This can often be found in the 'How to appeal' section. The UAN is 16 digits with dashes. " +
+            "The GWF starts with the letters \"GWF\" and then has 9 digits. ";
+        return error + getUserErrorHelpText(isAdmin);
     }
 
     public static boolean isAipJourney(AsylumCase asylumCase) {
@@ -913,13 +922,13 @@ public class HandlerUtils {
         PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
 
         if (!isWellFormedHomeOfficeReference(homeOfficeReferenceNumber)) {
-            response.addError(INVALID_HOME_OFFICE_REFERENCE);
+            response.addError(getInvalidHomeOfficeReference(isAdmin(asylumCase)));
         } else if (!isRealHomeOfficeCaseNumber(homeOfficeReferenceNumber, callback, homeOfficeReferenceService)) {
             // An error occurred - display a suitable message to the user
             response.addError(
                 asylumCase.read(HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS, HomeOfficeApiResponseStatusType.class)
                     .orElse(HomeOfficeApiResponseStatusType.UNKNOWN)
-                    .getUserFacingErrorText(homeOfficeReferenceNumber, callback.getEvent().equals(Event.SUBMIT_APPEAL))
+                    .getUserFacingErrorText(homeOfficeReferenceNumber, callback.getEvent().equals(Event.SUBMIT_APPEAL), isAdmin(asylumCase))
             );
         }
         return response;
@@ -956,13 +965,13 @@ public class HandlerUtils {
             String errorMessage = "";
             boolean isOnSubmit = callback.getEvent() == Event.SUBMIT_APPEAL;
             if (responseStatus.equals(HomeOfficeApiResponseStatusType.OK)) {
-                errorMessage = getMismatchErrorMessage(homeOfficeReferenceNumber, shouldRevalidate, isOnSubmit);
+                errorMessage = getMismatchErrorMessage(homeOfficeReferenceNumber, shouldRevalidate, isOnSubmit, isAdmin(asylumCase));
                 // Log this - if it happens repeatedly, that's suspicious
                 log.info("The details provided did not match the Home Office biographic data retrieved for case with reference ID {}.", homeOfficeReferenceNumber);
             } else {
                 // This shouldn't happen as the Home Office API ought not to have been called, since the data has already
-                // been retrieved from the Home Office.  But we'll check for it anyway just in case something unexpected has happened.
-                errorMessage = responseStatus.getUserFacingErrorText(homeOfficeReferenceNumber, isOnSubmit);
+                // been retrieved from the Home Office. But we'll check for it anyway just in case something unexpected has happened.
+                errorMessage = responseStatus.getUserFacingErrorText(homeOfficeReferenceNumber, isOnSubmit, isAdmin(asylumCase));
             }
             response.addError(errorMessage);
         }
@@ -976,7 +985,7 @@ public class HandlerUtils {
         return response;
     }
 
-    public static String getMismatchErrorMessage(String homeOfficeReferenceNumber, boolean shouldRevalidate, boolean isOnSubmit) {
+    public static String getMismatchErrorMessage(String homeOfficeReferenceNumber, boolean shouldRevalidate, boolean isOnSubmit, boolean isAdmin) {
         if (isOnSubmit) {
             return "The information given does not match the details held by the Home Office for reference number " +
                 homeOfficeReferenceNumber +
@@ -988,7 +997,7 @@ public class HandlerUtils {
             homeOfficeReferenceNumber +
             ". You should enter the " + (shouldRevalidate ? "" : "appellant's ") +
             "details exactly as they appear on the decision letter, so that we can verify them." +
-            " These details can often be found in the 'How to appeal' section. " + USER_ERROR_HELP_TEXT;
+            " These details can often be found in the 'How to appeal' section. " + getUserErrorHelpText(isAdmin);
     }
 
     public static boolean isWellFormedHomeOfficeReference(String hoReference) {

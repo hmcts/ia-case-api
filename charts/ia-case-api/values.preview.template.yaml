@@ -41,7 +41,7 @@ java:
     # Set HOME_OFFICE_VALIDATION_ENABLED: "true" if you want to run the validation against the mock HO validation API in Preview; otherwise leave at "false".
     # The mock HO validation API lives at http://ia-home-office-mock-api-aat.service.core-compute-aat.internal/ichallenge/applications/v1/1111-2222-3333-4444
     # (you can use any valid UAN at the end; but in ExUI you must enter the expected UAN, name and DOB in order to proceed past validation)
-    HOME_OFFICE_VALIDATION_ENABLED: "true" # Do not remove this this environment variable!
+    HOME_OFFICE_VALIDATION_ENABLED: "false" # Do not remove this this environment variable!
     HOME_OFFICE_MOCK_TURN_OFF_FOR_TEST: "false" # Set this environment variable to false if you want to test something using the mock HO validation API
   keyVaults:
     ia:
@@ -829,22 +829,6 @@ xui-webapp:
       PREVIEW_DEPLOYMENT_ID: "ia-${CHANGE_ID}"
       ENABLE_HEARING_DATA_SOURCE_HEADERS: "true"
       SERVICES_HEARINGS_COMPONENT_API_IAC: https://ia-case-api-pr-${CHANGE_ID}-hearings-api.preview.platform.hmcts.net
-    keyVaults:
-      rpx:
-        resourceGroup: rpx
-        secrets:
-          - name: mc-s2s-client-secret
-            alias: mc-s2s-client-secret
-          - name: mc-idam-client-secret
-            alias: mc-idam-client-secret
-          - name: mc-session-secret
-            alias: mc-session-secret
-          - name: system-user-name
-            alias: system-user-name
-          - name: system-user-password
-            alias: system-user-password
-          - name: mc-session-secret
-            alias: mc-session-secret
 
 ccd:
   enabled: true

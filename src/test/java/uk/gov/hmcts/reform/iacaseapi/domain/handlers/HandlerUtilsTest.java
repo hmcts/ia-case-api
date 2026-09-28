@@ -1852,4 +1852,20 @@ class HandlerUtilsTest {
 
         assertFalse(shouldValidateEditPersonalData(callback));
     }
+  
+    @Test
+    void getUserErrorHelpText_should_return_correct_text() {
+        assertTrue(HandlerUtils.getUserErrorHelpText(true).contains("HMCTS Portal Validation Team"));
+        assertFalse(HandlerUtils.getUserErrorHelpText(true).contains("Home Office help form"));
+        assertFalse(HandlerUtils.getUserErrorHelpText(false).contains("HMCTS Portal Validation Team"));
+        assertTrue(HandlerUtils.getUserErrorHelpText(false).contains("Home Office help form"));
+    }
+
+    @Test
+    void getInvalidHomeOfficeReference_should_return_correct_text() {
+        assertTrue(HandlerUtils.getInvalidHomeOfficeReference(true).contains("HMCTS Portal Validation Team"));
+        assertFalse(HandlerUtils.getInvalidHomeOfficeReference(true).contains("Home Office help form"));
+        assertFalse(HandlerUtils.getInvalidHomeOfficeReference(false).contains("HMCTS Portal Validation Team"));
+        assertTrue(HandlerUtils.getInvalidHomeOfficeReference(false).contains("Home Office help form"));
+    }
 }

@@ -23,6 +23,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.DispatchPriori
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.HomeOfficeApi;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.HomeOfficeReferenceService;
@@ -205,7 +206,28 @@ class AppealSubmittedNotifyHomeOfficeHandlerTest {
         assertEquals(asylumCase, response.getData());
         assertThat(response.getErrors())
             .hasSize(1)
-            .contains(status.getUserFacingErrorText(VALID_GWF, true));
+            .contains(status.getUserFacingErrorText(VALID_GWF, true, false));
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = HomeOfficeApiResponseStatusType.class, names = {"OK"}, mode = EnumSource.Mode.EXCLUDE)
+    void handle_should_return_errors_if_reference_validation_fails_admin(HomeOfficeApiResponseStatusType status) {
+        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+        when(caseDetails.getState()).thenReturn(State.APPEAL_STARTED);
+        when(asylumCase.read(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, String.class))
+            .thenReturn(Optional.of("string"));
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of(VALID_GWF));
+        when(asylumCase.read(APPEAL_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of(APPEAL_REF));
+        when(asylumCase.read(HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS, HomeOfficeApiResponseStatusType.class))
+            .thenReturn(Optional.of(status));
+
+        PreSubmitCallbackResponse<AsylumCase> response = handler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertEquals(asylumCase, response.getData());
+        assertThat(response.getErrors())
+            .hasSize(1)
+            .contains(status.getUserFacingErrorText(VALID_GWF, true, true));
     }
 
     @Test
@@ -224,7 +246,7 @@ class AppealSubmittedNotifyHomeOfficeHandlerTest {
         assertEquals(asylumCase, response.getData());
         assertThat(response.getErrors())
             .hasSize(1)
-            .contains(getMismatchErrorMessage(VALID_GWF, false, true));
+            .contains(getMismatchErrorMessage(VALID_GWF, false, true, false));
     }
 
     @Test

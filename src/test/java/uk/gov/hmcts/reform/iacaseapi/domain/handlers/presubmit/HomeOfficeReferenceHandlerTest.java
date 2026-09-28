@@ -276,7 +276,7 @@ class HomeOfficeReferenceHandlerTest {
             handler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
 
         assertFalse(response.getErrors().isEmpty());
-        assertEquals(getMismatchErrorMessage(VALID_GWF, true, false), response.getErrors().iterator().next());
+        assertEquals(getMismatchErrorMessage(VALID_GWF, true, false, false), response.getErrors().iterator().next());
     }
 
     @Test
@@ -471,7 +471,50 @@ class HomeOfficeReferenceHandlerTest {
         assertTrue(
             response.getErrors()
                 .stream()
-                .anyMatch(error -> error.contains(HomeOfficeApiResponseStatusType.NOT_FOUND.getUserFacingErrorText(VALID_GWF, false)))
+                .anyMatch(error -> error.contains(HomeOfficeApiResponseStatusType.NOT_FOUND.getUserFacingErrorText(VALID_GWF, false, false)))
+        );
+    }
+
+    @Test
+    void handle_should_return_api_error_when_details_do_not_match_and_status_not_ok_admin() {
+
+        when(callback.getEvent()).thenReturn(Event.START_APPEAL);
+        when(callback.getPageId()).thenReturn("cuiAppellantName");
+
+        when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class))
+            .thenReturn(Optional.of(VALID_GWF));
+
+        when(referenceService.getHomeOfficeReferenceData(VALID_GWF, callback))
+            .thenReturn(Collections.singletonList(idValue));
+
+        when(idValue.getValue()).thenReturn(appellant);
+
+        when(appellant.getFamilyName()).thenReturn("Smith");
+        when(appellant.getGivenNames()).thenReturn("John");
+
+        when(asylumCase.read(APPELLANT_FAMILY_NAME, String.class))
+            .thenReturn(Optional.of("Jones"));
+
+        when(asylumCase.read(APPELLANT_GIVEN_NAMES, String.class))
+            .thenReturn(Optional.of("Fred"));
+
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class))
+            .thenReturn(Optional.of(YesOrNo.YES));
+
+        when(asylumCase.read(
+            HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS,
+            HomeOfficeApiResponseStatusType.class))
+            .thenReturn(Optional.of(HomeOfficeApiResponseStatusType.NOT_FOUND));
+
+        PreSubmitCallbackResponse<AsylumCase> response =
+            handler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+
+        assertEquals(1, response.getErrors().size());
+
+        assertTrue(
+            response.getErrors()
+                .stream()
+                .anyMatch(error -> error.contains(HomeOfficeApiResponseStatusType.NOT_FOUND.getUserFacingErrorText(VALID_GWF, false, true)))
         );
     }
 
@@ -511,7 +554,48 @@ class HomeOfficeReferenceHandlerTest {
         assertTrue(
             response.getErrors()
                 .stream()
-                .anyMatch(error -> error.contains(HomeOfficeApiResponseStatusType.UNKNOWN.getUserFacingErrorText(VALID_GWF, false)))
+                .anyMatch(error -> error.contains(HomeOfficeApiResponseStatusType.UNKNOWN.getUserFacingErrorText(VALID_GWF, false, false)))
+        );
+    }
+
+    @Test
+    void handle_should_use_unknown_status_when_response_status_missing_admin() {
+
+        when(callback.getEvent()).thenReturn(Event.START_APPEAL);
+        when(callback.getPageId()).thenReturn("cuiAppellantName");
+
+        when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class))
+            .thenReturn(Optional.of(VALID_GWF));
+
+        when(referenceService.getHomeOfficeReferenceData(VALID_GWF, callback))
+            .thenReturn(Collections.singletonList(idValue));
+
+        when(idValue.getValue()).thenReturn(appellant);
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class))
+            .thenReturn(Optional.of(YesOrNo.YES));
+        when(appellant.getFamilyName()).thenReturn("Smith");
+        when(appellant.getGivenNames()).thenReturn("John");
+
+        when(asylumCase.read(APPELLANT_FAMILY_NAME, String.class))
+            .thenReturn(Optional.of("Jones"));
+
+        when(asylumCase.read(APPELLANT_GIVEN_NAMES, String.class))
+            .thenReturn(Optional.of("Fred"));
+
+        when(asylumCase.read(
+            HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS,
+            HomeOfficeApiResponseStatusType.class))
+            .thenReturn(Optional.empty());
+
+        PreSubmitCallbackResponse<AsylumCase> response =
+            handler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+
+        assertEquals(1, response.getErrors().size());
+
+        assertTrue(
+            response.getErrors()
+                .stream()
+                .anyMatch(error -> error.contains(HomeOfficeApiResponseStatusType.UNKNOWN.getUserFacingErrorText(VALID_GWF, false, true)))
         );
     }
 
@@ -556,7 +640,32 @@ class HomeOfficeReferenceHandlerTest {
         assertEquals(1, response.getErrors().size());
         assertTrue(
             response.getErrors().contains(
-                HomeOfficeApiResponseStatusType.UNKNOWN.getUserFacingErrorText(VALID_GWF, false)
+                HomeOfficeApiResponseStatusType.UNKNOWN.getUserFacingErrorText(VALID_GWF, false, false)
+            )
+        );
+    }
+
+
+    @Test
+    void handle_should_return_unknown_error_when_home_office_validation_throws_exception_admin() {
+
+        when(callback.getEvent()).thenReturn(Event.START_APPEAL);
+        when(callback.getPageId()).thenReturn("homeOfficeReferenceNumber");
+
+        when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class))
+            .thenReturn(Optional.of(VALID_GWF));
+
+        when(referenceService.getHomeOfficeReferenceData(VALID_GWF, callback))
+            .thenThrow(new RuntimeException("Boom"));
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class))
+            .thenReturn(Optional.of(YesOrNo.YES));
+        PreSubmitCallbackResponse<AsylumCase> response =
+            handler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+
+        assertEquals(1, response.getErrors().size());
+        assertTrue(
+            response.getErrors().contains(
+                HomeOfficeApiResponseStatusType.UNKNOWN.getUserFacingErrorText(VALID_GWF, false, true)
             )
         );
     }
@@ -577,7 +686,29 @@ class HomeOfficeReferenceHandlerTest {
             handler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
 
         assertEquals(
-            HomeOfficeApiResponseStatusType.UNKNOWN.getUserFacingErrorText(VALID_GWF, false),
+            HomeOfficeApiResponseStatusType.UNKNOWN.getUserFacingErrorText(VALID_GWF, false, false),
+            response.getErrors().iterator().next()
+        );
+    }
+
+    @Test
+    void handle_should_return_unknown_error_when_name_validation_throws_exception_admin() {
+
+        when(callback.getEvent()).thenReturn(Event.START_APPEAL);
+        when(callback.getPageId()).thenReturn("cuiAppellantName");
+
+        when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class))
+            .thenReturn(Optional.of(VALID_GWF));
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class))
+            .thenReturn(Optional.of(YesOrNo.YES));
+        when(referenceService.getHomeOfficeReferenceData(VALID_GWF, callback))
+            .thenThrow(new RuntimeException("Boom"));
+
+        PreSubmitCallbackResponse<AsylumCase> response =
+            handler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+
+        assertEquals(
+            HomeOfficeApiResponseStatusType.UNKNOWN.getUserFacingErrorText(VALID_GWF, false, true),
             response.getErrors().iterator().next()
         );
     }
@@ -601,7 +732,32 @@ class HomeOfficeReferenceHandlerTest {
 
         assertTrue(
             response.getErrors()
-                .contains(HomeOfficeApiResponseStatusType.UNKNOWN.getUserFacingErrorText(VALID_GWF, false))
+                .contains(HomeOfficeApiResponseStatusType.UNKNOWN.getUserFacingErrorText(VALID_GWF, false, false))
+        );
+    }
+
+    @Test
+    void handle_should_return_unknown_error_when_name_and_dob_validation_throws_exception_admin() {
+
+        when(callback.getEvent()).thenReturn(Event.START_APPEAL);
+        when(callback.getPageId()).thenReturn("cuiAppellantDob");
+
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class))
+            .thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class))
+            .thenReturn(Optional.of(VALID_GWF));
+
+        when(referenceService.getHomeOfficeReferenceData(VALID_GWF, callback))
+            .thenThrow(new RuntimeException("Boom"));
+
+        PreSubmitCallbackResponse<AsylumCase> response =
+            handler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+
+        assertEquals(1, response.getErrors().size());
+
+        assertTrue(
+            response.getErrors()
+                .contains(HomeOfficeApiResponseStatusType.UNKNOWN.getUserFacingErrorText(VALID_GWF, false, true))
         );
     }
 
