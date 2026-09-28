@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+USER_TOKEN=$(sh ${dir}/idam-user-token-aat.sh)
+SERVICE_TOKEN=$(sh ${dir}/idam-service-token-aat.sh)
+
 # User used during the CCD import and ccd-role creation
 ./bin/utils/ccd-add-role.sh "caseworker-ia-caseofficer" "$USER_TOKEN" "$SERVICE_TOKEN"
 ./bin/utils/ccd-add-role.sh "caseworker-ia-judiciary" "$USER_TOKEN" "$SERVICE_TOKEN"
