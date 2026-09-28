@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+dir=$(dirname ${0})
+
 USER_TOKEN=$(sh ${dir}/utils/idam-user-token-aat.sh)
 SERVICE_TOKEN=$(sh ${dir}/utils/idam-service-token-aat.sh)
 
