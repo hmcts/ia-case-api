@@ -97,7 +97,7 @@ public class AppealSubmittedNotifyHomeOfficeHandler implements PreSubmitCallback
         final String appealReferenceNumber = asylumCase.read(APPEAL_REFERENCE_NUMBER, String.class)
             .orElseThrow(() -> new IllegalStateException("Case ID for the appeal is not present"));
         // Re-validate the appeal with the Home Office API (in case anything has changed since the last time it was called)
-        asylumCase.clear(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY);
+        asylumCase.clear(HAS_BEEN_VALIDATED_BY_NEW_HOME_OFFICE_API);
         PreSubmitCallbackResponse<AsylumCase> validationResponse =
             validateAllDetails(callback, asylumCase, homeOfficeReferenceNumber, homeOfficeReferenceService);
         if (!validationResponse.getErrors().isEmpty()) {
