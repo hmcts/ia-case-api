@@ -330,7 +330,7 @@ dependencyManagement {
         dependency group: 'org.apache.httpcomponents.client5', name: 'httpclient5', version: '5.6.4'
         dependency group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.14'
 
-        dependencySet(group: 'org.apache.httpcomponents.core5', version: '5.4.3') {
+        dependencySet(group: 'org.apache.httpcomponents.core5', version: '5.4.4') {
             entry 'httpcore5'
             entry 'httpcore5-h2'
         }
