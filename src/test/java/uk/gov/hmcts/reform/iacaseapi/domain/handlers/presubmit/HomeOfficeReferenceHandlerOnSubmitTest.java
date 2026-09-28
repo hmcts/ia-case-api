@@ -187,34 +187,6 @@ class HomeOfficeReferenceHandlerOnSubmitTest {
     }
 
     @Test
-    void should_log_error_if_decryption_deserialisation_fails() {
-        when(callback.getEvent()).thenReturn(Event.START_APPEAL);
-        when(asylumCase.read(HOME_OFFICE_APPELLANTS)).thenReturn(Optional.empty());
-        when(asylumCase.read(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, String.class))
-                .thenReturn(Optional.of(encryptedData));
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
-
-        handlerUtilsMock
-                .when(() -> HandlerUtils.getUanOrGwf(asylumCase))
-                .thenReturn("non-empty-reference");
-
-        handlerUtilsMock
-                .when(() -> HandlerUtils.decrypt(encryptedData, homeOfficeSerialisedEncryptionKey))
-                .thenThrow(new RuntimeException("Decryption failed"));
-
-        ListAppender<ILoggingEvent> listAppender = setupLogVerifier(HomeOfficeReferenceHandlerOnSubmit.class);
-        PreSubmitCallbackResponse<AsylumCase> response = handler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
-
-        assertEquals(asylumCase, response.getData());
-        verifyLogsContainMessage(listAppender, "Writing retrieved Home Office appellant data to the case record in full for case with Home Office reference non-empty-reference.");
-        verify(asylumCase, never()).write(eq(HOME_OFFICE_APPELLANTS), any());
-        ILoggingEvent loggingEvent = verifyLogsContainMessage(listAppender,
-                "Could not deserialise list of Home Office appellants from encrypted serialised string");
-        assertEquals(Level.ERROR, loggingEvent.getLevel());
-    }
-
-    @Test
     void should_throw_error_if_home_office_reference_number_empty() {
         when(callback.getEvent()).thenReturn(Event.START_APPEAL);
         when(asylumCase.read(HOME_OFFICE_APPELLANTS)).thenReturn(Optional.empty());

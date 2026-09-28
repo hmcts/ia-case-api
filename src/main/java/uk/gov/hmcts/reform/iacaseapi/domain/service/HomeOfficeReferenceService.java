@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.HomeOfficeAppellant;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValueMixin;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 
 import java.util.List;
@@ -40,22 +41,15 @@ public class HomeOfficeReferenceService {
         mapper.addMixIn(IdValue.class, IdValueMixin.class);
         // Check case for existing data.
         final AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
-        String homeOfficeAppellantsSerialisedEncrypted = asylumCase.read(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, String.class).orElse("");
+        Optional<String> homeOfficeAppellantsSerialisedEncrypted = asylumCase.read(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, String.class);
         List<IdValue<HomeOfficeAppellant>> homeOfficeAppellants = emptyList();
         // If we have a list of appellants already (in serialised form - see comments below), don't call the API again.
-        if (!homeOfficeAppellantsSerialisedEncrypted.isEmpty()) {
+        if (homeOfficeAppellantsSerialisedEncrypted.isPresent()) {
             log.info("Deserialising and returning previously retrieved Home Office appellant data for case with Home Office reference {}.", hoReference);
-            try {
-                String homeOfficeAppellantsSerialised = HandlerUtils.decrypt(homeOfficeAppellantsSerialisedEncrypted, homeOfficeSerialisedEncryptionKey);
-                homeOfficeAppellants = mapper.readValue(
-                    homeOfficeAppellantsSerialised,
-                    new TypeReference<List<IdValue<HomeOfficeAppellant>>>() {
-                    }
-                );
+            homeOfficeAppellants = deserialiseHomeOfficeAppellantList(homeOfficeAppellantsSerialisedEncrypted.get(),
+                homeOfficeSerialisedEncryptionKey, asylumCase, hoReference);
+            if (!homeOfficeAppellants.isEmpty()) {
                 return homeOfficeAppellants;
-            } catch (Exception ex) {
-                log.error("Could not deserialise list of Home Office appellants from encrypted serialised string {} for case with Home Office reference {}:\n\n{}",
-                    homeOfficeAppellantsSerialisedEncrypted, hoReference, ex.getMessage());
             }
         }
 
@@ -111,4 +105,32 @@ public class HomeOfficeReferenceService {
             + "\n\nSee the corresponding logs in ia-home-office-integration-api for more details.";
     }
 
+    public static List<IdValue<HomeOfficeAppellant>> deserialiseHomeOfficeAppellantList(String homeOfficeAppellantsSerialisedEncrypted,
+                                                                                        String homeOfficeSerialisedEncryptionKey,
+                                                                                        AsylumCase asylumCase,
+                                                                                        String homeOfficeReferenceNumber) {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.addMixIn(IdValue.class, IdValueMixin.class);
+        try {
+            String homeOfficeAppellantsSerialised = HandlerUtils.decrypt(homeOfficeAppellantsSerialisedEncrypted, homeOfficeSerialisedEncryptionKey);
+            return mapper.readValue(
+                homeOfficeAppellantsSerialised,
+                new TypeReference<List<IdValue<HomeOfficeAppellant>>>() {
+                }
+            );
+        } catch (Exception ex) {
+            log.error("Could not deserialise list of Home Office appellants from encrypted serialised string {} for case with Home Office reference {}:\n\n{}",
+                homeOfficeAppellantsSerialisedEncrypted, homeOfficeReferenceNumber, ex.getMessage());
+        }
+        return emptyList();
+    }
+
+    public static void writeHomeOfficeAppellants(AsylumCase asylumCase, List<IdValue<HomeOfficeAppellant>> homeOfficeAppellants) {
+        if (!homeOfficeAppellants.isEmpty()) {
+            asylumCase.write(HOME_OFFICE_APPELLANTS, homeOfficeAppellants); // this will now work because we are no longer in the mid-event
+            asylumCase.write(HOME_OFFICE_APPELLANTS_PP_NUMBER, HandlerUtils.getPpNumberFromHomeOfficeAppellants(asylumCase));
+            asylumCase.clear(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY);
+            asylumCase.write(HAS_BEEN_VALIDATED_BY_NEW_HOME_OFFICE_API, YesOrNo.YES);
+        }
+    }
 }

@@ -1,7 +1,5 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -13,15 +11,15 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValueMixin;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 import java.util.List;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY;
+import static uk.gov.hmcts.reform.iacaseapi.domain.service.HomeOfficeReferenceService.deserialiseHomeOfficeAppellantList;
+import static uk.gov.hmcts.reform.iacaseapi.domain.service.HomeOfficeReferenceService.writeHomeOfficeAppellants;
 
 @Slf4j
 @Component
@@ -62,8 +60,8 @@ public class HomeOfficeReferenceHandlerOnSubmit implements PreSubmitCallbackHand
 
         final AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
-        String homeOfficeAppellantsSerialisedEncrypted = asylumCase.read(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, String.class).orElse("");
-        if (!homeOfficeAppellantsSerialisedEncrypted.isEmpty()) {
+        String encodedStr = asylumCase.read(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, String.class).orElse("");
+        if (!encodedStr.isEmpty()) {
             // Retrieve the UAN or GWF from the case record
             String homeOfficeReferenceNumber = HandlerUtils.getUanOrGwf(asylumCase);
             if (homeOfficeReferenceNumber.isBlank()) {
@@ -72,23 +70,9 @@ public class HomeOfficeReferenceHandlerOnSubmit implements PreSubmitCallbackHand
 
             log.info("Writing retrieved Home Office appellant data to the case record in full for case with Home Office reference {}.", homeOfficeReferenceNumber);
             // We need the mapper and mix-in to overcome a CCD bug concerning collections during the mid-event (see comments below).
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.addMixIn(IdValue.class, IdValueMixin.class);
-            try {
-                String homeOfficeAppellantsSerialised = HandlerUtils.decrypt(homeOfficeAppellantsSerialisedEncrypted, homeOfficeSerialisedEncryptionKey);
-                List<IdValue<HomeOfficeAppellant>> homeOfficeAppellants = mapper.readValue(
-                        homeOfficeAppellantsSerialised,
-                        new TypeReference<List<IdValue<HomeOfficeAppellant>>>() {
-                        }
-                );
-                asylumCase.write(HOME_OFFICE_APPELLANTS, homeOfficeAppellants); // this will now work because we are no longer in the mid-event
-                asylumCase.write(HOME_OFFICE_APPELLANTS_PP_NUMBER, HandlerUtils.getPpNumberFromHomeOfficeAppellants(asylumCase));
-                asylumCase.clear(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY);
-                asylumCase.write(HAS_BEEN_VALIDATED_BY_NEW_HOME_OFFICE_API, YesOrNo.YES);
-            } catch (Exception ex) {
-                log.error("Could not deserialise list of Home Office appellants from encrypted serialised string {} for case with Home Office reference {}:\n\n{}",
-                        homeOfficeAppellantsSerialisedEncrypted, homeOfficeReferenceNumber, ex.getMessage());
-            }
+            List<IdValue<HomeOfficeAppellant>> homeOfficeAppellants = deserialiseHomeOfficeAppellantList(encodedStr,
+                homeOfficeSerialisedEncryptionKey, asylumCase, homeOfficeReferenceNumber);
+            writeHomeOfficeAppellants(asylumCase, homeOfficeAppellants);
         }
         return new PreSubmitCallbackResponse<>(asylumCase);
     }

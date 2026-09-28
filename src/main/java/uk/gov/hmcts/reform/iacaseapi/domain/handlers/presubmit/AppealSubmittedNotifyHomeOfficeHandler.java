@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,6 +25,8 @@ import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SUBMIT_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.validateAllDetails;
+import static uk.gov.hmcts.reform.iacaseapi.domain.service.HomeOfficeReferenceService.deserialiseHomeOfficeAppellantList;
+import static uk.gov.hmcts.reform.iacaseapi.domain.service.HomeOfficeReferenceService.writeHomeOfficeAppellants;
 
 @Slf4j
 @Component
@@ -112,20 +113,9 @@ public class AppealSubmittedNotifyHomeOfficeHandler implements PreSubmitCallback
         mapper.addMixIn(IdValue.class, IdValueMixin.class);
         String encodedStr = asylumCase.read(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, String.class)
             .orElse("");
-        try {
-            String homeOfficeAppellantsSerialised = HandlerUtils
-                .decrypt(encodedStr, homeOfficeSerialisedEncryptionKey);
-            List<IdValue<HomeOfficeAppellant>> homeOfficeAppellants = mapper.readValue(
-                homeOfficeAppellantsSerialised,
-                new TypeReference<>() {
-                }
-            );
-            asylumCase.write(HOME_OFFICE_APPELLANTS, homeOfficeAppellants);
-            asylumCase.write(HOME_OFFICE_APPELLANTS_PP_NUMBER, HandlerUtils.getPpNumberFromHomeOfficeAppellants(asylumCase));
-        } catch (Exception ex) {
-            log.error("Could not deserialise list of Home Office appellants from encrypted serialised string {} for case with Home Office reference {}:\n\n{}",
-                encodedStr, homeOfficeReferenceNumber, ex.getMessage());
-        }
+        List<IdValue<HomeOfficeAppellant>> homeOfficeAppellants = deserialiseHomeOfficeAppellantList(encodedStr,
+            homeOfficeSerialisedEncryptionKey, asylumCase, homeOfficeReferenceNumber);
+        writeHomeOfficeAppellants(asylumCase, homeOfficeAppellants);
 
         // Details for logging purposes only
         final HomeOfficeApiResponseStatusType homeOfficeAppellantApiResponseStatus = asylumCase.read(
