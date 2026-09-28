@@ -699,6 +699,7 @@ ia-aip-frontend:
       TIMELINE_ENABLED: true
       ASK_FOR_MORE_TIME_ENABLED: true
       MAX_DRAFT_APPEALS: 5
+      HOME_OFFICE_VALIDATION_ENABLED: true
     keyVaults:
       ia:
         resourceGroup: ia
