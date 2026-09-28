@@ -925,10 +925,11 @@ public class HandlerUtils {
             response.addError(getInvalidHomeOfficeReference(isAdmin(asylumCase)));
         } else if (!isRealHomeOfficeCaseNumber(homeOfficeReferenceNumber, callback, homeOfficeReferenceService)) {
             // An error occurred - display a suitable message to the user
+            boolean isAdmin = callback.getEvent().equals(Event.EDIT_APPELLANT_PERSONAL_DATA) || isAdmin(asylumCase);
             response.addError(
                 asylumCase.read(HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS, HomeOfficeApiResponseStatusType.class)
                     .orElse(HomeOfficeApiResponseStatusType.UNKNOWN)
-                    .getUserFacingErrorText(homeOfficeReferenceNumber, callback.getEvent().equals(Event.SUBMIT_APPEAL), isAdmin(asylumCase))
+                    .getUserFacingErrorText(homeOfficeReferenceNumber, callback.getEvent().equals(Event.SUBMIT_APPEAL), isAdmin)
             );
         }
         return response;
@@ -964,14 +965,15 @@ public class HandlerUtils {
                     .orElse(HomeOfficeApiResponseStatusType.UNKNOWN);
             String errorMessage = "";
             boolean isOnSubmit = callback.getEvent() == Event.SUBMIT_APPEAL;
+            boolean isAdmin = callback.getEvent().equals(Event.EDIT_APPELLANT_PERSONAL_DATA) || isAdmin(asylumCase);
             if (responseStatus.equals(HomeOfficeApiResponseStatusType.OK)) {
-                errorMessage = getMismatchErrorMessage(homeOfficeReferenceNumber, shouldRevalidate, isOnSubmit, isAdmin(asylumCase));
+                errorMessage = getMismatchErrorMessage(homeOfficeReferenceNumber, shouldRevalidate, isOnSubmit, isAdmin);
                 // Log this - if it happens repeatedly, that's suspicious
                 log.info("The details provided did not match the Home Office biographic data retrieved for case with reference ID {}.", homeOfficeReferenceNumber);
             } else {
                 // This shouldn't happen as the Home Office API ought not to have been called, since the data has already
                 // been retrieved from the Home Office. But we'll check for it anyway just in case something unexpected has happened.
-                errorMessage = responseStatus.getUserFacingErrorText(homeOfficeReferenceNumber, isOnSubmit, isAdmin(asylumCase));
+                errorMessage = responseStatus.getUserFacingErrorText(homeOfficeReferenceNumber, isOnSubmit, isAdmin);
             }
             response.addError(errorMessage);
         }

@@ -519,6 +519,49 @@ class HomeOfficeReferenceHandlerTest {
     }
 
     @Test
+    void handle_should_return_api_error_when_details_do_not_match_and_status_not_ok_edit_personal_data() {
+
+        when(callback.getEvent()).thenReturn(Event.EDIT_APPELLANT_PERSONAL_DATA);
+        when(callback.getPageId()).thenReturn("cuiAppellantName");
+
+        when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class))
+            .thenReturn(Optional.of(VALID_GWF));
+
+        when(referenceService.getHomeOfficeReferenceData(VALID_GWF, callback))
+            .thenReturn(Collections.singletonList(idValue));
+
+        when(idValue.getValue()).thenReturn(appellant);
+
+        when(appellant.getFamilyName()).thenReturn("Smith");
+        when(appellant.getGivenNames()).thenReturn("John");
+
+        when(asylumCase.read(APPELLANT_FAMILY_NAME, String.class))
+            .thenReturn(Optional.of("Jones"));
+
+        when(asylumCase.read(APPELLANT_GIVEN_NAMES, String.class))
+            .thenReturn(Optional.of("Fred"));
+
+        when(asylumCase.read(HAS_BEEN_VALIDATED_BY_NEW_HOME_OFFICE_API, YesOrNo.class))
+            .thenReturn(Optional.of(YesOrNo.YES));
+
+        when(asylumCase.read(
+            HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS,
+            HomeOfficeApiResponseStatusType.class))
+            .thenReturn(Optional.of(HomeOfficeApiResponseStatusType.NOT_FOUND));
+
+        PreSubmitCallbackResponse<AsylumCase> response =
+            handler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+
+        assertEquals(1, response.getErrors().size());
+
+        assertTrue(
+            response.getErrors()
+                .stream()
+                .anyMatch(error -> error.contains(HomeOfficeApiResponseStatusType.NOT_FOUND.getUserFacingErrorText(VALID_GWF, false, true)))
+        );
+    }
+
+    @Test
     void handle_should_use_unknown_status_when_response_status_missing() {
 
         when(callback.getEvent()).thenReturn(Event.START_APPEAL);

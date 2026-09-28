@@ -96,8 +96,8 @@ public class HomeOfficeReferenceHandler implements PreSubmitCallbackHandler<Asyl
 
             PreSubmitCallbackResponse<AsylumCase> response =
                 new PreSubmitCallbackResponse<>(asylumCase);
-
-            response.addError(HomeOfficeApiResponseStatusType.UNKNOWN.getUserFacingErrorText(homeOfficeReferenceNumber, false, isAdmin(asylumCase)));
+            boolean isAdmin = callback.getEvent().equals(Event.EDIT_APPELLANT_PERSONAL_DATA) || isAdmin(asylumCase);
+            response.addError(HomeOfficeApiResponseStatusType.UNKNOWN.getUserFacingErrorText(homeOfficeReferenceNumber, false, isAdmin));
             return response;
         }
     }
