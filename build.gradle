@@ -334,6 +334,8 @@ dependencyManagement {
 }
 
 dependencies {
+    // Only so OpenFeign's config class can be introspected. Do NOT add spring-boot-jackson.
+    implementation 'tools.jackson.core:jackson-databind'   // version from Boot's BOM; pin a 3.x if it isn't managed
     implementation 'org.springframework.boot:spring-boot-jackson2'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springframework.boot:spring-boot-starter-aspectj'
@@ -369,7 +371,7 @@ dependencies {
 
     implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: '8.0.0'
     implementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '6.1.2'
-    implementation group: 'com.github.hmcts', name: 'core-case-data-store-client', version: '6.0.0'
+    implementation group: 'com.github.hmcts', name: 'core-case-data-store-client', version: '5.4.0'
     implementation group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '6.0.1-RELEASE'
 
     implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.20.0'
@@ -393,8 +395,10 @@ dependencies {
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.cloud:spring-cloud-contract-wiremock:5.0.3'
-    testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
-    testImplementation 'tools.jackson.core:jackson-databind'   // version managed by the Boot 4 BOM
+    testImplementation ('org.springframework.boot:spring-boot-starter-webmvc-test') {
+      exclude group: 'org.springframework.boot', module: 'spring-boot-jackson'
+    }
+    //testImplementation 'tools.jackson.core:jackson-databind'   // version managed by the Boot 4 BOM
 
     testImplementation group: 'com.github.hmcts', name: 'fortify-client', version: '1.4.10', classifier: 'all', {
         exclude group: 'commons-io', module: 'commons-io'

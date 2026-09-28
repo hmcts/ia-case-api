@@ -5,12 +5,11 @@ import static java.util.Objects.requireNonNull;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class Fee {
 
+    @JsonProperty("calculated_amount")
     private BigDecimal calculatedAmount;
     private String description;
     private String version;
