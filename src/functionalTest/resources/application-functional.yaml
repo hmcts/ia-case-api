@@ -17,6 +17,8 @@ feign:
     enabled: false
   client:
     config:
+      case-document-am-client-api:
+        loggerLevel: full
       default:
         connectTimeout: 160000000
         readTimeout: 160000000
