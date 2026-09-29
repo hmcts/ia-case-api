@@ -60,7 +60,11 @@ public class CDAMSystemDocumentManagementUploader {
 
         log.info("sb4 response: " + uploadResponse);
         log.info("sb4 string: " + uploadResponse.toString());
-        log.info("sb4 docs: " + uploadResponse.getDocuments());
+        log.info("sb4 size: " + uploadResponse.getDocuments().size());
+        log.info("sb4 first size: " + uploadResponse.getDocuments().getFirst().size);
+        log.info("sb4 links: " + uploadResponse.getDocuments().getFirst().links);
+        log.info("sb4 created: " + uploadResponse.getDocuments().getFirst().createdOn);
+        log.info("sb4 doc name: " + uploadResponse.getDocuments().getFirst().originalDocumentName);
 
         uk.gov.hmcts.reform.ccd.document.am.model.Document uploadedDocument = uploadResponse.getDocuments().getFirst();
 
