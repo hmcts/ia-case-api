@@ -4,6 +4,7 @@ import java.util.Collections;
 
 import com.google.common.io.ByteStreams;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
@@ -16,6 +17,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 /**
  * This class supersedes DMDocumentManagementUploader. Its usage is driven by a feature flag.
  */
+@Slf4j
 @Component
 @ComponentScan("uk.gov.hmcts.reform.ccd.document.am.feign")
 public class CDAMSystemDocumentManagementUploader {
@@ -55,6 +57,10 @@ public class CDAMSystemDocumentManagementUploader {
                 "IA",
                 Collections.singletonList(file)
             );
+
+        log.info("sb4 response: " + uploadResponse);
+        log.info("sb4 string: " + uploadResponse.toString());
+        log.info("sb4 docs: " + uploadResponse.getDocuments());
 
         uk.gov.hmcts.reform.ccd.document.am.model.Document uploadedDocument = uploadResponse.getDocuments().getFirst();
 
