@@ -4,12 +4,16 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.http.converter.autoconfigure.ClientHttpMessageConvertersCustomizer;
 import org.springframework.cloud.openfeign.support.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+@Slf4j
 @Configuration
 @SuppressWarnings("removal")
 public class FeignConfiguration {
@@ -33,10 +37,22 @@ public class FeignConfiguration {
         return builder
             .featuresToDisable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
             .featuresToEnable(DeserializationFeature.READ_UNKNOWN_ENUM_VALUES_USING_DEFAULT_VALUE)
-            .modules(
+            .modulesToInstall(
                 new Jdk8Module(),
                 new JavaTimeModule()
             )
             .build();
+    }
+
+    // TEMP for test logs
+    @Bean
+    ApplicationRunner dumpFeignConverters(ObjectProvider<FeignHttpMessageConverters> p) {
+        return args -> p.ifAvailable(c ->
+                                         c.getConverters().forEach(x -> log.info("feign converter: {}", x.getClass())));
+    }
+
+    @Bean
+    public feign.Logger.Level feignLoggerLevel() {
+        return feign.Logger.Level.FULL;
     }
 }
