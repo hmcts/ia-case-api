@@ -54,15 +54,18 @@ public class Stf24wDeterminationHandler implements PreSubmitCallbackHandler<Asyl
             throw new IllegalStateException("Cannot handle callback");
         }
 
-        PreSubmitCallbackResponse<AsylumCase> response = handle24wValidity(callback, stf24wLiveDate);
-        if (!response.getErrors().isEmpty()) {
-            log.error("Error in STF 24w determination for case ID: {}\n {}",
-                callback.getCaseDetails().getId(), String.join(",", response.getErrors()));
-            return response;
+        AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
+        YesOrNo status = asylumCase.read(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class)
+            .orElse(YesOrNo.NO);
+        if (status.isYes()) {
+            PreSubmitCallbackResponse<AsylumCase> response = handle24wValidity(callback, stf24wLiveDate);
+            if (!response.getErrors().isEmpty()) {
+                log.error("Error in STF 24w determination for case ID: {}\n {}",
+                    callback.getCaseDetails().getId(), String.join(",", response.getErrors()));
+                return response;
+            }
         }
 
-        AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
-        YesOrNo status = asylumCase.read(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class).orElse(YesOrNo.NO);
         AsylumCase updatedAsylum = updateStatutoryTimeframe24WeeksService.updateAsylumCaseFromDetermination(asylumCase, status);
         return new PreSubmitCallbackResponse<>(updatedAsylum);
     }

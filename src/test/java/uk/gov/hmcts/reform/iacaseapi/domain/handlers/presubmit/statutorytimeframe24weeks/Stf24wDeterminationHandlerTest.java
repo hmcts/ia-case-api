@@ -80,16 +80,17 @@ class Stf24wDeterminationHandlerTest {
         assertEquals(updatedAsylumCase, callbackResponse.getData());
         assertNotEquals(asylumCase, callbackResponse.getData());
         assertTrue(callbackResponse.getErrors().isEmpty());
-        handlerUtilsMock.verify(() -> HandlerUtils.handle24wValidity(eq(callback), any(LocalDate.class)));
+        if (status.isYes()) {
+            handlerUtilsMock.verify(() -> HandlerUtils.handle24wValidity(eq(callback), any(LocalDate.class)));
+        }
         verify(updateStatutoryTimeframe24WeeksService).updateAsylumCaseFromDetermination(asylumCase, status);
     }
 
-    @ParameterizedTest
-    @EnumSource(YesOrNo.class)
-    void should_not_update_from_determination_if_validity_fails(YesOrNo status) {
+    @Test
+    void should_not_update_from_determination_if_validity_fails() {
         when(asylumCase.read(AsylumCaseFieldDefinition.STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class))
-            .thenReturn(Optional.of(status));
-        when(updateStatutoryTimeframe24WeeksService.updateAsylumCaseFromDetermination(asylumCase, status))
+            .thenReturn(Optional.of(YesOrNo.YES));
+        when(updateStatutoryTimeframe24WeeksService.updateAsylumCaseFromDetermination(asylumCase, YesOrNo.YES))
             .thenReturn(updatedAsylumCase);
         handlerUtilsMock.when(() -> HandlerUtils.handle24wValidity(eq(callback), any(LocalDate.class)))
             .thenReturn(new PreSubmitCallbackResponse<>(asylumCase).withError("some error"));
@@ -101,7 +102,26 @@ class Stf24wDeterminationHandlerTest {
         assertEquals(asylumCase, callbackResponse.getData());
         assertFalse(callbackResponse.getErrors().isEmpty());
         handlerUtilsMock.verify(() -> HandlerUtils.handle24wValidity(eq(callback), any(LocalDate.class)));
-        verify(updateStatutoryTimeframe24WeeksService, never()).updateAsylumCaseFromDetermination(asylumCase, status);
+        verify(updateStatutoryTimeframe24WeeksService, never()).updateAsylumCaseFromDetermination(eq(asylumCase), any(YesOrNo.class));
+    }
+
+    @Test
+    void should_not_validate_and_will_update_from_determination_if_status_no() {
+        when(asylumCase.read(AsylumCaseFieldDefinition.STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class))
+            .thenReturn(Optional.of(YesOrNo.NO));
+        when(updateStatutoryTimeframe24WeeksService.updateAsylumCaseFromDetermination(asylumCase, YesOrNo.NO))
+            .thenReturn(updatedAsylumCase);
+        handlerUtilsMock.when(() -> HandlerUtils.handle24wValidity(eq(callback), any(LocalDate.class)))
+            .thenReturn(new PreSubmitCallbackResponse<>(asylumCase).withError("some error"));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            handler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotEquals(asylumCase, callbackResponse.getData());
+        assertEquals(updatedAsylumCase, callbackResponse.getData());
+        assertTrue(callbackResponse.getErrors().isEmpty());
+        handlerUtilsMock.verify(() -> HandlerUtils.handle24wValidity(eq(callback), any(LocalDate.class)), never());
+        verify(updateStatutoryTimeframe24WeeksService).updateAsylumCaseFromDetermination(asylumCase, YesOrNo.NO);
     }
 
     @Test
