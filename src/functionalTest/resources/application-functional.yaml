@@ -22,11 +22,12 @@ feign:
     enabled: false
   client:
     config:
-      case-document-am-client-api:
+      uk.gov.hmcts.reform.ccd.document.am.feign:
         loggerLevel: full
       default:
         connectTimeout: 160000000
         readTimeout: 160000000
+        loggerLevel: full
 
 citizenEmail: ${TEST_CITIZEN_USERNAME:ia-citizen@fake.hmcts.net}
 
