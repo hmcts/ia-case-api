@@ -989,7 +989,7 @@ public class HandlerUtils {
         if (isOnSubmit) {
             return "The information given does not match the details held by the Home Office for reference number " +
                 homeOfficeReferenceNumber +
-                ". You should edit the appeal and enter the HO reference and appellant's name exactly as they appear" +
+                ". You should edit the appeal and enter the Home Office reference and appellant's name exactly as they appear" +
                 " on the decision letter so that we can verify them. These can often be found in the 'How to appeal' " +
                 "section. Please also check if the appellant's date of birth is correct.";
         }
