@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import tools.jackson.databind.PropertyNamingStrategies;
+import tools.jackson.databind.annotation.JsonNaming;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.EqualsAndHashCode;

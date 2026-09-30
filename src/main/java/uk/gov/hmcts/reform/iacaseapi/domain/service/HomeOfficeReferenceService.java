@@ -1,7 +1,8 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.service;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -41,8 +42,9 @@ public class HomeOfficeReferenceService {
     // Note: don't cache this response, as we want to get fresh data each time in case something changes at the Home Office's end.
     public List<IdValue<HomeOfficeAppellant>> getHomeOfficeReferenceData(String hoReference, Callback<AsylumCase> callback) {
         // We need the mapper and mix-in to overcome a CCD bug concerning collections during the mid-event (see comments below).
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.addMixIn(IdValue.class, IdValueMixin.class);
+        ObjectMapper mapper = JsonMapper.builder()
+            .addMixIn(IdValue.class, IdValueMixin.class)
+            .build();
         // Check case for existing data.
         final AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
         String homeOfficeAppellantsSerialisedEncrypted = asylumCase.read(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, String.class).orElse("");

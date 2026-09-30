@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.controllers;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CheckValues;
@@ -22,7 +22,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre.MANCHE
 @SuppressWarnings("OperatorWrap")
 class AsylumCaseTest {
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new JsonMapper();
 
     @Test
     void reads_string() throws IOException {
@@ -314,7 +314,7 @@ class AsylumCaseTest {
     }
 
     @Test
-    void writeIfEmpty_does_not_write_if_not_empty() throws JsonProcessingException {
+    void writeIfEmpty_does_not_write_if_not_empty() {
         String caseData = "{\"appealReferenceNumber\": \"PA/50222/2019\"}";
         AsylumCase asylumCase = objectMapper.readValue(caseData, AsylumCase.class);
 
@@ -324,7 +324,7 @@ class AsylumCaseTest {
     }
 
     @Test
-    void writeIfEmpty_writes_if_empty() throws JsonProcessingException {
+    void writeIfEmpty_writes_if_empty() {
         String caseData = "{}";
         AsylumCase asylumCase = objectMapper.readValue(caseData, AsylumCase.class);
 

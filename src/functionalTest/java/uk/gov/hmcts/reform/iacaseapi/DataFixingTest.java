@@ -3,7 +3,8 @@ package uk.gov.hmcts.reform.iacaseapi;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 import io.restassured.RestAssured;
 import io.restassured.http.Headers;
 import java.io.IOException;
@@ -22,6 +23,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
+import tools.jackson.core.JacksonException;
 import uk.gov.hmcts.reform.iacaseapi.util.AuthorizationHeadersProvider;
 import uk.gov.hmcts.reform.iacaseapi.util.MapSerializer;
 
@@ -87,12 +89,12 @@ public class DataFixingTest {
 
     private Map<String, String> extractCaseData(String responseJson) {
 
-        ObjectMapper objectMapper = new ObjectMapper();
+        ObjectMapper objectMapper = new JsonMapper();
         Map<String, Map<String, String>> responseMap;
 
         try {
             responseMap = objectMapper.readValue(responseJson, Map.class);
-        } catch (IOException e) {
+        } catch (JacksonException e) {
             throw new RuntimeException("Couldn't read response", e);
         }
 

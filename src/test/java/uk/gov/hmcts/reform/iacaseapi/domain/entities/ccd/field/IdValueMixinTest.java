@@ -1,13 +1,13 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-
+import tools.jackson.databind.json.JsonMapper;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.ObjectMapper;
 
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.HomeOfficeAppellant;
 
@@ -16,9 +16,9 @@ class IdValueMixinTest {
     @Test
     void should_deserialise_id_value_using_mixin() throws Exception {
 
-        ObjectMapper mapper = new ObjectMapper();
-
-        mapper.addMixIn(IdValue.class, IdValueMixin.class);
+        ObjectMapper mapper = JsonMapper.builder()
+            .addMixIn(IdValue.class, IdValueMixin.class)
+            .build();
 
         String json =
             "[{\"id\":\"123\",\"value\":{\"familyName\":\"Smith\",\"givenNames\":\"John\"}}]";
@@ -51,9 +51,9 @@ class IdValueMixinTest {
     @Test
     void should_serialise_id_value_using_mixin() throws Exception {
 
-        ObjectMapper mapper = new ObjectMapper();
-
-        mapper.addMixIn(IdValue.class, IdValueMixin.class);
+        ObjectMapper mapper = JsonMapper.builder()
+            .addMixIn(IdValue.class, IdValueMixin.class)
+            .build();
 
         HomeOfficeAppellant appellant =
             new HomeOfficeAppellant();
