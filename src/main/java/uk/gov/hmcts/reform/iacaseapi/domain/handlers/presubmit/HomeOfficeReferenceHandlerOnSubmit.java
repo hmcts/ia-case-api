@@ -89,6 +89,20 @@ public class HomeOfficeReferenceHandlerOnSubmit implements PreSubmitCallbackHand
                         homeOfficeAppellantsSerialisedEncrypted, homeOfficeReferenceNumber, ex.getMessage());
             }
         }
+        // TODO: hardcoded to pp=01 (primary appellant); will not write fields if the case appellant is a different pp.
+        //       Use the appellant's actual pp once available: see ia-case-api#3379.
+        homeOfficeAppellants.stream()
+            .map(IdValue::getValue)
+            .filter(a -> "01".equals(a.getPp()))
+            .findFirst()
+            .ifPresent(a -> {
+                asylumCase.write(HO_RIGHT_OF_APPEAL, a.getRoa());
+                asylumCase.write(HO_ASYLUM_SUPPORT, a.getAsylumSupport());
+                asylumCase.write(HO_FEE_WAIVER, a.getHoFeeWaiver());
+                asylumCase.write(HOME_OFFICE_APPELLANT_LANGUAGE, a.getLanguage());
+                asylumCase.write(HO_INTERPRETER_REQUIRED, a.getInterpreterNeeded());
+            });
+
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 }
