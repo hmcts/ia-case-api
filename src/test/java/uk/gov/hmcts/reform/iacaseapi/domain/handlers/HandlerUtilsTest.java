@@ -16,6 +16,7 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.HomeOfficeAppellant;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
@@ -23,6 +24,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.AddressUk;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.HomeOfficeReferenceService;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationBasedFeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.PartyIdService;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.Organisation;
@@ -31,6 +33,7 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.Organisati
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -57,6 +60,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.*;
 @MockitoSettings(strictness = Strictness.LENIENT)
 class HandlerUtilsTest {
     private static final String ON_THE_PAPERS = "ONPPRS";
+    private static final String VALID_GWF = "GWF123456789";
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -70,6 +74,14 @@ class HandlerUtilsTest {
     private AsylumCase asylumCaseBefore;
     @Mock
     private LocationBasedFeatureToggler locationBasedFeatureToggler;
+    @Mock
+    private HomeOfficeReferenceService hoReferenceService;
+    @Mock
+    private IdValue<HomeOfficeAppellant> idValue;
+    @Mock
+    private HomeOfficeAppellant appellant;
+    @Mock
+    private HomeOfficeAppellant appellant2;
     @Mock
     private List<IdValue<Subscriber>> mockSubscribers;
     @Mock
@@ -1070,8 +1082,9 @@ class HandlerUtilsTest {
         verify(asylumCase).remove(HOME_OFFICE_APPELLANT_DECISION_LETTER_DATE);
         verify(asylumCase).remove(HOME_OFFICE_APPELLANTS);
         verify(asylumCase).remove(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY);
+        verify(asylumCase).remove(HAS_BEEN_VALIDATED_BY_NEW_HOME_OFFICE_API);
 
-        verify(asylumCase, times(6)).remove(any());
+        verify(asylumCase, times(7)).remove(any());
     }
 
     @Test
@@ -1449,7 +1462,7 @@ class HandlerUtilsTest {
     @Test
     void should_return_gwf_reference_number_when_home_office_reference_is_empty() {
 
-        when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of(""));
+        when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class)).thenReturn(Optional.empty());
         when(asylumCase.read(GWF_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of("GWF123456789"));
 
         String result = HandlerUtils.getUanOrGwf(asylumCase);
@@ -1522,6 +1535,312 @@ class HandlerUtilsTest {
         IllegalStateException exception =
             assertThrows(IllegalStateException.class, () -> HandlerUtils.isDecisionWithHearing(asylumCase));
         assertEquals("Appeal type is not present", exception.getMessage());
+    }
+
+
+    @Test
+    void isWellFormedHomeOfficeReference_should_validate_patterns() {
+
+        assertTrue(HandlerUtils.isWellFormedHomeOfficeReference("1234-1234-1234-1234"));
+        assertTrue(HandlerUtils.isWellFormedHomeOfficeReference("GWF123456789"));
+
+        assertFalse(HandlerUtils.isWellFormedHomeOfficeReference("BADREF"));
+        assertFalse(HandlerUtils.isWellFormedHomeOfficeReference(null));
+    }
+
+    @Test
+    void isRealHomeOfficeCaseNumber_should_return_false_when_null() {
+
+        assertFalse(HandlerUtils.isRealHomeOfficeCaseNumber(null, callback, hoReferenceService));
+    }
+
+    @Test
+    void isRealHomeOfficeCaseNumber_should_return_false_when_empty_response() {
+
+        when(hoReferenceService.getHomeOfficeReferenceData(VALID_GWF, callback))
+            .thenReturn(List.of());
+
+        assertFalse(HandlerUtils.isRealHomeOfficeCaseNumber(VALID_GWF, callback, hoReferenceService));
+    }
+
+    @Test
+    void isRealHomeOfficeCaseNumber_should_return_true_when_appellants_exist() {
+
+        when(hoReferenceService.getHomeOfficeReferenceData(VALID_GWF, callback))
+            .thenReturn(Collections.singletonList(idValue));
+
+        assertTrue(HandlerUtils.isRealHomeOfficeCaseNumber(VALID_GWF, callback, hoReferenceService));
+    }
+
+    @Test
+    void normaliseName_should_return_empty_string_on_null() {
+
+        String result = HandlerUtils.normaliseName(null, false);
+
+        assertEquals("", result);
+    }
+
+    @Test
+    void normaliseName_should_remove_accents_and_spaces() {
+
+        String result = HandlerUtils.normaliseName(" José   García ", false);
+
+        assertEquals("jose garcia", result);
+    }
+
+    @Test
+    void isMatchingNameAndDob_should_match() {
+
+        when(hoReferenceService.getHomeOfficeReferenceData(VALID_GWF, callback))
+            .thenReturn(Collections.singletonList(idValue));
+
+        when(idValue.getValue()).thenReturn(appellant);
+
+        when(appellant.getFamilyName()).thenReturn("Smith");
+        when(appellant.getGivenNames()).thenReturn("John");
+        when(appellant.getDateOfBirth()).thenReturn("1990-01-01");
+
+        when(asylumCase.read(APPELLANT_FAMILY_NAME, String.class))
+            .thenReturn(Optional.of("Smith"));
+
+        when(asylumCase.read(APPELLANT_GIVEN_NAMES, String.class))
+            .thenReturn(Optional.of("John"));
+
+        when(asylumCase.read(APPELLANT_DATE_OF_BIRTH, String.class))
+            .thenReturn(Optional.of("1990-01-01"));
+
+        boolean result = HandlerUtils.isMatchingNameAndDob(VALID_GWF, asylumCase, callback, hoReferenceService);
+
+        assertTrue(result);
+    }
+
+    @Test
+    void isMatchingNameAndDob_should_not_match() {
+
+        when(hoReferenceService.getHomeOfficeReferenceData(VALID_GWF, callback))
+            .thenReturn(Collections.singletonList(idValue));
+
+        when(idValue.getValue()).thenReturn(appellant);
+
+        when(appellant.getFamilyName()).thenReturn("Different");
+        when(appellant.getGivenNames()).thenReturn("Person");
+        when(appellant.getDateOfBirth()).thenReturn("1980-01-01");
+
+        when(asylumCase.read(APPELLANT_FAMILY_NAME, String.class))
+            .thenReturn(Optional.of("Smith"));
+
+        when(asylumCase.read(APPELLANT_GIVEN_NAMES, String.class))
+            .thenReturn(Optional.of("John"));
+
+        when(asylumCase.read(APPELLANT_DATE_OF_BIRTH, String.class))
+            .thenReturn(Optional.of("1990-01-01"));
+
+        boolean result = HandlerUtils.isMatchingNameAndDob(VALID_GWF, asylumCase, callback, hoReferenceService);
+
+        assertFalse(result);
+    }
+
+    @Test
+    void isMatchingName_should_match_when_given_names_have_different_second_words() {
+
+        when(hoReferenceService.getHomeOfficeReferenceData(VALID_GWF, callback))
+            .thenReturn(Collections.singletonList(idValue));
+
+        when(idValue.getValue()).thenReturn(appellant);
+
+        when(appellant.getFamilyName()).thenReturn("Smith");
+        when(appellant.getGivenNames()).thenReturn("John Boy");
+
+        when(asylumCase.read(APPELLANT_FAMILY_NAME, String.class))
+            .thenReturn(Optional.of("Smith"));
+
+        when(asylumCase.read(APPELLANT_GIVEN_NAMES, String.class))
+            .thenReturn(Optional.of("John James"));
+
+        boolean result = HandlerUtils.isMatchingName(VALID_GWF, asylumCase, callback, hoReferenceService);
+
+        assertTrue(result);
+    }
+
+    @Test
+    void isMatchingName_should_return_false_when_family_name_has_different_second_word() {
+
+        when(hoReferenceService.getHomeOfficeReferenceData(VALID_GWF, callback))
+            .thenReturn(Collections.singletonList(idValue));
+
+        when(idValue.getValue()).thenReturn(appellant);
+
+        when(appellant.getFamilyName()).thenReturn("Smithsonian Institute");
+        when(appellant.getGivenNames()).thenReturn("John");
+
+        when(asylumCase.read(APPELLANT_FAMILY_NAME, String.class))
+            .thenReturn(Optional.of("Smithsonian"));
+
+        when(asylumCase.read(APPELLANT_GIVEN_NAMES, String.class))
+            .thenReturn(Optional.of("John"));
+
+        boolean result = HandlerUtils.isMatchingName(VALID_GWF, asylumCase, callback, hoReferenceService);
+
+        assertFalse(result);
+    }
+
+    @Test
+    void isMatchingNameAndDob_should_return_false_when_family_name_is_null() {
+
+        when(hoReferenceService.getHomeOfficeReferenceData(VALID_GWF, callback))
+            .thenReturn(Collections.singletonList(idValue));
+
+        when(idValue.getValue()).thenReturn(appellant);
+
+        when(appellant.getFamilyName()).thenReturn(null);
+        when(appellant.getGivenNames()).thenReturn(null);
+        when(appellant.getDateOfBirth()).thenReturn(null);
+
+        when(asylumCase.read(APPELLANT_FAMILY_NAME, String.class))
+            .thenReturn(Optional.of("Smithsonian"));
+
+        when(asylumCase.read(APPELLANT_GIVEN_NAMES, String.class))
+            .thenReturn(Optional.of("John"));
+
+        when(asylumCase.read(APPELLANT_DATE_OF_BIRTH, String.class))
+            .thenReturn(Optional.of("1990-01-01"));
+
+        boolean result = HandlerUtils.isMatchingNameAndDob(VALID_GWF, asylumCase, callback, hoReferenceService);
+
+        assertFalse(result);
+    }
+
+    @Test
+    void getPpNumberFromHomeOfficeAppellants_should_return_correct_pp_number_when_present() {
+        when(asylumCase.read(HOME_OFFICE_APPELLANTS)).thenReturn(Optional.of(List.of(
+            new IdValue<>("2", appellant2),
+            new IdValue<>("1", appellant)
+        )));
+        when(appellant.getGivenNames()).thenReturn("givenName");
+        when(appellant2.getGivenNames()).thenReturn("givenName2");
+        when(appellant.getFamilyName()).thenReturn("familyName");
+        when(appellant2.getFamilyName()).thenReturn("familyName2");
+        when(appellant.getDateOfBirth()).thenReturn("1990-01-01");
+        when(appellant2.getDateOfBirth()).thenReturn("1990-01-02");
+        when(appellant.getPp()).thenReturn("ppNumber");
+        when(appellant2.getPp()).thenReturn("ppNumber2");
+        when(asylumCase.read(APPELLANT_GIVEN_NAMES, String.class)).thenReturn(Optional.of("givenName"));
+        when(asylumCase.read(APPELLANT_FAMILY_NAME, String.class)).thenReturn(Optional.of("familyName"));
+        when(asylumCase.read(APPELLANT_DATE_OF_BIRTH, String.class)).thenReturn(Optional.of("1990-01-01"));
+
+        assertEquals("ppNumber", HandlerUtils.getPpNumberFromHomeOfficeAppellants(asylumCase));
+    }
+
+    @Test
+    void getPpNumberFromHomeOfficeAppellants_should_return_null_when_empty_appellant_list() {
+        when(asylumCase.read(HOME_OFFICE_APPELLANTS)).thenReturn(Optional.empty());
+        assertNull(HandlerUtils.getPpNumberFromHomeOfficeAppellants(asylumCase));
+    }
+
+    @Test
+    void getPpNumberFromHomeOfficeAppellants_should_return_null_when_no_matching_given_name() {
+        when(asylumCase.read(HOME_OFFICE_APPELLANTS)).thenReturn(Optional.of(List.of(
+            new IdValue<>("2", appellant2),
+            new IdValue<>("1", appellant)
+        )));
+        when(appellant.getGivenNames()).thenReturn("givenName");
+        when(appellant2.getGivenNames()).thenReturn("givenName2");
+        when(asylumCase.read(APPELLANT_GIVEN_NAMES, String.class)).thenReturn(Optional.of("differentGivenName"));
+
+        assertNull(HandlerUtils.getPpNumberFromHomeOfficeAppellants(asylumCase));
+    }
+
+    @Test
+    void getPpNumberFromHomeOfficeAppellants_should_return_null_when_no_matching_family_name() {
+        when(asylumCase.read(HOME_OFFICE_APPELLANTS)).thenReturn(Optional.of(List.of(
+            new IdValue<>("2", appellant2),
+            new IdValue<>("1", appellant)
+        )));
+        when(appellant.getGivenNames()).thenReturn("givenName");
+        when(appellant2.getGivenNames()).thenReturn("givenName2");
+        when(appellant.getFamilyName()).thenReturn("familyName");
+        when(appellant2.getFamilyName()).thenReturn("familyName2");
+        when(appellant.getPp()).thenReturn("ppNumber");
+        when(appellant2.getPp()).thenReturn("ppNumber2");
+        when(asylumCase.read(APPELLANT_GIVEN_NAMES, String.class)).thenReturn(Optional.of("givenName"));
+        when(asylumCase.read(APPELLANT_FAMILY_NAME, String.class)).thenReturn(Optional.of("familyName2"));
+
+        assertNull(HandlerUtils.getPpNumberFromHomeOfficeAppellants(asylumCase));
+    }
+
+    @Test
+    void getPpNumberFromHomeOfficeAppellants_should_return_null_when_no_matching_dob() {
+        when(asylumCase.read(HOME_OFFICE_APPELLANTS)).thenReturn(Optional.of(List.of(
+            new IdValue<>("2", appellant2),
+            new IdValue<>("1", appellant)
+        )));
+        when(appellant.getGivenNames()).thenReturn("givenName");
+        when(appellant2.getGivenNames()).thenReturn("givenName2");
+        when(appellant.getFamilyName()).thenReturn("familyName");
+        when(appellant2.getFamilyName()).thenReturn("familyName2");
+        when(appellant.getDateOfBirth()).thenReturn("1990-01-01");
+        when(appellant2.getDateOfBirth()).thenReturn("1990-01-02");
+        when(asylumCase.read(APPELLANT_GIVEN_NAMES, String.class)).thenReturn(Optional.of("givenName"));
+        when(asylumCase.read(APPELLANT_FAMILY_NAME, String.class)).thenReturn(Optional.of("familyName"));
+        when(asylumCase.read(APPELLANT_DATE_OF_BIRTH, String.class)).thenReturn(Optional.of("1990-01-02"));
+
+        assertNull(HandlerUtils.getPpNumberFromHomeOfficeAppellants(asylumCase));
+    }
+
+    @Test
+    void getPpNumberFromHomeOfficeAppellants_should_return_null_when_pp_null() {
+        when(asylumCase.read(HOME_OFFICE_APPELLANTS)).thenReturn(Optional.of(List.of(
+            new IdValue<>("2", appellant2),
+            new IdValue<>("1", appellant)
+        )));
+        when(appellant.getGivenNames()).thenReturn("givenName");
+        when(appellant2.getGivenNames()).thenReturn("givenName2");
+        when(appellant.getFamilyName()).thenReturn("familyName");
+        when(appellant2.getFamilyName()).thenReturn("familyName2");
+        when(appellant.getDateOfBirth()).thenReturn("1990-01-01");
+        when(appellant2.getDateOfBirth()).thenReturn("1990-01-02");
+        when(asylumCase.read(APPELLANT_GIVEN_NAMES, String.class)).thenReturn(Optional.of("givenName"));
+        when(asylumCase.read(APPELLANT_FAMILY_NAME, String.class)).thenReturn(Optional.of("familyName"));
+        when(asylumCase.read(APPELLANT_DATE_OF_BIRTH, String.class)).thenReturn(Optional.of("1990-01-01"));
+        when(appellant.getPp()).thenReturn(null);
+
+        assertNull(HandlerUtils.getPpNumberFromHomeOfficeAppellants(asylumCase));
+    }
+
+    @Test
+    void getPpNumberFromHomeOfficeAppellants_should_return_null_when_pp_blank() {
+        when(asylumCase.read(HOME_OFFICE_APPELLANTS)).thenReturn(Optional.of(List.of(
+            new IdValue<>("2", appellant2),
+            new IdValue<>("1", appellant)
+        )));
+        when(appellant.getGivenNames()).thenReturn("givenName");
+        when(appellant2.getGivenNames()).thenReturn("givenName2");
+        when(appellant.getFamilyName()).thenReturn("familyName");
+        when(appellant2.getFamilyName()).thenReturn("familyName2");
+        when(appellant.getDateOfBirth()).thenReturn("1990-01-01");
+        when(appellant2.getDateOfBirth()).thenReturn("1990-01-02");
+        when(asylumCase.read(APPELLANT_GIVEN_NAMES, String.class)).thenReturn(Optional.of("givenName"));
+        when(asylumCase.read(APPELLANT_FAMILY_NAME, String.class)).thenReturn(Optional.of("familyName"));
+        when(asylumCase.read(APPELLANT_DATE_OF_BIRTH, String.class)).thenReturn(Optional.of("1990-01-01"));
+        when(appellant.getPp()).thenReturn(" ");
+
+        assertNull(HandlerUtils.getPpNumberFromHomeOfficeAppellants(asylumCase));
+    }
+
+    @Test
+    void getUserErrorHelpText_should_return_correct_text() {
+        assertTrue(HandlerUtils.getUserErrorHelpText(true).contains("HMCTS Portal Validation Team"));
+        assertFalse(HandlerUtils.getUserErrorHelpText(true).contains("Home Office help form"));
+        assertFalse(HandlerUtils.getUserErrorHelpText(false).contains("HMCTS Portal Validation Team"));
+        assertTrue(HandlerUtils.getUserErrorHelpText(false).contains("Home Office help form"));
+    }
+
+    @Test
+    void getInvalidHomeOfficeReference_should_return_correct_text() {
+        assertTrue(HandlerUtils.getInvalidHomeOfficeReference(true).contains("HMCTS Portal Validation Team"));
+        assertFalse(HandlerUtils.getInvalidHomeOfficeReference(true).contains("Home Office help form"));
+        assertFalse(HandlerUtils.getInvalidHomeOfficeReference(false).contains("HMCTS Portal Validation Team"));
+        assertTrue(HandlerUtils.getInvalidHomeOfficeReference(false).contains("Home Office help form"));
     }
 
     @ParameterizedTest

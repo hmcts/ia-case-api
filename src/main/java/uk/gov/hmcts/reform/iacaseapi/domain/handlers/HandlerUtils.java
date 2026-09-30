@@ -2,16 +2,20 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.io.ClassPathResource;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.HomeOfficeAppellant;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DirectionAppender;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.HomeOfficeReferenceService;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationBasedFeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.PartyIdService;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.CryptoUtils;
@@ -21,9 +25,11 @@ import javax.crypto.SecretKey;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.text.Normalizer;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static java.util.Collections.emptyList;
@@ -42,10 +48,12 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YE
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.statutorytimeframe24weeks.STF24WeeksUtils.getEffectiveState;
 import static uk.gov.hmcts.reform.iacaseapi.domain.service.StrategicCaseFlagService.ACTIVE_STATUS;
 
-
+@Slf4j
 public class HandlerUtils {
 
     public static final String ON_THE_PAPERS = "ONPPRS";
+    public static final Pattern HOME_OFFICE_REF_PATTERN = Pattern
+        .compile("^(([0-9]{4}\\-[0-9]{4}\\-[0-9]{4}\\-[0-9]{4})|(GWF[0-9]{9}))$");
     public static final Set<State> supportedAdd24wFlagStates = Set.of(
         State.PENDING_PAYMENT,
         State.APPEAL_SUBMITTED,
@@ -53,6 +61,19 @@ public class HandlerUtils {
     );
 
     private HandlerUtils() {
+    }
+
+    public static String getUserErrorHelpText(boolean isAdmin) {
+        String adminError = "If you need help, please contact the Home Office 'HMCTS Portal Validation Team' at HO_HMCTS_Portal@homeoffice.gov.uk.";
+        String userError = "If you need help, please use the Home Office help form in the bullet points on this page.";
+        return isAdmin ? adminError : userError;
+    }
+
+    public static String getInvalidHomeOfficeReference(boolean isAdmin) {
+        String error = "You should enter the UAN or GWF reference exactly as it appears on the decision letter. " +
+            "This can often be found in the 'How to appeal' section. The UAN is 16 digits with dashes. " +
+            "The GWF starts with the letters \"GWF\" and then has 9 digits. ";
+        return error + getUserErrorHelpText(isAdmin);
     }
 
     public static boolean isAipJourney(AsylumCase asylumCase) {
@@ -762,6 +783,7 @@ public class HandlerUtils {
         asylumCase.remove(HOME_OFFICE_APPELLANT_DECISION_LETTER_DATE);
         asylumCase.remove(HOME_OFFICE_APPELLANTS);
         asylumCase.remove(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY);
+        asylumCase.remove(HAS_BEEN_VALIDATED_BY_NEW_HOME_OFFICE_API);
     }
 
     public static boolean hasBeenValidatedNewHoApi(AsylumCase asylumCase) {
@@ -885,15 +907,9 @@ public class HandlerUtils {
 
     public static String getUanOrGwf(AsylumCase asylumCase) {
         // Retrieve the UAN or GWF from the case record
-        String homeOfficeReferenceNumber = asylumCase
+        return asylumCase
             .read(HOME_OFFICE_REFERENCE_NUMBER, String.class)
-            .orElse("");
-        if (homeOfficeReferenceNumber.isEmpty()) {
-            homeOfficeReferenceNumber = asylumCase
-                .read(GWF_REFERENCE_NUMBER, String.class)
-                .orElse("");
-        }
-        return homeOfficeReferenceNumber;
+            .orElse(asylumCase.read(GWF_REFERENCE_NUMBER, String.class).orElse(""));
     }
 
     public static boolean isDecisionWithHearing(AsylumCase asylumCase) {
@@ -907,6 +923,209 @@ public class HandlerUtils {
                 .equals("decisionWithHearing");
             case null, default -> throw new IllegalStateException("Appeal type is not present");
         };
+    }
+
+    public static PreSubmitCallbackResponse<AsylumCase> validateHomeOfficeReference(
+        Callback<AsylumCase> callback, AsylumCase asylumCase, String homeOfficeReferenceNumber, HomeOfficeReferenceService homeOfficeReferenceService) {
+
+        PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
+
+        if (!isWellFormedHomeOfficeReference(homeOfficeReferenceNumber)) {
+            response.addError(getInvalidHomeOfficeReference(isAdmin(asylumCase)));
+        } else if (!isRealHomeOfficeCaseNumber(homeOfficeReferenceNumber, callback, homeOfficeReferenceService)) {
+            // An error occurred - display a suitable message to the user
+            response.addError(
+                asylumCase.read(HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS, HomeOfficeApiResponseStatusType.class)
+                    .orElse(HomeOfficeApiResponseStatusType.UNKNOWN)
+                    .getUserFacingErrorText(homeOfficeReferenceNumber, callback.getEvent().equals(Event.SUBMIT_APPEAL), isAdmin(asylumCase))
+            );
+        }
+        return response;
+    }
+
+    public static PreSubmitCallbackResponse<AsylumCase> validateName(
+        Callback<AsylumCase> callback, AsylumCase asylumCase, String homeOfficeReferenceNumber, HomeOfficeReferenceService homeOfficeReferenceService) {
+
+        return validateBiographicDetails(callback, asylumCase, homeOfficeReferenceNumber, true, true, homeOfficeReferenceService);
+    }
+
+    public static PreSubmitCallbackResponse<AsylumCase> validateNameAndDateOfBirth(
+        Callback<AsylumCase> callback, AsylumCase asylumCase, String homeOfficeReferenceNumber, boolean shouldRevalidate, HomeOfficeReferenceService homeOfficeReferenceService) {
+
+        return validateBiographicDetails(callback, asylumCase, homeOfficeReferenceNumber, false, shouldRevalidate, homeOfficeReferenceService);
+    }
+
+    private static PreSubmitCallbackResponse<AsylumCase> validateBiographicDetails(
+        Callback<AsylumCase> callback, AsylumCase asylumCase, String homeOfficeReferenceNumber, boolean nameOnly, boolean shouldRevalidate, HomeOfficeReferenceService homeOfficeReferenceService) {
+        PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
+
+        if (shouldRevalidate) {
+            asylumCase.clear(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY);
+        }
+
+        boolean match = nameOnly ? isMatchingName(homeOfficeReferenceNumber, asylumCase, callback, homeOfficeReferenceService)
+            : isMatchingNameAndDob(homeOfficeReferenceNumber, asylumCase, callback, homeOfficeReferenceService);
+
+        if (!match) {
+            // Check whether an error occurred or if there just wasn't a match
+            HomeOfficeApiResponseStatusType responseStatus =
+                asylumCase.read(HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS, HomeOfficeApiResponseStatusType.class)
+                    .orElse(HomeOfficeApiResponseStatusType.UNKNOWN);
+            String errorMessage = "";
+            boolean isOnSubmit = callback.getEvent() == Event.SUBMIT_APPEAL;
+            if (responseStatus.equals(HomeOfficeApiResponseStatusType.OK)) {
+                errorMessage = getMismatchErrorMessage(homeOfficeReferenceNumber, shouldRevalidate, isOnSubmit, isAdmin(asylumCase));
+                // Log this - if it happens repeatedly, that's suspicious
+                log.info("The details provided did not match the Home Office biographic data retrieved for case with reference ID {}.", homeOfficeReferenceNumber);
+            } else {
+                // This shouldn't happen as the Home Office API ought not to have been called, since the data has already
+                // been retrieved from the Home Office. But we'll check for it anyway just in case something unexpected has happened.
+                errorMessage = responseStatus.getUserFacingErrorText(homeOfficeReferenceNumber, isOnSubmit, isAdmin(asylumCase));
+            }
+            response.addError(errorMessage);
+        }
+        return response;
+    }
+
+    public static PreSubmitCallbackResponse<AsylumCase> validateAllDetails(
+        Callback<AsylumCase> callback, AsylumCase asylumCase, String homeOfficeReferenceNumber, HomeOfficeReferenceService homeOfficeReferenceService) {
+        PreSubmitCallbackResponse<AsylumCase> response = validateHomeOfficeReference(callback, asylumCase, homeOfficeReferenceNumber, homeOfficeReferenceService);
+        response.addErrors(validateNameAndDateOfBirth(callback, asylumCase, homeOfficeReferenceNumber, false, homeOfficeReferenceService).getErrors());
+        return response;
+    }
+
+    public static String getMismatchErrorMessage(String homeOfficeReferenceNumber, boolean shouldRevalidate, boolean isOnSubmit, boolean isAdmin) {
+        if (isOnSubmit) {
+            return "The information given does not match the details held by the Home Office for reference number " +
+                homeOfficeReferenceNumber +
+                ". You should edit the appeal and enter the Home Office reference and appellant's name exactly as they appear" +
+                " on the decision letter so that we can verify them. These can often be found in the 'How to appeal' " +
+                "section. Please also check if the appellant's date of birth is correct.";
+        }
+        return "The information entered does not match the details held by the Home Office for reference number " +
+            homeOfficeReferenceNumber +
+            ". You should enter the " + (shouldRevalidate ? "" : "appellant's ") +
+            "details exactly as they appear on the decision letter, so that we can verify them." +
+            " These details can often be found in the 'How to appeal' section. " + getUserErrorHelpText(isAdmin);
+    }
+
+    public static boolean isWellFormedHomeOfficeReference(String hoReference) {
+        return hoReference != null && HOME_OFFICE_REF_PATTERN.matcher(hoReference).matches();
+    }
+
+    public static boolean isRealHomeOfficeCaseNumber(String hoReference, Callback<AsylumCase> callback, HomeOfficeReferenceService homeOfficeReferenceService) {
+        if (hoReference == null) {
+            return false;
+        } else {
+            List<IdValue<HomeOfficeAppellant>> homeOfficeAppellants = homeOfficeReferenceService.getHomeOfficeReferenceData(hoReference, callback);
+            return !homeOfficeAppellants.isEmpty();
+        }
+    }
+
+    public static boolean isMatchingName(String hoReference, AsylumCase asylumCase, Callback<AsylumCase> callback, HomeOfficeReferenceService homeOfficeReferenceService) {
+        // Check for a match on the first and last names only (no middle names or initials).
+        // This is triggered from CUI because the names are on a separate page to the date of birth.
+        if (hoReference == null) {
+            return false;
+        } else {
+            // Retrieve appellant data objects
+            final List<HomeOfficeAppellant> homeOfficeAppellantDataObjects = retrieveHomeOfficeAppellantDOs(hoReference, callback, homeOfficeReferenceService);
+            // Retrieve information currently entered (for comparison).
+            String appellantFamilyName = asylumCase.read(APPELLANT_FAMILY_NAME, String.class).orElse("");
+            String appellantGivenNames = asylumCase.read(APPELLANT_GIVEN_NAMES, String.class).orElse("");
+            // Loop through the Home Office appellants (usually just one) and see if one of them has details matching those entered.
+            return homeOfficeAppellantDataObjects.stream().anyMatch(homeOfficeAppellant ->
+                matchesName(homeOfficeAppellant.getFamilyName(), appellantFamilyName, false) &&
+                    matchesName(homeOfficeAppellant.getGivenNames(), appellantGivenNames, true));
+        }
+    }
+
+    public static boolean isMatchingNameAndDob(String hoReference, AsylumCase asylumCase, Callback<AsylumCase> callback, HomeOfficeReferenceService homeOfficeReferenceService) {
+        // Note: even if we have already found a match for the name(s), we must do so again here to ensure that for multi-person
+        // applications we don't match the date of birth for a different person than the one we matched the names for.
+        // This happens in CUI because the names are on a separate page to the date of birth.
+        if (hoReference == null) {
+            return false;
+        } else {
+            // Retrieve appellant data objects
+            final List<HomeOfficeAppellant> homeOfficeAppellantDataObjects = retrieveHomeOfficeAppellantDOs(hoReference, callback, homeOfficeReferenceService);
+            // Retrieve information currently entered (for comparison).
+            String appellantFamilyName = asylumCase.read(APPELLANT_FAMILY_NAME, String.class).orElse("");
+            String appellantGivenNames = asylumCase.read(APPELLANT_GIVEN_NAMES, String.class).orElse("");
+            String appellantDateOfBirth = asylumCase.read(APPELLANT_DATE_OF_BIRTH, String.class).orElse("");
+            // Loop through the Home Office appellants (usually just one) and see if one of them has details matching those entered.
+            return homeOfficeAppellantDataObjects.stream().anyMatch(homeOfficeAppellant ->
+                matchesName(homeOfficeAppellant.getFamilyName(), appellantFamilyName, false) &&
+                    matchesName(homeOfficeAppellant.getGivenNames(), appellantGivenNames, true) &&
+                    matchesDateOfBirth(homeOfficeAppellant.getDateOfBirth(), appellantDateOfBirth));
+        }
+    }
+
+    private static List<HomeOfficeAppellant> retrieveHomeOfficeAppellantDOs(String hoReference, Callback<AsylumCase> callback, HomeOfficeReferenceService homeOfficeReferenceService) {
+        List<IdValue<HomeOfficeAppellant>> homeOfficeAppellants = homeOfficeReferenceService.getHomeOfficeReferenceData(hoReference, callback);
+        if (homeOfficeAppellants.isEmpty()) {
+            // This should not have happened - we should always have at least one appellant from the Home Office by this point. Log an error.
+            log.error(
+                "No appellants returned from the Home Office for reference number {} although it appeared to match a record in Atlas.",
+                hoReference);
+            return List.of();
+        }
+        // Extract and return appellants
+        return homeOfficeAppellants
+            .stream()
+            .map(IdValue::getValue)
+            .collect(Collectors.toList());
+    }
+
+    private static boolean matchesName(String homeOfficeName, String appellantName, boolean firstWordOnly) {
+        if (homeOfficeName == null || appellantName == null) {
+            return false;
+        }
+        return normaliseName(homeOfficeName, firstWordOnly).equals(normaliseName(appellantName, firstWordOnly));
+    }
+
+    public static String normaliseName(String name, boolean firstWordOnly) {
+        if (name == null) {
+            return "";
+        }
+
+        // Step 1: Normalise spaces and convert to lowercase
+        String normalised = name.trim().toLowerCase().replaceAll("\\s+", " ");
+
+        // Step 1.5 (if specified): Take only the first word (to avoid checking middle names)
+        if (firstWordOnly && normalised.contains(" ")) {
+            normalised = normalised.substring(0, normalised.indexOf(" "));
+        }
+
+        // Step 2: Normalise to NFD (decomposed form) to separate base characters from
+        // diacritical marks
+        normalised = Normalizer.normalize(normalised, Normalizer.Form.NFD);
+
+        // Step 3: Remove diacritical marks (accents, etc.)
+        return normalised.replaceAll("\\p{M}", "");
+    }
+
+    private static boolean matchesDateOfBirth(String homeOfficeDob, String appellantDob) {
+        if (homeOfficeDob == null || appellantDob == null) {
+            return false;
+        }
+        return homeOfficeDob.trim().equals(appellantDob.trim());
+    }
+
+    public static String getPpNumberFromHomeOfficeAppellants(AsylumCase asylumCase) {
+        Optional<List<IdValue<HomeOfficeAppellant>>> homeOfficeAppellants = asylumCase.read(HOME_OFFICE_APPELLANTS);
+        String appellantGivenNames = asylumCase.read(APPELLANT_GIVEN_NAMES, String.class).orElse("");
+        String appellantFamilyName = asylumCase.read(APPELLANT_FAMILY_NAME, String.class).orElse("");
+        String appellantDateOfBirth = asylumCase.read(APPELLANT_DATE_OF_BIRTH, String.class).orElse("");
+        return homeOfficeAppellants.orElse(emptyList()).stream()
+            .map(IdValue::getValue)
+            .filter(appellant -> matchesName(appellant.getGivenNames(), appellantGivenNames, true)
+                && matchesName(appellant.getFamilyName(), appellantFamilyName, false)
+                && matchesDateOfBirth(appellant.getDateOfBirth(), appellantDateOfBirth)
+                && appellant.getPp() != null && !appellant.getPp().isBlank())
+            .findFirst()
+            .map(HomeOfficeAppellant::getPp)
+            .orElse(null);
     }
 
     public static PreSubmitCallbackResponse<AsylumCase> handle24wValidity(Callback<AsylumCase> callback,
