@@ -920,12 +920,12 @@ public class HandlerUtils {
         Callback<AsylumCase> callback, AsylumCase asylumCase, String homeOfficeReferenceNumber, HomeOfficeReferenceService homeOfficeReferenceService) {
 
         PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
+        boolean isAdmin = callback.getEvent().equals(Event.EDIT_APPELLANT_PERSONAL_DATA) || isAdmin(asylumCase);
 
         if (!isWellFormedHomeOfficeReference(homeOfficeReferenceNumber)) {
-            response.addError(getInvalidHomeOfficeReference(isAdmin(asylumCase)));
+            response.addError(getInvalidHomeOfficeReference(isAdmin));
         } else if (!isRealHomeOfficeCaseNumber(homeOfficeReferenceNumber, callback, homeOfficeReferenceService)) {
             // An error occurred - display a suitable message to the user
-            boolean isAdmin = callback.getEvent().equals(Event.EDIT_APPELLANT_PERSONAL_DATA) || isAdmin(asylumCase);
             response.addError(
                 asylumCase.read(HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS, HomeOfficeApiResponseStatusType.class)
                     .orElse(HomeOfficeApiResponseStatusType.UNKNOWN)
