@@ -547,7 +547,6 @@ class SendNotificationHandlerTest {
         Event.SEND_DIRECTION,
         Event.TRANSFER_OUT_OF_ADA,
         Event.EDIT_APPEAL_AFTER_SUBMIT,
-        Event.EDIT_APPELLANT_PERSONAL_DATA,
         Event.END_APPEAL,
         Event.REQUEST_RESPONSE_AMEND,
         Event.DECIDE_FTPA_APPLICATION,
