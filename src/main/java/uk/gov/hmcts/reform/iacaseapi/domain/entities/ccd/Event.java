@@ -41,6 +41,7 @@ public enum Event {
     ADD_CASE_NOTE("addCaseNote"),
     ADD_STATUTORY_TIMEFRAME_24_WEEKS("addStatutoryTimeframe24Weeks"),
     REMOVE_STATUTORY_TIMEFRAME_24_WEEKS("removeStatutoryTimeframe24Weeks"),
+    STF_24W_DETERMINATION("stf24wDetermination"),
     EDIT_CASE_LISTING("editCaseListing"),
     RECORD_APPLICATION("recordApplication"),
     RECORD_ATTENDEES_AND_DURATION("recordAttendeesAndDuration"),
