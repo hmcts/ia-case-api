@@ -1547,6 +1547,7 @@ class HandlerUtilsTest {
     void given_not_currently_stf24_returns_false() {
         when(asylumCase.read(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         assertFalse(HandlerUtils.isCurrently24WeekStfCase(asylumCase));
+    }
 
     @Test
     void isWellFormedHomeOfficeReference_should_validate_patterns() {
