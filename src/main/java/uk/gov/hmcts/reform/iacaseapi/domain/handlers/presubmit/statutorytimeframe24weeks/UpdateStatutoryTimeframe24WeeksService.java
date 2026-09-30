@@ -88,7 +88,9 @@ public class UpdateStatutoryTimeframe24WeeksService {
             asylumCase.write(AsylumCaseFieldDefinition.STF_24W_SET_DATE, dateProvider.now().toString());
             // Update case notes
             Optional<List<IdValue<CaseNote>>> existingCaseNotes = asylumCase.read(CASE_NOTES);
-            List<IdValue<CaseNote>> allCaseNotes = caseNoteAppender.append(buildNewCaseNote(stf24wStatus, stf24wReason, "Home Office Integration API"), existingCaseNotes.orElse(Collections.emptyList()));
+            // TODO DIAC-2945 subject to change
+            String homeOfficeApiUser = "Home Office Integration API";
+            List<IdValue<CaseNote>> allCaseNotes = caseNoteAppender.append(buildNewCaseNote(stf24wStatus, stf24wReason, homeOfficeApiUser), existingCaseNotes.orElse(Collections.emptyList()));
             asylumCase.write(CASE_NOTES, allCaseNotes);
         }
         stf24WeeksBannerTextService.updateBannerText(asylumCase);
