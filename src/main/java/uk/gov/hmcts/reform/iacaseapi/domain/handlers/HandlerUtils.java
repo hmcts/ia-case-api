@@ -7,7 +7,9 @@ import org.springframework.core.io.ClassPathResource;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DirectionAppender;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationBasedFeatureToggler;
@@ -19,6 +21,8 @@ import javax.crypto.SecretKey;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -35,12 +39,18 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagTyp
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagType.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.statutorytimeframe24weeks.STF24WeeksUtils.getEffectiveState;
 import static uk.gov.hmcts.reform.iacaseapi.domain.service.StrategicCaseFlagService.ACTIVE_STATUS;
 
 
 public class HandlerUtils {
 
     public static final String ON_THE_PAPERS = "ONPPRS";
+    public static final Set<State> supportedAdd24wFlagStates = Set.of(
+        State.PENDING_PAYMENT,
+        State.APPEAL_SUBMITTED,
+        State.AWAITING_RESPONDENT_EVIDENCE
+    );
 
     private HandlerUtils() {
     }
@@ -758,7 +768,7 @@ public class HandlerUtils {
         return asylumCase.read(HAS_BEEN_VALIDATED_BY_NEW_HOME_OFFICE_API, YesOrNo.class)
             .orElse(NO).equals(YES);
     }
-  
+
     public static void setSponsorDetailsFromNlrIfSame(AsylumCase asylumCase) {
         boolean isSponsorSameAsNlr = asylumCase.read(IS_SPONSOR_SAME_AS_NLR, YesOrNo.class).orElse(YesOrNo.NO)
             .equals(YesOrNo.YES);
@@ -897,5 +907,39 @@ public class HandlerUtils {
                 .equals("decisionWithHearing");
             case null, default -> throw new IllegalStateException("Appeal type is not present");
         };
+    }
+
+    public static PreSubmitCallbackResponse<AsylumCase> handle24wValidity(Callback<AsylumCase> callback,
+                                                                          LocalDate stf24wLiveDate) {
+        AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
+        PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
+
+        State effectiveState = getEffectiveState(callback, asylumCase);
+        if (!supportedAdd24wFlagStates.contains(effectiveState)) {
+            response.addError("This event cannot be run on this case at this time");
+        }
+
+        if (!caseReceivedAfterLive(asylumCase, stf24wLiveDate)) {
+            String errorMessage = "This event cannot be run on a case created before " + stf24wLiveDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+            response.addError(errorMessage);
+        }
+        if (isAppellantInDetention(asylumCase)) {
+            String errorMessage = "This event cannot be run on a detained case";
+            response.addError(errorMessage);
+        }
+        if (isAppealOutOfCountry(asylumCase)) {
+            String errorMessage = "This event cannot be run on an out of country case";
+            response.addError(errorMessage);
+        }
+
+        return response;
+    }
+
+    public static boolean caseReceivedAfterLive(AsylumCase asylumCase, LocalDate stf24wLiveDate) {
+        Optional<String> tribunalReceivedDate = asylumCase.read(TRIBUNAL_RECEIVED_DATE);
+        Optional<String> appealSubmissionDate = asylumCase.read(APPEAL_SUBMISSION_DATE);
+
+        return (tribunalReceivedDate.isPresent() && !LocalDate.parse(tribunalReceivedDate.get()).isBefore(stf24wLiveDate))
+            || (tribunalReceivedDate.isEmpty() && appealSubmissionDate.isPresent() && !LocalDate.parse(appealSubmissionDate.get()).isBefore(stf24wLiveDate));
     }
 }
