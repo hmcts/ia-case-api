@@ -17,7 +17,9 @@ import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.HomeOfficeAppellant;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.AddressUk;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
@@ -29,12 +31,14 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.Organisati
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.OrganisationPolicy;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -1837,5 +1841,126 @@ class HandlerUtilsTest {
         assertFalse(HandlerUtils.getInvalidHomeOfficeReference(true).contains("Home Office help form"));
         assertFalse(HandlerUtils.getInvalidHomeOfficeReference(false).contains("HMCTS Portal Validation Team"));
         assertTrue(HandlerUtils.getInvalidHomeOfficeReference(false).contains("Home Office help form"));
+    }
+
+    @ParameterizedTest
+    @CsvSource(value = {
+        "null, null, false",
+        "2024-01-01, null, false",
+        "2024-01-01, 2024-01-20, false",
+        "null, 2024-01-01, false",
+        "2024-01-20, 2024-01-01, true",
+        "2024-01-20, 2024-01-20, true",
+        "2024-01-20, null, true",
+        "null, 2024-01-20, true"
+    }, nullValues = {"null"})
+    void caseReceivedAfterLive_scenarios(String tribReceivedDate, String appealSubmittedDate, boolean expected) {
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(TRIBUNAL_RECEIVED_DATE)).thenReturn(Optional.ofNullable(tribReceivedDate));
+        when(asylumCase.read(APPEAL_SUBMISSION_DATE)).thenReturn(Optional.ofNullable(appealSubmittedDate));
+
+        assertEquals(expected, HandlerUtils.caseReceivedAfterLive(asylumCase, LocalDate.of(2024, 1, 10)));
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = State.class, names = {"PENDING_PAYMENT", "APPEAL_SUBMITTED", "AWAITING_RESPONDENT_EVIDENCE"})
+    void handle24wValidity_should_return_no_errors_if_valid(State state) {
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(caseDetails.getState()).thenReturn(state);
+        when(asylumCase.read(TRIBUNAL_RECEIVED_DATE)).thenReturn(Optional.of("2024-01-10"));
+        when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(NO));
+        when(asylumCase.read(APPEAL_OUT_OF_COUNTRY, YesOrNo.class)).thenReturn(Optional.of(NO));
+
+        PreSubmitCallbackResponse<AsylumCase> response = HandlerUtils.handle24wValidity(callback, LocalDate.of(2024, 1, 1));
+
+        assertTrue(response.getErrors().isEmpty());
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = State.class, names = {"PENDING_PAYMENT", "APPEAL_SUBMITTED", "AWAITING_RESPONDENT_EVIDENCE"},
+        mode = EnumSource.Mode.EXCLUDE)
+    void handle24wValidity_should_return_error_if_invalid_state(State state) {
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(caseDetails.getState()).thenReturn(state);
+        when(asylumCase.read(TRIBUNAL_RECEIVED_DATE)).thenReturn(Optional.of("2024-01-10"));
+        when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(NO));
+        when(asylumCase.read(APPEAL_OUT_OF_COUNTRY, YesOrNo.class)).thenReturn(Optional.of(NO));
+
+        PreSubmitCallbackResponse<AsylumCase> response = HandlerUtils.handle24wValidity(callback, LocalDate.of(2024, 1, 10));
+
+        assertFalse(response.getErrors().isEmpty());
+        assertEquals(1, response.getErrors().size());
+        assertTrue(response.getErrors().contains("This event cannot be run on this case at this time"));
+    }
+
+    @Test
+    void handle24wValidity_should_return_error_if_received_early() {
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(caseDetails.getState()).thenReturn(State.AWAITING_RESPONDENT_EVIDENCE);
+        when(asylumCase.read(TRIBUNAL_RECEIVED_DATE)).thenReturn(Optional.of("2024-01-01"));
+        when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(NO));
+        when(asylumCase.read(APPEAL_OUT_OF_COUNTRY, YesOrNo.class)).thenReturn(Optional.of(NO));
+
+        PreSubmitCallbackResponse<AsylumCase> response = HandlerUtils.handle24wValidity(callback, LocalDate.of(2024, 1, 10));
+
+        assertFalse(response.getErrors().isEmpty());
+        assertEquals(1, response.getErrors().size());
+        assertTrue(response.getErrors().contains("This event cannot be run on a case created before 10/01/2024"));
+    }
+
+    @Test
+    void handle24wValidity_should_return_error_if_in_detention() {
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(caseDetails.getState()).thenReturn(State.AWAITING_RESPONDENT_EVIDENCE);
+        when(asylumCase.read(TRIBUNAL_RECEIVED_DATE)).thenReturn(Optional.of("2024-01-10"));
+        when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(asylumCase.read(APPEAL_OUT_OF_COUNTRY, YesOrNo.class)).thenReturn(Optional.of(NO));
+
+        PreSubmitCallbackResponse<AsylumCase> response = HandlerUtils.handle24wValidity(callback, LocalDate.of(2024, 1, 10));
+
+        assertFalse(response.getErrors().isEmpty());
+        assertEquals(1, response.getErrors().size());
+        assertTrue(response.getErrors().contains("This event cannot be run on a detained case"));
+    }
+
+    @Test
+    void handle24wValidity_should_return_error_if_ooc() {
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(caseDetails.getState()).thenReturn(State.AWAITING_RESPONDENT_EVIDENCE);
+        when(asylumCase.read(TRIBUNAL_RECEIVED_DATE)).thenReturn(Optional.of("2024-01-10"));
+        when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(NO));
+        when(asylumCase.read(APPEAL_OUT_OF_COUNTRY, YesOrNo.class)).thenReturn(Optional.of(YES));
+
+        PreSubmitCallbackResponse<AsylumCase> response = HandlerUtils.handle24wValidity(callback, LocalDate.of(2024, 1, 10));
+
+        assertFalse(response.getErrors().isEmpty());
+        assertEquals(1, response.getErrors().size());
+        assertTrue(response.getErrors().contains("This event cannot be run on an out of country case"));
+    }
+
+    @Test
+    void handle24wValidity_should_return_errors_if_all_checks_fail() {
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(caseDetails.getState()).thenReturn(State.CASE_BUILDING);
+        when(asylumCase.read(TRIBUNAL_RECEIVED_DATE)).thenReturn(Optional.of("2024-01-01"));
+        when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(asylumCase.read(APPEAL_OUT_OF_COUNTRY, YesOrNo.class)).thenReturn(Optional.of(YES));
+
+        PreSubmitCallbackResponse<AsylumCase> response = HandlerUtils.handle24wValidity(callback, LocalDate.of(2024, 1, 10));
+
+        assertFalse(response.getErrors().isEmpty());
+        assertEquals(4, response.getErrors().size());
+        assertThat(response.getErrors())
+            .contains("This event cannot be run on this case at this time")
+            .contains("This event cannot be run on a case created before 10/01/2024")
+            .contains("This event cannot be run on a detained case")
+            .contains("This event cannot be run on an out of country case");
     }
 }

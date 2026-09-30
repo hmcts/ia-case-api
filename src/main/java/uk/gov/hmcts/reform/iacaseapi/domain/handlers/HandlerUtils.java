@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.HomeOfficeAppellant;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.*;
@@ -25,6 +26,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.text.Normalizer;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -42,6 +45,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagTyp
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagType.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.statutorytimeframe24weeks.STF24WeeksUtils.getEffectiveState;
 import static uk.gov.hmcts.reform.iacaseapi.domain.service.StrategicCaseFlagService.ACTIVE_STATUS;
 
 @Slf4j
@@ -50,6 +54,11 @@ public class HandlerUtils {
     public static final String ON_THE_PAPERS = "ONPPRS";
     public static final Pattern HOME_OFFICE_REF_PATTERN = Pattern
         .compile("^(([0-9]{4}\\-[0-9]{4}\\-[0-9]{4}\\-[0-9]{4})|(GWF[0-9]{9}))$");
+    public static final Set<State> supportedAdd24wFlagStates = Set.of(
+        State.PENDING_PAYMENT,
+        State.APPEAL_SUBMITTED,
+        State.AWAITING_RESPONDENT_EVIDENCE
+    );
 
     private HandlerUtils() {
     }
@@ -1117,5 +1126,39 @@ public class HandlerUtils {
             .findFirst()
             .map(HomeOfficeAppellant::getPp)
             .orElse(null);
+    }
+
+    public static PreSubmitCallbackResponse<AsylumCase> handle24wValidity(Callback<AsylumCase> callback,
+                                                                          LocalDate stf24wLiveDate) {
+        AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
+        PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
+
+        State effectiveState = getEffectiveState(callback, asylumCase);
+        if (!supportedAdd24wFlagStates.contains(effectiveState)) {
+            response.addError("This event cannot be run on this case at this time");
+        }
+
+        if (!caseReceivedAfterLive(asylumCase, stf24wLiveDate)) {
+            String errorMessage = "This event cannot be run on a case created before " + stf24wLiveDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+            response.addError(errorMessage);
+        }
+        if (isAppellantInDetention(asylumCase)) {
+            String errorMessage = "This event cannot be run on a detained case";
+            response.addError(errorMessage);
+        }
+        if (isAppealOutOfCountry(asylumCase)) {
+            String errorMessage = "This event cannot be run on an out of country case";
+            response.addError(errorMessage);
+        }
+
+        return response;
+    }
+
+    public static boolean caseReceivedAfterLive(AsylumCase asylumCase, LocalDate stf24wLiveDate) {
+        Optional<String> tribunalReceivedDate = asylumCase.read(TRIBUNAL_RECEIVED_DATE);
+        Optional<String> appealSubmissionDate = asylumCase.read(APPEAL_SUBMISSION_DATE);
+
+        return (tribunalReceivedDate.isPresent() && !LocalDate.parse(tribunalReceivedDate.get()).isBefore(stf24wLiveDate))
+            || (tribunalReceivedDate.isEmpty() && appealSubmissionDate.isPresent() && !LocalDate.parse(appealSubmissionDate.get()).isBefore(stf24wLiveDate));
     }
 }
