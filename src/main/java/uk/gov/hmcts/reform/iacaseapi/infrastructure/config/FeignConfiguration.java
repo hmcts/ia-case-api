@@ -13,6 +13,8 @@ import org.springframework.boot.http.converter.autoconfigure.ClientHttpMessageCo
 import org.springframework.cloud.openfeign.support.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.converter.ByteArrayHttpMessageConverter;
+import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.http.converter.yaml.MappingJackson2YamlHttpMessageConverter;
 
@@ -27,7 +29,15 @@ public class FeignConfiguration {
             log.info("feign converters BEFORE: {}", converters.stream().map(c -> c.getClass().getSimpleName()).toList());
             converters.removeIf(c -> c instanceof MappingJackson2HttpMessageConverter
                 || c instanceof MappingJackson2YamlHttpMessageConverter);
-            converters.add(new MappingJackson2HttpMessageConverter(objectMapper));
+
+            int idx = 0;
+            for (int i = 0; i < converters.size(); i++) {
+                if (converters.get(i) instanceof ByteArrayHttpMessageConverter
+                    || converters.get(i) instanceof StringHttpMessageConverter) {
+                    idx = i + 1;
+                }
+            }
+            converters.add(idx, new MappingJackson2HttpMessageConverter(objectMapper));
             log.info("feign converters AFTER: {}", converters.stream().map(c -> c.getClass().getSimpleName()).toList());
         };
     }
