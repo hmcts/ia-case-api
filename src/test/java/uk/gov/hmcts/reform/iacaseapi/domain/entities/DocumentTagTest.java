@@ -51,6 +51,7 @@ class DocumentTagTest {
         assertEquals("", DocumentTag.NONE.toString());
         assertEquals("appealWasNotSubmittedSupportingDocument", DocumentTag.APPEAL_WAS_NOT_SUBMITTED_SUPPORTING_DOCUMENT.toString());
         assertEquals("internalOutOfTimeDecisionLetter", DocumentTag.INTERNAL_OUT_OF_TIME_DECISION_LETTER.toString());
+        assertEquals("cmrHearingCancelledLetter", DocumentTag.CMR_HEARING_CANCELLED_LETTER.toString());
         assertEquals("stf24WeeksCaseReviewAppeallantDocument", DocumentTag.STF_24WEEKS_CASE_REVIEW_APPELLANT_DOCUMENT.toString());
         assertEquals("stf24WeeksRemovalDecisionDocument", DocumentTag.STF_24WEEKS_REMOVAL_DECISION_DOCUMENT.toString());
         assertEquals("stf24WeeksRemovalDecisionLetter", DocumentTag.STF_24WEEKS_REMOVAL_DECISION_LETTER.toString());
@@ -68,6 +69,6 @@ class DocumentTagTest {
 
     @Test
     void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(56, DocumentTag.values().length);
+        assertEquals(57, DocumentTag.values().length);
     }
 }

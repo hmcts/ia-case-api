@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Set;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.shouldValidateEditPersonalData;
 import static uk.gov.hmcts.reform.iacaseapi.domain.service.HomeOfficeReferenceService.deserialiseHomeOfficeAppellantList;
 import static uk.gov.hmcts.reform.iacaseapi.domain.service.HomeOfficeReferenceService.writeHomeOfficeAppellants;

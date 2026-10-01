@@ -595,6 +595,7 @@ ia-home-office-integration-api:
       POSTGRES_USERNAME: hmcts
       POSTGRES_PASSWORD: ${GENERIC_VALUES_PREVIEW_YAML_PASS}
       HOME_OFFICE_ENDPOINT: "https://ia-home-office-mock-api-pr-187.preview.platform.hmcts.net"
+      HOME_OFFICE_ALLOWED_ENDPOINTS: "/home-office-statutory-timeframe-status"
     keyVaults:
       ia:
         resourceGroup: ia
