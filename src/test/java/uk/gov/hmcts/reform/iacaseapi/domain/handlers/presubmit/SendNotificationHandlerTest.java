@@ -388,6 +388,17 @@ class SendNotificationHandlerTest {
     }
 
     @Test
+    void if_stf24w_then_should_handle_review_hearing_requirements() {
+        when(callback.getEvent()).thenReturn(Event.REVIEW_HEARING_REQUIREMENTS);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+
+        assertTrue(sendNotificationHandler.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback));
+    }
+
+    @Test
     void should_clear_24w_removal_temp_fields_when_event_is_remove_statutory_timeframe_24_weeks() {
         when(callback.getEvent()).thenReturn(Event.REMOVE_STATUTORY_TIMEFRAME_24_WEEKS);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
