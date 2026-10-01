@@ -287,6 +287,7 @@ If you want to clean up the environment just run:
 npx @hmcts/dev-env@latest --delete
 ```
 
+
 ## Scripts
 ### Creating AiP users using the scripts
 To create AiP citizen users, run `az login` and navigate to `/bin/utils/aip_scripts` and run `export IDAM_TESTING_ACCESS_TOKEN=$(zsh ./get_idam_token.zsh <environment>)`
