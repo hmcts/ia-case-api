@@ -13,6 +13,8 @@ import org.springframework.boot.http.converter.autoconfigure.ClientHttpMessageCo
 import org.springframework.cloud.openfeign.support.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.http.converter.yaml.MappingJackson2YamlHttpMessageConverter;
 
 @Slf4j
 @Configuration
@@ -23,8 +25,9 @@ public class FeignConfiguration {
     public HttpMessageConverterCustomizer feignJacksonConverterCustomizer(@Qualifier("feign") ObjectMapper objectMapper) {
         return converters -> {
             log.info("feign converters BEFORE: {}", converters.stream().map(c -> c.getClass().getSimpleName()).toList());
-            converters.removeIf(c -> c instanceof org.springframework.http.converter.json.MappingJackson2HttpMessageConverter);
-            converters.add(new org.springframework.http.converter.json.MappingJackson2HttpMessageConverter(objectMapper));
+            converters.removeIf(c -> c instanceof MappingJackson2HttpMessageConverter
+                || c instanceof MappingJackson2YamlHttpMessageConverter);
+            converters.add(new MappingJackson2HttpMessageConverter(objectMapper));
             log.info("feign converters AFTER: {}", converters.stream().map(c -> c.getClass().getSimpleName()).toList());
         };
     }
