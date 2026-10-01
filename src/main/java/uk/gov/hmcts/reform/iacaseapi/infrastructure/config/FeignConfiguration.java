@@ -22,8 +22,10 @@ public class FeignConfiguration {
     @Bean
     public HttpMessageConverterCustomizer feignJacksonConverterCustomizer(@Qualifier("feign") ObjectMapper objectMapper) {
         return converters -> {
+            log.info("feign converters BEFORE: {}", converters.stream().map(c -> c.getClass().getSimpleName()).toList());
             converters.removeIf(c -> c instanceof org.springframework.http.converter.json.MappingJackson2HttpMessageConverter);
-            converters.addFirst(new org.springframework.http.converter.json.MappingJackson2HttpMessageConverter(objectMapper));
+            converters.add(new org.springframework.http.converter.json.MappingJackson2HttpMessageConverter(objectMapper));
+            log.info("feign converters AFTER: {}", converters.stream().map(c -> c.getClass().getSimpleName()).toList());
         };
     }
 

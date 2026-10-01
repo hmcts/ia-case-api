@@ -23,6 +23,9 @@ public class RestTemplateConfiguration {
     public RestTemplate restTemplate(ObjectMapper objectMapper) {
         RestTemplate restTemplate = new RestTemplate();
 
+        restTemplate.getMessageConverters()
+            .forEach(c -> log.info("BEFORE converter: {}", c.getClass().getName()));
+
         // Remove every default JSON converter (Jackson 2 or Jackson 3)
         restTemplate.getMessageConverters().removeIf(converter ->
                                                          converter.getClass().getName().startsWith("org.springframework.http.converter.json.")
@@ -32,12 +35,13 @@ public class RestTemplateConfiguration {
         // Put ours first so it is always the one used
         restTemplate.getMessageConverters().add(0, mappingJackson2HttpMessageConverter(objectMapper));
 
+        log.info("AFTER");
         log.info("modules: {}, inclusion: {}",
                  objectMapper.getRegisteredModuleIds(),
                  objectMapper.getSerializationConfig().getDefaultPropertyInclusion());
 
         restTemplate.getMessageConverters()
-            .forEach(c -> log.info("converter: {}", c.getClass().getName()));
+            .forEach(c -> log.info("AFTER converter: {}", c.getClass().getName()));
 
         return restTemplate;
     }
