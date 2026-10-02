@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd;
 
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -10,11 +9,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
-@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class CaseDataContent {
 
     private Event event;
+    @JsonProperty("event_token")
     private String eventToken;
+    @JsonProperty("ignore_warning")
     private boolean ignoreWarning;
     private Map<String, Object> data;
 }

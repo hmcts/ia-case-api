@@ -14,8 +14,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -24,7 +22,6 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 
-@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(NON_NULL)
 @Builder
@@ -37,12 +34,12 @@ public class HomeOfficeStatutoryTimeframe {
     @JsonProperty(value = "hmctsReferenceNumber", required = true)
     @NotNull
     @Pattern(regexp = "^(RP|PA|EA|HU|DC|EU|AG)/[0-9]{5}/[0-9]{4}$",
-             message = "Home Office reference ID must be of the form XX/12345/2026, where XX is the appeal type, " + 
+             message = "Home Office reference ID must be of the form XX/12345/2026, where XX is the appeal type, " +
                        "12345 stands for any five-digit number and 2026 is the year")
     private String hmctsReferenceNumber;
 
     @JsonProperty(value = "uan")
-    @Pattern(regexp = "^[0-9]{4}-[0-9]{4}-[0-9]{4}-[0-9]{4}$", 
+    @Pattern(regexp = "^[0-9]{4}-[0-9]{4}-[0-9]{4}-[0-9]{4}$",
              message = "UAN must be in format XXXX-XXXX-XXXX-XXXX where X is a digit")
     private String uan;
 
@@ -69,7 +66,6 @@ public class HomeOfficeStatutoryTimeframe {
     @NotNull
     private OffsetDateTime timeStamp;
 
-    @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
     @JsonIgnoreProperties(ignoreUnknown = true)
     @JsonInclude(NON_NULL)
     @Builder

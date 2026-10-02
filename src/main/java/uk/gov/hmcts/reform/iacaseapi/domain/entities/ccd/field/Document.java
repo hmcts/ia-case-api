@@ -3,20 +3,21 @@ package uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field;
 import static java.util.Objects.requireNonNull;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
-@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 //Ignoring unknown property 'document_hash' for now until we are integrating it later.
 @JsonIgnoreProperties(ignoreUnknown = true)
 @EqualsAndHashCode
 @ToString
 public class Document {
 
+    @JsonProperty("document_url")
     private String documentUrl;
+    @JsonProperty("document_binary_url")
     private String documentBinaryUrl;
+    @JsonProperty("document_filename")
     private String documentFilename;
 
     private Document() {

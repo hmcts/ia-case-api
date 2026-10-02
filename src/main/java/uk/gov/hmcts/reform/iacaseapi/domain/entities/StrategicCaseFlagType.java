@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum StrategicCaseFlagType {
@@ -22,6 +23,7 @@ public enum StrategicCaseFlagType {
     private final String flagCode;
     private final String name;
 
+    @JsonCreator
     StrategicCaseFlagType(String flagCode, String name) {
         this.flagCode = flagCode;
         this.name = name;
