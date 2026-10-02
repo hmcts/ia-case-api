@@ -10,6 +10,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.HomeOfficeAppellant;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.HomeOfficeAppellant;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
@@ -25,6 +27,7 @@ import javax.crypto.SecretKey;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.text.Normalizer;
 import java.text.Normalizer;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -935,15 +938,16 @@ public class HandlerUtils {
         Callback<AsylumCase> callback, AsylumCase asylumCase, String homeOfficeReferenceNumber, HomeOfficeReferenceService homeOfficeReferenceService) {
 
         PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
+        boolean isAdmin = callback.getEvent().equals(Event.EDIT_APPELLANT_PERSONAL_DATA) || isAdmin(asylumCase);
 
         if (!isWellFormedHomeOfficeReference(homeOfficeReferenceNumber)) {
-            response.addError(getInvalidHomeOfficeReference(isAdmin(asylumCase)));
+            response.addError(getInvalidHomeOfficeReference(isAdmin));
         } else if (!isRealHomeOfficeCaseNumber(homeOfficeReferenceNumber, callback, homeOfficeReferenceService)) {
             // An error occurred - display a suitable message to the user
             response.addError(
                 asylumCase.read(HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS, HomeOfficeApiResponseStatusType.class)
                     .orElse(HomeOfficeApiResponseStatusType.UNKNOWN)
-                    .getUserFacingErrorText(homeOfficeReferenceNumber, callback.getEvent().equals(Event.SUBMIT_APPEAL), isAdmin(asylumCase))
+                    .getUserFacingErrorText(homeOfficeReferenceNumber, callback.getEvent().equals(Event.SUBMIT_APPEAL), isAdmin)
             );
         }
         return response;
@@ -979,14 +983,15 @@ public class HandlerUtils {
                     .orElse(HomeOfficeApiResponseStatusType.UNKNOWN);
             String errorMessage = "";
             boolean isOnSubmit = callback.getEvent() == Event.SUBMIT_APPEAL;
+            boolean isAdmin = callback.getEvent().equals(Event.EDIT_APPELLANT_PERSONAL_DATA) || isAdmin(asylumCase);
             if (responseStatus.equals(HomeOfficeApiResponseStatusType.OK)) {
-                errorMessage = getMismatchErrorMessage(homeOfficeReferenceNumber, shouldRevalidate, isOnSubmit, isAdmin(asylumCase));
+                errorMessage = getMismatchErrorMessage(homeOfficeReferenceNumber, shouldRevalidate, isOnSubmit, isAdmin);
                 // Log this - if it happens repeatedly, that's suspicious
                 log.info("The details provided did not match the Home Office biographic data retrieved for case with reference ID {}.", homeOfficeReferenceNumber);
             } else {
                 // This shouldn't happen as the Home Office API ought not to have been called, since the data has already
                 // been retrieved from the Home Office. But we'll check for it anyway just in case something unexpected has happened.
-                errorMessage = responseStatus.getUserFacingErrorText(homeOfficeReferenceNumber, isOnSubmit, isAdmin(asylumCase));
+                errorMessage = responseStatus.getUserFacingErrorText(homeOfficeReferenceNumber, isOnSubmit, isAdmin);
             }
             response.addError(errorMessage);
         }
@@ -1004,7 +1009,7 @@ public class HandlerUtils {
         if (isOnSubmit) {
             return "The information given does not match the details held by the Home Office for reference number " +
                 homeOfficeReferenceNumber +
-                ". You should edit the appeal and enter the Home Office reference and appellant's name exactly as they appear" +
+                ". You should edit the appeal and enter the HO reference and appellant's name exactly as they appear" +
                 " on the decision letter so that we can verify them. These can often be found in the 'How to appeal' " +
                 "section. Please also check if the appellant's date of birth is correct.";
         }
@@ -1132,6 +1137,13 @@ public class HandlerUtils {
             .findFirst()
             .map(HomeOfficeAppellant::getPp)
             .orElse(null);
+    }
+
+    public static boolean shouldValidateEditPersonalData(Callback<AsylumCase> callback) {
+        AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
+        return callback.getEvent().equals(Event.EDIT_APPELLANT_PERSONAL_DATA)
+            && asylumCase.read(HAS_BEEN_VALIDATED_BY_NEW_HOME_OFFICE_API, YesOrNo.class)
+            .orElse(YesOrNo.NO) == YesOrNo.YES;
     }
 
     public static PreSubmitCallbackResponse<AsylumCase> handle24wValidity(Callback<AsylumCase> callback,
