@@ -15,7 +15,7 @@ plugins {
     id 'uk.gov.hmcts.java' version '0.12.70'
     id 'org.gradle.test-retry' version '1.6.6'
     id 'net.serenity-bdd.serenity-gradle-plugin' version '5.3.9'
-    id 'hmcts.ccd.sdk' version 'json-definition-converter-160.1-fb82ae3e'
+    id 'hmcts.ccd.sdk' version 'json-definition-converter-161.1-5bdd2404'
 }
 
 apply plugin: 'java'

@@ -34,7 +34,7 @@ public class EditableDirection {
             typeOverride = FieldType.FixedList,
             typeParameterOverride = "parties"
     )
-    private String parties;
+    private PartiesList parties;
 
     @CCD(
             label = "By what date must they comply?",

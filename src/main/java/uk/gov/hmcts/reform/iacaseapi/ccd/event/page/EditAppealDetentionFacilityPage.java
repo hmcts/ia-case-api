@@ -29,7 +29,8 @@ public final class EditAppealDetentionFacilityPage {
         fields.mandatory(CaseData::getDetentionFacility)
                     .caseEventFieldLabel("Detention facility");
         fields.complex(CaseData::getPrisonNOMSNumber)
-                    .optional(PrisonNOMSComplexType::getPrison).done()
+                    .optional(PrisonNOMSComplexType::getPrison)
+                    .publish(false).done()
                     .fieldShowCondition("detentionFacility=\"prison\"")
                     .caseEventFieldLabel("Prison");
         fields.mandatory(CaseData::getOtherDetentionFacilityName)

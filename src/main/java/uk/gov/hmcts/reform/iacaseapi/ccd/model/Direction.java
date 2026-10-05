@@ -36,7 +36,7 @@ public class Direction {
             typeOverride = FieldType.FixedList,
             typeParameterOverride = "parties"
     )
-    private String parties;
+    private PartiesList parties;
 
     @CCD(
             label = "Date due",

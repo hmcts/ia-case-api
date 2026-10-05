@@ -31,10 +31,14 @@ public final class UpdateHearingRequirementsIsWitnessesAttendingPage {
                     .caseEventFieldLabel("Witness details");
         fields.complex(CaseData::getWitnessDetails, WitnessDetails.class)
                     .mandatory(WitnessDetails::getWitnessName)
+                    .publish(true)
                     .mandatory(WitnessDetails::getWitnessFamilyName)
+                    .publish(true)
                     .readonly(WitnessDetails::getWitnessPartyId)
+                    .publish(true)
                     .retainHiddenValue()
                     .readonly(WitnessDetails::getIsWitnessDeleted)
+                    .publish(true)
                     .retainHiddenValue().done();
     }
 }

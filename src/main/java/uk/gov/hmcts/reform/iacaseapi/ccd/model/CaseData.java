@@ -1419,7 +1419,7 @@ public class CaseData {
             typeParameterOverride = "parties",
             access = {DefaultAccess.class, IaCaseofficerCrudPlus3RolesHzzrzsAccess.class, IaAdmofficerIaIacjudgeCrudAccess.class}
     )
-    private String sendDirectionParties;
+    private PartiesList sendDirectionParties;
 
     @CCD(
             label = "By what date must they comply?",
@@ -12028,7 +12028,7 @@ public class CaseData {
             typeParameterOverride = "parties",
             access = {DefaultAccess.class, IaCaseofficerCrudPlus3RolesHzzrzsAccess.class, IaIacjudgeCrudAccess.class}
     )
-    private String directionEditParties;
+    private PartiesList directionEditParties;
 
     @CCD(
             label = "Date due",
@@ -12961,7 +12961,7 @@ public class CaseData {
             typeParameterOverride = "parties",
             access = {DefaultAccess.class, IaCaseofficerCrudPlus3RolesHzzrzsAccess.class, CitizenRAccess.class}
     )
-    private String reviewTimeExtensionParty;
+    private PartiesList reviewTimeExtensionParty;
 
     @CCD(
             label = "Why do you need more time?",

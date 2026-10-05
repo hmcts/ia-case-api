@@ -1,6 +1,0 @@
-[ {
-  "CaseEventID" : "markAppealAsDetained",
-  "CaseFieldID" : "prisonNOMSNumber",
-  "ListElementCode" : "prison",
-  "Publish" : "N"
-} ]

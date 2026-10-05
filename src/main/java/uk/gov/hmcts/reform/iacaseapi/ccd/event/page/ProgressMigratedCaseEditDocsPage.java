@@ -94,8 +94,11 @@ public final class ProgressMigratedCaseEditDocsPage {
                     .fieldShowCondition("migrationCaseNote=\"Yes\"");
         fields.complex(CaseData::getAddCaseNotesMigration, CaseNoteMigration.class)
                     .mandatory(CaseNoteMigration::getCaseNoteSubject)
+                    .publish(true)
                     .mandatory(CaseNoteMigration::getCaseNoteDescription)
-                    .optional(CaseNoteMigration::getCaseNoteDocument).done();
+                    .publish(true)
+                    .optional(CaseNoteMigration::getCaseNoteDocument)
+                    .publish(true).done();
         fields.mandatoryNoSummary(CaseData::getReviewedHearingRequirements)
                     .fieldShowCondition("dummyEmptyLabel=\"DUMMY_FIELD_TO_HIDE\"")
                     .retainHiddenValue();

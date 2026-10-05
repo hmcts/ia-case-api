@@ -40,7 +40,10 @@ public class ManageTTL implements CCDConfig<CaseData, State, UserRole> {
         fields.page("1");
         fields.complex(CaseData::getTTL)
                     .readonly(TTL::getSystemTTL)
+                    .publish(false)
                     .optional(TTL::getOverrideTTL)
-                    .optional(TTL::getSuspended).done();
+                    .publish(false)
+                    .optional(TTL::getSuspended)
+                    .publish(false).done();
     }
 }

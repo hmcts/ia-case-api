@@ -30,7 +30,8 @@ public final class StartAppealDetentionFacilityPage {
                     .caseEventFieldLabel("Detention facility")
                     .publish(false);
         fields.complex(CaseData::getPrisonNOMSNumber)
-                    .optional(PrisonNOMSComplexType::getPrison).done()
+                    .optional(PrisonNOMSComplexType::getPrison)
+                    .publish(false).done()
                     .fieldShowCondition("detentionFacility=\"prison\"")
                     .caseEventFieldLabel("Prison");
         fields.mandatory(CaseData::getOtherDetentionFacilityName)
