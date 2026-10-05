@@ -1,0 +1,64 @@
+[ {
+  "CaseFieldID" : "appealReferenceNumber",
+  "CallBackURLMidEvent" : "${CCD_DEF_IA_URL}/asylum/ccdMidEvent?pageId=appealReferenceNumber"
+}, {
+  "CaseFieldID" : "checklistTitle3",
+  "CallBackURLMidEvent" : "${CCD_DEF_IA_URL}/asylum/ccdMidEvent"
+}, {
+  "CaseFieldID" : "detentionFacility",
+  "CallBackURLMidEvent" : "${CCD_DEF_IA_URL}/asylum/ccdMidEvent?pageId=detentionFacility"
+}, {
+  "CaseFieldID" : "ircName",
+  "CallBackURLMidEvent" : "${CCD_DEF_IA_URL}/asylum/ccdMidEvent?pageId=ircName"
+}, {
+  "CaseFieldID" : "prisonName",
+  "CallBackURLMidEvent" : "${CCD_DEF_IA_URL}/asylum/ccdMidEvent?pageId=prisonName"
+}, {
+  "CaseFieldID" : "bailApplicationNumber",
+  "CallBackURLMidEvent" : "${CCD_DEF_IA_URL}/asylum/ccdMidEvent?pageId=hasPendingBailApplications"
+}, {
+  "CaseFieldID" : "homeOfficeReferenceNumberTitle",
+  "CallBackURLMidEvent" : "${CCD_DEF_IA_URL}/asylum/ccdMidEvent?pageId=homeOfficeReferenceNumber"
+}, {
+  "CaseFieldID" : "cuiHomeOfficeReferenceNumber",
+  "CallBackURLMidEvent" : "${CCD_DEF_IA_URL}/asylum/ccdMidEvent?pageId=cuiHomeOfficeReferenceNumber"
+}, {
+  "CaseFieldID" : "entryClearanceDecisionTitle",
+  "CallBackURLMidEvent" : "${CCD_DEF_IA_URL}/asylum/ccdMidEvent?pageId=oocHomeOfficeReferenceNumber"
+}, {
+  "CaseFieldID" : "cuiGwfReferenceNumber",
+  "CallBackURLMidEvent" : "${CCD_DEF_IA_URL}/asylum/ccdMidEvent?pageId=cuiGwfReferenceNumber"
+}, {
+  "CaseFieldID" : "appellantBasicDetailsTitle",
+  "CallBackURLMidEvent" : "${CCD_DEF_IA_URL}/asylum/ccdMidEvent?pageId=appellantBasicDetails"
+}, {
+  "CaseFieldID" : "cuiAppellantName",
+  "CallBackURLMidEvent" : "${CCD_DEF_IA_URL}/asylum/ccdMidEvent?pageId=cuiAppellantName"
+}, {
+  "CaseFieldID" : "cuiAppellantDob",
+  "CallBackURLMidEvent" : "${CCD_DEF_IA_URL}/asylum/ccdMidEvent?pageId=cuiAppellantDob"
+}, {
+  "CaseFieldID" : "appellantAddressTitle",
+  "CallBackURLMidEvent" : "${CCD_DEF_IA_URL}/asylum/ccdMidEvent?pageId=appellantAddress"
+}, {
+  "CaseFieldID" : "appellantAddress",
+  "CallBackURLMidEvent" : "${CCD_DEF_IA_URL}/asylum/ccdMidEvent?pageId=appellantAddress"
+}, {
+  "CaseFieldID" : "appellantHasFixedAddressAdminJ",
+  "CallBackURLMidEvent" : "${CCD_DEF_IA_URL}/asylum/ccdMidEvent?pageId=appellantAddressAdminJ"
+}, {
+  "CaseFieldID" : "appellantContactPreferenceTitle",
+  "CallBackURLMidEvent" : "${CCD_DEF_IA_URL}/asylum/ccdMidEvent?pageId=appellantContactPreference"
+}, {
+  "CaseFieldID" : "homeOfficeDecisionLetterTitle",
+  "CallBackURLMidEvent" : "${CCD_DEF_IA_URL}/asylum/ccdMidEvent?pageId=homeOfficeDecisionLetter"
+}, {
+  "CaseFieldID" : "entryClearanceDecisionLetterTitle",
+  "CallBackURLMidEvent" : "${CCD_DEF_IA_URL}/asylum/ccdMidEvent?pageId=entryClearanceDecisionLetter"
+}, {
+  "CaseFieldID" : "hasOtherAppealsTitle",
+  "CallBackURLMidEvent" : "${CCD_DEF_IA_URL}/asylum/ccdMidEvent"
+}, {
+  "CaseFieldID" : "legalRepDetailsHintAndTitle",
+  "CallBackURLMidEvent" : "${CCD_DEF_IA_URL}/asylum/ccdMidEvent?pageId=legalRepresentativeDetails"
+} ]

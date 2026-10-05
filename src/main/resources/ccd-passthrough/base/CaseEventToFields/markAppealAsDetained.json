@@ -1,0 +1,16 @@
+[ {
+  "CaseFieldID" : "detentionFacility",
+  "CallBackURLMidEvent" : "${CCD_DEF_IA_URL}/asylum/ccdMidEvent?pageId=markAppealAsDetained_detentionFacility"
+}, {
+  "CaseFieldID" : "ircName",
+  "CallBackURLMidEvent" : "${CCD_DEF_IA_URL}/asylum/ccdMidEvent?pageId=markAppealAsDetained_ircName"
+}, {
+  "CaseFieldID" : "prisonName",
+  "CallBackURLMidEvent" : "${CCD_DEF_IA_URL}/asylum/ccdMidEvent?pageId=markAppealAsDetained_prisonName"
+}, {
+  "CaseFieldID" : "appellantAddressTitle",
+  "CallBackURLMidEvent" : "${CCD_DEF_IA_URL}/asylum/ccdMidEvent?pageId=markAppealAsDetained_updateAppellantAddress"
+}, {
+  "CaseFieldID" : "bailApplicationNumber",
+  "CallBackURLMidEvent" : "${CCD_DEF_IA_URL}/asylum/ccdMidEvent?pageId=markAppealAsDetained_appellantBailApplication"
+} ]

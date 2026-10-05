@@ -1,0 +1,41 @@
+[ {
+  "CaseEventID" : "requestReasonsForAppeal",
+  "CaseFieldID" : "lastModifiedDirection",
+  "ListElementCode" : "explanation",
+  "Publish" : "Y"
+}, {
+  "CaseEventID" : "requestReasonsForAppeal",
+  "CaseFieldID" : "lastModifiedDirection",
+  "ListElementCode" : "parties",
+  "Publish" : "Y"
+}, {
+  "CaseEventID" : "requestReasonsForAppeal",
+  "CaseFieldID" : "lastModifiedDirection",
+  "ListElementCode" : "dateDue",
+  "Publish" : "Y"
+}, {
+  "CaseEventID" : "requestReasonsForAppeal",
+  "CaseFieldID" : "lastModifiedDirection",
+  "ListElementCode" : "dateSent",
+  "Publish" : "Y"
+}, {
+  "CaseEventID" : "requestReasonsForAppeal",
+  "CaseFieldID" : "lastModifiedDirection",
+  "ListElementCode" : "tag",
+  "Publish" : "Y"
+}, {
+  "CaseEventID" : "requestReasonsForAppeal",
+  "CaseFieldID" : "lastModifiedDirection",
+  "ListElementCode" : "previousDates",
+  "Publish" : "Y"
+}, {
+  "CaseEventID" : "requestReasonsForAppeal",
+  "CaseFieldID" : "lastModifiedDirection",
+  "ListElementCode" : "uniqueId",
+  "Publish" : "Y"
+}, {
+  "CaseEventID" : "requestReasonsForAppeal",
+  "CaseFieldID" : "lastModifiedDirection",
+  "ListElementCode" : "directionType",
+  "Publish" : "Y"
+} ]

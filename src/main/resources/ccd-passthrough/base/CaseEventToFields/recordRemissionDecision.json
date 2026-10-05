@@ -1,0 +1,4 @@
+[ {
+  "CaseFieldID" : "remissionApprovedForFeeWithHearingAdvice",
+  "CallBackURLMidEvent" : "${CCD_DEF_IA_URL}/asylum/ccdMidEvent"
+} ]

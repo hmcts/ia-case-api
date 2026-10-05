@@ -1,0 +1,4 @@
+[ {
+  "CaseFieldID" : "appellantInPersonManualTitle",
+  "CallBackURLMidEvent" : "${CCD_DEF_IA_URL}/asylum/ccdMidEvent?pageId=appellantAddress"
+} ]

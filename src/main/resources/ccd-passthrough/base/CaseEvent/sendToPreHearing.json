@@ -1,0 +1,5 @@
+[ {
+  "ID" : "sendToPreHearing",
+  "CallBackURLAboutToSubmitEvent" : "${CCD_DEF_IA_URL}/asylum/ccdAboutToSubmit",
+  "RetriesTimeoutURLAboutToSubmitEvent" : "5,5,5,5"
+} ]

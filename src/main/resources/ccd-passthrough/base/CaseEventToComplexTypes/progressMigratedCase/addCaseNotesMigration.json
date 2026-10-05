@@ -1,0 +1,16 @@
+[ {
+  "CaseEventID" : "progressMigratedCase",
+  "CaseFieldID" : "addCaseNotesMigration",
+  "ListElementCode" : "caseNoteSubject",
+  "Publish" : "Y"
+}, {
+  "CaseEventID" : "progressMigratedCase",
+  "CaseFieldID" : "addCaseNotesMigration",
+  "ListElementCode" : "caseNoteDescription",
+  "Publish" : "Y"
+}, {
+  "CaseEventID" : "progressMigratedCase",
+  "CaseFieldID" : "addCaseNotesMigration",
+  "ListElementCode" : "caseNoteDocument",
+  "Publish" : "Y"
+} ]

@@ -1,0 +1,5 @@
+[ {
+  "ID" : "saveNotificationsToData",
+  "CallBackURLAboutToSubmitEvent" : "${CCD_DEF_IA_URL}/asylum/ccdAboutToSubmit",
+  "RetriesTimeoutURLAboutToSubmitEvent" : "1,1,1,1"
+} ]

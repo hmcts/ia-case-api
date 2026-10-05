@@ -1,0 +1,16 @@
+[ {
+  "CaseFieldID" : "hearingRequirementsTitle",
+  "CallBackURLMidEvent" : "${CCD_DEF_IA_URL}/asylum/ccdMidEvent?pageId=draftHearingRequirements"
+}, {
+  "CaseFieldID" : "witnessDetails",
+  "CallBackURLMidEvent" : "${CCD_DEF_IA_URL}/asylum/ccdMidEvent?pageId=isWitnessesAttending"
+}, {
+  "CaseFieldID" : "appellantInterpreterLanguageCategory",
+  "CallBackURLMidEvent" : "${CCD_DEF_IA_URL}/asylum/ccdMidEvent?pageId=appellantInterpreterLanguageCategory"
+}, {
+  "CaseFieldID" : "isAnyWitnessInterpreterRequired",
+  "CallBackURLMidEvent" : "${CCD_DEF_IA_URL}/asylum/ccdMidEvent?pageId=isAnyWitnessInterpreterRequired"
+}, {
+  "CaseFieldID" : "whichWitnessRequiresInterpreterLabel",
+  "CallBackURLMidEvent" : "${CCD_DEF_IA_URL}/asylum/ccdMidEvent?pageId=whichWitnessRequiresInterpreter"
+} ]

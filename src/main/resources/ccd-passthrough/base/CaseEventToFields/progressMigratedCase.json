@@ -1,0 +1,4 @@
+[ {
+  "CaseFieldID" : "desiredStateTips",
+  "CallBackURLMidEvent" : "${CCD_DEF_IA_URL}/asylum/ccdMidEvent?pageId=migrateAriaCasesDocumentUploaderMidEvent"
+} ]

@@ -1,0 +1,16 @@
+[ {
+  "CaseEventID" : "migrateCase",
+  "CaseFieldID" : "TTL",
+  "ListElementCode" : "SystemTTL",
+  "Publish" : "N"
+}, {
+  "CaseEventID" : "migrateCase",
+  "CaseFieldID" : "TTL",
+  "ListElementCode" : "OverrideTTL",
+  "Publish" : "N"
+}, {
+  "CaseEventID" : "migrateCase",
+  "CaseFieldID" : "TTL",
+  "ListElementCode" : "Suspended",
+  "Publish" : "N"
+} ]

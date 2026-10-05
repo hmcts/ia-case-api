@@ -1,0 +1,56 @@
+[ {
+  "CaseEventID" : "decideAnApplication",
+  "CaseFieldID" : "lastModifiedApplication",
+  "ListElementCode" : "applicant",
+  "Publish" : "Y"
+}, {
+  "CaseEventID" : "decideAnApplication",
+  "CaseFieldID" : "lastModifiedApplication",
+  "ListElementCode" : "type",
+  "Publish" : "Y"
+}, {
+  "CaseEventID" : "decideAnApplication",
+  "CaseFieldID" : "lastModifiedApplication",
+  "ListElementCode" : "details",
+  "Publish" : "Y"
+}, {
+  "CaseEventID" : "decideAnApplication",
+  "CaseFieldID" : "lastModifiedApplication",
+  "ListElementCode" : "evidence",
+  "Publish" : "Y"
+}, {
+  "CaseEventID" : "decideAnApplication",
+  "CaseFieldID" : "lastModifiedApplication",
+  "ListElementCode" : "date",
+  "Publish" : "Y"
+}, {
+  "CaseEventID" : "decideAnApplication",
+  "CaseFieldID" : "lastModifiedApplication",
+  "ListElementCode" : "decision",
+  "Publish" : "Y"
+}, {
+  "CaseEventID" : "decideAnApplication",
+  "CaseFieldID" : "lastModifiedApplication",
+  "ListElementCode" : "state",
+  "Publish" : "Y"
+}, {
+  "CaseEventID" : "decideAnApplication",
+  "CaseFieldID" : "lastModifiedApplication",
+  "ListElementCode" : "applicantRole",
+  "Publish" : "Y"
+}, {
+  "CaseEventID" : "decideAnApplication",
+  "CaseFieldID" : "lastModifiedApplication",
+  "ListElementCode" : "decisionReason",
+  "Publish" : "Y"
+}, {
+  "CaseEventID" : "decideAnApplication",
+  "CaseFieldID" : "lastModifiedApplication",
+  "ListElementCode" : "decisionDate",
+  "Publish" : "Y"
+}, {
+  "CaseEventID" : "decideAnApplication",
+  "CaseFieldID" : "lastModifiedApplication",
+  "ListElementCode" : "decisionMaker",
+  "Publish" : "Y"
+} ]

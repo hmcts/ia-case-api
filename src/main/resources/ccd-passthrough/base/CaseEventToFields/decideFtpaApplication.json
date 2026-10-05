@@ -1,0 +1,28 @@
+[ {
+  "CaseFieldID" : "ftpaApplicantType",
+  "CallBackURLMidEvent" : "${CCD_DEF_IA_URL}/asylum/ccdMidEvent"
+}, {
+  "CaseFieldID" : "ftpaAppellantRjDecisionOutcomeType",
+  "CallBackURLMidEvent" : "${CCD_DEF_IA_URL}/asylum/ccdMidEvent"
+}, {
+  "CaseFieldID" : "isFtpaAppellantNoticeOfDecisionSetAside",
+  "CallBackURLMidEvent" : "${CCD_DEF_IA_URL}/asylum/ccdMidEvent"
+}, {
+  "CaseFieldID" : "ftpaAppellantR35DecisionObjections",
+  "CallBackURLMidEvent" : "${CCD_DEF_IA_URL}/asylum/ccdMidEvent"
+}, {
+  "CaseFieldID" : "ftpaAppellantDecisionNotesAdvice",
+  "CallBackURLMidEvent" : "${CCD_DEF_IA_URL}/asylum/ccdMidEvent"
+}, {
+  "CaseFieldID" : "ftpaRespondentRjDecisionOutcomeType",
+  "CallBackURLMidEvent" : "${CCD_DEF_IA_URL}/asylum/ccdMidEvent"
+}, {
+  "CaseFieldID" : "isFtpaRespondentNoticeOfDecisionSetAside",
+  "CallBackURLMidEvent" : "${CCD_DEF_IA_URL}/asylum/ccdMidEvent"
+}, {
+  "CaseFieldID" : "ftpaRespondentR35DecisionObjections",
+  "CallBackURLMidEvent" : "${CCD_DEF_IA_URL}/asylum/ccdMidEvent"
+}, {
+  "CaseFieldID" : "ftpaRespondentDecisionNotesAdvice",
+  "CallBackURLMidEvent" : "${CCD_DEF_IA_URL}/asylum/ccdMidEvent"
+} ]

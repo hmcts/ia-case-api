@@ -1,0 +1,5 @@
+[ {
+  "ID" : "applyNocDecision",
+  "CallBackURLAboutToStartEvent" : "${CCD_DEF_AAC_URL}/noc/apply-decision",
+  "RetriesTimeoutAboutToStartEvent" : "5,5,5,5"
+} ]

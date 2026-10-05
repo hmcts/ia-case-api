@@ -1,0 +1,16 @@
+[ {
+  "CaseEventID" : "updateHearingRequirements",
+  "CaseFieldID" : "witness6InterpreterSignLanguage",
+  "ListElementCode" : "languageRefData",
+  "SecurityClassification" : "PUBLIC"
+}, {
+  "CaseEventID" : "updateHearingRequirements",
+  "CaseFieldID" : "witness6InterpreterSignLanguage",
+  "ListElementCode" : "languageManualEntry",
+  "SecurityClassification" : "PUBLIC"
+}, {
+  "CaseEventID" : "updateHearingRequirements",
+  "CaseFieldID" : "witness6InterpreterSignLanguage",
+  "ListElementCode" : "languageManualEntryDescription",
+  "SecurityClassification" : "PUBLIC"
+} ]

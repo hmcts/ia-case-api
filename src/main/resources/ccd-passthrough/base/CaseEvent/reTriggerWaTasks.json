@@ -1,0 +1,5 @@
+[ {
+  "ID" : "reTriggerWaTasks",
+  "CallBackURLSubmittedEvent" : "${CCD_DEF_IA_URL}/asylum/ccdSubmitted",
+  "RetriesTimeoutURLSubmittedEvent" : "0"
+} ]

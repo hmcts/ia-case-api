@@ -1,0 +1,41 @@
+[ {
+  "CaseEventID" : "requestRespondentReview",
+  "CaseFieldID" : "lastModifiedDirection",
+  "ListElementCode" : "explanation",
+  "Publish" : "Y"
+}, {
+  "CaseEventID" : "requestRespondentReview",
+  "CaseFieldID" : "lastModifiedDirection",
+  "ListElementCode" : "parties",
+  "Publish" : "Y"
+}, {
+  "CaseEventID" : "requestRespondentReview",
+  "CaseFieldID" : "lastModifiedDirection",
+  "ListElementCode" : "dateDue",
+  "Publish" : "Y"
+}, {
+  "CaseEventID" : "requestRespondentReview",
+  "CaseFieldID" : "lastModifiedDirection",
+  "ListElementCode" : "dateSent",
+  "Publish" : "Y"
+}, {
+  "CaseEventID" : "requestRespondentReview",
+  "CaseFieldID" : "lastModifiedDirection",
+  "ListElementCode" : "tag",
+  "Publish" : "Y"
+}, {
+  "CaseEventID" : "requestRespondentReview",
+  "CaseFieldID" : "lastModifiedDirection",
+  "ListElementCode" : "previousDates",
+  "Publish" : "Y"
+}, {
+  "CaseEventID" : "requestRespondentReview",
+  "CaseFieldID" : "lastModifiedDirection",
+  "ListElementCode" : "uniqueId",
+  "Publish" : "Y"
+}, {
+  "CaseEventID" : "requestRespondentReview",
+  "CaseFieldID" : "lastModifiedDirection",
+  "ListElementCode" : "directionType",
+  "Publish" : "Y"
+} ]

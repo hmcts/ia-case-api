@@ -1,0 +1,7 @@
+[ {
+  "CaseFieldID" : "listCaseHearingLength",
+  "CallBackURLMidEvent" : "${CCD_DEF_IA_URL}/asylum/ccdMidEvent"
+}, {
+  "CaseFieldID" : "listingLength",
+  "CallBackURLMidEvent" : "${CCD_DEF_IA_URL}/asylum/ccdMidEvent"
+} ]

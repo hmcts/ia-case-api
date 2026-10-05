@@ -15,11 +15,29 @@ plugins {
     id 'uk.gov.hmcts.java' version '0.12.70'
     id 'org.gradle.test-retry' version '1.6.6'
     id 'net.serenity-bdd.serenity-gradle-plugin' version '5.3.9'
+    id 'hmcts.ccd.sdk' version 'json-definition-converter-160.1-fb82ae3e'
 }
 
 apply plugin: 'java'
 apply plugin: 'project-report'
 apply plugin: 'idea'
+
+ccd {
+    // rootPackage names the GENERATED package, not …iacaseapi: generateCCDConfig looks for a single
+    // @SpringBootConfiguration beneath it, and the generated tree carries its own minimal one
+    // (ConverterGeneratedApplication). Pointing it at the service's base package would find
+    // Application instead and boot the whole service, which definition generation has no need of.
+    configDir = file('build/definitions')
+    rootPackage = 'uk.gov.hmcts.reform.iacaseapi.ccd'
+    caseType = 'Asylum'
+}
+
+// Definition generation reads annotations and builders; it serves no traffic. The service is a
+// servlet application, so without this the generator's context tries to start a web server and dies
+// on the missing ServletWebServerFactory (the generator's own classpath carries no servlet container).
+generateCCDConfig {
+    systemProperty 'spring.main.web-application-type', 'none'
+}
 
 mainClassName = 'uk.gov.hmcts.reform.iacaseapi.Application'
 def jarName = 'ia-case-api.jar'
@@ -43,6 +61,10 @@ tasks.withType(JavaCompile).configureEach {
 
 compileJava {
     options.compilerArgs += ["-Werror"]
+    // The generated event classes are long fluent builder chains, which javac attributes recursively;
+    // at the default thread stack they overflow (StackOverflowError) before reporting any error.
+    options.fork = true
+    options.forkOptions.jvmArgs = ['-Xss128m']
 }
 
 compileTestJava {

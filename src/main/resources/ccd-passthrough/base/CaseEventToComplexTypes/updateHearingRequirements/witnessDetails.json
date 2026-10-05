@@ -1,0 +1,25 @@
+[ {
+  "CaseEventID" : "updateHearingRequirements",
+  "CaseFieldID" : "witnessDetails",
+  "ListElementCode" : "witnessName",
+  "SecurityClassification" : "PUBLIC",
+  "Publish" : "Y"
+}, {
+  "CaseEventID" : "updateHearingRequirements",
+  "CaseFieldID" : "witnessDetails",
+  "ListElementCode" : "witnessFamilyName",
+  "SecurityClassification" : "PUBLIC",
+  "Publish" : "Y"
+}, {
+  "CaseEventID" : "updateHearingRequirements",
+  "CaseFieldID" : "witnessDetails",
+  "ListElementCode" : "witnessPartyId",
+  "SecurityClassification" : "PUBLIC",
+  "Publish" : "Y"
+}, {
+  "CaseEventID" : "updateHearingRequirements",
+  "CaseFieldID" : "witnessDetails",
+  "ListElementCode" : "isWitnessDeleted",
+  "SecurityClassification" : "PUBLIC",
+  "Publish" : "Y"
+} ]

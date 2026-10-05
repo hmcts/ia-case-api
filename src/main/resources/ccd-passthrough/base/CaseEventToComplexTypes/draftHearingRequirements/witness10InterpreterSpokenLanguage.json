@@ -1,0 +1,16 @@
+[ {
+  "CaseEventID" : "draftHearingRequirements",
+  "CaseFieldID" : "witness10InterpreterSpokenLanguage",
+  "ListElementCode" : "languageRefData",
+  "SecurityClassification" : "PUBLIC"
+}, {
+  "CaseEventID" : "draftHearingRequirements",
+  "CaseFieldID" : "witness10InterpreterSpokenLanguage",
+  "ListElementCode" : "languageManualEntry",
+  "SecurityClassification" : "PUBLIC"
+}, {
+  "CaseEventID" : "draftHearingRequirements",
+  "CaseFieldID" : "witness10InterpreterSpokenLanguage",
+  "ListElementCode" : "languageManualEntryDescription",
+  "SecurityClassification" : "PUBLIC"
+} ]

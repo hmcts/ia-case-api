@@ -1,0 +1,41 @@
+[ {
+  "CaseEventID" : "sendDirection",
+  "CaseFieldID" : "lastModifiedDirection",
+  "ListElementCode" : "explanation",
+  "Publish" : "Y"
+}, {
+  "CaseEventID" : "sendDirection",
+  "CaseFieldID" : "lastModifiedDirection",
+  "ListElementCode" : "parties",
+  "Publish" : "Y"
+}, {
+  "CaseEventID" : "sendDirection",
+  "CaseFieldID" : "lastModifiedDirection",
+  "ListElementCode" : "dateDue",
+  "Publish" : "Y"
+}, {
+  "CaseEventID" : "sendDirection",
+  "CaseFieldID" : "lastModifiedDirection",
+  "ListElementCode" : "dateSent",
+  "Publish" : "Y"
+}, {
+  "CaseEventID" : "sendDirection",
+  "CaseFieldID" : "lastModifiedDirection",
+  "ListElementCode" : "tag",
+  "Publish" : "Y"
+}, {
+  "CaseEventID" : "sendDirection",
+  "CaseFieldID" : "lastModifiedDirection",
+  "ListElementCode" : "previousDates",
+  "Publish" : "Y"
+}, {
+  "CaseEventID" : "sendDirection",
+  "CaseFieldID" : "lastModifiedDirection",
+  "ListElementCode" : "uniqueId",
+  "Publish" : "Y"
+}, {
+  "CaseEventID" : "sendDirection",
+  "CaseFieldID" : "lastModifiedDirection",
+  "ListElementCode" : "directionType",
+  "Publish" : "Y"
+} ]

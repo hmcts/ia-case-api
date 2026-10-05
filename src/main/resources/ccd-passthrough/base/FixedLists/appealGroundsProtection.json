@@ -1,0 +1,13 @@
+[ {
+  "LiveFrom" : "01/01/2018",
+  "ID" : "appealGroundsProtection",
+  "ListElementCode" : "protectionHumanitarianProtection",
+  "ListElement" : "Removing the appellant from the UK would breach the UK's obligation in relation to persons eligible for a grant of humanitarian protection",
+  "DisplayOrder" : 1
+}, {
+  "LiveFrom" : "01/01/2018",
+  "ID" : "appealGroundsProtection",
+  "ListElementCode" : "protectionRefugeeConvention",
+  "ListElement" : "Removing the appellant from the UK would breach the UK's obligation under the Refugee Convention",
+  "DisplayOrder" : 2
+} ]

@@ -1,0 +1,4 @@
+[ {
+  "CaseFieldID" : "sendDirectionWithQuestionsTitle",
+  "CallBackURLMidEvent" : "${CCD_DEF_IA_URL}/asylum/ccdMidEvent"
+} ]
