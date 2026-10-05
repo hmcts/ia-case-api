@@ -138,7 +138,6 @@ def secrets = [
                 secret('idam-data-store-system-user-password', 'IDAM_DATA_STORE_SYSTEM_USER_PASSWORD'),
                 secret('postcode-info-address-lookup-token', 'ADDRESS_LOOKUP_TOKEN'),
                 secret('session-keys', 'SESSION_KEYS')
-
         ]
 ]
 

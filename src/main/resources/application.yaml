@@ -654,6 +654,7 @@ security:
       - "progressMigratedCase"
       - "generateListCmrTask"
       - "hearingCancelled"
+      - "cmrHearingCancelled"
       - "generateListCmrTask"
       - "markAppealAsDetained"
       - "removeDetainedStatus"
@@ -730,6 +731,7 @@ security:
       - "refundConfirmation"
       - "progressMigratedCase"
       - "hearingCancelled"
+      - "cmrHearingCancelled"
       - "generateListCmrTask"
       - "markAppealAsDetained"
       - "removeDetainedStatus"
@@ -808,6 +810,7 @@ security:
       - "refundConfirmation"
       - "progressMigratedCase"
       - "hearingCancelled"
+      - "cmrHearingCancelled"
       - "generateListCmrTask"
       - "markAppealAsDetained"
       - "removeDetainedStatus"
@@ -883,6 +886,7 @@ security:
       - "refundConfirmation"
       - "progressMigratedCase"
       - "hearingCancelled"
+      - "cmrHearingCancelled"
       - "generateListCmrTask"
       - "markAppealAsDetained"
       - "removeDetainedStatus"
@@ -958,6 +962,7 @@ security:
       - "refundConfirmation"
       - "progressMigratedCase"
       - "hearingCancelled"
+      - "cmrHearingCancelled"
       - "generateListCmrTask"
       - "markAppealAsDetained"
       - "removeDetainedStatus"
@@ -1033,6 +1038,7 @@ security:
       - "refundConfirmation"
       - "progressMigratedCase"
       - "hearingCancelled"
+      - "cmrHearingCancelled"
       - "appellantInPersonManual"
       - "generateListCmrTask"
       - "markAppealAsDetained"
@@ -1466,6 +1472,7 @@ security:
       - "UpdateNextHearingInfo"
       - "removeCaseManagerBulk"
       - "hearingCancelled"
+      - "cmrHearingCancelled"
       - "forceDecidedState"
       - "forceFtpaDecidedState"
       - "rollbackMigration"
@@ -1481,6 +1488,7 @@ security:
       - "joinAppealConfirmation"
       - "nlrDetailsUpdated"
       - "removeNonLegalRep"
+      - "stf24wDetermination"
     caseworker-ia-internal:
       - "revokeCaseAccess"
       - "removeCaseManagerBulk"
@@ -1587,5 +1595,7 @@ ia:
 app:
   home-office-validation:
     enabled: ${HOME_OFFICE_VALIDATION_ENABLED:true}
+  home-office-mock-turn-off-for-test:
+    enabled: ${HOME_OFFICE_MOCK_TURN_OFF_FOR_TEST:false}
   statutory-timeframe:
     live-date: ${STATUTORY_TIMEFRAME_LIVE_DATE:2026-08-12}
