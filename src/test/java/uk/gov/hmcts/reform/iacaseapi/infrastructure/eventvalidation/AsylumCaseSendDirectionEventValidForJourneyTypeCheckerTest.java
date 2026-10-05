@@ -119,20 +119,17 @@ class AsylumCaseSendDirectionEventValidForJourneyTypeCheckerTest {
             .thenReturn(Optional.of(party));
     }
 
-    @ParameterizedTest
-    @EnumSource(value = Parties.class, names = {
-        "BOTH", "LEGAL_REPRESENTATIVE"
-    })
-    void cannotSendDirectionToBothForInternalCase(Parties party) {
-        setupInternalCaseCallback(party);
+    @Test
+    void cannotSendDirectionToLR() {
+        setupInternalCaseCallback(Parties.LEGAL_REPRESENTATIVE);
         EventValid eventValid = new AsylumCaseSendDirectionEventValidForJourneyTypeChecker().check(callback);
 
         assertThat(eventValid).isEqualTo(
-                new EventValid("This is an Appellant in Person (AiP) manual appeal. You cannot select 'Legal Representative' or 'Both' as a recipient."));
+                new EventValid("This is an Appellant in Person (AiP) manual appeal. You cannot select 'Legal Representative' as a recipient."));
 
         Assertions.assertThat(loggingEventListAppender.list)
                 .extracting(ILoggingEvent::getMessage, ILoggingEvent::getLevel)
-                .contains(Tuple.tuple("This is an Appellant in Person (AiP) manual appeal. You cannot select 'Legal Representative' or 'Both' as a recipient.", Level.ERROR));
+                .contains(Tuple.tuple("This is an Appellant in Person (AiP) manual appeal. You cannot select 'Legal Representative' as a recipient.", Level.ERROR));
     }
 
     @Test
@@ -152,18 +149,5 @@ class AsylumCaseSendDirectionEventValidForJourneyTypeCheckerTest {
         when(asylumCase.read(AsylumCaseFieldDefinition.APPELLANTS_REPRESENTATION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(asylumCase.read(AsylumCaseFieldDefinition.SEND_DIRECTION_PARTIES, Parties.class))
                 .thenReturn(Optional.of(party));
-    }
-
-    @Test
-    void cannotSendDirectionToAppellantAndRespondentForManualCase() {
-        setupInternalCaseCallback(Parties.APPELLANT_AND_RESPONDENT);
-        EventValid eventValid = new AsylumCaseSendDirectionEventValidForJourneyTypeChecker().check(callback);
-
-        assertThat(eventValid).isEqualTo(
-                new EventValid("You cannot select appellant and respondent as joint recipients on a manual appeal. The direction will need to be issued to the recipients individually."));
-
-        Assertions.assertThat(loggingEventListAppender.list)
-                .extracting(ILoggingEvent::getMessage, ILoggingEvent::getLevel)
-                .contains(Tuple.tuple("You cannot select appellant and respondent as joint recipients on a manual appeal. The direction will need to be issued to the recipients individually.", Level.ERROR));
     }
 }
