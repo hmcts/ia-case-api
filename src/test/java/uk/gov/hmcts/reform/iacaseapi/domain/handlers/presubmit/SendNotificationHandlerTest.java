@@ -388,6 +388,17 @@ class SendNotificationHandlerTest {
     }
 
     @Test
+    void if_stf24w_then_should_handle_review_hearing_requirements() {
+        when(callback.getEvent()).thenReturn(Event.REVIEW_HEARING_REQUIREMENTS);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+
+        assertTrue(sendNotificationHandler.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback));
+    }
+
+    @Test
     void should_clear_24w_removal_temp_fields_when_event_is_remove_statutory_timeframe_24_weeks() {
         when(callback.getEvent()).thenReturn(Event.REMOVE_STATUTORY_TIMEFRAME_24_WEEKS);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -451,6 +462,8 @@ class SendNotificationHandlerTest {
         Event.DECISION_WITHOUT_HEARING,
         Event.LIST_CASE,
         Event.LIST_CASE_WITHOUT_HEARING_REQUIREMENTS,
+        Event.CMR_LISTING,
+        Event.CMR_RE_LISTING,
         Event.EDIT_CASE_LISTING,
         Event.END_APPEAL,
         Event.UPLOAD_HOME_OFFICE_BUNDLE,
@@ -525,6 +538,7 @@ class SendNotificationHandlerTest {
         Event.REFUND_CONFIRMATION,
         Event.REVOKE_CITIZEN_ACCESS,
         Event.HEARING_CANCELLED,
+        Event.CMR_HEARING_CANCELLED,
         Event.SEND_INVITE_TO_NON_LEGAL_REP,
         Event.SEND_PIP_TO_NON_LEGAL_REP,
         Event.JOIN_APPEAL_CONFIRMATION,
@@ -541,6 +555,7 @@ class SendNotificationHandlerTest {
     private static final List<Event> allowedInternalEventTypes = List.of(
         Event.PROGRESS_MIGRATED_CASE,
         Event.HEARING_CANCELLED,
+        Event.CMR_HEARING_CANCELLED,
         Event.REINSTATE_APPEAL,
         Event.UPLOAD_ADDITIONAL_EVIDENCE,
         Event.SEND_DIRECTION,
@@ -593,12 +608,15 @@ class SendNotificationHandlerTest {
         Event.REQUEST_RESPONDENT_REVIEW,
         Event.MARK_APPEAL_PAID,
         Event.LIST_CASE,
+        Event.CMR_LISTING,
+        Event.CMR_RE_LISTING,
         Event.DECISION_WITHOUT_HEARING,
         Event.REQUEST_RESPONDENT_EVIDENCE,
         Event.REMOVE_STATUTORY_TIMEFRAME_24_WEEKS,
         Event.CHANGE_DIRECTION_DUE_DATE,
         Event.SEND_LATE_TIMELINE_NOTICE,
-        Event.COMPLETE_CASE_REVIEW
+        Event.COMPLETE_CASE_REVIEW,
+        Event.REVIEW_HEARING_REQUIREMENTS
     );
 
     private static Stream<Event> allowedEventsSource() {
