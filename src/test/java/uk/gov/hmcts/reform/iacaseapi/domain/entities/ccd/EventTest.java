@@ -120,6 +120,7 @@ class EventTest {
             Arguments.of("decisionWithoutHearing", Event.DECISION_WITHOUT_HEARING.toString()),
             Arguments.of("listCma", Event.LIST_CMA.toString()),
             Arguments.of("editAppealAfterSubmit", Event.EDIT_APPEAL_AFTER_SUBMIT.toString()),
+            Arguments.of("editAppellantPersonalData", Event.EDIT_APPELLANT_PERSONAL_DATA.toString()),
             Arguments.of("linkAppeal", Event.LINK_APPEAL.toString()),
             Arguments.of("unlinkAppeal", Event.UNLINK_APPEAL.toString()),
             Arguments.of("paymentAppeal", Event.PAYMENT_APPEAL.toString()),
