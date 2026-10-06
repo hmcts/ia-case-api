@@ -41,9 +41,8 @@ java:
     # Set HOME_OFFICE_VALIDATION_ENABLED: "true" if you want to run the validation against the mock HO validation API in Preview; otherwise leave at "false".
     # The mock HO validation API lives at http://ia-home-office-mock-api-aat.service.core-compute-aat.internal/ichallenge/applications/v1/1111-2222-3333-4444
     # (you can use any valid UAN at the end; but in ExUI you must enter the expected UAN, name and DOB in order to proceed past validation)
-    
     HOME_OFFICE_VALIDATION_ENABLED: "true" # Do not remove this this environment variable!
-  
+    HOME_OFFICE_MOCK_TURN_OFF_FOR_TEST: "false" # Set this environment variable to false if you want to test something using the mock HO validation API
   keyVaults:
     ia:
       resourceGroup: ia
@@ -595,6 +594,7 @@ ia-home-office-integration-api:
       POSTGRES_NAME: "pr-${CHANGE_ID}-ia-case-api"
       POSTGRES_USERNAME: hmcts
       POSTGRES_PASSWORD: ${GENERIC_VALUES_PREVIEW_YAML_PASS}
+      HOME_OFFICE_ALLOWED_ENDPOINTS: "/home-office-statutory-timeframe-status"
     keyVaults:
       ia:
         resourceGroup: ia
@@ -699,6 +699,7 @@ ia-aip-frontend:
       TIMELINE_ENABLED: true
       ASK_FOR_MORE_TIME_ENABLED: true
       MAX_DRAFT_APPEALS: 5
+      HOME_OFFICE_VALIDATION_ENABLED: false
     keyVaults:
       ia:
         resourceGroup: ia
@@ -829,22 +830,7 @@ xui-webapp:
       PREVIEW_DEPLOYMENT_ID: "ia-${CHANGE_ID}"
       ENABLE_HEARING_DATA_SOURCE_HEADERS: "true"
       SERVICES_HEARINGS_COMPONENT_API_IAC: https://ia-case-api-pr-${CHANGE_ID}-hearings-api.preview.platform.hmcts.net
-    keyVaults:
-      rpx:
-        resourceGroup: rpx
-        secrets:
-          - name: mc-s2s-client-secret
-            alias: mc-s2s-client-secret
-          - name: mc-idam-client-secret
-            alias: mc-idam-client-secret
-          - name: mc-session-secret
-            alias: mc-session-secret
-          - name: system-user-name
-            alias: system-user-name
-          - name: system-user-password
-            alias: system-user-password
-          - name: mc-session-secret
-            alias: mc-session-secret
+
 
 ccd:
   enabled: true
@@ -1003,6 +989,7 @@ ccd:
         ADMINWEB_ELASTIC_INDEX_URL: https://ccd-definition-store-${SERVICE_FQDN}/elastic-support/index
         ADMINWEB_ELASTIC_CASE_TYPES_URL: https://ccd-definition-store-${SERVICE_FQDN}/elastic-support/case-types
         ADMINWEB_GLOBAL_SEARCH_INDEX_URL: https://ccd-definition-store-${SERVICE_FQDN}/elastic-support/global-search/index
+        SESSION_KEYS: '${SESSION_KEYS}'
       keyVaults: []
 
   ccd-definition-store-api:
@@ -1469,7 +1456,7 @@ ia-hearings-api:
   enabled: true
   java:
     imagePullPolicy: Always
-    image: hmctsprod.azurecr.io/ia/hearings-api:latest
+    image: 'hmctsprod.azurecr.io/ia/hearings-api:latest'
     releaseNameOverride: ${SERVICE_NAME}-hearings-api
     ingressHost: ${SERVICE_NAME}-hearings-api.preview.platform.hmcts.net
     devcpuRequests: 500m
