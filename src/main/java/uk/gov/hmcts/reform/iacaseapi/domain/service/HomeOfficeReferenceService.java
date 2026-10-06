@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValueMixin;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.homeoffice.HomeOfficeLanguage;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 
 import java.util.List;
@@ -142,7 +143,8 @@ public class HomeOfficeReferenceService {
                     asylumCase.write(HO_ASYLUM_SUPPORT, a.getAsylumSupport());
                     asylumCase.write(HO_FEE_WAIVER, a.getHoFeeWaiver());
                     // need to map language to ccd field as the Home Office API returns some language code
-                    asylumCase.write(HOME_OFFICE_APPELLANT_LANGUAGE, a.getLanguage());
+                    asylumCase.write(HOME_OFFICE_APPELLANT_LANGUAGE, HomeOfficeLanguage.getFromCode(a.getLanguage())
+                        .map(HomeOfficeLanguage::getLanguage).orElse(null));
                     asylumCase.write(HO_INTERPRETER_REQUIRED, a.getInterpreterNeeded());
                 });
         }

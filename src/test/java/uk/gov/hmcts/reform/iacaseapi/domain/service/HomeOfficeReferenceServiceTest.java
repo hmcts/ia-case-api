@@ -24,6 +24,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.HomeOfficeAppellant;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.homeoffice.HomeOfficeLanguage;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 
 import java.util.Arrays;
@@ -42,6 +43,7 @@ import static uk.gov.hmcts.reform.iacaseapi.utils.TestUtils.verifyLogsContainMes
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
+@SuppressWarnings("unchecked")
 class HomeOfficeReferenceServiceTest {
 
     private static final String HO_REFERENCE = "HO123456";
@@ -67,6 +69,12 @@ class HomeOfficeReferenceServiceTest {
 
     @Mock
     private IdValue<HomeOfficeAppellant> appellant;
+
+    @Mock
+    private HomeOfficeAppellant homeOfficeAppellant;
+
+    @Mock
+    private HomeOfficeAppellant secondAppellant;
 
     private final MockedStatic<HandlerUtils> handlerUtilsMock = Mockito.mockStatic(HandlerUtils.class);
 
@@ -355,26 +363,125 @@ class HomeOfficeReferenceServiceTest {
         assertTrue(logMessage.contains(statusCode.getHoIntegrationErrorText(HO_REFERENCE)));
     }
 
-    public static void writeHomeOfficeAppellants(AsylumCase asylumCase, List<IdValue<HomeOfficeAppellant>> homeOfficeAppellants) {
-        if (!homeOfficeAppellants.isEmpty()) {
-            asylumCase.write(HOME_OFFICE_APPELLANTS, homeOfficeAppellants); // this will now work because we are no longer in the mid-event
-            String ppNumber = HandlerUtils.getPpNumberFromHomeOfficeAppellants(asylumCase);
-            asylumCase.write(HOME_OFFICE_APPELLANTS_PP_NUMBER, ppNumber);
-            asylumCase.clear(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY);
-            asylumCase.write(HAS_BEEN_VALIDATED_BY_NEW_HOME_OFFICE_API, YesOrNo.YES);
+    @Test
+    void shouldDoNothingWhenHomeOfficeAppellantsIsEmpty() {
+        HomeOfficeReferenceService.writeHomeOfficeAppellants(asylumCase, List.of());
 
-            homeOfficeAppellants.stream()
-                .map(IdValue::getValue)
-                .filter(a -> ppNumber != null && ppNumber.equals(a.getPp()))
-                .findFirst()
-                .ifPresent(a -> {
-                    asylumCase.write(HO_RIGHT_OF_APPEAL, a.getRoa());
-                    asylumCase.write(HO_ASYLUM_SUPPORT, a.getAsylumSupport());
-                    asylumCase.write(HO_FEE_WAIVER, a.getHoFeeWaiver());
-                    // need to map language to ccd field as the Home Office API returns some language code
-                    asylumCase.write(HOME_OFFICE_APPELLANT_LANGUAGE, a.getLanguage());
-                    asylumCase.write(HO_INTERPRETER_REQUIRED, a.getInterpreterNeeded());
-                });
+        verifyNoInteractions(asylumCase);
+    }
+
+    @ParameterizedTest
+    @EnumSource(HomeOfficeLanguage.class)
+    void shouldWriteHomeOfficeAppellantsAndAppellantDetailsWhenPpNumberMatches(HomeOfficeLanguage language) {
+        String ppNumber = "123456789";
+
+        when(appellant.getValue()).thenReturn(homeOfficeAppellant);
+
+        when(homeOfficeAppellant.getPp()).thenReturn(ppNumber);
+        when(homeOfficeAppellant.getRoa()).thenReturn(YesOrNo.NO);
+        when(homeOfficeAppellant.getAsylumSupport()).thenReturn(YesOrNo.YES);
+        when(homeOfficeAppellant.getHoFeeWaiver()).thenReturn(YesOrNo.NO);
+        when(homeOfficeAppellant.getLanguage()).thenReturn(language.getCode());
+        when(homeOfficeAppellant.getInterpreterNeeded()).thenReturn(YesOrNo.YES);
+
+        handlerUtilsMock
+            .when(() -> HandlerUtils.getPpNumberFromHomeOfficeAppellants(asylumCase))
+            .thenReturn(ppNumber);
+
+        List<IdValue<HomeOfficeAppellant>> appellants = List.of(appellant);
+
+        HomeOfficeReferenceService.writeHomeOfficeAppellants(asylumCase, appellants);
+
+        verify(asylumCase).write(HOME_OFFICE_APPELLANTS, appellants);
+        verify(asylumCase).write(HOME_OFFICE_APPELLANTS_PP_NUMBER, ppNumber);
+        verify(asylumCase).clear(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY);
+        verify(asylumCase).write(HAS_BEEN_VALIDATED_BY_NEW_HOME_OFFICE_API, YesOrNo.YES);
+
+        verify(asylumCase).write(HO_RIGHT_OF_APPEAL, YesOrNo.NO);
+        verify(asylumCase).write(HO_ASYLUM_SUPPORT, YesOrNo.YES);
+        verify(asylumCase).write(HO_FEE_WAIVER, YesOrNo.NO);
+        verify(asylumCase).write(HOME_OFFICE_APPELLANT_LANGUAGE, language.getLanguage());
+        verify(asylumCase).write(HO_INTERPRETER_REQUIRED, YesOrNo.YES);
+    }
+
+    @Test
+    void shouldNotWriteAppellantDetailsWhenPpNumberDoesNotMatch() {
+        String ppNumber = "123456789";
+
+        when(appellant.getValue()).thenReturn(homeOfficeAppellant);
+        when(homeOfficeAppellant.getPp()).thenReturn("different-pp");
+
+        handlerUtilsMock
+            .when(() -> HandlerUtils.getPpNumberFromHomeOfficeAppellants(asylumCase))
+            .thenReturn(ppNumber);
+
+        List<IdValue<HomeOfficeAppellant>> appellants = List.of(appellant);
+
+        HomeOfficeReferenceService.writeHomeOfficeAppellants(asylumCase, appellants);
+
+        verify(asylumCase).write(HOME_OFFICE_APPELLANTS, appellants);
+        verify(asylumCase).write(HOME_OFFICE_APPELLANTS_PP_NUMBER, ppNumber);
+        verify(asylumCase).clear(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY);
+        verify(asylumCase).write(HAS_BEEN_VALIDATED_BY_NEW_HOME_OFFICE_API, YesOrNo.YES);
+
+        verify(asylumCase, never()).write(eq(HO_RIGHT_OF_APPEAL), any());
+        verify(asylumCase, never()).write(eq(HO_ASYLUM_SUPPORT), any());
+        verify(asylumCase, never()).write(eq(HO_FEE_WAIVER), any());
+        verify(asylumCase, never()).write(eq(HOME_OFFICE_APPELLANT_LANGUAGE), any());
+        verify(asylumCase, never()).write(eq(HO_INTERPRETER_REQUIRED), any());
+    }
+
+    @Test
+    void shouldNotWriteAppellantDetailsWhenPpNumberIsNull() {
+        when(appellant.getValue()).thenReturn(homeOfficeAppellant);
+        when(homeOfficeAppellant.getPp()).thenReturn("123456789");
+
+        handlerUtilsMock
+            .when(() -> HandlerUtils.getPpNumberFromHomeOfficeAppellants(asylumCase))
+            .thenReturn(null);
+
+        List<IdValue<HomeOfficeAppellant>> appellants = List.of(appellant);
+
+        HomeOfficeReferenceService.writeHomeOfficeAppellants(asylumCase, appellants);
+
+        verify(asylumCase).write(HOME_OFFICE_APPELLANTS, appellants);
+        verify(asylumCase).write(HOME_OFFICE_APPELLANTS_PP_NUMBER, null);
+        verify(asylumCase).clear(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY);
+        verify(asylumCase).write(HAS_BEEN_VALIDATED_BY_NEW_HOME_OFFICE_API, YesOrNo.YES);
+
+        verify(asylumCase, never()).write(eq(HO_RIGHT_OF_APPEAL), any());
+        verify(asylumCase, never()).write(eq(HO_ASYLUM_SUPPORT), any());
+        verify(asylumCase, never()).write(eq(HO_FEE_WAIVER), any());
+        verify(asylumCase, never()).write(eq(HOME_OFFICE_APPELLANT_LANGUAGE), any());
+        verify(asylumCase, never()).write(eq(HO_INTERPRETER_REQUIRED), any());
         }
+
+    @Test
+    void shouldUseFirstMatchingAppellant() {
+        String ppNumber = "123456789";
+
+        IdValue<HomeOfficeAppellant> first = mock(IdValue.class);
+        IdValue<HomeOfficeAppellant> second = mock(IdValue.class);
+
+        when(first.getValue()).thenReturn(homeOfficeAppellant);
+        when(second.getValue()).thenReturn(secondAppellant);
+
+        when(homeOfficeAppellant.getPp()).thenReturn(ppNumber);
+        when(homeOfficeAppellant.getRoa()).thenReturn(YesOrNo.YES);
+
+        when(secondAppellant.getPp()).thenReturn(ppNumber);
+        when(secondAppellant.getRoa()).thenReturn(YesOrNo.NO);
+
+        handlerUtilsMock
+            .when(() -> HandlerUtils.getPpNumberFromHomeOfficeAppellants(asylumCase))
+            .thenReturn(ppNumber);
+
+        List<IdValue<HomeOfficeAppellant>> appellants = List.of(first, second);
+
+        HomeOfficeReferenceService.writeHomeOfficeAppellants(asylumCase, appellants);
+
+        verify(asylumCase).write(HO_RIGHT_OF_APPEAL, YesOrNo.YES);
+
+        verify(asylumCase, never()).write(HO_RIGHT_OF_APPEAL, YesOrNo.NO);
     }
 }
