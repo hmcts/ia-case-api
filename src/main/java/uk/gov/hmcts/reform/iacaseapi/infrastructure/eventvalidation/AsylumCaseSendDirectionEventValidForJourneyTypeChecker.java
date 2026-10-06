@@ -33,10 +33,6 @@ public class AsylumCaseSendDirectionEventValidForJourneyTypeChecker implements E
                 log.error("Cannot send a legal representative a direction for an appellant in person case");
                 return new EventValid("This is an appellant in person case. You cannot select legal representative as the recipient.");
             }
-            if (isInternalCase(asylumCase) && !isAppellantsRepresentation(asylumCase) &&  (directionTo == Parties.BOTH)) {
-                log.error("You cannot select both as an option for a LR manual appeal. The direction must be issued to the legal representative individually.");
-                return new EventValid("You cannot select 'both' as an option for a LR manual appeal. The direction must be issued to the legal representative individually.");
-            }
             if (isInternalCase(asylumCase) && isAppellantsRepresentation(asylumCase) &&
                     directionTo == Parties.LEGAL_REPRESENTATIVE) {
                 log.error("This is an Appellant in Person (AiP) manual appeal. You cannot select 'Legal Representative' as a recipient.");
