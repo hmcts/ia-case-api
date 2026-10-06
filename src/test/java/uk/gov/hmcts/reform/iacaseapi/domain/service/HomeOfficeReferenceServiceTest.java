@@ -454,7 +454,7 @@ class HomeOfficeReferenceServiceTest {
         verify(asylumCase, never()).write(eq(HO_FEE_WAIVER), any());
         verify(asylumCase, never()).write(eq(HOME_OFFICE_APPELLANT_LANGUAGE), any());
         verify(asylumCase, never()).write(eq(HO_INTERPRETER_REQUIRED), any());
-        }
+    }
 
     @Test
     void shouldUseFirstMatchingAppellant() {
