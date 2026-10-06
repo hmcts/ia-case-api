@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
 import static java.util.Arrays.stream;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum AppealStatus {
@@ -11,6 +12,7 @@ public enum AppealStatus {
     @JsonValue
     private String value;
 
+    @JsonCreator
     AppealStatus(String value) {
         this.value = value;
     }

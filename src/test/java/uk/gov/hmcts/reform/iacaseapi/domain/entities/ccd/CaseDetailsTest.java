@@ -63,7 +63,7 @@ class CaseDetailsTest {
     }
 
     @Test
-    void should_throw_required_field_missing_exception() throws JsonProcessingException {
+    void should_throw_required_field_missing_exception() {
 
         CaseDetails<CaseData> caseDetails = new CaseDetails<>(
             id,

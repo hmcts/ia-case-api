@@ -3022,7 +3022,7 @@ public enum AsylumCaseFieldDefinition {
 
     XUI_BANNER_TEXT(
             "xuiBannerText", new TypeReference<String>(){}),
-  
+
     HAS_BEEN_DECIDED("hasBeenDecided",
         new TypeReference<YesOrNo>(){}),
 

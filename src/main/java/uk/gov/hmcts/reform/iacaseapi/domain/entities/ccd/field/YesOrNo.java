@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum YesOrNo {
@@ -10,6 +11,7 @@ public enum YesOrNo {
     @JsonValue
     private final String id;
 
+    @JsonCreator
     YesOrNo(String id) {
         this.id = id;
     }

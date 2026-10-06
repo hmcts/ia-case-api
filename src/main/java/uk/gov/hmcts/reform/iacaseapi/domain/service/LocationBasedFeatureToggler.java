@@ -6,6 +6,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isCaseUsingLocationRefData;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -78,6 +79,7 @@ public class LocationBasedFeatureToggler {
 
         public Set<Long> epimsIds;
 
+        @JsonCreator
         ListAssistIntegratedLocations(@JsonProperty("epimsIds") Set<Long> epimsIds) {
             this.epimsIds = epimsIds;
         }
