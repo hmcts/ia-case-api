@@ -128,9 +128,23 @@ public class HomeOfficeReferenceService {
     public static void writeHomeOfficeAppellants(AsylumCase asylumCase, List<IdValue<HomeOfficeAppellant>> homeOfficeAppellants) {
         if (!homeOfficeAppellants.isEmpty()) {
             asylumCase.write(HOME_OFFICE_APPELLANTS, homeOfficeAppellants); // this will now work because we are no longer in the mid-event
-            asylumCase.write(HOME_OFFICE_APPELLANTS_PP_NUMBER, HandlerUtils.getPpNumberFromHomeOfficeAppellants(asylumCase));
+            String ppNumber = HandlerUtils.getPpNumberFromHomeOfficeAppellants(asylumCase);
+            asylumCase.write(HOME_OFFICE_APPELLANTS_PP_NUMBER, ppNumber);
             asylumCase.clear(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY);
             asylumCase.write(HAS_BEEN_VALIDATED_BY_NEW_HOME_OFFICE_API, YesOrNo.YES);
+
+            homeOfficeAppellants.stream()
+                .map(IdValue::getValue)
+                .filter(a -> ppNumber != null && ppNumber.equals(a.getPp()))
+                .findFirst()
+                .ifPresent(a -> {
+                    asylumCase.write(HO_RIGHT_OF_APPEAL, a.getRoa());
+                    asylumCase.write(HO_ASYLUM_SUPPORT, a.getAsylumSupport());
+                    asylumCase.write(HO_FEE_WAIVER, a.getHoFeeWaiver());
+                    // need to map language to ccd field as the Home Office API returns some language code
+                    asylumCase.write(HOME_OFFICE_APPELLANT_LANGUAGE, a.getLanguage());
+                    asylumCase.write(HO_INTERPRETER_REQUIRED, a.getInterpreterNeeded());
+                });
         }
     }
 }
