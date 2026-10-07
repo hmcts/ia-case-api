@@ -33,18 +33,15 @@ public class AsylumCaseSendDirectionEventValidForJourneyTypeChecker implements E
                 log.error("Cannot send a legal representative a direction for an appellant in person case");
                 return new EventValid("This is an appellant in person case. You cannot select legal representative as the recipient.");
             }
-            if (isInternalCase(asylumCase) && !isAppellantsRepresentation(asylumCase) &&  (directionTo == Parties.BOTH)) {
-                log.error("You cannot select both as an option for a LR manual appeal. The direction must be issued to the legal representative individually.");
-                return new EventValid("You cannot select 'both' as an option for a LR manual appeal. The direction must be issued to the legal representative individually.");
+            if (isInternalCase(asylumCase) && !isAppellantsRepresentation(asylumCase) &&
+                    Arrays.asList(Parties.APPELLANT_AND_RESPONDENT, Parties.APPELLANT).contains(directionTo)) {
+                log.error("Cannot send a appellant a direction for a repped manual case");
+                return new EventValid("This is a legally represented manual appeal. You cannot select appellant as a recipient.");
             }
-            if (isInternalCase(asylumCase) && isAppellantsRepresentation(asylumCase) &&  ((directionTo == Parties.BOTH)
-                    || directionTo == Parties.LEGAL_REPRESENTATIVE)) {
+            if (isInternalCase(asylumCase) && isAppellantsRepresentation(asylumCase) &&
+                    Arrays.asList(Parties.LEGAL_REPRESENTATIVE, Parties.BOTH).contains(directionTo)) {
                 log.error("This is an Appellant in Person (AiP) manual appeal. You cannot select 'Legal Representative' or 'Both' as a recipient.");
                 return new EventValid("This is an Appellant in Person (AiP) manual appeal. You cannot select 'Legal Representative' or 'Both' as a recipient.");
-            }
-            if (isInternalCase(asylumCase) && (directionTo == Parties.APPELLANT_AND_RESPONDENT)) {
-                log.error("You cannot select appellant and respondent as joint recipients on a manual appeal. The direction will need to be issued to the recipients individually.");
-                return new EventValid("You cannot select appellant and respondent as joint recipients on a manual appeal. The direction will need to be issued to the recipients individually.");
             }
         }
 
