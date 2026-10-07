@@ -119,17 +119,20 @@ class AsylumCaseSendDirectionEventValidForJourneyTypeCheckerTest {
             .thenReturn(Optional.of(party));
     }
 
-    @Test
-    void cannotSendDirectionToLR() {
-        setupInternalCaseCallback(Parties.LEGAL_REPRESENTATIVE);
+    @ParameterizedTest
+    @EnumSource(value = Parties.class, names = {
+        "BOTH", "LEGAL_REPRESENTATIVE"
+    })
+    void cannotSendDirectionToBothForInternalCase(Parties party) {
+        setupInternalCaseCallback(party);
         EventValid eventValid = new AsylumCaseSendDirectionEventValidForJourneyTypeChecker().check(callback);
 
         assertThat(eventValid).isEqualTo(
-                new EventValid("This is an Appellant in Person (AiP) manual appeal. You cannot select 'Legal Representative' as a recipient."));
+                new EventValid("This is an Appellant in Person (AiP) manual appeal. You cannot select 'Legal Representative' or 'Both' as a recipient."));
 
         Assertions.assertThat(loggingEventListAppender.list)
                 .extracting(ILoggingEvent::getMessage, ILoggingEvent::getLevel)
-                .contains(Tuple.tuple("This is an Appellant in Person (AiP) manual appeal. You cannot select 'Legal Representative' as a recipient.", Level.ERROR));
+                .contains(Tuple.tuple("This is an Appellant in Person (AiP) manual appeal. You cannot select 'Legal Representative' or 'Both' as a recipient.", Level.ERROR));
     }
 
     @Test
