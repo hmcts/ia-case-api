@@ -40,8 +40,8 @@ public class AsylumCaseSendDirectionEventValidForJourneyTypeChecker implements E
             }
             if (isInternalCase(asylumCase) && isAppellantsRepresentation(asylumCase) &&
                     Arrays.asList(Parties.LEGAL_REPRESENTATIVE, Parties.BOTH).contains(directionTo)) {
-                log.error("This is an Appellant in Person (AiP) manual appeal. You cannot select 'Legal Representative' as a recipient.");
-                return new EventValid("This is an Appellant in Person (AiP) manual appeal. You cannot select 'Legal Representative' as a recipient.");
+                log.error("This is an Appellant in Person (AiP) manual appeal. You cannot select 'Legal Representative' or 'Both' as a recipient.");
+                return new EventValid("This is an Appellant in Person (AiP) manual appeal. You cannot select 'Legal Representative' or 'Both' as a recipient.");
             }
         }
 
