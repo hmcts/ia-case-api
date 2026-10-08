@@ -230,6 +230,7 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
             Event.CMR_LISTING,
             Event.CMR_RE_LISTING,
             Event.REQUEST_HEARING_REQUIREMENTS_FEATURE,
+            Event.REVIEW_HEARING_REQUIREMENTS,
             Event.REQUEST_RESPONSE_REVIEW,
             Event.MARK_APPEAL_AS_ADA,
             Event.TRANSFER_OUT_OF_ADA,
@@ -278,6 +279,10 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
 
         if (notifyHomeOfficeOnEditCaseListingEvent(callback)) {
             eventsToHandle.add(Event.EDIT_CASE_LISTING);
+        }
+
+        if (isCurrently24WeekStfCase(callback.getCaseDetails().getCaseData())) {
+            eventsToHandle.add(Event.REVIEW_HEARING_REQUIREMENTS);
         }
 
         return eventsToHandle;
