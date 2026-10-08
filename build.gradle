@@ -483,7 +483,7 @@ dependencyUpdates.resolutionStrategy = {
 }
 
 static def getCheckedOutGitCommitHash() {
-    'git rev-parse --verify --short HEAD'.execute().text.trim()
+    'git rev-parse --verify HEAD'.execute().text.trim()
 }
 
 gradle.startParameter.continueOnFailure = true

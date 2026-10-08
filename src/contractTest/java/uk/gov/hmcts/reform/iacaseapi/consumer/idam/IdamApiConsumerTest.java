@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.iacaseapi.consumer.idam;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 
-import au.com.dius.pact.consumer.dsl.PactDslJsonArray;
 import au.com.dius.pact.consumer.dsl.PactDslJsonBody;
 import au.com.dius.pact.consumer.dsl.PactDslJsonRootValue;
 import au.com.dius.pact.consumer.dsl.PactDslWithProvider;
@@ -114,15 +113,12 @@ public class IdamApiConsumerTest {
 
 
     private PactDslJsonBody createUserDetailsResponse() {
-        PactDslJsonArray array = new PactDslJsonArray().stringValue("caseofficer-ia");
-
         return new PactDslJsonBody()
-            .stringType("uid", "1111-2222-3333-4567")
-            .stringValue("sub", "ia-caseofficer@fake.hmcts.net")
-            .stringValue("givenName", "Case")
-            .stringValue("familyName", "Officer")
-            .minArrayLike("roles", 1, PactDslJsonRootValue.stringType("caseworker-ia-legalrep-solicitor"), 1)
-            .stringType("IDAM_ADMIN_USER");
+            .stringType("uid", "550e8400-e29b-41d4-a716-44665544a000")
+            .stringType("sub", "ia-caseofficer@fake.hmcts.net")
+            .stringType("given_name", "Case")
+            .stringType("family_name", "Officer")
+            .minArrayLike("roles", 0, PactDslJsonRootValue.stringType("caseworker"), 1);
     }
 
     private PactDslJsonBody createAuthResponse() {
