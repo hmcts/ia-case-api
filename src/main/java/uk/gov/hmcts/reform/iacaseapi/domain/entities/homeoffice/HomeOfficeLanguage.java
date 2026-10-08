@@ -7,7 +7,7 @@ import java.util.Optional;
 
 @Getter
 public enum HomeOfficeLanguage {
-
+    // These values are given by the Home Office so contact them if any are found to be missing in future
     AFG("AFG", "Afghan"),
     AFR("AFR", "Afrikaans"),
     AKA("AKA", "Akan"),
@@ -349,9 +349,9 @@ public enum HomeOfficeLanguage {
         return language;
     }
 
-    public static Optional<HomeOfficeLanguage> getFromCode(String code) {
+    public static String getLanguageFromCode(String code) {
         return Arrays.stream(HomeOfficeLanguage.values())
             .filter(lan -> lan.code.equalsIgnoreCase(code))
-            .findFirst();
+            .findFirst().map(HomeOfficeLanguage::getLanguage).orElse(code);
     }
 }

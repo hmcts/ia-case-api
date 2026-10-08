@@ -404,6 +404,31 @@ class HomeOfficeReferenceServiceTest {
         verify(asylumCase).write(HO_INTERPRETER_REQUIRED, YesOrNo.YES);
     }
 
+
+    @Test
+    void shouldWriteLanguageAsCodeIfNonExistent() {
+        String ppNumber = "123456789";
+
+        when(appellant.getValue()).thenReturn(homeOfficeAppellant);
+
+        when(homeOfficeAppellant.getPp()).thenReturn(ppNumber);
+        when(homeOfficeAppellant.getRoa()).thenReturn(YesOrNo.NO);
+        when(homeOfficeAppellant.getAsylumSupport()).thenReturn(YesOrNo.YES);
+        when(homeOfficeAppellant.getHoFeeWaiver()).thenReturn(YesOrNo.NO);
+        when(homeOfficeAppellant.getLanguage()).thenReturn("someBadCode");
+        when(homeOfficeAppellant.getInterpreterNeeded()).thenReturn(YesOrNo.YES);
+
+        handlerUtilsMock
+            .when(() -> HandlerUtils.getPpNumberFromHomeOfficeAppellants(asylumCase))
+            .thenReturn(ppNumber);
+
+        List<IdValue<HomeOfficeAppellant>> appellants = List.of(appellant);
+
+        HomeOfficeReferenceService.writeHomeOfficeAppellants(asylumCase, appellants);
+
+        verify(asylumCase).write(HOME_OFFICE_APPELLANT_LANGUAGE, "someBadCode");
+    }
+
     @Test
     void shouldNotWriteAppellantDetailsWhenPpNumberDoesNotMatch() {
         String ppNumber = "123456789";

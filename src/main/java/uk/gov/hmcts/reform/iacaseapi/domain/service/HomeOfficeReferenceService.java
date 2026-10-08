@@ -143,8 +143,7 @@ public class HomeOfficeReferenceService {
                     asylumCase.write(HO_ASYLUM_SUPPORT, a.getAsylumSupport());
                     asylumCase.write(HO_FEE_WAIVER, a.getHoFeeWaiver());
                     // need to map language to ccd field as the Home Office API returns some language code
-                    asylumCase.write(HOME_OFFICE_APPELLANT_LANGUAGE, HomeOfficeLanguage.getFromCode(a.getLanguage())
-                        .map(HomeOfficeLanguage::getLanguage).orElse(null));
+                    asylumCase.write(HOME_OFFICE_APPELLANT_LANGUAGE, HomeOfficeLanguage.getLanguageFromCode(a.getLanguage()));
                     asylumCase.write(HO_INTERPRETER_REQUIRED, a.getInterpreterNeeded());
                 });
         }
