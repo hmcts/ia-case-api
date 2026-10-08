@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.iacaseapi.domain.entities.homeoffice;
 import lombok.Getter;
 
 import java.util.Arrays;
-import java.util.Optional;
 
 @Getter
 public enum HomeOfficeLanguage {
