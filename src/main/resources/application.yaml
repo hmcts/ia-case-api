@@ -291,6 +291,9 @@ security:
       - "applyForCosts"
       - "respondToCosts"
       - "addEvidenceForCosts"
+      - "queryManagementRaiseQuery"
+    caseworker-ia-admofficer:
+      - "queryManagementRespondQuery"
     tribunal-caseworker:
       - "appellantInPersonManual"
       - "moveToPaymentPending"
@@ -389,6 +392,7 @@ security:
       - "sendInviteToNonLegalRep"
       - "sendPipToNonLegalRep"
       - "joinAppealConfirmation"
+      - "generatePinInPost"
     challenged-access-legal-operations:
       - "appellantInPersonManual"
       - "moveToPaymentPending"
@@ -486,6 +490,7 @@ security:
       - "sendInviteToNonLegalRep"
       - "sendPipToNonLegalRep"
       - "joinAppealConfirmation"
+      - "generatePinInPost"
     senior-tribunal-caseworker:
       - "appellantInPersonManual"
       - "moveToPaymentPending"
@@ -584,6 +589,7 @@ security:
       - "sendInviteToNonLegalRep"
       - "sendPipToNonLegalRep"
       - "joinAppealConfirmation"
+      - "generatePinInPost"
     hearing-centre-admin:
       - "appellantInPersonManual"
       - "startAppeal"
@@ -646,6 +652,7 @@ security:
       - "progressMigratedCase"
       - "generateListCmrTask"
       - "hearingCancelled"
+      - "cmrHearingCancelled"
       - "generateListCmrTask"
       - "markAppealAsDetained"
       - "removeDetainedStatus"
@@ -660,6 +667,7 @@ security:
       - "sendPipToNonLegalRep"
       - "joinAppealConfirmation"
       - "requestRespondentEvidence"
+      - "generatePinInPost"
     ctsc:
       - "appellantInPersonManual"
       - "startAppeal"
@@ -721,6 +729,7 @@ security:
       - "refundConfirmation"
       - "progressMigratedCase"
       - "hearingCancelled"
+      - "cmrHearingCancelled"
       - "generateListCmrTask"
       - "markAppealAsDetained"
       - "removeDetainedStatus"
@@ -734,7 +743,9 @@ security:
       - "joinAppealConfirmation"
       - "forceDecidedState"
       - "forceFtpaDecidedState"
+      - "queryManagementRespondQuery"
       - "requestRespondentEvidence"
+      - "generatePinInPost"
     ctsc-team-leader:
       - "appellantInPersonManual"
       - "startAppeal"
@@ -797,6 +808,7 @@ security:
       - "refundConfirmation"
       - "progressMigratedCase"
       - "hearingCancelled"
+      - "cmrHearingCancelled"
       - "generateListCmrTask"
       - "markAppealAsDetained"
       - "removeDetainedStatus"
@@ -810,6 +822,7 @@ security:
       - "sendPipToNonLegalRep"
       - "joinAppealConfirmation"
       - "requestRespondentEvidence"
+      - "generatePinInPost"
     national-business-centre:
       - "appellantInPersonManual"
       - "startAppeal"
@@ -871,6 +884,7 @@ security:
       - "refundConfirmation"
       - "progressMigratedCase"
       - "hearingCancelled"
+      - "cmrHearingCancelled"
       - "generateListCmrTask"
       - "markAppealAsDetained"
       - "removeDetainedStatus"
@@ -884,6 +898,7 @@ security:
       - "sendPipToNonLegalRep"
       - "joinAppealConfirmation"
       - "requestRespondentEvidence"
+      - "generatePinInPost"
     challenged-access-ctsc:
       - "appellantInPersonManual"
       - "startAppeal"
@@ -945,6 +960,7 @@ security:
       - "refundConfirmation"
       - "progressMigratedCase"
       - "hearingCancelled"
+      - "cmrHearingCancelled"
       - "generateListCmrTask"
       - "markAppealAsDetained"
       - "removeDetainedStatus"
@@ -958,6 +974,7 @@ security:
       - "sendPipToNonLegalRep"
       - "joinAppealConfirmation"
       - "requestRespondentEvidence"
+      - "generatePinInPost"
     challenged-access-admin:
       - "appellantInPersonManual"
       - "startAppeal"
@@ -1019,6 +1036,7 @@ security:
       - "refundConfirmation"
       - "progressMigratedCase"
       - "hearingCancelled"
+      - "cmrHearingCancelled"
       - "appellantInPersonManual"
       - "generateListCmrTask"
       - "markAppealAsDetained"
@@ -1033,6 +1051,7 @@ security:
       - "sendPipToNonLegalRep"
       - "joinAppealConfirmation"
       - "requestRespondentEvidence"
+      - "generatePinInPost"
     caseworker-ia-homeofficeapc:
       - "uploadHomeOfficeBundle"
       - "uploadAdditionalEvidenceHomeOffice"
@@ -1451,6 +1470,7 @@ security:
       - "UpdateNextHearingInfo"
       - "removeCaseManagerBulk"
       - "hearingCancelled"
+      - "cmrHearingCancelled"
       - "forceDecidedState"
       - "forceFtpaDecidedState"
       - "rollbackMigration"
@@ -1466,6 +1486,7 @@ security:
       - "joinAppealConfirmation"
       - "nlrDetailsUpdated"
       - "removeNonLegalRep"
+      - "stf24wDetermination"
     caseworker-ia-internal:
       - "revokeCaseAccess"
       - "removeCaseManagerBulk"
@@ -1572,5 +1593,7 @@ ia:
 app:
   home-office-validation:
     enabled: ${HOME_OFFICE_VALIDATION_ENABLED:true}
+  home-office-mock-turn-off-for-test:
+    enabled: ${HOME_OFFICE_MOCK_TURN_OFF_FOR_TEST:false}
   statutory-timeframe:
     live-date: ${STATUTORY_TIMEFRAME_LIVE_DATE:2026-08-12}

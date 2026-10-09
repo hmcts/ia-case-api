@@ -15,6 +15,7 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_INTEGRATED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LIST_CASE_HEARING_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NEXT_HEARING_DETAILS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.CMR_HEARING_CANCELLED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.CMR_LISTING;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.CMR_RE_LISTING;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.EDIT_CASE_LISTING;
@@ -147,7 +148,7 @@ class NextHearingDateHandlerTest {
                 boolean canHandle = handler.canHandle(callbackStage, callback);
 
                 if ((event == UPDATE_NEXT_HEARING_INFO && callbackStage == PreSubmitCallbackStage.ABOUT_TO_START)
-                    || (List.of(LIST_CASE, EDIT_CASE_LISTING, CMR_LISTING, CMR_RE_LISTING).contains(event)
+                    || (List.of(LIST_CASE, EDIT_CASE_LISTING, CMR_LISTING, CMR_RE_LISTING, CMR_HEARING_CANCELLED).contains(event)
                     && callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT)) {
                     assertTrue(canHandle);
                 } else {
