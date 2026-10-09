@@ -1,0 +1,5 @@
+[ {
+  "ID" : "editTimeExtension",
+  "CallBackURLSubmittedEvent" : "${CCD_DEF_IA_URL}/asylum/ccdSubmitted",
+  "RetriesTimeoutURLSubmittedEvent" : "5,5,5,5"
+} ]

@@ -1,0 +1,7 @@
+[ {
+  "CaseFieldID" : "relistCaseImmediately",
+  "CallBackURLMidEvent" : "${CCD_DEF_IA_URL}/asylum/ccdMidEvent?pageId=relistCaseImmediately"
+}, {
+  "CaseFieldID" : "nextHearingDate",
+  "CallBackURLMidEvent" : "${CCD_DEF_IA_URL}/asylum/ccdMidEvent?pageId=nextHearingDate"
+} ]

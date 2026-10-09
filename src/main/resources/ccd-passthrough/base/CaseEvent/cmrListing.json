@@ -1,0 +1,7 @@
+[ {
+  "ID" : "cmrListing",
+  "CallBackURLAboutToSubmitEvent" : "${CCD_DEF_IA_URL}/asylum/ccdAboutToSubmit",
+  "CallBackURLSubmittedEvent" : "${CCD_DEF_IA_URL}/asylum/ccdSubmitted",
+  "RetriesTimeoutURLAboutToSubmitEvent" : "5,5,5,5",
+  "RetriesTimeoutURLSubmittedEvent" : "5,5,5,5"
+} ]

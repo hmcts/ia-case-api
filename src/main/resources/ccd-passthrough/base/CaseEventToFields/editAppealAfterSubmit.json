@@ -1,0 +1,37 @@
+[ {
+  "CaseFieldID" : "checklistTitle3",
+  "CallBackURLMidEvent" : "${CCD_DEF_IA_URL}/asylum/ccdMidEvent"
+}, {
+  "CaseFieldID" : "homeOfficeReferenceNumberTitle",
+  "CallBackURLMidEvent" : "${CCD_DEF_IA_URL}/asylum/ccdMidEvent?pageId=homeOfficeReferenceNumber"
+}, {
+  "CaseFieldID" : "entryClearanceDecisionTitle",
+  "CallBackURLMidEvent" : "${CCD_DEF_IA_URL}/asylum/ccdMidEvent?pageId=oocHomeOfficeReferenceNumber"
+}, {
+  "CaseFieldID" : "appellantBasicDetailsTitle",
+  "CallBackURLMidEvent" : "${CCD_DEF_IA_URL}/asylum/ccdMidEvent?pageId=appellantBasicDetails"
+}, {
+  "CaseFieldID" : "appellantAddressTitle",
+  "CallBackURLMidEvent" : "${CCD_DEF_IA_URL}/asylum/ccdMidEvent?pageId=appellantAddress"
+}, {
+  "CaseFieldID" : "appellantHasFixedAddressAdminJ",
+  "CallBackURLMidEvent" : "${CCD_DEF_IA_URL}/asylum/ccdMidEvent?pageId=appellantAddressAdminJ"
+}, {
+  "CaseFieldID" : "appellantContactPreferenceTitle",
+  "CallBackURLMidEvent" : "${CCD_DEF_IA_URL}/asylum/ccdMidEvent?pageId=appellantContactPreference"
+}, {
+  "CaseFieldID" : "homeOfficeDecisionLetterTitle",
+  "CallBackURLMidEvent" : "${CCD_DEF_IA_URL}/asylum/ccdMidEvent?pageId=homeOfficeDecisionLetter"
+}, {
+  "CaseFieldID" : "entryClearanceDecisionLetterTitle",
+  "CallBackURLMidEvent" : "${CCD_DEF_IA_URL}/asylum/ccdMidEvent?pageId=entryClearanceDecisionLetter"
+}, {
+  "CaseFieldID" : "appellantSponsorTitle",
+  "CallBackURLMidEvent" : "${CCD_DEF_IA_URL}/asylum/ccdMidEvent?pageId=sponsor"
+}, {
+  "CaseFieldID" : "hasOtherAppealsTitle",
+  "CallBackURLMidEvent" : "${CCD_DEF_IA_URL}/asylum/ccdMidEvent"
+}, {
+  "CaseFieldID" : "legalRepDetailsHintAndTitle",
+  "CallBackURLMidEvent" : "${CCD_DEF_IA_URL}/asylum/ccdMidEvent?pageId=legalRepresentativeDetails"
+} ]

@@ -1,0 +1,13 @@
+[ {
+  "CaseFieldID" : "ircName",
+  "CallBackURLMidEvent" : "${CCD_DEF_IA_URL}/asylum/ccdMidEvent?pageId=ircName"
+}, {
+  "CaseFieldID" : "prisonName",
+  "CallBackURLMidEvent" : "${CCD_DEF_IA_URL}/asylum/ccdMidEvent?pageId=prisonName"
+}, {
+  "CaseFieldID" : "appellantAddressTitle",
+  "CallBackURLMidEvent" : "${CCD_DEF_IA_URL}/asylum/ccdMidEvent?pageId=appellantAddress"
+}, {
+  "CaseFieldID" : "bailApplicationNumber",
+  "CallBackURLMidEvent" : "${CCD_DEF_IA_URL}/asylum/ccdMidEvent?pageId=updateAppellantBailApplication"
+} ]

@@ -1,0 +1,9 @@
+[ {
+  "ID" : "applyForFTPAAppellant",
+  "CallBackURLAboutToStartEvent" : "${CCD_DEF_IA_URL}/asylum/ccdAboutToStart",
+  "CallBackURLAboutToSubmitEvent" : "${CCD_DEF_IA_URL}/asylum/ccdAboutToSubmit",
+  "CallBackURLSubmittedEvent" : "${CCD_DEF_IA_URL}/asylum/ccdSubmitted",
+  "RetriesTimeoutAboutToStartEvent" : "5,5,5,5",
+  "RetriesTimeoutURLAboutToSubmitEvent" : "5,5,5,5",
+  "RetriesTimeoutURLSubmittedEvent" : "5,5,5,5"
+} ]

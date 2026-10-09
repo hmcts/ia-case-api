@@ -1,0 +1,7 @@
+[ {
+  "ID" : "UpdateNextHearingInfo",
+  "CallBackURLAboutToStartEvent" : "${CCD_DEF_IA_URL}/asylum/ccdAboutToStart",
+  "CallBackURLAboutToSubmitEvent" : "${CCD_DEF_IA_URL}/asylum/ccdAboutToSubmit",
+  "RetriesTimeoutURLAboutToStartEvent" : "3,3,3,3",
+  "RetriesTimeoutURLAboutToSubmitEvent" : "3,3,3,3"
+} ]

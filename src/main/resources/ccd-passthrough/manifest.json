@@ -1,0 +1,976 @@
+[ {
+  "relativePath" : "CaseEventToFields/startAppeal.json",
+  "primaryKeys" : [ "CaseFieldID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : true
+}, {
+  "relativePath" : "CaseEventToFields/editAppeal.json",
+  "primaryKeys" : [ "CaseFieldID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : true
+}, {
+  "relativePath" : "CaseEventToFields/changeDirectionDueDate.json",
+  "primaryKeys" : [ "CaseFieldID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : true
+}, {
+  "relativePath" : "CaseEventToFields/listCase.json",
+  "primaryKeys" : [ "CaseFieldID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : true
+}, {
+  "relativePath" : "CaseEventToFields/listCaseWithoutHearingRequirements.json",
+  "primaryKeys" : [ "CaseFieldID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : true
+}, {
+  "relativePath" : "CaseEventToFields/sendDecisionAndReasons.json",
+  "primaryKeys" : [ "CaseFieldID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : true
+}, {
+  "relativePath" : "CaseEventToFields/editCaseListing.json",
+  "primaryKeys" : [ "CaseFieldID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : true
+}, {
+  "relativePath" : "CaseEventToFields/endAppeal.json",
+  "primaryKeys" : [ "CaseFieldID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : true
+}, {
+  "relativePath" : "CaseEventToFields/draftHearingRequirements.json",
+  "primaryKeys" : [ "CaseFieldID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : true
+}, {
+  "relativePath" : "CaseEventToFields/updateHearingRequirements.json",
+  "primaryKeys" : [ "CaseFieldID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : true
+}, {
+  "relativePath" : "CaseEventToFields/reviewHearingRequirements.json",
+  "primaryKeys" : [ "CaseFieldID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : true
+}, {
+  "relativePath" : "CaseEventToFields/updateHearingAdjustments.json",
+  "primaryKeys" : [ "CaseFieldID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : true
+}, {
+  "relativePath" : "CaseEventToFields/editDocuments.json",
+  "primaryKeys" : [ "CaseFieldID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : true
+}, {
+  "relativePath" : "CaseEventToFields/decideFtpaApplication.json",
+  "primaryKeys" : [ "CaseFieldID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : true
+}, {
+  "relativePath" : "CaseEventToFields/sendDirectionWithQuestions.json",
+  "primaryKeys" : [ "CaseFieldID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : true
+}, {
+  "relativePath" : "CaseEventToFields/flagCase.json",
+  "primaryKeys" : [ "CaseFieldID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : true
+}, {
+  "relativePath" : "CaseEventToFields/editAppealAfterSubmit.json",
+  "primaryKeys" : [ "CaseFieldID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : true
+}, {
+  "relativePath" : "CaseEventToFields/makeAnApplication.json",
+  "primaryKeys" : [ "CaseFieldID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : true
+}, {
+  "relativePath" : "CaseEventToFields/decideAnApplication.json",
+  "primaryKeys" : [ "CaseFieldID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : true
+}, {
+  "relativePath" : "CaseEventToFields/allocateTheCase.json",
+  "primaryKeys" : [ "CaseFieldID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : true
+}, {
+  "relativePath" : "CaseEventToFields/recordRemissionDecision.json",
+  "primaryKeys" : [ "CaseFieldID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : true
+}, {
+  "relativePath" : "CaseEventToFields/manageFeeUpdate.json",
+  "primaryKeys" : [ "CaseFieldID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : true
+}, {
+  "relativePath" : "CaseEventToFields/sendPipToNonLegalRep.json",
+  "primaryKeys" : [ "CaseFieldID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : true
+}, {
+  "relativePath" : "CaseEventToFields/updateHearingRequest.json",
+  "primaryKeys" : [ "CaseFieldID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : true
+}, {
+  "relativePath" : "CaseEventToFields/recordAdjournmentDetails.json",
+  "primaryKeys" : [ "CaseFieldID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : true
+}, {
+  "relativePath" : "CaseEventToFields/updateTribunalDecision.json",
+  "primaryKeys" : [ "CaseFieldID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : true
+}, {
+  "relativePath" : "CaseEventToFields/progressMigratedCase.json",
+  "primaryKeys" : [ "CaseFieldID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : true
+}, {
+  "relativePath" : "CaseEventToFields/updateDetentionLocation.json",
+  "primaryKeys" : [ "CaseFieldID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : true
+}, {
+  "relativePath" : "CaseEventToFields/markAppealAsDetained.json",
+  "primaryKeys" : [ "CaseFieldID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : true
+}, {
+  "relativePath" : "CaseEventToFields/removeDetainedStatus.json",
+  "primaryKeys" : [ "CaseFieldID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : true
+}, {
+  "relativePath" : "CaseEventToFields/appellantInPersonManual.json",
+  "primaryKeys" : [ "CaseFieldID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : true
+}, {
+  "relativePath" : "CaseEvent/startAppeal.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/ariaCreateCase.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/editAppeal.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/submitAppeal.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/sendDirection.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/changeDirectionDueDate.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/requestRespondentEvidence.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/uploadRespondentEvidence.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/uploadHomeOfficeBundle.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/requestCaseBuilding.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/forceRequestCaseBuilding.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/buildCase.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/submitCase.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/requestCaseEdit.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/requestRespondentReview.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/addAppealResponse.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/uploadHomeOfficeAppealResponse.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/requestResponseReview.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/requestResponseAmend.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/requestHearingRequirements.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/uploadAdditionalEvidence.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/listCase.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/listCaseWithoutHearingRequirements.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/createCaseSummary.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/revertStateToAwaitingRespondentEvidence.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/generateHearingBundle.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/asyncStitchingComplete.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/decisionAndReasonsStarted.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/generateDecisionAndReasons.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/sendDecisionAndReasons.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/addCaseNote.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/uploadAddendumEvidence.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/editCaseListing.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/recordApplication.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/recordAttendeesAndDuration.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/endAppeal.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/endAppealAutomatically.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/reinstateAppeal.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/uploadAdditionalEvidenceHomeOffice.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/uploadAddendumEvidenceLegalRep.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/uploadAddendumEvidenceHomeOffice.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/uploadAddendumEvidenceAdminOfficer.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/requestHearingRequirementsFeature.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/draftHearingRequirements.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/updateHearingRequirements.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/queryManagementRaiseQuery.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/queryManagementRespondQuery.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/removeAppealFromOnline.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/shareACase.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/reviewHearingRequirements.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/requestReasonsForAppeal.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/editReasonsForAppeal.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/submitReasonsForAppeal.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/updateHearingAdjustments.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/uploadHearingRecording.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/sendToPreHearing.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/changeHearingCentre.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/applyForFTPAAppellant.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/applyForFTPARespondent.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/editDocuments.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/recordAllocatedJudge.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/editTimeExtension.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/reviewTimeExtension.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/submitTimeExtension.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/decideFtpaApplication.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/sendDirectionWithQuestions.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/submitClarifyingQuestionAnswers.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/flagCase.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/removeFlag.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/requestCmaRequirements.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/createCaseLink.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/maintainCaseLinks.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/editCmaRequirements.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/submitCmaRequirements.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/reviewCmaRequirements.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/listCma.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/updateDetailsAfterCma.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/forceCaseToCaseUnderReview.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/forceCaseToSubmitHearingRequirements.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/updateLegalRepDetails.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/adjournHearingWithoutDate.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/restoreStateFromAdjourn.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/decisionWithoutHearing.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/editAppealAfterSubmit.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/paymentAppeal.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/markAppealPaid.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/moveToPaymentPending.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/rollbackPayment.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/rollbackPaymentTimeout.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/rollbackPaymentTimeoutToPaymentPending.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/customiseHearingBundle.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/generateUpdatedHearingBundle.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/uploadSensitiveDocuments.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/requestHomeOfficeData.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/makeAnApplication.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/decideAnApplication.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/requestNewHearingRequirements.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/allocateTheCase.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/recordRemissionDecision.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/recordRemissionReminder.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/manageFeeUpdate.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/nocRequest.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/applyNocDecision.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/removeRepresentation.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/removeLegalRepresentative.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/requestFeeRemission.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/recordOutOfTimeDecision.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/generateUpperTribunalBundle.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/markEvidenceAsReviewed.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/updatePaymentStatus.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/editAipHearingRequirements.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/completeClarifyQuestions.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/markPaymentRequestSent.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/generateServiceRequest.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/pipActivation.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/payAndSubmitAppeal.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/createFlag.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/manageFlags.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/updateS94bStatus.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/updateInterpreterBookingStatus.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/updateInterpreterDetails.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/updateHearingRequest.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/handleHearingException.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/triggerCmrUpdated.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/recordAdjournmentDetails.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/listAssistIntegration.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/updateTribunalDecision.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/reTriggerWaTasks.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/reTriggerWaBulkTasks.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/removeCaseManagerBulk.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/markAppealAsRemitted.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/sendPaymentReminderNotification.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/UpdateNextHearingInfo.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/hearingCancelled.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/cmrListing.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/cmrReListing.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/progressMigratedCase.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/refundConfirmation.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/revokeCaseAccess.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/revokeCitizenAccess.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/saveNotificationsToData.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/generatePinInPost.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/appellantInPersonManual.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/updateDetentionLocation.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/generateListCmrTask.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/markAppealAsDetained.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/removeDetainedStatus.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/addStatutoryTimeframe24Weeks.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/removeStatutoryTimeframe24Weeks.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/stf24wDetermination.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/sendInviteToNonLegalRep.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/sendPipToNonLegalRep.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/joinAppealConfirmation.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/nlrDetailsUpdated.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/removeNonLegalRep.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/rollbackMigration.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/completeCaseReview.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/sendLateTimelineNotice.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/turnOnNotificationsWATasks.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/forceDecidedState.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/deleteDraftAppeal.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/forceFtpaDecidedState.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/forceCaseToPrepareForHearing.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+}, {
+  "relativePath" : "CaseEvent/cmrHearingCancelled.json",
+  "primaryKeys" : [ "ID" ],
+  "overwriteColumns" : [ ],
+  "columnsOnly" : false
+} ]
