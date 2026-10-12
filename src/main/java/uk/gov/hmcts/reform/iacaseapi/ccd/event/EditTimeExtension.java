@@ -33,6 +33,7 @@ public class EditTimeExtension implements CCDConfig<CaseData, State, UserRole> {
             .displayOrder(45)
             .showSummary()
             .endButtonLabel("Submit")
+            .submittedCallback("${CCD_DEF_IA_URL}/asylum/ccdSubmitted", 5, 5, 5, 5)
             .explicitGrants()
             .grant(Permission.CRUD, UserRole.CITIZEN);
     }

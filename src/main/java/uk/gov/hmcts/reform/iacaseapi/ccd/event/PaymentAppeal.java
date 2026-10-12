@@ -35,6 +35,9 @@ public class PaymentAppeal implements CCDConfig<CaseData, State, UserRole> {
             .showSummary(false)
             .endButtonLabel("Pay now")
             .publishToCamunda()
+            .aboutToStartCallback("${CCD_DEF_IA_URL}/asylum/ccdAboutToStart", 5, 5, 5, 5)
+            .aboutToSubmitCallback("${CCD_DEF_IA_URL}/asylum/ccdAboutToSubmit", 5, 5, 5, 5)
+            .submittedCallback("${CCD_DEF_IA_URL}/asylum/ccdSubmitted", 5, 5, 5, 5)
             .explicitGrants()
             .grant(Permission.CRUD, UserRole.CASEWORKER_IA_LEGALREP_SOLICITOR, UserRole.CITIZEN)
             .fields();

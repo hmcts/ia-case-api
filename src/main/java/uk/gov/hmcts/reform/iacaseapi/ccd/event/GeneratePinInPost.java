@@ -32,6 +32,8 @@ public class GeneratePinInPost implements CCDConfig<CaseData, State, UserRole> {
             .name("Generate PIN in Post")
             .description("Manually generated PIN in Post for AiP")
             .displayOrder(113)
+            .aboutToStartCallback("${CCD_DEF_IA_URL}/asylum/ccdAboutToStart", 5, 5, 5, 5)
+            .aboutToSubmitCallback("${CCD_DEF_IA_URL}/asylum/ccdAboutToSubmit", 5, 5, 5, 5)
             .explicitGrants()
             .grant(Permission.CRUD, UserRole.CASEWORKER_IA_INTERNAL, UserRole.CASEWORKER_IA_SYSTEM)
             .fields();

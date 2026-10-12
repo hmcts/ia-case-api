@@ -34,6 +34,8 @@ public class CreateFlag implements CCDConfig<CaseData, State, UserRole> {
             .showSummary()
             .endButtonLabel("Create Flag")
             .publishToCamunda()
+            .aboutToStartCallback("${CCD_DEF_IA_URL}/asylum/ccdAboutToStart", 5, 5, 5, 5)
+            .submittedCallback("${CCD_DEF_IA_URL}/asylum/ccdSubmitted", 5, 5, 5, 5)
             .explicitGrants()
             .grant(Permission.CRUD, UserRole.IA_CASEFLAGS_PROFILE)
             .fields();

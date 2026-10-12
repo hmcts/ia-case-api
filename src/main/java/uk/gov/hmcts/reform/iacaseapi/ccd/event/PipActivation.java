@@ -36,6 +36,7 @@ public class PipActivation implements CCDConfig<CaseData, State, UserRole> {
             .showSummary()
             .endButtonLabel("Submit")
             .publishToCamunda()
+            .aboutToSubmitCallback("${CCD_DEF_IA_URL}/asylum/ccdAboutToSubmit", 5, 5, 5, 5)
             .explicitGrants()
             .grant(Permission.CRUD, UserRole.CITIZEN)
             .grant(Set.of(Permission.R), UserRole.CASEWORKER_IA_ADMOFFICER, UserRole.CASEWORKER_IA_CASEOFFICER);

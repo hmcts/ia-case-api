@@ -22,7 +22,7 @@ public final class MarkAppealAsDetainedMarkAppealAsDetainedIrcNamePage {
      */
     public static void apply(
             FieldCollection.FieldCollectionBuilder<CaseData, State, Event.EventBuilder<CaseData, UserRole, State>> fields) {
-        fields.page("markAppealAsDetained_ircName");
+        fields.page("markAppealAsDetained_ircName", "${CCD_DEF_IA_URL}/asylum/ccdMidEvent?pageId=markAppealAsDetained_ircName");
         fields.pageLabel("In which immigration removal centre is the appellant detained?");
         fields.showCondition("detentionFacility=\"immigrationRemovalCentre\"");
         fields.mandatory(CaseData::getIrcName)

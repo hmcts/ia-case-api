@@ -22,7 +22,7 @@ public final class EditAppealHomeOfficeDecisionLetterPage {
      */
     public static void apply(
             FieldCollection.FieldCollectionBuilder<CaseData, State, Event.EventBuilder<CaseData, UserRole, State>> fields) {
-        fields.page("homeOfficeDecisionLetter");
+        fields.page("homeOfficeDecisionLetter", "${CCD_DEF_IA_URL}/asylum/ccdMidEvent?pageId=homeOfficeDecisionLetter");
         fields.pageLabel("Home Office decision date");
         fields.showCondition("appellantInUk!=\"Yes\" AND outOfCountryDecisionType!=\"refusalOfHumanRights\" AND outOfCountryDecisionType!=\"refusePermit\" AND oocAppealAdminJ!=\"entryClearanceDecision\" OR appellantInUk=\"Yes\"");
         fields.readonlyNoSummary(CaseData::getHomeOfficeDecisionLetterTitle);

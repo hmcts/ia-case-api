@@ -22,7 +22,7 @@ public final class EditAppealAfterSubmitSponsorPage {
      */
     public static void apply(
             FieldCollection.FieldCollectionBuilder<CaseData, State, Event.EventBuilder<CaseData, UserRole, State>> fields) {
-        fields.page("sponsor");
+        fields.page("sponsor", "${CCD_DEF_IA_URL}/asylum/ccdMidEvent?pageId=sponsor");
         fields.pageLabel("Sponsor");
         fields.readonlyNoSummary(CaseData::getAppellantSponsorTitle)
                     .publish(false);

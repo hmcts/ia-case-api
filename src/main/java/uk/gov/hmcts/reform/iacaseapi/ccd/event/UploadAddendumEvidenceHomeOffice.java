@@ -35,6 +35,8 @@ public class UploadAddendumEvidenceHomeOffice implements CCDConfig<CaseData, Sta
             .showSummary()
             .endButtonLabel("Upload")
             .publishToCamunda()
+            .aboutToSubmitCallback("${CCD_DEF_IA_URL}/asylum/ccdAboutToSubmit", 5, 5, 5, 5)
+            .submittedCallback("${CCD_DEF_IA_URL}/asylum/ccdSubmitted", 5, 5, 5, 5)
             .explicitGrants()
             .grant(Permission.CRUD, UserRole.CASEWORKER_IA_HOMEOFFICEAPC, UserRole.CASEWORKER_IA_HOMEOFFICELART, UserRole.CASEWORKER_IA_HOMEOFFICEPOU, UserRole.CASEWORKER_IA_RESPONDENTOFFICER)
             .grant(Set.of(Permission.R), UserRole.CASEWORKER_IA_ADMOFFICER, UserRole.CASEWORKER_IA_CASEOFFICER, UserRole.CASEWORKER_IA_IACJUDGE, UserRole.CITIZEN)

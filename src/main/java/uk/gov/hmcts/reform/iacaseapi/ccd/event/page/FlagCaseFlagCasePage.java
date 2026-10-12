@@ -22,7 +22,7 @@ public final class FlagCaseFlagCasePage {
      */
     public static void apply(
             FieldCollection.FieldCollectionBuilder<CaseData, State, Event.EventBuilder<CaseData, UserRole, State>> fields) {
-        fields.page("flagCase");
+        fields.page("flagCase", "${CCD_DEF_IA_URL}/asylum/ccdMidEvent");
         fields.readonlyNoSummary(CaseData::getFlagCaseDescription);
         fields.mandatory(CaseData::getFlagCaseTypeOfFlag);
     }

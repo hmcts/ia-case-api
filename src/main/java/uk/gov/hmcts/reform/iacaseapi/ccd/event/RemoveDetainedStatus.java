@@ -40,6 +40,8 @@ public class RemoveDetainedStatus implements CCDConfig<CaseData, State, UserRole
             .showSummary()
             .endButtonLabel("Remove Detained Status")
             .publishToCamunda()
+            .aboutToSubmitCallback("${CCD_DEF_IA_URL}/asylum/ccdAboutToSubmit", 5, 5, 5, 5)
+            .submittedCallback("${CCD_DEF_IA_URL}/asylum/ccdSubmitted")
             .explicitGrants()
             .grant(Permission.CRUD, UserRole.CASEWORKER_IA_ADMOFFICER, UserRole.CASEWORKER_IA_CASEOFFICER)
             .fields();

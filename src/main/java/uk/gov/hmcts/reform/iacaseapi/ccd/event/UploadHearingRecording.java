@@ -34,6 +34,7 @@ public class UploadHearingRecording implements CCDConfig<CaseData, State, UserRo
             .displayOrder(43)
             .showSummary()
             .endButtonLabel("Upload")
+            .submittedCallback("${CCD_DEF_IA_URL}/asylum/ccdSubmitted", 5, 5, 5, 5)
             .explicitGrants()
             .grant(Permission.CRUD, UserRole.CASEWORKER_IA_ADMOFFICER, UserRole.CASEWORKER_IA_CASEOFFICER)
             .grant(Set.of(Permission.R), UserRole.CASEWORKER_IA_IACJUDGE)

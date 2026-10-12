@@ -35,6 +35,8 @@ public class GenerateListCmrTask implements CCDConfig<CaseData, State, UserRole>
             .showSummary(false)
             .endButtonLabel("Generate")
             .publishToCamunda()
+            .aboutToStartCallback("${CCD_DEF_IA_URL}/asylum/ccdAboutToStart", 5, 5, 5, 5)
+            .aboutToSubmitCallback("${CCD_DEF_IA_URL}/asylum/ccdAboutToSubmit", 5, 5, 5, 5)
             .explicitGrants()
             .grant(Permission.CRUD, UserRole.CASEWORKER_IA_ADMOFFICER, UserRole.CASEWORKER_IA_CASEOFFICER, UserRole.CASEWORKER_WA_TASK_CONFIGURATION)
             .fields();

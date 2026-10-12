@@ -22,7 +22,7 @@ public final class EndAppealEndAppealPage {
      */
     public static void apply(
             FieldCollection.FieldCollectionBuilder<CaseData, State, Event.EventBuilder<CaseData, UserRole, State>> fields) {
-        fields.page("endAppeal");
+        fields.page("endAppeal", "${CCD_DEF_IA_URL}/asylum/ccdMidEvent");
         fields.readonlyNoSummary(CaseData::getEndAppealTitle)
                     .publish(false);
         fields.mandatory(CaseData::getEndAppealOutcome)

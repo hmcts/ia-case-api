@@ -22,7 +22,7 @@ public final class ProgressMigratedCaseProgressDesiredStatePage {
      */
     public static void apply(
             FieldCollection.FieldCollectionBuilder<CaseData, State, Event.EventBuilder<CaseData, UserRole, State>> fields) {
-        fields.page("progressDesiredState");
+        fields.page("progressDesiredState", "${CCD_DEF_IA_URL}/asylum/ccdMidEvent?pageId=migrateAriaCasesDocumentUploaderMidEvent");
         fields.pageLabel("Desired state");
         fields.readonlyNoSummary(CaseData::getDesiredStateTips)
                     .publish(false);

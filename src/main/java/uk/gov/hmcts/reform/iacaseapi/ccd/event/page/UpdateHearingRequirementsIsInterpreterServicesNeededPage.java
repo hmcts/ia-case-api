@@ -22,7 +22,7 @@ public final class UpdateHearingRequirementsIsInterpreterServicesNeededPage {
      */
     public static void apply(
             FieldCollection.FieldCollectionBuilder<CaseData, State, Event.EventBuilder<CaseData, UserRole, State>> fields) {
-        fields.page("isInterpreterServicesNeeded");
+        fields.page("isInterpreterServicesNeeded", "${CCD_DEF_IA_URL}/asylum/ccdMidEvent?pageId=isInterpreterServicesNeeded");
         fields.mandatory(CaseData::getIsInterpreterServicesNeeded)
                     .caseEventFieldLabel("Will the appellant need a spoken or sign language interpreter at the hearing?")
                     .publish(false);

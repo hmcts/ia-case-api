@@ -22,7 +22,7 @@ public final class RecordAdjournmentDetailsNextHearingDatePage {
      */
     public static void apply(
             FieldCollection.FieldCollectionBuilder<CaseData, State, Event.EventBuilder<CaseData, UserRole, State>> fields) {
-        fields.page("nextHearingDate");
+        fields.page("nextHearingDate", "${CCD_DEF_IA_URL}/asylum/ccdMidEvent?pageId=nextHearingDate");
         fields.mandatory(CaseData::getNextHearingDate)
                     .publish(false);
         fields.mandatory(CaseData::getNextHearingDateFixed)

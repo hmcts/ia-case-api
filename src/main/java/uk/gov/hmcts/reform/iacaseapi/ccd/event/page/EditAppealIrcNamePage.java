@@ -22,7 +22,7 @@ public final class EditAppealIrcNamePage {
      */
     public static void apply(
             FieldCollection.FieldCollectionBuilder<CaseData, State, Event.EventBuilder<CaseData, UserRole, State>> fields) {
-        fields.page("ircName");
+        fields.page("ircName", "${CCD_DEF_IA_URL}/asylum/ccdMidEvent?pageId=ircName");
         fields.pageLabel("In which immigration removal centre is the appellant detained?");
         fields.showCondition("appellantInDetention=\"Yes\" AND detentionFacility=\"immigrationRemovalCentre\" AND appellantInUk=\"Yes\"");
         fields.mandatory(CaseData::getIrcName)

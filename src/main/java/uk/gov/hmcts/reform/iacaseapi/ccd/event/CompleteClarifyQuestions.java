@@ -33,6 +33,7 @@ public class CompleteClarifyQuestions implements CCDConfig<CaseData, State, User
             .displayOrder(44)
             .showSummary(false)
             .endButtonLabel("Complete Clarifying Questions")
+            .aboutToSubmitCallback("${CCD_DEF_IA_URL}/asylum/ccdAboutToSubmit")
             .explicitGrants()
             .grant(Permission.CRUD, UserRole.CASEWORKER_IA_CASEOFFICER);
     }

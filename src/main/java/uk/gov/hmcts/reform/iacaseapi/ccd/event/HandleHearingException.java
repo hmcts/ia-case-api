@@ -34,6 +34,8 @@ public class HandleHearingException implements CCDConfig<CaseData, State, UserRo
             .displayOrder(102)
             .showSummary(false)
             .endButtonLabel("Handle hearing exception")
+            .aboutToSubmitCallback("${CCD_DEF_IA_URL}/asylum/ccdAboutToSubmit", 5, 5, 5, 5)
+            .submittedCallback("${CCD_DEF_IA_URL}/asylum/ccdSubmitted", 5, 5, 5, 5)
             .explicitGrants()
             .grant(Permission.CRUD, UserRole.CASEWORKER_IA_SYSTEM)
             .fields();

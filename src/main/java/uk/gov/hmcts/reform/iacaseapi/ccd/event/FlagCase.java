@@ -34,6 +34,8 @@ public class FlagCase implements CCDConfig<CaseData, State, UserRole> {
             .displayOrder(45)
             .showSummary()
             .endButtonLabel("Flag case")
+            .aboutToSubmitCallback("${CCD_DEF_IA_URL}/asylum/ccdAboutToSubmit", 5, 5, 5, 5)
+            .submittedCallback("${CCD_DEF_IA_URL}/asylum/ccdSubmitted", 5, 5, 5, 5)
             .explicitGrants()
             .fields();
         FlagCaseFlagCasePage.apply(fields);

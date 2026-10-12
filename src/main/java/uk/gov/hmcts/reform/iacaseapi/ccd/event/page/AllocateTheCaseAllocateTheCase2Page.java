@@ -22,7 +22,7 @@ public final class AllocateTheCaseAllocateTheCase2Page {
      */
     public static void apply(
             FieldCollection.FieldCollectionBuilder<CaseData, State, Event.EventBuilder<CaseData, UserRole, State>> fields) {
-        fields.page("allocateTheCase2");
+        fields.page("allocateTheCase2", "${CCD_DEF_IA_URL}/asylum/ccdMidEvent");
         fields.showCondition("allocateTheCaseTo=\"caseworker\"");
         fields.readonlyNoSummary(CaseData::getCaseWorkerLocationTitle);
         fields.mandatory(CaseData::getCaseWorkerLocationList);

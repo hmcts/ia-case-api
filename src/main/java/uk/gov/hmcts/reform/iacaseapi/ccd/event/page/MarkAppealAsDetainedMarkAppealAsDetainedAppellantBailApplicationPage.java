@@ -22,7 +22,7 @@ public final class MarkAppealAsDetainedMarkAppealAsDetainedAppellantBailApplicat
      */
     public static void apply(
             FieldCollection.FieldCollectionBuilder<CaseData, State, Event.EventBuilder<CaseData, UserRole, State>> fields) {
-        fields.page("markAppealAsDetained_appellantBailApplication");
+        fields.page("markAppealAsDetained_appellantBailApplication", "${CCD_DEF_IA_URL}/asylum/ccdMidEvent?pageId=markAppealAsDetained_appellantBailApplication");
         fields.pageLabel("Bail application");
         fields.showCondition("releaseDateProvided!=\"Yes\"");
         fields.mandatory(CaseData::getHasPendingBailApplications)

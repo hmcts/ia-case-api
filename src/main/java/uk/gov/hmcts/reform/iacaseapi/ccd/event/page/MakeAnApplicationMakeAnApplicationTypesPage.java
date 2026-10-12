@@ -22,7 +22,7 @@ public final class MakeAnApplicationMakeAnApplicationTypesPage {
      */
     public static void apply(
             FieldCollection.FieldCollectionBuilder<CaseData, State, Event.EventBuilder<CaseData, UserRole, State>> fields) {
-        fields.page("makeAnApplicationTypes");
+        fields.page("makeAnApplicationTypes", "${CCD_DEF_IA_URL}/asylum/ccdMidEvent");
         fields.pageLabel("Type of application");
         fields.readonlyNoSummary(CaseData::getMakeAnApplicationAdvice)
                     .publish(false);

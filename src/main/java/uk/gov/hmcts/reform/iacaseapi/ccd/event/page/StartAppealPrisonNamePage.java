@@ -22,7 +22,7 @@ public final class StartAppealPrisonNamePage {
      */
     public static void apply(
             FieldCollection.FieldCollectionBuilder<CaseData, State, Event.EventBuilder<CaseData, UserRole, State>> fields) {
-        fields.page("prisonName");
+        fields.page("prisonName", "${CCD_DEF_IA_URL}/asylum/ccdMidEvent?pageId=prisonName");
         fields.pageLabel("In which prison is the appellant detained?");
         fields.showCondition("appellantInDetention=\"Yes\" AND detentionFacility=\"prison\" AND prisonNOMSNumber!=\"\" AND appellantInUk=\"Yes\"");
         fields.mandatory(CaseData::getPrisonName)

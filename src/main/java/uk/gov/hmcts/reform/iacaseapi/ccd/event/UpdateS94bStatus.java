@@ -34,6 +34,8 @@ public class UpdateS94bStatus implements CCDConfig<CaseData, State, UserRole> {
             .showSummary()
             .endButtonLabel("Submit")
             .publishToCamunda()
+            .aboutToStartCallback("${CCD_DEF_IA_URL}/asylum/ccdAboutToStart", 5, 5, 5, 5)
+            .submittedCallback("${CCD_DEF_IA_URL}/asylum/ccdSubmitted", 5, 5, 5, 5)
             .explicitGrants()
             .grant(Permission.CRUD, UserRole.CASEWORKER_IA_CASEOFFICER)
             .fields();

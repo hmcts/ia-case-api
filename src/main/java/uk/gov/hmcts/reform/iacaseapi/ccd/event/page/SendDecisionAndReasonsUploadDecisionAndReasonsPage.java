@@ -22,7 +22,7 @@ public final class SendDecisionAndReasonsUploadDecisionAndReasonsPage {
      */
     public static void apply(
             FieldCollection.FieldCollectionBuilder<CaseData, State, Event.EventBuilder<CaseData, UserRole, State>> fields) {
-        fields.page("uploadDecisionAndReasons");
+        fields.page("uploadDecisionAndReasons", "${CCD_DEF_IA_URL}/asylum/ccdMidEvent");
         fields.readonlyNoSummary(CaseData::getUploadDecisionAndReasonsTitle)
                     .publish(false);
         fields.mandatory(CaseData::getFinalDecisionAndReasonsDocument)

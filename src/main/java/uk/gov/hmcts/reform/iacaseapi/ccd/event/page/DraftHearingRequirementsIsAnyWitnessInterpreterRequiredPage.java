@@ -22,7 +22,7 @@ public final class DraftHearingRequirementsIsAnyWitnessInterpreterRequiredPage {
      */
     public static void apply(
             FieldCollection.FieldCollectionBuilder<CaseData, State, Event.EventBuilder<CaseData, UserRole, State>> fields) {
-        fields.page("isAnyWitnessInterpreterRequired");
+        fields.page("isAnyWitnessInterpreterRequired", "${CCD_DEF_IA_URL}/asylum/ccdMidEvent?pageId=isAnyWitnessInterpreterRequired");
         fields.pageLabel("Hearing requirements");
         fields.showCondition("isWitnessesAttending=\"Yes\"");
         fields.mandatory(CaseData::getIsAnyWitnessInterpreterRequired)

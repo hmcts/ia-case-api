@@ -22,7 +22,7 @@ public final class DecideAnApplicationSelectMakeAnApplicationPage {
      */
     public static void apply(
             FieldCollection.FieldCollectionBuilder<CaseData, State, Event.EventBuilder<CaseData, UserRole, State>> fields) {
-        fields.page("selectMakeAnApplication");
+        fields.page("selectMakeAnApplication", "${CCD_DEF_IA_URL}/asylum/ccdMidEvent");
         fields.readonlyNoSummary(CaseData::getDecideAnApplicationAdvice)
                     .publish(false);
         fields.mandatory(CaseData::getMakeAnApplicationsList)

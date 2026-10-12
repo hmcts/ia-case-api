@@ -22,7 +22,7 @@ public final class RemoveDetainedStatusDetentionRemovalAppellantContactPreferenc
      */
     public static void apply(
             FieldCollection.FieldCollectionBuilder<CaseData, State, Event.EventBuilder<CaseData, UserRole, State>> fields) {
-        fields.page("detentionRemoval_appellantContactPreference");
+        fields.page("detentionRemoval_appellantContactPreference", "${CCD_DEF_IA_URL}/asylum/ccdMidEvent?pageId=detentionRemoval_appellantContactPreference");
         fields.pageLabel("The appellant's contact preference");
         fields.showCondition("isAdmin!=\"Yes\"");
         fields.readonlyNoSummary(CaseData::getAppellantContactPreferenceTitle)

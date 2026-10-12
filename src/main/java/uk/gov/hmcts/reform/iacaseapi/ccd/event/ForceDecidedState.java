@@ -37,6 +37,8 @@ public class ForceDecidedState implements CCDConfig<CaseData, State, UserRole> {
             .showCondition("[STATE]!=\"appealStarted\" AND [STATE]!=\"appealStartedByAdmin\" AND isRehydratedAppeal=\"Yes\" AND isAdmin=\"Yes\" AND hasBeenDecided!=\"Yes\"")
             .showSummary()
             .endButtonLabel("Force to decided")
+            .aboutToSubmitCallback("${CCD_DEF_IA_URL}/asylum/ccdAboutToSubmit", 5, 5, 5, 5)
+            .submittedCallback("${CCD_DEF_IA_URL}/asylum/ccdSubmitted")
             .explicitGrants()
             .fields();
         ForceDecidedStateMoveToDecidedDatePagePage.apply(fields);

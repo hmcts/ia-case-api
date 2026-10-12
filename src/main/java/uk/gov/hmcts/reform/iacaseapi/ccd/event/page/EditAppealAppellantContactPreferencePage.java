@@ -22,7 +22,7 @@ public final class EditAppealAppellantContactPreferencePage {
      */
     public static void apply(
             FieldCollection.FieldCollectionBuilder<CaseData, State, Event.EventBuilder<CaseData, UserRole, State>> fields) {
-        fields.page("appellantContactPreference");
+        fields.page("appellantContactPreference", "${CCD_DEF_IA_URL}/asylum/ccdMidEvent?pageId=appellantContactPreference");
         fields.pageLabel("The appellant's contact preference");
         fields.showCondition("appellantInDetention!=\"Yes\" AND isAdmin!=\"Yes\"");
         fields.readonlyNoSummary(CaseData::getAppellantContactPreferenceTitle);

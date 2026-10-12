@@ -22,7 +22,7 @@ public final class DraftHearingRequirementsIsWitnessesAttendingPage {
      */
     public static void apply(
             FieldCollection.FieldCollectionBuilder<CaseData, State, Event.EventBuilder<CaseData, UserRole, State>> fields) {
-        fields.page("isWitnessesAttending");
+        fields.page("isWitnessesAttending", "${CCD_DEF_IA_URL}/asylum/ccdMidEvent?pageId=isWitnessesAttending");
         fields.pageLabel("Witnesses");
         fields.mandatory(CaseData::getIsWitnessesAttending)
                     .publish(false);

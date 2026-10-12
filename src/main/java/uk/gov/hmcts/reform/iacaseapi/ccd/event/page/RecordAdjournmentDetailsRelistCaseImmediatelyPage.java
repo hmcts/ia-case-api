@@ -22,7 +22,7 @@ public final class RecordAdjournmentDetailsRelistCaseImmediatelyPage {
      */
     public static void apply(
             FieldCollection.FieldCollectionBuilder<CaseData, State, Event.EventBuilder<CaseData, UserRole, State>> fields) {
-        fields.page("relistCaseImmediately");
+        fields.page("relistCaseImmediately", "${CCD_DEF_IA_URL}/asylum/ccdMidEvent?pageId=relistCaseImmediately");
         fields.mandatory(CaseData::getRelistCaseImmediately);
     }
 }

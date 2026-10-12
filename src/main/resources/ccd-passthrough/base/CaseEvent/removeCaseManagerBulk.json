@@ -1,5 +1,0 @@
-[ {
-  "ID" : "removeCaseManagerBulk",
-  "CallBackURLSubmittedEvent" : "${CCD_DEF_IA_URL}/asylum/ccdAboutToSubmit",
-  "RetriesTimeoutURLSubmittedEvent" : "5,5,5,5"
-} ]

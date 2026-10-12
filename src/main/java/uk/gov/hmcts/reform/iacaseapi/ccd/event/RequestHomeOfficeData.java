@@ -34,6 +34,9 @@ public class RequestHomeOfficeData implements CCDConfig<CaseData, State, UserRol
             .showCondition("appealOutOfCountry=\"No\" AND hasBeenValidatedByNewHomeOfficeApi!=\"Yes\"")
             .showSummary()
             .endButtonLabel("Request Home Office data")
+            .aboutToStartCallback("${CCD_DEF_IA_URL}/asylum/ccdAboutToStart", 1, 1, 1, 1)
+            .aboutToSubmitCallback("${CCD_DEF_IA_URL}/asylum/ccdAboutToSubmit", 1, 1, 1, 1)
+            .submittedCallback("${CCD_DEF_IA_URL}/asylum/ccdSubmitted", 5, 5, 5, 5)
             .explicitGrants()
             .grant(Permission.CRUD, UserRole.CASEWORKER_IA_CASEOFFICER)
             .fields();

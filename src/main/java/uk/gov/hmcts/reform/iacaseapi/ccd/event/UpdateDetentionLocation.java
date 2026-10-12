@@ -42,6 +42,8 @@ public class UpdateDetentionLocation implements CCDConfig<CaseData, State, UserR
             .showSummary()
             .endButtonLabel("Update detention location")
             .publishToCamunda()
+            .aboutToSubmitCallback("${CCD_DEF_IA_URL}/asylum/ccdAboutToSubmit", 5, 5, 5, 5)
+            .submittedCallback("${CCD_DEF_IA_URL}/asylum/ccdSubmitted", 5, 5, 5, 5)
             .explicitGrants()
             .grant(Permission.CRUD, UserRole.CASEWORKER_IA_ADMOFFICER, UserRole.CASEWORKER_IA_CASEOFFICER)
             .fields();

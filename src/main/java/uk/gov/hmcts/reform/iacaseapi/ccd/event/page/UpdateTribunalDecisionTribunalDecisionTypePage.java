@@ -22,7 +22,7 @@ public final class UpdateTribunalDecisionTribunalDecisionTypePage {
      */
     public static void apply(
             FieldCollection.FieldCollectionBuilder<CaseData, State, Event.EventBuilder<CaseData, UserRole, State>> fields) {
-        fields.page("tribunalDecisionType");
+        fields.page("tribunalDecisionType", "${CCD_DEF_IA_URL}/asylum/ccdMidEvent?pageId=tribunalDecisionType");
         fields.pageLabel("Reason for updating the decision");
         fields.mandatory(CaseData::getUpdateTribunalDecisionList);
         fields.readonly(CaseData::getUpdatedAppealDecision)

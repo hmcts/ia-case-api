@@ -34,6 +34,8 @@ public class MoveToPaymentPending implements CCDConfig<CaseData, State, UserRole
             .showSummary()
             .endButtonLabel("Mark as not paid")
             .publishToCamunda()
+            .aboutToStartCallback("${CCD_DEF_IA_URL}/asylum/ccdAboutToStart", 5, 5, 5, 5)
+            .aboutToSubmitCallback("${CCD_DEF_IA_URL}/asylum/ccdAboutToSubmit", 5, 5, 5, 5)
             .explicitGrants()
             .grant(Permission.CRUD, UserRole.CASEWORKER_IA_SYSTEM);
     }

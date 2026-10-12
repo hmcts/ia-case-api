@@ -23,7 +23,7 @@ public final class UpdateHearingRequirementsAppellantInterpreterSpokenLanguagePa
      */
     public static void apply(
             FieldCollection.FieldCollectionBuilder<CaseData, State, Event.EventBuilder<CaseData, UserRole, State>> fields) {
-        fields.page("appellantInterpreterSpokenLanguage");
+        fields.page("appellantInterpreterSpokenLanguage", "${CCD_DEF_IA_URL}/asylum/ccdMidEvent?pageId=appellantInterpreterSpokenLanguage");
         fields.showCondition("isInterpreterServicesNeeded=\"Yes\" AND appellantInterpreterLanguageCategoryCONTAINS\"spokenLanguageInterpreter\"");
         fields.complex(CaseData::getAppellantInterpreterSpokenLanguage)
                     .mandatory(InterpreterSpokenLanguage::getLanguageRefData)

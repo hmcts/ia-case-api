@@ -35,10 +35,13 @@ public class AppellantInPersonManual implements CCDConfig<CaseData, State, UserR
             .showSummary(false)
             .endButtonLabel("Appellant in Person - Manual")
             .publishToCamunda()
+            .aboutToStartCallback("${CCD_DEF_IA_URL}/asylum/ccdAboutToStart", 5, 5, 5, 5)
+            .aboutToSubmitCallback("${CCD_DEF_IA_URL}/asylum/ccdAboutToSubmit", 5, 5, 5, 5)
+            .submittedCallback("${CCD_DEF_IA_URL}/asylum/ccdSubmitted", 5, 5, 5, 5)
             .explicitGrants()
             .grant(Permission.CRUD, UserRole.CASEWORKER_IA_ADMOFFICER, UserRole.CASEWORKER_IA_CASEOFFICER)
             .fields();
-        fields.page("appellantInPersonManual_appellantAddress");
+        fields.page("appellantInPersonManual_appellantAddress", "${CCD_DEF_IA_URL}/asylum/ccdMidEvent?pageId=appellantAddress");
         fields.readonlyNoSummary(CaseData::getAppellantInPersonManualTitle)
                     .publish(false);
         fields.readonlyNoSummary(CaseData::getAppellantAddressTitle)

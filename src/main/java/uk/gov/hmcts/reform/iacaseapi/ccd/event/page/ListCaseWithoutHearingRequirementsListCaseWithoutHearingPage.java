@@ -22,7 +22,7 @@ public final class ListCaseWithoutHearingRequirementsListCaseWithoutHearingPage 
      */
     public static void apply(
             FieldCollection.FieldCollectionBuilder<CaseData, State, Event.EventBuilder<CaseData, UserRole, State>> fields) {
-        fields.page("listCaseWithoutHearing");
+        fields.page("listCaseWithoutHearing", "${CCD_DEF_IA_URL}/asylum/ccdMidEvent");
         fields.mandatoryNoSummary(CaseData::getIsIntegrated)
                     .fieldShowCondition("[STATE]=\"DUMMY_FIELD_TO_HIDE\"");
         fields.mandatoryNoSummary(CaseData::getAppellantInDetention)

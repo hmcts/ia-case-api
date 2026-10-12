@@ -22,7 +22,7 @@ public final class EditAppealAfterSubmitEntryClearanceDecisionLetterPage {
      */
     public static void apply(
             FieldCollection.FieldCollectionBuilder<CaseData, State, Event.EventBuilder<CaseData, UserRole, State>> fields) {
-        fields.page("entryClearanceDecisionLetter");
+        fields.page("entryClearanceDecisionLetter", "${CCD_DEF_IA_URL}/asylum/ccdMidEvent?pageId=entryClearanceDecisionLetter");
         fields.pageLabel("Entry clearance decision date");
         fields.showCondition("isAdmin=\"Yes\" AND appellantInUk!=\"Yes\" AND oocAppealAdminJ=\"entryClearanceDecision\" OR isAdmin!=\"Yes\" AND isOutOfCountryEnabled=\"Yes\" AND appellantInUk!=\"Yes\" AND outOfCountryDecisionType!=\"refusalOfProtection\" AND outOfCountryDecisionType!=\"removalOfClient\"");
         fields.readonlyNoSummary(CaseData::getEntryClearanceDecisionLetterTitle)

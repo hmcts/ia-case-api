@@ -35,6 +35,7 @@ public class ApplyNocDecision implements CCDConfig<CaseData, State, UserRole> {
             .displayOrder(72)
             .showSummary()
             .showEventNotes()
+            .aboutToStartCallback("${CCD_DEF_AAC_URL}/noc/apply-decision", 5, 5, 5, 5)
             .explicitGrants()
             .grant(Permission.CRUD, UserRole.CASEWORKER_APPROVER)
             .grant(Set.of(Permission.R), UserRole.CASEWORKER_IA_ADMOFFICER, UserRole.CASEWORKER_IA_CASEOFFICER);

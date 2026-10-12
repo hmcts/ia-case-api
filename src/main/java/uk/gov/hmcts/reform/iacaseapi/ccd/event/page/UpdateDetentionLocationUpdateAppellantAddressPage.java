@@ -22,7 +22,7 @@ public final class UpdateDetentionLocationUpdateAppellantAddressPage {
      */
     public static void apply(
             FieldCollection.FieldCollectionBuilder<CaseData, State, Event.EventBuilder<CaseData, UserRole, State>> fields) {
-        fields.page("updateAppellantAddress");
+        fields.page("updateAppellantAddress", "${CCD_DEF_IA_URL}/asylum/ccdMidEvent?pageId=appellantAddress");
         fields.pageLabel("Appellant's address");
         fields.showCondition("detentionFacility=\"other\"");
         fields.readonlyNoSummary(CaseData::getAppellantAddressTitle)

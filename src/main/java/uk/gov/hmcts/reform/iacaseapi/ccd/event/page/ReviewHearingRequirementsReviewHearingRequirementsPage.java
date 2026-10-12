@@ -22,7 +22,7 @@ public final class ReviewHearingRequirementsReviewHearingRequirementsPage {
      */
     public static void apply(
             FieldCollection.FieldCollectionBuilder<CaseData, State, Event.EventBuilder<CaseData, UserRole, State>> fields) {
-        fields.page("reviewHearingRequirements");
+        fields.page("reviewHearingRequirements", "${CCD_DEF_IA_URL}/asylum/ccdMidEvent");
         fields.readonlyNoSummary(CaseData::getReviewHearingRequirementsTitle)
                     .publish(false);
         fields.mandatoryNoSummary(CaseData::getAppellantInDetention)

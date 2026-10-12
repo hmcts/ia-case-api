@@ -22,7 +22,7 @@ public final class StartAppealDepartureDatePage {
      */
     public static void apply(
             FieldCollection.FieldCollectionBuilder<CaseData, State, Event.EventBuilder<CaseData, UserRole, State>> fields) {
-        fields.page("departureDate");
+        fields.page("departureDate", "${CCD_DEF_IA_URL}/asylum/ccdMidEvent?pageId=departureDate");
         fields.pageLabel("Departure date");
         fields.showCondition("isOutOfCountryEnabled=\"Yes\" AND appellantInUk=\"No\" AND outOfCountryDecisionType=\"refusalOfProtection\"");
         fields.readonlyNoSummary(CaseData::getDepartureDateTitle)

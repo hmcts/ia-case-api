@@ -22,7 +22,7 @@ public final class ChangeDirectionDueDateChangeDirectionDueDatePage {
      */
     public static void apply(
             FieldCollection.FieldCollectionBuilder<CaseData, State, Event.EventBuilder<CaseData, UserRole, State>> fields) {
-        fields.page("changeDirectionDueDate");
+        fields.page("changeDirectionDueDate", "${CCD_DEF_IA_URL}/asylum/ccdMidEvent");
         fields.readonlyNoSummary(CaseData::getChangeDirectionDueDateTitle)
                     .publish(false);
         fields.mandatory(CaseData::getDirectionList)

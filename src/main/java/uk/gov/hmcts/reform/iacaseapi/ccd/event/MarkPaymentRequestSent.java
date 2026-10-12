@@ -34,6 +34,8 @@ public class MarkPaymentRequestSent implements CCDConfig<CaseData, State, UserRo
             .showSummary()
             .endButtonLabel("Save note")
             .publishToCamunda()
+            .aboutToSubmitCallback("${CCD_DEF_IA_URL}/asylum/ccdAboutToSubmit", 5, 5, 5, 5)
+            .submittedCallback("${CCD_DEF_IA_URL}/asylum/ccdSubmitted", 5, 5, 5, 5)
             .explicitGrants()
             .grant(Permission.CRUD, UserRole.CASEWORKER_IA_ADMOFFICER)
             .fields();

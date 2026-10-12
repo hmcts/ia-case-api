@@ -22,7 +22,7 @@ public final class DecideFtpaApplicationFtpaRespondentDecisionReasonsNotesPage {
      */
     public static void apply(
             FieldCollection.FieldCollectionBuilder<CaseData, State, Event.EventBuilder<CaseData, UserRole, State>> fields) {
-        fields.page("ftpaRespondentDecisionReasonsNotes");
+        fields.page("ftpaRespondentDecisionReasonsNotes", "${CCD_DEF_IA_URL}/asylum/ccdMidEvent");
         fields.pageLabel("Notes for the Upper Tribunal");
         fields.showCondition("ftpaApplicantType=\"respondent\" AND ftpaRespondentDecisionReasonsNotesVisible=\"Yes\"");
         fields.readonlyNoSummary(CaseData::getFtpaRespondentDecisionNotesAdvice)

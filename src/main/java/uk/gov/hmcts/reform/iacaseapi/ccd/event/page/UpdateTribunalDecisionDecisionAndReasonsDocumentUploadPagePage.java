@@ -22,7 +22,7 @@ public final class UpdateTribunalDecisionDecisionAndReasonsDocumentUploadPagePag
      */
     public static void apply(
             FieldCollection.FieldCollectionBuilder<CaseData, State, Event.EventBuilder<CaseData, UserRole, State>> fields) {
-        fields.page("decisionAndReasonsDocumentUploadPage");
+        fields.page("decisionAndReasonsDocumentUploadPage", "${CCD_DEF_IA_URL}/asylum/ccdMidEvent?pageId=decisionAndReasonsDocumentUploadPage");
         fields.pageLabel("Decision and Reasons document");
         fields.showCondition("updateTribunalDecisionList=\"underRule31\"");
         fields.readonlyNoSummary(CaseData::getUpdateTribunalDecisionAndReasonsTitle)

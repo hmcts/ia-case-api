@@ -35,6 +35,7 @@ public class ReTriggerWaBulkTasks implements CCDConfig<CaseData, State, UserRole
             .showSummary(false)
             .endButtonLabel("Submit")
             .publishToCamunda()
+            .aboutToSubmitCallback("${CCD_DEF_IA_URL}/asylum/ccdAboutToSubmit", 0)
             .explicitGrants()
             .grant(Permission.CRUD, UserRole.CASEWORKER_IA_INTERNAL)
             .fields();

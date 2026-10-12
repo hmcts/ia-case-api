@@ -36,6 +36,7 @@ public class ReTriggerWaTasks implements CCDConfig<CaseData, State, UserRole> {
             .showSummary()
             .endButtonLabel("Submit")
             .publishToCamunda()
+            .submittedCallback("${CCD_DEF_IA_URL}/asylum/ccdSubmitted", 0)
             .explicitGrants()
             .grant(Permission.CRUD, UserRole.CASEWORKER_IA_INTERNAL, UserRole.CASEWORKER_IA_SYSTEM)
             .grant(Set.of(Permission.R), UserRole.CITIZEN)

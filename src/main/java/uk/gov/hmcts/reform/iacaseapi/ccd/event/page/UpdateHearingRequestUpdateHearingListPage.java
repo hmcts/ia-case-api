@@ -22,7 +22,7 @@ public final class UpdateHearingRequestUpdateHearingListPage {
      */
     public static void apply(
             FieldCollection.FieldCollectionBuilder<CaseData, State, Event.EventBuilder<CaseData, UserRole, State>> fields) {
-        fields.page("updateHearingList");
+        fields.page("updateHearingList", "${CCD_DEF_IA_URL}/asylum/ccdMidEvent?pageId=updateHearingList");
         fields.mandatoryNoSummary(CaseData::getChangeHearings)
                     .publish(false);
     }

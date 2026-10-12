@@ -22,7 +22,7 @@ public final class EditAppealCuiHomeOfficeReferenceNumberPage {
      */
     public static void apply(
             FieldCollection.FieldCollectionBuilder<CaseData, State, Event.EventBuilder<CaseData, UserRole, State>> fields) {
-        fields.page("cuiHomeOfficeReferenceNumber");
+        fields.page("cuiHomeOfficeReferenceNumber", "${CCD_DEF_IA_URL}/asylum/ccdMidEvent?pageId=cuiHomeOfficeReferenceNumber");
         fields.pageLabel("Home Office reference number");
         fields.showCondition("appealType=\"DO_NOT_SHOW_ON_UI\"");
         fields.readonlyNoSummary(CaseData::getCuiHomeOfficeReferenceNumber);

@@ -1,5 +1,0 @@
-[ {
-  "ID" : "reTriggerWaBulkTasks",
-  "CallBackURLAboutToSubmitEvent" : "${CCD_DEF_IA_URL}/asylum/ccdAboutToSubmit",
-  "RetriesTimeoutURLAboutToSubmitEvent" : "0"
-} ]

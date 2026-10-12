@@ -22,7 +22,7 @@ public final class DraftHearingRequirementsDraftHearingRequirementsPage {
      */
     public static void apply(
             FieldCollection.FieldCollectionBuilder<CaseData, State, Event.EventBuilder<CaseData, UserRole, State>> fields) {
-        fields.page("draftHearingRequirements");
+        fields.page("draftHearingRequirements", "${CCD_DEF_IA_URL}/asylum/ccdMidEvent?pageId=draftHearingRequirements");
         fields.pageLabel("Requirements");
         fields.readonlyNoSummary(CaseData::getHearingRequirementsTitle)
                     .publish(false);

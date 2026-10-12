@@ -23,7 +23,7 @@ public final class UpdateHearingRequirementsAppellantInterpreterSignLanguagePage
      */
     public static void apply(
             FieldCollection.FieldCollectionBuilder<CaseData, State, Event.EventBuilder<CaseData, UserRole, State>> fields) {
-        fields.page("appellantInterpreterSignLanguage");
+        fields.page("appellantInterpreterSignLanguage", "${CCD_DEF_IA_URL}/asylum/ccdMidEvent?pageId=appellantInterpreterSignLanguage");
         fields.showCondition("isInterpreterServicesNeeded=\"Yes\" AND appellantInterpreterLanguageCategoryCONTAINS\"signLanguageInterpreter\"");
         fields.complex(CaseData::getAppellantInterpreterSignLanguage)
                     .mandatory(InterpreterSignLanguage::getLanguageRefData)

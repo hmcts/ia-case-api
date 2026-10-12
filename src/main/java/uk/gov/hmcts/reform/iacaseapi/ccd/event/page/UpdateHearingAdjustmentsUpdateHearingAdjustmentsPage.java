@@ -22,7 +22,7 @@ public final class UpdateHearingAdjustmentsUpdateHearingAdjustmentsPage {
      */
     public static void apply(
             FieldCollection.FieldCollectionBuilder<CaseData, State, Event.EventBuilder<CaseData, UserRole, State>> fields) {
-        fields.page("updateHearingAdjustments");
+        fields.page("updateHearingAdjustments", "${CCD_DEF_IA_URL}/asylum/ccdMidEvent");
         fields.readonlyNoSummary(CaseData::getIsIntegrated)
                     .fieldShowCondition("reviewHearingRequirementsTitle=\"DUMMY_VALUE_TO_HIDE_FIELD\"");
         fields.readonlyNoSummary(CaseData::getReviewHearingRequirementsTitle);

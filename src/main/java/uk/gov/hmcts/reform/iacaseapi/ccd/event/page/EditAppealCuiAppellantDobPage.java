@@ -22,7 +22,7 @@ public final class EditAppealCuiAppellantDobPage {
      */
     public static void apply(
             FieldCollection.FieldCollectionBuilder<CaseData, State, Event.EventBuilder<CaseData, UserRole, State>> fields) {
-        fields.page("cuiAppellantDob");
+        fields.page("cuiAppellantDob", "${CCD_DEF_IA_URL}/asylum/ccdMidEvent?pageId=cuiAppellantDob");
         fields.pageLabel("Basic details");
         fields.showCondition("appealType=\"DO_NOT_SHOW_ON_UI\"");
         fields.readonlyNoSummary(CaseData::getCuiAppellantDob);

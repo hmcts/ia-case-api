@@ -35,6 +35,8 @@ public class RevokeCaseAccess implements CCDConfig<CaseData, State, UserRole> {
             .showSummary()
             .endButtonLabel("Revoke access")
             .publishToCamunda()
+            .aboutToSubmitCallback("${CCD_DEF_IA_URL}/asylum/ccdAboutToSubmit", 5, 5, 5, 5)
+            .submittedCallback("${CCD_DEF_IA_URL}/asylum/ccdSubmitted", 5, 5, 5, 5)
             .explicitGrants()
             .grant(Permission.CRUD, UserRole.CASEWORKER_IA_INTERNAL, UserRole.CASEWORKER_IA_SYSTEM)
             .fields();

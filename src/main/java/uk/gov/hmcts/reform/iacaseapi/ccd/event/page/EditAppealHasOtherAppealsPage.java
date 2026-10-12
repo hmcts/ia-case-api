@@ -22,7 +22,7 @@ public final class EditAppealHasOtherAppealsPage {
      */
     public static void apply(
             FieldCollection.FieldCollectionBuilder<CaseData, State, Event.EventBuilder<CaseData, UserRole, State>> fields) {
-        fields.page("hasOtherAppeals");
+        fields.page("hasOtherAppeals", "${CCD_DEF_IA_URL}/asylum/ccdMidEvent");
         fields.pageLabel("Other appeals");
         fields.readonlyNoSummary(CaseData::getHasOtherAppealsTitle);
         fields.mandatory(CaseData::getHasOtherAppeals)

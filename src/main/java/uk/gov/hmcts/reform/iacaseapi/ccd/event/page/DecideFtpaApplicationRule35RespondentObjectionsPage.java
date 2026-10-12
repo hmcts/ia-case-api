@@ -22,7 +22,7 @@ public final class DecideFtpaApplicationRule35RespondentObjectionsPage {
      */
     public static void apply(
             FieldCollection.FieldCollectionBuilder<CaseData, State, Event.EventBuilder<CaseData, UserRole, State>> fields) {
-        fields.page("rule35RespondentObjections");
+        fields.page("rule35RespondentObjections", "${CCD_DEF_IA_URL}/asylum/ccdMidEvent");
         fields.pageLabel("Objections");
         fields.showCondition("ftpaApplicantType=\"respondent\" AND ftpaRespondentRjDecisionOutcomeType=\"reheardRule35\"");
         fields.optional(CaseData::getFtpaRespondentR35DecisionObjections)

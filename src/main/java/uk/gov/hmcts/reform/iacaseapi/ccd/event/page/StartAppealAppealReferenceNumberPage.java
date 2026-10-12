@@ -22,7 +22,7 @@ public final class StartAppealAppealReferenceNumberPage {
      */
     public static void apply(
             FieldCollection.FieldCollectionBuilder<CaseData, State, Event.EventBuilder<CaseData, UserRole, State>> fields) {
-        fields.page("appealReferenceNumber");
+        fields.page("appealReferenceNumber", "${CCD_DEF_IA_URL}/asylum/ccdMidEvent?pageId=appealReferenceNumber");
         fields.pageLabel("What is/was the ARIA appeal reference number?");
         fields.showCondition("sourceOfAppeal=\"rehydratedAppeal\" AND isAdmin=\"Yes\"");
         fields.mandatory(CaseData::getAppealReferenceNumber)

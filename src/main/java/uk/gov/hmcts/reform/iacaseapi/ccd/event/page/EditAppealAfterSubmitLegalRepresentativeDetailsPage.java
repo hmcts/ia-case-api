@@ -22,7 +22,7 @@ public final class EditAppealAfterSubmitLegalRepresentativeDetailsPage {
      */
     public static void apply(
             FieldCollection.FieldCollectionBuilder<CaseData, State, Event.EventBuilder<CaseData, UserRole, State>> fields) {
-        fields.page("legalRepresentativeDetails");
+        fields.page("legalRepresentativeDetails", "${CCD_DEF_IA_URL}/asylum/ccdMidEvent?pageId=legalRepresentativeDetails");
         fields.showCondition("isAdmin!=\"Yes\" AND journeyType!=\"aip\"");
         fields.readonlyNoSummary(CaseData::getLegalRepDetailsHintAndTitle)
                     .publish(false);

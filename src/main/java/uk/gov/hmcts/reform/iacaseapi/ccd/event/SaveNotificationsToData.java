@@ -32,6 +32,7 @@ public class SaveNotificationsToData implements CCDConfig<CaseData, State, UserR
             .name("Save notifications to data")
             .displayOrder(111)
             .showSummary()
+            .aboutToSubmitCallback("${CCD_DEF_IA_URL}/asylum/ccdAboutToSubmit", 1, 1, 1, 1)
             .explicitGrants()
             .grant(Permission.CRUD, UserRole.CASEWORKER_IA_ADMOFFICER, UserRole.CASEWORKER_IA_SYSTEM);
     }

@@ -41,6 +41,9 @@ public class UpdateHearingRequest implements CCDConfig<CaseData, State, UserRole
             .showSummary()
             .endButtonLabel("Update")
             .publishToCamunda()
+            .aboutToStartCallback("${CCD_DEF_IA_URL}/asylum/ccdAboutToStart", 5, 5, 5, 5)
+            .aboutToSubmitCallback("${CCD_DEF_IA_URL}/asylum/ccdAboutToSubmit", 10)
+            .submittedCallback("${CCD_DEF_IA_URL}/asylum/ccdSubmitted", 10)
             .explicitGrants()
             .grant(Permission.CRUD, UserRole.CASEWORKER_IA_ADMOFFICER, UserRole.CASEWORKER_IA_CASEOFFICER)
             .fields();

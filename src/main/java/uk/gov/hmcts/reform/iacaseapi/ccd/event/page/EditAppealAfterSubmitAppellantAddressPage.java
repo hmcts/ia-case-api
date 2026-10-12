@@ -22,7 +22,7 @@ public final class EditAppealAfterSubmitAppellantAddressPage {
      */
     public static void apply(
             FieldCollection.FieldCollectionBuilder<CaseData, State, Event.EventBuilder<CaseData, UserRole, State>> fields) {
-        fields.page("appellantAddress");
+        fields.page("appellantAddress", "${CCD_DEF_IA_URL}/asylum/ccdMidEvent?pageId=appellantAddress");
         fields.pageLabel("Appellant's address");
         fields.showCondition("appellantInUk=\"Yes\" AND appellantInDetention!=\"Yes\"");
         fields.readonlyNoSummary(CaseData::getAppellantAddressTitle)

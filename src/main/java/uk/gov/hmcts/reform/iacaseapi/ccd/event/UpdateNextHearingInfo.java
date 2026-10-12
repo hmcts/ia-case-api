@@ -34,6 +34,8 @@ public class UpdateNextHearingInfo implements CCDConfig<CaseData, State, UserRol
             .displayOrder(110)
             .showSummary(false)
             .publishToCamunda()
+            .aboutToStartCallback("${CCD_DEF_IA_URL}/asylum/ccdAboutToStart")
+            .aboutToSubmitCallback("${CCD_DEF_IA_URL}/asylum/ccdAboutToSubmit", 3, 3, 3, 3)
             .explicitGrants()
             .grant(Permission.CRUD, UserRole.CASEWORKER_IA_SYSTEM, UserRole.NEXT_HEARING_DATE_ADMIN);
     }

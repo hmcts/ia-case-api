@@ -36,6 +36,7 @@ public class RemoveNonLegalRep implements CCDConfig<CaseData, State, UserRole> {
             .showSummary()
             .showEventNotes()
             .endButtonLabel("Submit")
+            .aboutToSubmitCallback("${CCD_DEF_IA_URL}/asylum/ccdAboutToSubmit", 5, 5, 5, 5)
             .explicitGrants()
             .grant(Permission.CRUD, UserRole.CASEWORKER_IA_SYSTEM, UserRole.CITIZEN)
             .grant(Set.of(Permission.R), UserRole.CASEWORKER_IA_ADMOFFICER, UserRole.CASEWORKER_IA_CASEOFFICER, UserRole.CASEWORKER_IA_IACJUDGE);

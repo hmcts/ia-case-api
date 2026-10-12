@@ -22,7 +22,7 @@ public final class EditAppealCuiGwfReferenceNumberPage {
      */
     public static void apply(
             FieldCollection.FieldCollectionBuilder<CaseData, State, Event.EventBuilder<CaseData, UserRole, State>> fields) {
-        fields.page("cuiGwfReferenceNumber");
+        fields.page("cuiGwfReferenceNumber", "${CCD_DEF_IA_URL}/asylum/ccdMidEvent?pageId=cuiGwfReferenceNumber");
         fields.pageLabel("Home Office reference number");
         fields.showCondition("appealType=\"DO_NOT_SHOW_ON_UI\"");
         fields.readonlyNoSummary(CaseData::getCuiGwfReferenceNumber);

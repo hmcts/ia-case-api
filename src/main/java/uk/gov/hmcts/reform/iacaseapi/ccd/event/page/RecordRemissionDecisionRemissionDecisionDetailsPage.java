@@ -22,7 +22,7 @@ public final class RecordRemissionDecisionRemissionDecisionDetailsPage {
      */
     public static void apply(
             FieldCollection.FieldCollectionBuilder<CaseData, State, Event.EventBuilder<CaseData, UserRole, State>> fields) {
-        fields.page("remissionDecisionDetails");
+        fields.page("remissionDecisionDetails", "${CCD_DEF_IA_URL}/asylum/ccdMidEvent");
         fields.readonlyNoSummary(CaseData::getRemissionApprovedForFeeWithHearingAdvice)
                     .fieldShowCondition("remissionDecision=\"approved\" AND decisionHearingFeeOption=\"decisionWithHearing\"")
                     .caseEventFieldLabel("The full fee of £${feeWithHearing} will be remitted. Click Continue to confirm the amount remitted and the amount left to pay are correct.")

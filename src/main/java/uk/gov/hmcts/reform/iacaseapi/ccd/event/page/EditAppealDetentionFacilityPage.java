@@ -23,7 +23,7 @@ public final class EditAppealDetentionFacilityPage {
      */
     public static void apply(
             FieldCollection.FieldCollectionBuilder<CaseData, State, Event.EventBuilder<CaseData, UserRole, State>> fields) {
-        fields.page("detentionFacility");
+        fields.page("detentionFacility", "${CCD_DEF_IA_URL}/asylum/ccdMidEvent?pageId=detentionFacility");
         fields.pageLabel("Where is the appellant detained?");
         fields.showCondition("appellantInDetention=\"Yes\" AND appellantInUk=\"Yes\"");
         fields.mandatory(CaseData::getDetentionFacility)

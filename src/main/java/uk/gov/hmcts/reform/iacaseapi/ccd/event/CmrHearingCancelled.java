@@ -34,6 +34,8 @@ public class CmrHearingCancelled implements CCDConfig<CaseData, State, UserRole>
             .displayOrder(126)
             .showSummary(false)
             .publishToCamunda()
+            .aboutToSubmitCallback("${CCD_DEF_IA_URL}/asylum/ccdAboutToSubmit", 5, 5, 5, 5)
+            .submittedCallback("${CCD_DEF_IA_URL}/asylum/ccdSubmitted", 5, 5, 5, 5)
             .explicitGrants()
             .grant(Permission.CRUD, UserRole.CASEWORKER_IA_SYSTEM);
     }

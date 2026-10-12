@@ -39,6 +39,8 @@ public class ForceFtpaDecidedState implements CCDConfig<CaseData, State, UserRol
             .showCondition("[STATE]!=\"appealStarted\" AND [STATE]!=\"appealStartedByAdmin\" AND isRehydratedAppeal=\"Yes\" AND isAdmin=\"Yes\" AND hasBeenFtpaDecided!=\"Yes\"")
             .showSummary()
             .endButtonLabel("Force to FTPA decided")
+            .aboutToSubmitCallback("${CCD_DEF_IA_URL}/asylum/ccdAboutToSubmit", 5, 5, 5, 5)
+            .submittedCallback("${CCD_DEF_IA_URL}/asylum/ccdSubmitted")
             .explicitGrants()
             .fields();
         ForceFtpaDecidedStateMoveToFtpaDecidedDatePagePage.apply(fields);

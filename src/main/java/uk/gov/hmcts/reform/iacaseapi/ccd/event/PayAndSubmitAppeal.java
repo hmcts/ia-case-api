@@ -33,6 +33,7 @@ public class PayAndSubmitAppeal implements CCDConfig<CaseData, State, UserRole> 
             .name("Pay and submit")
             .description("Pay and submit - event added back in for legacy inflight cases support")
             .showSummary(false)
+            .submittedCallback("${CCD_DEF_IA_URL}/asylum/ccdSubmitted", 0)
             .explicitGrants()
             .grant(Set.of(Permission.R), UserRole.CITIZEN);
     }

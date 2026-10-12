@@ -22,7 +22,7 @@ public final class DecideFtpaApplicationIsFtpaAppellantNoticeOfDecisionSetAsideP
      */
     public static void apply(
             FieldCollection.FieldCollectionBuilder<CaseData, State, Event.EventBuilder<CaseData, UserRole, State>> fields) {
-        fields.page("isFtpaAppellantNoticeOfDecisionSetAside");
+        fields.page("isFtpaAppellantNoticeOfDecisionSetAside", "${CCD_DEF_IA_URL}/asylum/ccdMidEvent");
         fields.pageLabel("Rule 35 objection - Resident Judge only");
         fields.showCondition("ftpaApplicantType=\"appellant\" AND ftpaAppellantNoticeOfDecisionSetAsideVisible=\"Yes\" AND ftpaAppellantRjDecisionOutcomeType!=\"reheardRule35\"");
         fields.mandatory(CaseData::getIsFtpaAppellantNoticeOfDecisionSetAside)

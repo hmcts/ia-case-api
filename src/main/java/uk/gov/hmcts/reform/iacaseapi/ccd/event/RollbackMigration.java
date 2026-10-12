@@ -34,6 +34,8 @@ public class RollbackMigration implements CCDConfig<CaseData, State, UserRole> {
             .displayOrder(99)
             .showSummary(false)
             .endButtonLabel("Submit")
+            .aboutToSubmitCallback("${CCD_DEF_IA_URL}/asylum/ccdAboutToSubmit", 5, 5, 5, 5)
+            .submittedCallback("${CCD_DEF_IA_URL}/asylum/ccdSubmitted", 5, 5, 5, 5)
             .explicitGrants()
             .grant(Permission.CRUD, UserRole.CASEWORKER_IA_SYSTEM);
     }

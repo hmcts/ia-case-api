@@ -35,6 +35,9 @@ public class RequestCmaRequirements implements CCDConfig<CaseData, State, UserRo
             .showSummary()
             .endButtonLabel("Send direction")
             .publishToCamunda()
+            .aboutToStartCallback("${CCD_DEF_IA_URL}/asylum/ccdAboutToStart", 5, 5, 5, 5)
+            .aboutToSubmitCallback("${CCD_DEF_IA_URL}/asylum/ccdAboutToSubmit", 5, 5, 5, 5)
+            .submittedCallback("${CCD_DEF_IA_URL}/asylum/ccdSubmitted", 5, 5, 5, 5)
             .explicitGrants()
             .fields();
         fields.page("requestCmaRequirements");

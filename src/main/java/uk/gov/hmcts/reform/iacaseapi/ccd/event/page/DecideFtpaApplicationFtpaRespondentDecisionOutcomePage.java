@@ -22,7 +22,7 @@ public final class DecideFtpaApplicationFtpaRespondentDecisionOutcomePage {
      */
     public static void apply(
             FieldCollection.FieldCollectionBuilder<CaseData, State, Event.EventBuilder<CaseData, UserRole, State>> fields) {
-        fields.page("ftpaRespondentDecisionOutcome");
+        fields.page("ftpaRespondentDecisionOutcome", "${CCD_DEF_IA_URL}/asylum/ccdMidEvent");
         fields.pageLabel("Decision");
         fields.showCondition("ftpaApplicantType=\"respondent\"");
         fields.mandatory(CaseData::getFtpaRespondentRjDecisionOutcomeType);

@@ -32,6 +32,9 @@ public class RemoveFlag implements CCDConfig<CaseData, State, UserRole> {
             .displayOrder(46)
             .showSummary()
             .endButtonLabel("Remove flag")
+            .aboutToStartCallback("${CCD_DEF_IA_URL}/asylum/ccdAboutToStart")
+            .aboutToSubmitCallback("${CCD_DEF_IA_URL}/asylum/ccdAboutToSubmit", 5, 5, 5, 5)
+            .submittedCallback("${CCD_DEF_IA_URL}/asylum/ccdSubmitted", 5, 5, 5, 5)
             .explicitGrants()
             .fields();
         fields.page("removeFlag");

@@ -36,6 +36,8 @@ public class DecisionWithoutHearing implements CCDConfig<CaseData, State, UserRo
             .showSummary()
             .endButtonLabel("Decision")
             .publishToCamunda()
+            .aboutToSubmitCallback("${CCD_DEF_IA_URL}/asylum/ccdAboutToSubmit", 5, 5, 5, 5)
+            .submittedCallback("${CCD_DEF_IA_URL}/asylum/ccdSubmitted", 5, 5, 5, 5)
             .explicitGrants()
             .grant(Permission.CRUD, UserRole.CASEWORKER_IA_ADMOFFICER, UserRole.CASEWORKER_IA_CASEOFFICER, UserRole.CITIZEN)
             .grant(Set.of(Permission.R), UserRole.CASEWORKER_IA_IACJUDGE);

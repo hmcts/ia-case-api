@@ -33,6 +33,7 @@ public class RollbackPaymentTimeout implements CCDConfig<CaseData, State, UserRo
             .displayOrder(53)
             .showSummary()
             .endButtonLabel("Rollback payment")
+            .aboutToSubmitCallback("${CCD_DEF_IA_URL}/asylum/ccdAboutToSubmit", 5, 5, 5, 5)
             .explicitGrants()
             .grant(Permission.CRUD, UserRole.CASEWORKER_IA_SYSTEM);
     }

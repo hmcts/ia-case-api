@@ -22,7 +22,7 @@ public final class StartAppealOocHomeOfficeReferenceNumberPage {
      */
     public static void apply(
             FieldCollection.FieldCollectionBuilder<CaseData, State, Event.EventBuilder<CaseData, UserRole, State>> fields) {
-        fields.page("oocHomeOfficeReferenceNumber");
+        fields.page("oocHomeOfficeReferenceNumber", "${CCD_DEF_IA_URL}/asylum/ccdMidEvent?pageId=oocHomeOfficeReferenceNumber");
         fields.pageLabel("Home Office reference number");
         fields.showCondition("isAdmin=\"Yes\" AND appellantInUk=\"No\" AND oocAppealAdminJ=\"entryClearanceDecision\" OR isOutOfCountryEnabled=\"Yes\" AND appellantInUk=\"No\" AND outOfCountryDecisionType!=\"refusalOfProtection\" AND outOfCountryDecisionType!=\"removalOfClient\"");
         fields.readonlyNoSummary(CaseData::getEntryClearanceDecisionTitle)

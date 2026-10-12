@@ -35,6 +35,7 @@ public class DeleteDraftAppeal implements CCDConfig<CaseData, State, UserRole> {
             .showSummary()
             .endButtonLabel("Submit")
             .ttlIncrement(1)
+            .aboutToSubmitCallback("${CCD_DEF_IA_URL}/asylum/ccdAboutToSubmit", 5, 5, 5, 5)
             .explicitGrants()
             .grant(Permission.CRUD, UserRole.CASEWORKER_IA_SYSTEM, UserRole.CITIZEN);
     }

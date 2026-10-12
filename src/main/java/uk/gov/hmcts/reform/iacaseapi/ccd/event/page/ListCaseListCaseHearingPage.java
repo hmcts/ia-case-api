@@ -22,7 +22,7 @@ public final class ListCaseListCaseHearingPage {
      */
     public static void apply(
             FieldCollection.FieldCollectionBuilder<CaseData, State, Event.EventBuilder<CaseData, UserRole, State>> fields) {
-        fields.page("listCaseHearing");
+        fields.page("listCaseHearing", "${CCD_DEF_IA_URL}/asylum/ccdMidEvent");
         fields.readonlyNoSummary(CaseData::getListCaseHearingTitle)
                     .publish(false);
         fields.readonlyNoSummary(CaseData::getIsIntegrated)

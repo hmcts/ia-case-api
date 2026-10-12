@@ -33,6 +33,8 @@ public class RecordRemissionReminder implements CCDConfig<CaseData, State, UserR
             .displayOrder(71)
             .showSummary(false)
             .endButtonLabel("Record decision")
+            .aboutToSubmitCallback("${CCD_DEF_IA_URL}/asylum/ccdAboutToSubmit", 5, 5, 5, 5)
+            .submittedCallback("${CCD_DEF_IA_URL}/asylum/ccdSubmitted", 5, 5, 5, 5)
             .explicitGrants()
             .grant(Permission.CRUD, UserRole.CASEWORKER_IA_SYSTEM);
     }

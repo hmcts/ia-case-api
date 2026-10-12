@@ -22,7 +22,7 @@ public final class EditAppealAppellantBasicDetailsPage {
      */
     public static void apply(
             FieldCollection.FieldCollectionBuilder<CaseData, State, Event.EventBuilder<CaseData, UserRole, State>> fields) {
-        fields.page("appellantBasicDetails");
+        fields.page("appellantBasicDetails", "${CCD_DEF_IA_URL}/asylum/ccdMidEvent?pageId=appellantBasicDetails");
         fields.pageLabel("Basic details");
         fields.readonlyNoSummary(CaseData::getAppellantBasicDetailsTitle);
         fields.readonlyNoSummary(CaseData::getAppellantBasicDetailsTips)

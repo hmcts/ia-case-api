@@ -35,11 +35,12 @@ public class SendPipToNonLegalRep implements CCDConfig<CaseData, State, UserRole
             .displayOrder(125)
             .showSummary()
             .endButtonLabel("Submit")
+            .aboutToSubmitCallback("${CCD_DEF_IA_URL}/asylum/ccdAboutToSubmit", 5, 5, 5, 5)
             .explicitGrants()
             .grant(Permission.CRUD, UserRole.CASEWORKER_IA_ADMOFFICER, UserRole.CASEWORKER_IA_CASEOFFICER, UserRole.CASEWORKER_IA_SYSTEM, UserRole.CITIZEN)
             .grant(Set.of(Permission.R), UserRole.CASEWORKER_IA_IACJUDGE)
             .fields();
-        fields.page("sendPipToNonLegalRep");
+        fields.page("sendPipToNonLegalRep", "${CCD_DEF_IA_URL}/asylum/ccdMidEvent?pageId=sendPipToNonLegalRep");
         fields.mandatory(CaseData::getNlrDetails);
     }
 }

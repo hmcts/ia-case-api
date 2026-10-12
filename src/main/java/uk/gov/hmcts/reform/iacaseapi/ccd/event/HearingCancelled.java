@@ -35,6 +35,8 @@ public class HearingCancelled implements CCDConfig<CaseData, State, UserRole> {
             .showSummary(false)
             .endButtonLabel("Submit")
             .publishToCamunda()
+            .aboutToSubmitCallback("${CCD_DEF_IA_URL}/asylum/ccdAboutToSubmit", 5, 5, 5, 5)
+            .submittedCallback("${CCD_DEF_IA_URL}/asylum/ccdSubmitted", 5, 5, 5, 5)
             .explicitGrants()
             .grant(Permission.CRUD, UserRole.CASEWORKER_IA_ADMOFFICER, UserRole.CASEWORKER_IA_SYSTEM, UserRole.IA_SPECIFIC_ACCESS_CTSC_PROFILE)
             .fields();

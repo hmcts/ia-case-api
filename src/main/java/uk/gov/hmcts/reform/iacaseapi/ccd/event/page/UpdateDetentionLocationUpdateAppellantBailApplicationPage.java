@@ -22,7 +22,7 @@ public final class UpdateDetentionLocationUpdateAppellantBailApplicationPage {
      */
     public static void apply(
             FieldCollection.FieldCollectionBuilder<CaseData, State, Event.EventBuilder<CaseData, UserRole, State>> fields) {
-        fields.page("updateAppellantBailApplication");
+        fields.page("updateAppellantBailApplication", "${CCD_DEF_IA_URL}/asylum/ccdMidEvent?pageId=updateAppellantBailApplication");
         fields.pageLabel("Bail application");
         fields.showCondition("detentionFacility=\"immigrationRemovalCentre\" OR releaseDateProvided!=\"Yes\"");
         fields.mandatory(CaseData::getHasPendingBailApplications)

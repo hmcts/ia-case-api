@@ -22,7 +22,7 @@ public final class ManageFeeUpdateNewFeeAmountPage {
      */
     public static void apply(
             FieldCollection.FieldCollectionBuilder<CaseData, State, Event.EventBuilder<CaseData, UserRole, State>> fields) {
-        fields.page("newFeeAmount");
+        fields.page("newFeeAmount", "${CCD_DEF_IA_URL}/asylum/ccdMidEvent");
         fields.pageLabel("New fee amount");
         fields.readonlyNoSummary(CaseData::getFeeAmountGbp)
                     .caseEventFieldLabel("Current appeal fee amount")

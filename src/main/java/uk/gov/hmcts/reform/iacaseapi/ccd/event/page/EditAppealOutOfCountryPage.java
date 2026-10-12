@@ -22,7 +22,7 @@ public final class EditAppealOutOfCountryPage {
      */
     public static void apply(
             FieldCollection.FieldCollectionBuilder<CaseData, State, Event.EventBuilder<CaseData, UserRole, State>> fields) {
-        fields.page("outOfCountry");
+        fields.page("outOfCountry", "${CCD_DEF_IA_URL}/asylum/ccdMidEvent");
         fields.pageLabel("Location");
         fields.readonlyNoSummary(CaseData::getChecklistTitle3);
         fields.mandatory(CaseData::getAppellantInUk);

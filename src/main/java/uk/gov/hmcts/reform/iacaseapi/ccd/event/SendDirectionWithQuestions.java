@@ -38,11 +38,14 @@ public class SendDirectionWithQuestions implements CCDConfig<CaseData, State, Us
             .showSummary()
             .endButtonLabel("Submit")
             .publishToCamunda()
+            .aboutToStartCallback("${CCD_DEF_IA_URL}/asylum/ccdAboutToStart", 5, 5, 5, 5)
+            .aboutToSubmitCallback("${CCD_DEF_IA_URL}/asylum/ccdAboutToSubmit", 5, 5, 5, 5)
+            .submittedCallback("${CCD_DEF_IA_URL}/asylum/ccdSubmitted", 5, 5, 5, 5)
             .explicitGrants()
             .grant(Permission.CRUD, UserRole.CASEWORKER_IA_CASEOFFICER)
             .grant(Set.of(Permission.R), UserRole.CASEWORKER_IA_ADMOFFICER, UserRole.CASEWORKER_IA_IACJUDGE)
             .fields();
-        fields.page("sendDirectionWithQuestions");
+        fields.page("sendDirectionWithQuestions", "${CCD_DEF_IA_URL}/asylum/ccdMidEvent");
         fields.readonlyNoSummary(CaseData::getSendDirectionWithQuestionsTitle)
                     .publish(false);
         fields.mandatory(CaseData::getSendDirectionQuestions)

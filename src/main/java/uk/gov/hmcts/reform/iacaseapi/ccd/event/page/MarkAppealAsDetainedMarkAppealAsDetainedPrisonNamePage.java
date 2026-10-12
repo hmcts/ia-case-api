@@ -22,7 +22,7 @@ public final class MarkAppealAsDetainedMarkAppealAsDetainedPrisonNamePage {
      */
     public static void apply(
             FieldCollection.FieldCollectionBuilder<CaseData, State, Event.EventBuilder<CaseData, UserRole, State>> fields) {
-        fields.page("markAppealAsDetained_prisonName");
+        fields.page("markAppealAsDetained_prisonName", "${CCD_DEF_IA_URL}/asylum/ccdMidEvent?pageId=markAppealAsDetained_prisonName");
         fields.pageLabel("In which prison is the appellant detained?");
         fields.showCondition("detentionFacility=\"prison\" AND prisonNOMSNumber!=\"\"");
         fields.mandatory(CaseData::getPrisonName)

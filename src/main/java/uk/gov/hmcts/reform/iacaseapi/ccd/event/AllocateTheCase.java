@@ -35,6 +35,9 @@ public class AllocateTheCase implements CCDConfig<CaseData, State, UserRole> {
             .displayOrder(54)
             .showSummary()
             .endButtonLabel("Submit")
+            .aboutToStartCallback("${CCD_DEF_IA_URL}/asylum/ccdAboutToStart", 5, 5, 5, 5)
+            .aboutToSubmitCallback("${CCD_DEF_IA_URL}/asylum/ccdAboutToSubmit", 5, 5, 5, 5)
+            .submittedCallback("${CCD_DEF_IA_URL}/asylum/ccdSubmitted", 5, 5, 5, 5)
             .explicitGrants()
             .fields();
         AllocateTheCaseAllocateTheCasePage.apply(fields);

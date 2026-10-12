@@ -33,6 +33,8 @@ public class AddCaseNote implements CCDConfig<CaseData, State, UserRole> {
             .displayOrder(27)
             .showSummary()
             .endButtonLabel("Save note")
+            .aboutToSubmitCallback("${CCD_DEF_IA_URL}/asylum/ccdAboutToSubmit", 5, 5, 5, 5)
+            .submittedCallback("${CCD_DEF_IA_URL}/asylum/ccdSubmitted", 5, 5, 5, 5)
             .explicitGrants()
             .grant(Permission.CRUD, UserRole.CASEWORKER_IA_ADMOFFICER, UserRole.CASEWORKER_IA_CASEOFFICER, UserRole.CASEWORKER_IA_IACJUDGE, UserRole.CASEWORKER_IA_RPAROBOT)
             .fields();

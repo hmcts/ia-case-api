@@ -22,7 +22,7 @@ public final class EditCaseListingEditCaseListingHearingPage {
      */
     public static void apply(
             FieldCollection.FieldCollectionBuilder<CaseData, State, Event.EventBuilder<CaseData, UserRole, State>> fields) {
-        fields.page("editCaseListingHearing");
+        fields.page("editCaseListingHearing", "${CCD_DEF_IA_URL}/asylum/ccdMidEvent");
         fields.readonlyNoSummary(CaseData::getEditCaseListingTitle)
                     .publish(false);
         fields.readonlyNoSummary(CaseData::getIsIntegrated)

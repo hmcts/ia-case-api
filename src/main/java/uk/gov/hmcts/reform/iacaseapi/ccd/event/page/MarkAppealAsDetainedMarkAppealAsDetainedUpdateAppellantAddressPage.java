@@ -22,7 +22,7 @@ public final class MarkAppealAsDetainedMarkAppealAsDetainedUpdateAppellantAddres
      */
     public static void apply(
             FieldCollection.FieldCollectionBuilder<CaseData, State, Event.EventBuilder<CaseData, UserRole, State>> fields) {
-        fields.page("markAppealAsDetained_updateAppellantAddress");
+        fields.page("markAppealAsDetained_updateAppellantAddress", "${CCD_DEF_IA_URL}/asylum/ccdMidEvent?pageId=markAppealAsDetained_updateAppellantAddress");
         fields.pageLabel("Appellant's address");
         fields.showCondition("detentionFacility=\"other\"");
         fields.readonlyNoSummary(CaseData::getAppellantAddressTitle)

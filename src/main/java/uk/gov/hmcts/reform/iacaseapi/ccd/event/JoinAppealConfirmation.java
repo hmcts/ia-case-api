@@ -35,6 +35,7 @@ public class JoinAppealConfirmation implements CCDConfig<CaseData, State, UserRo
             .displayOrder(125)
             .showSummary()
             .endButtonLabel("Submit")
+            .aboutToSubmitCallback("${CCD_DEF_IA_URL}/asylum/ccdAboutToSubmit", 5, 5, 5, 5)
             .explicitGrants()
             .grant(Permission.CRUD, UserRole.CASEWORKER_IA_SYSTEM, UserRole.CITIZEN)
             .grant(Set.of(Permission.R), UserRole.CASEWORKER_IA_ADMOFFICER, UserRole.CASEWORKER_IA_CASEOFFICER, UserRole.CASEWORKER_IA_IACJUDGE)

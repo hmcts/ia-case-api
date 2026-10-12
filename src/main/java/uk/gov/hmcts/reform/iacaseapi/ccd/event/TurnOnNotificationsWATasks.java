@@ -33,6 +33,8 @@ public class TurnOnNotificationsWATasks implements CCDConfig<CaseData, State, Us
             .showCondition("isNotificationTurnedOff=\"Yes\"")
             .showSummary(false)
             .endButtonLabel("Submit")
+            .aboutToSubmitCallback("${CCD_DEF_IA_URL}/asylum/ccdAboutToSubmit", 5, 5, 5, 5)
+            .submittedCallback("${CCD_DEF_IA_URL}/asylum/ccdSubmitted")
             .explicitGrants()
             .fields();
         fields.page("turnOnNotificationsWATasks");
