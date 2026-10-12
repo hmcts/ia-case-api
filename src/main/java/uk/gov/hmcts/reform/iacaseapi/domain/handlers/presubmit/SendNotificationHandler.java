@@ -90,6 +90,8 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
             Event.DECISION_WITHOUT_HEARING,
             Event.LIST_CASE,
             Event.LIST_CASE_WITHOUT_HEARING_REQUIREMENTS,
+            Event.CMR_LISTING,
+            Event.CMR_RE_LISTING,
             Event.END_APPEAL,
             Event.UPLOAD_HOME_OFFICE_BUNDLE,
             Event.REQUEST_CASE_BUILDING,
@@ -161,6 +163,9 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
             Event.MARK_APPEAL_AS_REMITTED,
             Event.REFUND_CONFIRMATION,
             Event.HEARING_CANCELLED,
+            Event.CMR_HEARING_CANCELLED,
+            Event.QUERY_MANAGEMENT_RAISE_QUERY,
+            Event.QUERY_MANAGEMENT_RESPOND_QUERY,
             Event.REMOVE_STATUTORY_TIMEFRAME_24_WEEKS,
             Event.REVOKE_CITIZEN_ACCESS,
             Event.GENERATE_PIN_IN_POST,
@@ -222,7 +227,10 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
             Event.RECORD_REMISSION_DECISION,
             Event.MARK_APPEAL_PAID,
             Event.LIST_CASE,
+            Event.CMR_LISTING,
+            Event.CMR_RE_LISTING,
             Event.REQUEST_HEARING_REQUIREMENTS_FEATURE,
+            Event.REVIEW_HEARING_REQUIREMENTS,
             Event.REQUEST_RESPONSE_REVIEW,
             Event.MARK_APPEAL_AS_ADA,
             Event.TRANSFER_OUT_OF_ADA,
@@ -253,6 +261,7 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
             Event.PROGRESS_MIGRATED_CASE,
             Event.REFUND_CONFIRMATION,
             Event.HEARING_CANCELLED,
+            Event.CMR_HEARING_CANCELLED,
             Event.REMOVE_STATUTORY_TIMEFRAME_24_WEEKS,
             Event.SEND_LATE_TIMELINE_NOTICE,
             Event.COMPLETE_CASE_REVIEW
@@ -270,6 +279,10 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
 
         if (notifyHomeOfficeOnEditCaseListingEvent(callback)) {
             eventsToHandle.add(Event.EDIT_CASE_LISTING);
+        }
+
+        if (isCurrently24WeekStfCase(callback.getCaseDetails().getCaseData())) {
+            eventsToHandle.add(Event.REVIEW_HEARING_REQUIREMENTS);
         }
 
         return eventsToHandle;

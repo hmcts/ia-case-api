@@ -3,35 +3,22 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.statutorytimefra
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.Optional;
-import java.util.Set;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_SUBMISSION_DATE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.TRIBUNAL_RECEIVED_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.ADD_STATUTORY_TIMEFRAME_24_WEEKS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isAppealOutOfCountry;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isAppellantInDetention;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.statutorytimeframe24weeks.STF24WeeksUtils.getEffectiveState;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.handle24wValidity;
 
 @Component
 public class AddStatutoryTimeframe24WeeksPreStartHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final LocalDate stf24wLiveDate;
-    private static final Set<State> supportedStates = Set.of(
-        State.PENDING_PAYMENT,
-        State.APPEAL_SUBMITTED,
-        State.AWAITING_RESPONDENT_EVIDENCE
-    );
 
     public AddStatutoryTimeframe24WeeksPreStartHandler(@Value("${app.statutory-timeframe.live-date}") String stf24wLiveDate) {
         this.stf24wLiveDate = LocalDate.parse(stf24wLiveDate);
@@ -55,39 +42,6 @@ public class AddStatutoryTimeframe24WeeksPreStartHandler implements PreSubmitCal
             throw new IllegalStateException("Cannot handle callback");
         }
 
-        AsylumCase asylumCase =
-            callback
-                .getCaseDetails()
-                .getCaseData();
-
-        PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
-
-        State effectiveState = getEffectiveState(callback, asylumCase);
-        if (!supportedStates.contains(effectiveState)) {
-            response.addError("This event cannot be run on this case at this time");
-        }
-
-        if (!caseReceivedAfterLive(asylumCase)) {
-            String errorMessage = "This event cannot be run on a case created before " + stf24wLiveDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-            response.addError(errorMessage);
-        }
-        if (isAppellantInDetention(asylumCase)) {
-            String errorMessage = "This event cannot be run on a detained case";
-            response.addError(errorMessage);
-        }
-        if (isAppealOutOfCountry(asylumCase)) {
-            String errorMessage = "This event cannot be run on an out of country case";
-            response.addError(errorMessage);
-        }
-
-        return response;
-    }
-
-    private boolean caseReceivedAfterLive(AsylumCase asylumCase) {
-        Optional<String> tribunalReceivedDate = asylumCase.read(TRIBUNAL_RECEIVED_DATE);
-        Optional<String> appealSubmissionDate = asylumCase.read(APPEAL_SUBMISSION_DATE);
-
-        return (tribunalReceivedDate.isPresent() && !LocalDate.parse(tribunalReceivedDate.get()).isBefore(stf24wLiveDate))
-            || (tribunalReceivedDate.isEmpty() && appealSubmissionDate.isPresent() && !LocalDate.parse(appealSubmissionDate.get()).isBefore(stf24wLiveDate));
+        return handle24wValidity(callback, stf24wLiveDate);
     }
 }
