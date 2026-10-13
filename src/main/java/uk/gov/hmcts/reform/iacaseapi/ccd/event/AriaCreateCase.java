@@ -5,7 +5,9 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.Permission;
+import uk.gov.hmcts.reform.iacaseapi.ccd.model.Appellant;
 import uk.gov.hmcts.reform.iacaseapi.ccd.model.CaseData;
+import uk.gov.hmcts.reform.iacaseapi.ccd.model.Remission;
 import uk.gov.hmcts.reform.iacaseapi.ccd.model.State;
 import uk.gov.hmcts.reform.iacaseapi.ccd.model.UserRole;
 
@@ -48,15 +50,17 @@ public class AriaCreateCase implements CCDConfig<CaseData, State, UserRole> {
         fields.mandatoryNoSummary(CaseData::getAriaMigrationTaskDueDays)
                     .fieldShowCondition("dummyEmptyLabel=\"DUMMY_FIELD_TO_HIDE\"")
                     .retainHiddenValue();
-        fields.mandatoryNoSummary(CaseData::getRemissionType)
+        fields.complex(CaseData::getRemission)
+                    .mandatoryNoSummary(Remission::getType)
                     .fieldShowCondition("dummyEmptyLabel=\"DUMMY_FIELD_TO_HIDE\"")
-                    .retainHiddenValue();
-        fields.mandatoryNoSummary(CaseData::getRemissionDecision)
+                    .retainHiddenValue()
+                    .mandatoryNoSummary(Remission::getDecision)
                     .fieldShowCondition("dummyEmptyLabel=\"DUMMY_FIELD_TO_HIDE\"")
-                    .retainHiddenValue();
-        fields.mandatoryNoSummary(CaseData::getAppellantInDetention)
+                    .retainHiddenValue().done();
+        fields.complex(CaseData::getAppellant)
+                    .mandatoryNoSummary(Appellant::getInDetention)
                     .fieldShowCondition("dummyEmptyLabel=\"DUMMY_FIELD_TO_HIDE\"")
-                    .retainHiddenValue();
+                    .retainHiddenValue().done();
         fields.mandatoryNoSummary(CaseData::getIsNotificationTurnedOff)
                     .fieldShowCondition("dummyEmptyLabel=\"DUMMY_FIELD_TO_HIDE\"")
                     .retainHiddenValue();

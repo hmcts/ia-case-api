@@ -5,7 +5,10 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.Permission;
+import uk.gov.hmcts.reform.iacaseapi.ccd.model.Appellant;
+import uk.gov.hmcts.reform.iacaseapi.ccd.model.ApplicationFields;
 import uk.gov.hmcts.reform.iacaseapi.ccd.model.CaseData;
+import uk.gov.hmcts.reform.iacaseapi.ccd.model.Hearing;
 import uk.gov.hmcts.reform.iacaseapi.ccd.model.State;
 import uk.gov.hmcts.reform.iacaseapi.ccd.model.UserRole;
 
@@ -48,16 +51,19 @@ public class ChangeHearingCentre implements CCDConfig<CaseData, State, UserRole>
         fields.readonlyNoSummary(CaseData::getIsCaseUsingLocationRefData)
                     .fieldShowCondition("changeHearingCentreTitle=\"DUMMY\"")
                     .publish(false);
-        fields.mandatory(CaseData::getApplicationChangeDesignatedHearingCentre)
+        fields.complex(CaseData::getApplication)
+                    .mandatory(ApplicationFields::getChangeDesignatedHearingCentre)
                     .fieldShowCondition("isCaseUsingLocationRefData!=\"Yes\"")
-                    .publish(false);
-        fields.mandatory(CaseData::getHearingCentreDynamicList)
+                    .publish(false).done();
+        fields.complex(CaseData::getHearing)
+                    .mandatory(Hearing::getCentreDynamicList)
                     .fieldShowCondition("isCaseUsingLocationRefData=\"Yes\"")
                     .caseEventFieldLabel("Designated hearing centre")
-                    .publish(false);
-        fields.mandatoryNoSummary(CaseData::getAppellantInDetention)
+                    .publish(false).done();
+        fields.complex(CaseData::getAppellant)
+                    .mandatoryNoSummary(Appellant::getInDetention)
                     .fieldShowCondition("changeHearingCentreTitle=\"DUMMY_FIELD_TO_HIDE\"")
-                    .retainHiddenValue();
+                    .retainHiddenValue().done();
         fields.mandatoryNoSummary(CaseData::getIsNotificationTurnedOff)
                     .fieldShowCondition("changeHearingCentreTitle=\"DUMMY_FIELD_TO_HIDE\"")
                     .retainHiddenValue();

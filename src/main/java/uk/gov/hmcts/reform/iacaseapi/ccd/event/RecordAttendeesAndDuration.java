@@ -6,6 +6,7 @@ import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.Permission;
 import uk.gov.hmcts.reform.iacaseapi.ccd.model.CaseData;
+import uk.gov.hmcts.reform.iacaseapi.ccd.model.Hearing;
 import uk.gov.hmcts.reform.iacaseapi.ccd.model.State;
 import uk.gov.hmcts.reform.iacaseapi.ccd.model.UserRole;
 
@@ -48,7 +49,8 @@ public class RecordAttendeesAndDuration implements CCDConfig<CaseData, State, Us
         fields.optional(CaseData::getAttendingAppellantsLegalRepresentative);
         fields.optional(CaseData::getAttendingHomeOfficeLegalRepresentative);
         fields.mandatory(CaseData::getActualCaseHearingLength);
-        fields.mandatory(CaseData::getHearingConductionOptions)
-                    .caseEventFieldLabel("How was the hearing conducted?");
+        fields.complex(CaseData::getHearing)
+                    .mandatory(Hearing::getConductionOptions)
+                    .caseEventFieldLabel("How was the hearing conducted?").done();
     }
 }

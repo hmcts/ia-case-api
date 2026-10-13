@@ -6,6 +6,7 @@ import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.Permission;
 import uk.gov.hmcts.reform.iacaseapi.ccd.model.CaseData;
+import uk.gov.hmcts.reform.iacaseapi.ccd.model.Nlr;
 import uk.gov.hmcts.reform.iacaseapi.ccd.model.State;
 import uk.gov.hmcts.reform.iacaseapi.ccd.model.UserRole;
 
@@ -41,6 +42,7 @@ public class SendPipToNonLegalRep implements CCDConfig<CaseData, State, UserRole
             .grant(Set.of(Permission.R), UserRole.CASEWORKER_IA_IACJUDGE)
             .fields();
         fields.page("sendPipToNonLegalRep", "${CCD_DEF_IA_URL}/asylum/ccdMidEvent?pageId=sendPipToNonLegalRep");
-        fields.mandatory(CaseData::getNlrDetails);
+        fields.complex(CaseData::getNlr)
+                    .mandatory(Nlr::getDetails).done();
     }
 }

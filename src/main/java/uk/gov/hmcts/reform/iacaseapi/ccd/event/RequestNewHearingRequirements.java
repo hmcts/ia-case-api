@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.Permission;
+import uk.gov.hmcts.reform.iacaseapi.ccd.model.Appellant;
 import uk.gov.hmcts.reform.iacaseapi.ccd.model.CaseData;
 import uk.gov.hmcts.reform.iacaseapi.ccd.model.State;
 import uk.gov.hmcts.reform.iacaseapi.ccd.model.UserRole;
@@ -56,9 +57,10 @@ public class RequestNewHearingRequirements implements CCDConfig<CaseData, State,
         fields.mandatoryNoSummary(CaseData::getIsAdmin)
                     .fieldShowCondition("requestNewHearingRequirementsTitle=\"DUMMY_FIELD_TO_HIDE\"")
                     .retainHiddenValue();
-        fields.mandatoryNoSummary(CaseData::getAppellantInDetention)
+        fields.complex(CaseData::getAppellant)
+                    .mandatoryNoSummary(Appellant::getInDetention)
                     .fieldShowCondition("requestNewHearingRequirementsTitle=\"DUMMY_FIELD_TO_HIDE\"")
-                    .retainHiddenValue();
+                    .retainHiddenValue().done();
         fields.mandatoryNoSummary(CaseData::getIsNotificationTurnedOff)
                     .fieldShowCondition("requestNewHearingRequirementsTitle=\"DUMMY_FIELD_TO_HIDE\"")
                     .retainHiddenValue();

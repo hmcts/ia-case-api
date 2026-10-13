@@ -6,6 +6,7 @@ import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.Permission;
 import uk.gov.hmcts.reform.iacaseapi.ccd.model.CaseData;
+import uk.gov.hmcts.reform.iacaseapi.ccd.model.Remission;
 import uk.gov.hmcts.reform.iacaseapi.ccd.model.State;
 import uk.gov.hmcts.reform.iacaseapi.ccd.model.UserRole;
 
@@ -43,9 +44,10 @@ public class ReTriggerWaTasks implements CCDConfig<CaseData, State, UserRole> {
             .fields();
         fields.page("1.0");
         fields.readonlyNoSummary(CaseData::getJourneyType);
-        fields.readonlyNoSummary(CaseData::getRemissionOption)
+        fields.complex(CaseData::getRemission)
+                    .readonlyNoSummary(Remission::getOption)
                     .fieldShowCondition("journeyType=\"DO_NOT_SHOW_ON_UI\"")
-                    .retainHiddenValue();
+                    .retainHiddenValue().done();
         fields.readonlyNoSummary(CaseData::getHelpWithFeesOption)
                     .fieldShowCondition("journeyType=\"DO_NOT_SHOW_ON_UI\"")
                     .retainHiddenValue();

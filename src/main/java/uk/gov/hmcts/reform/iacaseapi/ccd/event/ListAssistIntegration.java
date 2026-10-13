@@ -4,7 +4,9 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.Permission;
+import uk.gov.hmcts.reform.iacaseapi.ccd.model.Appellant;
 import uk.gov.hmcts.reform.iacaseapi.ccd.model.CaseData;
+import uk.gov.hmcts.reform.iacaseapi.ccd.model.Legal;
 import uk.gov.hmcts.reform.iacaseapi.ccd.model.State;
 import uk.gov.hmcts.reform.iacaseapi.ccd.model.UserRole;
 
@@ -43,17 +45,19 @@ public class ListAssistIntegration implements CCDConfig<CaseData, State, UserRol
         fields.page("listHearingInListAssist");
         fields.mandatory(CaseData::getIsIntegrated)
                     .publish(false);
-        fields.readonlyNoSummary(CaseData::getAppellantGivenNames)
+        fields.complex(CaseData::getAppellant)
+                    .readonlyNoSummary(Appellant::getGivenNames)
                     .fieldShowCondition("isIntegrated=\"DO_NOT_SHOW_ON_UI\"")
-                    .publish(false);
-        fields.readonlyNoSummary(CaseData::getAppellantFamilyName)
+                    .publish(false)
+                    .readonlyNoSummary(Appellant::getFamilyName)
                     .fieldShowCondition("isIntegrated=\"DO_NOT_SHOW_ON_UI\"")
-                    .publish(false);
-        fields.readonly(CaseData::getLegalRepName)
+                    .publish(false).done();
+        fields.complex(CaseData::getLegal)
+                    .readonly(Legal::getRepName)
                     .fieldShowCondition("isIntegrated=\"DO_NOT_SHOW_ON_UI\"")
-                    .publish(false);
-        fields.readonly(CaseData::getLegalRepFamilyName)
+                    .publish(false)
+                    .readonly(Legal::getRepFamilyName)
                     .fieldShowCondition("isIntegrated=\"DO_NOT_SHOW_ON_UI\"")
-                    .publish(false);
+                    .publish(false).done();
     }
 }

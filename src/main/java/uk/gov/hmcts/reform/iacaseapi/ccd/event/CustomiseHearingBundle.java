@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.Permission;
+import uk.gov.hmcts.reform.iacaseapi.ccd.model.Appellant;
 import uk.gov.hmcts.reform.iacaseapi.ccd.model.CaseData;
 import uk.gov.hmcts.reform.iacaseapi.ccd.model.State;
 import uk.gov.hmcts.reform.iacaseapi.ccd.model.UserRole;
@@ -64,9 +65,10 @@ public class CustomiseHearingBundle implements CCDConfig<CaseData, State, UserRo
         fields.optionalNoSummary(CaseData::getCustomTribunalDocuments)
                     .fieldShowCondition("caseFlagSetAsideReheardExists!=\"Yes\"")
                     .publish(false);
-        fields.optionalNoSummary(CaseData::getAppellantAddendumEvidenceDocs)
+        fields.complex(CaseData::getAppellant)
+                    .optionalNoSummary(Appellant::getAddendumEvidenceDocs)
                     .fieldShowCondition("customHearingDocuments=\"DUMMY_VALUE_TO_HIDE_FIELD\"")
-                    .publish(false);
+                    .publish(false).done();
         fields.optionalNoSummary(CaseData::getRespondentAddendumEvidenceDocs)
                     .fieldShowCondition("customHearingDocuments=\"DUMMY_VALUE_TO_HIDE_FIELD\"")
                     .publish(false);
@@ -103,9 +105,10 @@ public class CustomiseHearingBundle implements CCDConfig<CaseData, State, UserRo
         fields.optionalNoSummary(CaseData::getCustomLatestRemittalDocs)
                     .fieldShowCondition("caseFlagSetAsideReheardExists=\"Yes\" AND sourceOfRemittal=\"*\"")
                     .publish(false);
-        fields.mandatoryNoSummary(CaseData::getAppellantInDetention)
+        fields.complex(CaseData::getAppellant)
+                    .mandatoryNoSummary(Appellant::getInDetention)
                     .fieldShowCondition("customRespAddendumEvidenceDocs=\"DUMMY_FIELD_TO_HIDE\"")
-                    .retainHiddenValue();
+                    .retainHiddenValue().done();
         fields.mandatoryNoSummary(CaseData::getIsNotificationTurnedOff)
                     .fieldShowCondition("customRespAddendumEvidenceDocs=\"DUMMY_FIELD_TO_HIDE\"")
                     .retainHiddenValue();

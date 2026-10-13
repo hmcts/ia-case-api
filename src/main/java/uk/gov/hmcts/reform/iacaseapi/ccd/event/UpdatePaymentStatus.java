@@ -5,6 +5,8 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.Permission;
+import uk.gov.hmcts.reform.iacaseapi.ccd.model.Appeal;
+import uk.gov.hmcts.reform.iacaseapi.ccd.model.Appellant;
 import uk.gov.hmcts.reform.iacaseapi.ccd.model.CaseData;
 import uk.gov.hmcts.reform.iacaseapi.ccd.model.State;
 import uk.gov.hmcts.reform.iacaseapi.ccd.model.UserRole;
@@ -43,11 +45,13 @@ public class UpdatePaymentStatus implements CCDConfig<CaseData, State, UserRole>
         fields.page("updatePaymentStatus");
         fields.pageLabel("Update payment status");
         fields.showCondition("appealType=\"DO_NOT_SHOW_ON_UI\"");
-        fields.readonlyNoSummary(CaseData::getAppealType)
-                    .caseEventFieldLabel(" ");
-        fields.mandatoryNoSummary(CaseData::getAppellantInDetention)
+        fields.complex(CaseData::getAppeal)
+                    .readonlyNoSummary(Appeal::getType)
+                    .caseEventFieldLabel(" ").done();
+        fields.complex(CaseData::getAppellant)
+                    .mandatoryNoSummary(Appellant::getInDetention)
                     .fieldShowCondition("appealType=\"DUMMY_FIELD_TO_HIDE\"")
-                    .retainHiddenValue();
+                    .retainHiddenValue().done();
         fields.mandatoryNoSummary(CaseData::getIsNotificationTurnedOff)
                     .fieldShowCondition("appealType=\"DUMMY_FIELD_TO_HIDE\"")
                     .retainHiddenValue();

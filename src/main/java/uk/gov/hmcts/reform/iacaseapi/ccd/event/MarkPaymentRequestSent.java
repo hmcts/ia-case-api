@@ -5,6 +5,7 @@ import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.Permission;
 import uk.gov.hmcts.reform.iacaseapi.ccd.model.CaseData;
+import uk.gov.hmcts.reform.iacaseapi.ccd.model.Payment;
 import uk.gov.hmcts.reform.iacaseapi.ccd.model.State;
 import uk.gov.hmcts.reform.iacaseapi.ccd.model.UserRole;
 
@@ -40,11 +41,12 @@ public class MarkPaymentRequestSent implements CCDConfig<CaseData, State, UserRo
             .grant(Permission.CRUD, UserRole.CASEWORKER_IA_ADMOFFICER)
             .fields();
         fields.page("paymentRequestSent");
-        fields.mandatory(CaseData::getPaymentRequestSentDate)
-                    .publish(false);
-        fields.mandatory(CaseData::getPaymentRequestSentNoteDescription)
-                    .publish(false);
-        fields.mandatory(CaseData::getPaymentRequestSentDocument)
-                    .publish(false);
+        fields.complex(CaseData::getPayment)
+                    .mandatory(Payment::getRequestSentDate)
+                    .publish(false)
+                    .mandatory(Payment::getRequestSentNoteDescription)
+                    .publish(false)
+                    .mandatory(Payment::getRequestSentDocument)
+                    .publish(false).done();
     }
 }

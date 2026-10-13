@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi.ccd.event;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
+import uk.gov.hmcts.reform.iacaseapi.ccd.model.ApplicationFields;
 import uk.gov.hmcts.reform.iacaseapi.ccd.model.CaseData;
 import uk.gov.hmcts.reform.iacaseapi.ccd.model.State;
 import uk.gov.hmcts.reform.iacaseapi.ccd.model.UserRole;
@@ -39,12 +40,13 @@ public class RecordApplication implements CCDConfig<CaseData, State, UserRole> {
         fields.page("recordApplication");
         fields.readonlyNoSummary(CaseData::getApplicationsTitle);
         fields.readonlyNoSummary(CaseData::getApplicationsTitle2);
-        fields.mandatory(CaseData::getApplicationDocuments);
-        fields.mandatory(CaseData::getApplicationSupplier);
-        fields.mandatory(CaseData::getApplicationType);
-        fields.mandatory(CaseData::getApplicationReason);
-        fields.mandatory(CaseData::getApplicationDate);
-        fields.mandatory(CaseData::getApplicationDecision);
-        fields.mandatory(CaseData::getApplicationDecisionReason);
+        fields.complex(CaseData::getApplication)
+                    .mandatory(ApplicationFields::getDocuments)
+                    .mandatory(ApplicationFields::getSupplier)
+                    .mandatory(ApplicationFields::getType)
+                    .mandatory(ApplicationFields::getReason)
+                    .mandatory(ApplicationFields::getDate)
+                    .mandatory(ApplicationFields::getDecision)
+                    .mandatory(ApplicationFields::getDecisionReason).done();
     }
 }

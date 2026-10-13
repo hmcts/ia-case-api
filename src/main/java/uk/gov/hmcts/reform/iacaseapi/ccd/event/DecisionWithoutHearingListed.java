@@ -5,6 +5,7 @@ import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.Permission;
 import uk.gov.hmcts.reform.iacaseapi.ccd.model.CaseData;
+import uk.gov.hmcts.reform.iacaseapi.ccd.model.Decision;
 import uk.gov.hmcts.reform.iacaseapi.ccd.model.State;
 import uk.gov.hmcts.reform.iacaseapi.ccd.model.UserRole;
 
@@ -39,7 +40,8 @@ public class DecisionWithoutHearingListed implements CCDConfig<CaseData, State, 
             .grant(Permission.CRUD, UserRole.CASEWORKER_IA_SYSTEM)
             .fields();
         fields.page("decisionWithoutHearingListed");
-        fields.mandatory(CaseData::getDecisionWithoutHearingListed)
-                    .publish(false);
+        fields.complex(CaseData::getDecision)
+                    .mandatory(Decision::getWithoutHearingListed)
+                    .publish(false).done();
     }
 }

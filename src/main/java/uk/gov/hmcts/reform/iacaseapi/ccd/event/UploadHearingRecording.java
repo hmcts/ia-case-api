@@ -6,6 +6,7 @@ import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.Permission;
 import uk.gov.hmcts.reform.iacaseapi.ccd.model.CaseData;
+import uk.gov.hmcts.reform.iacaseapi.ccd.model.Hearing;
 import uk.gov.hmcts.reform.iacaseapi.ccd.model.State;
 import uk.gov.hmcts.reform.iacaseapi.ccd.model.UserRole;
 
@@ -41,6 +42,7 @@ public class UploadHearingRecording implements CCDConfig<CaseData, State, UserRo
             .fields();
         fields.page("uploadHearingRecording");
         fields.readonlyNoSummary(CaseData::getUploadHearingRecordingTitle);
-        fields.mandatory(CaseData::getHearingRecordingDocuments);
+        fields.complex(CaseData::getHearing)
+                    .mandatory(Hearing::getRecordingDocuments).done();
     }
 }

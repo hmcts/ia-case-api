@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.Permission;
+import uk.gov.hmcts.reform.iacaseapi.ccd.model.Appellant;
 import uk.gov.hmcts.reform.iacaseapi.ccd.model.CaseData;
 import uk.gov.hmcts.reform.iacaseapi.ccd.model.State;
 import uk.gov.hmcts.reform.iacaseapi.ccd.model.UserRole;
@@ -42,22 +43,23 @@ public class AppellantInPersonManual implements CCDConfig<CaseData, State, UserR
             .grant(Permission.CRUD, UserRole.CASEWORKER_IA_ADMOFFICER, UserRole.CASEWORKER_IA_CASEOFFICER)
             .fields();
         fields.page("appellantInPersonManual_appellantAddress", "${CCD_DEF_IA_URL}/asylum/ccdMidEvent?pageId=appellantAddress");
-        fields.readonlyNoSummary(CaseData::getAppellantInPersonManualTitle)
-                    .publish(false);
-        fields.readonlyNoSummary(CaseData::getAppellantAddressTitle)
+        fields.complex(CaseData::getAppellant)
+                    .readonlyNoSummary(Appellant::getInPersonManualTitle)
+                    .publish(false)
+                    .readonlyNoSummary(Appellant::getAddressTitle)
                     .fieldShowCondition("appellantInDetention!=\"Yes\"")
-                    .publish(false);
-        fields.mandatoryNoSummary(CaseData::getAppellantAddress)
+                    .publish(false)
+                    .mandatoryNoSummary(Appellant::getAddress)
                     .fieldShowCondition("appellantInDetention!=\"Yes\"")
-                    .publish(false);
-        fields.readonlyNoSummary(CaseData::getAppellantAddressTitleDetained)
+                    .publish(false)
+                    .readonlyNoSummary(Appellant::getAddressTitleDetained)
                     .fieldShowCondition("appellantInDetention=\"Yes\"")
-                    .publish(false);
-        fields.readonlyNoSummary(CaseData::getAppellantInPersonManualInstructions)
+                    .publish(false)
+                    .readonlyNoSummary(Appellant::getInPersonManualInstructions)
                     .fieldShowCondition("appellantInDetention=\"Yes\"")
-                    .publish(false);
-        fields.readonlyNoSummary(CaseData::getAppellantInDetention)
+                    .publish(false)
+                    .readonlyNoSummary(Appellant::getInDetention)
                     .fieldShowCondition("appellantInPersonManualTitle=\"DUMMY_VALUE_TO_HIDE_FIELD\"")
-                    .retainHiddenValue();
+                    .retainHiddenValue().done();
     }
 }

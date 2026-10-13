@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.Permission;
+import uk.gov.hmcts.reform.iacaseapi.ccd.model.Appeal;
 import uk.gov.hmcts.reform.iacaseapi.ccd.model.CaseData;
 import uk.gov.hmcts.reform.iacaseapi.ccd.model.State;
 import uk.gov.hmcts.reform.iacaseapi.ccd.model.UserRole;
@@ -44,9 +45,10 @@ public class AddAppealResponse implements CCDConfig<CaseData, State, UserRole> {
         fields.page("addAppealResponse");
         fields.readonlyNoSummary(CaseData::getAddAppealResponseTitle);
         fields.readonlyNoSummary(CaseData::getUploadedHomeOfficeAppealResponseDocs);
-        fields.mandatory(CaseData::getAppealResponseDocument);
-        fields.optional(CaseData::getAppealResponseDescription)
-                    .caseEventFieldLabel("Describe the document");
-        fields.optional(CaseData::getAppealResponseEvidence);
+        fields.complex(CaseData::getAppeal)
+                    .mandatory(Appeal::getResponseDocument)
+                    .optional(Appeal::getResponseDescription)
+                    .caseEventFieldLabel("Describe the document")
+                    .optional(Appeal::getResponseEvidence).done();
     }
 }

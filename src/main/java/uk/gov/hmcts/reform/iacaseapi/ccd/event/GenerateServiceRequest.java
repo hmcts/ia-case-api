@@ -4,7 +4,11 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.Permission;
+import uk.gov.hmcts.reform.iacaseapi.ccd.model.Appeal;
 import uk.gov.hmcts.reform.iacaseapi.ccd.model.CaseData;
+import uk.gov.hmcts.reform.iacaseapi.ccd.model.Fee;
+import uk.gov.hmcts.reform.iacaseapi.ccd.model.Legal;
+import uk.gov.hmcts.reform.iacaseapi.ccd.model.Remission;
 import uk.gov.hmcts.reform.iacaseapi.ccd.model.State;
 import uk.gov.hmcts.reform.iacaseapi.ccd.model.UserRole;
 
@@ -43,16 +47,20 @@ public class GenerateServiceRequest implements CCDConfig<CaseData, State, UserRo
             .fields();
         fields.page("createAServiceRequest");
         fields.pageLabel("Pay for this appeal");
-        fields.readonlyNoSummary(CaseData::getAppealType)
-                    .fieldShowCondition("remissionType=\"DO_NOT_SHOW_ON_UI\"");
-        fields.readonlyNoSummary(CaseData::getRemissionType)
-                    .fieldShowCondition("appealType=\"DO_NOT_SHOW_ON_UI\"");
-        fields.readonlyNoSummary(CaseData::getLegalRepCreateServiceRequestHeader);
-        fields.readonlyNoSummary(CaseData::getLegalRepCreateServiceRequestDescription);
-        fields.readonlyNoSummary(CaseData::getLegalRepCreateServiceRequestFeeHeader);
-        fields.readonlyNoSummary(CaseData::getFeeAmountGbp)
+        fields.complex(CaseData::getAppeal)
+                    .readonlyNoSummary(Appeal::getType)
+                    .fieldShowCondition("remissionType=\"DO_NOT_SHOW_ON_UI\"").done();
+        fields.complex(CaseData::getRemission)
+                    .readonlyNoSummary(Remission::getType)
+                    .fieldShowCondition("appealType=\"DO_NOT_SHOW_ON_UI\"").done();
+        fields.complex(CaseData::getLegal)
+                    .readonlyNoSummary(Legal::getRepCreateServiceRequestHeader)
+                    .readonlyNoSummary(Legal::getRepCreateServiceRequestDescription)
+                    .readonlyNoSummary(Legal::getRepCreateServiceRequestFeeHeader).done();
+        fields.complex(CaseData::getFee)
+                    .readonlyNoSummary(Fee::getAmountGbp)
                     .fieldShowCondition("newFeeAmount!=\"*\"")
-                    .caseEventFieldLabel(" ");
+                    .caseEventFieldLabel(" ").done();
         fields.readonlyNoSummary(CaseData::getNewFeeAmount)
                     .caseEventFieldLabel(" ");
         fields.readonlyNoSummary(CaseData::getManageFeeRequestedAmount)

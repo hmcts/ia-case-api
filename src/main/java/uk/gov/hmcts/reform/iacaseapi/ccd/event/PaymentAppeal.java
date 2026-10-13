@@ -4,7 +4,11 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.Permission;
+import uk.gov.hmcts.reform.iacaseapi.ccd.model.Appeal;
 import uk.gov.hmcts.reform.iacaseapi.ccd.model.CaseData;
+import uk.gov.hmcts.reform.iacaseapi.ccd.model.Decision;
+import uk.gov.hmcts.reform.iacaseapi.ccd.model.Fee;
+import uk.gov.hmcts.reform.iacaseapi.ccd.model.Payment;
 import uk.gov.hmcts.reform.iacaseapi.ccd.model.State;
 import uk.gov.hmcts.reform.iacaseapi.ccd.model.UserRole;
 
@@ -43,17 +47,19 @@ public class PaymentAppeal implements CCDConfig<CaseData, State, UserRole> {
             .fields();
         fields.page("enterPbaNumber");
         fields.pageLabel("Select PBA number");
-        fields.mandatoryNoSummary(CaseData::getDecisionHearingFeeOption)
+        fields.complex(CaseData::getDecision)
+                    .mandatoryNoSummary(Decision::getHearingFeeOption)
                     .fieldShowCondition("supportPaymentAccount=\"DUMMY_VALUE_TO_HIDE_FIELD\"")
-                    .publish(false);
+                    .publish(false).done();
         fields.mandatoryNoSummary(CaseData::getJourneyType)
                     .fieldShowCondition("supportPaymentAccount=\"DUMMY_FIELD_TO_HIDE\"");
-        fields.mandatoryNoSummary(CaseData::getFeeWithHearing)
+        fields.complex(CaseData::getFee)
+                    .mandatoryNoSummary(Fee::getWithHearing)
                     .fieldShowCondition("supportPaymentAccount=\"DUMMY_VALUE_TO_HIDE_FIELD\"")
-                    .publish(false);
-        fields.mandatoryNoSummary(CaseData::getFeeWithoutHearing)
+                    .publish(false)
+                    .mandatoryNoSummary(Fee::getWithoutHearing)
                     .fieldShowCondition("supportPaymentAccount=\"DUMMY_VALUE_TO_HIDE_FIELD\"")
-                    .publish(false);
+                    .publish(false).done();
         fields.mandatoryNoSummary(CaseData::getHasPbaAccounts)
                     .fieldShowCondition("supportPaymentAccount=\"DUMMY_VALUE_TO_HIDE_FIELD\"")
                     .publish(false);
@@ -64,16 +70,18 @@ public class PaymentAppeal implements CCDConfig<CaseData, State, UserRole> {
         fields.readonlyNoSummary(CaseData::getSupportPaymentAccount)
                     .fieldShowCondition("hasPbaAccounts=\"No\"")
                     .publish(false);
-        fields.readonlyNoSummary(CaseData::getAppealFeeHearingDesc)
+        fields.complex(CaseData::getAppeal)
+                    .readonlyNoSummary(Appeal::getFeeHearingDesc)
                     .fieldShowCondition("decisionHearingFeeOption=\"decisionWithHearing\"")
                     .caseEventFieldLabel("The fee for an appeal with a hearing is £${feeWithHearing}")
-                    .publish(false);
-        fields.readonlyNoSummary(CaseData::getAppealFeeWithoutHearingDesc)
+                    .publish(false)
+                    .readonlyNoSummary(Appeal::getFeeWithoutHearingDesc)
                     .fieldShowCondition("decisionHearingFeeOption=\"decisionWithoutHearing\"")
                     .caseEventFieldLabel("The fee for an appeal without a hearing is £${feeWithoutHearing}")
-                    .publish(false);
-        fields.mandatory(CaseData::getPaymentAccountList)
-                    .publish(false);
+                    .publish(false).done();
+        fields.complex(CaseData::getPayment)
+                    .mandatory(Payment::getAccountList)
+                    .publish(false).done();
         fields.readonlyNoSummary(CaseData::getCantSeePaymentByAccount)
                     .fieldShowCondition("hasPbaAccounts!=\"No\"")
                     .publish(false);
@@ -83,13 +91,15 @@ public class PaymentAppeal implements CCDConfig<CaseData, State, UserRole> {
         fields.readonlyNoSummary(CaseData::getEditYourAppeal)
                     .fieldShowCondition("hasPbaAccounts!=\"No\"")
                     .publish(false);
-        fields.readonlyNoSummary(CaseData::getPaymentStatus)
+        fields.complex(CaseData::getPayment)
+                    .readonlyNoSummary(Payment::getStatus)
                     .fieldShowCondition("supportPaymentAccount=\"DUMMY_VALUE_TO_HIDE_FIELD\"")
-                    .retainHiddenValue();
-        fields.mandatoryNoSummary(CaseData::getAppealType)
+                    .retainHiddenValue().done();
+        fields.complex(CaseData::getAppeal)
+                    .mandatoryNoSummary(Appeal::getType)
                     .fieldShowCondition("supportPaymentAccount=\"DUMMY_VALUE_TO_HIDE_FIELD\"")
                     .caseEventFieldLabel("Type of appeal")
-                    .retainHiddenValue();
+                    .retainHiddenValue().done();
         fields.mandatoryNoSummary(CaseData::getIsNotificationTurnedOff)
                     .fieldShowCondition("supportPaymentAccount=\"DUMMY_FIELD_TO_HIDE\"")
                     .retainHiddenValue();

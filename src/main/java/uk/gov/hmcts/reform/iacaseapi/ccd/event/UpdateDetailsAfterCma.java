@@ -5,6 +5,7 @@ import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.Permission;
 import uk.gov.hmcts.reform.iacaseapi.ccd.model.CaseData;
+import uk.gov.hmcts.reform.iacaseapi.ccd.model.Hearing;
 import uk.gov.hmcts.reform.iacaseapi.ccd.model.State;
 import uk.gov.hmcts.reform.iacaseapi.ccd.model.UserRole;
 
@@ -65,8 +66,9 @@ public class UpdateDetailsAfterCma implements CCDConfig<CaseData, State, UserRol
                     .publish(false);
         fields.readonlyNoSummary(CaseData::getUpdateDetailsAfterCmaAppRecordingsTitle)
                     .publish(false);
-        fields.optional(CaseData::getHearingRecordingDocuments)
-                    .publish(false);
+        fields.complex(CaseData::getHearing)
+                    .optional(Hearing::getRecordingDocuments)
+                    .publish(false).done();
         fields.readonlyNoSummary(CaseData::getUpdateDetailsAfterCmAppSummaryTitle)
                     .publish(false);
         fields.mandatory(CaseData::getAppointmentSummary)

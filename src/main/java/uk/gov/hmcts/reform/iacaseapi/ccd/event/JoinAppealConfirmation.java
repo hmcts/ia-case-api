@@ -6,6 +6,7 @@ import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.Permission;
 import uk.gov.hmcts.reform.iacaseapi.ccd.model.CaseData;
+import uk.gov.hmcts.reform.iacaseapi.ccd.model.Nlr;
 import uk.gov.hmcts.reform.iacaseapi.ccd.model.State;
 import uk.gov.hmcts.reform.iacaseapi.ccd.model.UserRole;
 
@@ -41,6 +42,7 @@ public class JoinAppealConfirmation implements CCDConfig<CaseData, State, UserRo
             .grant(Set.of(Permission.R), UserRole.CASEWORKER_IA_ADMOFFICER, UserRole.CASEWORKER_IA_CASEOFFICER, UserRole.CASEWORKER_IA_IACJUDGE)
             .fields();
         fields.page("joinAppealConfirmation");
-        fields.mandatoryNoSummary(CaseData::getNlrDetails);
+        fields.complex(CaseData::getNlr)
+                    .mandatoryNoSummary(Nlr::getDetails).done();
     }
 }

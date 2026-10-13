@@ -4,7 +4,9 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.Permission;
+import uk.gov.hmcts.reform.iacaseapi.ccd.model.Appellant;
 import uk.gov.hmcts.reform.iacaseapi.ccd.model.CaseData;
+import uk.gov.hmcts.reform.iacaseapi.ccd.model.HomeOffice;
 import uk.gov.hmcts.reform.iacaseapi.ccd.model.State;
 import uk.gov.hmcts.reform.iacaseapi.ccd.model.UserRole;
 
@@ -47,16 +49,20 @@ public class RequestHomeOfficeData implements CCDConfig<CaseData, State, UserRol
                     .fieldShowCondition("hoAppellantDetailsAdviceFlag=\"DUMMY_VALUE_TO_HIDE_FIELD\"");
         fields.readonlyNoSummary(CaseData::getHoAppellantDetailsFoundAdvice)
                     .fieldShowCondition("matchingAppellantDetailsFound=\"Yes\"");
-        fields.readonlyNoSummary(CaseData::getHomeOfficeSearchResponse)
-                    .fieldShowCondition("matchingAppellantDetailsFound=\"DUMMY_VALUE_TO_HIDE_FIELD\"");
+        fields.complex(CaseData::getHomeOffice)
+                    .readonlyNoSummary(HomeOffice::getSearchResponse)
+                    .fieldShowCondition("matchingAppellantDetailsFound=\"DUMMY_VALUE_TO_HIDE_FIELD\"").done();
         fields.readonlyNoSummary(CaseData::getHoAppellantDetailsNotFoundAdvice)
                     .fieldShowCondition("matchingAppellantDetailsFound=\"No\"");
-        fields.readonlyNoSummary(CaseData::getHomeOfficeApiError)
-                    .fieldShowCondition("matchingAppellantDetailsFound!=\"No\" AND matchingAppellantDetailsFound!=\"Yes\"");
-        fields.readonlyNoSummary(CaseData::getAppellantDetails);
-        fields.readonlyNoSummary(CaseData::getAppellantFullName)
-                    .caseEventFieldLabel("Name");
-        fields.readonlyNoSummary(CaseData::getAppellantDateOfBirth);
-        fields.mandatory(CaseData::getHomeOfficeAppellantsList);
+        fields.complex(CaseData::getHomeOffice)
+                    .readonlyNoSummary(HomeOffice::getApiError)
+                    .fieldShowCondition("matchingAppellantDetailsFound!=\"No\" AND matchingAppellantDetailsFound!=\"Yes\"").done();
+        fields.complex(CaseData::getAppellant)
+                    .readonlyNoSummary(Appellant::getDetails)
+                    .readonlyNoSummary(Appellant::getFullName)
+                    .caseEventFieldLabel("Name")
+                    .readonlyNoSummary(Appellant::getDateOfBirth).done();
+        fields.complex(CaseData::getHomeOffice)
+                    .mandatory(HomeOffice::getAppellantsList).done();
     }
 }

@@ -4,7 +4,9 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.Permission;
+import uk.gov.hmcts.reform.iacaseapi.ccd.model.Appellant;
 import uk.gov.hmcts.reform.iacaseapi.ccd.model.CaseData;
+import uk.gov.hmcts.reform.iacaseapi.ccd.model.Hearing;
 import uk.gov.hmcts.reform.iacaseapi.ccd.model.State;
 import uk.gov.hmcts.reform.iacaseapi.ccd.model.UserRole;
 
@@ -41,11 +43,13 @@ public class HearingCancelled implements CCDConfig<CaseData, State, UserRole> {
             .grant(Permission.CRUD, UserRole.CASEWORKER_IA_ADMOFFICER, UserRole.CASEWORKER_IA_SYSTEM, UserRole.IA_SPECIFIC_ACCESS_CTSC_PROFILE)
             .fields();
         fields.page("hearingCancelled");
-        fields.readonlyNoSummary(CaseData::getHearingCancelledLabel)
-                    .publish(false);
-        fields.mandatoryNoSummary(CaseData::getAppellantInDetention)
+        fields.complex(CaseData::getHearing)
+                    .readonlyNoSummary(Hearing::getCancelledLabel)
+                    .publish(false).done();
+        fields.complex(CaseData::getAppellant)
+                    .mandatoryNoSummary(Appellant::getInDetention)
                     .fieldShowCondition("hearingCancelledLabel=\"DUMMY_FIELD_TO_HIDE\"")
-                    .retainHiddenValue();
+                    .retainHiddenValue().done();
         fields.mandatoryNoSummary(CaseData::getIsNotificationTurnedOff)
                     .fieldShowCondition("hearingCancelledLabel=\"DUMMY_FIELD_TO_HIDE\"")
                     .retainHiddenValue();

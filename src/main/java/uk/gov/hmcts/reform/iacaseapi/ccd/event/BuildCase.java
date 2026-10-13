@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.Permission;
+import uk.gov.hmcts.reform.iacaseapi.ccd.model.Appellant;
 import uk.gov.hmcts.reform.iacaseapi.ccd.model.CaseData;
 import uk.gov.hmcts.reform.iacaseapi.ccd.model.State;
 import uk.gov.hmcts.reform.iacaseapi.ccd.model.UserRole;
@@ -63,9 +64,10 @@ public class BuildCase implements CCDConfig<CaseData, State, UserRole> {
         fields.readonlyNoSummary(CaseData::getCaseArgumentDocumentRequiredLabel)
                     .fieldShowCondition("caseArgumentAvailable=\"\"")
                     .publish(false);
-        fields.mandatoryNoSummary(CaseData::getAppellantInDetention)
+        fields.complex(CaseData::getAppellant)
+                    .mandatoryNoSummary(Appellant::getInDetention)
                     .fieldShowCondition("buildCaseTitle=\"DUMMY_FIELD_TO_HIDE\"")
-                    .retainHiddenValue();
+                    .retainHiddenValue().done();
         fields.mandatoryNoSummary(CaseData::getIsNotificationTurnedOff)
                     .fieldShowCondition("buildCaseTitle=\"DUMMY_FIELD_TO_HIDE\"")
                     .retainHiddenValue();
