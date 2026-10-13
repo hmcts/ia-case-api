@@ -17,10 +17,7 @@ import uk.gov.hmcts.reform.iacaseapi.ccd.model.enums.Subscribers;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ComplexType(
-        name = "subscription",
-        generate = true
-)
+@ComplexType(name = "subscription", generate = true)
 public class Subscription {
     @CCD(
             label = "Subscriber",
@@ -30,27 +27,15 @@ public class Subscription {
     )
     private Subscribers subscriber;
 
-    @CCD(
-            label = "Email",
-            searchable = false
-    )
+    @CCD(label = "Email", searchable = false)
     private String email;
 
-    @CCD(
-            label = "Mobile Number",
-            searchable = false
-    )
+    @CCD(label = "Mobile Number", searchable = false)
     private String mobileNumber;
 
-    @CCD(
-            label = "Whether the user wants emails",
-            searchable = false
-    )
+    @CCD(label = "Whether the user wants emails", searchable = false)
     private YesOrNo wantsEmail;
 
-    @CCD(
-            label = "Whether the user wants sms",
-            searchable = false
-    )
+    @CCD(label = "Whether the user wants sms", searchable = false)
     private YesOrNo wantsSms;
 }

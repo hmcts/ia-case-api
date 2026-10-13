@@ -17,28 +17,27 @@ import uk.gov.hmcts.reform.iacaseapi.ccd.access.AdmofficerCaseofficerRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.AdmofficerCaseofficerSystemCrudAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.AdmofficerCitizenCrudAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.AdmofficerCrudAccess;
-import uk.gov.hmcts.reform.iacaseapi.ccd.access.AdmofficerIacjudgeRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.AdmofficerLegalrepSolicitorCruAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.AdmofficerLegalrepSolicitorRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.AdmofficerRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.AdmofficerSystemCrudAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.CaseofficerCitizenRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.CaseofficerIacjudgeRAccess;
+import uk.gov.hmcts.reform.iacaseapi.ccd.access.CaseofficerIacjudgeSpecificAccessCtscProfileWaTaskConfigurationRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.CaseofficerSpecificAccessCtscProfileWaTaskConfigurationRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.CitizenIacjudgeLegalrepSolicitorWaTaskConfigurationCrudAccess;
+import uk.gov.hmcts.reform.iacaseapi.ccd.access.CitizenIacjudgeRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.CitizenRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.CitizenSystemCrudAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.HomeofficeapcHomeofficelartHomeofficepouRespondentofficerCrudAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.HomeofficepouCrudAccess;
-import uk.gov.hmcts.reform.iacaseapi.ccd.access.HomeofficepouLegalrepSolicitorRespondentofficerRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.HomeofficepouRespondentofficerRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.IacjudgeCrudAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.IacjudgeLegalrepSolicitorCrudAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.IacjudgeRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.IacjudgeSpecificAccessCtscProfileRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.IacjudgeSystemCrudAccess;
-import uk.gov.hmcts.reform.iacaseapi.ccd.access.LegalrepSolicitorRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.LegalrepSolicitorSystemCrudAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.RespondentofficerCrudAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.RespondentofficerSystemCrudAccess;
@@ -196,14 +195,14 @@ public class Ftpa {
             label = "Reasons why the application is late",
             searchable = false,
             typeOverride = FieldType.TextArea,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, AdmofficerIacjudgeRAccess.class, CaseofficerCitizenRAccess.class, RespondentofficerSystemCrudAccess.class, HomeofficepouCrudAccess.class}
+            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, AdmofficerCaseofficerRAccess.class, CitizenIacjudgeRAccess.class, RespondentofficerSystemCrudAccess.class, HomeofficepouCrudAccess.class}
     )
     private String respondentOutOfTimeExplanation;
 
     @CCD(
             label = "Documents supporting late application",
             searchable = false,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, AdmofficerIacjudgeRAccess.class, CaseofficerCitizenRAccess.class, RespondentofficerSystemCrudAccess.class, HomeofficepouCrudAccess.class}
+            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, AdmofficerCaseofficerRAccess.class, CitizenIacjudgeRAccess.class, RespondentofficerSystemCrudAccess.class, HomeofficepouCrudAccess.class}
     )
     private List<ListValue<DocumentWithDescription>> respondentOutOfTimeDocuments;
 
@@ -245,7 +244,7 @@ public class Ftpa {
     @CCD(
             label = "Grounds of the application",
             searchable = false,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, AdmofficerIacjudgeRAccess.class, CaseofficerCitizenRAccess.class, RespondentofficerSystemCrudAccess.class, HomeofficepouCrudAccess.class}
+            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, AdmofficerCaseofficerRAccess.class, CitizenIacjudgeRAccess.class, RespondentofficerSystemCrudAccess.class, HomeofficepouCrudAccess.class}
     )
     private List<ListValue<DocumentWithDescription>> respondentGroundsDocuments;
 
@@ -260,7 +259,7 @@ public class Ftpa {
     @CCD(
             label = "Supporting evidence",
             searchable = false,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, AdmofficerIacjudgeRAccess.class, CaseofficerCitizenRAccess.class, RespondentofficerSystemCrudAccess.class, HomeofficepouCrudAccess.class}
+            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, AdmofficerCaseofficerRAccess.class, CitizenIacjudgeRAccess.class, RespondentofficerSystemCrudAccess.class, HomeofficepouCrudAccess.class}
     )
     private List<ListValue<DocumentWithDescription>> respondentEvidenceDocuments;
 
@@ -357,11 +356,7 @@ public class Ftpa {
     )
     private FtpaDecisionOutcomeType appellantDecisionOutcomeType;
 
-    @CCD(
-            label = "The outcome of the application",
-            searchable = false,
-            access = {AdmofficerSystemCrudAccess.class}
-    )
+    @CCD(label = "The outcome of the application", searchable = false, access = {AdmofficerSystemCrudAccess.class})
     private FtpaDecisionOutcomeType appellantDecisionOutcomeTypeRehydrated;
 
     @CCD(
@@ -458,11 +453,7 @@ public class Ftpa {
     )
     private LocalDate appellantDecisionDate;
 
-    @CCD(
-            label = "Decision date",
-            searchable = false,
-            access = {AdmofficerSystemCrudAccess.class}
-    )
+    @CCD(label = "Decision date", searchable = false, access = {AdmofficerSystemCrudAccess.class})
     private LocalDate appellantDecisionDateRehydrated;
 
     @CCD(
@@ -704,7 +695,7 @@ public class Ftpa {
                             + "#### Upload FTPA Decision and Reasons document",
             searchable = false,
             typeOverride = FieldType.Label,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, CaseofficerSpecificAccessCtscProfileWaTaskConfigurationRAccess.class, AdmofficerIacjudgeRAccess.class, LegalrepSolicitorRAccess.class, SystemCrudAccess.class}
+            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, CaseofficerIacjudgeSpecificAccessCtscProfileWaTaskConfigurationRAccess.class, AdmofficerLegalrepSolicitorRAccess.class, SystemCrudAccess.class}
     )
     private String appellantRjDecisionDocumentUploadAdvice;
 
@@ -717,7 +708,7 @@ public class Ftpa {
                             + "#### Upload final rule 35 notice",
             searchable = false,
             typeOverride = FieldType.Label,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, CaseofficerSpecificAccessCtscProfileWaTaskConfigurationRAccess.class, AdmofficerIacjudgeRAccess.class, LegalrepSolicitorRAccess.class, SystemCrudAccess.class}
+            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, CaseofficerIacjudgeSpecificAccessCtscProfileWaTaskConfigurationRAccess.class, AdmofficerLegalrepSolicitorRAccess.class, SystemCrudAccess.class}
     )
     private String appellantR35RjDecisionDocumentUploadAdvice;
 
@@ -725,7 +716,7 @@ public class Ftpa {
             label = "## Objections",
             searchable = false,
             typeOverride = FieldType.Label,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, CaseofficerSpecificAccessCtscProfileWaTaskConfigurationRAccess.class, AdmofficerIacjudgeRAccess.class, LegalrepSolicitorRAccess.class, SystemCrudAccess.class}
+            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, CaseofficerIacjudgeSpecificAccessCtscProfileWaTaskConfigurationRAccess.class, AdmofficerLegalrepSolicitorRAccess.class, SystemCrudAccess.class}
     )
     private String appellantDecisionObjectionsTitle;
 
@@ -741,7 +732,7 @@ public class Ftpa {
             label = "**Attach a copy of any communication from the parties regarding the Notice Objections.**",
             searchable = false,
             typeOverride = FieldType.Label,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, CaseofficerSpecificAccessCtscProfileWaTaskConfigurationRAccess.class, AdmofficerIacjudgeRAccess.class, LegalrepSolicitorRAccess.class, SystemCrudAccess.class}
+            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, CaseofficerIacjudgeSpecificAccessCtscProfileWaTaskConfigurationRAccess.class, AdmofficerLegalrepSolicitorRAccess.class, SystemCrudAccess.class}
     )
     private String appellantNoticeUploadAdivce;
 
@@ -764,7 +755,7 @@ public class Ftpa {
             label = "**Attach a copy of any communication from the parties regarding the Notice Objections.**",
             searchable = false,
             typeOverride = FieldType.Label,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, CaseofficerSpecificAccessCtscProfileWaTaskConfigurationRAccess.class, AdmofficerIacjudgeRAccess.class, LegalrepSolicitorRAccess.class, SystemCrudAccess.class}
+            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, CaseofficerIacjudgeSpecificAccessCtscProfileWaTaskConfigurationRAccess.class, AdmofficerLegalrepSolicitorRAccess.class, SystemCrudAccess.class}
     )
     private String appellantR35NoticeUploadAdivce;
 
@@ -829,7 +820,7 @@ public class Ftpa {
                             + "#### Upload FTPA Decision and Reasons document",
             searchable = false,
             typeOverride = FieldType.Label,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, CaseofficerSpecificAccessCtscProfileWaTaskConfigurationRAccess.class, AdmofficerIacjudgeRAccess.class, HomeofficepouLegalrepSolicitorRespondentofficerRAccess.class, SystemCrudAccess.class}
+            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, CaseofficerIacjudgeSpecificAccessCtscProfileWaTaskConfigurationRAccess.class, AdmofficerLegalrepSolicitorRAccess.class, HomeofficepouRespondentofficerRAccess.class, SystemCrudAccess.class}
     )
     private String respondentRjDecisionDocumentUploadAdvice;
 
@@ -837,7 +828,7 @@ public class Ftpa {
             label = "## Objections",
             searchable = false,
             typeOverride = FieldType.Label,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, CaseofficerSpecificAccessCtscProfileWaTaskConfigurationRAccess.class, AdmofficerIacjudgeRAccess.class, HomeofficepouLegalrepSolicitorRespondentofficerRAccess.class, SystemCrudAccess.class}
+            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, CaseofficerIacjudgeSpecificAccessCtscProfileWaTaskConfigurationRAccess.class, AdmofficerLegalrepSolicitorRAccess.class, HomeofficepouRespondentofficerRAccess.class, SystemCrudAccess.class}
     )
     private String respondentDecisionObjectionsTitle;
 
@@ -853,7 +844,7 @@ public class Ftpa {
             label = "**Attach a copy of any communication from the parties regarding the notice Objections.**",
             searchable = false,
             typeOverride = FieldType.Label,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, CaseofficerSpecificAccessCtscProfileWaTaskConfigurationRAccess.class, AdmofficerIacjudgeRAccess.class, HomeofficepouLegalrepSolicitorRespondentofficerRAccess.class, SystemCrudAccess.class}
+            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, CaseofficerIacjudgeSpecificAccessCtscProfileWaTaskConfigurationRAccess.class, AdmofficerLegalrepSolicitorRAccess.class, HomeofficepouRespondentofficerRAccess.class, SystemCrudAccess.class}
     )
     private String respondentNoticeUploadAdivce;
 
@@ -876,7 +867,7 @@ public class Ftpa {
             label = "**Attach a copy of any communication from the parties regarding the notice Objections.**",
             searchable = false,
             typeOverride = FieldType.Label,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, CaseofficerSpecificAccessCtscProfileWaTaskConfigurationRAccess.class, AdmofficerIacjudgeRAccess.class, HomeofficepouLegalrepSolicitorRespondentofficerRAccess.class, SystemCrudAccess.class}
+            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, CaseofficerIacjudgeSpecificAccessCtscProfileWaTaskConfigurationRAccess.class, AdmofficerLegalrepSolicitorRAccess.class, HomeofficepouRespondentofficerRAccess.class, SystemCrudAccess.class}
     )
     private String respondentR35NoticeUploadAdivce;
 
@@ -896,7 +887,7 @@ public class Ftpa {
                             + "#### Upload final rule 35 notice",
             searchable = false,
             typeOverride = FieldType.Label,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, CaseofficerSpecificAccessCtscProfileWaTaskConfigurationRAccess.class, AdmofficerIacjudgeRAccess.class, HomeofficepouLegalrepSolicitorRespondentofficerRAccess.class, SystemCrudAccess.class}
+            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, CaseofficerIacjudgeSpecificAccessCtscProfileWaTaskConfigurationRAccess.class, AdmofficerLegalrepSolicitorRAccess.class, HomeofficepouRespondentofficerRAccess.class, SystemCrudAccess.class}
     )
     private String respondentR35RjDecisionDocumentUploadAdvice;
 
@@ -982,7 +973,7 @@ public class Ftpa {
                             + "- any Directions to be sent before listing",
             searchable = false,
             typeOverride = FieldType.Label,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, CaseofficerSpecificAccessCtscProfileWaTaskConfigurationRAccess.class, AdmofficerIacjudgeRAccess.class, HomeofficepouLegalrepSolicitorRespondentofficerRAccess.class, SystemCrudAccess.class}
+            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, CaseofficerIacjudgeSpecificAccessCtscProfileWaTaskConfigurationRAccess.class, AdmofficerLegalrepSolicitorRAccess.class, HomeofficepouRespondentofficerRAccess.class, SystemCrudAccess.class}
     )
     private String decisionListingInsAdvice;
 

@@ -11,9 +11,9 @@ import uk.gov.hmcts.ccd.sdk.api.CCD;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.FieldType;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.AdmofficerCitizenCrudAccess;
-import uk.gov.hmcts.reform.iacaseapi.ccd.access.AdmofficerIacjudgeRAccess;
+import uk.gov.hmcts.reform.iacaseapi.ccd.access.AdmofficerRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.AdmofficerSystemCrudAccess;
-import uk.gov.hmcts.reform.iacaseapi.ccd.access.CaseofficerSpecificAccessCtscProfileWaTaskConfigurationRAccess;
+import uk.gov.hmcts.reform.iacaseapi.ccd.access.CaseofficerIacjudgeSpecificAccessCtscProfileWaTaskConfigurationRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.CitizenCrudAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.LegalrepSolicitorRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.LegalrepSolicitorSystemCrudAccess;
@@ -46,11 +46,7 @@ public class Payment {
     )
     private String reference;
 
-    @CCD(
-            label = "Payment description",
-            searchable = false,
-            access = {LegalrepSolicitorSystemCrudAccess.class}
-    )
+    @CCD(label = "Payment description", searchable = false, access = {LegalrepSolicitorSystemCrudAccess.class})
     private String description;
 
     @CCD(
@@ -60,18 +56,10 @@ public class Payment {
     )
     private String date;
 
-    @CCD(
-            label = " ",
-            searchable = false,
-            access = {LegalrepSolicitorSystemCrudAccess.class}
-    )
+    @CCD(label = " ", searchable = false, access = {LegalrepSolicitorSystemCrudAccess.class})
     private String errorCode;
 
-    @CCD(
-            label = " ",
-            searchable = false,
-            access = {LegalrepSolicitorSystemCrudAccess.class}
-    )
+    @CCD(label = " ", searchable = false, access = {LegalrepSolicitorSystemCrudAccess.class})
     private String errorMessage;
 
     @CCD(
@@ -101,7 +89,7 @@ public class Payment {
     @CCD(
             label = "Payment status",
             searchable = false,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, CaseofficerSpecificAccessCtscProfileWaTaskConfigurationRAccess.class, LegalrepSolicitorSystemCrudAccess.class, AdmofficerIacjudgeRAccess.class}
+            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, CaseofficerIacjudgeSpecificAccessCtscProfileWaTaskConfigurationRAccess.class, LegalrepSolicitorSystemCrudAccess.class, AdmofficerRAccess.class}
     )
     private String failedForDisplay;
 

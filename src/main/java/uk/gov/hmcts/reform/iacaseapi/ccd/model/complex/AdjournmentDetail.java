@@ -21,70 +21,36 @@ import uk.gov.hmcts.reform.iacaseapi.ccd.model.enums.WhenDidTheAdjournmentHappen
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ComplexType(
-        name = "adjournmentDetail",
-        generate = true
-)
+@ComplexType(name = "adjournmentDetail", generate = true)
 public class AdjournmentDetail {
-    @CCD(
-            label = "Which hearing are you recording adjournment details for?",
-            searchable = false
-    )
+    @CCD(label = "Which hearing are you recording adjournment details for?", searchable = false)
     private String adjournmentDetailsHearing;
 
-    @CCD(
-            label = "When did the adjournment happen?",
-            searchable = false
-    )
+    @CCD(label = "When did the adjournment happen?", searchable = false)
     private WhenDidTheAdjournmentHappen hearingAdjournmentWhen;
 
-    @CCD(
-            label = "Who made the decision to adjourn?",
-            searchable = false
-    )
+    @CCD(label = "Who made the decision to adjourn?", searchable = false)
     private HearingAdjournmentDecisionParty hearingAdjournmentDecisionParty;
 
-    @CCD(
-            label = "Name",
-            searchable = false
-    )
+    @CCD(label = "Name", searchable = false)
     private String hearingAdjournmentDecisionPartyName;
 
-    @CCD(
-            label = "Who requested the adjournment?",
-            searchable = false
-    )
+    @CCD(label = "Who requested the adjournment?", searchable = false)
     private HearingAdjournmentRequestingParty hearingAdjournmentRequestingParty;
 
-    @CCD(
-            label = "Is there anything about the adjournment you want to add?",
-            searchable = false
-    )
+    @CCD(label = "Is there anything about the adjournment you want to add?", searchable = false)
     private String anyAdditionalAdjournmentInfo;
 
-    @CCD(
-            label = "Provide more information",
-            searchable = false,
-            typeOverride = FieldType.TextArea
-    )
+    @CCD(label = "Provide more information", searchable = false, typeOverride = FieldType.TextArea)
     private String additionalAdjournmentInfo;
 
-    @CCD(
-            label = "Can the case be relisted right away?",
-            searchable = false
-    )
+    @CCD(label = "Can the case be relisted right away?", searchable = false)
     private String relistCaseImmediately;
 
-    @CCD(
-            label = "Confirm the format of the next hearing",
-            searchable = false
-    )
+    @CCD(label = "Confirm the format of the next hearing", searchable = false)
     private String nextHearingFormat;
 
-    @CCD(
-            label = "Where should the next hearing be listed?",
-            searchable = false
-    )
+    @CCD(label = "Where should the next hearing be listed?", searchable = false)
     private String nextHearingVenue;
 
     @CCD(
@@ -95,34 +61,19 @@ public class AdjournmentDetail {
     )
     private HearingLength nextHearingDuration;
 
-    @CCD(
-            label = "When should the next hearing be?",
-            searchable = false
-    )
+    @CCD(label = "When should the next hearing be?", searchable = false)
     private HearingDateChangingValues nextHearingDate;
 
-    @CCD(
-            label = "The date of the hearing must be",
-            searchable = false
-    )
+    @CCD(label = "The date of the hearing must be", searchable = false)
     private String nextHearingDateFixed;
 
-    @CCD(
-            label = "Earliest hearing date",
-            searchable = false
-    )
+    @CCD(label = "Earliest hearing date", searchable = false)
     private String nextHearingDateRangeEarliest;
 
-    @CCD(
-            label = "Latest hearing date",
-            searchable = false
-    )
+    @CCD(label = "Latest hearing date", searchable = false)
     private String nextHearingDateRangeLatest;
 
-    @CCD(
-            label = "Does the judge need to be reserved or excluded?",
-            searchable = false
-    )
+    @CCD(label = "Does the judge need to be reserved or excluded?", searchable = false)
     private String shouldReserveOrExcludeJudge;
 
     @CCD(

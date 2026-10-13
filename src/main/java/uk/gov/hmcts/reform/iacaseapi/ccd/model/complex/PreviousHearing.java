@@ -20,39 +20,21 @@ import uk.gov.hmcts.reform.iacaseapi.ccd.model.enums.HearingVenue;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ComplexType(
-        name = "previousHearing",
-        generate = true
-)
+@ComplexType(name = "previousHearing", generate = true)
 public class PreviousHearing {
-    @CCD(
-            label = "The Judge",
-            searchable = false
-    )
+    @CCD(label = "The Judge", searchable = false)
     private String attendingJudge;
 
-    @CCD(
-            label = "The appellant",
-            searchable = false
-    )
+    @CCD(label = "The appellant", searchable = false)
     private String attendingAppellant;
 
-    @CCD(
-            label = "Home Office Respondent",
-            searchable = false
-    )
+    @CCD(label = "Home Office Respondent", searchable = false)
     private String attendingHomeOfficeLegalRepresentative;
 
-    @CCD(
-            label = "Actual length",
-            searchable = false
-    )
+    @CCD(label = "Actual length", searchable = false)
     private HoursAndMinutes actualCaseHearingLength;
 
-    @CCD(
-            label = "Listing reference",
-            searchable = false
-    )
+    @CCD(label = "Listing reference", searchable = false)
     private String ariaListingReference;
 
     @CCD(
@@ -63,10 +45,7 @@ public class PreviousHearing {
     )
     private HearingVenue listCaseHearingCentre;
 
-    @CCD(
-            label = "Date and time",
-            searchable = false
-    )
+    @CCD(label = "Date and time", searchable = false)
     private LocalDateTime listCaseHearingDate;
 
     @CCD(
@@ -77,15 +56,9 @@ public class PreviousHearing {
     )
     private HearingLength listCaseHearingLength;
 
-    @CCD(
-            label = "Decision of appeal",
-            searchable = false
-    )
+    @CCD(label = "Decision of appeal", searchable = false)
     private String appealDecision;
 
-    @CCD(
-            label = "Decision and reasons documents",
-            searchable = false
-    )
+    @CCD(label = "Decision and reasons documents", searchable = false)
     private List<ListValue<DocumentWithMetadata>> finalDecisionAndReasonsDocuments;
 }

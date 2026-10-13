@@ -23,39 +23,21 @@ import uk.gov.hmcts.reform.iacaseapi.ccd.model.enums.IsDecisionAllowed;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ComplexType(
-        name = "ftpaApplications",
-        generate = true
-)
+@ComplexType(name = "ftpaApplications", generate = true)
 public class FtpaApplications {
-    @CCD(
-            label = "Applicant",
-            searchable = false
-    )
+    @CCD(label = "Applicant", searchable = false)
     private FtpaApplicantType ftpaApplicant;
 
-    @CCD(
-            label = "FTPA Decision and Reasons document",
-            searchable = false
-    )
+    @CCD(label = "FTPA Decision and Reasons document", searchable = false)
     private Document ftpaNewDecisionDocument;
 
-    @CCD(
-            label = "FTPA Decision and Reasons document",
-            searchable = false
-    )
+    @CCD(label = "FTPA Decision and Reasons document", searchable = false)
     private List<ListValue<DocumentWithDescription>> ftpaLegacyDecisionDocument;
 
-    @CCD(
-            label = "Rule 35 notice",
-            searchable = false
-    )
+    @CCD(label = "Rule 35 notice", searchable = false)
     private Document ftpaR35Document;
 
-    @CCD(
-            label = "What is the First-tier Tribunal's decision on this case following the FTPA?",
-            searchable = false
-    )
+    @CCD(label = "What is the First-tier Tribunal's decision on this case following the FTPA?", searchable = false)
     private IsDecisionAllowed ftpaDecisionRemadeRule32;
 
     @CCD(
@@ -71,74 +53,37 @@ public class FtpaApplications {
     )
     private YesOrNo isFtpaNoticeOfDecisionSetAside;
 
-    @CCD(
-            label = "Objections to set aside",
-            searchable = false,
-            typeOverride = FieldType.TextArea
-    )
+    @CCD(label = "Objections to set aside", searchable = false, typeOverride = FieldType.TextArea)
     private String ftpaDecisionObjections;
 
-    @CCD(
-            label = "Notice communication",
-            searchable = false
-    )
+    @CCD(label = "Notice communication", searchable = false)
     private List<ListValue<DocumentWithDescription>> ftpaNoticeDocument;
 
-    @CCD(
-            label = "Listing instructions",
-            searchable = false,
-            typeOverride = FieldType.TextArea
-    )
+    @CCD(label = "Listing instructions", searchable = false, typeOverride = FieldType.TextArea)
     private String ftpaDecisionLstIns;
 
-    @CCD(
-            label = "Decision date",
-            searchable = false
-    )
+    @CCD(label = "Decision date", searchable = false)
     private LocalDate ftpaDecisionDate;
 
-    @CCD(
-            label = "Reasons why the application is late",
-            searchable = false,
-            typeOverride = FieldType.TextArea
-    )
+    @CCD(label = "Reasons why the application is late", searchable = false, typeOverride = FieldType.TextArea)
     private String ftpaOutOfTimeExplanation;
 
-    @CCD(
-            label = "Documents supporting late application",
-            searchable = false
-    )
+    @CCD(label = "Documents supporting late application", searchable = false)
     private List<ListValue<DocumentWithDescription>> ftpaOutOfTimeDocuments;
 
-    @CCD(
-            label = "Grounds of the application",
-            searchable = false,
-            typeOverride = FieldType.TextArea
-    )
+    @CCD(label = "Grounds of the application", searchable = false, typeOverride = FieldType.TextArea)
     private String ftpaAppellantGroundsText;
 
-    @CCD(
-            label = "Grounds of the application",
-            searchable = false
-    )
+    @CCD(label = "Grounds of the application", searchable = false)
     private List<ListValue<DocumentWithDescription>> ftpaGroundsDocuments;
 
-    @CCD(
-            label = "Supporting evidence",
-            searchable = false
-    )
+    @CCD(label = "Supporting evidence", searchable = false)
     private List<ListValue<DocumentWithDescription>> ftpaEvidenceDocuments;
 
-    @CCD(
-            label = "Application date",
-            searchable = false
-    )
+    @CCD(label = "Application date", searchable = false)
     private LocalDate ftpaApplicationDate;
 
-    @CCD(
-            label = "Tick any applicable points",
-            searchable = false
-    )
+    @CCD(label = "Tick any applicable points", searchable = false)
     private FtpaDecisionCheckList ftpaDecisionNotesPoints;
 
     @CCD(
@@ -148,15 +93,9 @@ public class FtpaApplications {
     )
     private String ftpaDecisionNotesDescription;
 
-    @CCD(
-            label = "The outcome of the application",
-            searchable = false
-    )
+    @CCD(label = "The outcome of the application", searchable = false)
     private FtpaResidentJudgeDecisionOutcomeType ftpaDecisionOutcomeType;
 
-    @CCD(
-            label = "The outcome of the application",
-            searchable = false
-    )
+    @CCD(label = "The outcome of the application", searchable = false)
     private String ftpaDecisionOutcomeTypeR35;
 }

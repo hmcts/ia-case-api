@@ -16,20 +16,11 @@ import uk.gov.hmcts.ccd.sdk.type.ListValue;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ComplexType(
-        name = "remittalDocument",
-        generate = true
-)
+@ComplexType(name = "remittalDocument", generate = true)
 public class RemittalDocument {
-    @CCD(
-            label = "Decision Documents",
-            searchable = false
-    )
+    @CCD(label = "Decision Documents", searchable = false)
     private DocumentWithMetadata decisionDocument;
 
-    @CCD(
-            label = "Other Remittal Documents",
-            searchable = false
-    )
+    @CCD(label = "Other Remittal Documents", searchable = false)
     private List<ListValue<DocumentWithMetadata>> otherRemittalDocs;
 }

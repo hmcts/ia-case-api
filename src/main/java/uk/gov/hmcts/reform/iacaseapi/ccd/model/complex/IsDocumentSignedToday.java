@@ -16,14 +16,8 @@ import uk.gov.hmcts.reform.iacaseapi.ccd.model.enums.IsDocumentSignedTodayList;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ComplexType(
-        name = "isDocumentSignedToday",
-        generate = true
-)
+@ComplexType(name = "isDocumentSignedToday", generate = true)
 public class IsDocumentSignedToday {
-    @CCD(
-            label = " ",
-            searchable = false
-    )
+    @CCD(label = " ", searchable = false)
     private Set<IsDocumentSignedTodayList> values;
 }

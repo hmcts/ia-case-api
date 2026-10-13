@@ -16,14 +16,8 @@ import uk.gov.hmcts.reform.iacaseapi.ccd.model.enums.AppealGroundsProtectionList
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ComplexType(
-        name = "appealGroundsProtection",
-        generate = true
-)
+@ComplexType(name = "appealGroundsProtection", generate = true)
 public class AppealGroundsProtection {
-    @CCD(
-            label = " ",
-            searchable = false
-    )
+    @CCD(label = " ", searchable = false)
     private Set<AppealGroundsProtectionList> values;
 }

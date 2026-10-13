@@ -13,17 +13,15 @@ import uk.gov.hmcts.ccd.sdk.type.FieldType;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.AdmofficerCaseofficerSystemCrudAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.AdmofficerCruAccess;
-import uk.gov.hmcts.reform.iacaseapi.ccd.access.AdmofficerIacjudgeRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.AdmofficerRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.AdmofficerSystemCrudAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.CaseofficerCrudAccess;
-import uk.gov.hmcts.reform.iacaseapi.ccd.access.CaseofficerSpecificAccessCtscProfileWaTaskConfigurationRAccess;
+import uk.gov.hmcts.reform.iacaseapi.ccd.access.CaseofficerIacjudgeSpecificAccessCtscProfileWaTaskConfigurationRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.CaseofficerSystemWaTaskConfigurationCrudAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.CitizenCrudAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.CitizenLegalrepSolicitorRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.IacjudgeLegalrepSolicitorCrudAccess;
-import uk.gov.hmcts.reform.iacaseapi.ccd.access.IacjudgeRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.IacjudgeSpecificAccessCtscProfileRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.IacjudgeSystemCrudAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.IacjudgeWaTaskConfigurationCrudAccess;
@@ -59,7 +57,7 @@ public class Decision {
                             + "- You can only apply a fee award when you have allowed the appeal",
             searchable = false,
             typeOverride = FieldType.Label,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, CaseofficerSpecificAccessCtscProfileWaTaskConfigurationRAccess.class, AdmofficerIacjudgeRAccess.class, SystemCrudAccess.class}
+            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, CaseofficerIacjudgeSpecificAccessCtscProfileWaTaskConfigurationRAccess.class, AdmofficerRAccess.class, SystemCrudAccess.class}
     )
     private String andReasonsDeclarationLabel;
 
@@ -93,18 +91,10 @@ public class Decision {
     )
     private String hearingFeeHintText;
 
-    @CCD(
-            label = " ",
-            searchable = false,
-            access = {LegalrepSolicitorRAccess.class, SystemCrudAccess.class}
-    )
+    @CCD(label = " ", searchable = false, access = {LegalrepSolicitorRAccess.class, SystemCrudAccess.class})
     private String hearingFeeDesc;
 
-    @CCD(
-            label = " ",
-            searchable = false,
-            access = {LegalrepSolicitorRAccess.class, SystemCrudAccess.class}
-    )
+    @CCD(label = " ", searchable = false, access = {LegalrepSolicitorRAccess.class, SystemCrudAccess.class})
     private String withoutHearingFeeDesc;
 
     @CCD(
@@ -123,10 +113,7 @@ public class Decision {
     )
     private LocalDate letterReceivedDate;
 
-    @CCD(
-            label = " ",
-            access = {SystemCrudAccess.class}
-    )
+    @CCD(label = " ", access = {SystemCrudAccess.class})
     private YesOrNo withoutHearingListed;
 
     @CCD(
@@ -143,18 +130,13 @@ public class Decision {
     )
     private String letterReferenceNumber;
 
-    @CCD(
-            label = " ",
-            searchable = false,
-            typeOverride = FieldType.Label,
-            access = {SystemCrudAccess.class}
-    )
+    @CCD(label = " ", searchable = false, typeOverride = FieldType.Label, access = {SystemCrudAccess.class})
     private String letterDetailsTitle;
 
     @CCD(
             label = " ",
             searchable = false,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, CaseofficerSpecificAccessCtscProfileWaTaskConfigurationRAccess.class, CitizenLegalrepSolicitorRAccess.class, AdmofficerCruAccess.class, IacjudgeRAccess.class, SystemCrudAccess.class}
+            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, CaseofficerIacjudgeSpecificAccessCtscProfileWaTaskConfigurationRAccess.class, CitizenLegalrepSolicitorRAccess.class, AdmofficerCruAccess.class, SystemCrudAccess.class}
     )
     private YesOrNo typeChangedWithRefundFlag;
 }

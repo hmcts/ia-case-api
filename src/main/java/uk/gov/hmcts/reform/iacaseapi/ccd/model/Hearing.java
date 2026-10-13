@@ -18,11 +18,12 @@ import uk.gov.hmcts.reform.iacaseapi.ccd.access.AdmofficerCruAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.AdmofficerIacjudgeCruAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.AdmofficerIacjudgeRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.AdmofficerLegalrepSolicitorRAccess;
+import uk.gov.hmcts.reform.iacaseapi.ccd.access.AdmofficerRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.AdmofficerSpecificAccessCtscProfileRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.AdmofficerSystemCrudAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.CaseofficerCrudAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.CaseofficerIacjudgeRAccess;
-import uk.gov.hmcts.reform.iacaseapi.ccd.access.CaseofficerLegalrepSolicitorRAccess;
+import uk.gov.hmcts.reform.iacaseapi.ccd.access.CaseofficerIacjudgeSpecificAccessCtscProfileWaTaskConfigurationRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.CaseofficerRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.CaseofficerSpecificAccessCtscProfileWaTaskConfigurationRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.CitizenCrudAccess;
@@ -73,7 +74,7 @@ public class Hearing {
     @CCD(
             label = "Hearing centre",
             typeOverride = FieldType.DynamicList,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, AdmofficerIacjudgeRAccess.class, CitizenSystemCrudAccess.class, CaseofficerCrudAccess.class}
+            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, CitizenSystemCrudAccess.class, AdmofficerIacjudgeRAccess.class, CaseofficerCrudAccess.class}
     )
     private String centreDynamicList;
 
@@ -123,7 +124,7 @@ public class Hearing {
             label = "You can request additional adjustments based on the appellant's personal circumstances. The Tribunal will review the information you provide and decide whether a request can be granted.",
             searchable = false,
             typeOverride = FieldType.Label,
-            access = {AdmofficerIacjudgeRAccess.class, CaseofficerLegalrepSolicitorRAccess.class, SystemCrudAccess.class}
+            access = {AdmofficerLegalrepSolicitorRAccess.class, CaseofficerIacjudgeRAccess.class, SystemCrudAccess.class}
     )
     private String requirementsAdditionalRequestsText;
 
@@ -191,7 +192,7 @@ public class Hearing {
     @CCD(
             label = "How do you want the appeal to be decided?",
             searchable = false,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, CaseofficerSpecificAccessCtscProfileWaTaskConfigurationRAccess.class, LegalrepSolicitorSystemCrudAccess.class, AdmofficerIacjudgeRAccess.class}
+            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, CaseofficerIacjudgeSpecificAccessCtscProfileWaTaskConfigurationRAccess.class, LegalrepSolicitorSystemCrudAccess.class, AdmofficerRAccess.class}
     )
     private String decisionSelected;
 
@@ -282,11 +283,7 @@ public class Hearing {
     )
     private YesOrNo typeResult;
 
-    @CCD(
-            label = " ",
-            searchable = false,
-            access = {SystemCrudAccess.class}
-    )
+    @CCD(label = " ", searchable = false, access = {SystemCrudAccess.class})
     private String reqSuffix;
 
     @CCD(

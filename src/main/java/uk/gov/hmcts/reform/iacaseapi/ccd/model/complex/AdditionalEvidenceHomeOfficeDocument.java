@@ -16,21 +16,11 @@ import uk.gov.hmcts.ccd.sdk.type.FieldType;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ComplexType(
-        name = "additionalEvidenceHomeOfficeDocument",
-        generate = true
-)
+@ComplexType(name = "additionalEvidenceHomeOfficeDocument", generate = true)
 public class AdditionalEvidenceHomeOfficeDocument {
-    @CCD(
-            label = "Document",
-            searchable = false
-    )
+    @CCD(label = "Document", searchable = false)
     private Document document;
 
-    @CCD(
-            label = "Why it was late",
-            searchable = false,
-            typeOverride = FieldType.TextArea
-    )
+    @CCD(label = "Why it was late", searchable = false, typeOverride = FieldType.TextArea)
     private String description;
 }

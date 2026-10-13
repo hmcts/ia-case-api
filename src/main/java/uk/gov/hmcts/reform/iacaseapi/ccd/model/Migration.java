@@ -64,18 +64,10 @@ public class Migration {
     )
     private String vhhToCcdText;
 
-    @CCD(
-            label = " ",
-            searchable = false,
-            access = {AdmofficerSystemCrudAccess.class}
-    )
+    @CCD(label = " ", searchable = false, access = {AdmofficerSystemCrudAccess.class})
     private String mainTextVisible;
 
-    @CCD(
-            label = " ",
-            searchable = false,
-            access = {AdmofficerSystemCrudAccess.class}
-    )
+    @CCD(label = " ", searchable = false, access = {AdmofficerSystemCrudAccess.class})
     private String hmcSecondPartVisible;
 
     @CCD(
@@ -104,10 +96,6 @@ public class Migration {
     )
     private String caseNoteTitle;
 
-    @CCD(
-            label = " ",
-            searchable = false,
-            access = {AdmofficerSystemCrudAccess.class}
-    )
+    @CCD(label = " ", searchable = false, access = {AdmofficerSystemCrudAccess.class})
     private MigrationCaseNote caseNote;
 }

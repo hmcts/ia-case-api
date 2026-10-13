@@ -17,22 +17,11 @@ import uk.gov.hmcts.reform.iacaseapi.ccd.model.enums.Region;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ComplexType(
-        name = "caseManagementLocation",
-        generate = true
-)
+@ComplexType(name = "caseManagementLocation", generate = true)
 public class CaseManagementLocation {
-    @CCD(
-            label = "region",
-            typeOverride = FieldType.FixedList,
-            typeParameterOverride = "region"
-    )
+    @CCD(label = "region", typeOverride = FieldType.FixedList, typeParameterOverride = "region")
     private Region region;
 
-    @CCD(
-            label = "baseLocation",
-            typeOverride = FieldType.FixedList,
-            typeParameterOverride = "baseLocation"
-    )
+    @CCD(label = "baseLocation", typeOverride = FieldType.FixedList, typeParameterOverride = "baseLocation")
     private BaseLocation baseLocation;
 }

@@ -19,68 +19,32 @@ import uk.gov.hmcts.reform.iacaseapi.ccd.model.enums.PartiesList;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ComplexType(
-        name = "direction",
-        generate = true
-)
+@ComplexType(name = "direction", generate = true)
 public class Direction {
-    @CCD(
-            label = "Explanation",
-            searchable = false,
-            typeOverride = FieldType.TextArea
-    )
+    @CCD(label = "Explanation", searchable = false, typeOverride = FieldType.TextArea)
     private String explanation;
 
-    @CCD(
-            label = "Parties",
-            searchable = false,
-            typeOverride = FieldType.FixedList,
-            typeParameterOverride = "parties"
-    )
+    @CCD(label = "Parties", searchable = false, typeOverride = FieldType.FixedList, typeParameterOverride = "parties")
     private PartiesList parties;
 
-    @CCD(
-            label = "Date due",
-            searchable = false
-    )
+    @CCD(label = "Date due", searchable = false)
     private LocalDate dateDue;
 
-    @CCD(
-            label = "Date sent",
-            searchable = false
-    )
+    @CCD(label = "Date sent", searchable = false)
     private LocalDate dateSent;
 
-    @CCD(
-            label = "Tag",
-            showCondition = "tag=\"DUMMY_VALUE_TO_HIDE_FIELD\"",
-            searchable = false
-    )
+    @CCD(label = "Tag", showCondition = "tag=\"DUMMY_VALUE_TO_HIDE_FIELD\"", searchable = false)
     private String tag;
 
-    @CCD(
-            label = "Previous dates",
-            searchable = false
-    )
+    @CCD(label = "Previous dates", searchable = false)
     private List<ListValue<PreviousDates>> previousDates;
 
-    @CCD(
-            label = "Clarifying questions",
-            searchable = false
-    )
+    @CCD(label = "Clarifying questions", searchable = false)
     private List<ListValue<ClarifyingQuestion>> clarifyingQuestions;
 
-    @CCD(
-            label = "Unique Id",
-            showCondition = "uniqueId=\"DUMMY_VALUE_TO_HIDE_FIELD\"",
-            searchable = false
-    )
+    @CCD(label = "Unique Id", showCondition = "uniqueId=\"DUMMY_VALUE_TO_HIDE_FIELD\"", searchable = false)
     private String uniqueId;
 
-    @CCD(
-            label = "Direction Type",
-            showCondition = "directionType=\"DUMMY_VALUE_TO_HIDE_FIELD\"",
-            searchable = false
-    )
+    @CCD(label = "Direction Type", showCondition = "directionType=\"DUMMY_VALUE_TO_HIDE_FIELD\"", searchable = false)
     private String directionType;
 }

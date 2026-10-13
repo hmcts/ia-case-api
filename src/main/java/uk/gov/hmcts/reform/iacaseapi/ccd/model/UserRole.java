@@ -67,16 +67,10 @@ public enum UserRole implements HasRole {
 
     CASEWORKER_IA_HOMEOFFICEBAIL("caseworker-ia-homeofficebail", ""),
 
-    @CCD(
-            label = "Legal Representative",
-            hint = "Legal Representative"
-    )
+    @CCD(label = "Legal Representative", hint = "Legal Representative")
     LEGALREPRESENTATIVE("[LEGALREPRESENTATIVE]", ""),
 
-    @CCD(
-            label = "Citizen",
-            hint = "Citizen"
-    )
+    @CCD(label = "Citizen", hint = "Citizen")
     CREATOR("[CREATOR]", "");
 
     private final String role;

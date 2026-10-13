@@ -15,53 +15,26 @@ import uk.gov.hmcts.ccd.sdk.type.FieldType;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ComplexType(
-        name = "interpreterDetails",
-        generate = true
-)
+@ComplexType(name = "interpreterDetails", generate = true)
 public class InterpreterDetails {
-    @CCD(
-            label = "Booking reference",
-            searchable = false
-    )
+    @CCD(label = "Booking reference", searchable = false)
     private String interpreterBookingRef;
 
-    @CCD(
-            label = "Given names",
-            searchable = false
-    )
+    @CCD(label = "Given names", searchable = false)
     private String interpreterGivenNames;
 
-    @CCD(
-            label = "Family name",
-            searchable = false
-    )
+    @CCD(label = "Family name", searchable = false)
     private String interpreterFamilyName;
 
-    @CCD(
-            label = "Phone number",
-            searchable = false,
-            typeOverride = FieldType.PhoneUK
-    )
+    @CCD(label = "Phone number", searchable = false, typeOverride = FieldType.PhoneUK)
     private String interpreterPhoneNumber;
 
-    @CCD(
-            label = "Email",
-            searchable = false,
-            typeOverride = FieldType.Email
-    )
+    @CCD(label = "Email", searchable = false, typeOverride = FieldType.Email)
     private String interpreterEmail;
 
-    @CCD(
-            label = "Note",
-            searchable = false
-    )
+    @CCD(label = "Note", searchable = false)
     private String interpreterNote;
 
-    @CCD(
-            label = " ",
-            showCondition = "interpreterBookingRef=\"DUMMY_VALUE_TO_HIDE_FIELD\"",
-            searchable = false
-    )
+    @CCD(label = " ", showCondition = "interpreterBookingRef=\"DUMMY_VALUE_TO_HIDE_FIELD\"", searchable = false)
     private String interpreterId;
 }

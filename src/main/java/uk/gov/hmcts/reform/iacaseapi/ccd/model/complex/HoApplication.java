@@ -16,68 +16,35 @@ import uk.gov.hmcts.ccd.sdk.type.ListValue;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ComplexType(
-        name = "hoApplication",
-        generate = true
-)
+@ComplexType(name = "hoApplication", generate = true)
 public class HoApplication {
-    @CCD(
-            label = "HO decision date",
-            searchable = false
-    )
+    @CCD(label = "HO decision date", searchable = false)
     private String decisionDate;
 
-    @CCD(
-            label = "HO document reference",
-            searchable = false
-    )
+    @CCD(label = "HO document reference", searchable = false)
     private String documentReference;
 
-    @CCD(
-            label = "HO application type",
-            searchable = false
-    )
+    @CCD(label = "HO application type", searchable = false)
     private HoCodeValue applicationType;
 
-    @CCD(
-            label = "HO claim reason",
-            searchable = false
-    )
+    @CCD(label = "HO claim reason", searchable = false)
     private HoCodeValue claimReasonType;
 
-    @CCD(
-            label = "HO decision communication",
-            searchable = false
-    )
+    @CCD(label = "HO decision communication", searchable = false)
     private HoDecisionComm decisionCommunication;
 
-    @CCD(
-            label = "HO role decision type",
-            searchable = false
-    )
+    @CCD(label = "HO role decision type", searchable = false)
     private HoCodeValue decisionType;
 
-    @CCD(
-            label = "HO role sub type",
-            searchable = false
-    )
+    @CCD(label = "HO role sub type", searchable = false)
     private HoCodeValue roleSubType;
 
-    @CCD(
-            label = "HO role type",
-            searchable = false
-    )
+    @CCD(label = "HO role type", searchable = false)
     private HoCodeValue roleType;
 
-    @CCD(
-            label = "HO rejection reasons",
-            searchable = false
-    )
+    @CCD(label = "HO rejection reasons", searchable = false)
     private List<ListValue<HoRejectionReason>> ccdRejectionReasons;
 
-    @CCD(
-            label = "HO metadata",
-            searchable = false
-    )
+    @CCD(label = "HO metadata", searchable = false)
     private List<ListValue<HoMetadata>> ccdHomeOfficeMetadata;
 }

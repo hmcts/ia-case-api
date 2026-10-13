@@ -18,54 +18,26 @@ import uk.gov.hmcts.ccd.sdk.type.FieldType;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ComplexType(
-        name = "documentWithMetadata",
-        generate = true
-)
+@ComplexType(name = "documentWithMetadata", generate = true)
 public class DocumentWithMetadata {
-    @CCD(
-            label = "Supplied by",
-            searchable = false
-    )
+    @CCD(label = "Supplied by", searchable = false)
     private String suppliedBy;
 
-    @CCD(
-            label = "Uploaded by",
-            showCondition = "uploadedBy=\"DUMMY_VALUE_TO_HIDE_FIELD\"",
-            searchable = false
-    )
+    @CCD(label = "Uploaded by", showCondition = "uploadedBy=\"DUMMY_VALUE_TO_HIDE_FIELD\"", searchable = false)
     private String uploadedBy;
 
-    @CCD(
-            label = "Document",
-            searchable = false
-    )
+    @CCD(label = "Document", searchable = false)
     private Document document;
 
-    @CCD(
-            label = "Description",
-            searchable = false,
-            typeOverride = FieldType.TextArea
-    )
+    @CCD(label = "Description", searchable = false, typeOverride = FieldType.TextArea)
     private String description;
 
-    @CCD(
-            label = "Date uploaded",
-            showCondition = "dateTimeUploaded!=\"*\"",
-            searchable = false
-    )
+    @CCD(label = "Date uploaded", showCondition = "dateTimeUploaded!=\"*\"", searchable = false)
     private LocalDate dateUploaded;
 
-    @CCD(
-            label = "Date uploaded",
-            searchable = false
-    )
+    @CCD(label = "Date uploaded", searchable = false)
     private LocalDateTime dateTimeUploaded;
 
-    @CCD(
-            label = "Tag",
-            showCondition = "tag=\"DUMMY_VALUE_TO_HIDE_FIELD\"",
-            searchable = false
-    )
+    @CCD(label = "Tag", showCondition = "tag=\"DUMMY_VALUE_TO_HIDE_FIELD\"", searchable = false)
     private String tag;
 }

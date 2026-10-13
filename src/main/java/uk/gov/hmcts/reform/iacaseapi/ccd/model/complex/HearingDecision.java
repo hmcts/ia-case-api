@@ -14,20 +14,11 @@ import uk.gov.hmcts.ccd.sdk.api.ComplexType;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ComplexType(
-        name = "hearingDecision",
-        generate = true
-)
+@ComplexType(name = "hearingDecision", generate = true)
 public class HearingDecision {
-    @CCD(
-            label = " ",
-            searchable = false
-    )
+    @CCD(label = " ", searchable = false)
     private String hearingId;
 
-    @CCD(
-            label = " ",
-            searchable = false
-    )
+    @CCD(label = " ", searchable = false)
     private String decision;
 }

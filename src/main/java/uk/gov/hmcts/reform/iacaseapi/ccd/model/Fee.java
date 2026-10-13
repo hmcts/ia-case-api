@@ -16,15 +16,14 @@ import uk.gov.hmcts.reform.iacaseapi.ccd.access.AdmofficerCitizenCruAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.AdmofficerCitizenCrudAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.AdmofficerCrudAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.AdmofficerSpecificAccessCtscProfileRAccess;
-import uk.gov.hmcts.reform.iacaseapi.ccd.access.CaseofficerCitizenRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.CaseofficerRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.CaseofficerSpecificAccessCtscProfileWaTaskConfigurationRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.CitizenCrudAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.CitizenIacjudgeLegalrepSolicitorWaTaskConfigurationCrudAccess;
+import uk.gov.hmcts.reform.iacaseapi.ccd.access.CitizenIacjudgeRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.CitizenLegalrepSolicitorRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.CitizenRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.HomeofficeapcHomeofficelartHomeofficepouRespondentofficerCrudAccess;
-import uk.gov.hmcts.reform.iacaseapi.ccd.access.IacjudgeRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.LegalrepSolicitorCruAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.LegalrepSolicitorSystemCrudAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.SpecificAccessAdminJudgeLegalOpsProfileRAccess;
@@ -73,15 +72,11 @@ public class Fee {
             label = "Fee",
             searchable = false,
             typeOverride = FieldType.MoneyGBP,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, LegalrepSolicitorSystemCrudAccess.class, CaseofficerCitizenRAccess.class, AdmofficerCrudAccess.class, IacjudgeRAccess.class}
+            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, LegalrepSolicitorSystemCrudAccess.class, CitizenIacjudgeRAccess.class, AdmofficerCrudAccess.class, CaseofficerRAccess.class}
     )
     private String amountGbp;
 
-    @CCD(
-            label = "Fee",
-            searchable = false,
-            access = {CitizenLegalrepSolicitorRAccess.class, SystemCrudAccess.class}
-    )
+    @CCD(label = "Fee", searchable = false, access = {CitizenLegalrepSolicitorRAccess.class, SystemCrudAccess.class})
     private String amountForDisplay;
 
     @CCD(
@@ -100,11 +95,7 @@ public class Fee {
     )
     private String withoutHearing;
 
-    @CCD(
-            label = " ",
-            searchable = false,
-            access = {LegalrepSolicitorSystemCrudAccess.class}
-    )
+    @CCD(label = " ", searchable = false, access = {LegalrepSolicitorSystemCrudAccess.class})
     private String paymentAppealType;
 
     @CCD(

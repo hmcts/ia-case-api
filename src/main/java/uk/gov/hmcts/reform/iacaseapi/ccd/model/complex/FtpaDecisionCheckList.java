@@ -18,26 +18,14 @@ import uk.gov.hmcts.reform.iacaseapi.ccd.model.enums.SpecialReasons;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ComplexType(
-        name = "ftpaDecisionCheckList",
-        generate = true
-)
+@ComplexType(name = "ftpaDecisionCheckList", generate = true)
 public class FtpaDecisionCheckList {
-    @CCD(
-            label = " ",
-            searchable = false
-    )
+    @CCD(label = " ", searchable = false)
     private Set<SpecialDifficulty> specialDifficulty;
 
-    @CCD(
-            label = " ",
-            searchable = false
-    )
+    @CCD(label = " ", searchable = false)
     private Set<SpecialReasons> specialReasons;
 
-    @CCD(
-            label = " ",
-            searchable = false
-    )
+    @CCD(label = " ", searchable = false)
     private Set<CountryGuidance> countryGuidance;
 }

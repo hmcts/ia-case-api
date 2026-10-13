@@ -17,54 +17,29 @@ import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ComplexType(
-        name = "nlrDetails",
-        generate = true
-)
+@ComplexType(name = "nlrDetails", generate = true)
 public class NlrDetails {
-    @CCD(
-            label = "Given names"
-    )
+    @CCD(label = "Given names")
     private String givenNames;
 
-    @CCD(
-            label = "Family name"
-    )
+    @CCD(label = "Family name")
     private String familyName;
 
-    @CCD(
-            label = "Email Address",
-            typeOverride = FieldType.Email
-    )
+    @CCD(label = "Email Address", typeOverride = FieldType.Email)
     private String emailAddress;
 
-    @CCD(
-            label = "Phone number"
-    )
+    @CCD(label = "Phone number")
     private String phoneNumber;
 
-    @CCD(
-            label = "Is same as sponsor",
-            showCondition = "emailAddress=\"DUMMY_VALUE_TO_HIDE_FIELD\""
-    )
+    @CCD(label = "Is same as sponsor", showCondition = "emailAddress=\"DUMMY_VALUE_TO_HIDE_FIELD\"")
     private YesOrNo sameAsSponsor;
 
-    @CCD(
-            label = "Address",
-            showCondition = "sameAsSponsor=\"Yes\""
-    )
+    @CCD(label = "Address", showCondition = "sameAsSponsor=\"Yes\"")
     private AddressUK addressUk;
 
-    @CCD(
-            label = "Address",
-            showCondition = "sameAsSponsor!=\"Yes\"",
-            typeOverride = FieldType.TextArea
-    )
+    @CCD(label = "Address", showCondition = "sameAsSponsor!=\"Yes\"", typeOverride = FieldType.TextArea)
     private String address;
 
-    @CCD(
-            label = "Idam ID",
-            showCondition = "emailAddress=\"DUMMY_VALUE_TO_HIDE_FIELD\""
-    )
+    @CCD(label = "Idam ID", showCondition = "emailAddress=\"DUMMY_VALUE_TO_HIDE_FIELD\"")
     private String idamId;
 }

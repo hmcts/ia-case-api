@@ -17,10 +17,7 @@ import uk.gov.hmcts.reform.iacaseapi.ccd.model.enums.IsLanguageEnteredManually;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ComplexType(
-        name = "interpreterSpokenLanguage",
-        generate = true
-)
+@ComplexType(name = "interpreterSpokenLanguage", generate = true)
 public class InterpreterSpokenLanguage {
     @CCD(
             label = "Spoken language",
@@ -29,14 +26,9 @@ public class InterpreterSpokenLanguage {
     )
     private String languageRefData;
 
-    @CCD(
-            label = " "
-    )
+    @CCD(label = " ")
     private Set<IsLanguageEnteredManually> languageManualEntry;
 
-    @CCD(
-            label = " ",
-            showCondition = "languageManualEntry=\"Yes\""
-    )
+    @CCD(label = " ", showCondition = "languageManualEntry=\"Yes\"")
     private String languageManualEntryDescription;
 }

@@ -16,32 +16,17 @@ import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ComplexType(
-        name = "statutoryTimeframe24WeeksHistory",
-        generate = true
-)
+@ComplexType(name = "statutoryTimeframe24WeeksHistory", generate = true)
 public class StatutoryTimeframe24WeeksHistory {
-    @CCD(
-            label = "Status",
-            searchable = false
-    )
+    @CCD(label = "Status", searchable = false)
     private YesOrNo status;
 
-    @CCD(
-            label = "Reason",
-            searchable = false
-    )
+    @CCD(label = "Reason", searchable = false)
     private String reason;
 
-    @CCD(
-            label = "User",
-            searchable = false
-    )
+    @CCD(label = "User", searchable = false)
     private String user;
 
-    @CCD(
-            label = "Date added",
-            searchable = false
-    )
+    @CCD(label = "Date added", searchable = false)
     private LocalDateTime dateTimeAdded;
 }

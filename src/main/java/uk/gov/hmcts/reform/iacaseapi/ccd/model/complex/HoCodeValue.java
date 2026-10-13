@@ -14,20 +14,11 @@ import uk.gov.hmcts.ccd.sdk.api.ComplexType;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ComplexType(
-        name = "hoCodeValue",
-        generate = true
-)
+@ComplexType(name = "hoCodeValue", generate = true)
 public class HoCodeValue {
-    @CCD(
-            label = "HO code",
-            searchable = false
-    )
+    @CCD(label = "HO code", searchable = false)
     private String code;
 
-    @CCD(
-            label = "HO description",
-            searchable = false
-    )
+    @CCD(label = "HO description", searchable = false)
     private String description;
 }

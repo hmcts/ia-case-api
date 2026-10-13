@@ -19,55 +19,32 @@ import uk.gov.hmcts.ccd.sdk.type.ListValue;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ComplexType(
-        name = "application",
-        generate = true
-)
+@ComplexType(name = "application", generate = true)
 public class Application {
-    @CCD(
-            label = "Application email"
-    )
+    @CCD(label = "Application email")
     private List<ListValue<Document>> applicationDocuments;
 
-    @CCD(
-            label = "Application from"
-    )
+    @CCD(label = "Application from")
     private String applicationSupplier;
 
-    @CCD(
-            label = "Type of application"
-    )
+    @CCD(label = "Type of application")
     private String applicationType;
 
-    @CCD(
-            label = "Reason of application",
-            typeOverride = FieldType.TextArea
-    )
+    @CCD(label = "Reason of application", typeOverride = FieldType.TextArea)
     private String applicationReason;
 
-    @CCD(
-            label = "Date application was made"
-    )
+    @CCD(label = "Date application was made")
     private LocalDate applicationDate;
 
-    @CCD(
-            label = "Decision"
-    )
+    @CCD(label = "Decision")
     private String applicationDecision;
 
-    @CCD(
-            label = "Reason of decision",
-            typeOverride = FieldType.TextArea
-    )
+    @CCD(label = "Reason of decision", typeOverride = FieldType.TextArea)
     private String applicationDecisionReason;
 
-    @CCD(
-            label = "Date of decision"
-    )
+    @CCD(label = "Date of decision")
     private LocalDate applicationDateOfDecision;
 
-    @CCD(
-            label = "Status"
-    )
+    @CCD(label = "Status")
     private String applicationStatus;
 }

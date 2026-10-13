@@ -18,15 +18,15 @@ import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.AdmofficerCaseofficerSystemCrudAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.AdmofficerCaseofficerWaTaskConfigurationCrudAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.AdmofficerCrudAccess;
-import uk.gov.hmcts.reform.iacaseapi.ccd.access.AdmofficerIacjudgeRAccess;
+import uk.gov.hmcts.reform.iacaseapi.ccd.access.AdmofficerLegalrepSolicitorRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.AdmofficerRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.AdmofficerSpecificAccessCtscProfileRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.CaaCrudAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.CaseflagsProfileReadonlyProfileCruAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.CaseofficerCrudAccess;
-import uk.gov.hmcts.reform.iacaseapi.ccd.access.CaseofficerLegalrepSolicitorRAccess;
+import uk.gov.hmcts.reform.iacaseapi.ccd.access.CaseofficerIacjudgeRAccess;
+import uk.gov.hmcts.reform.iacaseapi.ccd.access.CaseofficerIacjudgeSpecificAccessCtscProfileWaTaskConfigurationRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.CaseofficerSpecificAccessCtscProfileRAccess;
-import uk.gov.hmcts.reform.iacaseapi.ccd.access.CaseofficerSpecificAccessCtscProfileWaTaskConfigurationRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.CaseofficerSystemCrudAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.CaseofficerSystemWaTaskConfigurationCrudAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.CitizenCrAccess;
@@ -76,11 +76,7 @@ public class Appellant {
     )
     private YesOrNo inUk;
 
-    @CCD(
-            label = " ",
-            searchable = false,
-            access = {CitizenSystemCrudAccess.class}
-    )
+    @CCD(label = " ", searchable = false, access = {CitizenSystemCrudAccess.class})
     private YesOrNo inUkPreviousSelection;
 
     @CCD(
@@ -222,7 +218,7 @@ public class Appellant {
 
     @CCD(
             label = "Appellant name",
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, AdmofficerIacjudgeRAccess.class, CaseofficerLegalrepSolicitorRAccess.class, SystemCrudAccess.class}
+            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, AdmofficerLegalrepSolicitorRAccess.class, CaseofficerIacjudgeRAccess.class, SystemCrudAccess.class}
     )
     private String nameForDisplay;
 
@@ -240,7 +236,7 @@ public class Appellant {
                             + "Go to the documents tab and find the appeal skeleton argument for this case. This should contain the case summary written by the appellant's legal representative. You can copy and paste this case summary into the box below.",
             searchable = false,
             typeOverride = FieldType.Label,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, CaseofficerSpecificAccessCtscProfileWaTaskConfigurationRAccess.class, AdmofficerIacjudgeRAccess.class, SystemCrudAccess.class}
+            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, CaseofficerIacjudgeSpecificAccessCtscProfileWaTaskConfigurationRAccess.class, AdmofficerRAccess.class, SystemCrudAccess.class}
     )
     private String caseSummaryTitle;
 
@@ -275,10 +271,7 @@ public class Appellant {
     )
     private Set<InterpreterLanguageCategory> interpreterLanguageCategory;
 
-    @CCD(
-            label = " ",
-            access = {CaseflagsProfileReadonlyProfileCruAccess.class, SystemCrudAccess.class}
-    )
+    @CCD(label = " ", access = {CaseflagsProfileReadonlyProfileCruAccess.class, SystemCrudAccess.class})
     private Flags levelFlags;
 
     @CCD(

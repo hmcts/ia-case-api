@@ -16,15 +16,9 @@ import uk.gov.hmcts.ccd.sdk.type.FieldType;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ComplexType(
-        name = "additionalEvidenceDocument",
-        generate = true
-)
+@ComplexType(name = "additionalEvidenceDocument", generate = true)
 public class AdditionalEvidenceDocument {
-    @CCD(
-            label = "Document",
-            searchable = false
-    )
+    @CCD(label = "Document", searchable = false)
     private Document document;
 
     @CCD(

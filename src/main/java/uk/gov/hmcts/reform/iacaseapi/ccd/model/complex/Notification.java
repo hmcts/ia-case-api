@@ -16,78 +16,38 @@ import uk.gov.hmcts.ccd.sdk.type.Document;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ComplexType(
-        name = "notification",
-        generate = true
-)
+@ComplexType(name = "notification", generate = true)
 public class Notification {
-    @CCD(
-            label = "ID",
-            showCondition = "notificationId=\"DUMMY_VALUE_TO_HIDE_FIELD\"",
-            searchable = false
-    )
+    @CCD(label = "ID", showCondition = "notificationId=\"DUMMY_VALUE_TO_HIDE_FIELD\"", searchable = false)
     private String notificationId;
 
-    @CCD(
-            label = "Sent on",
-            searchable = false
-    )
+    @CCD(label = "Sent on", searchable = false)
     private LocalDateTime notificationDateSent;
 
-    @CCD(
-            label = "To",
-            searchable = false
-    )
+    @CCD(label = "To", searchable = false)
     private String notificationSentTo;
 
-    @CCD(
-            label = "Subject",
-            searchable = false
-    )
+    @CCD(label = "Subject", searchable = false)
     private String notificationSubject;
 
-    @CCD(
-            label = "Body",
-            showCondition = "notificationId=\"DUMMY_VALUE_TO_HIDE_FIELD\"",
-            searchable = false
-    )
+    @CCD(label = "Body", showCondition = "notificationId=\"DUMMY_VALUE_TO_HIDE_FIELD\"", searchable = false)
     private String notificationBody;
 
-    @CCD(
-            label = "Notification",
-            searchable = false
-    )
+    @CCD(label = "Notification", searchable = false)
     private Document notificationDocument;
 
-    @CCD(
-            label = "Notification",
-            showCondition = "notificationId=\"DUMMY_VALUE_TO_HIDE_FIELD\"",
-            searchable = false
-    )
+    @CCD(label = "Notification", showCondition = "notificationId=\"DUMMY_VALUE_TO_HIDE_FIELD\"", searchable = false)
     private String notificationDocumentEncoded;
 
-    @CCD(
-            label = "Method",
-            searchable = false
-    )
+    @CCD(label = "Method", searchable = false)
     private String notificationMethod;
 
-    @CCD(
-            label = "Status",
-            searchable = false
-    )
+    @CCD(label = "Status", searchable = false)
     private String notificationStatus;
 
-    @CCD(
-            label = "Reference",
-            showCondition = "notificationId=\"DUMMY_VALUE_TO_HIDE_FIELD\"",
-            searchable = false
-    )
+    @CCD(label = "Reference", showCondition = "notificationId=\"DUMMY_VALUE_TO_HIDE_FIELD\"", searchable = false)
     private String notificationReference;
 
-    @CCD(
-            label = "Error",
-            searchable = false
-    )
+    @CCD(label = "Error", searchable = false)
     private String notificationErrorMessage;
 }

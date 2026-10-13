@@ -16,21 +16,11 @@ import uk.gov.hmcts.reform.iacaseapi.ccd.model.enums.Region;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ComplexType(
-        name = "caseManagementLocationRefData",
-        generate = true
-)
+@ComplexType(name = "caseManagementLocationRefData", generate = true)
 public class CaseManagementLocationRefData {
-    @CCD(
-            label = "region",
-            typeOverride = FieldType.FixedList,
-            typeParameterOverride = "region"
-    )
+    @CCD(label = "region", typeOverride = FieldType.FixedList, typeParameterOverride = "region")
     private Region region;
 
-    @CCD(
-            label = "baseLocation",
-            typeOverride = FieldType.DynamicList
-    )
+    @CCD(label = "baseLocation", typeOverride = FieldType.DynamicList)
     private String baseLocation;
 }

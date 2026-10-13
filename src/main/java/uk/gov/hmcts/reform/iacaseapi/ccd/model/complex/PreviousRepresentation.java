@@ -14,20 +14,11 @@ import uk.gov.hmcts.ccd.sdk.api.ComplexType;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ComplexType(
-        name = "previousRepresentation",
-        generate = true
-)
+@ComplexType(name = "previousRepresentation", generate = true)
 public class PreviousRepresentation {
-    @CCD(
-            label = "Company Name",
-            searchable = false
-    )
+    @CCD(label = "Company Name", searchable = false)
     private String legalRepCompany;
 
-    @CCD(
-            label = "Legal representation reference",
-            searchable = false
-    )
+    @CCD(label = "Legal representation reference", searchable = false)
     private String legalRepReferenceNumber;
 }

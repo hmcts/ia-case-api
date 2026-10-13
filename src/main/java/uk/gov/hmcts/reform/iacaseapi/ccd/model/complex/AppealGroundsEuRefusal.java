@@ -16,14 +16,8 @@ import uk.gov.hmcts.reform.iacaseapi.ccd.model.enums.AppealGroundsEuRefusalList;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ComplexType(
-        name = "appealGroundsEuRefusal",
-        generate = true
-)
+@ComplexType(name = "appealGroundsEuRefusal", generate = true)
 public class AppealGroundsEuRefusal {
-    @CCD(
-            label = " ",
-            searchable = false
-    )
+    @CCD(label = " ", searchable = false)
     private Set<AppealGroundsEuRefusalList> values;
 }

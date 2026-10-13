@@ -30,11 +30,7 @@ public class Suitability {
     )
     private String reviewLabel;
 
-    @CCD(
-            label = "Judge's name",
-            searchable = false,
-            access = {SystemCrudAccess.class}
-    )
+    @CCD(label = "Judge's name", searchable = false, access = {SystemCrudAccess.class})
     private String reviewJudge;
 
     @CCD(

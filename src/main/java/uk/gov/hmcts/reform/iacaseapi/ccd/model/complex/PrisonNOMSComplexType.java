@@ -14,13 +14,8 @@ import uk.gov.hmcts.ccd.sdk.api.ComplexType;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ComplexType(
-        name = "prisonNOMSComplexType",
-        generate = true
-)
+@ComplexType(name = "prisonNOMSComplexType", generate = true)
 public class PrisonNOMSComplexType {
-    @CCD(
-            label = "What is the appellant's NOMS number?"
-    )
+    @CCD(label = "What is the appellant's NOMS number?")
     private String prison;
 }

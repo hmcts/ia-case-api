@@ -15,11 +15,11 @@ import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.AdmofficerCaseofficerSystemCrudAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.AdmofficerCitizenCrudAccess;
-import uk.gov.hmcts.reform.iacaseapi.ccd.access.AdmofficerIacjudgeRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.AdmofficerLegalrepSolicitorRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.AdmofficerRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.AdmofficerSpecificAccessCtscProfileRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.ApproverCaaCrudAccess;
+import uk.gov.hmcts.reform.iacaseapi.ccd.access.CaseofficerIacjudgeSpecificAccessCtscProfileWaTaskConfigurationRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.CaseofficerSpecificAccessCtscProfileWaTaskConfigurationRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.CaseofficerSystemWaTaskConfigurationCrudAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.CitizenRAccess;
@@ -97,14 +97,14 @@ public class Legal {
 
     @CCD(
             label = "Company",
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, CaseofficerSpecificAccessCtscProfileWaTaskConfigurationRAccess.class, LegalrepSolicitorSystemCrudAccess.class, AdmofficerRAccess.class}
+            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, LegalrepSolicitorSystemCrudAccess.class, CaseofficerSpecificAccessCtscProfileWaTaskConfigurationRAccess.class, AdmofficerRAccess.class}
     )
     private String repCompanyName;
 
     @CCD(
             label = "Company Address",
             searchable = false,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, CaseofficerSpecificAccessCtscProfileWaTaskConfigurationRAccess.class, LegalrepSolicitorSystemCrudAccess.class}
+            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, LegalrepSolicitorSystemCrudAccess.class, CaseofficerSpecificAccessCtscProfileWaTaskConfigurationRAccess.class}
     )
     private AddressUK repCompanyAddress;
 
@@ -238,14 +238,11 @@ public class Legal {
             label = "### Give the names of the legal representatives in this case",
             searchable = false,
             typeOverride = FieldType.Label,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, CaseofficerSpecificAccessCtscProfileWaTaskConfigurationRAccess.class, AdmofficerIacjudgeRAccess.class, SystemCrudAccess.class}
+            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, CaseofficerIacjudgeSpecificAccessCtscProfileWaTaskConfigurationRAccess.class, AdmofficerRAccess.class, SystemCrudAccess.class}
     )
     private String representativeNamesLabel;
 
-    @CCD(
-            label = "Internal data managed by API",
-            access = {SystemCrudAccess.class}
-    )
+    @CCD(label = "Internal data managed by API", access = {SystemCrudAccess.class})
     private String representativeName;
 
     @CCD(
@@ -339,45 +336,21 @@ public class Legal {
     )
     private String repDetailsTitleEjp;
 
-    @CCD(
-            label = "Company",
-            searchable = false,
-            access = {SystemCrudAccess.class}
-    )
+    @CCD(label = "Company", searchable = false, access = {SystemCrudAccess.class})
     private String repCompanyEjp;
 
-    @CCD(
-            label = "Given Name",
-            searchable = false,
-            access = {SystemCrudAccess.class}
-    )
+    @CCD(label = "Given Name", searchable = false, access = {SystemCrudAccess.class})
     private String repGivenNameEjp;
 
-    @CCD(
-            label = "Family Name",
-            searchable = false,
-            access = {SystemCrudAccess.class}
-    )
+    @CCD(label = "Family Name", searchable = false, access = {SystemCrudAccess.class})
     private String repFamilyNameEjp;
 
-    @CCD(
-            label = "Email",
-            searchable = false,
-            access = {SystemCrudAccess.class}
-    )
+    @CCD(label = "Email", searchable = false, access = {SystemCrudAccess.class})
     private String repEmailEjp;
 
-    @CCD(
-            label = "Legal representative reference",
-            searchable = false,
-            access = {SystemCrudAccess.class}
-    )
+    @CCD(label = "Legal representative reference", searchable = false, access = {SystemCrudAccess.class})
     private String repReferenceEjp;
 
-    @CCD(
-            label = "Legal practice address",
-            searchable = false,
-            access = {SystemCrudAccess.class}
-    )
+    @CCD(label = "Legal practice address", searchable = false, access = {SystemCrudAccess.class})
     private AddressUK practiceAddressEjp;
 }

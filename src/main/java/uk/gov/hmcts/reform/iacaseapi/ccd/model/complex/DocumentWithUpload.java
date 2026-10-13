@@ -16,21 +16,11 @@ import uk.gov.hmcts.ccd.sdk.type.FieldType;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ComplexType(
-        name = "documentWithUpload",
-        generate = true
-)
+@ComplexType(name = "documentWithUpload", generate = true)
 public class DocumentWithUpload {
-    @CCD(
-            label = "Upload a file",
-            searchable = false
-    )
+    @CCD(label = "Upload a file", searchable = false)
     private Document document;
 
-    @CCD(
-            label = "Describe the document",
-            searchable = false,
-            typeOverride = FieldType.TextArea
-    )
+    @CCD(label = "Describe the document", searchable = false, typeOverride = FieldType.TextArea)
     private String description;
 }

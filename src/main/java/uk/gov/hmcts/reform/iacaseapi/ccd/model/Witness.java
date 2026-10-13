@@ -129,10 +129,7 @@ public class Witness {
     )
     private String detailsReadonly;
 
-    @CCD(
-            label = " ",
-            access = {CaseflagsProfileSystemCrudAccess.class, CaseflagsReadonlyProfileCruAccess.class}
-    )
+    @CCD(label = " ", access = {CaseflagsProfileSystemCrudAccess.class, CaseflagsReadonlyProfileCruAccess.class})
     private List<ListValue<Flags>> levelFlags;
 
     @CCD(

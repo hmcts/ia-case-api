@@ -17,20 +17,11 @@ import uk.gov.hmcts.reform.iacaseapi.ccd.model.enums.IsNotEUDecision;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ComplexType(
-        name = "checklistOutOfCountry",
-        generate = true
-)
+@ComplexType(name = "checklistOutOfCountry", generate = true)
 public class ChecklistOutOfCountry {
-    @CCD(
-            label = " ",
-            searchable = false
-    )
+    @CCD(label = " ", searchable = false)
     private Set<IsNotDetained> checklist2;
 
-    @CCD(
-            label = " ",
-            searchable = false
-    )
+    @CCD(label = " ", searchable = false)
     private Set<IsNotEUDecision> checklist7;
 }

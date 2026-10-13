@@ -16,26 +16,14 @@ import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ComplexType(
-        name = "pinInPost",
-        generate = true
-)
+@ComplexType(name = "pinInPost", generate = true)
 public class PinInPost {
-    @CCD(
-            label = "Legal representation reference",
-            searchable = false
-    )
+    @CCD(label = "Legal representation reference", searchable = false)
     private String accessCode;
 
-    @CCD(
-            label = "Legal representation reference",
-            searchable = false
-    )
+    @CCD(label = "Legal representation reference", searchable = false)
     private LocalDate expiryDate;
 
-    @CCD(
-            label = "Legal representation reference",
-            searchable = false
-    )
+    @CCD(label = "Legal representation reference", searchable = false)
     private YesOrNo pinUsed;
 }

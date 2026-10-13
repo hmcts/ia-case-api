@@ -16,14 +16,8 @@ import uk.gov.hmcts.reform.iacaseapi.ccd.model.enums.AppealGroundsDeprivationLis
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ComplexType(
-        name = "appealGroundsDeprivation",
-        generate = true
-)
+@ComplexType(name = "appealGroundsDeprivation", generate = true)
 public class AppealGroundsDeprivation {
-    @CCD(
-            label = " ",
-            searchable = false
-    )
+    @CCD(label = " ", searchable = false)
     private Set<AppealGroundsDeprivationList> values;
 }

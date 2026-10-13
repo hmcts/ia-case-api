@@ -15,18 +15,11 @@ import uk.gov.hmcts.ccd.sdk.api.ComplexType;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ComplexType(
-        name = "hearingSchedule",
-        generate = true
-)
+@ComplexType(name = "hearingSchedule", generate = true)
 public class HearingSchedule {
-    @CCD(
-            label = " "
-    )
+    @CCD(label = " ")
     private String hearingID;
 
-    @CCD(
-            label = " "
-    )
+    @CCD(label = " ")
     private LocalDateTime hearingDateTime;
 }

@@ -15,15 +15,8 @@ import uk.gov.hmcts.ccd.sdk.type.FieldType;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ComplexType(
-        name = "clarifyingQuestion",
-        generate = true
-)
+@ComplexType(name = "clarifyingQuestion", generate = true)
 public class ClarifyingQuestion {
-    @CCD(
-            label = "Question",
-            searchable = false,
-            typeOverride = FieldType.TextArea
-    )
+    @CCD(label = "Question", searchable = false, typeOverride = FieldType.TextArea)
     private String question;
 }

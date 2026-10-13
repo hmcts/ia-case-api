@@ -14,68 +14,35 @@ import uk.gov.hmcts.ccd.sdk.api.ComplexType;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ComplexType(
-        name = "hoCaseData",
-        generate = true
-)
+@ComplexType(name = "hoCaseData", generate = true)
 public class HoCaseData {
-    @CCD(
-            label = "HO date of birth",
-            searchable = false
-    )
+    @CCD(label = "HO date of birth", searchable = false)
     private String displayDateOfBirth;
 
-    @CCD(
-            label = "HO rejection reasons",
-            searchable = false
-    )
+    @CCD(label = "HO rejection reasons", searchable = false)
     private String displayRejectionReasons;
 
-    @CCD(
-            label = "HO decision date",
-            searchable = false
-    )
+    @CCD(label = "HO decision date", searchable = false)
     private String displayDecisionDate;
 
-    @CCD(
-            label = "HO decision sent date",
-            searchable = false
-    )
+    @CCD(label = "HO decision sent date", searchable = false)
     private String displayDecisionSentDate;
 
-    @CCD(
-            label = "HO appealable",
-            searchable = false
-    )
+    @CCD(label = "HO appealable", searchable = false)
     private String displayMetadataValueBoolean;
 
-    @CCD(
-            label = "HO dispatch date",
-            searchable = false
-    )
+    @CCD(label = "HO dispatch date", searchable = false)
     private String displayMetadataValueDateTime;
 
-    @CCD(
-            label = "HO appellant details title",
-            searchable = false
-    )
+    @CCD(label = "HO appellant details title", searchable = false)
     private String displayAppellantDetailsTitle;
 
-    @CCD(
-            label = "HO application details title",
-            searchable = false
-    )
+    @CCD(label = "HO application details title", searchable = false)
     private String displayApplicationDetailsTitle;
 
-    @CCD(
-            label = "HO person",
-            searchable = false
-    )
+    @CCD(label = "HO person", searchable = false)
     private HoPerson person;
 
-    @CCD(
-            label = "HO application",
-            searchable = false
-    )
+    @CCD(label = "HO application", searchable = false)
     private HoApplication applicationStatus;
 }

@@ -15,28 +15,15 @@ import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ComplexType(
-        name = "witnessDetails",
-        generate = true
-)
+@ComplexType(name = "witnessDetails", generate = true)
 public class WitnessDetails {
-    @CCD(
-            label = "Given names",
-            searchable = false
-    )
+    @CCD(label = "Given names", searchable = false)
     private String witnessName;
 
-    @CCD(
-            label = "Family name",
-            searchable = false
-    )
+    @CCD(label = "Family name", searchable = false)
     private String witnessFamilyName;
 
-    @CCD(
-            label = " ",
-            showCondition = "witnessPartyId=\"DUMMY_VALUE_TO_HIDE_FIELD\"",
-            searchable = false
-    )
+    @CCD(label = " ", showCondition = "witnessPartyId=\"DUMMY_VALUE_TO_HIDE_FIELD\"", searchable = false)
     private String witnessPartyId;
 
     @CCD(

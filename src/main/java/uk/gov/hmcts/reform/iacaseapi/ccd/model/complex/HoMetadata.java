@@ -14,32 +14,17 @@ import uk.gov.hmcts.ccd.sdk.api.ComplexType;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ComplexType(
-        name = "hoMetadata",
-        generate = true
-)
+@ComplexType(name = "hoMetadata", generate = true)
 public class HoMetadata {
-    @CCD(
-            label = "HO metadata code",
-            searchable = false
-    )
+    @CCD(label = "HO metadata code", searchable = false)
     private String code;
 
-    @CCD(
-            label = "HO metadata value boolean",
-            searchable = false
-    )
+    @CCD(label = "HO metadata value boolean", searchable = false)
     private String valueBoolean;
 
-    @CCD(
-            label = "HO metadata value date",
-            searchable = false
-    )
+    @CCD(label = "HO metadata value date", searchable = false)
     private String valueDateTime;
 
-    @CCD(
-            label = "HO metadata value string",
-            searchable = false
-    )
+    @CCD(label = "HO metadata value string", searchable = false)
     private String valueString;
 }

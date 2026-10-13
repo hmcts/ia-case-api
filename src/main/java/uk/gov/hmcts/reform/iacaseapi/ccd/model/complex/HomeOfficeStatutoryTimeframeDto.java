@@ -18,50 +18,26 @@ import uk.gov.hmcts.ccd.sdk.type.ListValue;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ComplexType(
-        name = "homeOfficeStatutoryTimeframeDto",
-        generate = true
-)
+@ComplexType(name = "homeOfficeStatutoryTimeframeDto", generate = true)
 public class HomeOfficeStatutoryTimeframeDto {
-    @CCD(
-            label = "HMCTS reference number",
-            searchable = false
-    )
+    @CCD(label = "HMCTS reference number", searchable = false)
     private String hmctsReferenceNumber;
 
-    @CCD(
-            label = "UAN",
-            searchable = false
-    )
+    @CCD(label = "UAN", searchable = false)
     private String uan;
 
-    @CCD(
-            label = "Family name",
-            searchable = false
-    )
+    @CCD(label = "Family name", searchable = false)
     private String familyName;
 
-    @CCD(
-            label = "Given names",
-            searchable = false
-    )
+    @CCD(label = "Given names", searchable = false)
     private String givenNames;
 
-    @CCD(
-            label = "Date of birth",
-            searchable = false
-    )
+    @CCD(label = "Date of birth", searchable = false)
     private LocalDate dateOfBirth;
 
-    @CCD(
-            label = "24-week cohorts",
-            searchable = false
-    )
+    @CCD(label = "24-week cohorts", searchable = false)
     private List<ListValue<Stf24WeekCohort>> stf24weekCohorts;
 
-    @CCD(
-            label = "Time-stamp",
-            searchable = false
-    )
+    @CCD(label = "Time-stamp", searchable = false)
     private LocalDateTime timeStamp;
 }

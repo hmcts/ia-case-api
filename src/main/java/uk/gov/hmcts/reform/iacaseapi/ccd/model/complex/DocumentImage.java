@@ -17,10 +17,7 @@ import uk.gov.hmcts.reform.iacaseapi.ccd.model.enums.ImageRenderingLocation;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ComplexType(
-        name = "DocumentImage",
-        generate = true
-)
+@ComplexType(name = "DocumentImage", generate = true)
 public class DocumentImage {
     @CCD(
             label = "How would you like to have the image rendered?",
@@ -38,21 +35,12 @@ public class DocumentImage {
     )
     private ImageRenderingLocation imageRenderingLocation;
 
-    @CCD(
-            label = "The filename of the Image you wish to embed",
-            searchable = false
-    )
+    @CCD(label = "The filename of the Image you wish to embed", searchable = false)
     private String docmosisAssetId;
 
-    @CCD(
-            label = "X position of the image",
-            searchable = false
-    )
+    @CCD(label = "X position of the image", searchable = false)
     private Integer coordinateX;
 
-    @CCD(
-            label = "Y position of the image",
-            searchable = false
-    )
+    @CCD(label = "Y position of the image", searchable = false)
     private Integer coordinateY;
 }

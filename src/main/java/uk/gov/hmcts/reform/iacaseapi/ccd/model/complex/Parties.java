@@ -16,44 +16,23 @@ import uk.gov.hmcts.ccd.sdk.type.AddressUK;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ComplexType(
-        name = "parties",
-        generate = true
-)
+@ComplexType(name = "parties", generate = true)
 public class Parties {
-    @CCD(
-            label = " ",
-            searchable = false
-    )
+    @CCD(label = " ", searchable = false)
     private String appellantTitle;
 
-    @CCD(
-            label = " ",
-            searchable = false
-    )
+    @CCD(label = " ", searchable = false)
     private String appellantGivenNames;
 
-    @CCD(
-            label = " ",
-            searchable = false
-    )
+    @CCD(label = " ", searchable = false)
     private String appellantFamilyName;
 
-    @CCD(
-            label = " ",
-            searchable = false
-    )
+    @CCD(label = " ", searchable = false)
     private AddressUK appellantAddress;
 
-    @CCD(
-            label = " ",
-            searchable = false
-    )
+    @CCD(label = " ", searchable = false)
     private String appellantEmailAddress;
 
-    @CCD(
-            label = " ",
-            searchable = false
-    )
+    @CCD(label = " ", searchable = false)
     private LocalDate appellantDateOfBirth;
 }

@@ -17,39 +17,20 @@ import uk.gov.hmcts.ccd.sdk.type.FieldType;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ComplexType(
-        name = "caseNote",
-        generate = true
-)
+@ComplexType(name = "caseNote", generate = true)
 public class CaseNote {
-    @CCD(
-            label = "Subject",
-            searchable = false
-    )
+    @CCD(label = "Subject", searchable = false)
     private String caseNoteSubject;
 
-    @CCD(
-            label = "Case note",
-            searchable = false,
-            typeOverride = FieldType.TextArea
-    )
+    @CCD(label = "Case note", searchable = false, typeOverride = FieldType.TextArea)
     private String caseNoteDescription;
 
-    @CCD(
-            label = "Document",
-            searchable = false
-    )
+    @CCD(label = "Document", searchable = false)
     private Document caseNoteDocument;
 
-    @CCD(
-            label = "User",
-            searchable = false
-    )
+    @CCD(label = "User", searchable = false)
     private String user;
 
-    @CCD(
-            label = "Date added",
-            searchable = false
-    )
+    @CCD(label = "Date added", searchable = false)
     private LocalDate dateAdded;
 }

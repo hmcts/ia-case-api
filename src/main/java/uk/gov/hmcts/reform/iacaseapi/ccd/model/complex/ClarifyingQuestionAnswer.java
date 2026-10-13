@@ -19,53 +19,26 @@ import uk.gov.hmcts.ccd.sdk.type.ListValue;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ComplexType(
-        name = "clarifyingQuestionAnswer",
-        generate = true
-)
+@ComplexType(name = "clarifyingQuestionAnswer", generate = true)
 public class ClarifyingQuestionAnswer {
-    @CCD(
-            label = "Date sent",
-            searchable = false
-    )
+    @CCD(label = "Date sent", searchable = false)
     private LocalDate dateSent;
 
-    @CCD(
-            label = "Due date",
-            searchable = false
-    )
+    @CCD(label = "Due date", searchable = false)
     private LocalDate dueDate;
 
-    @CCD(
-            label = "Date responded",
-            searchable = false
-    )
+    @CCD(label = "Date responded", searchable = false)
     private LocalDate dateResponded;
 
-    @CCD(
-            label = "Question",
-            searchable = false,
-            typeOverride = FieldType.TextArea
-    )
+    @CCD(label = "Question", searchable = false, typeOverride = FieldType.TextArea)
     private String question;
 
-    @CCD(
-            label = "Answer",
-            searchable = false,
-            typeOverride = FieldType.TextArea
-    )
+    @CCD(label = "Answer", searchable = false, typeOverride = FieldType.TextArea)
     private String answer;
 
-    @CCD(
-            label = "Supporting evidence",
-            searchable = false
-    )
+    @CCD(label = "Supporting evidence", searchable = false)
     private List<ListValue<Document>> supportingEvidence;
 
-    @CCD(
-            label = "Direction Id",
-            showCondition = "directionId=\"DUMMY_VALUE_TO_HIDE_FIELD\"",
-            searchable = false
-    )
+    @CCD(label = "Direction Id", showCondition = "directionId=\"DUMMY_VALUE_TO_HIDE_FIELD\"", searchable = false)
     private String directionId;
 }

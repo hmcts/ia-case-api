@@ -15,68 +15,35 @@ import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ComplexType(
-        name = "homeOfficeAppellant",
-        generate = true
-)
+@ComplexType(name = "homeOfficeAppellant", generate = true)
 public class HomeOfficeAppellant {
-    @CCD(
-            label = "Family name",
-            searchable = false
-    )
+    @CCD(label = "Family name", searchable = false)
     private String familyName;
 
-    @CCD(
-            label = "Given names",
-            searchable = false
-    )
+    @CCD(label = "Given names", searchable = false)
     private String givenNames;
 
-    @CCD(
-            label = "Date of birth",
-            searchable = false
-    )
+    @CCD(label = "Date of birth", searchable = false)
     private String dateOfBirth;
 
-    @CCD(
-            label = "Nationality",
-            searchable = false
-    )
+    @CCD(label = "Nationality", searchable = false)
     private String nationality;
 
-    @CCD(
-            label = "Right of appeal",
-            searchable = false
-    )
+    @CCD(label = "Right of appeal", searchable = false)
     private YesOrNo roa;
 
-    @CCD(
-            label = "Asylum support",
-            searchable = false
-    )
+    @CCD(label = "Asylum support", searchable = false)
     private YesOrNo asylumSupport;
 
-    @CCD(
-            label = "Home Office fee waiver",
-            searchable = false
-    )
+    @CCD(label = "Home Office fee waiver", searchable = false)
     private YesOrNo hoFeeWaiver;
 
-    @CCD(
-            label = "Language",
-            searchable = false
-    )
+    @CCD(label = "Language", searchable = false)
     private String language;
 
-    @CCD(
-            label = "Interpreter needed",
-            searchable = false
-    )
+    @CCD(label = "Interpreter needed", searchable = false)
     private YesOrNo interpreterNeeded;
 
-    @CCD(
-            label = "Person number",
-            searchable = false
-    )
+    @CCD(label = "Person number", searchable = false)
     private String pp;
 }

@@ -16,10 +16,7 @@ import uk.gov.hmcts.reform.iacaseapi.ccd.model.enums.GovUkNationalities;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ComplexType(
-        name = "nationalityList",
-        generate = true
-)
+@ComplexType(name = "nationalityList", generate = true)
 public class NationalityList {
     @CCD(
             label = "Nationality",

@@ -22,28 +22,15 @@ import uk.gov.hmcts.reform.iacaseapi.ccd.model.enums.TimeExtensionType;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ComplexType(
-        name = "timeExtension",
-        generate = true
-)
+@ComplexType(name = "timeExtension", generate = true)
 public class TimeExtension {
-    @CCD(
-            label = "Date requested",
-            searchable = false
-    )
+    @CCD(label = "Date requested", searchable = false)
     private LocalDate requestDate;
 
-    @CCD(
-            label = "Reason for time extension",
-            searchable = false,
-            typeOverride = FieldType.TextArea
-    )
+    @CCD(label = "Reason for time extension", searchable = false, typeOverride = FieldType.TextArea)
     private String reason;
 
-    @CCD(
-            label = "Reason for time extension evidence",
-            searchable = false
-    )
+    @CCD(label = "Reason for time extension evidence", searchable = false)
     private List<ListValue<Document>> evidence;
 
     @CCD(
@@ -70,16 +57,9 @@ public class TimeExtension {
     )
     private TimeExtensionDecision decision;
 
-    @CCD(
-            label = "Decision reason",
-            searchable = false,
-            typeOverride = FieldType.TextArea
-    )
+    @CCD(label = "Decision reason", searchable = false, typeOverride = FieldType.TextArea)
     private String decisionReason;
 
-    @CCD(
-            label = "Decision outcome due date reason",
-            searchable = false
-    )
+    @CCD(label = "Decision outcome due date reason", searchable = false)
     private LocalDate decisionOutcomeDate;
 }

@@ -16,14 +16,8 @@ import uk.gov.hmcts.reform.iacaseapi.ccd.model.enums.FeeUpdateRecordedList;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ComplexType(
-        name = "feeUpdateRecorded",
-        generate = true
-)
+@ComplexType(name = "feeUpdateRecorded", generate = true)
 public class FeeUpdateRecorded {
-    @CCD(
-            label = " ",
-            searchable = false
-    )
+    @CCD(label = " ", searchable = false)
     private Set<FeeUpdateRecordedList> values;
 }

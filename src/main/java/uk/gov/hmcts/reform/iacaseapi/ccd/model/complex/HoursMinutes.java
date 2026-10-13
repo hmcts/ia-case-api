@@ -14,20 +14,11 @@ import uk.gov.hmcts.ccd.sdk.api.ComplexType;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ComplexType(
-        name = "hoursMinutes",
-        generate = true
-)
+@ComplexType(name = "hoursMinutes", generate = true)
 public class HoursMinutes {
-    @CCD(
-            label = "Hours",
-            searchable = false
-    )
+    @CCD(label = "Hours", searchable = false)
     private Integer hours;
 
-    @CCD(
-            label = "Minutes",
-            searchable = false
-    )
+    @CCD(label = "Minutes", searchable = false)
     private Integer minutes;
 }

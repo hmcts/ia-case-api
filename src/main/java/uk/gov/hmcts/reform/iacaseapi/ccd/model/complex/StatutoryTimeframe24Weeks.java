@@ -16,20 +16,11 @@ import uk.gov.hmcts.ccd.sdk.type.ListValue;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ComplexType(
-        name = "statutoryTimeframe24Weeks",
-        generate = true
-)
+@ComplexType(name = "statutoryTimeframe24Weeks", generate = true)
 public class StatutoryTimeframe24Weeks {
-    @CCD(
-            label = "History",
-            searchable = false
-    )
+    @CCD(label = "History", searchable = false)
     private List<ListValue<StatutoryTimeframe24WeeksHistory>> history;
 
-    @CCD(
-            label = "Home Office response",
-            searchable = false
-    )
+    @CCD(label = "Home Office response", searchable = false)
     private HomeOfficeStatutoryTimeframeDto homeOfficeResponse;
 }

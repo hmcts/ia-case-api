@@ -14,56 +14,29 @@ import uk.gov.hmcts.ccd.sdk.api.ComplexType;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ComplexType(
-        name = "hoPerson",
-        generate = true
-)
+@ComplexType(name = "hoPerson", generate = true)
 public class HoPerson {
-    @CCD(
-            label = "HO given name",
-            searchable = false
-    )
+    @CCD(label = "HO given name", searchable = false)
     private String givenName;
 
-    @CCD(
-            label = "HO family name",
-            searchable = false
-    )
+    @CCD(label = "HO family name", searchable = false)
     private String familyName;
 
-    @CCD(
-            label = "HO full name",
-            searchable = false
-    )
+    @CCD(label = "HO full name", searchable = false)
     private String fullName;
 
-    @CCD(
-            label = "HO day of birth",
-            searchable = false
-    )
+    @CCD(label = "HO day of birth", searchable = false)
     private Integer dayOfBirth;
 
-    @CCD(
-            label = "HO month of birth",
-            searchable = false
-    )
+    @CCD(label = "HO month of birth", searchable = false)
     private Integer monthOfBirth;
 
-    @CCD(
-            label = "HO year of birth",
-            searchable = false
-    )
+    @CCD(label = "HO year of birth", searchable = false)
     private Integer yearOfBirth;
 
-    @CCD(
-            label = "HO gender",
-            searchable = false
-    )
+    @CCD(label = "HO gender", searchable = false)
     private HoCodeValue gender;
 
-    @CCD(
-            label = "HO nationality",
-            searchable = false
-    )
+    @CCD(label = "HO nationality", searchable = false)
     private HoCodeValue nationality;
 }

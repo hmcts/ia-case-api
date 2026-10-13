@@ -16,14 +16,8 @@ import uk.gov.hmcts.ccd.sdk.type.ListValue;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ComplexType(
-        name = "reheardHearingDocumentsComplex",
-        generate = true
-)
+@ComplexType(name = "reheardHearingDocumentsComplex", generate = true)
 public class ReheardHearingDocumentsComplex {
-    @CCD(
-            label = "Reheard hearing documents",
-            searchable = false
-    )
+    @CCD(label = "Reheard hearing documents", searchable = false)
     private List<ListValue<DocumentWithMetadata>> reheardHearingDocs;
 }

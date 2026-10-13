@@ -14,13 +14,8 @@ import uk.gov.hmcts.ccd.sdk.api.ComplexType;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ComplexType(
-        name = "otherDetentionFacilityComplexType",
-        generate = true
-)
+@ComplexType(name = "otherDetentionFacilityComplexType", generate = true)
 public class OtherDetentionFacilityComplexType {
-    @CCD(
-            label = "Enter the name of the detention facility"
-    )
+    @CCD(label = "Enter the name of the detention facility")
     private String other;
 }

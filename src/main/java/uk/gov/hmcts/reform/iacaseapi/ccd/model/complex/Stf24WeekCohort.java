@@ -14,20 +14,11 @@ import uk.gov.hmcts.ccd.sdk.api.ComplexType;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ComplexType(
-        name = "stf24WeekCohort",
-        generate = true
-)
+@ComplexType(name = "stf24WeekCohort", generate = true)
 public class Stf24WeekCohort {
-    @CCD(
-            label = "Name",
-            searchable = false
-    )
+    @CCD(label = "Name", searchable = false)
     private String name;
 
-    @CCD(
-            label = "Included",
-            searchable = false
-    )
+    @CCD(label = "Included", searchable = false)
     private String included;
 }

@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi.ccd.model;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,24 +14,24 @@ import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.FieldType;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.ccd.access.AdmofficerCaseofficerRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.AdmofficerCaseofficerSystemCrudAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.AdmofficerCitizenCrudAccess;
-import uk.gov.hmcts.reform.iacaseapi.ccd.access.AdmofficerIacjudgeRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.AdmofficerRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.AdmofficerSpecificAccessCtscProfileRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.AdmofficerSystemCrudAccess;
-import uk.gov.hmcts.reform.iacaseapi.ccd.access.CaseofficerCitizenRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.CaseofficerCrudAccess;
+import uk.gov.hmcts.reform.iacaseapi.ccd.access.CaseofficerIacjudgeSpecificAccessCtscProfileWaTaskConfigurationRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.CaseofficerLegalrepSolicitorRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.CaseofficerSpecificAccessCtscProfileRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.CaseofficerSpecificAccessCtscProfileWaTaskConfigurationRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.CaseofficerSystemCrudAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.CitizenIacjudgeLegalrepSolicitorWaTaskConfigurationCrudAccess;
+import uk.gov.hmcts.reform.iacaseapi.ccd.access.CitizenIacjudgeRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.HomeofficeapcCrudAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.HomeofficelartCrudAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.HomeofficepouRespondentofficerRAccess;
-import uk.gov.hmcts.reform.iacaseapi.ccd.access.IacjudgeRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.IacjudgeSpecificAccessCtscProfileRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.LegalrepSolicitorRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.LegalrepSolicitorSystemCrudAccess;
@@ -56,11 +57,7 @@ import uk.gov.hmcts.reform.iacaseapi.ccd.model.complex.HomeOfficeAppellant;
 @NoArgsConstructor
 @AllArgsConstructor
 public class HomeOffice {
-    @CCD(
-            label = " ",
-            searchable = false,
-            typeOverride = FieldType.Label
-    )
+    @CCD(label = " ", searchable = false, typeOverride = FieldType.Label)
     private String decisionTitle;
 
     @CCD(
@@ -136,7 +133,7 @@ public class HomeOffice {
     @CCD(
             label = "Upload the appeal response",
             searchable = false,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, AdmofficerIacjudgeRAccess.class, CaseofficerCitizenRAccess.class, RespondentofficerSystemCrudAccess.class, HomeofficelartCrudAccess.class}
+            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, AdmofficerCaseofficerRAccess.class, CitizenIacjudgeRAccess.class, RespondentofficerSystemCrudAccess.class, HomeofficelartCrudAccess.class}
     )
     private Document appealResponseDocument;
 
@@ -145,14 +142,14 @@ public class HomeOffice {
             hint = "For example, Home Office response to appeal",
             searchable = false,
             typeOverride = FieldType.TextArea,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, AdmofficerIacjudgeRAccess.class, CaseofficerCitizenRAccess.class, RespondentofficerSystemCrudAccess.class, HomeofficelartCrudAccess.class}
+            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, AdmofficerCaseofficerRAccess.class, CitizenIacjudgeRAccess.class, RespondentofficerSystemCrudAccess.class, HomeofficelartCrudAccess.class}
     )
     private String appealResponseDescription;
 
     @CCD(
             label = "Add any additional evidence here",
             searchable = false,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, AdmofficerIacjudgeRAccess.class, CaseofficerCitizenRAccess.class, RespondentofficerSystemCrudAccess.class, HomeofficelartCrudAccess.class}
+            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, AdmofficerCaseofficerRAccess.class, CitizenIacjudgeRAccess.class, RespondentofficerSystemCrudAccess.class, HomeofficelartCrudAccess.class}
     )
     private List<ListValue<DocumentWithDescription>> appealResponseEvidence;
 
@@ -236,14 +233,14 @@ public class HomeOffice {
     @CCD(
             label = "Instruct status for Home Office appeal submitted notification",
             searchable = false,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, CaseofficerSpecificAccessCtscProfileWaTaskConfigurationRAccess.class, AdmofficerIacjudgeRAccess.class, SystemCrudAccess.class}
+            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, CaseofficerIacjudgeSpecificAccessCtscProfileWaTaskConfigurationRAccess.class, AdmofficerRAccess.class, SystemCrudAccess.class}
     )
     private String appealSubmittedInstructStatus;
 
     @CCD(
             label = "Instruct status for Home Office appeal decided notification",
             searchable = false,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, CaseofficerSpecificAccessCtscProfileWaTaskConfigurationRAccess.class, AdmofficerIacjudgeRAccess.class, SystemCrudAccess.class}
+            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, CaseofficerIacjudgeSpecificAccessCtscProfileWaTaskConfigurationRAccess.class, AdmofficerRAccess.class, SystemCrudAccess.class}
     )
     private String appealDecidedInstructStatus;
 
@@ -278,7 +275,7 @@ public class HomeOffice {
     @CCD(
             label = "Instruct status for Home Office end appeal notification",
             searchable = false,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, CaseofficerSpecificAccessCtscProfileWaTaskConfigurationRAccess.class, AdmofficerIacjudgeRAccess.class, SystemCrudAccess.class}
+            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, CaseofficerIacjudgeSpecificAccessCtscProfileWaTaskConfigurationRAccess.class, AdmofficerRAccess.class, SystemCrudAccess.class}
     )
     private String endAppealInstructStatus;
 
@@ -299,16 +296,142 @@ public class HomeOffice {
     @CCD(
             label = "Instruct status for Review Home Office change direction due date notification",
             searchable = false,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, CaseofficerSpecificAccessCtscProfileWaTaskConfigurationRAccess.class, IacjudgeRAccess.class, SystemCrudAccess.class}
+            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, CaseofficerIacjudgeSpecificAccessCtscProfileWaTaskConfigurationRAccess.class, SystemCrudAccess.class}
     )
     private String reviewChangeDirectionDueDateInstructStatus;
 
     @CCD(
             label = "Instruct status for Evidence Home Office change direction due date notification",
             searchable = false,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, CaseofficerSpecificAccessCtscProfileWaTaskConfigurationRAccess.class, IacjudgeRAccess.class, SystemCrudAccess.class}
+            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, CaseofficerIacjudgeSpecificAccessCtscProfileWaTaskConfigurationRAccess.class, SystemCrudAccess.class}
     )
     private String evidenceChangeDirectionDueDateInstructStatus;
+
+    @CCD(
+            label = "Response API message date time of failure for Appellant Api",
+            searchable = false,
+            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, CaseofficerIacjudgeSpecificAccessCtscProfileWaTaskConfigurationRAccess.class, SystemCrudAccess.class}
+    )
+    private LocalDateTime appellantApiResponseFailDateTime;
+
+    @CCD(
+            label = "Instruct API message date time of failure for Request Evidence Bundle",
+            searchable = false,
+            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, CaseofficerIacjudgeSpecificAccessCtscProfileWaTaskConfigurationRAccess.class, SystemCrudAccess.class}
+    )
+    private LocalDateTime instructFailDateTime;
+
+    @CCD(
+            label = "Instruct API message date time of failure for Request Review",
+            searchable = false,
+            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, CaseofficerIacjudgeSpecificAccessCtscProfileWaTaskConfigurationRAccess.class, SystemCrudAccess.class}
+    )
+    private LocalDateTime requestReviewInstructFailDateTime;
+
+    @CCD(
+            label = "Instruct API message date time of failure for Hearing",
+            searchable = false,
+            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, CaseofficerIacjudgeSpecificAccessCtscProfileWaTaskConfigurationRAccess.class, SystemCrudAccess.class}
+    )
+    private LocalDateTime hearingInstructFailDateTime;
+
+    @CCD(
+            label = "Instruct API message date time of failure for Edit Listing",
+            searchable = false,
+            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, CaseofficerIacjudgeSpecificAccessCtscProfileWaTaskConfigurationRAccess.class, SystemCrudAccess.class}
+    )
+    private LocalDateTime editListingInstructFailDateTime;
+
+    @CCD(
+            label = "Instruct API message date time of failure for Adjourn Without Date",
+            searchable = false,
+            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, CaseofficerIacjudgeSpecificAccessCtscProfileWaTaskConfigurationRAccess.class, SystemCrudAccess.class}
+    )
+    private LocalDateTime adjournWithoutDateInstructFailDateTime;
+
+    @CCD(
+            label = "Instruct API message date time of failure for Appeal Submitted",
+            searchable = false,
+            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, CaseofficerIacjudgeSpecificAccessCtscProfileWaTaskConfigurationRAccess.class, SystemCrudAccess.class}
+    )
+    private LocalDateTime appealSubmittedInstructFailDateTime;
+
+    @CCD(
+            label = "Instruct API message date time of failure for Appeal Decided",
+            searchable = false,
+            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, CaseofficerIacjudgeSpecificAccessCtscProfileWaTaskConfigurationRAccess.class, SystemCrudAccess.class}
+    )
+    private LocalDateTime appealDecidedInstructFailDateTime;
+
+    @CCD(
+            label = "Instruct API message date time of failure for Ftpa Appellant",
+            searchable = false,
+            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, CaseofficerIacjudgeSpecificAccessCtscProfileWaTaskConfigurationRAccess.class, SystemCrudAccess.class}
+    )
+    private LocalDateTime ftpaAppellantInstructFailDateTime;
+
+    @CCD(
+            label = "Instruct API message date time of failure for Ftpa Respondent",
+            searchable = false,
+            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, CaseofficerIacjudgeSpecificAccessCtscProfileWaTaskConfigurationRAccess.class, SystemCrudAccess.class}
+    )
+    private LocalDateTime ftpaRespondentInstructFailDateTime;
+
+    @CCD(
+            label = "Instruct API message date time of failure for Ftpa Appellant Decided",
+            searchable = false,
+            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, CaseofficerIacjudgeSpecificAccessCtscProfileWaTaskConfigurationRAccess.class, SystemCrudAccess.class}
+    )
+    private LocalDateTime ftpaAppellantDecidedInstructFailDateTime;
+
+    @CCD(
+            label = "Instruct API message date time of failure for Ftpa Respondent Decided",
+            searchable = false,
+            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, CaseofficerIacjudgeSpecificAccessCtscProfileWaTaskConfigurationRAccess.class, SystemCrudAccess.class}
+    )
+    private LocalDateTime ftpaRespondentDecidedInstructFailDateTime;
+
+    @CCD(
+            label = "Instruct API message date time of failure for Hearing Bundle Ready",
+            searchable = false,
+            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, CaseofficerIacjudgeSpecificAccessCtscProfileWaTaskConfigurationRAccess.class, SystemCrudAccess.class}
+    )
+    private LocalDateTime hearingBundleReadyInstructFailDateTime;
+
+    @CCD(
+            label = "Instruct API message date time of failure for End Appeal",
+            searchable = false,
+            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, CaseofficerIacjudgeSpecificAccessCtscProfileWaTaskConfigurationRAccess.class, SystemCrudAccess.class}
+    )
+    private LocalDateTime endAppealInstructFailDateTime;
+
+    @CCD(
+            label = "Instruct API message date time of failure for Amend Bundle",
+            searchable = false,
+            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, CaseofficerIacjudgeSpecificAccessCtscProfileWaTaskConfigurationRAccess.class, SystemCrudAccess.class}
+    )
+    private LocalDateTime amendBundleInstructFailDateTime;
+
+    @CCD(
+            label = "Instruct API message date time of failure for Amend Response",
+            searchable = false,
+            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, CaseofficerIacjudgeSpecificAccessCtscProfileWaTaskConfigurationRAccess.class, SystemCrudAccess.class}
+    )
+    private LocalDateTime amendResponseInstructFailDateTime;
+
+    @CCD(
+            label = "Instruct API message date time of failure for Review Change Direction Due Date",
+            searchable = false,
+            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, CaseofficerIacjudgeSpecificAccessCtscProfileWaTaskConfigurationRAccess.class, SystemCrudAccess.class}
+    )
+    private LocalDateTime reviewChangeDirectionDueDateInstructFailDateTime;
+
+    @CCD(
+            label = "Instruct API message date time of failure for Evidence Change Direction Due Date",
+            searchable = false,
+            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, CaseofficerIacjudgeSpecificAccessCtscProfileWaTaskConfigurationRAccess.class, SystemCrudAccess.class}
+    )
+    private LocalDateTime evidenceChangeDirectionDueDateInstructFailDateTime;
 
     @CCD(
             label = " ",

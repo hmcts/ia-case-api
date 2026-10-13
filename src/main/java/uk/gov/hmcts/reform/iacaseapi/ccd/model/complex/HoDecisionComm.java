@@ -14,32 +14,17 @@ import uk.gov.hmcts.ccd.sdk.api.ComplexType;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ComplexType(
-        name = "hoDecisionComm",
-        generate = true
-)
+@ComplexType(name = "hoDecisionComm", generate = true)
 public class HoDecisionComm {
-    @CCD(
-            label = "HO decision description",
-            searchable = false
-    )
+    @CCD(label = "HO decision description", searchable = false)
     private String description;
 
-    @CCD(
-            label = "HO decision dispatch date",
-            searchable = false
-    )
+    @CCD(label = "HO decision dispatch date", searchable = false)
     private String dispatchDate;
 
-    @CCD(
-            label = "HO decision sent date",
-            searchable = false
-    )
+    @CCD(label = "HO decision sent date", searchable = false)
     private String sentDate;
 
-    @CCD(
-            label = "HO decision type",
-            searchable = false
-    )
+    @CCD(label = "HO decision type", searchable = false)
     private String type;
 }

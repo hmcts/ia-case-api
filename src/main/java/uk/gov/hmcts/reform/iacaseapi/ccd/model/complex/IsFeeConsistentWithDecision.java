@@ -16,14 +16,8 @@ import uk.gov.hmcts.reform.iacaseapi.ccd.model.enums.IsFeeConsistentWithDecision
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ComplexType(
-        name = "isFeeConsistentWithDecision",
-        generate = true
-)
+@ComplexType(name = "isFeeConsistentWithDecision", generate = true)
 public class IsFeeConsistentWithDecision {
-    @CCD(
-            label = " ",
-            searchable = false
-    )
+    @CCD(label = " ", searchable = false)
     private Set<IsFeeConsistentWithDecisionList> values;
 }

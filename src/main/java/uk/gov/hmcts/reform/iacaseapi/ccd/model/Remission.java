@@ -150,11 +150,7 @@ public class Remission {
     )
     private String rejectedDatePlus14days;
 
-    @CCD(
-            label = "Remission details",
-            searchable = false,
-            access = {SystemCrudAccess.class}
-    )
+    @CCD(label = "Remission details", searchable = false, access = {SystemCrudAccess.class})
     private List<ListValue<RemissionDetails>> details;
 
     @CCD(

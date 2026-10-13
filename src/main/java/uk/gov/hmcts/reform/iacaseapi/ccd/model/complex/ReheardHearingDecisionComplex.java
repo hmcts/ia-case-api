@@ -16,14 +16,8 @@ import uk.gov.hmcts.ccd.sdk.type.ListValue;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ComplexType(
-        name = "reheardHearingDecisionComplex",
-        generate = true
-)
+@ComplexType(name = "reheardHearingDecisionComplex", generate = true)
 public class ReheardHearingDecisionComplex {
-    @CCD(
-            label = "Reheard decision and reason documents",
-            searchable = false
-    )
+    @CCD(label = "Reheard decision and reason documents", searchable = false)
     private List<ListValue<DocumentWithMetadata>> reheardHearingDocs;
 }

@@ -22,56 +22,26 @@ import uk.gov.hmcts.reform.iacaseapi.ccd.model.enums.IsWithinPostcode;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ComplexType(
-        name = "checklist",
-        generate = true
-)
+@ComplexType(name = "checklist", generate = true)
 public class Checklist {
-    @CCD(
-            label = " ",
-            showCondition = "checklist1=\"DUMMY_VALUE_TO_HIDE_FIELD\"",
-            searchable = false
-    )
+    @CCD(label = " ", showCondition = "checklist1=\"DUMMY_VALUE_TO_HIDE_FIELD\"", searchable = false)
     private Set<IsResidingInUK> checklist5;
 
-    @CCD(
-            label = " ",
-            showCondition = "checklist1=\"DUMMY_VALUE_TO_HIDE_FIELD\"",
-            searchable = false
-    )
+    @CCD(label = " ", showCondition = "checklist1=\"DUMMY_VALUE_TO_HIDE_FIELD\"", searchable = false)
     private Set<IsAdult> checklist1;
 
-    @CCD(
-            label = " ",
-            searchable = false
-    )
+    @CCD(label = " ", searchable = false)
     private Set<IsNotDetained> checklist2;
 
-    @CCD(
-            label = " ",
-            showCondition = "checklist7=\"DUMMY_VALUE_TO_HIDE_FIELD\"",
-            searchable = false
-    )
+    @CCD(label = " ", showCondition = "checklist7=\"DUMMY_VALUE_TO_HIDE_FIELD\"", searchable = false)
     private Set<IsNotEUDecision> checklist7;
 
-    @CCD(
-            label = " ",
-            showCondition = "checklist4=\"DUMMY_VALUE_TO_HIDE_FIELD\"",
-            searchable = false
-    )
+    @CCD(label = " ", showCondition = "checklist4=\"DUMMY_VALUE_TO_HIDE_FIELD\"", searchable = false)
     private Set<IsNotFamilyAppeal> checklist3;
 
-    @CCD(
-            label = " ",
-            showCondition = "checklist4=\"DUMMY_VALUE_TO_HIDE_FIELD\"",
-            searchable = false
-    )
+    @CCD(label = " ", showCondition = "checklist4=\"DUMMY_VALUE_TO_HIDE_FIELD\"", searchable = false)
     private Set<IsWithinPostcode> checklist4;
 
-    @CCD(
-            label = " ",
-            showCondition = "checklist6=\"DUMMY_VALUE_TO_HIDE_FIELD\"",
-            searchable = false
-    )
+    @CCD(label = " ", showCondition = "checklist6=\"DUMMY_VALUE_TO_HIDE_FIELD\"", searchable = false)
     private Set<IsNotStateless> checklist6;
 }

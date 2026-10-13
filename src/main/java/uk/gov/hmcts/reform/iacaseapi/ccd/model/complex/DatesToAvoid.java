@@ -16,21 +16,11 @@ import uk.gov.hmcts.ccd.sdk.type.FieldType;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ComplexType(
-        name = "datesToAvoid",
-        generate = true
-)
+@ComplexType(name = "datesToAvoid", generate = true)
 public class DatesToAvoid {
-    @CCD(
-            label = "Date",
-            searchable = false
-    )
+    @CCD(label = "Date", searchable = false)
     private LocalDate dateToAvoid;
 
-    @CCD(
-            label = "Reason",
-            searchable = false,
-            typeOverride = FieldType.TextArea
-    )
+    @CCD(label = "Reason", searchable = false, typeOverride = FieldType.TextArea)
     private String dateToAvoidReason;
 }

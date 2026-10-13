@@ -37,10 +37,7 @@ import uk.gov.hmcts.reform.iacaseapi.ccd.model.enums.InterpreterLanguageCategory
 @NoArgsConstructor
 @AllArgsConstructor
 public class Nlr {
-    @CCD(
-            label = " ",
-            access = {CaseflagsProfileSystemCrudAccess.class, CaseflagsReadonlyProfileCruAccess.class}
-    )
+    @CCD(label = " ", access = {CaseflagsProfileSystemCrudAccess.class, CaseflagsReadonlyProfileCruAccess.class})
     private Flags levelFlags;
 
     @CCD(

@@ -1207,7 +1207,7 @@ public class AsylumTabs implements CCDConfig<CaseData, State, UserRole> {
             .field(CaseData::getCaseLinks, "LinkedCasesComponentLauncher!=\"\"", "#ARGUMENT(LinkedCases)")
             .field(CaseData::getLinkedCasesComponentLauncher, "", "#ARGUMENT(LinkedCases)");
         builder.tab("serviceRequest", "Service Request")
-            .showCondition("isFeePaymentEnabled=\"Yes\" AND currentCaseStateVisibleToLegalRepresentative!=\"appealStarted\" AND appealType!=\"deprivation\" AND appealType!=\"revocationOfProtection\" AND hasServiceRequestAlready=\"Yes\"")
+            .showCondition("isFeePaymentEnabled=\"Yes\" AND [STATE]!=\"ended\" AND currentCaseStateVisibleToLegalRepresentative!=\"appealStarted\" AND appealType!=\"deprivation\" AND appealType!=\"revocationOfProtection\" AND hasServiceRequestAlready=\"Yes\"")
             .field("serviceRequest");
         builder.tab("hearing", "Hearing and appointment")
             .showCondition("submitHearingRequirementsAvailable=\"Yes\" OR caseListedWithoutHearingRequirements=\"Yes\"")

@@ -14,14 +14,8 @@ import uk.gov.hmcts.ccd.sdk.api.ComplexType;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ComplexType(
-        name = "hoRejectionReason",
-        generate = true
-)
+@ComplexType(name = "hoRejectionReason", generate = true)
 public class HoRejectionReason {
-    @CCD(
-            label = "HO reject reason",
-            searchable = false
-    )
+    @CCD(label = "HO reject reason", searchable = false)
     private String reason;
 }

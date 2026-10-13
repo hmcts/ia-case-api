@@ -14,14 +14,8 @@ import uk.gov.hmcts.ccd.sdk.api.ComplexType;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ComplexType(
-        name = "appealNumber",
-        generate = true
-)
+@ComplexType(name = "appealNumber", generate = true)
 public class AppealNumber {
-    @CCD(
-            label = " ",
-            regex = "^(RP|PA|EA|HU|DC|DA|AA|IA|OA|VA|EU)\\/[0-9]{5}\\/[0-9]{4}$"
-    )
+    @CCD(label = " ", regex = "^(RP|PA|EA|HU|DC|DA|AA|IA|OA|VA|EU)\\/[0-9]{5}\\/[0-9]{4}$")
     private String value;
 }

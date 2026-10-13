@@ -19,12 +19,12 @@ import uk.gov.hmcts.reform.iacaseapi.ccd.access.AdmofficerIacjudgeRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.AdmofficerLegalrepSolicitorRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.AdmofficerRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.AdmofficerSystemCrudAccess;
+import uk.gov.hmcts.reform.iacaseapi.ccd.access.CaseofficerIacjudgeSpecificAccessCtscProfileWaTaskConfigurationRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.CaseofficerLegalrepSolicitorRAccess;
-import uk.gov.hmcts.reform.iacaseapi.ccd.access.CaseofficerSpecificAccessCtscProfileWaTaskConfigurationRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.CaseofficerSystemWaTaskConfigurationCrudAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.CitizenIacjudgeLegalrepSolicitorWaTaskConfigurationCrudAccess;
+import uk.gov.hmcts.reform.iacaseapi.ccd.access.CitizenIacjudgeRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.CitizenLegalrepSolicitorCrudAccess;
-import uk.gov.hmcts.reform.iacaseapi.ccd.access.CitizenLegalrepSolicitorRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.CitizenSpecificAccessCtscProfileRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.CitizenSystemCrudAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess;
@@ -215,7 +215,7 @@ public class Appeal {
 
     @CCD(
             label = "Appeal reference",
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, AdmofficerCaseofficerSystemCrudAccess.class, CitizenLegalrepSolicitorRAccess.class, IacjudgeRAccess.class, SystemAccessRAccess.class, RasValidationRAccess.class}
+            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, AdmofficerCaseofficerSystemCrudAccess.class, CitizenIacjudgeRAccess.class, LegalrepSolicitorRAccess.class, SystemAccessRAccess.class, RasValidationRAccess.class}
     )
     private String referenceNumber;
 
@@ -348,18 +348,10 @@ public class Appeal {
     )
     private String removedFromTheOnlineServiceTitle;
 
-    @CCD(
-            label = " ",
-            searchable = false,
-            access = {LegalrepSolicitorSystemCrudAccess.class}
-    )
+    @CCD(label = " ", searchable = false, access = {LegalrepSolicitorSystemCrudAccess.class})
     private String feeHearingDesc;
 
-    @CCD(
-            label = " ",
-            searchable = false,
-            access = {LegalrepSolicitorSystemCrudAccess.class}
-    )
+    @CCD(label = " ", searchable = false, access = {LegalrepSolicitorSystemCrudAccess.class})
     private String feeWithoutHearingDesc;
 
     @CCD(
@@ -369,11 +361,7 @@ public class Appeal {
     )
     private String typeDescription;
 
-    @CCD(
-            label = " ",
-            searchable = false,
-            access = {CitizenSystemCrudAccess.class}
-    )
+    @CCD(label = " ", searchable = false, access = {CitizenSystemCrudAccess.class})
     private AppealType typePreviousSelection;
 
     @CCD(
@@ -388,7 +376,7 @@ public class Appeal {
     @CCD(
             label = "Appeal created by the Tribunal",
             searchable = false,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, CaseofficerSpecificAccessCtscProfileWaTaskConfigurationRAccess.class, AdmofficerSystemCrudAccess.class, IacjudgeRAccess.class, LegalrepSolicitorRAccess.class}
+            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, CaseofficerIacjudgeSpecificAccessCtscProfileWaTaskConfigurationRAccess.class, AdmofficerSystemCrudAccess.class, LegalrepSolicitorRAccess.class}
     )
     private LocalDate submissionInternalDate;
 
@@ -425,18 +413,10 @@ public class Appeal {
     )
     private String typeTitleUnrep;
 
-    @CCD(
-            label = " ",
-            searchable = false,
-            access = {SystemCrudAccess.class}
-    )
+    @CCD(label = " ", searchable = false, access = {SystemCrudAccess.class})
     private YesOrNo readyForUtTransfer;
 
-    @CCD(
-            label = "Outcome of the appeal",
-            searchable = false,
-            access = {SystemCrudAccess.class}
-    )
+    @CCD(label = "Outcome of the appeal", searchable = false, access = {SystemCrudAccess.class})
     private String readyForUtTransferOutcome;
 
     @CCD(
@@ -449,9 +429,6 @@ public class Appeal {
     )
     private String transferDetailsTabTitle;
 
-    @CCD(
-            label = "Date of remission",
-            access = {AdmofficerSystemCrudAccess.class}
-    )
+    @CCD(label = "Date of remission", access = {AdmofficerSystemCrudAccess.class})
     private LocalDate remittedDate;
 }

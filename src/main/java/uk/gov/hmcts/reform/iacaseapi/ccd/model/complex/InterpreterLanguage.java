@@ -16,21 +16,11 @@ import uk.gov.hmcts.reform.iacaseapi.ccd.model.enums.IsoLanguages;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ComplexType(
-        name = "interpreterLanguage",
-        generate = true
-)
+@ComplexType(name = "interpreterLanguage", generate = true)
 public class InterpreterLanguage {
-    @CCD(
-            label = "Language",
-            typeOverride = FieldType.FixedList,
-            typeParameterOverride = "isoLanguages"
-    )
+    @CCD(label = "Language", typeOverride = FieldType.FixedList, typeParameterOverride = "isoLanguages")
     private IsoLanguages language;
 
-    @CCD(
-            label = "Dialect",
-            hint = "Enter N/A if no dialect required"
-    )
+    @CCD(label = "Dialect", hint = "Enter N/A if no dialect required")
     private String languageDialect;
 }

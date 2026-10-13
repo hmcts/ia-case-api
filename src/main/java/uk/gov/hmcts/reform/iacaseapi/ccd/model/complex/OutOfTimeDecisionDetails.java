@@ -15,26 +15,14 @@ import uk.gov.hmcts.ccd.sdk.type.Document;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ComplexType(
-        name = "outOfTimeDecisionDetails",
-        generate = true
-)
+@ComplexType(name = "outOfTimeDecisionDetails", generate = true)
 public class OutOfTimeDecisionDetails {
-    @CCD(
-            label = "Out of time decision",
-            searchable = false
-    )
+    @CCD(label = "Out of time decision", searchable = false)
     private String decisionType;
 
-    @CCD(
-            label = "Decision maker",
-            searchable = false
-    )
+    @CCD(label = "Decision maker", searchable = false)
     private String decisionMaker;
 
-    @CCD(
-            label = "Decision notice",
-            searchable = false
-    )
+    @CCD(label = "Decision notice", searchable = false)
     private Document decisionDocument;
 }

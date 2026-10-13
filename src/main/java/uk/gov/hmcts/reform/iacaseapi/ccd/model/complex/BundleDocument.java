@@ -15,32 +15,17 @@ import uk.gov.hmcts.ccd.sdk.type.Document;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ComplexType(
-        name = "BundleDocument",
-        generate = true
-)
+@ComplexType(name = "BundleDocument", generate = true)
 public class BundleDocument {
-    @CCD(
-            label = "Document Name",
-            searchable = false
-    )
+    @CCD(label = "Document Name", searchable = false)
     private String name;
 
-    @CCD(
-            label = "Sort Index",
-            searchable = false
-    )
+    @CCD(label = "Sort Index", searchable = false)
     private Integer sortIndex;
 
-    @CCD(
-            label = "Description",
-            searchable = false
-    )
+    @CCD(label = "Description", searchable = false)
     private String description;
 
-    @CCD(
-            label = "Source Document",
-            searchable = false
-    )
+    @CCD(label = "Source Document", searchable = false)
     private Document sourceDocument;
 }

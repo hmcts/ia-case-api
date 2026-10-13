@@ -21,23 +21,12 @@ import uk.gov.hmcts.reform.iacaseapi.ccd.model.enums.PaginationStyle;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ComplexType(
-        name = "Bundle",
-        generate = true
-)
+@ComplexType(name = "Bundle", generate = true)
 public class Bundle {
-    @CCD(
-            label = "Bundle ID",
-            showCondition = "id=\"DUMMY_VALUE_TO_HIDE_FIELD\"",
-            searchable = false
-    )
+    @CCD(label = "Bundle ID", showCondition = "id=\"DUMMY_VALUE_TO_HIDE_FIELD\"", searchable = false)
     private String id;
 
-    @CCD(
-            label = "Name of bundle",
-            showCondition = "title=\"DUMMY_VALUE_TO_HIDE_FIELD\"",
-            searchable = false
-    )
+    @CCD(label = "Name of bundle", showCondition = "title=\"DUMMY_VALUE_TO_HIDE_FIELD\"", searchable = false)
     private String title;
 
     @CCD(
@@ -62,30 +51,16 @@ public class Bundle {
     )
     private YesOrNo eligibleForCloning;
 
-    @CCD(
-            label = "Bundle document",
-            showCondition = "documents=\"DUMMY_VALUE_TO_HIDE_FIELD\"",
-            searchable = false
-    )
+    @CCD(label = "Bundle document", showCondition = "documents=\"DUMMY_VALUE_TO_HIDE_FIELD\"", searchable = false)
     private List<ListValue<BundleDocument>> documents;
 
-    @CCD(
-            label = "Bundle folder",
-            showCondition = "folders=\"DUMMY_VALUE_TO_HIDE_FIELD\"",
-            searchable = false
-    )
+    @CCD(label = "Bundle folder", showCondition = "folders=\"DUMMY_VALUE_TO_HIDE_FIELD\"", searchable = false)
     private List<ListValue<BundleFolder>> folders;
 
-    @CCD(
-            label = "Stitch Status",
-            searchable = false
-    )
+    @CCD(label = "Stitch Status", searchable = false)
     private String stitchStatus;
 
-    @CCD(
-            label = "Stitched Document",
-            searchable = false
-    )
+    @CCD(label = "Stitched Document", searchable = false)
     private Document stitchedDocument;
 
     @CCD(
@@ -109,16 +84,10 @@ public class Bundle {
     )
     private YesOrNo hasFolderCoversheets;
 
-    @CCD(
-            label = "Error from Stiching service",
-            searchable = false
-    )
+    @CCD(label = "Error from Stiching service", searchable = false)
     private String stitchingFailureMessage;
 
-    @CCD(
-            label = "Name of the PDF",
-            searchable = false
-    )
+    @CCD(label = "Name of the PDF", searchable = false)
     private String fileName;
 
     @CCD(

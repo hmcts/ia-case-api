@@ -16,14 +16,8 @@ import uk.gov.hmcts.reform.iacaseapi.ccd.model.enums.AppealGroundsHumanRightsRef
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ComplexType(
-        name = "appealGroundsHumanRightsRefusal",
-        generate = true
-)
+@ComplexType(name = "appealGroundsHumanRightsRefusal", generate = true)
 public class AppealGroundsHumanRightsRefusal {
-    @CCD(
-            label = " ",
-            searchable = false
-    )
+    @CCD(label = " ", searchable = false)
     private Set<AppealGroundsHumanRightsRefusalList> values;
 }

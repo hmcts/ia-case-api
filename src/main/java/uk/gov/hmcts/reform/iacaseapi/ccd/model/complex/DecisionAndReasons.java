@@ -17,39 +17,23 @@ import uk.gov.hmcts.ccd.sdk.type.FieldType;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ComplexType(
-        name = "decisionAndReasons",
-        generate = true
-)
+@ComplexType(name = "decisionAndReasons", generate = true)
 public class DecisionAndReasons {
-    @CCD(
-            label = "Date uploaded"
-    )
+    @CCD(label = "Date uploaded")
     private LocalDate updatedDecisionDate;
 
-    @CCD(
-            label = "Date uploaded"
-    )
+    @CCD(label = "Date uploaded")
     private LocalDate dateCoverLetterDocumentUploaded;
 
-    @CCD(
-            label = "Document"
-    )
+    @CCD(label = "Document")
     private Document coverLetterDocument;
 
-    @CCD(
-            label = "Date uploaded"
-    )
+    @CCD(label = "Date uploaded")
     private LocalDate dateDocumentAndReasonsDocumentUploaded;
 
-    @CCD(
-            label = "Document"
-    )
+    @CCD(label = "Document")
     private Document documentAndReasonsDocument;
 
-    @CCD(
-            label = "What has been corrected",
-            typeOverride = FieldType.TextArea
-    )
+    @CCD(label = "What has been corrected", typeOverride = FieldType.TextArea)
     private String summariseChanges;
 }

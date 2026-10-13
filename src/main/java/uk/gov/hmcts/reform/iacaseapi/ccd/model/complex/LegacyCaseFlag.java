@@ -16,21 +16,11 @@ import uk.gov.hmcts.reform.iacaseapi.ccd.model.enums.LegacyCaseFlags;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ComplexType(
-        name = "legacyCaseFlag",
-        generate = true
-)
+@ComplexType(name = "legacyCaseFlag", generate = true)
 public class LegacyCaseFlag {
-    @CCD(
-            label = "Flag type",
-            typeOverride = FieldType.FixedList,
-            typeParameterOverride = "legacyCaseFlags"
-    )
+    @CCD(label = "Flag type", typeOverride = FieldType.FixedList, typeParameterOverride = "legacyCaseFlags")
     private LegacyCaseFlags legacyCaseFlagType;
 
-    @CCD(
-            label = "Additional information",
-            typeOverride = FieldType.TextArea
-    )
+    @CCD(label = "Additional information", typeOverride = FieldType.TextArea)
     private String legacyCaseFlagAdditionalInformation;
 }

@@ -15,20 +15,11 @@ import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ComplexType(
-        name = "LatestQuery",
-        generate = true
-)
+@ComplexType(name = "LatestQuery", generate = true)
 public class LatestQuery {
-    @CCD(
-            label = "Query id",
-            searchable = false
-    )
+    @CCD(label = "Query id", searchable = false)
     private String queryId;
 
-    @CCD(
-            label = "Is hearing related",
-            searchable = false
-    )
+    @CCD(label = "Is hearing related", searchable = false)
     private YesOrNo isHearingRelated;
 }

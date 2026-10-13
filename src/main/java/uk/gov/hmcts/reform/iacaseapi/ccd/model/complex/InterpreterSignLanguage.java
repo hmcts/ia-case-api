@@ -17,26 +17,14 @@ import uk.gov.hmcts.reform.iacaseapi.ccd.model.enums.IsLanguageEnteredManually;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ComplexType(
-        name = "interpreterSignLanguage",
-        generate = true
-)
+@ComplexType(name = "interpreterSignLanguage", generate = true)
 public class InterpreterSignLanguage {
-    @CCD(
-            label = "Sign language",
-            showCondition = "languageManualEntry!=\"Yes\"",
-            typeOverride = FieldType.DynamicList
-    )
+    @CCD(label = "Sign language", showCondition = "languageManualEntry!=\"Yes\"", typeOverride = FieldType.DynamicList)
     private String languageRefData;
 
-    @CCD(
-            label = " "
-    )
+    @CCD(label = " ")
     private Set<IsLanguageEnteredManually> languageManualEntry;
 
-    @CCD(
-            label = " ",
-            showCondition = "languageManualEntry=\"Yes\""
-    )
+    @CCD(label = " ", showCondition = "languageManualEntry=\"Yes\"")
     private String languageManualEntryDescription;
 }

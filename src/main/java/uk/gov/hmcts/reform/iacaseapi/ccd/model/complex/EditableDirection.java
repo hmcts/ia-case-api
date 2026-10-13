@@ -17,29 +17,14 @@ import uk.gov.hmcts.reform.iacaseapi.ccd.model.enums.PartiesList;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ComplexType(
-        name = "editableDirection",
-        generate = true
-)
+@ComplexType(name = "editableDirection", generate = true)
 public class EditableDirection {
-    @CCD(
-            label = "Explanation",
-            searchable = false,
-            typeOverride = FieldType.TextArea
-    )
+    @CCD(label = "Explanation", searchable = false, typeOverride = FieldType.TextArea)
     private String explanation;
 
-    @CCD(
-            label = "Parties",
-            searchable = false,
-            typeOverride = FieldType.FixedList,
-            typeParameterOverride = "parties"
-    )
+    @CCD(label = "Parties", searchable = false, typeOverride = FieldType.FixedList, typeParameterOverride = "parties")
     private PartiesList parties;
 
-    @CCD(
-            label = "By what date must they comply?",
-            searchable = false
-    )
+    @CCD(label = "By what date must they comply?", searchable = false)
     private LocalDate dateDue;
 }

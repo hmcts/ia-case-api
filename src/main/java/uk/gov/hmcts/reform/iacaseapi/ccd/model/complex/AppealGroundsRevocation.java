@@ -16,14 +16,8 @@ import uk.gov.hmcts.reform.iacaseapi.ccd.model.enums.AppealGroundsRevocationList
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ComplexType(
-        name = "appealGroundsRevocation",
-        generate = true
-)
+@ComplexType(name = "appealGroundsRevocation", generate = true)
 public class AppealGroundsRevocation {
-    @CCD(
-            label = " ",
-            searchable = false
-    )
+    @CCD(label = " ", searchable = false)
     private Set<AppealGroundsRevocationList> values;
 }

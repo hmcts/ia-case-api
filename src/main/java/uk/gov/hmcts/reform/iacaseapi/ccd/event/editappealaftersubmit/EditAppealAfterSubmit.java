@@ -52,9 +52,6 @@ public class EditAppealAfterSubmit implements CCDConfig<CaseData, State, UserRol
         OutOfCountryAppealAdminJPage.apply(fields);
         DepartureDateAdminJPage.apply(fields);
         DepartureDatePage.apply(fields);
-        HomeOfficeReferenceNumberPage.apply(fields);
-        OocHomeOfficeReferenceNumberPage.apply(fields);
-        AppellantBasicDetailsPage.apply(fields);
         AppellantNationalitiesPage.apply(fields);
         AppellantAddressPage.apply(fields);
         OocAppellantAddressPage.apply(fields);

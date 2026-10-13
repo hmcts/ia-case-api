@@ -38,7 +38,7 @@ public final class LegalRepresentativeDetailsPaperJPage {
                     .optional(Legal::getRepRefNumberPaperJ)
                     .publish(false).done();
         fields.readonlyNoSummary(CaseData::getLetterSentOrReceived)
-                    .fieldShowCondition("homeOfficeReferenceNumberTitle=\"DUMMY_VALUE_TO_HIDE_FIELD\"")
+                    .fieldShowCondition("checklistTitle4=\"DUMMY_VALUE_TO_HIDE_FIELD\"")
                     .publish(false);
     }
 }

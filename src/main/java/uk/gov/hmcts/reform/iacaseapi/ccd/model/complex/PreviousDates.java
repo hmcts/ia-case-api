@@ -15,20 +15,11 @@ import uk.gov.hmcts.ccd.sdk.api.ComplexType;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ComplexType(
-        name = "previousDates",
-        generate = true
-)
+@ComplexType(name = "previousDates", generate = true)
 public class PreviousDates {
-    @CCD(
-            label = "Date due",
-            searchable = false
-    )
+    @CCD(label = "Date due", searchable = false)
     private LocalDate dateDue;
 
-    @CCD(
-            label = "Date sent",
-            searchable = false
-    )
+    @CCD(label = "Date sent", searchable = false)
     private LocalDate dateSent;
 }

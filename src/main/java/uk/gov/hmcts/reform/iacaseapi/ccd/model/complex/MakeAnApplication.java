@@ -19,72 +19,41 @@ import uk.gov.hmcts.ccd.sdk.type.ListValue;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ComplexType(
-        name = "makeAnApplication",
-        generate = true
-)
+@ComplexType(name = "makeAnApplication", generate = true)
 public class MakeAnApplication {
-    @CCD(
-            label = "Applicant"
-    )
+    @CCD(label = "Applicant")
     private String applicant;
 
-    @CCD(
-            label = "Type of application"
-    )
+    @CCD(label = "Type of application")
     private String type;
 
-    @CCD(
-            label = "Application details",
-            typeOverride = FieldType.TextArea
-    )
+    @CCD(label = "Application details", typeOverride = FieldType.TextArea)
     private String details;
 
-    @CCD(
-            label = "Documents supporting application"
-    )
+    @CCD(label = "Documents supporting application")
     private List<ListValue<Document>> evidence;
 
-    @CCD(
-            label = "Date application was made"
-    )
+    @CCD(label = "Date application was made")
     private LocalDate date;
 
-    @CCD(
-            label = "Decision"
-    )
+    @CCD(label = "Decision")
     private String decision;
 
-    @CCD(
-            label = " ",
-            showCondition = "state=\"DUMMY_VALUE_TO_HIDE_FIELD\""
-    )
+    @CCD(label = " ", showCondition = "state=\"DUMMY_VALUE_TO_HIDE_FIELD\"")
     private String state;
 
-    @CCD(
-            label = " ",
-            showCondition = "applicantRole=\"DUMMY_VALUE_TO_HIDE_FIELD\""
-    )
+    @CCD(label = " ", showCondition = "applicantRole=\"DUMMY_VALUE_TO_HIDE_FIELD\"")
     private String applicantRole;
 
-    @CCD(
-            label = "Reasons for decision"
-    )
+    @CCD(label = "Reasons for decision")
     private String decisionReason;
 
-    @CCD(
-            label = "Date of decision"
-    )
+    @CCD(label = "Date of decision")
     private LocalDate decisionDate;
 
-    @CCD(
-            label = "Decision maker"
-    )
+    @CCD(label = "Decision maker")
     private String decisionMaker;
 
-    @CCD(
-            label = "Decision notice document",
-            searchable = false
-    )
+    @CCD(label = "Decision notice document", searchable = false)
     private Document refusalOfRemoval24wDocument;
 }

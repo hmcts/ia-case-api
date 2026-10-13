@@ -16,32 +16,17 @@ import uk.gov.hmcts.ccd.sdk.type.ListValue;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ComplexType(
-        name = "BundleFolder",
-        generate = true
-)
+@ComplexType(name = "BundleFolder", generate = true)
 public class BundleFolder {
-    @CCD(
-            label = "Folder Name",
-            searchable = false
-    )
+    @CCD(label = "Folder Name", searchable = false)
     private String name;
 
-    @CCD(
-            label = "Folder Documents",
-            searchable = false
-    )
+    @CCD(label = "Folder Documents", searchable = false)
     private List<ListValue<BundleDocument>> documents;
 
-    @CCD(
-            label = "Subfolders",
-            searchable = false
-    )
+    @CCD(label = "Subfolders", searchable = false)
     private List<ListValue<BundleSubfolder>> folders;
 
-    @CCD(
-            label = "Sort Index",
-            searchable = false
-    )
+    @CCD(label = "Sort Index", searchable = false)
     private Integer sortIndex;
 }
