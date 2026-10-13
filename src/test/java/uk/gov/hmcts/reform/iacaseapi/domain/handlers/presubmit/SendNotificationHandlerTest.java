@@ -497,6 +497,7 @@ class SendNotificationHandlerTest {
         Event.SUBMIT_CMA_REQUIREMENTS,
         Event.SUBMIT_CASE,
         Event.EDIT_APPEAL_AFTER_SUBMIT,
+        Event.EDIT_APPELLANT_PERSONAL_DATA,
         Event.LINK_APPEAL,
         Event.UNLINK_APPEAL,
         Event.EDIT_DOCUMENTS,
