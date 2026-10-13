@@ -13,15 +13,16 @@ import uk.gov.hmcts.ccd.sdk.type.FieldType;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.AdmofficerCaseofficerSystemCrudAccess;
-import uk.gov.hmcts.reform.iacaseapi.ccd.access.AdmofficerCrudAccess;
+import uk.gov.hmcts.reform.iacaseapi.ccd.access.AdmofficerSystemCrudAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.CaseofficerCrudAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.CitizenCrudAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.CitizenIacjudgeCrudAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.CitizenLegalrepSolicitorCrudAccess;
+import uk.gov.hmcts.reform.iacaseapi.ccd.access.CitizenSystemCrudAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.IacjudgeCrudAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.IacjudgeLegalrepSolicitorCrudAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.IacjudgeSpecificAccessCtscProfileRAccess;
-import uk.gov.hmcts.reform.iacaseapi.ccd.access.LegalrepSolicitorSystemCrudAccess;
+import uk.gov.hmcts.reform.iacaseapi.ccd.access.LegalrepSolicitorCrudAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.SpecificAccessAdminJudgeLegalOpsProfileRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.SpecificAccessCtscProfileRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.model.complex.Subscription;
@@ -58,7 +59,7 @@ public class Sponsor {
             label = " ",
             searchable = false,
             typeOverride = FieldType.Label,
-            access = {LegalrepSolicitorSystemCrudAccess.class, AdmofficerCrudAccess.class}
+            access = {AdmofficerSystemCrudAccess.class, LegalrepSolicitorCrudAccess.class}
     )
     private String title;
 
@@ -66,7 +67,7 @@ public class Sponsor {
             label = " ",
             searchable = false,
             typeOverride = FieldType.Label,
-            access = {LegalrepSolicitorSystemCrudAccess.class, AdmofficerCrudAccess.class}
+            access = {AdmofficerSystemCrudAccess.class, LegalrepSolicitorCrudAccess.class}
     )
     private String nameTitle;
 
@@ -86,7 +87,7 @@ public class Sponsor {
             label = " ",
             searchable = false,
             typeOverride = FieldType.Label,
-            access = {LegalrepSolicitorSystemCrudAccess.class, AdmofficerCrudAccess.class}
+            access = {AdmofficerSystemCrudAccess.class, LegalrepSolicitorCrudAccess.class}
     )
     private String addressTitle;
 
@@ -108,7 +109,7 @@ public class Sponsor {
                             + "Please provide an email address or phone number for your client's sponsor, or a person responsible for the sponsor.",
             searchable = false,
             typeOverride = FieldType.Label,
-            access = {LegalrepSolicitorSystemCrudAccess.class, AdmofficerCrudAccess.class}
+            access = {AdmofficerSystemCrudAccess.class, LegalrepSolicitorCrudAccess.class}
     )
     private String contactTitle;
 
@@ -143,13 +144,13 @@ public class Sponsor {
             label = "**The sponsor will not be sent any notices or decisions relating to the appeal other than a Notice of Hearing, if applicable.**",
             searchable = false,
             typeOverride = FieldType.Label,
-            access = {LegalrepSolicitorSystemCrudAccess.class, AdmofficerCrudAccess.class}
+            access = {AdmofficerSystemCrudAccess.class, LegalrepSolicitorCrudAccess.class}
     )
     private String authorisationLabel;
 
     @CCD(
             label = "Sponsor name",
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, LegalrepSolicitorSystemCrudAccess.class, CitizenIacjudgeCrudAccess.class, CaseofficerCrudAccess.class}
+            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, IacjudgeLegalrepSolicitorCrudAccess.class, CitizenSystemCrudAccess.class, CaseofficerCrudAccess.class}
     )
     private String nameForDisplay;
 
@@ -157,7 +158,7 @@ public class Sponsor {
             label = "Sponsor address",
             searchable = false,
             typeOverride = FieldType.TextArea,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, LegalrepSolicitorSystemCrudAccess.class, CitizenIacjudgeCrudAccess.class, CaseofficerCrudAccess.class}
+            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, IacjudgeLegalrepSolicitorCrudAccess.class, CitizenSystemCrudAccess.class, CaseofficerCrudAccess.class}
     )
     private String addressForDisplay;
 

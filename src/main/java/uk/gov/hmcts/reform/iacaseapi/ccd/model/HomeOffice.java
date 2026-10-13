@@ -16,7 +16,6 @@ import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.AdmofficerCaseofficerRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.AdmofficerCaseofficerSystemCrudAccess;
-import uk.gov.hmcts.reform.iacaseapi.ccd.access.AdmofficerCitizenCrudAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.AdmofficerRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.AdmofficerSpecificAccessCtscProfileRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.AdmofficerSystemCrudAccess;
@@ -28,15 +27,16 @@ import uk.gov.hmcts.reform.iacaseapi.ccd.access.CaseofficerSpecificAccessCtscPro
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.CaseofficerSystemCrudAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.CitizenIacjudgeLegalrepSolicitorWaTaskConfigurationCrudAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.CitizenIacjudgeRAccess;
-import uk.gov.hmcts.reform.iacaseapi.ccd.access.HomeofficeapcCrudAccess;
+import uk.gov.hmcts.reform.iacaseapi.ccd.access.CitizenLegalrepSolicitorCrudAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess;
-import uk.gov.hmcts.reform.iacaseapi.ccd.access.HomeofficelartCrudAccess;
+import uk.gov.hmcts.reform.iacaseapi.ccd.access.HomeofficeapcRespondentofficerCrudAccess;
+import uk.gov.hmcts.reform.iacaseapi.ccd.access.HomeofficelartRespondentofficerSystemCrudAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.HomeofficepouRespondentofficerRAccess;
+import uk.gov.hmcts.reform.iacaseapi.ccd.access.IacjudgeSpecificAccessAdminCtscJudgeLegalOpsProfileRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.IacjudgeSpecificAccessCtscProfileRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.LegalrepSolicitorRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.LegalrepSolicitorSystemCrudAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.LegalrepSolicitorWaTaskConfigurationCrudAccess;
-import uk.gov.hmcts.reform.iacaseapi.ccd.access.RespondentofficerSystemCrudAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.SpecificAccessAdminJudgeLegalOpsProfileRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.SpecificAccessCtscProfileRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.SystemCrudAccess;
@@ -126,14 +126,14 @@ public class HomeOffice {
     @CCD(
             label = "Upload Home Office bundle",
             searchable = false,
-            access = {RespondentofficerSystemCrudAccess.class, HomeofficeapcCrudAccess.class}
+            access = {HomeofficeapcRespondentofficerCrudAccess.class, SystemCrudAccess.class}
     )
     private List<ListValue<DocumentWithUpload>> bundle;
 
     @CCD(
             label = "Upload the appeal response",
             searchable = false,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, AdmofficerCaseofficerRAccess.class, CitizenIacjudgeRAccess.class, RespondentofficerSystemCrudAccess.class, HomeofficelartCrudAccess.class}
+            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, AdmofficerCaseofficerRAccess.class, CitizenIacjudgeRAccess.class, HomeofficelartRespondentofficerSystemCrudAccess.class}
     )
     private Document appealResponseDocument;
 
@@ -142,14 +142,14 @@ public class HomeOffice {
             hint = "For example, Home Office response to appeal",
             searchable = false,
             typeOverride = FieldType.TextArea,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, AdmofficerCaseofficerRAccess.class, CitizenIacjudgeRAccess.class, RespondentofficerSystemCrudAccess.class, HomeofficelartCrudAccess.class}
+            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, AdmofficerCaseofficerRAccess.class, CitizenIacjudgeRAccess.class, HomeofficelartRespondentofficerSystemCrudAccess.class}
     )
     private String appealResponseDescription;
 
     @CCD(
             label = "Add any additional evidence here",
             searchable = false,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, AdmofficerCaseofficerRAccess.class, CitizenIacjudgeRAccess.class, RespondentofficerSystemCrudAccess.class, HomeofficelartCrudAccess.class}
+            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, AdmofficerCaseofficerRAccess.class, CitizenIacjudgeRAccess.class, HomeofficelartRespondentofficerSystemCrudAccess.class}
     )
     private List<ListValue<DocumentWithDescription>> appealResponseEvidence;
 
@@ -460,7 +460,7 @@ public class HomeOffice {
     @CCD(
             label = "Home Office fee waiver letter",
             searchable = false,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, LegalrepSolicitorSystemCrudAccess.class, AdmofficerCitizenCrudAccess.class}
+            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, AdmofficerSystemCrudAccess.class, CitizenLegalrepSolicitorCrudAccess.class}
     )
     private Document waiverDocument;
 
@@ -551,7 +551,7 @@ public class HomeOffice {
             label = "You can find the Home Office reference and the date the letter was sent on the appellant's Home Office decision letter.",
             searchable = false,
             typeOverride = FieldType.Label,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, IacjudgeSpecificAccessCtscProfileRAccess.class, AdmofficerSystemCrudAccess.class, CaseofficerLegalrepSolicitorRAccess.class, WaTaskConfigurationCrudAccess.class}
+            access = {IacjudgeSpecificAccessAdminCtscJudgeLegalOpsProfileRAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, AdmofficerSystemCrudAccess.class, CaseofficerLegalrepSolicitorRAccess.class, WaTaskConfigurationCrudAccess.class}
     )
     private String referenceTips;
 }

@@ -15,15 +15,14 @@ import uk.gov.hmcts.ccd.sdk.type.FieldType;
 import uk.gov.hmcts.ccd.sdk.type.Flags;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.ccd.access.AdmofficerCaseofficerCrudAccess;
+import uk.gov.hmcts.reform.iacaseapi.ccd.access.AdmofficerCaseofficerLegalrepSolicitorSystemCrudAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.AdmofficerCaseofficerSystemCrudAccess;
-import uk.gov.hmcts.reform.iacaseapi.ccd.access.AdmofficerCaseofficerWaTaskConfigurationCrudAccess;
-import uk.gov.hmcts.reform.iacaseapi.ccd.access.AdmofficerCrudAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.AdmofficerLegalrepSolicitorRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.AdmofficerRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.AdmofficerSpecificAccessCtscProfileRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.CaaCrudAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.CaseflagsProfileReadonlyProfileCruAccess;
-import uk.gov.hmcts.reform.iacaseapi.ccd.access.CaseofficerCrudAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.CaseofficerIacjudgeRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.CaseofficerIacjudgeSpecificAccessCtscProfileWaTaskConfigurationRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.CaseofficerSpecificAccessCtscProfileRAccess;
@@ -46,6 +45,7 @@ import uk.gov.hmcts.reform.iacaseapi.ccd.access.LegalrepSolicitorCrudAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.LegalrepSolicitorSystemCrudAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.LegalrepSolicitorWaTaskConfigurationCrudAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.SpecificAccessAdminCtscJudgeLegalOpsProfileCrudAccess;
+import uk.gov.hmcts.reform.iacaseapi.ccd.access.SpecificAccessAdminCtscJudgeLegalOpsProfileRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.SpecificAccessAdminJudgeLegalOpsProfileRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.SpecificAccessAdminLegalOpsProfileRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.SpecificAccessCtscProfileRAccess;
@@ -110,7 +110,7 @@ public class Appellant {
 
     @CCD(
             label = "Family name",
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, AdmofficerCaseofficerSystemCrudAccess.class, CitizenIacjudgeLegalrepSolicitorWaTaskConfigurationCrudAccess.class, CaaCrudAccess.class, SystemAccessRAccess.class, SpecificAccessCtscProfileRAccess.class}
+            access = {SpecificAccessAdminCtscJudgeLegalOpsProfileRAccess.class, AdmofficerCaseofficerSystemCrudAccess.class, CitizenIacjudgeLegalrepSolicitorWaTaskConfigurationCrudAccess.class, CaaCrudAccess.class, SystemAccessRAccess.class}
     )
     private String familyName;
 
@@ -147,7 +147,7 @@ public class Appellant {
             label = "  ",
             searchable = false,
             typeOverride = FieldType.Label,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, AdmofficerCaseofficerSystemCrudAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, IacjudgeLegalrepSolicitorCrudAccess.class, WaTaskConfigurationCrudAccess.class, SpecificAccessCtscProfileRAccess.class}
+            access = {SpecificAccessAdminCtscJudgeLegalOpsProfileRAccess.class, AdmofficerCaseofficerSystemCrudAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, IacjudgeLegalrepSolicitorCrudAccess.class, WaTaskConfigurationCrudAccess.class}
     )
     private String addressTitle;
 
@@ -155,7 +155,7 @@ public class Appellant {
             label = "  ",
             searchable = false,
             typeOverride = FieldType.Label,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, IacjudgeLegalrepSolicitorCrudAccess.class, AdmofficerCaseofficerWaTaskConfigurationCrudAccess.class, SpecificAccessCtscProfileRAccess.class}
+            access = {SpecificAccessAdminCtscJudgeLegalOpsProfileRAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, IacjudgeLegalrepSolicitorCrudAccess.class, AdmofficerCaseofficerCrudAccess.class, WaTaskConfigurationCrudAccess.class}
     )
     private String addressTitleDetained;
 
@@ -170,7 +170,7 @@ public class Appellant {
             label = "**We will use the address of your legal practice.**",
             searchable = false,
             typeOverride = FieldType.Label,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, AdmofficerCaseofficerSystemCrudAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, IacjudgeLegalrepSolicitorCrudAccess.class, WaTaskConfigurationCrudAccess.class, SpecificAccessCtscProfileRAccess.class}
+            access = {SpecificAccessAdminCtscJudgeLegalOpsProfileRAccess.class, AdmofficerCaseofficerSystemCrudAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, IacjudgeLegalrepSolicitorCrudAccess.class, WaTaskConfigurationCrudAccess.class}
     )
     private String hasFixedAddressLabel;
 
@@ -345,7 +345,7 @@ public class Appellant {
     @CCD(
             label = " ",
             searchable = false,
-            access = {AdmofficerCaseofficerSystemCrudAccess.class, SpecificAccessAdminLegalOpsProfileRAccess.class, InternalCrudAccess.class, LegalrepSolicitorCrudAccess.class, CitizenRuAccess.class, SpecificAccessCtscProfileRAccess.class}
+            access = {AdmofficerCaseofficerLegalrepSolicitorSystemCrudAccess.class, SpecificAccessAdminLegalOpsProfileRAccess.class, InternalCrudAccess.class, CitizenRuAccess.class, SpecificAccessCtscProfileRAccess.class}
     )
     private PinInPost pinInPost;
 
@@ -410,7 +410,7 @@ public class Appellant {
             label = "Enter the appellant's contact details.",
             searchable = false,
             typeOverride = FieldType.Label,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, IacjudgeLegalrepSolicitorCrudAccess.class, AdmofficerCrudAccess.class, CaseofficerCrudAccess.class}
+            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, IacjudgeLegalrepSolicitorCrudAccess.class, AdmofficerCaseofficerCrudAccess.class}
     )
     private String contactDetailsTitle;
 
@@ -426,7 +426,7 @@ public class Appellant {
 
     @CCD(
             label = "Is the appellant currently in detention?",
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, AdmofficerCaseofficerSystemCrudAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerCrudAccess.class, IacjudgeLegalrepSolicitorCrudAccess.class, WaTaskConfigurationCrudAccess.class, SpecificAccessCtscProfileRAccess.class}
+            access = {SpecificAccessAdminCtscJudgeLegalOpsProfileRAccess.class, AdmofficerCaseofficerSystemCrudAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerCrudAccess.class, IacjudgeLegalrepSolicitorCrudAccess.class, WaTaskConfigurationCrudAccess.class}
     )
     private YesOrNo inDetention;
 
@@ -441,7 +441,7 @@ public class Appellant {
             label = " ",
             searchable = false,
             typeOverride = FieldType.Label,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, IacjudgeLegalrepSolicitorCrudAccess.class, AdmofficerCaseofficerWaTaskConfigurationCrudAccess.class, SpecificAccessCtscProfileRAccess.class}
+            access = {SpecificAccessAdminCtscJudgeLegalOpsProfileRAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, IacjudgeLegalrepSolicitorCrudAccess.class, AdmofficerCaseofficerCrudAccess.class, WaTaskConfigurationCrudAccess.class}
     )
     private String inPersonManualTitle;
 
@@ -449,7 +449,7 @@ public class Appellant {
             label = "Once you've submitted the request</br><ul><li>This appeal will have to be continued by internal users</li><li>To update the detention location, select the \"Update detention location\" event</li></ul>",
             searchable = false,
             typeOverride = FieldType.Label,
-            access = {AdmofficerCrudAccess.class, CaseofficerCrudAccess.class}
+            access = {AdmofficerCaseofficerCrudAccess.class}
     )
     private String inPersonManualInstructions;
 }

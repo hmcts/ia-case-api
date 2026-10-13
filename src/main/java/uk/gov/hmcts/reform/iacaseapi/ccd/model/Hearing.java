@@ -26,7 +26,7 @@ import uk.gov.hmcts.reform.iacaseapi.ccd.access.CaseofficerIacjudgeRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.CaseofficerIacjudgeSpecificAccessCtscProfileWaTaskConfigurationRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.CaseofficerRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.CaseofficerSpecificAccessCtscProfileWaTaskConfigurationRAccess;
-import uk.gov.hmcts.reform.iacaseapi.ccd.access.CitizenCrudAccess;
+import uk.gov.hmcts.reform.iacaseapi.ccd.access.CitizenLegalrepSolicitorCrudAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.CitizenSystemCrudAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.HomeofficebailHomeofficepouLegalrepSolicitorRAccess;
@@ -35,7 +35,6 @@ import uk.gov.hmcts.reform.iacaseapi.ccd.access.IacjudgeRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.IacjudgeSystemCrudAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.IacjudgeWaTaskConfigurationCrudAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.LegalrepSolicitorSystemCrudAccess;
-import uk.gov.hmcts.reform.iacaseapi.ccd.access.LegalrepSolicitorWaTaskConfigurationCrudAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.SpecificAccessAdminJudgeLegalOpsProfileRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.SpecificAccessCtscProfileCrudAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.SpecificAccessCtscProfileRAccess;
@@ -146,7 +145,7 @@ public class Hearing {
             label = "Type of Hearing",
             typeOverride = FieldType.FixedList,
             typeParameterOverride = "hearingTypes",
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, AdmofficerCaseofficerSystemCrudAccess.class, LegalrepSolicitorWaTaskConfigurationCrudAccess.class, CitizenCrudAccess.class}
+            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, AdmofficerCaseofficerSystemCrudAccess.class, CitizenLegalrepSolicitorCrudAccess.class, WaTaskConfigurationCrudAccess.class}
     )
     private HearingTypes type;
 

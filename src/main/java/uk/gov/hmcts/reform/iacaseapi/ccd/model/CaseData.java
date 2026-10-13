@@ -22,12 +22,12 @@ import uk.gov.hmcts.ccd.sdk.type.TTL;
 import uk.gov.hmcts.ccd.sdk.type.WaysToPay;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.AdmofficerCaseofficerCruAccess;
+import uk.gov.hmcts.reform.iacaseapi.ccd.access.AdmofficerCaseofficerCrudAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.AdmofficerCaseofficerLegalrepSolicitorCruAccess;
+import uk.gov.hmcts.reform.iacaseapi.ccd.access.AdmofficerCaseofficerLegalrepSolicitorSystemCrudAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.AdmofficerCaseofficerRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.AdmofficerCaseofficerSystemCrudAccess;
-import uk.gov.hmcts.reform.iacaseapi.ccd.access.AdmofficerCaseofficerWaTaskConfigurationCrudAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.AdmofficerCitizenCruAccess;
-import uk.gov.hmcts.reform.iacaseapi.ccd.access.AdmofficerCitizenCrudAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.AdmofficerCruAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.AdmofficerCrudAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.AdmofficerIacjudgeCruAccess;
@@ -39,8 +39,8 @@ import uk.gov.hmcts.reform.iacaseapi.ccd.access.AdmofficerRuAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.AdmofficerSpecificAccessCtscProfileRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.AdmofficerSystemCrudAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.ApproverCaaCrudAccess;
+import uk.gov.hmcts.reform.iacaseapi.ccd.access.CaseflagsProfileCrudAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.CaseflagsProfileReadonlyProfileCruAccess;
-import uk.gov.hmcts.reform.iacaseapi.ccd.access.CaseflagsProfileSystemCrudAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.CaseflagsReadonlyProfileCruAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.CaselinksProfileRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.CaselinksProfileSystemCrudAccess;
@@ -52,9 +52,11 @@ import uk.gov.hmcts.reform.iacaseapi.ccd.access.CaseofficerCruAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.CaseofficerCrudAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.CaseofficerIacjudgeRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.CaseofficerIacjudgeSpecificAccessCtscProfileWaTaskConfigurationRAccess;
+import uk.gov.hmcts.reform.iacaseapi.ccd.access.CaseofficerLegalrepSolicitorCruWaTaskConfigurationRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.CaseofficerLegalrepSolicitorRAccess;
+import uk.gov.hmcts.reform.iacaseapi.ccd.access.CaseofficerLegalrepSolicitorSystemCrudAdmofficerRAccess;
+import uk.gov.hmcts.reform.iacaseapi.ccd.access.CaseofficerLegalrepSolicitorWaTaskConfigurationRuAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.CaseofficerRAccess;
-import uk.gov.hmcts.reform.iacaseapi.ccd.access.CaseofficerRuAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.CaseofficerSpecificAccessCtscProfileRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.CaseofficerSpecificAccessCtscProfileWaTaskConfigurationRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.CaseofficerSystemCrudAccess;
@@ -78,60 +80,60 @@ import uk.gov.hmcts.reform.iacaseapi.ccd.access.CitizenWaTaskConfigurationCrudAc
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.CitizenWaTaskConfigurationRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.GsProfileCrudAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.GsProfileRAccess;
-import uk.gov.hmcts.reform.iacaseapi.ccd.access.HomeofficeapcCrudAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.HomeofficeapcHomeofficelartHomeofficepouRespondentofficerCruAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.HomeofficeapcHomeofficelartHomeofficepouRespondentofficerCrudAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess;
-import uk.gov.hmcts.reform.iacaseapi.ccd.access.HomeofficeapcRAccess;
+import uk.gov.hmcts.reform.iacaseapi.ccd.access.HomeofficeapcHomeofficepouRAccess;
+import uk.gov.hmcts.reform.iacaseapi.ccd.access.HomeofficeapcRespondentofficerCrudAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.HomeofficebailHomeofficepouLegalrepSolicitorRAccess;
-import uk.gov.hmcts.reform.iacaseapi.ccd.access.HomeofficelartCrudAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.HomeofficelartRespondentofficerCrudAccess;
-import uk.gov.hmcts.reform.iacaseapi.ccd.access.HomeofficepouRAccess;
+import uk.gov.hmcts.reform.iacaseapi.ccd.access.HomeofficelartRespondentofficerSystemCrudAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.IacjudgeCruAccess;
+import uk.gov.hmcts.reform.iacaseapi.ccd.access.IacjudgeCruLegalrepSolicitorSpecificAccessCtscProfileRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.IacjudgeCrudAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.IacjudgeLegalrepSolicitorCrudAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.IacjudgeRAccess;
+import uk.gov.hmcts.reform.iacaseapi.ccd.access.IacjudgeSpecificAccessAdminCtscJudgeLegalOpsProfileRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.IacjudgeSpecificAccessCtscProfileRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.IacjudgeSystemCrudAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.IacjudgeWaTaskConfigurationCrudAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.InternalCrudAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.InternalSystemCrudAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.LegalrepSolicitorCruAccess;
+import uk.gov.hmcts.reform.iacaseapi.ccd.access.LegalrepSolicitorCruSpecificAccessAdminJudgeLegalOpsProfileRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.LegalrepSolicitorCrudAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.LegalrepSolicitorRAccess;
-import uk.gov.hmcts.reform.iacaseapi.ccd.access.LegalrepSolicitorRuAccess;
+import uk.gov.hmcts.reform.iacaseapi.ccd.access.LegalrepSolicitorSpecificAccessAdminJudgeLegalOpsProfileRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.LegalrepSolicitorSpecificAccessCtscProfileRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.LegalrepSolicitorSystemCrudAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.LegalrepSolicitorWaTaskConfigurationCrudAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.NextHearingDateAdminCrudAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.RasValidationRAccess;
-import uk.gov.hmcts.reform.iacaseapi.ccd.access.RespondentofficerCrudAccess;
-import uk.gov.hmcts.reform.iacaseapi.ccd.access.RespondentofficerSystemCrudAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.RparobotCrudAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.RparobotRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.SpecificAccessAdminCtscJudgeLegalOpsProfileCrudAccess;
+import uk.gov.hmcts.reform.iacaseapi.ccd.access.SpecificAccessAdminCtscJudgeLegalOpsProfileRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.SpecificAccessAdminJudgeLegalOpsProfileRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.SpecificAccessAdminLegalOpsProfileRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.SpecificAccessAdminProfileCruAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.SpecificAccessAdminProfileCrudAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.SpecificAccessAdminProfileRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.SpecificAccessAdminProfileWaTaskConfigurationCrudAccess;
-import uk.gov.hmcts.reform.iacaseapi.ccd.access.SpecificAccessCtscProfileCruAccess;
+import uk.gov.hmcts.reform.iacaseapi.ccd.access.SpecificAccessCtscJudgeLegalOpsProfileCruAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.SpecificAccessCtscProfileCrudAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.SpecificAccessCtscProfileRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.SpecificAccessJudgeLegalOpsProfileRAccess;
-import uk.gov.hmcts.reform.iacaseapi.ccd.access.SpecificAccessJudgeProfileCruAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.SpecificAccessJudgeProfileCrudAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.SpecificAccessJudgeProfileRAccess;
-import uk.gov.hmcts.reform.iacaseapi.ccd.access.SpecificAccessLegalOpsProfileCruAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.SpecificAccessLegalOpsProfileCrudAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.SpecificAccessLegalOpsProfileRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.SystemAccessRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.SystemCrudAccess;
+import uk.gov.hmcts.reform.iacaseapi.ccd.access.SystemCrudAdmofficerLegalrepSolicitorRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.WaTaskConfigurationCruAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.WaTaskConfigurationCrudAccess;
+import uk.gov.hmcts.reform.iacaseapi.ccd.access.WaTaskConfigurationCrudCaseofficerRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.WaTaskConfigurationRAccess;
-import uk.gov.hmcts.reform.iacaseapi.ccd.access.WaTaskConfigurationRuAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.model.complex.AdditionalAddendumDocument;
 import uk.gov.hmcts.reform.iacaseapi.ccd.model.complex.AdditionalEvidenceDocument;
 import uk.gov.hmcts.reform.iacaseapi.ccd.model.complex.AdditionalEvidenceHomeOfficeDocument;
@@ -244,21 +246,28 @@ import uk.gov.hmcts.reform.iacaseapi.ccd.model.enums.UploadSensitiveDocsIsAppell
 @NoArgsConstructor
 public class CaseData {
     @JsonUnwrapped(prefix = "appeal")
+    @CCD(access = {SystemCrudAccess.class})
     private Appeal appeal = new Appeal();
 
     @JsonUnwrapped(prefix = "appellant")
     private Appellant appellant = new Appellant();
 
     @JsonUnwrapped(prefix = "application")
+    @CCD(
+            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, SystemCrudAccess.class, SpecificAccessCtscProfileRAccess.class}
+    )
     private ApplicationFields application = new ApplicationFields();
 
     @JsonUnwrapped(prefix = "decision")
+    @CCD(access = {SystemCrudAccess.class})
     private Decision decision = new Decision();
 
     @JsonUnwrapped(prefix = "fee")
+    @CCD(access = {SystemCrudAccess.class})
     private Fee fee = new Fee();
 
     @JsonUnwrapped(prefix = "ftpa")
+    @CCD(access = {SystemCrudAccess.class})
     private Ftpa ftpa = new Ftpa();
 
     @JsonUnwrapped(prefix = "hearing")
@@ -271,6 +280,7 @@ public class CaseData {
     private Journey journey = new Journey();
 
     @JsonUnwrapped(prefix = "legal")
+    @CCD(access = {SystemCrudAccess.class})
     private Legal legal = new Legal();
 
     @JsonUnwrapped(prefix = "migration")
@@ -280,6 +290,7 @@ public class CaseData {
     private Nlr nlr = new Nlr();
 
     @JsonUnwrapped(prefix = "payment")
+    @CCD(access = {SystemCrudAccess.class})
     private Payment payment = new Payment();
 
     @JsonUnwrapped
@@ -328,22 +339,25 @@ public class CaseData {
     private ProgressRespondentReview progressRespondentReview = new ProgressRespondentReview();
 
     @JsonUnwrapped(prefix = "remission")
+    @CCD(access = {SystemCrudAccess.class})
     private Remission remission = new Remission();
 
     @JsonUnwrapped(prefix = "sponsor")
     private Sponsor sponsor = new Sponsor();
 
     @JsonUnwrapped(prefix = "suitability")
+    @CCD(access = {SystemCrudAccess.class})
     private Suitability suitability = new Suitability();
 
     @JsonUnwrapped(prefix = "witness")
+    @CCD(access = {SystemCrudAccess.class})
     private Witness witness = new Witness();
 
     @CCD(
             label = " ",
             searchable = false,
             typeOverride = FieldType.Label,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, CaseofficerSystemWaTaskConfigurationCrudAccess.class, IacjudgeSpecificAccessCtscProfileRAccess.class, AdmofficerRAccess.class, LegalrepSolicitorCrudAccess.class}
+            access = {IacjudgeSpecificAccessAdminCtscJudgeLegalOpsProfileRAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, CaseofficerSystemWaTaskConfigurationCrudAccess.class, AdmofficerRAccess.class, LegalrepSolicitorCrudAccess.class}
     )
     private String checklistTitle;
 
@@ -351,7 +365,7 @@ public class CaseData {
             label = "If you cannot use the new online service due to your client's circumstances, you can <a href=\"https://immigrationappealsonline.justice.gov.uk/IACFees\" target=\"_blank\">appeal using the current online service</a> or appeal by post or fax using <a href=\"https://www.gov.uk/government/publications/appeal-a-visa-or-immigration-decision-within-the-uk-form-iaft-5\" target=\"_blank\">form IAFT-5</a>.",
             searchable = false,
             typeOverride = FieldType.Label,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, CaseofficerSystemWaTaskConfigurationCrudAccess.class, IacjudgeSpecificAccessCtscProfileRAccess.class, AdmofficerRAccess.class, LegalrepSolicitorCrudAccess.class}
+            access = {IacjudgeSpecificAccessAdminCtscJudgeLegalOpsProfileRAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, CaseofficerSystemWaTaskConfigurationCrudAccess.class, AdmofficerRAccess.class, LegalrepSolicitorCrudAccess.class}
     )
     private String checklistTitle2;
 
@@ -359,7 +373,7 @@ public class CaseData {
             label = " ",
             searchable = false,
             typeOverride = FieldType.Label,
-            access = {HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, IacjudgeSpecificAccessCtscProfileRAccess.class, LegalrepSolicitorSystemCrudAccess.class, SpecificAccessJudgeLegalOpsProfileRAccess.class, AdmofficerRAccess.class, CaseofficerCrudAccess.class, SpecificAccessAdminProfileCrudAccess.class}
+            access = {HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, IacjudgeSpecificAccessCtscProfileRAccess.class, CaseofficerLegalrepSolicitorSystemCrudAdmofficerRAccess.class, SpecificAccessJudgeLegalOpsProfileRAccess.class, SpecificAccessAdminProfileCrudAccess.class}
     )
     private String checklistTitle3;
 
@@ -373,14 +387,14 @@ public class CaseData {
     @CCD(
             label = " ",
             searchable = false,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, CaseofficerSystemWaTaskConfigurationCrudAccess.class, IacjudgeSpecificAccessCtscProfileRAccess.class, AdmofficerRAccess.class, LegalrepSolicitorCrudAccess.class}
+            access = {IacjudgeSpecificAccessAdminCtscJudgeLegalOpsProfileRAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, CaseofficerSystemWaTaskConfigurationCrudAccess.class, AdmofficerRAccess.class, LegalrepSolicitorCrudAccess.class}
     )
     private Checklist checklist;
 
     @CCD(
             label = " ",
             searchable = false,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, IacjudgeSpecificAccessCtscProfileRAccess.class, LegalrepSolicitorSystemCrudAccess.class, AdmofficerRAccess.class, CaseofficerCrudAccess.class}
+            access = {IacjudgeSpecificAccessAdminCtscJudgeLegalOpsProfileRAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, LegalrepSolicitorSystemCrudAccess.class, AdmofficerRAccess.class, CaseofficerCrudAccess.class}
     )
     private ChecklistOutOfCountry checklistOutOfCountry;
 
@@ -389,7 +403,7 @@ public class CaseData {
                             + "Address of where the appellant is detained.",
             searchable = false,
             typeOverride = FieldType.Label,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, IacjudgeLegalrepSolicitorCrudAccess.class, AdmofficerCaseofficerWaTaskConfigurationCrudAccess.class, SpecificAccessCtscProfileRAccess.class}
+            access = {SpecificAccessAdminCtscJudgeLegalOpsProfileRAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, IacjudgeLegalrepSolicitorCrudAccess.class, AdmofficerCaseofficerCrudAccess.class, WaTaskConfigurationCrudAccess.class}
     )
     private String detaineeAddressSubTitle;
 
@@ -443,7 +457,7 @@ public class CaseData {
             label = "This must be the appellant's email address. Please do not give your own",
             searchable = false,
             typeOverride = FieldType.Label,
-            access = {IacjudgeLegalrepSolicitorCrudAccess.class, SpecificAccessJudgeLegalOpsProfileRAccess.class, AdmofficerCaseofficerWaTaskConfigurationCrudAccess.class, SpecificAccessAdminProfileCrudAccess.class, SpecificAccessCtscProfileRAccess.class}
+            access = {IacjudgeLegalrepSolicitorCrudAccess.class, AdmofficerCaseofficerCrudAccess.class, SpecificAccessJudgeLegalOpsProfileRAccess.class, SpecificAccessAdminProfileWaTaskConfigurationCrudAccess.class, SpecificAccessCtscProfileRAccess.class}
     )
     private String emailInfoText;
 
@@ -487,7 +501,7 @@ public class CaseData {
             label = " ",
             searchable = false,
             typeOverride = FieldType.Label,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, AdmofficerCaseofficerSystemCrudAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, IacjudgeLegalrepSolicitorCrudAccess.class, WaTaskConfigurationCrudAccess.class, SpecificAccessCtscProfileRAccess.class}
+            access = {SpecificAccessAdminCtscJudgeLegalOpsProfileRAccess.class, AdmofficerCaseofficerSystemCrudAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, IacjudgeLegalrepSolicitorCrudAccess.class, WaTaskConfigurationCrudAccess.class}
     )
     private String newMattersTitle;
 
@@ -510,7 +524,7 @@ public class CaseData {
             label = " ",
             searchable = false,
             typeOverride = FieldType.Label,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, AdmofficerCaseofficerSystemCrudAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, IacjudgeLegalrepSolicitorCrudAccess.class, WaTaskConfigurationCrudAccess.class, SpecificAccessCtscProfileRAccess.class}
+            access = {SpecificAccessAdminCtscJudgeLegalOpsProfileRAccess.class, AdmofficerCaseofficerSystemCrudAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, IacjudgeLegalrepSolicitorCrudAccess.class, WaTaskConfigurationCrudAccess.class}
     )
     private String hasOtherAppealsTitle;
 
@@ -524,7 +538,7 @@ public class CaseData {
             label = " ",
             searchable = false,
             typeOverride = FieldType.Label,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, AdmofficerCaseofficerSystemCrudAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, IacjudgeLegalrepSolicitorCrudAccess.class, WaTaskConfigurationCrudAccess.class, SpecificAccessCtscProfileRAccess.class}
+            access = {SpecificAccessAdminCtscJudgeLegalOpsProfileRAccess.class, AdmofficerCaseofficerSystemCrudAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, IacjudgeLegalrepSolicitorCrudAccess.class, WaTaskConfigurationCrudAccess.class}
     )
     private String otherAppealsTitle;
 
@@ -591,7 +605,7 @@ public class CaseData {
             label = "Component Launcher",
             searchable = false,
             typeOverride = FieldType.ComponentLauncher,
-            access = {LegalrepSolicitorSystemCrudAccess.class, AdmofficerCrudAccess.class}
+            access = {AdmofficerSystemCrudAccess.class, LegalrepSolicitorCrudAccess.class}
     )
     private String queriesComponentLauncher;
 
@@ -599,7 +613,7 @@ public class CaseData {
             label = " ",
             searchable = false,
             typeOverride = FieldType.CaseQueriesCollection,
-            access = {LegalrepSolicitorSystemCrudAccess.class, AdmofficerCrudAccess.class}
+            access = {AdmofficerSystemCrudAccess.class, LegalrepSolicitorCrudAccess.class}
     )
     private String qmLegalRepresentativeQueries;
 
@@ -786,7 +800,7 @@ public class CaseData {
                             + "- in Word or PDF format - other file formats must be sent to both the appellant and Tribunal",
             searchable = false,
             typeOverride = FieldType.Label,
-            access = {RespondentofficerSystemCrudAccess.class, HomeofficeapcCrudAccess.class}
+            access = {HomeofficeapcRespondentofficerCrudAccess.class, SystemCrudAccess.class}
     )
     private String uploadHomeOfficeBundleTitle;
 
@@ -847,7 +861,7 @@ public class CaseData {
             label = "Already uploaded files:",
             searchable = false,
             typeOverride = FieldType.TextArea,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, AdmofficerCaseofficerSystemCrudAccess.class, IacjudgeSpecificAccessCtscProfileRAccess.class, LegalrepSolicitorWaTaskConfigurationCrudAccess.class, HomeofficelartRespondentofficerCrudAccess.class, HomeofficeapcRAccess.class, HomeofficepouRAccess.class}
+            access = {IacjudgeSpecificAccessAdminCtscJudgeLegalOpsProfileRAccess.class, AdmofficerCaseofficerSystemCrudAccess.class, LegalrepSolicitorWaTaskConfigurationCrudAccess.class, HomeofficelartRespondentofficerCrudAccess.class, HomeofficeapcHomeofficepouRAccess.class}
     )
     private String uploadedLegalRepBuildCaseDocs;
 
@@ -911,7 +925,7 @@ public class CaseData {
                             + "- in Word or PDF format - other file formats must be sent to both the appellant and Tribunal",
             searchable = false,
             typeOverride = FieldType.Label,
-            access = {RespondentofficerSystemCrudAccess.class, HomeofficelartCrudAccess.class}
+            access = {HomeofficelartRespondentofficerSystemCrudAccess.class}
     )
     private String addHomeOfficeAppealResponseTitle;
 
@@ -939,7 +953,7 @@ public class CaseData {
     @CCD(
             label = "Upload documents",
             searchable = false,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, AdmofficerCaseofficerSystemCrudAccess.class, IacjudgeSpecificAccessCtscProfileRAccess.class, LegalrepSolicitorWaTaskConfigurationCrudAccess.class, CitizenCrudAccess.class}
+            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, AdmofficerCaseofficerSystemCrudAccess.class, IacjudgeSpecificAccessCtscProfileRAccess.class, CitizenLegalrepSolicitorCrudAccess.class, WaTaskConfigurationCrudAccess.class}
     )
     private List<ListValue<AdditionalEvidenceDocument>> additionalEvidence;
 
@@ -970,7 +984,7 @@ public class CaseData {
     @CCD(
             label = "Hearing Centre address",
             searchable = false,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, AdmofficerCaseofficerSystemCrudAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, IacjudgeSpecificAccessCtscProfileRAccess.class, CitizenLegalrepSolicitorRAccess.class, WaTaskConfigurationCrudAccess.class}
+            access = {IacjudgeSpecificAccessAdminCtscJudgeLegalOpsProfileRAccess.class, AdmofficerCaseofficerSystemCrudAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, CitizenLegalrepSolicitorRAccess.class, WaTaskConfigurationCrudAccess.class}
     )
     private String listCaseHearingCentreAddress;
 
@@ -1003,7 +1017,7 @@ public class CaseData {
     @CCD(
             label = "Are there any additional instructions for the hearing?",
             searchable = false,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, AdmofficerCaseofficerSystemCrudAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, IacjudgeWaTaskConfigurationCrudAccess.class, CitizenSpecificAccessCtscProfileRAccess.class, LegalrepSolicitorRAccess.class}
+            access = {LegalrepSolicitorSpecificAccessAdminJudgeLegalOpsProfileRAccess.class, AdmofficerCaseofficerSystemCrudAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, IacjudgeWaTaskConfigurationCrudAccess.class, CitizenSpecificAccessCtscProfileRAccess.class}
     )
     private YesOrNo additionalInstructions;
 
@@ -1011,7 +1025,7 @@ public class CaseData {
             label = "Additional Instructions",
             searchable = false,
             typeOverride = FieldType.TextArea,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, AdmofficerCaseofficerSystemCrudAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, IacjudgeWaTaskConfigurationCrudAccess.class, CitizenSpecificAccessCtscProfileRAccess.class, LegalrepSolicitorRAccess.class}
+            access = {LegalrepSolicitorSpecificAccessAdminJudgeLegalOpsProfileRAccess.class, AdmofficerCaseofficerSystemCrudAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, IacjudgeWaTaskConfigurationCrudAccess.class, CitizenSpecificAccessCtscProfileRAccess.class}
     )
     private String additionalInstructionsDescription;
 
@@ -1323,7 +1337,7 @@ public class CaseData {
             label = "Already uploaded files:",
             searchable = false,
             typeOverride = FieldType.TextArea,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, CaseofficerSystemWaTaskConfigurationCrudAccess.class, IacjudgeSpecificAccessCtscProfileRAccess.class, HomeofficeapcCrudAccess.class, RespondentofficerCrudAccess.class}
+            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, CaseofficerSystemWaTaskConfigurationCrudAccess.class, IacjudgeSpecificAccessCtscProfileRAccess.class, HomeofficeapcRespondentofficerCrudAccess.class}
     )
     private String uploadedHomeOfficeBundleDocs;
 
@@ -1669,7 +1683,7 @@ public class CaseData {
     @CCD(
             label = "Evidence supplied after the hearing bundle",
             searchable = false,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, AdmofficerCaseofficerSystemCrudAccess.class, LegalrepSolicitorWaTaskConfigurationCrudAccess.class, IacjudgeRAccess.class, CitizenCrudAccess.class}
+            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, AdmofficerCaseofficerSystemCrudAccess.class, CitizenLegalrepSolicitorCrudAccess.class, IacjudgeRAccess.class, WaTaskConfigurationCrudAccess.class}
     )
     private List<ListValue<DocumentWithMetadata>> addendumEvidenceDocuments;
 
@@ -1817,14 +1831,14 @@ public class CaseData {
             label = "You'll need to explain why this evidence is being submitted after the hearing bundle has been produced.",
             searchable = false,
             typeOverride = FieldType.Label,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, AdmofficerCaseofficerSystemCrudAccess.class, IacjudgeSpecificAccessCtscProfileRAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerCrudAccess.class, LegalrepSolicitorWaTaskConfigurationCrudAccess.class}
+            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, AdmofficerCaseofficerSystemCrudAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerCrudAccess.class, IacjudgeSpecificAccessCtscProfileRAccess.class, LegalrepSolicitorWaTaskConfigurationCrudAccess.class}
     )
     private String addendumEvidenceTitle;
 
     @CCD(
             label = "Evidence",
             searchable = false,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, AdmofficerCaseofficerSystemCrudAccess.class, IacjudgeSpecificAccessCtscProfileRAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerCrudAccess.class, LegalrepSolicitorWaTaskConfigurationCrudAccess.class, CitizenCrudAccess.class}
+            access = {IacjudgeSpecificAccessAdminCtscJudgeLegalOpsProfileRAccess.class, AdmofficerCaseofficerSystemCrudAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerCrudAccess.class, CitizenLegalrepSolicitorCrudAccess.class, WaTaskConfigurationCrudAccess.class}
     )
     private List<ListValue<AdditionalAddendumDocument>> addendumEvidence;
 
@@ -1946,7 +1960,7 @@ public class CaseData {
     @CCD(
             label = "This appeal has ended. Record the outcome and reasons below.",
             searchable = false,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, CaseofficerSystemWaTaskConfigurationCrudAccess.class, AdmofficerCitizenCruAccess.class, LegalrepSolicitorSpecificAccessCtscProfileRAccess.class, IacjudgeCruAccess.class}
+            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, CaseofficerSystemWaTaskConfigurationCrudAccess.class, AdmofficerCitizenCruAccess.class, IacjudgeCruLegalrepSolicitorSpecificAccessCtscProfileRAccess.class}
     )
     private String endAppealTitle;
 
@@ -1967,7 +1981,7 @@ public class CaseData {
     @CCD(
             label = "Record who approved this outcome.",
             searchable = false,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, CaseofficerSystemWaTaskConfigurationCrudAccess.class, AdmofficerCitizenCruAccess.class, LegalrepSolicitorSpecificAccessCtscProfileRAccess.class, IacjudgeCruAccess.class}
+            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, CaseofficerSystemWaTaskConfigurationCrudAccess.class, AdmofficerCitizenCruAccess.class, IacjudgeCruLegalrepSolicitorSpecificAccessCtscProfileRAccess.class}
     )
     private String endAppealTitle2;
 
@@ -2093,7 +2107,7 @@ public class CaseData {
             label = "Type of Journey",
             typeOverride = FieldType.FixedList,
             typeParameterOverride = "journeyTypes",
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, AdmofficerCaseofficerSystemCrudAccess.class, LegalrepSolicitorWaTaskConfigurationCrudAccess.class, IacjudgeRAccess.class, CitizenCrudAccess.class}
+            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, AdmofficerCaseofficerSystemCrudAccess.class, CitizenLegalrepSolicitorCrudAccess.class, IacjudgeRAccess.class, WaTaskConfigurationCrudAccess.class}
     )
     private JourneyTypes journeyType;
 
@@ -2176,7 +2190,7 @@ public class CaseData {
             label = "Select the witnesses that need a spoken or sign language interpreter and the kind of interpreter they need",
             searchable = false,
             typeOverride = FieldType.Label,
-            access = {HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, AdmofficerLegalrepSolicitorRAccess.class, SpecificAccessJudgeLegalOpsProfileRAccess.class, CitizenIacjudgeRAccess.class, CaseofficerRAccess.class, SystemCrudAccess.class, WaTaskConfigurationCrudAccess.class}
+            access = {HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, SystemCrudAdmofficerLegalrepSolicitorRAccess.class, SpecificAccessJudgeLegalOpsProfileRAccess.class, CitizenIacjudgeRAccess.class, WaTaskConfigurationCrudCaseofficerRAccess.class}
     )
     private String whichWitnessRequiresInterpreterLabel;
 
@@ -2556,7 +2570,7 @@ public class CaseData {
     @CCD(
             label = "Does the appellant bring the equipment to play this evidence?",
             searchable = false,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, LegalrepSolicitorSystemCrudAccess.class, AdmofficerSpecificAccessCtscProfileRAccess.class, CitizenIacjudgeCrudAccess.class, CaseofficerCrudAccess.class}
+            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, IacjudgeLegalrepSolicitorCrudAccess.class, AdmofficerSpecificAccessCtscProfileRAccess.class, CitizenSystemCrudAccess.class, CaseofficerCrudAccess.class}
     )
     private YesOrNo bringOwnMultimediaEquipment;
 
@@ -2609,7 +2623,7 @@ public class CaseData {
             label = "## Hearing dates to avoid",
             searchable = false,
             typeOverride = FieldType.Label,
-            access = {LegalrepSolicitorSystemCrudAccess.class, AdmofficerCrudAccess.class}
+            access = {AdmofficerSystemCrudAccess.class, LegalrepSolicitorCrudAccess.class}
     )
     private String datesToAvoidTitle;
 
@@ -2624,7 +2638,7 @@ public class CaseData {
             label = "Tell us which dates and explain why the case cannot be heard on these dates.",
             searchable = false,
             typeOverride = FieldType.Label,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, LegalrepSolicitorSystemCrudAccess.class, CaseofficerSpecificAccessCtscProfileWaTaskConfigurationRAccess.class, AdmofficerCitizenCrudAccess.class, IacjudgeCrudAccess.class}
+            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, IacjudgeLegalrepSolicitorCrudAccess.class, CaseofficerSpecificAccessCtscProfileWaTaskConfigurationRAccess.class, AdmofficerSystemCrudAccess.class, CitizenCrudAccess.class}
     )
     private String datesToAvoidDescription;
 
@@ -2842,7 +2856,7 @@ public class CaseData {
     @CCD(
             label = "Vulnerabilities decision",
             searchable = false,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, CaseofficerSystemWaTaskConfigurationCrudAccess.class, AdmofficerLegalrepSolicitorRAccess.class, IacjudgeCrudAccess.class, SpecificAccessCtscProfileRAccess.class}
+            access = {SpecificAccessAdminCtscJudgeLegalOpsProfileRAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, CaseofficerSystemWaTaskConfigurationCrudAccess.class, AdmofficerLegalrepSolicitorRAccess.class, IacjudgeCrudAccess.class}
     )
     private IsVulnerabilitiesAllowed isVulnerabilitiesAllowed;
 
@@ -2893,7 +2907,7 @@ public class CaseData {
     @CCD(
             label = "Remote hearing decision",
             searchable = false,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, IacjudgeSystemCrudAccess.class, AdmofficerLegalrepSolicitorRAccess.class, CaseofficerCrudAccess.class, SpecificAccessCtscProfileRAccess.class}
+            access = {SpecificAccessAdminCtscJudgeLegalOpsProfileRAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, AdmofficerLegalrepSolicitorRAccess.class, IacjudgeSystemCrudAccess.class, CaseofficerCrudAccess.class}
     )
     private IsRemoteHearingAllowed isRemoteHearingAllowed;
 
@@ -2927,7 +2941,7 @@ public class CaseData {
     @CCD(
             label = "Multimedia decision",
             searchable = false,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, CaseofficerSystemWaTaskConfigurationCrudAccess.class, AdmofficerLegalrepSolicitorRAccess.class, IacjudgeCrudAccess.class, SpecificAccessCtscProfileRAccess.class}
+            access = {SpecificAccessAdminCtscJudgeLegalOpsProfileRAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, CaseofficerSystemWaTaskConfigurationCrudAccess.class, AdmofficerLegalrepSolicitorRAccess.class, IacjudgeCrudAccess.class}
     )
     private IsMultimediaAllowed isMultimediaAllowed;
 
@@ -2961,7 +2975,7 @@ public class CaseData {
     @CCD(
             label = "Single-sex court decision",
             searchable = false,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, CaseofficerSystemWaTaskConfigurationCrudAccess.class, AdmofficerLegalrepSolicitorRAccess.class, IacjudgeCrudAccess.class, SpecificAccessCtscProfileRAccess.class}
+            access = {SpecificAccessAdminCtscJudgeLegalOpsProfileRAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, CaseofficerSystemWaTaskConfigurationCrudAccess.class, AdmofficerLegalrepSolicitorRAccess.class, IacjudgeCrudAccess.class}
     )
     private IsSingleSexCourtAllowed isSingleSexCourtAllowed;
 
@@ -2995,7 +3009,7 @@ public class CaseData {
     @CCD(
             label = "In camera court decision",
             searchable = false,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, CaseofficerSystemWaTaskConfigurationCrudAccess.class, AdmofficerLegalrepSolicitorRAccess.class, IacjudgeCrudAccess.class, SpecificAccessCtscProfileRAccess.class}
+            access = {SpecificAccessAdminCtscJudgeLegalOpsProfileRAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, CaseofficerSystemWaTaskConfigurationCrudAccess.class, AdmofficerLegalrepSolicitorRAccess.class, IacjudgeCrudAccess.class}
     )
     private IsInCameraCourtAllowed isInCameraCourtAllowed;
 
@@ -3029,7 +3043,7 @@ public class CaseData {
     @CCD(
             label = "Other adjustments decision",
             searchable = false,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, CaseofficerSystemWaTaskConfigurationCrudAccess.class, AdmofficerLegalrepSolicitorRAccess.class, IacjudgeCrudAccess.class, SpecificAccessCtscProfileRAccess.class}
+            access = {SpecificAccessAdminCtscJudgeLegalOpsProfileRAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, CaseofficerSystemWaTaskConfigurationCrudAccess.class, AdmofficerLegalrepSolicitorRAccess.class, IacjudgeCrudAccess.class}
     )
     private IsAdditionalAdjustmentsAllowed isAdditionalAdjustmentsAllowed;
 
@@ -3307,35 +3321,35 @@ public class CaseData {
     @CCD(
             label = "Internal flag managed by API for ftpa appellant docs visible in ftpa submitted state",
             searchable = false,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, LegalrepSolicitorSystemCrudAccess.class, IacjudgeCrudAccess.class}
+            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, IacjudgeLegalrepSolicitorCrudAccess.class, SystemCrudAccess.class}
     )
     private YesOrNo isFtpaAppellantDocsVisibleInSubmitted;
 
     @CCD(
             label = "Internal flag managed by API for ftpa appellant grounds docs visible in ftpa submitted state",
             searchable = false,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, LegalrepSolicitorSystemCrudAccess.class, IacjudgeCrudAccess.class}
+            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, IacjudgeLegalrepSolicitorCrudAccess.class, SystemCrudAccess.class}
     )
     private YesOrNo isFtpaAppellantGroundsDocsVisibleInSubmitted;
 
     @CCD(
             label = "Internal flag managed by API for ftpa appellant evidence docs visible in ftpa submitted state",
             searchable = false,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, LegalrepSolicitorSystemCrudAccess.class, IacjudgeCrudAccess.class}
+            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, IacjudgeLegalrepSolicitorCrudAccess.class, SystemCrudAccess.class}
     )
     private YesOrNo isFtpaAppellantEvidenceDocsVisibleInSubmitted;
 
     @CCD(
             label = "Internal flag managed by API for ftpa appellant out of time docs visible in ftpa submitted state",
             searchable = false,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, LegalrepSolicitorSystemCrudAccess.class, IacjudgeCrudAccess.class}
+            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, IacjudgeLegalrepSolicitorCrudAccess.class, SystemCrudAccess.class}
     )
     private YesOrNo isFtpaAppellantOotDocsVisibleInSubmitted;
 
     @CCD(
             label = "Internal flag managed by API for ftpa appellant out of time explanation visible in ftpa submitted state",
             searchable = false,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, LegalrepSolicitorSystemCrudAccess.class, IacjudgeCrudAccess.class}
+            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, IacjudgeLegalrepSolicitorCrudAccess.class, SystemCrudAccess.class}
     )
     private YesOrNo isFtpaAppellantOotExplanationVisibleInSubmitted;
 
@@ -3349,28 +3363,28 @@ public class CaseData {
     @CCD(
             label = "Internal flag managed by API for ftpa appellant grounds docs visible in ftpa decided state",
             searchable = false,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, LegalrepSolicitorSystemCrudAccess.class, IacjudgeCrudAccess.class}
+            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, IacjudgeLegalrepSolicitorCrudAccess.class, SystemCrudAccess.class}
     )
     private YesOrNo isFtpaAppellantGroundsDocsVisibleInDecided;
 
     @CCD(
             label = "Internal flag managed by API for ftpa appellant evidence docs visible in ftpa decided state",
             searchable = false,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, LegalrepSolicitorSystemCrudAccess.class, IacjudgeCrudAccess.class}
+            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, IacjudgeLegalrepSolicitorCrudAccess.class, SystemCrudAccess.class}
     )
     private YesOrNo isFtpaAppellantEvidenceDocsVisibleInDecided;
 
     @CCD(
             label = "Internal flag managed by API for ftpa appellant out of time docs visible in ftpa decided state",
             searchable = false,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, LegalrepSolicitorSystemCrudAccess.class, IacjudgeCrudAccess.class}
+            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, IacjudgeLegalrepSolicitorCrudAccess.class, SystemCrudAccess.class}
     )
     private YesOrNo isFtpaAppellantOotDocsVisibleInDecided;
 
     @CCD(
             label = "Internal flag managed by API for ftpa appellant out of time explanation visible in ftpa decided state",
             searchable = false,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, LegalrepSolicitorSystemCrudAccess.class, IacjudgeCrudAccess.class}
+            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, IacjudgeLegalrepSolicitorCrudAccess.class, SystemCrudAccess.class}
     )
     private YesOrNo isFtpaAppellantOotExplanationVisibleInDecided;
 
@@ -3644,7 +3658,7 @@ public class CaseData {
     @CCD(
             label = "Appellant is under the age of 18",
             searchable = false,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, CaseofficerSystemWaTaskConfigurationCrudAccess.class, IacjudgeLegalrepSolicitorCrudAccess.class, AdmofficerSpecificAccessCtscProfileRAccess.class, CitizenCrudAccess.class}
+            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, CitizenIacjudgeLegalrepSolicitorWaTaskConfigurationCrudAccess.class, AdmofficerSpecificAccessCtscProfileRAccess.class, CaseofficerSystemCrudAccess.class}
     )
     private YesOrNo isAppellantMinor;
 
@@ -3696,7 +3710,10 @@ public class CaseData {
     @CCD(label = " ", access = {CaseflagsProfileReadonlyProfileCruAccess.class, SystemCrudAccess.class})
     private Flags caseFlags;
 
-    @CCD(label = " ", access = {CaseflagsProfileSystemCrudAccess.class, CaseflagsReadonlyProfileCruAccess.class})
+    @CCD(
+            label = " ",
+            access = {SystemCrudAccess.class, CaseflagsProfileCrudAccess.class, CaseflagsReadonlyProfileCruAccess.class}
+    )
     private List<ListValue<Flags>> interpreterLevelFlags;
 
     @CCD(
@@ -4166,7 +4183,7 @@ public class CaseData {
             searchable = false,
             typeOverride = FieldType.FixedList,
             typeParameterOverride = "hearingVenue",
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, AdmofficerCaseofficerSystemCrudAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, IacjudgeSpecificAccessCtscProfileRAccess.class, CitizenLegalrepSolicitorRAccess.class, WaTaskConfigurationCrudAccess.class}
+            access = {IacjudgeSpecificAccessAdminCtscJudgeLegalOpsProfileRAccess.class, AdmofficerCaseofficerSystemCrudAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, CitizenLegalrepSolicitorRAccess.class, WaTaskConfigurationCrudAccess.class}
     )
     private HearingVenue listCmaHearingCentre;
 
@@ -4175,14 +4192,14 @@ public class CaseData {
             searchable = false,
             typeOverride = FieldType.FixedList,
             typeParameterOverride = "hearingLength",
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, AdmofficerCaseofficerSystemCrudAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, IacjudgeSpecificAccessCtscProfileRAccess.class, CitizenLegalrepSolicitorRAccess.class, WaTaskConfigurationCrudAccess.class}
+            access = {IacjudgeSpecificAccessAdminCtscJudgeLegalOpsProfileRAccess.class, AdmofficerCaseofficerSystemCrudAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, CitizenLegalrepSolicitorRAccess.class, WaTaskConfigurationCrudAccess.class}
     )
     private HearingLength listCmaHearingLength;
 
     @CCD(
             label = "Appointment date and time",
             searchable = false,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, AdmofficerCaseofficerSystemCrudAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, IacjudgeSpecificAccessCtscProfileRAccess.class, CitizenLegalrepSolicitorRAccess.class, WaTaskConfigurationCrudAccess.class}
+            access = {IacjudgeSpecificAccessAdminCtscJudgeLegalOpsProfileRAccess.class, AdmofficerCaseofficerSystemCrudAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, CitizenLegalrepSolicitorRAccess.class, WaTaskConfigurationCrudAccess.class}
     )
     private LocalDateTime listCmaHearingDate;
 
@@ -4309,7 +4326,7 @@ public class CaseData {
     @CCD(
             label = "isReheardAppealEnabled",
             searchable = false,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, LegalrepSolicitorSystemCrudAccess.class, AdmofficerCrudAccess.class}
+            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, AdmofficerSystemCrudAccess.class, LegalrepSolicitorCrudAccess.class}
     )
     private String isReheardAppealEnabled;
 
@@ -4402,7 +4419,7 @@ public class CaseData {
                             + "You must upload the Notice of Decision. If it is not possible, you must provide a valid reason.",
             searchable = false,
             typeOverride = FieldType.Label,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, CaseofficerSystemWaTaskConfigurationCrudAccess.class, IacjudgeSpecificAccessCtscProfileRAccess.class, AdmofficerRAccess.class, LegalrepSolicitorCrudAccess.class}
+            access = {IacjudgeSpecificAccessAdminCtscJudgeLegalOpsProfileRAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, CaseofficerSystemWaTaskConfigurationCrudAccess.class, AdmofficerRAccess.class, LegalrepSolicitorCrudAccess.class}
     )
     private String uploadTheNoticeOfDecisionTips;
 
@@ -4423,7 +4440,7 @@ public class CaseData {
     @CCD(
             label = "Notice of Decision",
             searchable = false,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, CaseofficerSystemWaTaskConfigurationCrudAccess.class, IacjudgeSpecificAccessCtscProfileRAccess.class, AdmofficerRAccess.class, LegalrepSolicitorCrudAccess.class}
+            access = {IacjudgeSpecificAccessAdminCtscJudgeLegalOpsProfileRAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, CaseofficerSystemWaTaskConfigurationCrudAccess.class, AdmofficerRAccess.class, LegalrepSolicitorCrudAccess.class}
     )
     private Document uploadTheNoticeOfDecisionDocument;
 
@@ -4515,7 +4532,7 @@ public class CaseData {
     @CCD(
             label = "Payment method",
             searchable = false,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, LegalrepSolicitorSystemCrudAccess.class, CaseofficerIacjudgeRAccess.class, AdmofficerCrudAccess.class}
+            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, AdmofficerSystemCrudAccess.class, CaseofficerIacjudgeRAccess.class, LegalrepSolicitorCrudAccess.class}
     )
     private PaAppealTypePaymentOptions paAppealTypePaymentOption;
 
@@ -4620,7 +4637,7 @@ public class CaseData {
     @CCD(
             label = "Staff Location Id",
             searchable = false,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, AdmofficerRuAccess.class, CaseofficerRuAccess.class, LegalrepSolicitorRuAccess.class, SystemCrudAccess.class, WaTaskConfigurationRuAccess.class, CitizenRuAccess.class, SpecificAccessCtscProfileRAccess.class}
+            access = {SpecificAccessAdminCtscJudgeLegalOpsProfileRAccess.class, AdmofficerRuAccess.class, SystemCrudAccess.class, CitizenRuAccess.class, CaseofficerLegalrepSolicitorWaTaskConfigurationRuAccess.class}
     )
     private String staffLocationId;
 
@@ -4705,7 +4722,7 @@ public class CaseData {
 
     @CCD(
             label = "Case management location",
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, CaseofficerSystemWaTaskConfigurationCrudAccess.class, IacjudgeSpecificAccessCtscProfileRAccess.class, CitizenLegalrepSolicitorCrudAccess.class, AdmofficerRAccess.class}
+            access = {IacjudgeSpecificAccessAdminCtscJudgeLegalOpsProfileRAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, CaseofficerSystemWaTaskConfigurationCrudAccess.class, CitizenLegalrepSolicitorCrudAccess.class, AdmofficerRAccess.class}
     )
     private CaseManagementLocationRefData caseManagementLocationRefData;
 
@@ -4728,7 +4745,7 @@ public class CaseData {
     @CCD(
             label = "Type of application",
             typeOverride = FieldType.DynamicList,
-            access = {HomeofficeapcHomeofficelartHomeofficepouRespondentofficerCrudAccess.class, LegalrepSolicitorSystemCrudAccess.class, AdmofficerCitizenCrudAccess.class}
+            access = {HomeofficeapcHomeofficelartHomeofficepouRespondentofficerCrudAccess.class, AdmofficerSystemCrudAccess.class, CitizenLegalrepSolicitorCrudAccess.class}
     )
     private String makeAnApplicationTypes;
 
@@ -4759,7 +4776,7 @@ public class CaseData {
     @CCD(
             label = " ",
             searchable = false,
-            access = {HomeofficeapcHomeofficelartHomeofficepouRespondentofficerCrudAccess.class, LegalrepSolicitorSystemCrudAccess.class, AdmofficerCrudAccess.class}
+            access = {HomeofficeapcHomeofficelartHomeofficepouRespondentofficerCrudAccess.class, AdmofficerSystemCrudAccess.class, LegalrepSolicitorCrudAccess.class}
     )
     private String makeAnApplicationDetailsLabel;
 
@@ -4767,7 +4784,7 @@ public class CaseData {
             label = " ",
             searchable = false,
             typeOverride = FieldType.TextArea,
-            access = {HomeofficeapcHomeofficelartHomeofficepouRespondentofficerCrudAccess.class, LegalrepSolicitorSystemCrudAccess.class, AdmofficerCitizenCrudAccess.class}
+            access = {HomeofficeapcHomeofficelartHomeofficepouRespondentofficerCrudAccess.class, AdmofficerSystemCrudAccess.class, CitizenLegalrepSolicitorCrudAccess.class}
     )
     private String makeAnApplicationDetails;
 
@@ -4785,7 +4802,7 @@ public class CaseData {
     @CCD(
             label = "Supporting evidence",
             searchable = false,
-            access = {HomeofficeapcHomeofficelartHomeofficepouRespondentofficerCrudAccess.class, LegalrepSolicitorSystemCrudAccess.class, AdmofficerCitizenCrudAccess.class}
+            access = {HomeofficeapcHomeofficelartHomeofficepouRespondentofficerCrudAccess.class, AdmofficerSystemCrudAccess.class, CitizenLegalrepSolicitorCrudAccess.class}
     )
     private List<ListValue<Document>> makeAnApplicationEvidence;
 
@@ -5017,7 +5034,7 @@ public class CaseData {
     @CCD(
             label = "How does the appellant want the appeal to be decided?",
             searchable = false,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, AdmofficerSystemCrudAccess.class, CaseofficerWaTaskConfigurationCruAccess.class, IacjudgeRAccess.class, LegalrepSolicitorCruAccess.class, CitizenCrudAccess.class}
+            access = {LegalrepSolicitorCruSpecificAccessAdminJudgeLegalOpsProfileRAccess.class, AdmofficerSystemCrudAccess.class, CaseofficerWaTaskConfigurationCruAccess.class, IacjudgeRAccess.class, CitizenCrudAccess.class}
     )
     private RpDcAppealHearingOptions rpDcAppealHearingOption;
 
@@ -5060,14 +5077,14 @@ public class CaseData {
     @CCD(
             label = "Asylum Support reference number",
             hint = "For example, 20/02/1234",
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, LegalrepSolicitorSystemCrudAccess.class, AdmofficerCitizenCrudAccess.class}
+            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, AdmofficerSystemCrudAccess.class, CitizenLegalrepSolicitorCrudAccess.class}
     )
     private String asylumSupportReference;
 
     @CCD(
             label = "Asylum Support confirmation letter",
             searchable = false,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, LegalrepSolicitorSystemCrudAccess.class, AdmofficerCitizenCrudAccess.class}
+            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, AdmofficerSystemCrudAccess.class, CitizenLegalrepSolicitorCrudAccess.class}
     )
     private Document asylumSupportDocument;
 
@@ -5098,7 +5115,7 @@ public class CaseData {
     @CCD(
             label = "Local authority letter",
             searchable = false,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, LegalrepSolicitorSystemCrudAccess.class, AdmofficerCitizenCrudAccess.class}
+            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, AdmofficerSystemCrudAccess.class, CitizenLegalrepSolicitorCrudAccess.class}
     )
     private Document section17Document;
 
@@ -5129,7 +5146,7 @@ public class CaseData {
     @CCD(
             label = "Local authority letter",
             searchable = false,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, LegalrepSolicitorSystemCrudAccess.class, AdmofficerCitizenCrudAccess.class}
+            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, AdmofficerSystemCrudAccess.class, CitizenLegalrepSolicitorCrudAccess.class}
     )
     private Document section20Document;
 
@@ -5153,7 +5170,7 @@ public class CaseData {
     @CCD(
             label = "Help with Fees reference number",
             hint = "For example, HWF-A1B-23C",
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, LegalrepSolicitorSystemCrudAccess.class, AdmofficerCitizenCrudAccess.class}
+            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, AdmofficerSystemCrudAccess.class, CitizenLegalrepSolicitorCrudAccess.class}
     )
     private String helpWithFeesReferenceNumber;
 
@@ -5169,7 +5186,7 @@ public class CaseData {
             label = "Explain the exceptional circumstances which justify remission of the fee",
             searchable = false,
             typeOverride = FieldType.TextArea,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, LegalrepSolicitorSystemCrudAccess.class, AdmofficerCitizenCrudAccess.class}
+            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, AdmofficerSystemCrudAccess.class, CitizenLegalrepSolicitorCrudAccess.class}
     )
     private String exceptionalCircumstances;
 
@@ -5179,7 +5196,7 @@ public class CaseData {
                             + "You should provide evidence to support your explanation such as notices threatening legal action due to non-payment of bills or housing costs; details of income, savings or expenses; or any other relevant information.",
             searchable = false,
             typeOverride = FieldType.Label,
-            access = {LegalrepSolicitorSystemCrudAccess.class, AdmofficerCrudAccess.class}
+            access = {AdmofficerSystemCrudAccess.class, LegalrepSolicitorCrudAccess.class}
     )
     private String exceptionalCircumstancesSupportEvidenceAdvice;
 
@@ -5365,7 +5382,7 @@ public class CaseData {
             label = " ",
             searchable = false,
             typeOverride = FieldType.Label,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, LegalrepSolicitorSystemCrudAccess.class, AdmofficerSpecificAccessCtscProfileRAccess.class, CaseofficerCrudAccess.class, IacjudgeCrudAccess.class}
+            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, IacjudgeLegalrepSolicitorCrudAccess.class, AdmofficerSpecificAccessCtscProfileRAccess.class, CaseofficerSystemCrudAccess.class}
     )
     private String outOfCountryDecisionTypeTitle;
 
@@ -5382,7 +5399,7 @@ public class CaseData {
                             + "Please provide an email address or phone number for your client's sponsor, or a person responsible for the sponsor.",
             searchable = false,
             typeOverride = FieldType.Label,
-            access = {LegalrepSolicitorSystemCrudAccess.class, AdmofficerCrudAccess.class}
+            access = {AdmofficerSystemCrudAccess.class, LegalrepSolicitorCrudAccess.class}
     )
     private String adminJSponsorContactTitle;
 
@@ -5410,7 +5427,7 @@ public class CaseData {
 
     @CCD(
             label = "Organisation policy",
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, IacjudgeSpecificAccessCtscProfileRAccess.class, LegalrepSolicitorSystemCrudAccess.class, ApproverCaaCrudAccess.class, AdmofficerRAccess.class, CaseofficerCrudAccess.class}
+            access = {IacjudgeSpecificAccessAdminCtscJudgeLegalOpsProfileRAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, CaseofficerLegalrepSolicitorSystemCrudAdmofficerRAccess.class, ApproverCaaCrudAccess.class}
     )
     private OrganisationPolicy localAuthorityPolicy;
 
@@ -5619,7 +5636,7 @@ public class CaseData {
     @CCD(
             label = "Upper Tribunal documents",
             searchable = false,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, IacjudgeSystemCrudAccess.class, AdmofficerCrudAccess.class}
+            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, AdmofficerSystemCrudAccess.class, IacjudgeCrudAccess.class}
     )
     private List<ListValue<DocumentWithMetadata>> upperTribunalDocuments;
 
@@ -5633,7 +5650,7 @@ public class CaseData {
     @CCD(
             label = "Internal flag managed by API to store if second ftpa decision exists",
             searchable = false,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, IacjudgeSystemCrudAccess.class, AdmofficerCrudAccess.class}
+            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, AdmofficerSystemCrudAccess.class, IacjudgeCrudAccess.class}
     )
     private YesOrNo secondFtpaDecisionExists;
 
@@ -5713,7 +5730,7 @@ public class CaseData {
 
     @CCD(
             label = " ",
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, LegalrepSolicitorSystemCrudAccess.class, AdmofficerCrudAccess.class}
+            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, AdmofficerSystemCrudAccess.class, LegalrepSolicitorCrudAccess.class}
     )
     private YesOrNo hasServiceRequestAlready;
 
@@ -5723,14 +5740,14 @@ public class CaseData {
     @CCD(
             label = " ",
             searchable = false,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, LegalrepSolicitorSystemCrudAccess.class, AdmofficerCrudAccess.class, SpecificAccessCtscProfileRAccess.class}
+            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, AdmofficerSystemCrudAccess.class, LegalrepSolicitorCrudAccess.class, SpecificAccessCtscProfileRAccess.class}
     )
     private YesOrNo displayMarkAsPaidEventForPartialRemission;
 
     @CCD(
             label = " ",
             searchable = false,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, LegalrepSolicitorSystemCrudAccess.class, AdmofficerCrudAccess.class, SpecificAccessCtscProfileRAccess.class}
+            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, AdmofficerSystemCrudAccess.class, LegalrepSolicitorCrudAccess.class, SpecificAccessCtscProfileRAccess.class}
     )
     private YesOrNo requestFeeRemissionFlagForServiceRequest;
 
@@ -6115,7 +6132,7 @@ public class CaseData {
     @CCD(
             label = "Auto-list the hearing?",
             searchable = false,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, CaseofficerSystemWaTaskConfigurationCrudAccess.class, AdmofficerLegalrepSolicitorRAccess.class, IacjudgeCrudAccess.class, SpecificAccessCtscProfileRAccess.class}
+            access = {SpecificAccessAdminCtscJudgeLegalOpsProfileRAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, CaseofficerSystemWaTaskConfigurationCrudAccess.class, AdmofficerLegalrepSolicitorRAccess.class, IacjudgeCrudAccess.class}
     )
     private YesOrNo autoListHearing;
 
@@ -6145,21 +6162,21 @@ public class CaseData {
             searchable = false,
             typeOverride = FieldType.FixedList,
             typeParameterOverride = "hearingLength",
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, AdmofficerCaseofficerSystemCrudAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, IacjudgeWaTaskConfigurationCrudAccess.class, CitizenSpecificAccessCtscProfileRAccess.class, LegalrepSolicitorRAccess.class}
+            access = {LegalrepSolicitorSpecificAccessAdminJudgeLegalOpsProfileRAccess.class, AdmofficerCaseofficerSystemCrudAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, IacjudgeWaTaskConfigurationCrudAccess.class, CitizenSpecificAccessCtscProfileRAccess.class}
     )
     private HearingLength requestHearingLength;
 
     @CCD(
             label = "Date and time",
             searchable = false,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, AdmofficerCaseofficerSystemCrudAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, IacjudgeSpecificAccessCtscProfileRAccess.class, CitizenLegalrepSolicitorRAccess.class, WaTaskConfigurationCrudAccess.class}
+            access = {IacjudgeSpecificAccessAdminCtscJudgeLegalOpsProfileRAccess.class, AdmofficerCaseofficerSystemCrudAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, CitizenLegalrepSolicitorRAccess.class, WaTaskConfigurationCrudAccess.class}
     )
     private LocalDateTime requestHearingDate;
 
     @CCD(
             label = "Date",
             searchable = false,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, AdmofficerCaseofficerSystemCrudAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, IacjudgeSpecificAccessCtscProfileRAccess.class, CitizenLegalrepSolicitorRAccess.class, WaTaskConfigurationCrudAccess.class}
+            access = {IacjudgeSpecificAccessAdminCtscJudgeLegalOpsProfileRAccess.class, AdmofficerCaseofficerSystemCrudAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, CitizenLegalrepSolicitorRAccess.class, WaTaskConfigurationCrudAccess.class}
     )
     private LocalDate requestHearingDate1;
 
@@ -6208,7 +6225,7 @@ public class CaseData {
     @CCD(
             label = "Internal flag managed by API to check DLRM fee remission feature flag value",
             searchable = false,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, CaseofficerIacjudgeSpecificAccessCtscProfileWaTaskConfigurationRAccess.class, AdmofficerLegalrepSolicitorRAccess.class, SystemCrudAccess.class, CitizenRAccess.class}
+            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, CaseofficerIacjudgeSpecificAccessCtscProfileWaTaskConfigurationRAccess.class, SystemCrudAdmofficerLegalrepSolicitorRAccess.class, CitizenRAccess.class}
     )
     private YesOrNo isDlrmFeeRemissionEnabled;
 
@@ -6415,7 +6432,7 @@ public class CaseData {
     @CCD(
             label = "Age Assessment Appeal condition to determine if AAA page is visible",
             searchable = false,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, IacjudgeSpecificAccessCtscProfileRAccess.class, LegalrepSolicitorSystemCrudAccess.class, CaseofficerCitizenRAccess.class, AdmofficerCrudAccess.class}
+            access = {IacjudgeSpecificAccessAdminCtscJudgeLegalOpsProfileRAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, AdmofficerSystemCrudAccess.class, CaseofficerCitizenRAccess.class, LegalrepSolicitorCrudAccess.class}
     )
     private YesOrNo isAgeAssessmentVisible;
 
@@ -6618,7 +6635,7 @@ public class CaseData {
             label = "This date will be used to determine if the appeal is in time.",
             searchable = false,
             typeOverride = FieldType.Label,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, IacjudgeSpecificAccessCtscProfileRAccess.class, LegalrepSolicitorSystemCrudAccess.class, CaseofficerCitizenRAccess.class, AdmofficerCrudAccess.class}
+            access = {IacjudgeSpecificAccessAdminCtscJudgeLegalOpsProfileRAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, AdmofficerSystemCrudAccess.class, CaseofficerCitizenRAccess.class, LegalrepSolicitorCrudAccess.class}
     )
     private String dateWillBeUsedToDetermineLabel;
 
@@ -6812,7 +6829,7 @@ public class CaseData {
     @CCD(
             label = " ",
             searchable = false,
-            access = {AdmofficerCaseofficerSystemCrudAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerCruAccess.class, IacjudgeCruAccess.class, LegalrepSolicitorCrudAccess.class, SpecificAccessAdminProfileCruAccess.class, SpecificAccessCtscProfileCruAccess.class, SpecificAccessJudgeProfileCruAccess.class, SpecificAccessLegalOpsProfileCruAccess.class}
+            access = {AdmofficerCaseofficerLegalrepSolicitorSystemCrudAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerCruAccess.class, IacjudgeCruAccess.class, SpecificAccessAdminProfileCruAccess.class, SpecificAccessCtscJudgeLegalOpsProfileCruAccess.class}
     )
     private YesOrNo isNotificationTurnedOff;
 
@@ -7325,21 +7342,21 @@ public class CaseData {
     @CCD(
             label = "Decision and reason documents",
             searchable = false,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, IacjudgeSpecificAccessCtscProfileRAccess.class, AdmofficerLegalrepSolicitorRAccess.class, CaseofficerSystemCrudAccess.class, CitizenWaTaskConfigurationRAccess.class}
+            access = {IacjudgeSpecificAccessAdminCtscJudgeLegalOpsProfileRAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, AdmofficerLegalrepSolicitorRAccess.class, CaseofficerSystemCrudAccess.class, CitizenWaTaskConfigurationRAccess.class}
     )
     private List<ListValue<DocumentWithMetadata>> latestDecisionAndReasonsDocuments;
 
     @CCD(
             label = "Remittal Documents",
             searchable = false,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, IacjudgeSpecificAccessCtscProfileRAccess.class, AdmofficerLegalrepSolicitorRAccess.class, CaseofficerSystemCrudAccess.class, CitizenWaTaskConfigurationRAccess.class}
+            access = {IacjudgeSpecificAccessAdminCtscJudgeLegalOpsProfileRAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, AdmofficerLegalrepSolicitorRAccess.class, CaseofficerSystemCrudAccess.class, CitizenWaTaskConfigurationRAccess.class}
     )
     private List<ListValue<DocumentWithMetadata>> latestRemittalDocuments;
 
     @CCD(
             label = "Reheard hearing documents",
             searchable = false,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, IacjudgeSpecificAccessCtscProfileRAccess.class, AdmofficerLegalrepSolicitorRAccess.class, CaseofficerSystemCrudAccess.class, CitizenWaTaskConfigurationRAccess.class}
+            access = {IacjudgeSpecificAccessAdminCtscJudgeLegalOpsProfileRAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, AdmofficerLegalrepSolicitorRAccess.class, CaseofficerSystemCrudAccess.class, CitizenWaTaskConfigurationRAccess.class}
     )
     private List<ListValue<DocumentWithMetadata>> latestReheardHearingDocuments;
 
@@ -7364,13 +7381,13 @@ public class CaseData {
 
     @CCD(
             label = "Internal flag managed by API to check DLRM fee refund feature flag value",
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, CaseofficerIacjudgeSpecificAccessCtscProfileWaTaskConfigurationRAccess.class, AdmofficerLegalrepSolicitorRAccess.class, SystemCrudAccess.class, CitizenRAccess.class}
+            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, CaseofficerIacjudgeSpecificAccessCtscProfileWaTaskConfigurationRAccess.class, SystemCrudAdmofficerLegalrepSolicitorRAccess.class, CitizenRAccess.class}
     )
     private YesOrNo isDlrmFeeRefundEnabled;
 
     @CCD(
             label = "Internal flag managed by API to check whether fee remission request is late (refund) or not",
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, CaseofficerIacjudgeSpecificAccessCtscProfileWaTaskConfigurationRAccess.class, AdmofficerLegalrepSolicitorRAccess.class, SystemCrudAccess.class, CitizenCruAccess.class}
+            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, CaseofficerIacjudgeSpecificAccessCtscProfileWaTaskConfigurationRAccess.class, SystemCrudAdmofficerLegalrepSolicitorRAccess.class, CitizenCruAccess.class}
     )
     private YesOrNo isLateRemissionRequest;
 
@@ -7418,7 +7435,7 @@ public class CaseData {
     @CCD(
             label = " ",
             searchable = false,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, CaseofficerIacjudgeSpecificAccessCtscProfileWaTaskConfigurationRAccess.class, LegalrepSolicitorSystemCrudAccess.class, AdmofficerCitizenCrudAccess.class}
+            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, CaseofficerIacjudgeSpecificAccessCtscProfileWaTaskConfigurationRAccess.class, AdmofficerSystemCrudAccess.class, CitizenLegalrepSolicitorCrudAccess.class}
     )
     private YesOrNo hasPreviousRemission;
 
@@ -7458,14 +7475,14 @@ public class CaseData {
     @CCD(
             label = " ",
             searchable = false,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, CaseofficerIacjudgeSpecificAccessCtscProfileWaTaskConfigurationRAccess.class, AdmofficerCitizenCruAccess.class, LegalrepSolicitorRAccess.class, SystemCrudAccess.class}
+            access = {LegalrepSolicitorSpecificAccessAdminJudgeLegalOpsProfileRAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, CaseofficerIacjudgeSpecificAccessCtscProfileWaTaskConfigurationRAccess.class, AdmofficerCitizenCruAccess.class, SystemCrudAccess.class}
     )
     private YesOrNo refundConfirmationApplied;
 
     @CCD(
             label = "How do you want the appeal to be decided?",
             searchable = false,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, IacjudgeSpecificAccessCtscProfileRAccess.class, AdmofficerSystemCrudAccess.class, CaseofficerCruAccess.class, LegalrepSolicitorCruAccess.class, WaTaskConfigurationRAccess.class, CitizenCrudAccess.class}
+            access = {IacjudgeSpecificAccessAdminCtscJudgeLegalOpsProfileRAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, AdmofficerSystemCrudAccess.class, CitizenCrudAccess.class, CaseofficerLegalrepSolicitorCruWaTaskConfigurationRAccess.class}
     )
     private DecisionHearingFeeOption updatedDecisionHearingFeeOption;
 
@@ -7486,7 +7503,7 @@ public class CaseData {
             label = "Fee",
             searchable = false,
             typeOverride = FieldType.MoneyGBP,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, CaseofficerIacjudgeSpecificAccessCtscProfileWaTaskConfigurationRAccess.class, LegalrepSolicitorSystemCrudAccess.class, AdmofficerCrudAccess.class, CitizenCruAccess.class}
+            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, CaseofficerIacjudgeSpecificAccessCtscProfileWaTaskConfigurationRAccess.class, AdmofficerSystemCrudAccess.class, LegalrepSolicitorCrudAccess.class, CitizenCruAccess.class}
     )
     private String previousFeeAmountGbp;
 
@@ -7574,7 +7591,7 @@ public class CaseData {
     @CCD(
             label = "Internal flag managed by API to check if decision is changed via Tribunal decision under rule 31",
             searchable = false,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, IacjudgeSystemCrudAccess.class, AdmofficerLegalrepSolicitorRAccess.class, CaseofficerCrudAccess.class, SpecificAccessCtscProfileRAccess.class}
+            access = {SpecificAccessAdminCtscJudgeLegalOpsProfileRAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, AdmofficerLegalrepSolicitorRAccess.class, IacjudgeSystemCrudAccess.class, CaseofficerCrudAccess.class}
     )
     private YesOrNo isDecisionRule31Changed;
 
@@ -7736,7 +7753,7 @@ public class CaseData {
             label = " ",
             searchable = false,
             typeOverride = FieldType.Label,
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, IacjudgeLegalrepSolicitorCrudAccess.class, AdmofficerCaseofficerWaTaskConfigurationCrudAccess.class, SpecificAccessCtscProfileRAccess.class}
+            access = {SpecificAccessAdminCtscJudgeLegalOpsProfileRAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerRAccess.class, IacjudgeLegalrepSolicitorCrudAccess.class, AdmofficerCaseofficerCrudAccess.class, WaTaskConfigurationCrudAccess.class}
     )
     private String custodialSentenceTitle;
 
@@ -7814,7 +7831,7 @@ public class CaseData {
     @CCD(
             label = " ",
             searchable = false,
-            access = {LegalrepSolicitorSystemCrudAccess.class, AdmofficerCitizenCrudAccess.class}
+            access = {AdmofficerSystemCrudAccess.class, CitizenLegalrepSolicitorCrudAccess.class}
     )
     private LocalDate lastEditAppealNotificationDate;
 
@@ -7850,7 +7867,7 @@ public class CaseData {
 
     @CCD(
             label = "STF 24 Weeks was Yes",
-            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, AdmofficerCaseofficerSystemCrudAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerCruAccess.class, IacjudgeCrudAccess.class, LegalrepSolicitorCruAccess.class, CitizenRAccess.class}
+            access = {LegalrepSolicitorCruSpecificAccessAdminJudgeLegalOpsProfileRAccess.class, AdmofficerCaseofficerSystemCrudAccess.class, HomeofficeapcHomeofficelartHomeofficepouRespondentofficerCruAccess.class, IacjudgeCrudAccess.class, CitizenRAccess.class}
     )
     private YesOrNo stf24wPreviousStatusWasYesAutoGenerated;
 

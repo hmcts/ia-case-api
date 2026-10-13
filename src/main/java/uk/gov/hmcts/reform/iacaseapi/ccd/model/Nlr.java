@@ -12,7 +12,7 @@ import uk.gov.hmcts.ccd.sdk.type.FieldType;
 import uk.gov.hmcts.ccd.sdk.type.Flags;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.AdmofficerCaseofficerSystemCrudAccess;
-import uk.gov.hmcts.reform.iacaseapi.ccd.access.CaseflagsProfileSystemCrudAccess;
+import uk.gov.hmcts.reform.iacaseapi.ccd.access.CaseflagsProfileCrudAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.CaseflagsReadonlyProfileCruAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.CitizenIacjudgeSpecificAccessAdminCtscLegalOpsProfileCrudAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.CitizenLegalrepSolicitorCrudAccess;
@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.iacaseapi.ccd.access.GsProfileCrudAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.IacjudgeSpecificAccessCtscProfileRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.SpecificAccessAdminJudgeLegalOpsProfileRAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.SpecificAccessAdminLegalOpsProfileRAccess;
+import uk.gov.hmcts.reform.iacaseapi.ccd.access.SystemCrudAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.model.complex.InterpreterSignLanguage;
 import uk.gov.hmcts.reform.iacaseapi.ccd.model.complex.InterpreterSpokenLanguage;
 import uk.gov.hmcts.reform.iacaseapi.ccd.model.complex.NlrDetails;
@@ -37,7 +38,10 @@ import uk.gov.hmcts.reform.iacaseapi.ccd.model.enums.InterpreterLanguageCategory
 @NoArgsConstructor
 @AllArgsConstructor
 public class Nlr {
-    @CCD(label = " ", access = {CaseflagsProfileSystemCrudAccess.class, CaseflagsReadonlyProfileCruAccess.class})
+    @CCD(
+            label = " ",
+            access = {SystemCrudAccess.class, CaseflagsProfileCrudAccess.class, CaseflagsReadonlyProfileCruAccess.class}
+    )
     private Flags levelFlags;
 
     @CCD(

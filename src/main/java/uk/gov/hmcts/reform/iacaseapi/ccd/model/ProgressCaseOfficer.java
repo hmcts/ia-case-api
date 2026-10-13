@@ -6,9 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
 import uk.gov.hmcts.ccd.sdk.type.FieldType;
-import uk.gov.hmcts.reform.iacaseapi.ccd.access.CaseofficerCrudAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.CaseofficerWaTaskConfigurationCrudAccess;
-import uk.gov.hmcts.reform.iacaseapi.ccd.access.IacjudgeWaTaskConfigurationCrudAccess;
+import uk.gov.hmcts.reform.iacaseapi.ccd.access.IacjudgeCrudAccess;
 import uk.gov.hmcts.reform.iacaseapi.ccd.access.SpecificAccessAdminJudgeLegalOpsProfileRAccess;
 
 /**
@@ -1681,7 +1680,7 @@ public class ProgressCaseOfficer {
                             + "You must now [update the hearing adjustments or confirm they haven't changed.](/case/IA/Asylum/${[CASE_REFERENCE]}/trigger/updateHearingAdjustments)",
             searchable = false,
             typeOverride = FieldType.Label,
-            access = {IacjudgeWaTaskConfigurationCrudAccess.class, CaseofficerCrudAccess.class}
+            access = {CaseofficerWaTaskConfigurationCrudAccess.class, IacjudgeCrudAccess.class}
     )
     private String progress_caseOfficer_updateHearingRequirements;
 
