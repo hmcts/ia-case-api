@@ -15,18 +15,20 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 import java.util.List;
+import java.util.Set;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.shouldValidateEditPersonalData;
 import static uk.gov.hmcts.reform.iacaseapi.domain.service.HomeOfficeReferenceService.deserialiseHomeOfficeAppellantList;
 import static uk.gov.hmcts.reform.iacaseapi.domain.service.HomeOfficeReferenceService.writeHomeOfficeAppellants;
 
 @Slf4j
 @Component
 @ConditionalOnProperty(
-        name = "app.home-office-validation.enabled",
-        havingValue = "true",
-        matchIfMissing = true
+    name = "app.home-office-validation.enabled",
+    havingValue = "true",
+    matchIfMissing = true
 )
 @ConditionalOnProperty(
     name = "app.home-office-mock-turn-off-for-test.enabled",
@@ -42,18 +44,20 @@ public class HomeOfficeReferenceHandlerOnSubmit implements PreSubmitCallbackHand
     }
 
     public boolean canHandle(
-            PreSubmitCallbackStage callbackStage,
-            Callback<AsylumCase> callback) {
+        PreSubmitCallbackStage callbackStage,
+        Callback<AsylumCase> callback) {
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-                && List.of(Event.START_APPEAL, Event.EDIT_APPEAL, Event.EDIT_APPEAL_AFTER_SUBMIT).contains(callback.getEvent());
+            && (Set.of(Event.START_APPEAL, Event.EDIT_APPEAL).contains(callback.getEvent())
+            || shouldValidateEditPersonalData(callback));
+
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
-            PreSubmitCallbackStage callbackStage,
-            Callback<AsylumCase> callback) {
+        PreSubmitCallbackStage callbackStage,
+        Callback<AsylumCase> callback) {
         if (!canHandle(callbackStage, callback)) {
             throw new IllegalStateException("Cannot handle callback");
         }
