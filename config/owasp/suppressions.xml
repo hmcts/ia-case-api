@@ -38,5 +38,8 @@
         <cve>CVE-2026-103005</cve>
         <cve>CVE-2026-103008</cve>
         <cve>CVE-2026-103009</cve>
+        <cve>CVE-2026-102408,</cve>
+        <cve>CVE-2026-102409</cve>
+        <cve>CVE-2026-102404</cve>
     </suppress>
 </suppressions>
