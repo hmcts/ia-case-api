@@ -686,7 +686,7 @@ ia-aip-frontend:
       PAYMENTS_API_URL: http://payment-api-aat.service.core-compute-aat.internal
       DOCMOSIS_RENDER_URL: "https://docmosis.aat.platform.hmcts.net/rs/render"
       IDAM_WEB_URL: https://idam-web-public.aat.platform.hmcts.net
-      IDAM_API_URL: https://idam-api.aat.platform.hmcts.net
+      IDAM_API_URL: https://hmcts-access.aat.platform.hmcts.net
       # IDAM_API_URL: http://{{ .Release.Name }}-xui-webapp
       S2S_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
       REDIS_URL: redis://{{ .Release.Name }}-redis-master
