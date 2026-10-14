@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 import static java.util.Arrays.stream;
@@ -13,6 +14,7 @@ public enum SourceOfAppeal {
     @JsonValue
     private String value;
 
+    @JsonCreator
     SourceOfAppeal(String value) {
         this.value = value;
     }

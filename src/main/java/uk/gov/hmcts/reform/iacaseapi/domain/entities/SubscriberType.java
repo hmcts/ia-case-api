@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
 import static java.util.Arrays.stream;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.Optional;
 
@@ -13,6 +14,7 @@ public enum SubscriberType {
     @JsonValue
     private final String value;
 
+    @JsonCreator
     SubscriberType(String value) {
         this.value = value;
     }

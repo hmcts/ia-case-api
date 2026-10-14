@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum RemissionDecision {
@@ -11,6 +12,7 @@ public enum RemissionDecision {
     @JsonValue
     private final String id;
 
+    @JsonCreator
     RemissionDecision(String id) {
         this.id = id;
     }

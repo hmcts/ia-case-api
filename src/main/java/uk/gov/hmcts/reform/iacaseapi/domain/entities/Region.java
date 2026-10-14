@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum Region {
@@ -8,6 +9,7 @@ public enum Region {
     @JsonValue
     private String id;
 
+    @JsonCreator
     Region(String id) {
         this.id = id;
     }

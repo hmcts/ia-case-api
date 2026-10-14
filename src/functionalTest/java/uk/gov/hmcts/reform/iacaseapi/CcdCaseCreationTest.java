@@ -117,6 +117,7 @@ public class CcdCaseCreationTest {
     }
 
     private void startAppealAsLegalRep() {
+        log.info("Start: Starting appeal as legal rep");
         Map<String, Object> data = getStartAppealData(startLegalRepAppeal);
         data.put("paAppealTypePaymentOption", "payNow");
 
@@ -148,10 +149,13 @@ public class CcdCaseCreationTest {
                 jurisdiction, caseType, true, content);
 
         legalRepCaseId = caseDetails.getId();
+        log.info("End: Starting appeal as legal rep: " + legalRepCaseId);
 
     }
 
     private void submitAppealAsLegalRep() {
+        log.info("Start: Submit appeal as legal rep: " + legalRepCaseId);
+
         caseData = new HashMap<>();
         caseData.put("decisionHearingFeeOption", "decisionWithHearing");
         caseData.put("hmctsCaseNameInternal", "testCase");
@@ -185,6 +189,7 @@ public class CcdCaseCreationTest {
             content);
 
         legalRepAppealCaseData = caseResource.getData();
+        log.info("End: Submit appeal as legal rep: " + legalRepAppealCaseData);
     }
 
     private void startAppealAsCitizen() {
@@ -278,6 +283,7 @@ public class CcdCaseCreationTest {
     }
 
     protected String getLegalRepCaseId() {
+        log.info("Legal rep case id: " + legalRepCaseId);
         return Long.toString(legalRepCaseId);
     }
 
@@ -291,7 +297,7 @@ public class CcdCaseCreationTest {
         for (Map.Entry<String, JsonNode> entry : legalRepAppealCaseData.entrySet()) {
             asylumCase.put(entry.getKey(), entry.getValue());
         }
-
+        log.info("Asylum case retrieved");
         return asylumCase;
     }
 
