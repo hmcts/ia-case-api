@@ -9,7 +9,7 @@
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
-          "homeOfficeReferenceNumber": "1212-0099-0062-8083",
+          "homeOfficeReferenceNumber": "1342-5786-9120-3564",
           "listCaseHearingCentre": "coventry",
           "listCaseHearingCentreAddress": "Coventry Magistrates' Court, Little Park Street, CV1 2SQ",
           "listCaseHearingLength": "60",
@@ -67,7 +67,7 @@
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {
-        "homeOfficeReferenceNumber": "1212-0099-0062-8083",
+        "homeOfficeReferenceNumber": "1342-5786-9120-3564",
         "listCaseHearingCentre": "coventry",
         "listCaseHearingCentreAddress": "Coventry Magistrates' Court, Little Park Street, CV1 2SQ",
         "listCaseHearingLength": "60",
