@@ -124,6 +124,13 @@ public class HomeOffice {
     private String decisionEnvelopeImage;
 
     @CCD(
+            label = "Home Office appellant language",
+            searchable = false,
+            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, SystemCrudAccess.class}
+    )
+    private String appellantLanguage;
+
+    @CCD(
             label = "Upload Home Office bundle",
             searchable = false,
             access = {HomeofficeapcRespondentofficerCrudAccess.class, SystemCrudAccess.class}

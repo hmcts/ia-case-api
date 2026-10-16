@@ -31,6 +31,8 @@ public class UpdatePaymentStatus implements CCDConfig<CaseData, State, UserRole>
     @Override
     public void configure(ConfigBuilder<CaseData, State, UserRole> builder) {
         var fields = builder.event(UPDATE_PAYMENT_STATUS)
+            // Definition PostConditionState: appealSubmitted(journeyType!="aip" AND paymentStatus="Paid" AND appealType!="protection" AND appealType!="revocationOfProtection" AND appealType!="deprivation"):1;*
+            // The SDK sets one end state (appealSubmitted); the aboutToSubmit callback must set the state.
             .forStateTransition(EnumSet.allOf(State.class), State.appealSubmitted)
             .name("Update payment status")
             .displayOrder(90)

@@ -30,13 +30,13 @@ public class RevertStateToAwaitingRespondentEvidence implements CCDConfig<CaseDa
     public void configure(ConfigBuilder<CaseData, State, UserRole> builder) {
         builder.event(REVERT_STATE_TO_AWAITING_RESPONDENT_EVIDENCE)
             .forStateTransition(State.caseBuilding, State.awaitingRespondentEvidence)
-            .name("Add additional evidence")
+            .name("Revert to respondent evidence")
             .displayOrder(22)
             .showSummary(false)
             .endButtonLabel("Continue")
             .aboutToSubmitCallback("${CCD_DEF_IA_URL}/asylum/ccdAboutToSubmit", 5, 5, 5, 5)
             .explicitGrants()
-            .grant(Permission.CRUD, UserRole.CASEWORKER_IA_CASEOFFICER)
-            .grant(Set.of(Permission.R), UserRole.CASEWORKER_IA_ADMOFFICER, UserRole.CASEWORKER_IA_IACJUDGE);
+            .grant(Set.of(Permission.R), UserRole.CASEWORKER_IA_ADMOFFICER, UserRole.CASEWORKER_IA_CASEOFFICER, UserRole.CASEWORKER_IA_IACJUDGE)
+            .grant(Permission.CRUD, UserRole.CASEWORKER_IA_INTERNAL);
     }
 }

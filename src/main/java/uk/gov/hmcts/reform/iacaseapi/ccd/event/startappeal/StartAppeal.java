@@ -28,6 +28,8 @@ public class StartAppeal implements CCDConfig<CaseData, State, UserRole> {
     @Override
     public void configure(ConfigBuilder<CaseData, State, UserRole> builder) {
         var fields = builder.event(START_APPEAL)
+            // Definition PostConditionState: appealStartedByAdmin(isAdmin!="" AND isAdmin="Yes"):2;appealStarted
+            // The SDK sets one end state (appealStartedByAdmin); the aboutToSubmit callback must set the state.
             .initialState(State.appealStartedByAdmin)
             .name("Start the appeal")
             .displayOrder(1)

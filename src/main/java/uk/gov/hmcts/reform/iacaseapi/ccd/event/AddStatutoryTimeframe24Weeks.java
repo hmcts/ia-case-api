@@ -29,6 +29,8 @@ public class AddStatutoryTimeframe24Weeks implements CCDConfig<CaseData, State, 
     @Override
     public void configure(ConfigBuilder<CaseData, State, UserRole> builder) {
         var fields = builder.event(ADD_STATUTORY_TIMEFRAME24_WEEKS)
+            // Definition PostConditionState: listing([STATE]="awaitingRespondentEvidence"):1;*
+            // The SDK sets one end state (listing); the aboutToSubmit callback must set the state.
             .forStateTransition(EnumSet.of(State.pendingPayment, State.appealSubmitted, State.awaitingRespondentEvidence, State.awaitingClarifyingQuestionsAnswers, State.clarifyingQuestionsAnswersSubmitted), State.listing)
             .name("Add Statutory Timeframe")
             .description("Add Statutory Timeframe 24 Weeks")

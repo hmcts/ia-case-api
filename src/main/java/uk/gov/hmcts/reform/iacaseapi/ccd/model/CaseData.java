@@ -498,6 +498,43 @@ public class CaseData {
     private String mobileNumberRetype;
 
     @CCD(
+            label = "Right of appeal as determined by the Home Office",
+            searchable = false,
+            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, SystemCrudAccess.class}
+    )
+    private YesOrNo hoRightOfAppeal;
+
+    @CCD(
+            label = "![]()\n"
+                            + "## Home Office approved remission",
+            searchable = false,
+            typeOverride = FieldType.Label,
+            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, SystemCrudAccess.class}
+    )
+    private String hoApprovedRemissionTitle;
+
+    @CCD(
+            label = "Asylum support",
+            searchable = false,
+            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, SystemCrudAccess.class}
+    )
+    private YesOrNo hoAsylumSupport;
+
+    @CCD(
+            label = "Fee waiver",
+            searchable = false,
+            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, SystemCrudAccess.class}
+    )
+    private YesOrNo hoFeeWaiver;
+
+    @CCD(
+            label = "Home office Interpreter required",
+            searchable = false,
+            access = {SpecificAccessAdminJudgeLegalOpsProfileRAccess.class, SystemCrudAccess.class}
+    )
+    private YesOrNo hoInterpreterRequired;
+
+    @CCD(
             label = " ",
             searchable = false,
             typeOverride = FieldType.Label,
