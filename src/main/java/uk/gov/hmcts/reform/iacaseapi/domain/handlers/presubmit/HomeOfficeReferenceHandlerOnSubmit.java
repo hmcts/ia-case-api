@@ -78,6 +78,7 @@ public class HomeOfficeReferenceHandlerOnSubmit implements PreSubmitCallbackHand
                 homeOfficeSerialisedEncryptionKey, asylumCase, homeOfficeReferenceNumber);
             writeHomeOfficeAppellants(asylumCase, homeOfficeAppellants);
         }
+
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 }

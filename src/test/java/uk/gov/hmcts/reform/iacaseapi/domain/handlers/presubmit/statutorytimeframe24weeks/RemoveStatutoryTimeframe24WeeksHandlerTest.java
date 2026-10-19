@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -28,6 +29,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMOVAL_OF_24W_DECISION_REASON;
+
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -54,14 +57,16 @@ class RemoveStatutoryTimeframe24WeeksHandlerTest {
 
     @Test
     void should_append_new_statutory_timeframe_24_weeks_to_existing_statutory_timeframe_24_weeks() {
-        when(updateStatutoryTimeframe24WeeksService.updateAsylumCase(any(AsylumCase.class), any(YesOrNo.class)))
+        when(updateStatutoryTimeframe24WeeksService.updateAsylumCase(any(AsylumCase.class), any(YesOrNo.class), any(String.class)))
                 .thenReturn(asylumCase);
+        String reason = "reason test";
+        when(asylumCase.read(REMOVAL_OF_24W_DECISION_REASON, String.class)).thenReturn(Optional.of(reason));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
                 removeStatutoryTimeframe24WeeksHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertThat(callbackResponse.getData()).isEqualTo(asylumCase);
-        verify(updateStatutoryTimeframe24WeeksService).updateAsylumCase(asylumCase, YesOrNo.NO);
+        verify(updateStatutoryTimeframe24WeeksService).updateAsylumCase(asylumCase, YesOrNo.NO, reason);
         verify(asylumCase).writeIfEmpty(AsylumCaseFieldDefinition.STF_24W_REMOVE_DATE, LocalDate.now().toString());
     }
 
@@ -115,6 +120,15 @@ class RemoveStatutoryTimeframe24WeeksHandlerTest {
         assertThatThrownBy(() -> removeStatutoryTimeframe24WeeksHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
                 .hasMessage("callback must not be null")
                 .isExactlyInstanceOf(NullPointerException.class);
+    }
+
+    @Test
+    void should_throw_when_removalOf24wDecisionReason_is_not_present_if_status_no() {
+        when(asylumCase.read(REMOVAL_OF_24W_DECISION_REASON, String.class)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> removeStatutoryTimeframe24WeeksHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
+            .hasMessage("removalOf24wDecisionReason is not present")
+            .isExactlyInstanceOf(IllegalStateException.class);
     }
 
 }
