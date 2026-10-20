@@ -37,10 +37,14 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.service.HomeOfficeReferenceSe
 public class HomeOfficeReferenceHandlerOnSubmit implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final String homeOfficeSerialisedEncryptionKey;
+    private final boolean isGwfValidationEnabled;
 
     public HomeOfficeReferenceHandlerOnSubmit(@Value("${homeOfficeApi.serialisation.encryption.key}")
-                                              String homeOfficeSerialisedEncryptionKey) {
+                                              String homeOfficeSerialisedEncryptionKey,
+                                              @Value("${app.gwf-validation.enabled}") boolean isGwfValidationEnabled
+    ) {
         this.homeOfficeSerialisedEncryptionKey = homeOfficeSerialisedEncryptionKey;
+        this.isGwfValidationEnabled = isGwfValidationEnabled;
     }
 
     public boolean canHandle(
@@ -70,6 +74,9 @@ public class HomeOfficeReferenceHandlerOnSubmit implements PreSubmitCallbackHand
             String homeOfficeReferenceNumber = HandlerUtils.getUanOrGwf(asylumCase);
             if (homeOfficeReferenceNumber.isBlank()) {
                 throw new IllegalStateException("homeOfficeReferenceNumber and gwfReferenceNumber are both missing - one or other is needed");
+            }
+            if (HandlerUtils.isGwfReference(homeOfficeReferenceNumber) && !isGwfValidationEnabled) {
+                return new PreSubmitCallbackResponse<>(asylumCase);
             }
 
             log.info("Writing retrieved Home Office appellant data to the case record in full for case with Home Office reference {}.", homeOfficeReferenceNumber);

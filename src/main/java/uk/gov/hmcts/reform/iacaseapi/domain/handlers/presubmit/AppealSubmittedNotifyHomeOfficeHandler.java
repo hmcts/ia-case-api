@@ -50,6 +50,7 @@ public class AppealSubmittedNotifyHomeOfficeHandler implements PreSubmitCallback
     private final HomeOfficeApi<AsylumCase> homeOfficeApi;
     private final HomeOfficeReferenceService homeOfficeReferenceService;
     private final String homeOfficeSerialisedEncryptionKey;
+    private final boolean isGwfValidationEnabled;
 
     @Override
     public DispatchPriority getDispatchPriority() {
@@ -60,10 +61,12 @@ public class AppealSubmittedNotifyHomeOfficeHandler implements PreSubmitCallback
         @Value("${featureFlag.isHomeOfficeIntegrationEnabled}") boolean isHomeOfficeIntegrationEnabled,
         HomeOfficeReferenceService homeOfficeReferenceService,
         HomeOfficeApi<AsylumCase> homeOfficeApi,
+        @Value("${app.gwf-validation.enabled}") boolean isGwfValidationEnabled,
         @Value("${homeOfficeApi.serialisation.encryption.key}")
         String homeOfficeSerialisedEncryptionKey) {
         this.homeOfficeApi = homeOfficeApi;
         this.homeOfficeReferenceService = homeOfficeReferenceService;
+        this.isGwfValidationEnabled = isGwfValidationEnabled;
         this.homeOfficeSerialisedEncryptionKey = homeOfficeSerialisedEncryptionKey;
     }
 
@@ -93,6 +96,9 @@ public class AppealSubmittedNotifyHomeOfficeHandler implements PreSubmitCallback
         final String homeOfficeReferenceNumber = HandlerUtils.getUanOrGwf(asylumCase);
         if (homeOfficeReferenceNumber.isEmpty()) {
             throw new IllegalStateException("homeOfficeReferenceNumber and gwfReferenceNumber are both missing - one or other is needed");
+        }
+        if (HandlerUtils.isGwfReference(homeOfficeReferenceNumber) && !isGwfValidationEnabled) {
+            return new PreSubmitCallbackResponse<>(asylumCase);
         }
         // Ensure this is present before calling the Home Office API (where it will be needed)
         final String appealReferenceNumber = asylumCase.read(APPEAL_REFERENCE_NUMBER, String.class)

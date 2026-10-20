@@ -60,13 +60,13 @@ class HomeOfficeReferenceHandlerTest {
     @Mock
     private HomeOfficeAppellant appellant;
 
-    @InjectMocks
     private HomeOfficeReferenceHandler handler;
 
     @BeforeEach
     void setup() {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        handler = new HomeOfficeReferenceHandler(referenceService, true);
     }
 
     @ParameterizedTest

@@ -56,7 +56,9 @@ public class HandlerUtils {
 
     public static final String ON_THE_PAPERS = "ONPPRS";
     public static final Pattern HOME_OFFICE_REF_PATTERN = Pattern
-        .compile("^(([0-9]{4}\\-[0-9]{4}\\-[0-9]{4}\\-[0-9]{4})|(GWF[0-9]{9}))$");
+        .compile("^([0-9]{4}\\-[0-9]{4}\\-[0-9]{4}\\-[0-9]{4})$");
+    public static final Pattern GWF_PATTERN = Pattern
+        .compile("^(GWF[0-9]{9})$");
     public static final Set<State> supportedAdd24wFlagStates = Set.of(
         State.PENDING_PAYMENT,
         State.APPEAL_SUBMITTED,
@@ -1021,16 +1023,16 @@ public class HandlerUtils {
     }
 
     public static boolean isWellFormedHomeOfficeReference(String hoReference) {
-        return hoReference != null && HOME_OFFICE_REF_PATTERN.matcher(hoReference).matches();
+        return hoReference != null && (HOME_OFFICE_REF_PATTERN.matcher(hoReference).matches() || GWF_PATTERN.matcher(hoReference).matches());
+    }
+
+    public static boolean isGwfReference(String hoReference) {
+        return hoReference != null && GWF_PATTERN.matcher(hoReference).matches();
     }
 
     public static boolean isRealHomeOfficeCaseNumber(String hoReference, Callback<AsylumCase> callback, HomeOfficeReferenceService homeOfficeReferenceService) {
-        if (hoReference == null) {
-            return false;
-        } else {
-            List<IdValue<HomeOfficeAppellant>> homeOfficeAppellants = homeOfficeReferenceService.getHomeOfficeReferenceData(hoReference, callback);
-            return !homeOfficeAppellants.isEmpty();
-        }
+        List<IdValue<HomeOfficeAppellant>> homeOfficeAppellants = homeOfficeReferenceService.getHomeOfficeReferenceData(hoReference, callback);
+        return !homeOfficeAppellants.isEmpty();
     }
 
     public static boolean isMatchingName(String hoReference, AsylumCase asylumCase, Callback<AsylumCase> callback, HomeOfficeReferenceService homeOfficeReferenceService) {

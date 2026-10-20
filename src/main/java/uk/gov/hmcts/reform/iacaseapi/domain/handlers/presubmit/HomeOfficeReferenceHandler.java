@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -31,13 +32,17 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.*;
 )
 public class HomeOfficeReferenceHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
+    private final boolean isGwfValidationEnabled;
     private final HomeOfficeReferenceService homeOfficeReferenceService;
     public final Set<String> validPages = Set.of(
         "homeOfficeReferenceNumber", "oocHomeOfficeReferenceNumber", "appellantBasicDetails", // ExUI pages
         "cuiHomeOfficeReferenceNumber", "cuiGwfReferenceNumber", "cuiAppellantName", "cuiAppellantDob"); // CUI pages
 
-    public HomeOfficeReferenceHandler(HomeOfficeReferenceService homeOfficeReferenceService) {
+    public HomeOfficeReferenceHandler(HomeOfficeReferenceService homeOfficeReferenceService,
+                                      @Value("${app.gwf-validation.enabled}") boolean isGwfValidationEnabled
+    ) {
         this.homeOfficeReferenceService = homeOfficeReferenceService;
+        this.isGwfValidationEnabled = isGwfValidationEnabled;
     }
 
     public boolean canHandle(
@@ -64,6 +69,10 @@ public class HomeOfficeReferenceHandler implements PreSubmitCallbackHandler<Asyl
         String homeOfficeReferenceNumber = HandlerUtils.getUanOrGwf(asylumCase);
         if (homeOfficeReferenceNumber.isEmpty()) {
             throw new IllegalStateException("homeOfficeReferenceNumber and gwfReferenceNumber are both missing - one or other is needed");
+        }
+
+        if (HandlerUtils.isGwfReference(homeOfficeReferenceNumber) && !isGwfValidationEnabled) {
+            return new PreSubmitCallbackResponse<>(asylumCase);
         }
 
         String pageId = callback.getPageId();
