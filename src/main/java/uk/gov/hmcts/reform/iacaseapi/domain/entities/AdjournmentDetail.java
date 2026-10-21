@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
 import lombok.Builder;
 import lombok.Data;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.HoursMinutes;
 
 @Data
 @Builder
@@ -17,7 +18,7 @@ public class AdjournmentDetail {
     private String relistCaseImmediately;
     private String nextHearingFormat;
     private String nextHearingVenue;
-    private String nextHearingDuration;
+    private HoursMinutes nextHearingDuration;
     private String nextHearingDate;
     private String nextHearingDateFixed;
     private String nextHearingDateRangeEarliest;
