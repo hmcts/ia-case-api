@@ -1026,8 +1026,11 @@ public class HandlerUtils {
         return hoReference != null && (HOME_OFFICE_REF_PATTERN.matcher(hoReference).matches() || GWF_PATTERN.matcher(hoReference).matches());
     }
 
-    public static boolean isGwfReference(String hoReference) {
-        return hoReference != null && GWF_PATTERN.matcher(hoReference).matches();
+    public static boolean isGwfReferenceAndOoc(AsylumCase asylumCase) {
+        boolean isOoc = asylumCase.read(APPELLANT_IN_UK, YesOrNo.class).orElse(YesOrNo.YES).isNo();
+        final String homeOfficeReferenceNumber = HandlerUtils.getUanOrGwf(asylumCase);
+
+        return homeOfficeReferenceNumber != null && GWF_PATTERN.matcher(homeOfficeReferenceNumber).matches() && isOoc;
     }
 
     public static boolean isRealHomeOfficeCaseNumber(String hoReference, Callback<AsylumCase> callback, HomeOfficeReferenceService homeOfficeReferenceService) {

@@ -71,7 +71,7 @@ public class HomeOfficeReferenceHandler implements PreSubmitCallbackHandler<Asyl
             throw new IllegalStateException("homeOfficeReferenceNumber and gwfReferenceNumber are both missing - one or other is needed");
         }
 
-        if (HandlerUtils.isGwfReference(homeOfficeReferenceNumber) && !isGwfValidationEnabled) {
+        if (HandlerUtils.isGwfReferenceAndOoc(asylumCase) && !isGwfValidationEnabled) {
             return new PreSubmitCallbackResponse<>(asylumCase);
         }
 
