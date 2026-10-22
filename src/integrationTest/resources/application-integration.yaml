@@ -1,5 +1,8 @@
 
 spring:
+  data:
+    redis:
+      url: ${REDIS_URL:redis://localhost:6379}
   retry:
     max-attempts: 100
   datasource:

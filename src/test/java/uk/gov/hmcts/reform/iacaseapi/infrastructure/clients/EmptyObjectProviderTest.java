@@ -11,8 +11,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.cloud.openfeign.support.HttpMessageConverterCustomizer;
 import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 
+@SuppressWarnings("removal")
 @ExtendWith(MockitoExtension.class)
 class EmptyObjectProviderTest {
 
@@ -21,8 +21,8 @@ class EmptyObjectProviderTest {
     @Test
     void should_return_message_converter_unchanged() {
         ObjectMapper objectMapper = new ObjectMapper();
-        HttpMessageConverter jacksonConverter1 = new MappingJackson2HttpMessageConverter(objectMapper);
-        HttpMessageConverter jacksonConverter2 = new MappingJackson2HttpMessageConverter(objectMapper);
+        HttpMessageConverter jacksonConverter1 = new org.springframework.http.converter.json.MappingJackson2HttpMessageConverter(objectMapper);
+        HttpMessageConverter jacksonConverter2 = new org.springframework.http.converter.json.MappingJackson2HttpMessageConverter(objectMapper);
         emptyObjectProvider.forEach(t -> t.accept(Arrays.asList(jacksonConverter1)));
 
         assertEquals(jacksonConverter1.getSupportedMediaTypes(),jacksonConverter2.getSupportedMediaTypes());

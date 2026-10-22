@@ -89,7 +89,7 @@ public class RoleAssignmentApiConsumerTest {
             .matchHeader(SERVICE_AUTHORIZATION, SERVICE_AUTH_TOKEN)
             .body(new ObjectMapper()
                 .writeValueAsString(roleAssignmentService.getRoleAssignment(caseId, assigneeId, userId)))
-            .willRespondWith()            
+            .willRespondWith()
             .status(201)
             .toPact(V4Pact.class);
     }
