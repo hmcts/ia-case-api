@@ -81,8 +81,8 @@
           "nextHearingDate": "ChooseADateRange",
           "nextHearingFormat": "Not in Attendance",
           "nextHearingDuration": {
-            "hours": "2",
-            "minutes": "0"
+            "hours": 2,
+            "minutes": 0
           },
           "nextHearingVenue": "newcastle",
           "nextHearingDateFixed": "",
