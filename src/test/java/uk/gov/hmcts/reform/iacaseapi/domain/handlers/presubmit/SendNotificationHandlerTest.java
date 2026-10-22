@@ -497,6 +497,7 @@ class SendNotificationHandlerTest {
         Event.SUBMIT_CMA_REQUIREMENTS,
         Event.SUBMIT_CASE,
         Event.EDIT_APPEAL_AFTER_SUBMIT,
+        Event.EDIT_APPELLANT_PERSONAL_DATA,
         Event.LINK_APPEAL,
         Event.UNLINK_APPEAL,
         Event.EDIT_DOCUMENTS,
@@ -615,7 +616,8 @@ class SendNotificationHandlerTest {
         Event.REMOVE_STATUTORY_TIMEFRAME_24_WEEKS,
         Event.CHANGE_DIRECTION_DUE_DATE,
         Event.SEND_LATE_TIMELINE_NOTICE,
-        Event.COMPLETE_CASE_REVIEW
+        Event.COMPLETE_CASE_REVIEW,
+        Event.REVIEW_HEARING_REQUIREMENTS
     );
 
     private static Stream<Event> allowedEventsSource() {
