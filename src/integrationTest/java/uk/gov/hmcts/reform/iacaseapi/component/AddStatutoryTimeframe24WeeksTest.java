@@ -158,7 +158,7 @@ class AddStatutoryTimeframe24WeeksTest extends SpringBootIntegrationTest impleme
         assertThat(response.getErrors()).contains("This event cannot be run on a case created before 12/08/2026");
         assertThat(response.getErrors()).contains("This event cannot be run on a detained case");
         assertThat(response.getErrors()).contains("This event cannot be run on an out of country case");
-        assertThat(response.getErrors()).contains("This event cannot be run on this case");
+        assertThat(response.getErrors()).contains("This event cannot be run on this case at this time");
     }
 
     @Test

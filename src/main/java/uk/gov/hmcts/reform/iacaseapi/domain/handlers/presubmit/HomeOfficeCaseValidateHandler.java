@@ -1,24 +1,5 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
-import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE_DESCRIPTION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_IN_UK;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_NATIONALITIES;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_NATIONALITIES_DESCRIPTION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CONTACT_PREFERENCE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CONTACT_PREFERENCE_DESCRIPTION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_CASE_STATUS_DATA;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_NOTIFICATIONS_ELIGIBLE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_HOME_OFFICE_INTEGRATION_ENABLED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.MARK_APPEAL_PAID;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.REQUEST_HOME_OFFICE_DATA;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SUBMIT_APPEAL;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
@@ -38,19 +19,30 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.HomeOfficeApi;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.*;
+
 @Component
 public class HomeOfficeCaseValidateHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final HomeOfficeApi<AsylumCase> homeOfficeApi;
     private final boolean isHomeOfficeIntegrationEnabled;
+    private final boolean isNewValidationEnabled;
     private final FeatureToggler featureToggler;
 
     public HomeOfficeCaseValidateHandler(
         FeatureToggler featureToggler,
         @Value("${featureFlag.isHomeOfficeIntegrationEnabled}") boolean isHomeOfficeIntegrationEnabled,
+        @Value("${app.home-office-validation.enabled}") boolean isNewValidationEnabled,
         HomeOfficeApi<AsylumCase> homeOfficeApi) {
         this.featureToggler = featureToggler;
         this.isHomeOfficeIntegrationEnabled = isHomeOfficeIntegrationEnabled;
+        this.isNewValidationEnabled = isNewValidationEnabled;
         this.homeOfficeApi = homeOfficeApi;
     }
 
@@ -88,12 +80,12 @@ public class HomeOfficeCaseValidateHandler implements PreSubmitCallbackHandler<A
             asylumCase.write(IS_HOME_OFFICE_INTEGRATION_ENABLED, YesOrNo.YES);
             // Don't invoke the old  applicationStatus/getBySearchParameters  Home Office endpoint if the new  applications/v1/{id}  endpoint
             // has already been called
-            boolean validationDone = asylumCase.read(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, String.class).isPresent();
 
             if (HandlerUtils.isAgeAssessmentAppeal(asylumCase) || 
                 HandlerUtils.isEjpCase(asylumCase) || 
                 HandlerUtils.isNotificationTurnedOff(asylumCase) ||
-                validationDone) {
+                HandlerUtils.hasBeenValidatedNewHoApi(asylumCase) ||
+                isNewSubmission(callback)) {
                 return new PreSubmitCallbackResponse<>(asylumCase);
             }
 
@@ -151,6 +143,10 @@ public class HomeOfficeCaseValidateHandler implements PreSubmitCallbackHandler<A
             asylumCase.write(HOME_OFFICE_NOTIFICATIONS_ELIGIBLE, YesOrNo.YES);
         }
         return new PreSubmitCallbackResponse<>(asylumCase);
+    }
+
+    private boolean isNewSubmission(Callback<AsylumCase> callback) {
+        return isNewValidationEnabled && callback.getEvent().equals(SUBMIT_APPEAL);
     }
 
 }

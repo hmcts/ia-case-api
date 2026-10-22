@@ -6,11 +6,11 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PostSubmitCallbackHandler;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ACCELERATED_DETAINED_APPEAL;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED;
 
 @Component
 public class SubmitHearingRequirementsConfirmation implements PostSubmitCallbackHandler<AsylumCase> {
@@ -41,9 +41,7 @@ public class SubmitHearingRequirementsConfirmation implements PostSubmitCallback
 
         postSubmitResponse.setConfirmationHeader("# You've submitted your hearing requirements");
 
-        boolean is24w = asylumCase.read(STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED, YesOrNo.class)
-            .orElse(YesOrNo.NO)
-            .equals(YesOrNo.YES);
+        boolean is24w = HandlerUtils.is24WeekStfCase(asylumCase);
 
         if (isAcceleratedDetainedAppeal) {
             postSubmitResponse.setConfirmationBody(

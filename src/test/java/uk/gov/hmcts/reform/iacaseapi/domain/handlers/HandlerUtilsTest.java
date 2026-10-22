@@ -7,87 +7,60 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseFlagDetail;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseFlagValue;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.FeeRemissionType;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingAdjournmentDay;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.HelpWithFeesOption;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfCountryCircumstances;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfCountryDecisionType;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionOption;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.SourceOfAppeal;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlag;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.Value;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.HomeOfficeAppellant;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.AddressUk;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.HomeOfficeReferenceService;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationBasedFeatureToggler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.PartyIdService;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.Organisation;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.OrganisationPolicy;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingAdjournmentDay.BEFORE_HEARING_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingAdjournmentDay.ON_HEARING_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre.GLASGOW;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HelpWithFeesOption.ALREADY_APPLIED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HelpWithFeesOption.WANT_TO_APPLY;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HelpWithFeesOption.WILL_PAY_FOR_APPEAL;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HelpWithFeesOption.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfCountryCircumstances.ENTRY_CLEARANCE_DECISION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionOption.ASYLUM_SUPPORT_FROM_HOME_OFFICE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionOption.I_WANT_TO_GET_HELP_WITH_FEES;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType.EXCEPTIONAL_CIRCUMSTANCES_REMISSION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType.HELP_WITH_FEES;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType.HO_WAIVER_REMISSION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType.NO_REMISSION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.adjournedBeforeHearingDay;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.adjournedOnHearingDay;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.appealHasRemissionOptionOrType;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.hasAddedLegalRepDetails;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.hasRepresentation;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.hasUpdatedLegalRepFields;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isAdmin;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isCaseUsingLocationRefData;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isEntryClearanceDecision;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isIntegrated;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isOnlyRemoteToRemoteHearingChannelUpdate;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isPanelRequired;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.outOfCountryDecisionTypeIsRefusalOfHumanRightsOrPermit;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.relistCaseImmediately;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.*;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 class HandlerUtilsTest {
     private static final String ON_THE_PAPERS = "ONPPRS";
+    private static final String VALID_GWF = "GWF123456789";
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -101,6 +74,20 @@ class HandlerUtilsTest {
     private AsylumCase asylumCaseBefore;
     @Mock
     private LocationBasedFeatureToggler locationBasedFeatureToggler;
+    @Mock
+    private HomeOfficeReferenceService hoReferenceService;
+    @Mock
+    private IdValue<HomeOfficeAppellant> idValue;
+    @Mock
+    private HomeOfficeAppellant appellant;
+    @Mock
+    private HomeOfficeAppellant appellant2;
+    @Mock
+    private List<IdValue<Subscriber>> mockSubscribers;
+    @Mock
+    private NonLegalRepDetails mockNlrDetails;
+    @Captor
+    private ArgumentCaptor<List<IdValue<Subscriber>>> subscribersCaptor;
 
     @Test
     void given_journey_type_aip_returns_true() {
@@ -167,7 +154,7 @@ class HandlerUtilsTest {
 
     @Test
     void isInternalCase_should_return_false() {
-        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(NO));
         assertFalse(HandlerUtils.isInternalCase(asylumCase));
     }
 
@@ -191,7 +178,7 @@ class HandlerUtilsTest {
 
     @Test
     void isEjpCase_should_return_false() {
-        when(asylumCase.read(IS_EJP, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(asylumCase.read(IS_EJP, YesOrNo.class)).thenReturn(Optional.of(NO));
         assertFalse(HandlerUtils.isEjpCase(asylumCase));
     }
 
@@ -203,7 +190,7 @@ class HandlerUtilsTest {
 
     @Test
     void isNotificationTurnedOff_should_return_false() {
-        when(asylumCase.read(IS_NOTIFICATION_TURNED_OFF, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(asylumCase.read(IS_NOTIFICATION_TURNED_OFF, YesOrNo.class)).thenReturn(Optional.of(NO));
         assertFalse(HandlerUtils.isNotificationTurnedOff(asylumCase));
     }
 
@@ -215,7 +202,7 @@ class HandlerUtilsTest {
 
     @Test
     void isLegallyRepresentedEjpCase_should_return_false() {
-        when(asylumCase.read(IS_LEGALLY_REPRESENTED_EJP, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(asylumCase.read(IS_LEGALLY_REPRESENTED_EJP, YesOrNo.class)).thenReturn(Optional.of(NO));
         assertFalse(HandlerUtils.isLegallyRepresentedEjpCase(asylumCase));
     }
 
@@ -379,9 +366,7 @@ class HandlerUtilsTest {
     @Test
     public void read_json_file_list_invalid_file_path_throws_io() {
         String filePath = "/missingCaseIdList.json";
-        assertThrows(IOException.class, () -> {
-            HandlerUtils.readJsonFileList(filePath, "key");
-        });
+        assertThrows(IOException.class, () -> HandlerUtils.readJsonFileList(filePath, "key"));
     }
 
     @Test
@@ -1028,7 +1013,7 @@ class HandlerUtilsTest {
 
     @Test
     void hasAppellantDataBeenValidated_returns_true_1() {
-        when(asylumCase.read(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, String.class)).thenReturn(Optional.of("ABCDE"));
+        when(asylumCase.read(HAS_BEEN_VALIDATED_BY_NEW_HOME_OFFICE_API, YesOrNo.class)).thenReturn(Optional.of(YES));
         when(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class)).thenReturn(Optional.of(""));
         when(asylumCase.read(HOME_OFFICE_SEARCH_NO_MATCH, String.class)).thenReturn(Optional.of("NO_MATCH"));
         assertTrue(HandlerUtils.hasAppellantDataBeenValidated(asylumCase));
@@ -1036,7 +1021,7 @@ class HandlerUtilsTest {
 
     @Test
     void hasAppellantDataBeenValidated_returns_true_2() {
-        when(asylumCase.read(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, String.class)).thenReturn(Optional.empty());
+        when(asylumCase.read(HAS_BEEN_VALIDATED_BY_NEW_HOME_OFFICE_API, YesOrNo.class)).thenReturn(Optional.empty());
         when(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class)).thenReturn(Optional.of("SUCCESS"));
         when(asylumCase.read(HOME_OFFICE_SEARCH_NO_MATCH, String.class)).thenReturn(Optional.of(""));
         assertTrue(HandlerUtils.hasAppellantDataBeenValidated(asylumCase));
@@ -1044,7 +1029,7 @@ class HandlerUtilsTest {
 
     @Test
     void hasAppellantDataBeenValidated_returns_true_3() {
-        when(asylumCase.read(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, String.class)).thenReturn(Optional.empty());
+        when(asylumCase.read(HAS_BEEN_VALIDATED_BY_NEW_HOME_OFFICE_API, YesOrNo.class)).thenReturn(Optional.empty());
         when(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class)).thenReturn(Optional.of("SUCCESS"));
         when(asylumCase.read(HOME_OFFICE_SEARCH_NO_MATCH, String.class)).thenReturn(Optional.of("NO_MATCH"));
         assertTrue(HandlerUtils.hasAppellantDataBeenValidated(asylumCase));
@@ -1052,21 +1037,21 @@ class HandlerUtilsTest {
 
     @Test
     void hasAppellantDataBeenValidated_returns_false_1() {
-        when(asylumCase.read(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, String.class)).thenReturn(Optional.empty());
+        when(asylumCase.read(HAS_BEEN_VALIDATED_BY_NEW_HOME_OFFICE_API, YesOrNo.class)).thenReturn(Optional.empty());
         when(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class)).thenReturn(Optional.of(""));
         assertFalse(HandlerUtils.hasAppellantDataBeenValidated(asylumCase));
     }
 
     @Test
     void hasAppellantDataBeenValidated_returns_false_2() {
-        when(asylumCase.read(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, String.class)).thenReturn(Optional.empty());
+        when(asylumCase.read(HAS_BEEN_VALIDATED_BY_NEW_HOME_OFFICE_API, YesOrNo.class)).thenReturn(Optional.empty());
         when(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class)).thenReturn(Optional.of("FAIL"));
         assertFalse(HandlerUtils.hasAppellantDataBeenValidated(asylumCase));
     }
 
     @Test
     void hasAppellantDataBeenValidated_returns_false_3() {
-        when(asylumCase.read(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, String.class)).thenReturn(Optional.empty());
+        when(asylumCase.read(HAS_BEEN_VALIDATED_BY_NEW_HOME_OFFICE_API, YesOrNo.class)).thenReturn(Optional.empty());
         when(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class)).thenReturn(Optional.of("MULTIPLE"));
         assertFalse(HandlerUtils.hasAppellantDataBeenValidated(asylumCase));
     }
@@ -1097,8 +1082,371 @@ class HandlerUtilsTest {
         verify(asylumCase).remove(HOME_OFFICE_APPELLANT_DECISION_LETTER_DATE);
         verify(asylumCase).remove(HOME_OFFICE_APPELLANTS);
         verify(asylumCase).remove(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY);
+        verify(asylumCase).remove(HAS_BEEN_VALIDATED_BY_NEW_HOME_OFFICE_API);
 
-        verify(asylumCase, times(6)).remove(any());
+        verify(asylumCase, times(7)).remove(any());
+    }
+
+    @Test
+    void test_clearNlrFields_clears_nlr_fields() {
+        HandlerUtils.clearNlrFields(asylumCase);
+        verify(asylumCase).clear(NLR_DETAILS);
+        verify(asylumCase).clear(JOIN_APPEAL_PIN);
+        verify(asylumCase).clear(IS_SPONSOR_SAME_AS_NLR);
+        verify(asylumCase).clear(HAS_NON_LEGAL_REP_JOINED);
+    }
+
+    @Test
+    void setSponsorDetailsFromNlrIfSame_clears_addressUk_if_not_same_and_has_nlr() {
+        try (MockedStatic<PartyIdService> partyIdService = mockStatic(PartyIdService.class)) {
+            when(asylumCase.read(HAS_NON_LEGAL_REP, YesOrNo.class)).thenReturn(Optional.of(YES));
+            when(asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class)).thenReturn(Optional.of(mockNlrDetails));
+
+            setSponsorDetailsFromNlrIfSame(asylumCase);
+            partyIdService.verify(
+                () -> PartyIdService.setSponsorPartyId(asylumCase),
+                times(1)
+            );
+            verify(mockNlrDetails).setAddressUk(null);
+            verify(asylumCase).write(NLR_DETAILS, mockNlrDetails);
+        }
+    }
+
+    @Test
+    void setSponsorDetailsFromNlrIfSame_throws_if_if_not_same_and_has_nlr_without_nlr_details() {
+        when(asylumCase.read(HAS_NON_LEGAL_REP, YesOrNo.class)).thenReturn(Optional.of(YES));
+        IllegalStateException exception =
+            assertThrows(IllegalStateException.class, () -> setSponsorDetailsFromNlrIfSame(asylumCase));
+        assertEquals("Non-legal representative details are not present", exception.getMessage());
+    }
+
+    @Test
+    void setSponsorDetailsFromNlrIfSame_clear_nlr_fields_if_not_same_and_has_no_nlr() {
+        try (MockedStatic<PartyIdService> partyIdService = mockStatic(PartyIdService.class)) {
+
+            setSponsorDetailsFromNlrIfSame(asylumCase);
+            partyIdService.verify(
+                () -> PartyIdService.setSponsorPartyId(asylumCase),
+                times(1)
+            );
+            verify(asylumCase).clear(NLR_DETAILS);
+            verify(asylumCase).clear(JOIN_APPEAL_PIN);
+            verify(asylumCase).clear(IS_SPONSOR_SAME_AS_NLR);
+            verify(asylumCase).clear(HAS_NON_LEGAL_REP_JOINED);
+        }
+    }
+
+    @Test
+    void setSponsorDetailsFromNlrIfSame_throws_if_yes_and_no_nlr_details() {
+        when(asylumCase.read(IS_SPONSOR_SAME_AS_NLR, YesOrNo.class)).thenReturn(Optional.of(YES));
+
+        IllegalStateException exception =
+            assertThrows(IllegalStateException.class, () -> setSponsorDetailsFromNlrIfSame(asylumCase));
+        assertEquals("Non-legal representative details are not present", exception.getMessage());
+    }
+
+    @Test
+    void setSponsorDetailsFromNlrIfSame_sets_correctly_if_yes() {
+        try (MockedStatic<PartyIdService> partyIdService = mockStatic(PartyIdService.class)) {
+            String expectedEmailAddress = "someEmailAddress";
+            String expectedIdamId = "someIdamId";
+            String expectedFamilyName = "someFamilyName";
+            String expectedAddress = "someAddress";
+            AddressUk expectedAddressUk = new AddressUk("someLine1", null, null,
+                "someTown", null, "somePostcode", null);
+            String expectedPhoneNumber = "somePhoneNumber";
+            String expectedGivenNames = "someGivenNames";
+            when(asylumCase.read(IS_SPONSOR_SAME_AS_NLR, YesOrNo.class)).thenReturn(Optional.of(YES));
+            when(asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class))
+                .thenReturn(Optional.of(NonLegalRepDetails.builder()
+                    .emailAddress(expectedEmailAddress)
+                    .idamId(expectedIdamId)
+                    .familyName(expectedFamilyName)
+                    .address(expectedAddress)
+                    .addressUk(expectedAddressUk)
+                    .phoneNumber(expectedPhoneNumber)
+                    .givenNames(expectedGivenNames)
+                    .build()));
+
+            setSponsorDetailsFromNlrIfSame(asylumCase);
+            partyIdService.verify(
+                () -> PartyIdService.setSponsorPartyId(asylumCase),
+                times(1)
+            );
+            verify(asylumCase).write(SPONSOR_GIVEN_NAMES, expectedGivenNames);
+            verify(asylumCase).write(SPONSOR_FAMILY_NAME, expectedFamilyName);
+            verify(asylumCase).write(SPONSOR_ADDRESS, expectedAddressUk);
+            verify(asylumCase).write(SPONSOR_ADDRESS_FOR_DISPLAY, expectedAddressUk.toDisplay());
+            verify(asylumCase).write(SPONSOR_NAME_FOR_DISPLAY, expectedGivenNames + " " + expectedFamilyName);
+            verify(asylumCase).write(SPONSOR_CONTACT_PREFERENCE, ContactPreference.WANTS_EMAIL);
+            verify(asylumCase).write(SPONSOR_EMAIL, expectedEmailAddress);
+            verify(asylumCase).write(SPONSOR_MOBILE_NUMBER, expectedPhoneNumber);
+            verify(asylumCase).write(SPONSOR_AUTHORISATION, YES);
+            verify(asylumCase).write(eq(SPONSOR_SUBSCRIPTIONS), anyList());
+        }
+    }
+
+    @Test
+    void setSponsorDetailsFromNlrIfSame_sets_correctly_if_yes_empty_nlr_details() {
+        try (MockedStatic<PartyIdService> partyIdService = mockStatic(PartyIdService.class)) {
+            when(asylumCase.read(IS_SPONSOR_SAME_AS_NLR, YesOrNo.class)).thenReturn(Optional.of(YES));
+            when(asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class))
+                .thenReturn(Optional.of(NonLegalRepDetails.builder().build()));
+
+            setSponsorDetailsFromNlrIfSame(asylumCase);
+            partyIdService.verify(
+                () -> PartyIdService.setSponsorPartyId(asylumCase),
+                times(1)
+            );
+            verify(asylumCase, never()).write(SPONSOR_GIVEN_NAMES, null);
+            verify(asylumCase, never()).write(SPONSOR_FAMILY_NAME, null);
+            verify(asylumCase, never()).write(SPONSOR_ADDRESS, null);
+            verify(asylumCase, never()).write(SPONSOR_ADDRESS_FOR_DISPLAY, null);
+            verify(asylumCase, never()).write(SPONSOR_NAME_FOR_DISPLAY, null);
+            verify(asylumCase, never()).write(SPONSOR_CONTACT_PREFERENCE, ContactPreference.WANTS_EMAIL);
+            verify(asylumCase, never()).write(SPONSOR_EMAIL, null);
+            verify(asylumCase, never()).write(SPONSOR_MOBILE_NUMBER, null);
+            verify(asylumCase).write(SPONSOR_AUTHORISATION, YES);
+            verify(asylumCase, never()).write(eq(SPONSOR_SUBSCRIPTIONS), anyList());
+        }
+    }
+
+    @Test
+    void setSponsorDetailsFromNlrIfSame_sets_sponsor_subscription_correctly() {
+        try (MockedStatic<PartyIdService> partyIdService = mockStatic(PartyIdService.class)) {
+            String email = "some-email";
+            String phoneNumber = "some-phoneNumber";
+            String idamId = "some-idamId";
+            when(asylumCase.read(IS_SPONSOR_SAME_AS_NLR, YesOrNo.class)).thenReturn(Optional.of(YES));
+            when(asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class))
+                .thenReturn(Optional.of(NonLegalRepDetails.builder()
+                    .emailAddress(email)
+                    .phoneNumber(phoneNumber)
+                    .idamId(idamId)
+                    .build()
+                ));
+            when(asylumCase.read(SPONSOR_SUBSCRIPTIONS)).thenReturn(Optional.of(mockSubscribers));
+            when(mockSubscribers.isEmpty()).thenReturn(false);
+            setSponsorDetailsFromNlrIfSame(asylumCase);
+            partyIdService.verify(
+                () -> PartyIdService.setSponsorPartyId(asylumCase),
+                times(1)
+            );
+            verify(asylumCase).write(eq(SPONSOR_SUBSCRIPTIONS), subscribersCaptor.capture());
+            List<IdValue<Subscriber>> capturedSubscribers = subscribersCaptor.getValue();
+            assertFalse(capturedSubscribers.isEmpty());
+            assertEquals(1, capturedSubscribers.size());
+            Subscriber subscriber = capturedSubscribers.getFirst().getValue();
+            assertEquals(SubscriberType.SUPPORTER, subscriber.getSubscriber());
+            assertEquals(email, subscriber.getEmail());
+            assertEquals(phoneNumber, subscriber.getMobileNumber());
+            assertEquals(YES, subscriber.getWantsEmail());
+            assertEquals(NO, subscriber.getWantsSms());
+        }
+    }
+
+    @Test
+    void updateSubscriptionsForNlr_does_not_write_if_no_nlr_and_no_existing_supporter() {
+        updateSubscriptionsForNlr(asylumCase);
+        verify(asylumCase, never()).write(eq(SUBSCRIPTIONS), any());
+    }
+
+    @Test
+    void updateSubscriptionsForNlr_removes_supporter_if_no_nlr_but_existing_supporter() {
+        Subscriber sub1 = mock(Subscriber.class);
+        when(sub1.getSubscriber()).thenReturn(SubscriberType.APPELLANT);
+        IdValue<Subscriber> sub1IdValue = new IdValue<>("1", sub1);
+        Subscriber sub2 = mock(Subscriber.class);
+        when(sub2.getSubscriber()).thenReturn(SubscriberType.SUPPORTER);
+        when(sub2.getEmail()).thenReturn("existing@email.com");
+        IdValue<Subscriber> sub2IdValue = new IdValue<>("2", sub2);
+        when(asylumCase.read(SUBSCRIPTIONS)).thenReturn(Optional.of(List.of(sub1IdValue, sub2IdValue)));
+
+        updateSubscriptionsForNlr(asylumCase);
+
+        verify(asylumCase, times(1)).write(eq(SUBSCRIPTIONS), subscribersCaptor.capture());
+        List<IdValue<Subscriber>> capturedSubscribers = subscribersCaptor.getValue();
+        assertFalse(capturedSubscribers.isEmpty());
+        assertEquals(1, capturedSubscribers.size());
+        Subscriber subscriber = capturedSubscribers.getFirst().getValue();
+        assertEquals(sub1, subscriber);
+    }
+
+    @Test
+    void updateSubscriptionsForNlr_updates_subs_for_nlr_none_existing() {
+        when(asylumCase.read(HAS_NON_LEGAL_REP, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class)).thenReturn(Optional.of(NonLegalRepDetails.builder()
+            .emailAddress("some-email")
+            .phoneNumber("some-phoneNumber")
+            .idamId("some-idamId")
+            .build()
+        ));
+
+        updateSubscriptionsForNlr(asylumCase);
+
+        verify(asylumCase, times(1)).write(eq(SUBSCRIPTIONS), subscribersCaptor.capture());
+        List<IdValue<Subscriber>> capturedSubscribers = subscribersCaptor.getValue();
+        assertFalse(capturedSubscribers.isEmpty());
+        assertEquals(1, capturedSubscribers.size());
+        Subscriber subscriber = capturedSubscribers.getFirst().getValue();
+        assertEquals(SubscriberType.SUPPORTER, subscriber.getSubscriber());
+        assertEquals("some-email", subscriber.getEmail());
+        assertEquals("some-phoneNumber", subscriber.getMobileNumber());
+        assertEquals(YES, subscriber.getWantsEmail());
+        assertEquals(NO, subscriber.getWantsSms());
+    }
+
+    @Test
+    void updateSubscriptionsForNlr_updates_subs_for_nlr_supporters_existing() {
+        when(asylumCase.read(HAS_NON_LEGAL_REP, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class)).thenReturn(Optional.of(NonLegalRepDetails.builder()
+            .emailAddress("some-email")
+            .phoneNumber("some-phoneNumber")
+            .idamId("some-idamId")
+            .build()
+        ));
+        Subscriber sub1 = mock(Subscriber.class);
+        when(sub1.getSubscriber()).thenReturn(SubscriberType.APPELLANT);
+        IdValue<Subscriber> sub1IdValue = new IdValue<>("1", sub1);
+        Subscriber sub2 = mock(Subscriber.class);
+        when(sub2.getSubscriber()).thenReturn(SubscriberType.SUPPORTER);
+        when(sub2.getEmail()).thenReturn("old-email");
+        IdValue<Subscriber> sub2IdValue = new IdValue<>("2", sub2);
+        Subscriber sub3 = mock(Subscriber.class);
+        when(sub3.getSubscriber()).thenReturn(SubscriberType.APPELLANT);
+        IdValue<Subscriber> sub3IdValue = new IdValue<>("3", sub3);
+        Subscriber sub4 = mock(Subscriber.class);
+        when(sub4.getSubscriber()).thenReturn(SubscriberType.SUPPORTER);
+        when(sub4.getEmail()).thenReturn("old-email");
+        IdValue<Subscriber> sub4IdValue = new IdValue<>("4", sub4);
+        when(asylumCase.read(SUBSCRIPTIONS))
+            .thenReturn(Optional.of(List.of(sub1IdValue, sub2IdValue, sub3IdValue, sub4IdValue)));
+
+        updateSubscriptionsForNlr(asylumCase);
+
+        verify(asylumCase, times(1)).write(eq(SUBSCRIPTIONS), subscribersCaptor.capture());
+        List<IdValue<Subscriber>> capturedSubscribers = subscribersCaptor.getValue();
+        assertFalse(capturedSubscribers.isEmpty());
+        assertEquals(3, capturedSubscribers.size());
+        assertTrue(capturedSubscribers.contains(sub1IdValue));
+        assertFalse(capturedSubscribers.contains(sub2IdValue));
+        assertTrue(capturedSubscribers.contains(sub3IdValue));
+        assertFalse(capturedSubscribers.contains(sub4IdValue));
+        Subscriber subscriber = capturedSubscribers.getLast().getValue();
+        assertEquals(SubscriberType.SUPPORTER, subscriber.getSubscriber());
+        assertEquals("some-email", subscriber.getEmail());
+        assertEquals("some-phoneNumber", subscriber.getMobileNumber());
+        assertEquals(YES, subscriber.getWantsEmail());
+        assertEquals(NO, subscriber.getWantsSms());
+    }
+
+    @Test
+    void updateSubscriptionsForNlr_does_not_update_if_email_unchanged() {
+        when(asylumCase.read(HAS_NON_LEGAL_REP, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class)).thenReturn(Optional.of(NonLegalRepDetails.builder()
+            .emailAddress("same-email")
+            .phoneNumber("some-phoneNumber")
+            .idamId("some-idamId")
+            .build()
+        ));
+        Subscriber existingSupporter = mock(Subscriber.class);
+        when(existingSupporter.getSubscriber()).thenReturn(SubscriberType.SUPPORTER);
+        when(existingSupporter.getEmail()).thenReturn("same-email");
+        IdValue<Subscriber> supporterIdValue = new IdValue<>("1", existingSupporter);
+        when(asylumCase.read(SUBSCRIPTIONS)).thenReturn(Optional.of(List.of(supporterIdValue)));
+
+        updateSubscriptionsForNlr(asylumCase);
+
+        verify(asylumCase, never()).write(eq(SUBSCRIPTIONS), any());
+    }
+
+    @Test
+    void get_nlr_full_name_should_return_nlr_given_plus_family_name() {
+        String givenName = "FirstName";
+        String familyName = "FamilyName";
+
+        when(asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class)).thenReturn(Optional.of(NonLegalRepDetails.builder()
+            .givenNames(givenName)
+            .familyName(familyName)
+            .build())
+        );
+
+        assertEquals("FirstName FamilyName", HandlerUtils.getNlrFullName(asylumCase));
+    }
+
+    @Test
+    void get_nlr_full_name_should_throw_if_empty_fields_or_empty_details() {
+        String expectedErrorMessage = "Non-legal representative name is not present";
+        IllegalStateException exception = assertThrows(IllegalStateException.class,
+            () -> HandlerUtils.getNlrFullName(asylumCase));
+        assertEquals(expectedErrorMessage, exception.getMessage());
+
+        when(asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class)).thenReturn(Optional.of(NonLegalRepDetails.builder().build()));
+        exception = assertThrows(IllegalStateException.class,
+            () -> HandlerUtils.getNlrFullName(asylumCase));
+        assertEquals(expectedErrorMessage, exception.getMessage());
+
+        when(asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class)).thenReturn(Optional.of(NonLegalRepDetails.builder()
+            .givenNames("something").build()));
+        exception = assertThrows(IllegalStateException.class,
+            () -> HandlerUtils.getNlrFullName(asylumCase));
+        assertEquals(expectedErrorMessage, exception.getMessage());
+
+        when(asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class)).thenReturn(Optional.of(NonLegalRepDetails.builder()
+            .familyName("something").build()));
+        exception = assertThrows(IllegalStateException.class,
+            () -> HandlerUtils.getNlrFullName(asylumCase));
+        assertEquals(expectedErrorMessage, exception.getMessage());
+    }
+
+
+    @ParameterizedTest
+    @CsvSource(nullValues = {"null"}, value = {
+        "NO,NO",
+        "null,NO",
+        "NO,null",
+        "null,null"
+    })
+    void nlrAttendingHearing_should_return_false_correctly(YesOrNo isNlrAttending, YesOrNo isOutsideUk) {
+        when(asylumCase.read(NLR_ATTENDING, YesOrNo.class)).thenReturn(Optional.ofNullable(isNlrAttending));
+        when(asylumCase.read(NLR_ATTENDING_OUTSIDE_UK, YesOrNo.class)).thenReturn(Optional.ofNullable(isOutsideUk));
+        assertFalse(HandlerUtils.nlrAttendingHearing(asylumCase));
+    }
+
+    @ParameterizedTest
+    @CsvSource(nullValues = {"null"}, value = {
+        "YES,YES",
+        "null,YES",
+        "YES,null",
+        "null,YES",
+        "YES,null"
+    })
+    void nlrAttendingHearing_should_return_true_correctly(YesOrNo isNlrAttending, YesOrNo isOutsideUk) {
+        when(asylumCase.read(NLR_ATTENDING, YesOrNo.class)).thenReturn(Optional.ofNullable(isNlrAttending));
+        when(asylumCase.read(NLR_ATTENDING_OUTSIDE_UK, YesOrNo.class)).thenReturn(Optional.ofNullable(isOutsideUk));
+        assertTrue(HandlerUtils.nlrAttendingHearing(asylumCase));
+    }
+
+    @Test
+    void hasActiveNlr_should_return_true_if_nlr_details_present_with_idam_id() {
+        when(asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class)).thenReturn(Optional.of(NonLegalRepDetails.builder()
+            .idamId("some-idamId")
+            .build())
+        );
+        assertTrue(HandlerUtils.hasActiveNlr(asylumCase));
+    }
+
+    @Test
+    void hasActiveNlr_should_return_false_if_nlr_details_present_without_idam_id() {
+        when(asylumCase.read(NLR_DETAILS, NonLegalRepDetails.class)).thenReturn(Optional.of(NonLegalRepDetails.builder()
+            .build())
+        );
+        assertFalse(HandlerUtils.hasActiveNlr(asylumCase));
+    }
+
+    @Test
+    void hasActiveNlr_should_return_false_if_nlr_details_not_present() {
+        assertFalse(HandlerUtils.hasActiveNlr(asylumCase));
     }
 
     @Test
@@ -1114,7 +1462,7 @@ class HandlerUtilsTest {
     @Test
     void should_return_gwf_reference_number_when_home_office_reference_is_empty() {
 
-        when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of(""));
+        when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class)).thenReturn(Optional.empty());
         when(asylumCase.read(GWF_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of("GWF123456789"));
 
         String result = HandlerUtils.getUanOrGwf(asylumCase);
@@ -1187,5 +1535,167 @@ class HandlerUtilsTest {
         IllegalStateException exception =
             assertThrows(IllegalStateException.class, () -> HandlerUtils.isDecisionWithHearing(asylumCase));
         assertEquals("Appeal type is not present", exception.getMessage());
+    }
+
+    @Test
+    void shouldValidateEditPersonalData_return_true() {
+        when(callback.getEvent()).thenReturn(Event.EDIT_APPELLANT_PERSONAL_DATA);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(HAS_BEEN_VALIDATED_BY_NEW_HOME_OFFICE_API, YesOrNo.class)).thenReturn(Optional.of(YES));
+
+        assertTrue(shouldValidateEditPersonalData(callback));
+    }
+
+    @Test
+    void shouldValidateEditPersonalData_return_false_bad_event() {
+        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        assertFalse(shouldValidateEditPersonalData(callback));
+    }
+
+    @Test
+    void shouldValidateEditPersonalData_return_false_unvalidated() {
+        when(callback.getEvent()).thenReturn(Event.EDIT_APPELLANT_PERSONAL_DATA);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(HAS_BEEN_VALIDATED_BY_NEW_HOME_OFFICE_API, YesOrNo.class)).thenReturn(Optional.empty());
+
+        assertFalse(shouldValidateEditPersonalData(callback));
+    }
+
+    @Test
+    void given_currently_stf24_returns_true() {
+        when(asylumCase.read(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        assertTrue(HandlerUtils.isCurrently24WeekStfCase(asylumCase));
+    }
+
+    @Test
+    void given_not_currently_stf24_returns_false() {
+        when(asylumCase.read(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        assertFalse(HandlerUtils.isCurrently24WeekStfCase(asylumCase));
+    }
+
+    @ParameterizedTest
+    @CsvSource(value = {
+        "null, null, false",
+        "2024-01-01, null, false",
+        "2024-01-01, 2024-01-20, false",
+        "null, 2024-01-01, false",
+        "2024-01-20, 2024-01-01, true",
+        "2024-01-20, 2024-01-20, true",
+        "2024-01-20, null, true",
+        "null, 2024-01-20, true"
+    }, nullValues = {"null"})
+    void caseReceivedAfterLive_scenarios(String tribReceivedDate, String appealSubmittedDate, boolean expected) {
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(TRIBUNAL_RECEIVED_DATE)).thenReturn(Optional.ofNullable(tribReceivedDate));
+        when(asylumCase.read(APPEAL_SUBMISSION_DATE)).thenReturn(Optional.ofNullable(appealSubmittedDate));
+
+        assertEquals(expected, HandlerUtils.caseReceivedAfterLive(asylumCase, LocalDate.of(2024, 1, 10)));
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = State.class, names = {"PENDING_PAYMENT", "APPEAL_SUBMITTED", "AWAITING_RESPONDENT_EVIDENCE"})
+    void handle24wValidity_should_return_no_errors_if_valid(State state) {
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(caseDetails.getState()).thenReturn(state);
+        when(asylumCase.read(TRIBUNAL_RECEIVED_DATE)).thenReturn(Optional.of("2024-01-10"));
+        when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(NO));
+        when(asylumCase.read(APPEAL_OUT_OF_COUNTRY, YesOrNo.class)).thenReturn(Optional.of(NO));
+
+        PreSubmitCallbackResponse<AsylumCase> response = HandlerUtils.handle24wValidity(callback, LocalDate.of(2024, 1, 1));
+
+        assertTrue(response.getErrors().isEmpty());
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = State.class, names = {"PENDING_PAYMENT", "APPEAL_SUBMITTED", "AWAITING_RESPONDENT_EVIDENCE"},
+        mode = EnumSource.Mode.EXCLUDE)
+    void handle24wValidity_should_return_error_if_invalid_state(State state) {
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(caseDetails.getState()).thenReturn(state);
+        when(asylumCase.read(TRIBUNAL_RECEIVED_DATE)).thenReturn(Optional.of("2024-01-10"));
+        when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(NO));
+        when(asylumCase.read(APPEAL_OUT_OF_COUNTRY, YesOrNo.class)).thenReturn(Optional.of(NO));
+
+        PreSubmitCallbackResponse<AsylumCase> response = HandlerUtils.handle24wValidity(callback, LocalDate.of(2024, 1, 10));
+
+        assertFalse(response.getErrors().isEmpty());
+        assertEquals(1, response.getErrors().size());
+        assertTrue(response.getErrors().contains("This event cannot be run on this case at this time"));
+    }
+
+    @Test
+    void handle24wValidity_should_return_error_if_received_early() {
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(caseDetails.getState()).thenReturn(State.AWAITING_RESPONDENT_EVIDENCE);
+        when(asylumCase.read(TRIBUNAL_RECEIVED_DATE)).thenReturn(Optional.of("2024-01-01"));
+        when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(NO));
+        when(asylumCase.read(APPEAL_OUT_OF_COUNTRY, YesOrNo.class)).thenReturn(Optional.of(NO));
+
+        PreSubmitCallbackResponse<AsylumCase> response = HandlerUtils.handle24wValidity(callback, LocalDate.of(2024, 1, 10));
+
+        assertFalse(response.getErrors().isEmpty());
+        assertEquals(1, response.getErrors().size());
+        assertTrue(response.getErrors().contains("This event cannot be run on a case created before 10/01/2024"));
+    }
+
+    @Test
+    void handle24wValidity_should_return_error_if_in_detention() {
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(caseDetails.getState()).thenReturn(State.AWAITING_RESPONDENT_EVIDENCE);
+        when(asylumCase.read(TRIBUNAL_RECEIVED_DATE)).thenReturn(Optional.of("2024-01-10"));
+        when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(asylumCase.read(APPEAL_OUT_OF_COUNTRY, YesOrNo.class)).thenReturn(Optional.of(NO));
+
+        PreSubmitCallbackResponse<AsylumCase> response = HandlerUtils.handle24wValidity(callback, LocalDate.of(2024, 1, 10));
+
+        assertFalse(response.getErrors().isEmpty());
+        assertEquals(1, response.getErrors().size());
+        assertTrue(response.getErrors().contains("This event cannot be run on a detained case"));
+    }
+
+    @Test
+    void handle24wValidity_should_return_error_if_ooc() {
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(caseDetails.getState()).thenReturn(State.AWAITING_RESPONDENT_EVIDENCE);
+        when(asylumCase.read(TRIBUNAL_RECEIVED_DATE)).thenReturn(Optional.of("2024-01-10"));
+        when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(NO));
+        when(asylumCase.read(APPEAL_OUT_OF_COUNTRY, YesOrNo.class)).thenReturn(Optional.of(YES));
+
+        PreSubmitCallbackResponse<AsylumCase> response = HandlerUtils.handle24wValidity(callback, LocalDate.of(2024, 1, 10));
+
+        assertFalse(response.getErrors().isEmpty());
+        assertEquals(1, response.getErrors().size());
+        assertTrue(response.getErrors().contains("This event cannot be run on an out of country case"));
+    }
+
+    @Test
+    void handle24wValidity_should_return_errors_if_all_checks_fail() {
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(caseDetails.getState()).thenReturn(State.CASE_BUILDING);
+        when(asylumCase.read(TRIBUNAL_RECEIVED_DATE)).thenReturn(Optional.of("2024-01-01"));
+        when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(asylumCase.read(APPEAL_OUT_OF_COUNTRY, YesOrNo.class)).thenReturn(Optional.of(YES));
+
+        PreSubmitCallbackResponse<AsylumCase> response = HandlerUtils.handle24wValidity(callback, LocalDate.of(2024, 1, 10));
+
+        assertFalse(response.getErrors().isEmpty());
+        assertEquals(4, response.getErrors().size());
+        assertThat(response.getErrors())
+            .contains("This event cannot be run on this case at this time")
+            .contains("This event cannot be run on a case created before 10/01/2024")
+            .contains("This event cannot be run on a detained case")
+            .contains("This event cannot be run on an out of country case");
     }
 }

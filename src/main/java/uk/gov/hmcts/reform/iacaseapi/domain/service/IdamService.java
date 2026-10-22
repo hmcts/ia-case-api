@@ -1,11 +1,5 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.service;
 
-import java.text.MessageFormat;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
@@ -16,6 +10,13 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.IdamClientApi;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.idam.User;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.idam.UserInfo;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.idam.IdentityManagerResponseException;
+
+import java.text.MessageFormat;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Stream;
 
 @Slf4j
 @Component
@@ -32,8 +33,6 @@ public class IdamService {
     private final RoleAssignmentService roleAssignmentService;
     public static final List<String> amOnboardedRoles =
         List.of("caseworker-ia-caseofficer", "caseworker-ia-iacjudge", "caseworker-ia-admofficer");
-
-    private String idamClientToken = "idamToken";
 
     public IdamService(
         @Value("${idam.ia_system_user.username}") String systemUserName,
@@ -94,6 +93,7 @@ public class IdamService {
 
     @Cacheable(value = "clientCredsCache", key = "'clientCredsCache'")
     public String getClientCredentialsToken() {
+        String idamClientToken;
         try {
             Map<String, String> idamAuthDetails = new ConcurrentHashMap<>();
             idamAuthDetails.put("grant_type", "client_credentials");
@@ -121,6 +121,21 @@ public class IdamService {
         }
         if (response.getBody().isEmpty()) {
             log.error("No user found for userId: {}", userId);
+            return null;
+        }
+        return response.getBody().getFirst();
+    }
+
+    public User getUserFromEmail(String email) {
+        String idamToken = getClientCredentialsToken();
+        String query = MessageFormat.format("email:{0}", email);
+        ResponseEntity<List<User>> response = idamClientApi.getUser(idamToken, query);
+        if (!response.getStatusCode().is2xxSuccessful() || response.getBody() == null) {
+            log.error("Error fetching user details for user: {}. Response status: {}", email, response.getStatusCode());
+            return null;
+        }
+        if (response.getBody().isEmpty()) {
+            log.error("No user found for userEmail: {}", email);
             return null;
         }
         return response.getBody().getFirst();

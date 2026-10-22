@@ -1,15 +1,5 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit.editdocs;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.when;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -20,6 +10,23 @@ import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @MockitoSettings(strictness = Strictness.STRICT_STUBS)
 @ExtendWith(MockitoExtension.class)
@@ -31,6 +38,14 @@ class EditDocsAuditLogServiceTest {
     private UserDetails userDetails;
     @Mock
     private AsylumCase asylumCase;
+    @Mock
+    private AsylumCase asylumCaseBefore;
+    @Mock
+    private Callback<AsylumCase> callback;
+    @Mock
+    private CaseDetails<AsylumCase> caseDetails;
+    @Mock
+    private CaseDetails<AsylumCase> caseDetailsBefore;
 
     @InjectMocks
     private EditDocsAuditLogService editDocsAuditLogService;
@@ -102,6 +117,24 @@ class EditDocsAuditLogServiceTest {
             .thenReturn(Collections.singletonList("docName14"))
             .thenReturn(Collections.singletonList("docName15"))
             .thenThrow(new RuntimeException("no more calls expected"));
+    }
+
+    @Test
+    void getUploadedOrGeneratedDocumentNames_should_return_uploaded_or_generated_doc_names_with_asylumCaseBefore() {
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getCaseDetailsBefore()).thenReturn(Optional.of(caseDetailsBefore));
+        when(caseDetailsBefore.getCaseData()).thenReturn(asylumCaseBefore);
+        List<String> expectedDocNames = List.of("something");
+        when(editDocsAuditService.getUploadedOrGeneratedDocNamesForGivenField(any(AsylumCase.class),
+            any(AsylumCase.class), any(AsylumCaseFieldDefinition.class)))
+            .thenReturn(expectedDocNames);
+        List<String> actualDocNames = editDocsAuditLogService.getUploadedOrGeneratedDocumentNames(callback);
+        int fieldListSize = editDocsAuditLogService.getListOfDocumentFields().size();
+        verify(editDocsAuditService, times(fieldListSize)).getUploadedOrGeneratedDocNamesForGivenField(eq(asylumCase), eq(asylumCaseBefore),
+            any(AsylumCaseFieldDefinition.class));
+        assertEquals(expectedDocNames.size() * fieldListSize, actualDocNames.size());
+        assertTrue(actualDocNames.containsAll(expectedDocNames));
     }
 
 }

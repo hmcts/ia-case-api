@@ -1,13 +1,15 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import java.util.Collections;
-import java.util.List;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
+
+import java.util.Collections;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 class MakeAnApplicationTest {
 
@@ -40,6 +42,7 @@ class MakeAnApplicationTest {
         assertEquals(date, makeAnApplication.getDate());
         assertEquals(decision, makeAnApplication.getDecision());
         assertEquals(state, makeAnApplication.getState());
+        assertNull(makeAnApplication.getRefusalOfRemoval24wDocument());
 
         makeAnApplication.setApplicantRole(applicantRole);
         assertEquals(applicantRole, makeAnApplication.getApplicantRole());

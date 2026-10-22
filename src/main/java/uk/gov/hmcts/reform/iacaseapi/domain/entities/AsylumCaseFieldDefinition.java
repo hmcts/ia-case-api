@@ -6,6 +6,9 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.em.Bundle;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.homeoffice.HomeOfficeCaseStatus;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.OrganisationPolicy;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.controllers.model.querymanagement.CaseMessage;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.controllers.model.querymanagement.CaseQueriesCollection;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.controllers.model.querymanagement.LatestQuery;
 
 import java.util.List;
 
@@ -53,8 +56,28 @@ public enum AsylumCaseFieldDefinition {
     HOME_OFFICE_APPELLANTS(
         "homeOfficeAppellants", new TypeReference<List<IdValue<HomeOfficeAppellant>>>(){}),
 
+    HOME_OFFICE_APPELLANTS_PP_NUMBER(
+        "homeOfficeAppellantsPpNumber", new TypeReference<String>(){}),
+
     HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY(
         "homeOfficeAppellantsSerialisedInternalUseOnly", new TypeReference<String>(){}),
+
+    HO_RIGHT_OF_APPEAL(
+        "hoRightOfAppeal", new TypeReference<YesOrNo>(){}),
+
+    HO_ASYLUM_SUPPORT(
+        "hoAsylumSupport", new TypeReference<YesOrNo>(){}),
+
+    HO_FEE_WAIVER(
+        "hoFeeWaiver", new TypeReference<YesOrNo>(){}),
+
+    HOME_OFFICE_APPELLANT_LANGUAGE(
+        "homeOfficeAppellantLanguage", new TypeReference<String>(){}),
+
+    HO_INTERPRETER_REQUIRED(
+        "hoInterpreterRequired", new TypeReference<YesOrNo>(){}),
+    HAS_BEEN_VALIDATED_BY_NEW_HOME_OFFICE_API(
+        "hasBeenValidatedByNewHomeOfficeApi", new TypeReference<YesOrNo>(){}),
 
     APPELLANT_GIVEN_NAMES(
         "appellantGivenNames", new TypeReference<String>(){}),
@@ -1743,6 +1766,66 @@ public enum AsylumCaseFieldDefinition {
     REVOKE_ACCESS_DL(
         "revokeAccessDl", new TypeReference<DynamicList>(){}),
 
+    JOIN_APPEAL_PIN(
+        "joinAppealPin", new TypeReference<PinInPostDetails>(){}),
+
+    HAS_NON_LEGAL_REP(
+        "hasNonLegalRep", new TypeReference<YesOrNo>(){}),
+
+    HAS_NON_LEGAL_REP_JOINED(
+        "hasNonLegalRepJoined", new TypeReference<YesOrNo>(){}),
+
+    HAS_NLR_SUBMITTED(
+        "hasNlrSubmitted", new TypeReference<YesOrNo>(){}),
+
+    NLR_DETAILS(
+        "nlrDetails", new TypeReference<NonLegalRepDetails>(){}),
+
+    PREVIOUS_NLR_DETAILS(
+        "previousNlrDetails", new TypeReference<NonLegalRepDetails>(){}),
+
+    SHOULD_INVITE_NLR_TO_IDAM(
+        "shouldInviteNlrToIdam", new TypeReference<YesOrNo>(){}),
+
+    IS_SPONSOR_SAME_AS_NLR(
+        "isSponsorSameAsNlr", new TypeReference<YesOrNo>(){}),
+
+    NLR_ATTENDING(
+        "nlrAttending", new TypeReference<YesOrNo>(){}),
+
+    NLR_ATTENDING_OUTSIDE_UK(
+        "nlrAttendingOutsideUK", new TypeReference<YesOrNo>(){}),
+
+    IS_NLR_INTERPRETER_REQUIRED(
+        "isNlrInterpreterRequired", new TypeReference<YesOrNo>(){}),
+
+    NLR_INTERPRETER_LANGUAGE_CATEGORY(
+        "nlrInterpreterLanguageCategory", new TypeReference<List<String>>() {}),
+
+    NLR_INTERPRETER_SPOKEN_LANGUAGE(
+        "nlrInterpreterSpokenLanguage", new TypeReference<InterpreterLanguageRefData>() {}),
+
+    NLR_INTERPRETER_SIGN_LANGUAGE(
+        "nlrInterpreterSignLanguage", new TypeReference<InterpreterLanguageRefData>() {}),
+
+    NLR_INTERPRETER_SPOKEN_LANGUAGE_BOOKING(
+        "nlrInterpreterSpokenLanguageBooking", new TypeReference<String>() {}),
+
+    NLR_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_STATUS(
+        "nlrInterpreterSpokenLanguageBookingStatus", new TypeReference<InterpreterBookingStatus>() {}),
+
+    NLR_INTERPRETER_SIGN_LANGUAGE_BOOKING(
+        "nlrInterpreterSignLanguageBooking", new TypeReference<String>() {}),
+
+    NLR_INTERPRETER_SIGN_LANGUAGE_BOOKING_STATUS(
+        "nlrInterpreterSignLanguageBookingStatus", new TypeReference<InterpreterBookingStatus>() {}),
+
+    NLR_NEEDS_STEP_FREE_ACCESS(
+        "nlrNeedsStepFreeAccess", new TypeReference<YesOrNo>(){}),
+
+    NLR_NEEDS_HEARING_LOOP(
+        "nlrNeedsHearingLoop", new TypeReference<YesOrNo>(){}),
+
     FEE_UPDATE_RECORDED(
         "feeUpdateRecorded", new TypeReference<CheckValues<String>>(){}),
 
@@ -2045,6 +2128,9 @@ public enum AsylumCaseFieldDefinition {
     CASE_LEVEL_FLAGS(
         "caseFlags", new TypeReference<StrategicCaseFlag>(){}),
 
+    NLR_LEVEL_FLAGS(
+        "nlrLevelFlags", new TypeReference<StrategicCaseFlag>() {}),
+
     IS_HEARING_ROOM_NEEDED(
             "isHearingRoomNeeded", new TypeReference<YesOrNo>(){}),
 
@@ -2201,6 +2287,9 @@ public enum AsylumCaseFieldDefinition {
 
     SPONSOR_PARTY_ID(
             "sponsorPartyId", new TypeReference<String>() {}),
+
+    NLR_PARTY_ID(
+        "nlrPartyId", new TypeReference<String>() {}),
 
     CHANGE_HEARINGS(
             "changeHearings", new TypeReference<DynamicList>(){}),
@@ -2884,7 +2973,7 @@ public enum AsylumCaseFieldDefinition {
 
     REMISSION_REQUESTED_BY(
         "remissionRequestedBy", new TypeReference<UserRoleLabel>(){}),
-  
+
     GENERATE_LIST_CMR_TASK_REQUESTED(
             "generateListCmrTaskRequested", new TypeReference<YesOrNo>(){}),
 
@@ -2930,8 +3019,20 @@ public enum AsylumCaseFieldDefinition {
     STF_24W_REMOVE_DATE(
             "stf24wRemoveDate", new TypeReference<String>(){}),
 
+    REMOVAL_OF_24W_DECISION_REASON(
+            "removalOf24wDecisionReason", new TypeReference<String>(){}),
+
+    IS_REMOVAL_OF_24W_APPLICATION_REFUSED(
+        "isRemovalOf24wApplicationRefused", new TypeReference<YesOrNo>(){}),
+
+    REMOVAL_OF_24W_DECISION_DECISION_MAKER(
+        "removalOf24wDecisionDecisionMaker", new TypeReference<String>(){}),
+
     SAVE_NOTIFICATIONS_TO_DATA_DATE(
         "saveNotificationsToDataDate", new TypeReference<String>(){}),
+    QM_LEGAL_REPRESENTATIVE_QUERIES("qmLegalRepresentativeQueries", new TypeReference<CaseQueriesCollection>(){}),
+    CASE_MESSAGE("caseMessage", new TypeReference<CaseMessage>(){}),
+    QM_LATEST_QUERY("qmLatestQuery", new TypeReference<List<IdValue<LatestQuery>>>(){}),
 
     XUI_BANNER_TEXT(
             "xuiBannerText", new TypeReference<String>(){}),

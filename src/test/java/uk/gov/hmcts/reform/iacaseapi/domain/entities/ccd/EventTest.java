@@ -1,15 +1,16 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Stream;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class EventTest {
 
@@ -119,6 +120,7 @@ class EventTest {
             Arguments.of("decisionWithoutHearing", Event.DECISION_WITHOUT_HEARING.toString()),
             Arguments.of("listCma", Event.LIST_CMA.toString()),
             Arguments.of("editAppealAfterSubmit", Event.EDIT_APPEAL_AFTER_SUBMIT.toString()),
+            Arguments.of("editAppellantPersonalData", Event.EDIT_APPELLANT_PERSONAL_DATA.toString()),
             Arguments.of("linkAppeal", Event.LINK_APPEAL.toString()),
             Arguments.of("unlinkAppeal", Event.UNLINK_APPEAL.toString()),
             Arguments.of("paymentAppeal", Event.PAYMENT_APPEAL.toString()),
@@ -176,6 +178,7 @@ class EventTest {
             Arguments.of("ariaCreateCase", Event.ARIA_CREATE_CASE.toString()),
             Arguments.of("progressMigratedCase", Event.PROGRESS_MIGRATED_CASE.toString()),
             Arguments.of("refundConfirmation", Event.REFUND_CONFIRMATION.toString()),
+            Arguments.of("cmrHearingCancelled", Event.CMR_HEARING_CANCELLED.toString()),
             Arguments.of("hearingCancelled", Event.HEARING_CANCELLED.toString()),
             Arguments.of("updateInterpreterBookingStatus", Event.UPDATE_INTERPRETER_BOOKING_STATUS.toString()),
             Arguments.of("updateInterpreterDetails", Event.UPDATE_INTERPRETER_DETAILS.toString()),
@@ -195,9 +198,18 @@ class EventTest {
             Arguments.of("forceFtpaDecidedState", Event.FORCE_FTPA_DECIDED_STATE.toString()),
             Arguments.of("rollbackMigration", Event.ROLLBACK_MIGRATION.toString()),
             Arguments.of("revokeCitizenAccess", Event.REVOKE_CITIZEN_ACCESS.toString()),
+            Arguments.of("sendInviteToNonLegalRep", Event.SEND_INVITE_TO_NON_LEGAL_REP.toString()),
+            Arguments.of("sendPipToNonLegalRep", Event.SEND_PIP_TO_NON_LEGAL_REP.toString()),
+            Arguments.of("joinAppealConfirmation", Event.JOIN_APPEAL_CONFIRMATION.toString()),
+            Arguments.of("nlrDetailsUpdated", Event.NLR_DETAILS_UPDATED.toString()),
+            Arguments.of("removeNonLegalRep", Event.REMOVE_NON_LEGAL_REP.toString()),
             Arguments.of("completeCaseReview", Event.COMPLETE_CASE_REVIEW.toString()),
+            Arguments.of("queryManagementRaiseQuery", Event.QUERY_MANAGEMENT_RAISE_QUERY.toString()),
+            Arguments.of("queryManagementRespondQuery", Event.QUERY_MANAGEMENT_RESPOND_QUERY.toString()),
             Arguments.of("generatePinInPost", Event.GENERATE_PIN_IN_POST.toString()),
             Arguments.of("forceCaseToPrepareForHearing", Event.FORCE_CASE_TO_PREPARE_FOR_HEARING.toString()),
+            Arguments.of("sendLateTimelineNotice", Event.SEND_LATE_TIMELINE_NOTICE.toString()),
+            Arguments.of("stf24wDetermination", Event.STF_24W_DETERMINATION.toString()),
             Arguments.of("unknown", Event.UNKNOWN.toString())
         );
     }

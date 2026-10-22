@@ -1,37 +1,9 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
-import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DECIDE_AN_APPLICATION_ID;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAS_APPLICATIONS_TO_DECIDE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MAKE_AN_APPLICATIONS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MAKE_AN_APPLICATIONS_LIST;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MAKE_AN_APPLICATION_DECISION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MAKE_AN_APPLICATION_DECISION_REASON;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MAKE_AN_APPLICATION_FIELDS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MANUAL_CANCEL_HEARINGS_REQUIRED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationDecision.GRANTED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.CHANGE_DECISION_TYPE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.DECISION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.FINAL_BUNDLING;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.LISTING;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.PREPARE_FOR_HEARING;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.PRE_HEARING;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsHelper;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplication;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationDecision;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -44,6 +16,19 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.IaHearingsApiService;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.AsylumCaseServiceResponseException;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+
+import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationDecision.GRANTED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.CHANGE_DECISION_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 @Component
 public class DecideAnApplicationHandler implements PreSubmitCallbackHandler<AsylumCase> {
@@ -84,7 +69,7 @@ public class DecideAnApplicationHandler implements PreSubmitCallbackHandler<Asyl
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-               && callback.getEvent() == Event.DECIDE_AN_APPLICATION;
+            && callback.getEvent() == Event.DECIDE_AN_APPLICATION;
     }
 
     @Override
@@ -106,7 +91,8 @@ public class DecideAnApplicationHandler implements PreSubmitCallbackHandler<Asyl
             .orElseThrow(() -> new IllegalStateException("No application decision is present"));
         String decisionReason = asylumCase.read(MAKE_AN_APPLICATION_DECISION_REASON, String.class)
             .orElseThrow(() -> new IllegalStateException("No application decision reason is present"));
-        String decisionMakerRole = userDetailsHelper.getLoggedInUserRoleLabel(userDetails).toString();
+        UserRoleLabel decisionMakerRoleObj = userDetailsHelper.getLoggedInUserRoleLabel(userDetails);
+        String decisionMakerRole = decisionMakerRoleObj.toString();
         String updatedDecisionMakerRole = decisionMakerRole.equals(oldLegalOfficerDisplayName) ? newLegalOfficerDisplayName : decisionMakerRole;
 
         Optional<List<IdValue<MakeAnApplication>>> mayBeMakeAnApplications = asylumCase.read(MAKE_AN_APPLICATIONS);
@@ -115,7 +101,8 @@ public class DecideAnApplicationHandler implements PreSubmitCallbackHandler<Asyl
         boolean isIntegrated = HandlerUtils.isIntegrated(asylumCase);
 
         State currentState = callback.getCaseDetails().getState();
-
+        boolean isPertaining24wRemoval = asylumCase.read(IS_REMOVAL_OF_24W_APPLICATION_REFUSED, YesOrNo.class)
+            .orElse(NO).equals(YES);
         mayBeMakeAnApplications
             .orElse(Collections.emptyList())
             .stream()
@@ -125,6 +112,9 @@ public class DecideAnApplicationHandler implements PreSubmitCallbackHandler<Asyl
                 setDecisionInfo(makeAnApplication, decision.toString(), decisionReason, dateProvider.now().toString(), updatedDecisionMakerRole);
                 if (isIntegrated && isHearingDeletionNecessary(makeAnApplication, currentState)) {
                     delegateToIaHearingsApi(callback, response);
+                }
+                if (isPertaining24wRemoval) {
+                    asylumCase.write(REMOVAL_OF_24W_DECISION_REASON, decisionReason);
                 }
                 asylumCase.write(HAS_APPLICATIONS_TO_DECIDE, NO);
                 asylumCase.write(AsylumCaseFieldDefinition.LAST_MODIFIED_APPLICATION, makeAnApplication);
@@ -143,6 +133,10 @@ public class DecideAnApplicationHandler implements PreSubmitCallbackHandler<Asyl
         asylumCase.clear(MAKE_AN_APPLICATION_FIELDS);
         asylumCase.clear(MAKE_AN_APPLICATION_DECISION);
         asylumCase.clear(MAKE_AN_APPLICATION_DECISION_REASON);
+
+        if (!isPertaining24wRemoval || !UserRoleLabel.JUDGE.equals(decisionMakerRoleObj)) {
+            asylumCase.clear(REMOVAL_OF_24W_DECISION_DECISION_MAKER);
+        }
 
         return response;
     }
@@ -169,8 +163,8 @@ public class DecideAnApplicationHandler implements PreSubmitCallbackHandler<Asyl
     private boolean isHearingDeletionNecessary(MakeAnApplication makeAnApplication, State state) {
 
         return makeAnApplication.getType().equals(CHANGE_DECISION_TYPE.toString())
-               && makeAnApplication.getDecision().equals(GRANTED.toString())
-               && STATES_FOR_HEARING_CANCELLATION.contains(state);
+            && makeAnApplication.getDecision().equals(GRANTED.toString())
+            && STATES_FOR_HEARING_CANCELLATION.contains(state);
     }
 
     private boolean isDeletionRequestSuccessful(AsylumCase asylumCase) {

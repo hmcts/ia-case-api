@@ -18,4 +18,12 @@ public enum YesOrNo {
     public String toString() {
         return id;
     }
+
+    public boolean isYes() {
+        return this == YES;
+    }
+
+    public boolean isNo() {
+        return this == NO;
+    }
 }

@@ -1,5 +1,21 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
+import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterLanguageRefData;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.WitnessDetails;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+
 import static java.util.Objects.requireNonNull;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_INTERPRETER_LANGUAGE_CATEGORY;
@@ -10,6 +26,13 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_INTERPRETER_SPOKEN_LANGUAGE_BOOKING;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_STATUS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_NAME_FOR_DISPLAY;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NLR_INTERPRETER_LANGUAGE_CATEGORY;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NLR_INTERPRETER_SIGN_LANGUAGE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NLR_INTERPRETER_SIGN_LANGUAGE_BOOKING;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NLR_INTERPRETER_SIGN_LANGUAGE_BOOKING_STATUS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NLR_INTERPRETER_SPOKEN_LANGUAGE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NLR_INTERPRETER_SPOKEN_LANGUAGE_BOOKING;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NLR_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_STATUS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_10_INTERPRETER_SIGN_LANGUAGE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_10_INTERPRETER_SPOKEN_LANGUAGE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_1_INTERPRETER_SIGN_LANGUAGE;
@@ -74,30 +97,18 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterBookingStatus.NOT_REQUESTED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterLanguageCategory.SIGN_LANGUAGE_INTERPRETER;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterLanguageCategory.SPOKEN_LANGUAGE_INTERPRETER;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.getNlrFullName;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.hasActiveNlr;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_N_INTERPRETER_SIGN_LANGUAGE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_N_INTERPRETER_SPOKEN_LANGUAGE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.buildWitnessFullName;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterLanguageRefData;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.WitnessDetails;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
-import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 @Component
 public class UpdateInterpreterBookingStatusPreparer implements PreSubmitCallbackHandler<AsylumCase> {
 
     public static String APPELLANT = "Appellant";
     public static String WITNESS = "Witness";
+    public static String NLR = "Non-legal representative";
     private AsylumCase asylumCase;
 
     @Override
@@ -121,6 +132,10 @@ public class UpdateInterpreterBookingStatusPreparer implements PreSubmitCallback
         populateOrClearAppellantSignAndSpokenInterpreterBookingFields();
 
         populateOrClearWitnessesSignAndSpokenInterpreterBookingFields();
+
+        if (hasActiveNlr(asylumCase)) {
+            populateOrClearNlrSignAndSpokenInterpreterBookingFields();
+        }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
@@ -190,6 +205,35 @@ public class UpdateInterpreterBookingStatusPreparer implements PreSubmitCallback
         }
     }
 
+    private void populateOrClearNlrSignAndSpokenInterpreterBookingFields() {
+        Optional<List<String>> languageCategoriesOptional = asylumCase
+            .read(NLR_INTERPRETER_LANGUAGE_CATEGORY);
+
+        if (languageCategoriesOptional.isPresent()
+            && languageCategoriesOptional.get().contains(SPOKEN_LANGUAGE_INTERPRETER.getValue())) {
+            populateBookingStatusFieldsForNlr(
+                NLR_INTERPRETER_SPOKEN_LANGUAGE,
+                NLR_INTERPRETER_SPOKEN_LANGUAGE_BOOKING,
+                NLR_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_STATUS);
+        } else {
+            clearBookingStatusFields(
+                NLR_INTERPRETER_SPOKEN_LANGUAGE_BOOKING,
+                NLR_INTERPRETER_SPOKEN_LANGUAGE_BOOKING_STATUS);
+        }
+
+        if (languageCategoriesOptional.isPresent()
+            && languageCategoriesOptional.get().contains(SIGN_LANGUAGE_INTERPRETER.getValue())) {
+            populateBookingStatusFieldsForNlr(
+                NLR_INTERPRETER_SIGN_LANGUAGE,
+                NLR_INTERPRETER_SIGN_LANGUAGE_BOOKING,
+                NLR_INTERPRETER_SIGN_LANGUAGE_BOOKING_STATUS);
+        } else {
+            clearBookingStatusFields(
+                NLR_INTERPRETER_SIGN_LANGUAGE_BOOKING,
+                NLR_INTERPRETER_SIGN_LANGUAGE_BOOKING_STATUS);
+        }
+    }
+
     private void populateBookingStatusFieldsForAppellant(AsylumCaseFieldDefinition language,
                                                          AsylumCaseFieldDefinition booking,
                                                          AsylumCaseFieldDefinition bookingStatus) {
@@ -203,8 +247,21 @@ public class UpdateInterpreterBookingStatusPreparer implements PreSubmitCallback
         setBookingStatus(bookingStatus);
     }
 
+    private void populateBookingStatusFieldsForNlr(AsylumCaseFieldDefinition language,
+                                                   AsylumCaseFieldDefinition booking,
+                                                   AsylumCaseFieldDefinition bookingStatus) {
+        String bookingDetails = formatBookingDetails(
+            getNlrFullName(asylumCase),
+            NLR,
+            getLanguage(language));
+
+        asylumCase.write(booking, bookingDetails);
+
+        setBookingStatus(bookingStatus);
+    }
+
     private void populateSpokenLanguageBookingStatusFieldsForWitness(AsylumCaseFieldDefinition witness,
-                                                                   List<IdValue<WitnessDetails>> witnesses) {
+                                                                     List<IdValue<WitnessDetails>> witnesses) {
         String witnessName = "";
         switch (witness) {
             case WITNESS_1_INTERPRETER_SPOKEN_LANGUAGE -> {
@@ -498,7 +555,7 @@ public class UpdateInterpreterBookingStatusPreparer implements PreSubmitCallback
             }
         }
     }
-    
+
     private void assignBookingStatus(String witnessName,
                                      AsylumCaseFieldDefinition language,
                                      AsylumCaseFieldDefinition booking,

@@ -110,21 +110,7 @@ public class AppealOutOfCountryHandler implements PreSubmitCallbackHandler<Asylu
             Optional<AddressUk> optionalAddressUk = asylumCase.read(SPONSOR_ADDRESS, AddressUk.class);
             if (optionalAddressUk.isPresent()) {
                 AddressUk addressUk = optionalAddressUk.get();
-                StringBuilder sponsorAddress = new StringBuilder("");
-                addAddressLine(addressUk.getAddressLine1(), sponsorAddress);
-                addAddressLine(addressUk.getAddressLine2(), sponsorAddress);
-                addAddressLine(addressUk.getAddressLine3(), sponsorAddress);
-                addAddressLine(addressUk.getPostTown(), sponsorAddress);
-                addAddressLine(addressUk.getCounty(), sponsorAddress);
-                addAddressLine(addressUk.getPostCode(), sponsorAddress);
-                addressUk.getCountry().ifPresent(
-                    line -> {
-                        if (!line.equals("")) {
-                            sponsorAddress.append(line);
-                        }
-                    }
-                );
-                asylumCase.write(SPONSOR_ADDRESS_FOR_DISPLAY, sponsorAddress.toString());
+                asylumCase.write(SPONSOR_ADDRESS_FOR_DISPLAY, addressUk.toDisplay());
             }
         }
         return new PreSubmitCallbackResponse<>(asylumCase);
@@ -134,16 +120,6 @@ public class AppealOutOfCountryHandler implements PreSubmitCallbackHandler<Asylu
         asylumCase.write(
             SPONSOR_NAME_FOR_DISPLAY,
             sponsorNameForDisplay.replaceAll("\\s+", " ").trim()
-        );
-    }
-
-    private void addAddressLine(final Optional<String> addressLine, StringBuilder sponsorDetails) {
-        addressLine.ifPresent(
-            line -> {
-                if (!line.equals("")) {
-                    sponsorDetails.append(line).append("\r\n");
-                }
-            }
         );
     }
 }

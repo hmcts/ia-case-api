@@ -1,25 +1,5 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MAKE_AN_APPLICATIONS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MAKE_AN_APPLICATION_DETAILS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MAKE_AN_APPLICATION_DETAILS_LABEL;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MAKE_AN_APPLICATION_EVIDENCE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MAKE_AN_APPLICATION_TYPES;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.MAKE_AN_APPLICATION;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -44,8 +24,31 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.MakeAnApplicationAppender;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.WaFieldsPublisher;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAS_NLR_SUBMITTED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MAKE_AN_APPLICATIONS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MAKE_AN_APPLICATION_DETAILS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MAKE_AN_APPLICATION_DETAILS_LABEL;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MAKE_AN_APPLICATION_EVIDENCE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MAKE_AN_APPLICATION_TYPES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.MAKE_AN_APPLICATION;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -133,6 +136,71 @@ class MakeAnApplicationHandlerTest {
         verify(makeAnApplicationAppender, times(1))
             .append(existingMakeAnApplications, newMakeAnApplicationType,
                 newMakeAnApplicationReason, newMakeAnApplicationEvidence,
+                newMakeAnApplicationStatus, currentState);
+
+        verify(asylumCase, times(1)).write(MAKE_AN_APPLICATIONS, newMakeAnApplications);
+        verify(asylumCase, times(1)).clear(MAKE_AN_APPLICATION_TYPES);
+        verify(asylumCase, times(1)).clear(MAKE_AN_APPLICATION_DETAILS);
+        verify(asylumCase, times(1)).clear(MAKE_AN_APPLICATION_EVIDENCE);
+        verify(asylumCase, times(1)).clear(MAKE_AN_APPLICATION_DETAILS_LABEL);
+    }
+
+    @Test
+    void should_append_make_an_application_if_nlr_submits() {
+
+        final List<IdValue<MakeAnApplication>> existingMakeAnApplications = new ArrayList<>();
+        final List<IdValue<MakeAnApplication>> newMakeAnApplications = new ArrayList<>();
+
+        DynamicList makeAnApplicationTypes = new DynamicList("updateAppealDetails");
+
+        String newMakeAnApplicationType = makeAnApplicationTypes.getValue().getLabel();
+        String newMakeAnApplicationReason = "Some reason";
+        List<IdValue<Document>> newMakeAnApplicationEvidence = Collections.emptyList();
+        String newMakeAnApplicationStatus = "Pending";
+        String currentState = "listing";
+
+        when(callback.getEvent()).thenReturn(MAKE_AN_APPLICATION);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+
+        when(callback.getCaseDetails().getState()).thenReturn(State.LISTING);
+        when(asylumCase.read(MAKE_AN_APPLICATION_TYPES, DynamicList.class))
+            .thenReturn(Optional.of(makeAnApplicationTypes));
+        when(asylumCase.read(MAKE_AN_APPLICATION_DETAILS, String.class))
+            .thenReturn(Optional.of(newMakeAnApplicationReason));
+        when(asylumCase.read(MAKE_AN_APPLICATION_EVIDENCE)).thenReturn(Optional.of(newMakeAnApplicationEvidence));
+        when(asylumCase.read(MAKE_AN_APPLICATIONS)).thenReturn(Optional.of(existingMakeAnApplications));
+        when(asylumCase.read(HAS_NLR_SUBMITTED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(makeAnApplicationAppender.append(
+            existingMakeAnApplications,
+            newMakeAnApplicationType,
+            newMakeAnApplicationReason,
+            newMakeAnApplicationEvidence,
+            newMakeAnApplicationStatus,
+            currentState)).thenReturn(newMakeAnApplications);
+
+        when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(UserRoleLabel.LEGAL_REPRESENTATIVE);
+        when(userDetailsHelper.getLoggedInUserRole(userDetails)).thenReturn(UserRole.LEGAL_REPRESENTATIVE);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            makeAnApplicationHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, times(1))
+            .read(MAKE_AN_APPLICATION_TYPES, DynamicList.class);
+        verify(asylumCase, times(1))
+            .read(MAKE_AN_APPLICATION_DETAILS, String.class);
+        verify(asylumCase, times(1))
+            .read(MAKE_AN_APPLICATION_EVIDENCE);
+        verify(asylumCase, times(1))
+            .read(MAKE_AN_APPLICATIONS);
+        String expectedReason = "Non-legal representative submitted on behalf of the appellant.\n" + newMakeAnApplicationReason;
+        verify(makeAnApplicationAppender, times(1))
+            .append(existingMakeAnApplications, newMakeAnApplicationType,
+                expectedReason, newMakeAnApplicationEvidence,
                 newMakeAnApplicationStatus, currentState);
 
         verify(asylumCase, times(1)).write(MAKE_AN_APPLICATIONS, newMakeAnApplications);

@@ -242,48 +242,9 @@ additional information where necessary.
 
    Still, you shouldn't need to do this so make sure you get in touch with a Technical Lead soon afterward.
 
-## Creating AiP users using the scripts
-To create AiP citizen users, run `az login` and navigate to `/bin/utils/aip_scripts` and run `export IDAM_TESTING_ACCESS_TOKEN=$(zsh ./get_idam_token.zsh <environment>)`
-
-Then run `zsh ./create-test-user.zsh <environment> <email (optional)>` where `<environment>` is either `aat`, `demo`, `perftest`, `ithc` and `<email (optional)>` is an optional email address, if not entered then it will generate one automatically in the format of `citizen-SOME_UUID@mailnesia.com`.
-
-NB. The token will expire every 8 hours, so if the create-test-user doesn't return an email address, it's likely that the first step will need to be re-run.
-NB2. Use aat env variable for preview environment user creation as it uses aat's IDAM instance.
-
 ## mirrord issue with node out of space error
 If your mirrord agent is failing to spin up, run `kubectl get events -n ia | grep mirrord-agent` and look for your instance logs
-If it is failing with a node out of space error then you can use the following:
-
-### Mirrord Pod Auto-Fix Script
-
-Automates selection of a healthy mirrord pod when node saturation causes issues.
-
-The script:
-- Finds a pod using a prefix (e.g. `ia-case-api-pr-3042-java`)
-- Matches it to your repo path (e.g. `ia-case-api`)
-- Checks which node the pod is running on
-- If the node has **> 28 pods**, it deletes and retries until a suitable pod is found since the max is 30
-- Updates `.mirrord/mirrord.json → target.path` automatically once a valid pod is selected in the repo path provided in the args
-
-### Usage
-
-```bash
-chmod +x set_mirrord_pod.sh
-./set_mirrord_pod.sh <pod-prefix> <repo-path>
-````
-
-Examples:
-
-```bash
-./set_mirrord_pod.sh ia-case-api-pr-3042-java /Users/nilay/hmcts/iac/ia-case-api
-./set_mirrord_pod.sh ia-case-api-pr-3042-case-documents-api /Users/nilay/hmcts/iac/ia-case-documents-api
-./set_mirrord_pod.sh ia-case-notifications-api-pr-1654-java /Users/nilay/hmcts/iac/ia-case-notifications-api
-```
-
-### After running
-
-* Wait for the script to finish selecting a pod (may loop) and will beep when complete
-* Then run your bootrun application in IDE with the mirrord plugin enabled
+If it is failing with a node out of space error then you can use the Mirrord Pod Auto-Fix Script found in the Scripts section of the readme
 
 ## Development / Debugging Environment - Preview with Mirrord
 
@@ -325,3 +286,50 @@ If you want to clean up the environment just run:
 ```shell
 npx @hmcts/dev-env@latest --delete
 ```
+
+## Scripts
+### Creating AiP users using the scripts
+To create AiP citizen users, run `az login` and navigate to `/bin/utils/aip_scripts` and run `export IDAM_TESTING_ACCESS_TOKEN=$(zsh ./get_idam_token.zsh <environment>)`
+
+Then run `zsh ./create-test-user.zsh <environment> <email (optional)>` where `<environment>` is either `aat`, `demo`, `perftest`, `ithc` and `<email (optional)>` is an optional email address, if not entered then it will generate one automatically in the format of `citizen-SOME_UUID@mailnesia.com`.
+
+NB. The token will expire every 8 hours, so if the create-test-user doesn't return an email address, it's likely that the first step will need to be re-run.
+NB2. Use aat env variable for preview environment user creation as it uses aat's IDAM instance.
+
+### Copy over case data script
+copy_over_data.zsh is a script that can be used to overwrite case data and event history from one appeal to another.
+Main use case is if an appeal is inaccessible by AIP or LR in a preview env (likely due to the test user being torn down), one can create a new test user, create a new appeal for it (as a baseline) and copy over all the data and events into this appeal so it'll be as if it was the original (with a different ccd reference number)
+`zsh ./copy_over_data.zsh PR_NUMBER, CASE_REF_1, CASE_REF_2`
+Where PR_NUMBER is ia-case-api pr, CASE_REF_1 is the old inaccessible ccd reference, and CASE_REF_2 is the new usable appeal ccd reference
+This will carry over data and wipe the events of the new case and replace them with the old events.
+
+### Mirrord Pod Auto-Fix Script
+
+Automates selection of a healthy mirrord pod when node saturation causes issues.
+
+The script:
+- Finds a pod using a prefix (e.g. `ia-case-api-pr-3042-java`)
+- Matches it to your repo path (e.g. `ia-case-api`)
+- Checks which node the pod is running on
+- If the node has **> 28 pods**, it deletes and retries until a suitable pod is found since the max is 30
+- Updates `.mirrord/mirrord.json → target.path` automatically once a valid pod is selected in the repo path provided in the args
+
+#### Usage
+
+```bash
+chmod +x set_mirrord_pod.sh
+./set_mirrord_pod.sh <pod-prefix> <repo-path>
+````
+
+Examples:
+
+```bash
+./set_mirrord_pod.sh ia-case-api-pr-3042-java /Users/nilay/hmcts/iac/ia-case-api
+./set_mirrord_pod.sh ia-case-api-pr-3042-case-documents-api /Users/nilay/hmcts/iac/ia-case-documents-api
+./set_mirrord_pod.sh ia-case-notifications-api-pr-1654-java /Users/nilay/hmcts/iac/ia-case-notifications-api
+```
+
+### After running
+
+* Wait for the script to finish selecting a pod (may loop) and will beep when complete
+* Then run your bootrun application in IDE with the mirrord plugin enabled

@@ -1,5 +1,39 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.Application;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ApplicationType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterLanguageRefData;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.Value;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.WitnessDetails;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.PreviousRequirementsAndRequestsAppender;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+
 import static com.google.common.collect.Lists.newArrayList;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -10,6 +44,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -23,13 +58,22 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_FLAG_SET_ASIDE_REHEARD_EXISTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DATES_TO_AVOID;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DATES_TO_AVOID_YES_NO;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAS_NON_LEGAL_REP;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IN_CAMERA_COURT_DECISION_FOR_DISPLAY;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IN_CAMERA_COURT_TRIBUNAL_RESPONSE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ANY_WITNESS_INTERPRETER_REQUIRED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_INTERPRETER_SERVICES_NEEDED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_NLR_INTERPRETER_REQUIRED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_WITNESSES_ATTENDING;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MULTIMEDIA_DECISION_FOR_DISPLAY;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MULTIMEDIA_TRIBUNAL_RESPONSE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NLR_ATTENDING;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NLR_INTERPRETER_LANGUAGE_CATEGORY;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NLR_INTERPRETER_SIGN_LANGUAGE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NLR_INTERPRETER_SPOKEN_LANGUAGE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NLR_NEEDS_HEARING_LOOP;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NLR_NEEDS_STEP_FREE_ACCESS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NLR_ATTENDING_OUTSIDE_UK;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.OTHER_DECISION_FOR_DISPLAY;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMOTE_HEARING_DECISION_FOR_DISPLAY;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMOTE_VIDEO_CALL_TRIBUNAL_RESPONSE;
@@ -84,37 +128,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguages
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_N_INTERPRETER_SIGN_LANGUAGE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.InterpreterLanguagesUtils.WITNESS_N_INTERPRETER_SPOKEN_LANGUAGE;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.Application;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ApplicationType;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterLanguageRefData;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.Value;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.WitnessDetails;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.PreviousRequirementsAndRequestsAppender;
-
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
@@ -150,9 +163,9 @@ public class UpdateHearingRequirementsHandlerTest {
     private String applicationDateOfDecision = "31/01/2019";
     private String applicationStatus = "In progress";
     private InterpreterLanguageRefData interpreterLanguage = new InterpreterLanguageRefData(
-            new DynamicList(new Value("abc", "abc"), Collections.emptyList()),
-            Collections.emptyList(),
-            "");
+        new DynamicList(new Value("abc", "abc"), Collections.emptyList()),
+        Collections.emptyList(),
+        "");
     private InterpreterLanguageRefData interpreterLanguage2 = new InterpreterLanguageRefData(
         new DynamicList(new Value("def", "def"), Collections.emptyList()),
         Collections.emptyList(),
@@ -375,7 +388,7 @@ public class UpdateHearingRequirementsHandlerTest {
 
         when(asylumCase.read(IS_INTERPRETER_SERVICES_NEEDED, YesOrNo.class)).thenReturn(Optional.of(YES));
         when(asylumCase.read(APPELLANT_INTERPRETER_LANGUAGE_CATEGORY))
-                .thenReturn(Optional.of(List.of(SPOKEN_LANGUAGE_INTERPRETER.getValue())));
+            .thenReturn(Optional.of(List.of(SPOKEN_LANGUAGE_INTERPRETER.getValue())));
         when(asylumCase.read(APPELLANT_INTERPRETER_SPOKEN_LANGUAGE)).thenReturn(Optional.of(interpreterLanguage));
         when(asylumCase.read(APPELLANT_INTERPRETER_SIGN_LANGUAGE)).thenReturn(Optional.of(interpreterLanguage));
 
@@ -391,7 +404,7 @@ public class UpdateHearingRequirementsHandlerTest {
 
         when(asylumCase.read(IS_INTERPRETER_SERVICES_NEEDED, YesOrNo.class)).thenReturn(Optional.of(YES));
         when(asylumCase.read(APPELLANT_INTERPRETER_LANGUAGE_CATEGORY))
-                .thenReturn(Optional.of(List.of(SPOKEN_LANGUAGE_INTERPRETER.getValue(), SIGN_LANGUAGE_INTERPRETER.getValue())));
+            .thenReturn(Optional.of(List.of(SPOKEN_LANGUAGE_INTERPRETER.getValue(), SIGN_LANGUAGE_INTERPRETER.getValue())));
         when(asylumCase.read(APPELLANT_INTERPRETER_SPOKEN_LANGUAGE)).thenReturn(Optional.of(interpreterLanguage));
         when(asylumCase.read(APPELLANT_INTERPRETER_SIGN_LANGUAGE)).thenReturn(Optional.of(interpreterLanguage));
 
@@ -740,6 +753,156 @@ public class UpdateHearingRequirementsHandlerTest {
         assertEquals(asylumCase, callbackResponse.getData());
 
         verify(previousRequirementsAndRequestsAppender, times(0)).appendAndTrim(asylumCase);
+    }
+
+    @ParameterizedTest
+    @CsvSource(value = {"NO", "null"}, nullValues = {"null"})
+    void should_clearAllNlrFields_if_no_nlr(YesOrNo value) {
+        when(asylumCase.read(HAS_NON_LEGAL_REP, YesOrNo.class)).thenReturn(Optional.ofNullable(value));
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            updateHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase).clear(NLR_ATTENDING);
+        verify(asylumCase).clear(NLR_ATTENDING_OUTSIDE_UK);
+        verify(asylumCase).clear(IS_NLR_INTERPRETER_REQUIRED);
+        verify(asylumCase).clear(NLR_NEEDS_STEP_FREE_ACCESS);
+        verify(asylumCase).clear(NLR_NEEDS_HEARING_LOOP);
+        verify(asylumCase).clear(NLR_INTERPRETER_LANGUAGE_CATEGORY);
+        verify(asylumCase).clear(NLR_INTERPRETER_SPOKEN_LANGUAGE);
+        verify(asylumCase).clear(NLR_INTERPRETER_SIGN_LANGUAGE);
+    }
+
+    @ParameterizedTest
+    @CsvSource(value = {"NO", "null"}, nullValues = {"null"})
+    void should_clearNlrNeedsFields_if_has_nlr_but_noAttendanceOrOutside(YesOrNo value) {
+        when(asylumCase.read(HAS_NON_LEGAL_REP, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(asylumCase.read(NLR_ATTENDING, YesOrNo.class)).thenReturn(Optional.ofNullable(value));
+        when(asylumCase.read(NLR_ATTENDING_OUTSIDE_UK, YesOrNo.class)).thenReturn(Optional.ofNullable(value));
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            updateHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, never()).clear(NLR_ATTENDING);
+        verify(asylumCase, never()).clear(NLR_ATTENDING_OUTSIDE_UK);
+        verify(asylumCase).clear(IS_NLR_INTERPRETER_REQUIRED);
+        verify(asylumCase).clear(NLR_NEEDS_STEP_FREE_ACCESS);
+        verify(asylumCase).clear(NLR_NEEDS_HEARING_LOOP);
+        verify(asylumCase).clear(NLR_INTERPRETER_LANGUAGE_CATEGORY);
+        verify(asylumCase).clear(NLR_INTERPRETER_SPOKEN_LANGUAGE);
+        verify(asylumCase).clear(NLR_INTERPRETER_SIGN_LANGUAGE);
+    }
+
+    @ParameterizedTest
+    @CsvSource(value = {"NO", "null"}, nullValues = {"null"})
+    void should_clearNlrInterpreterFields_if_no_interpreter(YesOrNo value) {
+        when(asylumCase.read(HAS_NON_LEGAL_REP, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(asylumCase.read(NLR_ATTENDING, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(asylumCase.read(IS_NLR_INTERPRETER_REQUIRED, YesOrNo.class)).thenReturn(Optional.ofNullable(value));
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            updateHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, never()).clear(NLR_ATTENDING);
+        verify(asylumCase, never()).clear(NLR_ATTENDING_OUTSIDE_UK);
+        verify(asylumCase, never()).clear(IS_NLR_INTERPRETER_REQUIRED);
+        verify(asylumCase, never()).clear(NLR_NEEDS_STEP_FREE_ACCESS);
+        verify(asylumCase, never()).clear(NLR_NEEDS_HEARING_LOOP);
+        verify(asylumCase).clear(NLR_INTERPRETER_LANGUAGE_CATEGORY);
+        verify(asylumCase).clear(NLR_INTERPRETER_SPOKEN_LANGUAGE);
+        verify(asylumCase).clear(NLR_INTERPRETER_SIGN_LANGUAGE);
+    }
+
+    @Test
+    void should_not_clear_spoken_or_sign_if_needed() {
+        when(asylumCase.read(HAS_NON_LEGAL_REP, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(asylumCase.read(NLR_ATTENDING_OUTSIDE_UK, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(asylumCase.read(IS_NLR_INTERPRETER_REQUIRED, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(asylumCase.read(NLR_INTERPRETER_LANGUAGE_CATEGORY))
+            .thenReturn(Optional.of(List.of(SPOKEN_LANGUAGE_INTERPRETER.getValue(),
+                SIGN_LANGUAGE_INTERPRETER.getValue())));
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            updateHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, never()).clear(NLR_ATTENDING);
+        verify(asylumCase, never()).clear(NLR_ATTENDING_OUTSIDE_UK);
+        verify(asylumCase, never()).clear(IS_NLR_INTERPRETER_REQUIRED);
+        verify(asylumCase, never()).clear(NLR_NEEDS_STEP_FREE_ACCESS);
+        verify(asylumCase, never()).clear(NLR_NEEDS_HEARING_LOOP);
+        verify(asylumCase, never()).clear(NLR_INTERPRETER_LANGUAGE_CATEGORY);
+        verify(asylumCase, never()).clear(NLR_INTERPRETER_SPOKEN_LANGUAGE);
+        verify(asylumCase, never()).clear(NLR_INTERPRETER_SIGN_LANGUAGE);
+    }
+
+    @Test
+    void should_clear_spoken_or_sign_if_empty_category() {
+        when(asylumCase.read(HAS_NON_LEGAL_REP, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(asylumCase.read(NLR_ATTENDING_OUTSIDE_UK, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(asylumCase.read(IS_NLR_INTERPRETER_REQUIRED, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(asylumCase.read(NLR_INTERPRETER_LANGUAGE_CATEGORY))
+            .thenReturn(Optional.of(List.of()));
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            updateHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, never()).clear(NLR_ATTENDING);
+        verify(asylumCase, never()).clear(NLR_ATTENDING_OUTSIDE_UK);
+        verify(asylumCase, never()).clear(IS_NLR_INTERPRETER_REQUIRED);
+        verify(asylumCase, never()).clear(NLR_NEEDS_STEP_FREE_ACCESS);
+        verify(asylumCase, never()).clear(NLR_NEEDS_HEARING_LOOP);
+        verify(asylumCase, never()).clear(NLR_INTERPRETER_LANGUAGE_CATEGORY);
+        verify(asylumCase).clear(NLR_INTERPRETER_SPOKEN_LANGUAGE);
+        verify(asylumCase).clear(NLR_INTERPRETER_SIGN_LANGUAGE);
+    }
+
+    @Test
+    void should_clear_spoken_or_sign_if_no_category() {
+        when(asylumCase.read(HAS_NON_LEGAL_REP, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(asylumCase.read(NLR_ATTENDING_OUTSIDE_UK, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(asylumCase.read(IS_NLR_INTERPRETER_REQUIRED, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            updateHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, never()).clear(NLR_ATTENDING);
+        verify(asylumCase, never()).clear(NLR_ATTENDING_OUTSIDE_UK);
+        verify(asylumCase, never()).clear(IS_NLR_INTERPRETER_REQUIRED);
+        verify(asylumCase, never()).clear(NLR_NEEDS_STEP_FREE_ACCESS);
+        verify(asylumCase, never()).clear(NLR_NEEDS_HEARING_LOOP);
+        verify(asylumCase, never()).clear(NLR_INTERPRETER_LANGUAGE_CATEGORY);
+        verify(asylumCase).clear(NLR_INTERPRETER_SPOKEN_LANGUAGE);
+        verify(asylumCase).clear(NLR_INTERPRETER_SIGN_LANGUAGE);
     }
 
     @Test

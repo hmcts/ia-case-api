@@ -36,4 +36,24 @@ class AddressUkTest {
         assertEquals(Optional.of(postCode), addressUk.getPostCode());
         assertEquals(Optional.of(country), addressUk.getCountry());
     }
+
+    @Test
+    void toDisplay_returns_expected_value() {
+        assertEquals("A\r\nB\r\nC\r\nD\r\nE\r\nF\r\nG", addressUk.toDisplay());
+    }
+
+
+    @Test
+    void toDisplay_ignores_null_and_blanks() {
+        addressUk = new AddressUk(
+            addressLine1,
+            null,
+            "",
+            " ",
+            county,
+            postCode,
+            country
+        );
+        assertEquals("A\r\nE\r\nF\r\nG", addressUk.toDisplay());
+    }
 }
