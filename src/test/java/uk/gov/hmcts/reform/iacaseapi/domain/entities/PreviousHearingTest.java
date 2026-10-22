@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.HoursAndMinutes;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.HoursMinutes;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 
@@ -20,7 +21,7 @@ class PreviousHearingTest {
     private final String ariaListingReference = "123456";
     private final HearingCentre listCaseHearingCentre = HearingCentre.NEWPORT;
     private final String listCaseHearingDate = "13/10/2020";
-    private final String listCaseHearingLength = "6 hours";
+    private final Optional<HoursMinutes> listCaseHearingLength = Optional.of(new HoursMinutes(6, 0));
     private final String appealDecision = "Dismissed";
 
     private final Document doc = new Document(
