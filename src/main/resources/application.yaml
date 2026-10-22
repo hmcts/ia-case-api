@@ -394,6 +394,7 @@ security:
       - "sendPipToNonLegalRep"
       - "joinAppealConfirmation"
       - "generatePinInPost"
+      - "queryManagementRespondQuery"
     challenged-access-legal-operations:
       - "appellantInPersonManual"
       - "moveToPaymentPending"
@@ -593,6 +594,7 @@ security:
       - "sendPipToNonLegalRep"
       - "joinAppealConfirmation"
       - "generatePinInPost"
+      - "queryManagementRespondQuery"
     hearing-centre-admin:
       - "appellantInPersonManual"
       - "startAppeal"
