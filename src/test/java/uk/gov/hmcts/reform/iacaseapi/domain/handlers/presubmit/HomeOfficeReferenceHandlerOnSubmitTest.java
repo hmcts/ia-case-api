@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 
 import java.util.List;
@@ -68,7 +69,7 @@ class HomeOfficeReferenceHandlerOnSubmitTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = Event.class, names = {"START_APPEAL", "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT"})
+    @EnumSource(value = Event.class, names = {"START_APPEAL", "EDIT_APPEAL"})
     void canHandle_true_for_correct_stage_and_event(Event event) {
         when(callback.getEvent()).thenReturn(event);
 
@@ -76,18 +77,35 @@ class HomeOfficeReferenceHandlerOnSubmitTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = Event.class, names = {"START_APPEAL", "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT"}, mode = EnumSource.Mode.EXCLUDE)
+    @EnumSource(value = Event.class, names = {"START_APPEAL", "EDIT_APPEAL"}, mode = EnumSource.Mode.EXCLUDE)
     void canHandle_false_for_correct_stage_incorrect_event(Event event) {
         when(callback.getEvent()).thenReturn(event);
 
         assertFalse(handler.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback));
     }
 
-
     @ParameterizedTest
     @EnumSource(value = PreSubmitCallbackStage.class, names = {"ABOUT_TO_SUBMIT"}, mode = EnumSource.Mode.EXCLUDE)
-    void canHandle_false_for_incorrect_stage_correct_event(PreSubmitCallbackStage stage) {
+    void canHandle_false_for_incorrect_stage(PreSubmitCallbackStage stage) {
         assertFalse(handler.canHandle(stage, callback));
+    }
+
+    @Test
+    void canHandle_true_for_edit_personal_info_validated() {
+        when(callback.getEvent()).thenReturn(Event.EDIT_APPELLANT_PERSONAL_DATA);
+        handlerUtilsMock
+            .when(() -> HandlerUtils.shouldValidateEditPersonalData(callback))
+            .thenReturn(true);
+        assertTrue(handler.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback));
+    }
+
+    @Test
+    void canHandle_false_for_edit_personal_info_unvalidated() {
+        when(callback.getEvent()).thenReturn(Event.EDIT_APPELLANT_PERSONAL_DATA);
+        handlerUtilsMock
+            .when(() -> HandlerUtils.shouldValidateEditPersonalData(callback))
+            .thenReturn(false);
+        assertFalse(handler.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback));
     }
 
     @Test
@@ -224,5 +242,52 @@ class HomeOfficeReferenceHandlerOnSubmitTest {
 
         verify(asylumCase, never()).write(any(), any());
         assertTrue(listAppender.list.isEmpty());
+    }
+
+    @Test
+    void should_write_ho_right_of_appeal_from_serialised_appellant_pp01() {
+        when(callback.getEvent()).thenReturn(Event.START_APPEAL);
+        when(asylumCase.read(HOME_OFFICE_APPELLANTS)).thenReturn(Optional.empty());
+        when(asylumCase.read(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, String.class))
+                .thenReturn(Optional.of(encryptedData));
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        handlerUtilsMock.when(() -> HandlerUtils.getPpNumberFromHomeOfficeAppellants(asylumCase)).thenReturn("01");
+        handlerUtilsMock.when(() -> HandlerUtils.getUanOrGwf(asylumCase)).thenReturn("non-empty-reference");
+        String json =
+                "[{\"id\":\"1342-5786-9120-3564/01\",\"value\":{\"pp\":\"01\",\"familyName\":\"Bachchan\",\"givenNames\":\"Abhishek Amitabh\",\"roa\":\"Yes\",\"asylumSupport\":\"No\",\"hoFeeWaiver\":\"Yes\",\"language\":\"ENG\",\"interpreterNeeded\":\"No\"}}," +
+                "{\"id\":\"1342-5786-9120-3564/02\",\"value\":{\"pp\":\"02\",\"familyName\":\"Rai\",\"givenNames\":\"Aishwarya\",\"roa\":\"No\"}}]";
+        handlerUtilsMock.when(() -> HandlerUtils.decrypt(encryptedData, homeOfficeSerialisedEncryptionKey)).thenReturn(json);
+
+        handler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        verify(asylumCase).write(eq(HO_RIGHT_OF_APPEAL), eq(YesOrNo.YES));
+        verify(asylumCase).write(eq(HO_ASYLUM_SUPPORT), eq(YesOrNo.NO));
+        verify(asylumCase).write(eq(HO_FEE_WAIVER), eq(YesOrNo.YES));
+        verify(asylumCase).write(eq(HOME_OFFICE_APPELLANT_LANGUAGE), eq("English"));
+        verify(asylumCase).write(eq(HO_INTERPRETER_REQUIRED), eq(YesOrNo.NO));
+    }
+
+    @Test
+    void should_not_write_ho_fields_when_no_appellant_pp01() {
+        HomeOfficeAppellant appellant = new HomeOfficeAppellant();
+        appellant.setPp("02");
+        appellant.setRoa(YesOrNo.NO);
+
+        when(callback.getEvent()).thenReturn(Event.START_APPEAL);
+        when(asylumCase.read(HOME_OFFICE_APPELLANTS)).thenReturn(Optional.of(List.of(new IdValue<>("1342-5786-9120-3564/02", appellant))));
+        when(asylumCase.read(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, String.class))
+                .thenReturn(Optional.empty());
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        handler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        verify(asylumCase, never()).write(eq(HO_RIGHT_OF_APPEAL), any());
+        verify(asylumCase, never()).write(eq(HO_ASYLUM_SUPPORT), any());
+        verify(asylumCase, never()).write(eq(HO_FEE_WAIVER), any());
+        verify(asylumCase, never()).write(eq(HOME_OFFICE_APPELLANT_LANGUAGE), any());
+        verify(asylumCase, never()).write(eq(HO_INTERPRETER_REQUIRED), any());
     }
 }
