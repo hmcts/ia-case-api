@@ -1467,6 +1467,7 @@ security:
       - "removeStatutoryTimeframe24Weeks"
       - "updateTribunalDecision"
     caseworker-ia-system:
+      - "generateServiceRequest"
       - "requestHearingRequirementsFeature"
       - "changeHearingCentre"
       - "moveToPaymentPending"
