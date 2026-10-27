@@ -8,6 +8,8 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isCaseU
 
 import java.util.List;
 import java.util.Objects;
+
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
@@ -19,6 +21,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationRefDataService;
 
+@Slf4j
 @Component
 public class EditCaseListingPreparer implements PreSubmitCallbackHandler<AsylumCase> {
 
@@ -48,6 +51,8 @@ public class EditCaseListingPreparer implements PreSubmitCallbackHandler<AsylumC
         PreSubmitCallbackStage callbackStage,
         Callback<AsylumCase> callback
     ) {
+        log.info("Handling callback for EditCaseListingPreparer");
+
         if (!canHandle(callbackStage, callback)) {
             throw new IllegalStateException("Cannot handle callback");
         }
@@ -58,6 +63,7 @@ public class EditCaseListingPreparer implements PreSubmitCallbackHandler<AsylumC
             asylumCase.write(LISTING_LOCATION, prepareLocationDynamicList(asylumCase));
         }
 
+        log.info("Calling hearingIdListProcessor");
         hearingIdListProcessor.processHearingIdList(asylumCase);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
