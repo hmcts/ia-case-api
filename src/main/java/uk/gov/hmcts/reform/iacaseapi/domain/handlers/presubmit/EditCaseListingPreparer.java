@@ -23,9 +23,14 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationRefDataService;
 public class EditCaseListingPreparer implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final LocationRefDataService locationRefDataService;
+    private final HearingIdListProcessor hearingIdListProcessor;
 
-    public EditCaseListingPreparer(LocationRefDataService locationRefDataService) {
+    public EditCaseListingPreparer(
+            LocationRefDataService locationRefDataService,
+            HearingIdListProcessor hearingIdListProcessor
+    ) {
         this.locationRefDataService = locationRefDataService;
+        this.hearingIdListProcessor = hearingIdListProcessor;
     }
 
     public boolean canHandle(
@@ -52,6 +57,8 @@ public class EditCaseListingPreparer implements PreSubmitCallbackHandler<AsylumC
         if (isCaseUsingLocationRefData(asylumCase)) {
             asylumCase.write(LISTING_LOCATION, prepareLocationDynamicList(asylumCase));
         }
+
+        hearingIdListProcessor.processHearingIdList(asylumCase);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }

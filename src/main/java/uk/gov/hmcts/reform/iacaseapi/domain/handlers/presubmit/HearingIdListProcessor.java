@@ -27,6 +27,13 @@ public class HearingIdListProcessor {
 
             if (doesNotContainHearingId(hearingIdList, hearingId)) {
                 List<IdValue<String>> newHearingIdList = appendToHearingIdList(hearingIdList, hearingId);
+
+                log.info(
+                    "Writing {} (size {}) {} to asylum case",
+                    HEARING_ID_LIST,
+                    newHearingIdList.size(),
+                    hearingId
+                );
                 asylumCase.write(HEARING_ID_LIST, newHearingIdList);
             }
         }

@@ -4,6 +4,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -45,6 +47,8 @@ class EditCaseListingPreparerTest {
     private AsylumCase asylumCase;
     @Mock
     private LocationRefDataService locationRefDataService;
+    @Mock
+    private HearingIdListProcessor hearingIdListProcessor;
 
     private EditCaseListingPreparer editCaseListingPreparer;
 
@@ -52,7 +56,7 @@ class EditCaseListingPreparerTest {
     public void setUp() {
 
         editCaseListingPreparer =
-            new EditCaseListingPreparer(locationRefDataService);
+            new EditCaseListingPreparer(locationRefDataService, hearingIdListProcessor);
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.EDIT_CASE_LISTING);
@@ -77,6 +81,7 @@ class EditCaseListingPreparerTest {
         editCaseListingPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
         verify(asylumCase, times(1)).write(eq(LISTING_LOCATION), eq(freshDynamicList));
+        verify(hearingIdListProcessor, times(1)).processHearingIdList(asylumCase);
     }
 
     @Test
@@ -116,6 +121,7 @@ class EditCaseListingPreparerTest {
         );
 
         verify(asylumCase, times(1)).write(eq(LISTING_LOCATION), eq(expectedListingLocation));
+        verify(hearingIdListProcessor, times(1)).processHearingIdList(asylumCase);
     }
 
     @Test
@@ -146,6 +152,7 @@ class EditCaseListingPreparerTest {
         editCaseListingPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
         verify(asylumCase, times(1)).write(eq(LISTING_LOCATION), eq(freshDynamicList));
+        verify(hearingIdListProcessor, times(1)).processHearingIdList(asylumCase);
     }
 
     @Test
@@ -176,6 +183,19 @@ class EditCaseListingPreparerTest {
                 new Value("386417", "hattonCross"))
         );
         verify(asylumCase, times(1)).write(eq(LISTING_LOCATION), eq(expectedDynamicList));
+        verify(hearingIdListProcessor, times(1)).processHearingIdList(asylumCase);
+    }
+
+    @Test
+    void should_only_process_hearing_id_list_if_case_not_enabled_for_location_ref_data() {
+
+        when(asylumCase.read(IS_CASE_USING_LOCATION_REF_DATA, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+
+        editCaseListingPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        verify(locationRefDataService, never()).getHearingLocationsDynamicList();
+        verify(asylumCase, never()).write(eq(LISTING_LOCATION), any());
+        verify(hearingIdListProcessor, times(1)).processHearingIdList(asylumCase);
     }
 
     @Test
@@ -189,6 +209,8 @@ class EditCaseListingPreparerTest {
         assertThatThrownBy(() -> editCaseListingPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
+
+        verify(hearingIdListProcessor, never()).processHearingIdList(any());
     }
 
     @Test
