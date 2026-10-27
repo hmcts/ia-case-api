@@ -1,0 +1,36 @@
+{
+  "description": "DIAC-683 Reinstate paid appeal to appeal submitted state",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "CaseOfficer",
+    "input": {
+      "eventId": "reinstateAppeal",
+      "state": "ended",
+      "appealType": "refusalOfHumanRights",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "endAppealOutcome": "Abandoned",
+          "endAppealOutcomeReason": "some reason",
+          "stateBeforeEndAppeal": "pendingPayment",
+          "paymentStatus": "Paid"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "state": "appealSubmitted",
+      "replacements": {
+        "endAppealOutcome": "Abandoned",
+        "endAppealOutcomeReason": "some reason",
+        "appealStatus": "Reinstated",
+        "recordApplicationActionDisabled": "No",
+        "stateBeforeEndAppeal": null
+      }
+    }
+  }
+}
