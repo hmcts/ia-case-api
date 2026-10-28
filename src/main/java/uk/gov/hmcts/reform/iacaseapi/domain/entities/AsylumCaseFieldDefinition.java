@@ -2361,6 +2361,9 @@ public enum AsylumCaseFieldDefinition {
     ADJOURNMENT_DETAILS_HEARING(
         "adjournmentDetailsHearing", new TypeReference<DynamicList>(){}),
 
+    ATTENDEES_AND_DURATION_HEARING(
+            "attendeesAndDurationHearing", new TypeReference<DynamicList>(){}),
+
     CURRENT_ADJOURNMENT_DETAIL(
             "currentAdjournmentDetail", new TypeReference<AdjournmentDetail>(){}),
 
