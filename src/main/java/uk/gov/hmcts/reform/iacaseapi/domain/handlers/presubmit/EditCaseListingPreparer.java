@@ -8,8 +8,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isCaseU
 
 import java.util.List;
 import java.util.Objects;
-
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
@@ -21,38 +19,30 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationRefDataService;
 
-@Slf4j
 @Component
 public class EditCaseListingPreparer implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final LocationRefDataService locationRefDataService;
-    private final HearingIdListProcessor hearingIdListProcessor;
 
-    public EditCaseListingPreparer(
-            LocationRefDataService locationRefDataService,
-            HearingIdListProcessor hearingIdListProcessor
-    ) {
+    public EditCaseListingPreparer(LocationRefDataService locationRefDataService) {
         this.locationRefDataService = locationRefDataService;
-        this.hearingIdListProcessor = hearingIdListProcessor;
     }
 
     public boolean canHandle(
-        PreSubmitCallbackStage callbackStage,
-        Callback<AsylumCase> callback
+            PreSubmitCallbackStage callbackStage,
+            Callback<AsylumCase> callback
     ) {
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_START
-               && callback.getEvent() == EDIT_CASE_LISTING;
+                && callback.getEvent() == EDIT_CASE_LISTING;
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
-        PreSubmitCallbackStage callbackStage,
-        Callback<AsylumCase> callback
+            PreSubmitCallbackStage callbackStage,
+            Callback<AsylumCase> callback
     ) {
-        log.info("Handling callback for EditCaseListingPreparer");
-
         if (!canHandle(callbackStage, callback)) {
             throw new IllegalStateException("Cannot handle callback");
         }
@@ -63,24 +53,21 @@ public class EditCaseListingPreparer implements PreSubmitCallbackHandler<AsylumC
             asylumCase.write(LISTING_LOCATION, prepareLocationDynamicList(asylumCase));
         }
 
-        log.info("Calling hearingIdListProcessor");
-        hearingIdListProcessor.processHearingIdList(asylumCase);
-
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 
     private DynamicList prepareLocationDynamicList(AsylumCase asylumCase) {
 
         String existingSelectionEpimmsId = asylumCase.read(LISTING_LOCATION, DynamicList.class)
-            .map(location -> location.getValue().getCode())
-            .orElseGet(() -> asylumCase.read(LIST_CASE_HEARING_CENTRE, HearingCentre.class)
-                .map(HearingCentre::getEpimsId).orElse(""));
+                .map(location -> location.getValue().getCode())
+                .orElseGet(() -> asylumCase.read(LIST_CASE_HEARING_CENTRE, HearingCentre.class)
+                        .map(HearingCentre::getEpimsId).orElse(""));
 
         List<Value> refDataLocations = locationRefDataService.getHearingLocationsDynamicList().getListItems();
 
         Value existingSelectionValue = refDataLocations.stream()
-            .filter(location -> Objects.equals(location.getCode(), existingSelectionEpimmsId))
-            .findAny().orElse(new Value("", ""));
+                .filter(location -> Objects.equals(location.getCode(), existingSelectionEpimmsId))
+                .findAny().orElse(new Value("", ""));
 
         return new DynamicList(existingSelectionValue, refDataLocations);
     }

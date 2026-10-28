@@ -4,8 +4,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -47,8 +45,6 @@ class EditCaseListingPreparerTest {
     private AsylumCase asylumCase;
     @Mock
     private LocationRefDataService locationRefDataService;
-    @Mock
-    private HearingIdListProcessor hearingIdListProcessor;
 
     private EditCaseListingPreparer editCaseListingPreparer;
 
@@ -56,7 +52,7 @@ class EditCaseListingPreparerTest {
     public void setUp() {
 
         editCaseListingPreparer =
-            new EditCaseListingPreparer(locationRefDataService, hearingIdListProcessor);
+                new EditCaseListingPreparer(locationRefDataService);
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.EDIT_CASE_LISTING);
@@ -69,11 +65,11 @@ class EditCaseListingPreparerTest {
         when(asylumCase.read(IS_CASE_USING_LOCATION_REF_DATA, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
 
         DynamicList freshDynamicList = new DynamicList(
-            new Value("", ""),
-            List.of(
-                new Value("111111", "First hearing center"),
-                new Value("222222", "Second hearing center"),
-                new Value("333333", "Third hearing center"))
+                new Value("", ""),
+                List.of(
+                        new Value("111111", "First hearing center"),
+                        new Value("222222", "Second hearing center"),
+                        new Value("333333", "Third hearing center"))
         );
 
         when(locationRefDataService.getHearingLocationsDynamicList()).thenReturn(freshDynamicList);
@@ -81,7 +77,6 @@ class EditCaseListingPreparerTest {
         editCaseListingPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
         verify(asylumCase, times(1)).write(eq(LISTING_LOCATION), eq(freshDynamicList));
-        verify(hearingIdListProcessor, times(1)).processHearingIdList(asylumCase);
     }
 
     @Test
@@ -90,20 +85,20 @@ class EditCaseListingPreparerTest {
         when(asylumCase.read(IS_CASE_USING_LOCATION_REF_DATA, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
 
         DynamicList freshDynamicList = new DynamicList(
-            new Value("", ""),
-            List.of(
-                new Value("111111", "First hearing center"),
-                new Value("222222", "Second hearing center"),
-                new Value("333333", "Third hearing center"),
-                new Value("444444", "Fourth newly added hearing center"))
+                new Value("", ""),
+                List.of(
+                        new Value("111111", "First hearing center"),
+                        new Value("222222", "Second hearing center"),
+                        new Value("333333", "Third hearing center"),
+                        new Value("444444", "Fourth newly added hearing center"))
         );
 
         DynamicList existingDynamicList = new DynamicList(
-            new Value("111111", "First hearing center"),
-            List.of(
                 new Value("111111", "First hearing center"),
-                new Value("222222", "Second hearing center"),
-                new Value("333333", "Third hearing center"))
+                List.of(
+                        new Value("111111", "First hearing center"),
+                        new Value("222222", "Second hearing center"),
+                        new Value("333333", "Third hearing center"))
         );
 
         when(locationRefDataService.getHearingLocationsDynamicList()).thenReturn(freshDynamicList);
@@ -112,16 +107,15 @@ class EditCaseListingPreparerTest {
         editCaseListingPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
         DynamicList expectedListingLocation = new DynamicList(
-            new Value("111111", "First hearing center"),
-            List.of(
                 new Value("111111", "First hearing center"),
-                new Value("222222", "Second hearing center"),
-                new Value("333333", "Third hearing center"),
-                new Value("444444", "Fourth newly added hearing center"))
+                List.of(
+                        new Value("111111", "First hearing center"),
+                        new Value("222222", "Second hearing center"),
+                        new Value("333333", "Third hearing center"),
+                        new Value("444444", "Fourth newly added hearing center"))
         );
 
         verify(asylumCase, times(1)).write(eq(LISTING_LOCATION), eq(expectedListingLocation));
-        verify(hearingIdListProcessor, times(1)).processHearingIdList(asylumCase);
     }
 
     @Test
@@ -130,20 +124,20 @@ class EditCaseListingPreparerTest {
         when(asylumCase.read(IS_CASE_USING_LOCATION_REF_DATA, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
 
         DynamicList freshDynamicList = new DynamicList(
-            new Value("", ""),
-            List.of(
-                new Value("111111", "First hearing center"),
-                new Value("222222", "Second hearing center"),
-                new Value("333333", "Third hearing center"),
-                new Value("444444", "Fourth hearing center"))
+                new Value("", ""),
+                List.of(
+                        new Value("111111", "First hearing center"),
+                        new Value("222222", "Second hearing center"),
+                        new Value("333333", "Third hearing center"),
+                        new Value("444444", "Fourth hearing center"))
         );
 
         DynamicList existingDynamicList = new DynamicList(
-            new Value("999999", "Deprecated hearing center"),
-            List.of(
-                new Value("111111", "First hearing center"),
-                new Value("222222", "Second hearing center"),
-                new Value("999999", "Deprecated hearing center"))
+                new Value("999999", "Deprecated hearing center"),
+                List.of(
+                        new Value("111111", "First hearing center"),
+                        new Value("222222", "Second hearing center"),
+                        new Value("999999", "Deprecated hearing center"))
         );
 
         when(locationRefDataService.getHearingLocationsDynamicList()).thenReturn(freshDynamicList);
@@ -152,7 +146,6 @@ class EditCaseListingPreparerTest {
         editCaseListingPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
         verify(asylumCase, times(1)).write(eq(LISTING_LOCATION), eq(freshDynamicList));
-        verify(hearingIdListProcessor, times(1)).processHearingIdList(asylumCase);
     }
 
     @Test
@@ -161,56 +154,41 @@ class EditCaseListingPreparerTest {
         when(asylumCase.read(IS_CASE_USING_LOCATION_REF_DATA, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
 
         DynamicList freshDynamicList = new DynamicList(
-            new Value("", ""),
-            List.of(
-                new Value("111111", "First hearing center"),
-                new Value("222222", "Second hearing center"),
-                new Value("386417", "hattonCross"))
+                new Value("", ""),
+                List.of(
+                        new Value("111111", "First hearing center"),
+                        new Value("222222", "Second hearing center"),
+                        new Value("386417", "hattonCross"))
         );
 
         when(locationRefDataService.getHearingLocationsDynamicList()).thenReturn(freshDynamicList);
         when(asylumCase.read(LISTING_LOCATION, DynamicList.class)).thenReturn(Optional.empty());
         when(asylumCase.read(LIST_CASE_HEARING_CENTRE, HearingCentre.class))
-            .thenReturn(Optional.of(HearingCentre.HATTON_CROSS));
+                .thenReturn(Optional.of(HearingCentre.HATTON_CROSS));
 
         editCaseListingPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
         DynamicList expectedDynamicList = new DynamicList(
-            new Value("386417", "hattonCross"),
-            List.of(
-                new Value("111111", "First hearing center"),
-                new Value("222222", "Second hearing center"),
-                new Value("386417", "hattonCross"))
+                new Value("386417", "hattonCross"),
+                List.of(
+                        new Value("111111", "First hearing center"),
+                        new Value("222222", "Second hearing center"),
+                        new Value("386417", "hattonCross"))
         );
         verify(asylumCase, times(1)).write(eq(LISTING_LOCATION), eq(expectedDynamicList));
-        verify(hearingIdListProcessor, times(1)).processHearingIdList(asylumCase);
-    }
-
-    @Test
-    void should_only_process_hearing_id_list_if_case_not_enabled_for_location_ref_data() {
-
-        when(asylumCase.read(IS_CASE_USING_LOCATION_REF_DATA, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
-
-        editCaseListingPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
-
-        verify(locationRefDataService, never()).getHearingLocationsDynamicList();
-        verify(asylumCase, never()).write(eq(LISTING_LOCATION), any());
-        verify(hearingIdListProcessor, times(1)).processHearingIdList(asylumCase);
     }
 
     @Test
     void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> editCaseListingPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
-            .hasMessage("Cannot handle callback")
-            .isExactlyInstanceOf(IllegalStateException.class);
+                .hasMessage("Cannot handle callback")
+                .isExactlyInstanceOf(IllegalStateException.class);
 
         when(callback.getEvent()).thenReturn(Event.SEND_DIRECTION);
         assertThatThrownBy(() -> editCaseListingPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
-            .hasMessage("Cannot handle callback")
-            .isExactlyInstanceOf(IllegalStateException.class);
-
-        verify(hearingIdListProcessor, never()).processHearingIdList(any());
+                .hasMessage("Cannot handle callback")
+                .isExactlyInstanceOf(IllegalStateException.class);
     }
 
     @Test
@@ -225,7 +203,7 @@ class EditCaseListingPreparerTest {
                 boolean canHandle = editCaseListingPreparer.canHandle(callbackStage, callback);
 
                 if (event == Event.EDIT_CASE_LISTING
-                    && callbackStage == PreSubmitCallbackStage.ABOUT_TO_START) {
+                        && callbackStage == PreSubmitCallbackStage.ABOUT_TO_START) {
 
                     assertTrue(canHandle);
                 } else {
@@ -241,19 +219,19 @@ class EditCaseListingPreparerTest {
     void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> editCaseListingPreparer.canHandle(null, callback))
-            .hasMessage("callbackStage must not be null")
-            .isExactlyInstanceOf(NullPointerException.class);
+                .hasMessage("callbackStage must not be null")
+                .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(() -> editCaseListingPreparer.canHandle(PreSubmitCallbackStage.ABOUT_TO_START, null))
-            .hasMessage("callback must not be null")
-            .isExactlyInstanceOf(NullPointerException.class);
+                .hasMessage("callback must not be null")
+                .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(() -> editCaseListingPreparer.handle(null, callback))
-            .hasMessage("callbackStage must not be null")
-            .isExactlyInstanceOf(NullPointerException.class);
+                .hasMessage("callbackStage must not be null")
+                .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(() -> editCaseListingPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, null))
-            .hasMessage("callback must not be null")
-            .isExactlyInstanceOf(NullPointerException.class);
+                .hasMessage("callback must not be null")
+                .isExactlyInstanceOf(NullPointerException.class);
     }
 }
