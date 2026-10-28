@@ -17,6 +17,9 @@ import static java.util.Objects.requireNonNull;
 @Component
 @RequiredArgsConstructor
 public class RecordAttendeesAndDurationMidEventHandler implements PreSubmitCallbackHandler<AsylumCase> {
+    private static final String SELECT_ATTENDEES_AND_DURATION_HEARING_LIST_PAGE_ID =
+            "selectHearingRecordAttendeesAndDuration";
+
     private final CommonRefDataDynamicListProvider provider;
     private final LocationRefDataService locationRefDataService;
     private final IaHearingsApiService iaHearingsApiService;
@@ -37,6 +40,11 @@ public class RecordAttendeesAndDurationMidEventHandler implements PreSubmitCallb
         }
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
+
+        switch (callback.getPageId()) {
+            case SELECT_ATTENDEES_AND_DURATION_HEARING_LIST_PAGE_ID -> asylumCase = iaHearingsApiService.midEvent(callback);
+            default -> { }
+        }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
