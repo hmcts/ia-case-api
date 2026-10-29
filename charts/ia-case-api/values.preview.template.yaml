@@ -938,6 +938,7 @@ ccd:
         ENABLE_PSEUDO_ACCESS_PROFILES_GENERATION: true
         IDAM_WEB_PUBLIC_URL: https://idam-web-public.aat.platform.hmcts.net
         IDAM_HMCTS_ACCESS_URL: https://hmcts-access.aat.platform.hmcts.net
+        OIDC_ALLOWED_ISSUERS: "https://idam-web-public.aat.platform.hmcts.net/o,https://hmcts-access.aat.platform.hmcts.net/o,https://forgerock-am.service.core-compute-idam-aat2.internal:8443/openam/oauth2/realms/root/realms/hmcts"
       keyVaults: []
       ingressHost: ccd-data-store-api-${SERVICE_FQDN}
 
