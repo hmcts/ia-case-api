@@ -57,7 +57,7 @@ class HomeOfficeReferenceHandlerOnSubmitTest {
 
     @BeforeEach
     void setUp() {
-        handler = new HomeOfficeReferenceHandlerOnSubmit(homeOfficeSerialisedEncryptionKey);
+        handler = new HomeOfficeReferenceHandlerOnSubmit(homeOfficeSerialisedEncryptionKey, true);
         handlerUtilsMock
             .when(() -> HandlerUtils.getPpNumberFromHomeOfficeAppellants(asylumCase))
             .thenReturn("ppNumber");

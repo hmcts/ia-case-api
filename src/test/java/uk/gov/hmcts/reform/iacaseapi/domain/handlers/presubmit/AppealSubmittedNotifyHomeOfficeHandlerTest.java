@@ -77,7 +77,7 @@ class AppealSubmittedNotifyHomeOfficeHandlerTest {
     @BeforeEach
     void setup() {
 
-        handler = new AppealSubmittedNotifyHomeOfficeHandler(true, hoReferenceService, homeOfficeApi, key);
+        handler = new AppealSubmittedNotifyHomeOfficeHandler(true, hoReferenceService, homeOfficeApi, true, key);
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
 
@@ -329,7 +329,7 @@ class AppealSubmittedNotifyHomeOfficeHandlerTest {
         handlerUtilsMock.when(
                 () -> HandlerUtils.validateAllDetails(callback, asylumCase, VALID_GWF, hoReferenceService))
             .thenReturn(new PreSubmitCallbackResponse<>(asylumCase));
-        handler = new AppealSubmittedNotifyHomeOfficeHandler(true, hoReferenceService, homeOfficeApi, key);
+        handler = new AppealSubmittedNotifyHomeOfficeHandler(true, hoReferenceService, homeOfficeApi, true, key);
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
         when(caseDetails.getState()).thenReturn(State.APPEAL_STARTED);
         when(asylumCase.read(APPEAL_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of(APPEAL_REF));

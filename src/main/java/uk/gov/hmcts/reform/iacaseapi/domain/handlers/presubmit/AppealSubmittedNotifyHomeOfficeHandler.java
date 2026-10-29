@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValueMixin;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.HomeOfficeApi;
@@ -50,6 +51,7 @@ public class AppealSubmittedNotifyHomeOfficeHandler implements PreSubmitCallback
     private final HomeOfficeApi<AsylumCase> homeOfficeApi;
     private final HomeOfficeReferenceService homeOfficeReferenceService;
     private final String homeOfficeSerialisedEncryptionKey;
+    private final boolean isGwfValidationEnabled;
 
     @Override
     public DispatchPriority getDispatchPriority() {
@@ -60,10 +62,12 @@ public class AppealSubmittedNotifyHomeOfficeHandler implements PreSubmitCallback
         @Value("${featureFlag.isHomeOfficeIntegrationEnabled}") boolean isHomeOfficeIntegrationEnabled,
         HomeOfficeReferenceService homeOfficeReferenceService,
         HomeOfficeApi<AsylumCase> homeOfficeApi,
+        @Value("${app.gwf-validation.enabled}") boolean isGwfValidationEnabled,
         @Value("${homeOfficeApi.serialisation.encryption.key}")
         String homeOfficeSerialisedEncryptionKey) {
         this.homeOfficeApi = homeOfficeApi;
         this.homeOfficeReferenceService = homeOfficeReferenceService;
+        this.isGwfValidationEnabled = isGwfValidationEnabled;
         this.homeOfficeSerialisedEncryptionKey = homeOfficeSerialisedEncryptionKey;
     }
 
@@ -93,6 +97,9 @@ public class AppealSubmittedNotifyHomeOfficeHandler implements PreSubmitCallback
         final String homeOfficeReferenceNumber = HandlerUtils.getUanOrGwf(asylumCase);
         if (homeOfficeReferenceNumber.isEmpty()) {
             throw new IllegalStateException("homeOfficeReferenceNumber and gwfReferenceNumber are both missing - one or other is needed");
+        }
+        if (HandlerUtils.isGwfReferenceAndOoc(asylumCase) && !isGwfValidationEnabled) {
+            return new PreSubmitCallbackResponse<>(asylumCase);
         }
         // Ensure this is present before calling the Home Office API (where it will be needed)
         final String appealReferenceNumber = asylumCase.read(APPEAL_REFERENCE_NUMBER, String.class)
