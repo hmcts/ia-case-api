@@ -29,19 +29,19 @@ public class EditCaseListingPreparer implements PreSubmitCallbackHandler<AsylumC
     }
 
     public boolean canHandle(
-        PreSubmitCallbackStage callbackStage,
-        Callback<AsylumCase> callback
+            PreSubmitCallbackStage callbackStage,
+            Callback<AsylumCase> callback
     ) {
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_START
-               && callback.getEvent() == EDIT_CASE_LISTING;
+                && callback.getEvent() == EDIT_CASE_LISTING;
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
-        PreSubmitCallbackStage callbackStage,
-        Callback<AsylumCase> callback
+            PreSubmitCallbackStage callbackStage,
+            Callback<AsylumCase> callback
     ) {
         if (!canHandle(callbackStage, callback)) {
             throw new IllegalStateException("Cannot handle callback");
@@ -59,15 +59,15 @@ public class EditCaseListingPreparer implements PreSubmitCallbackHandler<AsylumC
     private DynamicList prepareLocationDynamicList(AsylumCase asylumCase) {
 
         String existingSelectionEpimmsId = asylumCase.read(LISTING_LOCATION, DynamicList.class)
-            .map(location -> location.getValue().getCode())
-            .orElseGet(() -> asylumCase.read(LIST_CASE_HEARING_CENTRE, HearingCentre.class)
-                .map(HearingCentre::getEpimsId).orElse(""));
+                .map(location -> location.getValue().getCode())
+                .orElseGet(() -> asylumCase.read(LIST_CASE_HEARING_CENTRE, HearingCentre.class)
+                        .map(HearingCentre::getEpimsId).orElse(""));
 
         List<Value> refDataLocations = locationRefDataService.getHearingLocationsDynamicList().getListItems();
 
         Value existingSelectionValue = refDataLocations.stream()
-            .filter(location -> Objects.equals(location.getCode(), existingSelectionEpimmsId))
-            .findAny().orElse(new Value("", ""));
+                .filter(location -> Objects.equals(location.getCode(), existingSelectionEpimmsId))
+                .findAny().orElse(new Value("", ""));
 
         return new DynamicList(existingSelectionValue, refDataLocations);
     }
