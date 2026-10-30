@@ -8,7 +8,10 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isAppea
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsHelper;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserRoleLabel;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
@@ -20,10 +23,16 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 public class GenerateServiceRequestPreparer implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final boolean isFeePaymentEnabled;
+    private final UserDetails userDetails;
+    private final UserDetailsHelper userDetailsHelper;
 
     public GenerateServiceRequestPreparer(
-        @Value("${featureFlag.isfeePaymentEnabled}") boolean isFeePaymentEnabled) {
+        @Value("${featureFlag.isfeePaymentEnabled}") boolean isFeePaymentEnabled,
+        UserDetails userDetails,
+        UserDetailsHelper userDetailsHelper) {
         this.isFeePaymentEnabled = isFeePaymentEnabled;
+        this.userDetails = userDetails;
+        this.userDetailsHelper = userDetailsHelper;
     }
 
     public boolean canHandle(
@@ -56,7 +65,7 @@ public class GenerateServiceRequestPreparer implements PreSubmitCallbackHandler<
             return response;
         }
 
-        if (!asylumCase.read(REFUND_CONFIRMATION_APPLIED, YesOrNo.class).orElse(YesOrNo.NO).equals(YesOrNo.YES)
+        if (!isSystemUser() && !asylumCase.read(REFUND_CONFIRMATION_APPLIED, YesOrNo.class).orElse(YesOrNo.NO).equals(YesOrNo.YES)
             && (!asylumCase.read(SERVICE_REQUEST_REFERENCE, String.class).orElse("").isEmpty()
             || asylumCase.read(HAS_SERVICE_REQUEST_ALREADY, YesOrNo.class).orElse(YesOrNo.NO).equals(YesOrNo.YES))
         ) {
@@ -67,5 +76,9 @@ public class GenerateServiceRequestPreparer implements PreSubmitCallbackHandler<
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
+    }
+
+    private boolean isSystemUser() {
+        return userDetailsHelper.getLoggedInUserRoleLabel(userDetails).equals(UserRoleLabel.SYSTEM);
     }
 }

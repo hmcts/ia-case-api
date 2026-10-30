@@ -20,7 +20,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsHelper;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserRoleLabel;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -43,11 +46,18 @@ class GenerateServiceRequestPreparerTest {
     @Mock
     private AsylumCase asylumCase;
 
+    @Mock
+    private UserDetails userDetails;
+
+    @Mock
+    private UserDetailsHelper userDetailsHelper;
+
     private GenerateServiceRequestPreparer serviceRequestPreparer;
 
     @BeforeEach
     public void setUp() {
-        serviceRequestPreparer = new GenerateServiceRequestPreparer(true);
+        when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(UserRoleLabel.LEGAL_REPRESENTATIVE);
+        serviceRequestPreparer = new GenerateServiceRequestPreparer(true, userDetails, userDetailsHelper);
     }
 
     @Test
@@ -200,5 +210,22 @@ class GenerateServiceRequestPreparerTest {
         assertNotNull(callbackResponse);
         assertEquals(1, callbackResponse.getErrors().size());
         assertTrue(callbackResponse.getErrors().contains("Refund confirmation should be done first to make another service request."));
+    }
+
+    @Test
+    void should_not_return_error_for_system_user_with_existing_service_request() {
+
+        when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(UserRoleLabel.SYSTEM);
+        when(callback.getEvent()).thenReturn(Event.GENERATE_SERVICE_REQUEST);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(SERVICE_REQUEST_REFERENCE, String.class)).thenReturn(Optional.of("aServiceRequestReference"));
+        when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)).thenReturn(Optional.of(PaymentStatus.PAYMENT_PENDING));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            serviceRequestPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        assertNotNull(callbackResponse);
+        assertTrue(callbackResponse.getErrors().isEmpty());
     }
 }
