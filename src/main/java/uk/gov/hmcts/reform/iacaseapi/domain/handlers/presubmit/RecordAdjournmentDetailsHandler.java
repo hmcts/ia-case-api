@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.AdjournmentDetail;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingAdjournmentDay;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.HoursMinutes;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
@@ -103,7 +104,7 @@ public class RecordAdjournmentDetailsHandler implements PreSubmitCallbackHandler
                         .map(dynamicList -> dynamicList.getValue().getLabel()).orElse(""))
                 .nextHearingVenue(asylumCase.read(NEXT_HEARING_VENUE, DynamicList.class)
                         .map(dynamicList -> dynamicList.getValue().getLabel()).orElse(""))
-                .nextHearingDuration(asylumCase.read(NEXT_HEARING_DURATION, String.class).orElse(""))
+                .nextHearingDuration(asylumCase.read(NEXT_HEARING_DURATION, HoursMinutes.class).orElse(null))
                 .nextHearingDate(asylumCase.read(NEXT_HEARING_DATE, String.class).orElse(""))
                 .nextHearingDateFixed(asylumCase.read(NEXT_HEARING_DATE_FIXED, String.class).orElse(""))
                 .nextHearingDateRangeEarliest(asylumCase.read(NEXT_HEARING_DATE_RANGE_EARLIEST, String.class)
