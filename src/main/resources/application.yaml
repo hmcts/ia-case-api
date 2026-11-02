@@ -596,6 +596,7 @@ security:
       - "joinAppealConfirmation"
       - "generatePinInPost"
       - "queryManagementRespondQuery"
+      - "confirmHOReviewMaintained"
     hearing-centre-admin:
       - "appellantInPersonManual"
       - "startAppeal"
