@@ -395,6 +395,7 @@ security:
       - "joinAppealConfirmation"
       - "generatePinInPost"
       - "queryManagementRespondQuery"
+      - "confirmHOReviewMaintained"
     challenged-access-legal-operations:
       - "appellantInPersonManual"
       - "moveToPaymentPending"
