@@ -36,7 +36,7 @@ public class LocationBasedFeatureToggler {
 
     public YesOrNo isAutoHearingRequestEnabled(AsylumCase asylumCase) {
 
-        return isTargetLocation(asylumCase, AUTO_HEARING_REQUEST_LOCATIONS_LIST);
+        return YES;
     }
 
     private YesOrNo isTargetLocation(AsylumCase asylumCase, String featureKey) {
