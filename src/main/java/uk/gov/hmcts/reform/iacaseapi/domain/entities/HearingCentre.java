@@ -25,6 +25,7 @@ public enum HearingCentre {
     BELFAST("belfast", "999973"),
     HARMONDSWORTH("harmondsworth", "28837"),
     HENDON("hendon", "745389"),
+    KIRKLEES("kirklees", "320113"),
     YARLS_WOOD("yarlsWood", "649000"),
     BRADFORD_KEIGHLEY("bradfordKeighley", "580554"),
     MCC_MINSHULL("mccMinshull", "326944"),
