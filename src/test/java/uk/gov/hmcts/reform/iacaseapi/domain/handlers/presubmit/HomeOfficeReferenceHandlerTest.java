@@ -30,6 +30,8 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.getMismatchErrorMessage;
@@ -819,5 +821,52 @@ class HomeOfficeReferenceHandlerTest {
         assertEquals(1, response.getErrors().size());
 
         assertTrue(response.getErrors().contains(GWF_IN_UK_ERROR));
+    }
+
+    @Test
+    void handle_should_return_early_for_gwf_ooc_and_gwf_validation_not_enabled() {
+        when(callback.getEvent()).thenReturn(Event.START_APPEAL);
+        when(callback.getPageId()).thenReturn("cuiGwfReferenceNumber");
+        when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class))
+            .thenReturn(Optional.of("GWF123456789"));
+        when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class))
+            .thenReturn(Optional.of(YesOrNo.YES));
+
+        handler = new HomeOfficeReferenceHandler(referenceService, false);
+
+        try (MockedStatic<HandlerUtils> mockedStatic = Mockito.mockStatic(HandlerUtils.class, Mockito.CALLS_REAL_METHODS)) {
+
+            PreSubmitCallbackResponse<AsylumCase> response =
+                handler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+
+            mockedStatic.verify(() -> HandlerUtils.removeValidationFields(asylumCase), never());
+            mockedStatic.verify(() -> HandlerUtils.validateNameAndDateOfBirth(any(), any(), any(), any(), any()), never());
+            mockedStatic.verify(() -> HandlerUtils.validateHomeOfficeReference(any(), any(), any(), any()), never());
+            mockedStatic.verify(() -> HandlerUtils.validateName(any(), any(), any(), any()), never());
+
+            assertTrue(response.getErrors().isEmpty());
+        }
+    }
+
+    @Test
+    void handle_should_not_return_early_for_gwf_ooc_and_gwf_validation_enabled() {
+        when(callback.getEvent()).thenReturn(Event.START_APPEAL);
+        when(callback.getPageId()).thenReturn("cuiGwfReferenceNumber");
+        when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class))
+            .thenReturn(Optional.of("GWF123456789"));
+        when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class))
+            .thenReturn(Optional.of(YesOrNo.NO));
+
+        when(referenceService.getHomeOfficeReferenceData(VALID_UAN, callback))
+            .thenReturn(Collections.singletonList(idValue));
+
+        try (MockedStatic<HandlerUtils> mockedStatic = Mockito.mockStatic(HandlerUtils.class, Mockito.CALLS_REAL_METHODS)) {
+
+            PreSubmitCallbackResponse<AsylumCase> response =
+                handler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+
+            mockedStatic.verify(() -> HandlerUtils.removeValidationFields(asylumCase));
+            mockedStatic.verify(() -> HandlerUtils.validateHomeOfficeReference(any(), any(), any(), any()));
+        }
     }
 }

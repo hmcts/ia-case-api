@@ -290,4 +290,85 @@ class HomeOfficeReferenceHandlerOnSubmitTest {
         verify(asylumCase, never()).write(eq(HOME_OFFICE_APPELLANT_LANGUAGE), any());
         verify(asylumCase, never()).write(eq(HO_INTERPRETER_REQUIRED), any());
     }
+
+    @Test
+    void should_return_early_if_is_gwf_ooc_and_gwf_validation_not_enabled() {
+        when(callback.getEvent()).thenReturn(Event.START_APPEAL);
+        when(asylumCase.read(HOME_OFFICE_APPELLANTS)).thenReturn(Optional.empty());
+        when(asylumCase.read(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, String.class))
+            .thenReturn(Optional.of(encryptedData));
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        handlerUtilsMock
+            .when(() -> HandlerUtils.getUanOrGwf(asylumCase))
+            .thenReturn("GWF123456789");
+        handlerUtilsMock
+            .when(() -> HandlerUtils.isGwfReferenceAndOoc(asylumCase))
+            .thenReturn(true);
+
+        ListAppender<ILoggingEvent> listAppender = setupLogVerifier(HomeOfficeReferenceHandlerOnSubmit.class);
+        handler = new HomeOfficeReferenceHandlerOnSubmit(homeOfficeSerialisedEncryptionKey, false);
+
+        handler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertTrue(listAppender.list.isEmpty());
+    }
+
+    @Test
+    void should_not_return_early_if_not_gwf_ooc_and_gwf_validation_not_enabled() {
+        when(callback.getEvent()).thenReturn(Event.START_APPEAL);
+        when(asylumCase.read(HOME_OFFICE_APPELLANTS)).thenReturn(Optional.empty());
+        when(asylumCase.read(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, String.class))
+            .thenReturn(Optional.of(encryptedData));
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        handlerUtilsMock
+            .when(() -> HandlerUtils.getUanOrGwf(asylumCase))
+            .thenReturn("non-empty-reference");
+        String json =
+            "[{\"id\":\"123\",\"value\":{\"familyName\":\"Smith\",\"givenNames\":\"John\"}}]";
+        handlerUtilsMock
+            .when(() -> HandlerUtils.decrypt(encryptedData, homeOfficeSerialisedEncryptionKey))
+            .thenReturn(json);
+        handlerUtilsMock
+            .when(() -> HandlerUtils.isGwfReferenceAndOoc(asylumCase))
+            .thenReturn(false);
+
+        ListAppender<ILoggingEvent> listAppender = setupLogVerifier(HomeOfficeReferenceHandlerOnSubmit.class);
+        handler = new HomeOfficeReferenceHandlerOnSubmit(homeOfficeSerialisedEncryptionKey, false);
+        PreSubmitCallbackResponse<AsylumCase> response = handler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertEquals(asylumCase, response.getData());
+        verifyLogsContainMessage(listAppender, "Writing retrieved Home Office appellant data to the case record in full for case with Home Office reference non-empty-reference.");
+    }
+
+    @Test
+    void should_not_return_early_if_gwf_ooc_and_gwf_validation_enabled() {
+        when(callback.getEvent()).thenReturn(Event.START_APPEAL);
+        when(asylumCase.read(HOME_OFFICE_APPELLANTS)).thenReturn(Optional.empty());
+        when(asylumCase.read(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, String.class))
+            .thenReturn(Optional.of(encryptedData));
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        handlerUtilsMock
+            .when(() -> HandlerUtils.getUanOrGwf(asylumCase))
+            .thenReturn("non-empty-reference");
+        String json =
+            "[{\"id\":\"123\",\"value\":{\"familyName\":\"Smith\",\"givenNames\":\"John\"}}]";
+        handlerUtilsMock
+            .when(() -> HandlerUtils.decrypt(encryptedData, homeOfficeSerialisedEncryptionKey))
+            .thenReturn(json);
+        handlerUtilsMock
+            .when(() -> HandlerUtils.isGwfReferenceAndOoc(asylumCase))
+            .thenReturn(true);
+
+        ListAppender<ILoggingEvent> listAppender = setupLogVerifier(HomeOfficeReferenceHandlerOnSubmit.class);
+        PreSubmitCallbackResponse<AsylumCase> response = handler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertEquals(asylumCase, response.getData());
+        verifyLogsContainMessage(listAppender, "Writing retrieved Home Office appellant data to the case record in full for case with Home Office reference non-empty-reference.");
+    }
 }
