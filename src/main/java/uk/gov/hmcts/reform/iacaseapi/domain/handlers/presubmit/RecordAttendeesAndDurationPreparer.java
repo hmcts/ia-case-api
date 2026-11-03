@@ -12,10 +12,11 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.IaHearingsApiService;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationBasedFeatureToggler;
 
+import java.util.Arrays;
 import java.util.Optional;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ATTENDEES_AND_DURATION_HEARING;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.RECORD_ATTENDEES_AND_DURATION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 
@@ -48,6 +49,8 @@ public class RecordAttendeesAndDurationPreparer implements PreSubmitCallbackHand
             throw new IllegalStateException("Cannot handle callback");
         }
 
+        clearAttendeesAndDurationDetails(callback);
+
         AsylumCase asylumCase = iaHearingsApiService.aboutToStart(callback);
 
         HandlerUtils.checkAndUpdateAutoHearingRequestEnabled(locationBasedFeatureToggler, asylumCase);
@@ -65,5 +68,25 @@ public class RecordAttendeesAndDurationPreparer implements PreSubmitCallbackHand
         Optional<DynamicList> hearings = asylumCase.read(ATTENDEES_AND_DURATION_HEARING, DynamicList.class);
 
         return hearings.map(dynamicList -> dynamicList.getListItems().isEmpty()).orElse(true);
+    }
+
+    private void clearAttendeesAndDurationDetails(Callback<AsylumCase> callback) {
+        AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
+
+        Arrays.asList(
+            ATTENDEES_AND_DURATION_HEARING,
+            ATTENDEES_AND_DURATION_HEARING_ID,
+            ATTENDEES_AND_DURATION_HEARING_DATE,
+            ATTENDEES_AND_DURATION_PAPER_HEARING,
+            ATTENDEES_AND_DURATION_HEARING_METHODS,
+            ATTENDEES_AND_DURATION_HEARING_STAGE,
+            ATTENDEES_AND_DURATION_HEARING_RESULT,
+            ATTENDEES_AND_DURATION_HEARING_JUDGE,
+            ATTENDEES_AND_DURATION_DATE_OF_HEARING,
+            ATTENDEES_AND_DURATION_HEARING_START_TIME,
+            ATTENDEES_AND_DURATION_HEARING_FINISH_TIME,
+            ATTENDEES_AND_DURATION_PAUSED_TIME_REQUIRED,
+            ATTENDEES_AND_DURATION_PAUSES)
+                .forEach(asylumCase::clear);
     }
 }

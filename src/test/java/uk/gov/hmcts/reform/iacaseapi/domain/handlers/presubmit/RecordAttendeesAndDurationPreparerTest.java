@@ -4,16 +4,30 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ATTENDEES_AND_DURATION_DATE_OF_HEARING;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ATTENDEES_AND_DURATION_HEARING;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ATTENDEES_AND_DURATION_HEARING_DATE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ATTENDEES_AND_DURATION_HEARING_FINISH_TIME;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ATTENDEES_AND_DURATION_HEARING_ID;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ATTENDEES_AND_DURATION_HEARING_JUDGE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ATTENDEES_AND_DURATION_HEARING_METHODS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ATTENDEES_AND_DURATION_HEARING_RESULT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ATTENDEES_AND_DURATION_HEARING_STAGE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ATTENDEES_AND_DURATION_HEARING_START_TIME;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ATTENDEES_AND_DURATION_PAPER_HEARING;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ATTENDEES_AND_DURATION_PAUSED_TIME_REQUIRED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ATTENDEES_AND_DURATION_PAUSES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.AUTO_HEARING_REQUEST_ENABLED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.RECORD_ATTENDEES_AND_DURATION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.RecordAttendeesAndDurationPreparer.NO_HEARINGS_ERROR_MESSAGE;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -22,6 +36,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -29,6 +44,7 @@ import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Value;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
@@ -44,6 +60,10 @@ class RecordAttendeesAndDurationPreparerTest {
     @Mock
     private Callback<AsylumCase> callback;
     @Mock
+    private CaseDetails<AsylumCase> caseDetails;
+    @Mock
+    private AsylumCase asylumCase;
+    @Mock
     private AsylumCase updatedAsylumCase;
     @Mock
     private IaHearingsApiService iaHearingsApiService;
@@ -55,6 +75,8 @@ class RecordAttendeesAndDurationPreparerTest {
     @BeforeEach
     public void setUp() {
         when(callback.getEvent()).thenReturn(RECORD_ATTENDEES_AND_DURATION);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(iaHearingsApiService.aboutToStart(callback)).thenReturn(updatedAsylumCase);
 
         recordAttendeesAndDurationPreparer = new RecordAttendeesAndDurationPreparer(
@@ -71,6 +93,30 @@ class RecordAttendeesAndDurationPreparerTest {
         verify(iaHearingsApiService, times(1)).aboutToStart(callback);
         assertEquals(updatedAsylumCase, response.getData());
         assertTrue(response.getErrors().isEmpty());
+    }
+
+    @Test
+    void should_clear_attendees_and_duration_fields_before_calling_ia_hearings_api() {
+        givenHearings(List.of(new Value("hearing1", "Hearing 1")));
+
+        recordAttendeesAndDurationPreparer.handle(ABOUT_TO_START, callback);
+
+        InOrder inOrder = inOrder(asylumCase, iaHearingsApiService);
+        Arrays.asList(
+            ATTENDEES_AND_DURATION_HEARING,
+            ATTENDEES_AND_DURATION_HEARING_ID,
+            ATTENDEES_AND_DURATION_HEARING_DATE,
+            ATTENDEES_AND_DURATION_PAPER_HEARING,
+            ATTENDEES_AND_DURATION_HEARING_METHODS,
+            ATTENDEES_AND_DURATION_HEARING_STAGE,
+            ATTENDEES_AND_DURATION_HEARING_RESULT,
+            ATTENDEES_AND_DURATION_HEARING_JUDGE,
+            ATTENDEES_AND_DURATION_DATE_OF_HEARING,
+            ATTENDEES_AND_DURATION_HEARING_START_TIME,
+            ATTENDEES_AND_DURATION_HEARING_FINISH_TIME,
+            ATTENDEES_AND_DURATION_PAUSED_TIME_REQUIRED,
+            ATTENDEES_AND_DURATION_PAUSES).forEach(field -> inOrder.verify(asylumCase).clear(field));
+        inOrder.verify(iaHearingsApiService).aboutToStart(callback);
     }
 
     @Test
