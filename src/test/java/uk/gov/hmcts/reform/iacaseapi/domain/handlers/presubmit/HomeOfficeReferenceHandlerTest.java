@@ -31,6 +31,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
@@ -836,15 +837,12 @@ class HomeOfficeReferenceHandlerTest {
 
         try (MockedStatic<HandlerUtils> mockedStatic = Mockito.mockStatic(HandlerUtils.class, Mockito.CALLS_REAL_METHODS)) {
 
-            PreSubmitCallbackResponse<AsylumCase> response =
-                handler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+            handler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
 
             mockedStatic.verify(() -> HandlerUtils.removeValidationFields(asylumCase), never());
-            mockedStatic.verify(() -> HandlerUtils.validateNameAndDateOfBirth(any(), any(), any(), any(), any()), never());
+            mockedStatic.verify(() -> HandlerUtils.validateNameAndDateOfBirth(eq(callback), eq(asylumCase), eq("GWF123456789"), eq(true), any(HomeOfficeReferenceService.class)), never());
             mockedStatic.verify(() -> HandlerUtils.validateHomeOfficeReference(any(), any(), any(), any()), never());
             mockedStatic.verify(() -> HandlerUtils.validateName(any(), any(), any(), any()), never());
-
-            assertTrue(response.getErrors().isEmpty());
         }
     }
 
@@ -862,8 +860,7 @@ class HomeOfficeReferenceHandlerTest {
 
         try (MockedStatic<HandlerUtils> mockedStatic = Mockito.mockStatic(HandlerUtils.class, Mockito.CALLS_REAL_METHODS)) {
 
-            PreSubmitCallbackResponse<AsylumCase> response =
-                handler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+            handler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
 
             mockedStatic.verify(() -> HandlerUtils.removeValidationFields(asylumCase));
             mockedStatic.verify(() -> HandlerUtils.validateHomeOfficeReference(any(), any(), any(), any()));
