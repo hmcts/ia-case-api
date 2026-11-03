@@ -2400,6 +2400,12 @@ public enum AsylumCaseFieldDefinition {
     ATTENDEES_AND_DURATION_PAUSES(
             "attendeesAndDurationPauses", new TypeReference<List<IdValue<HearingPause>>>(){}),
 
+    ATTENDEES_AND_DURATION_HEARING_CANCELLATION_REASON(
+            "attendeesAndDurationHearingCancellationReason", new TypeReference<DynamicList>(){}),
+
+    ATTENDEES_AND_DURATION_HEARING_PART_HEARD_REASON(
+            "attendeesAndDurationHearingPartHeardReason", new TypeReference<DynamicList>(){}),
+
     CURRENT_ADJOURNMENT_DETAIL(
             "currentAdjournmentDetail", new TypeReference<AdjournmentDetail>(){}),
 

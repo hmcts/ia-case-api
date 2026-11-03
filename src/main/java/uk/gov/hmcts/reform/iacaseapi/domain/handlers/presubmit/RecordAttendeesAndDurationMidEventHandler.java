@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
@@ -14,6 +15,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.IaHearingsApiService;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationRefDataService;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ATTENDEES_AND_DURATION_HEARING_CANCELLATION_REASON;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ATTENDEES_AND_DURATION_HEARING_PART_HEARD_REASON;
 
 @Slf4j
 @Component
@@ -51,10 +54,47 @@ public class RecordAttendeesAndDurationMidEventHandler implements PreSubmitCallb
             case SELECT_ATTENDEES_AND_DURATION_HEARING_LIST_PAGE_ID -> {
                 log.info("selecting attendees and duration hearing");
                 asylumCase = iaHearingsApiService.midEvent(callback);
+
+                prePopulateActualHearingCancellationReason(asylumCase);
+                prePopulateActualHearingPartHeardReason(asylumCase);
             }
             default -> { }
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
+    }
+
+    private void prePopulateActualHearingCancellationReason(AsylumCase asylumCase) {
+        DynamicList hearingCancellationReason =
+            asylumCase.read(ATTENDEES_AND_DURATION_HEARING_CANCELLATION_REASON, DynamicList.class)
+                .orElse(null);
+        if (hearingCancellationReason == null) {
+            hearingCancellationReason = provider.provideActualCancellationReasonCodes();
+        } else {
+            hearingCancellationReason = new DynamicList(
+                hearingCancellationReason.getValue(),
+                provider.provideActualCancellationReasonCodes().getListItems()
+            );
+        }
+
+        log.info("hearingCancellationReason = {}", hearingCancellationReason);
+        asylumCase.write(ATTENDEES_AND_DURATION_HEARING_CANCELLATION_REASON, hearingCancellationReason);
+    }
+
+    private void prePopulateActualHearingPartHeardReason(AsylumCase asylumCase) {
+        DynamicList hearingPartHeardReason =
+            asylumCase.read(ATTENDEES_AND_DURATION_HEARING_PART_HEARD_REASON, DynamicList.class)
+                .orElse(null);
+        if (hearingPartHeardReason == null) {
+            hearingPartHeardReason = provider.provideActualPartHeardReasonCodes();
+        } else {
+            hearingPartHeardReason = new DynamicList(
+                hearingPartHeardReason.getValue(),
+                provider.provideActualPartHeardReasonCodes().getListItems()
+            );
+        }
+
+        log.info("hearingPartHeardReason = {}", hearingPartHeardReason);
+        asylumCase.write(ATTENDEES_AND_DURATION_HEARING_PART_HEARD_REASON, hearingPartHeardReason);
     }
 }

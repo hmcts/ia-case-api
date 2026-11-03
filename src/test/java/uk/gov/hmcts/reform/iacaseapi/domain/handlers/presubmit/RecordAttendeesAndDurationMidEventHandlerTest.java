@@ -8,10 +8,14 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ATTENDEES_AND_DURATION_HEARING_CANCELLATION_REASON;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ATTENDEES_AND_DURATION_HEARING_PART_HEARD_REASON;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.RECORD_ATTENDEES_AND_DURATION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.MID_EVENT;
 
+import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,6 +24,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.Value;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -34,6 +40,13 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationRefDataService;
 class RecordAttendeesAndDurationMidEventHandlerTest {
 
     private static final String SELECT_HEARING_PAGE_ID = "selectHearingRecordAttendeesAndDuration";
+
+    private final List<Value> cancellationReasons = List.of(
+        new Value("cancelled", "Cancelled"),
+        new Value("withdrawn", "Withdrawn"));
+    private final List<Value> partHeardReasons = List.of(
+        new Value("timeRanOut", "Time ran out"),
+        new Value("judgeUnwell", "Judge unwell"));
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -58,6 +71,10 @@ class RecordAttendeesAndDurationMidEventHandlerTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(iaHearingsApiService.midEvent(callback)).thenReturn(updatedAsylumCase);
+        when(provider.provideActualCancellationReasonCodes())
+            .thenReturn(new DynamicList(new Value("", ""), cancellationReasons));
+        when(provider.provideActualPartHeardReasonCodes())
+            .thenReturn(new DynamicList(new Value("", ""), partHeardReasons));
 
         handler = new RecordAttendeesAndDurationMidEventHandler(provider, locationRefDataService, iaHearingsApiService);
     }
@@ -71,6 +88,44 @@ class RecordAttendeesAndDurationMidEventHandlerTest {
         verify(iaHearingsApiService, times(1)).midEvent(callback);
         assertEquals(updatedAsylumCase, response.getData());
         assertTrue(response.getErrors().isEmpty());
+    }
+
+    @Test
+    void should_populate_reason_lists_when_not_already_present() {
+        when(callback.getPageId()).thenReturn(SELECT_HEARING_PAGE_ID);
+        when(updatedAsylumCase.read(ATTENDEES_AND_DURATION_HEARING_CANCELLATION_REASON, DynamicList.class))
+            .thenReturn(Optional.empty());
+        when(updatedAsylumCase.read(ATTENDEES_AND_DURATION_HEARING_PART_HEARD_REASON, DynamicList.class))
+            .thenReturn(Optional.empty());
+
+        handler.handle(MID_EVENT, callback);
+
+        verify(updatedAsylumCase).write(
+            ATTENDEES_AND_DURATION_HEARING_CANCELLATION_REASON,
+            new DynamicList(new Value("", ""), cancellationReasons));
+        verify(updatedAsylumCase).write(
+            ATTENDEES_AND_DURATION_HEARING_PART_HEARD_REASON,
+            new DynamicList(new Value("", ""), partHeardReasons));
+    }
+
+    @Test
+    void should_keep_existing_selections_and_refresh_reason_list_items() {
+        when(callback.getPageId()).thenReturn(SELECT_HEARING_PAGE_ID);
+        Value selectedCancellationReason = new Value("withdrawn", "Withdrawn");
+        Value selectedPartHeardReason = new Value("timeRanOut", "Time ran out");
+        when(updatedAsylumCase.read(ATTENDEES_AND_DURATION_HEARING_CANCELLATION_REASON, DynamicList.class))
+            .thenReturn(Optional.of(new DynamicList(selectedCancellationReason, List.of(selectedCancellationReason))));
+        when(updatedAsylumCase.read(ATTENDEES_AND_DURATION_HEARING_PART_HEARD_REASON, DynamicList.class))
+            .thenReturn(Optional.of(new DynamicList(selectedPartHeardReason, List.of(selectedPartHeardReason))));
+
+        handler.handle(MID_EVENT, callback);
+
+        verify(updatedAsylumCase).write(
+            ATTENDEES_AND_DURATION_HEARING_CANCELLATION_REASON,
+            new DynamicList(selectedCancellationReason, cancellationReasons));
+        verify(updatedAsylumCase).write(
+            ATTENDEES_AND_DURATION_HEARING_PART_HEARD_REASON,
+            new DynamicList(selectedPartHeardReason, partHeardReasons));
     }
 
     @Test
