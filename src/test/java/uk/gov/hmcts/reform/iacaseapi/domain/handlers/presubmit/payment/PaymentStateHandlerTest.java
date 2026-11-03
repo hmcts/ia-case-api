@@ -695,6 +695,22 @@ class PaymentStateHandlerTest {
         assertEquals(asylumCase, returnedCallbackResponse.getData());
     }
 
+    @ParameterizedTest
+    @EnumSource(value = AppealType.class, names = {"EA", "HU", "EU", "PA", "AG"})
+    void should_return_ended_state_when_current_state_is_ended_for_payment_appeal(AppealType appealType) {
+        when(callback.getEvent()).thenReturn(Event.PAYMENT_APPEAL);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(caseDetails.getState()).thenReturn(ENDED);
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
+
+        PreSubmitCallbackResponse<AsylumCase> returnedCallbackResponse =
+            paymentStateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse);
+
+        assertNotNull(returnedCallbackResponse);
+        Assertions.assertThat(returnedCallbackResponse.getState()).isEqualTo(ENDED);
+        assertEquals(asylumCase, returnedCallbackResponse.getData());
+    }
+
     private static Stream<Arguments> typeRemissionOptionAndHelpWithFees() {
         return Stream.of(
             Arguments.of(EA, RemissionOption.ASYLUM_SUPPORT_FROM_HOME_OFFICE, HelpWithFeesOption.WANT_TO_APPLY, "", APPEAL_STARTED, PENDING_PAYMENT),
