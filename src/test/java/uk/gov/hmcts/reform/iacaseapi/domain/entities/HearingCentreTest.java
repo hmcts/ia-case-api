@@ -27,6 +27,7 @@ class HearingCentreTest {
         assertEquals("belfast", HearingCentre.BELFAST.toString());
         assertEquals("harmondsworth", HearingCentre.HARMONDSWORTH.toString());
         assertEquals("hendon", HearingCentre.HENDON.toString());
+        assertEquals("kirklees", HearingCentre.KIRKLEES.toString());
         assertEquals("yarlsWood", HearingCentre.YARLS_WOOD.toString());
         assertEquals("bradfordKeighley", HearingCentre.BRADFORD_KEIGHLEY.toString());
         assertEquals("mccMinshull", HearingCentre.MCC_MINSHULL.toString());
@@ -58,6 +59,7 @@ class HearingCentreTest {
         assertEquals(HearingCentre.BELFAST, HearingCentre.from("belfast").get());
         assertEquals(HearingCentre.HARMONDSWORTH, HearingCentre.from("harmondsworth").get());
         assertEquals(HearingCentre.HENDON, HearingCentre.from("hendon").get());
+        assertEquals(HearingCentre.KIRKLEES, HearingCentre.from("kirklees").get());
         assertEquals(HearingCentre.YARLS_WOOD, HearingCentre.from("yarlsWood").get());
         assertEquals(HearingCentre.BRADFORD_KEIGHLEY, HearingCentre.from("bradfordKeighley").get());
         assertEquals(HearingCentre.MCC_MINSHULL, HearingCentre.from("mccMinshull").get());
@@ -88,6 +90,7 @@ class HearingCentreTest {
         "belfast, 999973",
         "harmondsworth, 28837",
         "hendon, 745389",
+        "kirklees, 320113",
         "yarlsWood, 649000",
         "bradfordKeighley, 580554",
         "mccMinshull, 326944",
@@ -117,6 +120,6 @@ class HearingCentreTest {
 
     @Test
     void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(28, HearingCentre.values().length);
+        assertEquals(29, HearingCentre.values().length);
     }
 }
