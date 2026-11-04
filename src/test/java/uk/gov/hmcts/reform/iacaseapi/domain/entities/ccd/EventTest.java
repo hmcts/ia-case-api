@@ -210,6 +210,7 @@ class EventTest {
             Arguments.of("forceCaseToPrepareForHearing", Event.FORCE_CASE_TO_PREPARE_FOR_HEARING.toString()),
             Arguments.of("sendLateTimelineNotice", Event.SEND_LATE_TIMELINE_NOTICE.toString()),
             Arguments.of("stf24wDetermination", Event.STF_24W_DETERMINATION.toString()),
+            Arguments.of("updateFtpaDecision", Event.UPDATE_FTPA_DECISION.toString()),
             Arguments.of("unknown", Event.UNKNOWN.toString())
         );
     }
