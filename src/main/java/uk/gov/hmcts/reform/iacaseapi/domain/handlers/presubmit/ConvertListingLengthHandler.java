@@ -35,8 +35,7 @@ public class ConvertListingLengthHandler implements PreSubmitCallbackHandler<Asy
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
-        return callbackStage == PreSubmitCallbackStage.ABOUT_TO_START
-            || callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
+        return true;
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(

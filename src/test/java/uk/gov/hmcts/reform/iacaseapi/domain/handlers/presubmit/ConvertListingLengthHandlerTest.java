@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.reset;
@@ -179,19 +178,32 @@ class ConvertListingLengthHandlerTest {
     }
 
     @Test
-    void it_can_handle_callback_for_all_events() {
+    void should_handle_mid_event_stage() {
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        HoursMinutes duration = new HoursMinutes(6, 0);
+        when(asylumCase.read(NEXT_HEARING_DURATION, HoursMinutes.class)).thenReturn(Optional.of(duration));
+        when(asylumCase.read(CURRENT_ADJOURNMENT_DETAIL, AdjournmentDetail.class)).thenReturn(Optional.empty());
+        when(asylumCase.read(PREVIOUS_ADJOURNMENT_DETAILS)).thenReturn(Optional.empty());
+        when(asylumCase.read(PREVIOUS_HEARINGS)).thenReturn(Optional.empty());
+
+        PreSubmitCallbackResponse<AsylumCase> response =
+            handler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+
+        assertNotNull(response);
+        assertEquals(asylumCase, response.getData());
+        verify(asylumCase).write(NEXT_HEARING_DURATION, duration);
+    }
+
+    @Test
+    void it_can_handle_callback_for_all_events_and_stages() {
         for (Event event : Event.values()) {
             when(callback.getEvent()).thenReturn(event);
 
             for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
                 boolean canHandle = handler.canHandle(callbackStage, callback);
-
-                if (callbackStage == PreSubmitCallbackStage.ABOUT_TO_START
-                    || callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT) {
-                    assertTrue(canHandle);
-                } else {
-                    assertFalse(canHandle);
-                }
+                assertTrue(canHandle);
             }
             reset(callback);
         }
