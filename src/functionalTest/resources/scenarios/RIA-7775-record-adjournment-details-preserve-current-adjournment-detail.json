@@ -80,10 +80,7 @@
         "currentAdjournmentDetail": {
           "nextHearingDate": "ChooseADateRange",
           "nextHearingFormat": "Not in Attendance",
-          "nextHearingDuration": {
-            "hours": 2,
-            "minutes": 0
-          },
+          "nextHearingDuration": "120",
           "nextHearingVenue": "newcastle",
           "nextHearingDateFixed": "",
           "relistCaseImmediately": "Yes",
