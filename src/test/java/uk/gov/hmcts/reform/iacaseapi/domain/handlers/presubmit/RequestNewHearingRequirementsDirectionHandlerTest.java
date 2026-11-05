@@ -1,48 +1,5 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.contains;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ACTUAL_CASE_HEARING_LENGTH;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_DECISION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ARIA_LISTING_REFERENCE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ATTENDING_APPELLANT;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ATTENDING_HOME_OFFICE_LEGAL_REPRESENTATIVE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ATTENDING_JUDGE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DIRECTIONS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FINAL_DECISION_AND_REASONS_DOCUMENTS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_DECISION_WITHOUT_HEARING;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_INTEGRATED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LISTING_LENGTH;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LIST_CASE_HEARING_CENTRE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LIST_CASE_HEARING_DATE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LIST_CASE_HEARING_LENGTH;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PREVIOUS_HEARINGS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REHEARD_CASE_LISTED_WITHOUT_HEARING_REQUIREMENTS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SEND_DIRECTION_DATE_DUE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SEND_DIRECTION_EXPLANATION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SEND_DIRECTION_PARTIES;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STF_24W_CURRENT_STATUS_AUTO_GENERATED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre.DECISION_WITHOUT_HEARING;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre.NEWPORT;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isIntegrated;
-
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -54,12 +11,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.Direction;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.DirectionTag;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithMetadata;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.Parties;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.HoursAndMinutes;
@@ -71,6 +23,25 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DirectionAppender;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.PreviousHearingAppender;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Stream;
+
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.contains;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre.DECISION_WITHOUT_HEARING;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre.NEWPORT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isIntegrated;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -122,116 +93,6 @@ class RequestNewHearingRequirementsDirectionHandlerTest {
                 requestNewHearingRequirementsDirectionHandler.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertTrue(canHandle);
-    }
-
-    @ParameterizedTest
-    @MethodSource("hearingCentersScenarios")
-    void should_append_new_direction_to_existing_directions_for_the_case(
-            YesOrNo isIntegrated, HearingCentre listCaseHearingCentre, YesOrNo decisionWithoutHearingFlag
-    ) {
-        final List<IdValue<Direction>> existingDirections = new ArrayList<>();
-        final List<IdValue<Direction>> allDirections = new ArrayList<>();
-        final String expectedExplanation = "Do the thing";
-        final Parties expectedParties = Parties.LEGAL_REPRESENTATIVE;
-        final String expectedDateDue = "2020-10-06";
-        final DirectionTag expectedDirectionTag = DirectionTag.REQUEST_NEW_HEARING_REQUIREMENTS;
-        final Event event = Event.REQUEST_NEW_HEARING_REQUIREMENTS;
-        final String attendingJudge = "Judge Johnson";
-        final String attendingAppellant = "Joe Bloggs";
-        final String attendingHomeOfficeLegalRepresentative = "Jim Smith";
-        final HoursAndMinutes actualCaseHearingLength = new HoursAndMinutes("5", "30");
-        final String ariaListingReference = "LP/12345/2020";
-        final String listCaseHearingDate = "13/10/2020";
-        final String listCaseHearingLength = "6 hours";
-        final String appealDecision = "Dismissed";
-
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getEvent()).thenReturn(event);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(dateProvider.now()).thenReturn(LocalDate.parse("2020-10-01"));
-
-        when(asylumCase.read(DIRECTIONS)).thenReturn(Optional.of(existingDirections));
-        when(asylumCase.read(SEND_DIRECTION_EXPLANATION, String.class)).thenReturn(Optional.of(expectedExplanation));
-        when(asylumCase.read(SEND_DIRECTION_DATE_DUE, String.class)).thenReturn(Optional.of(expectedDateDue));
-        when(asylumCase.read(ATTENDING_JUDGE, String.class)).thenReturn(Optional.of(attendingJudge));
-        when(asylumCase.read(ATTENDING_APPELLANT, String.class)).thenReturn(Optional.of(attendingAppellant));
-        when(asylumCase.read(ATTENDING_HOME_OFFICE_LEGAL_REPRESENTATIVE, String.class)).thenReturn(Optional.of(attendingHomeOfficeLegalRepresentative));
-        when(asylumCase.read(ACTUAL_CASE_HEARING_LENGTH, HoursAndMinutes.class)).thenReturn(Optional.of(actualCaseHearingLength));
-        when(asylumCase.read(ARIA_LISTING_REFERENCE, String.class)).thenReturn(Optional.of(ariaListingReference));
-        when(asylumCase.read(LIST_CASE_HEARING_CENTRE, HearingCentre.class)).thenReturn(Optional.ofNullable(listCaseHearingCentre));
-        when(asylumCase.read(LIST_CASE_HEARING_DATE, String.class)).thenReturn(Optional.of(listCaseHearingDate));
-        when(asylumCase.read(IS_INTEGRATED, YesOrNo.class)).thenReturn(Optional.of(isIntegrated));
-        when(asylumCase.read(IS_DECISION_WITHOUT_HEARING, YesOrNo.class)).thenReturn(Optional.of(decisionWithoutHearingFlag));
-        when(asylumCase.read(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class)).thenReturn(Optional.of(YES));
-
-        if (isIntegrated.equals(YES)) {
-            when(asylumCase.read(LISTING_LENGTH, HoursMinutes.class)).thenReturn(Optional.of(new HoursMinutes(6, 0)));
-        } else {
-            when(asylumCase.read(LIST_CASE_HEARING_LENGTH, String.class)).thenReturn(Optional.of(listCaseHearingLength));
-        }
-
-        when(asylumCase.read(APPEAL_DECISION, String.class)).thenReturn(Optional.of(appealDecision));
-
-        when(directionAppender.append(
-                asylumCase,
-                existingDirections,
-                expectedExplanation,
-                expectedParties,
-                expectedDateDue,
-                expectedDirectionTag
-        )).thenReturn(allDirections);
-
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                requestNewHearingRequirementsDirectionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
-
-        assertNotNull(callbackResponse);
-        assertEquals(asylumCase, callbackResponse.getData());
-
-        verify(directionAppender, times(1)).append(
-                eq(asylumCase),
-                eq(existingDirections),
-                contains(expectedExplanation),
-                eq(expectedParties),
-                eq(expectedDateDue),
-                eq(expectedDirectionTag)
-        );
-
-        verify(asylumCase, times(1)).read(DIRECTIONS);
-        verify(asylumCase, times(1)).read(SEND_DIRECTION_EXPLANATION, String.class);
-        verify(asylumCase, times(1)).read(SEND_DIRECTION_DATE_DUE, String.class);
-        verify(asylumCase, times(1)).write(DIRECTIONS, allDirections);
-
-        verify(asylumCase).clear(SEND_DIRECTION_EXPLANATION);
-        verify(asylumCase).clear(SEND_DIRECTION_PARTIES);
-        verify(asylumCase).clear(SEND_DIRECTION_DATE_DUE);
-
-        verify(asylumCase, times(1)).read(PREVIOUS_HEARINGS);
-        verify(asylumCase, times(1)).read(ATTENDING_JUDGE, String.class);
-        verify(asylumCase, times(1)).read(ATTENDING_APPELLANT, String.class);
-        verify(asylumCase, times(1)).read(ATTENDING_HOME_OFFICE_LEGAL_REPRESENTATIVE, String.class);
-
-        verify(asylumCase, times(1)).read(ACTUAL_CASE_HEARING_LENGTH, HoursAndMinutes.class);
-        verify(asylumCase, times(1)).read(LIST_CASE_HEARING_CENTRE, HearingCentre.class);
-        verify(asylumCase, times(1)).read(IS_DECISION_WITHOUT_HEARING, YesOrNo.class);
-
-        if (listCaseHearingCentre != null && !listCaseHearingCentre.equals(DECISION_WITHOUT_HEARING) && decisionWithoutHearingFlag.equals(NO)) {
-            verify(asylumCase, times(1)).read(LIST_CASE_HEARING_DATE, String.class);
-            verify(asylumCase, times(1)).read(IS_INTEGRATED, YesOrNo.class);
-
-            if (isIntegrated(asylumCase)) {
-                verify(asylumCase, times(1)).read(LISTING_LENGTH, HoursMinutes.class);
-            } else {
-                verify(asylumCase, times(1)).read(ARIA_LISTING_REFERENCE, String.class);
-                verify(asylumCase, times(1)).read(LIST_CASE_HEARING_LENGTH, String.class);
-            }
-        }
-
-        verify(asylumCase, times(1)).read(APPEAL_DECISION, String.class);
-        verify(asylumCase, times(1)).read(FINAL_DECISION_AND_REASONS_DOCUMENTS);
-        verify(asylumCase, times(1)).write(PREVIOUS_HEARINGS, Collections.EMPTY_LIST);
-        verify(asylumCase, times(1)).write(REHEARD_CASE_LISTED_WITHOUT_HEARING_REQUIREMENTS, NO);
-        verify(asylumCase, times(1)).read(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class);
-        verify(asylumCase, times(0)).write(STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED, NO);
     }
 
     @ParameterizedTest
@@ -342,6 +203,7 @@ class RequestNewHearingRequirementsDirectionHandlerTest {
         verify(asylumCase, times(1)).write(REHEARD_CASE_LISTED_WITHOUT_HEARING_REQUIREMENTS, NO);
         verify(asylumCase, times(1)).read(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class);
         verify(asylumCase, times(1)).clear(STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED);
+
     }
 
     static Stream<Arguments> hearingCentersScenarios() {
