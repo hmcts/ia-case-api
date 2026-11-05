@@ -58,27 +58,34 @@ public class GenerateServiceRequestPreparer implements PreSubmitCallbackHandler<
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
         PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
 
-        if (isAppealPaid(asylumCase) && !asylumCase.read(REFUND_CONFIRMATION_APPLIED, YesOrNo.class).orElse(YesOrNo.NO).equals(YesOrNo.YES)) {
+        boolean isSystemUser = userDetailsHelper.getLoggedInUserRoleLabel(userDetails).equals(UserRoleLabel.SYSTEM);
+
+        if (isSystemUser) {
+            return new PreSubmitCallbackResponse<>(asylumCase);
+        }
+
+        boolean refundConfirmed = asylumCase.read(REFUND_CONFIRMATION_APPLIED, YesOrNo.class)
+            .orElse(YesOrNo.NO).equals(YesOrNo.YES);
+        boolean hasServiceRequestRef = !asylumCase.read(SERVICE_REQUEST_REFERENCE, String.class)
+            .orElse("").isEmpty();
+        boolean hasServiceRequestAlready = asylumCase.read(HAS_SERVICE_REQUEST_ALREADY, YesOrNo.class)
+            .orElse(YesOrNo.NO).equals(YesOrNo.YES);
+
+        if (isAppealPaid(asylumCase) && !refundConfirmed) {
             response.addError(
                 "Refund confirmation should be done first to make another service request."
             );
             return response;
         }
 
-        if (!isSystemUser() && !asylumCase.read(REFUND_CONFIRMATION_APPLIED, YesOrNo.class).orElse(YesOrNo.NO).equals(YesOrNo.YES)
-            && (!asylumCase.read(SERVICE_REQUEST_REFERENCE, String.class).orElse("").isEmpty()
-            || asylumCase.read(HAS_SERVICE_REQUEST_ALREADY, YesOrNo.class).orElse(YesOrNo.NO).equals(YesOrNo.YES))
-        ) {
+        if (!refundConfirmed && (hasServiceRequestRef || hasServiceRequestAlready)) {
             response.addError(
                 "A service request has already been created for this case. Pay via the 'Service Request' tab."
             );
             return response;
         }
 
-        return new PreSubmitCallbackResponse<>(asylumCase);
+        return response;
     }
 
-    private boolean isSystemUser() {
-        return userDetailsHelper.getLoggedInUserRoleLabel(userDetails).equals(UserRoleLabel.SYSTEM);
-    }
 }
