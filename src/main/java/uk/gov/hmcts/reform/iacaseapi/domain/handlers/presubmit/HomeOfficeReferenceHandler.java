@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -9,6 +10,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.HomeOfficeReferenceService;
@@ -16,6 +18,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.HomeOfficeReferenceService;
 import java.util.Set;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_IN_UK;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.*;
 
 @Slf4j
@@ -31,13 +34,18 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.*;
 )
 public class HomeOfficeReferenceHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
+    public static final String GWF_IN_UK_ERROR = "The GWF reference number is only valid for Out of Country appeals. Please enter a valid UAN.";
+    private final boolean isGwfValidationEnabled;
     private final HomeOfficeReferenceService homeOfficeReferenceService;
     public final Set<String> validPages = Set.of(
         "homeOfficeReferenceNumber", "oocHomeOfficeReferenceNumber", "appellantBasicDetails", // ExUI pages
         "cuiHomeOfficeReferenceNumber", "cuiGwfReferenceNumber", "cuiAppellantName", "cuiAppellantDob"); // CUI pages
 
-    public HomeOfficeReferenceHandler(HomeOfficeReferenceService homeOfficeReferenceService) {
+    public HomeOfficeReferenceHandler(HomeOfficeReferenceService homeOfficeReferenceService,
+                                      @Value("${app.gwf-validation.enabled}") boolean isGwfValidationEnabled
+    ) {
         this.homeOfficeReferenceService = homeOfficeReferenceService;
+        this.isGwfValidationEnabled = isGwfValidationEnabled;
     }
 
     public boolean canHandle(
@@ -64,6 +72,16 @@ public class HomeOfficeReferenceHandler implements PreSubmitCallbackHandler<Asyl
         String homeOfficeReferenceNumber = HandlerUtils.getUanOrGwf(asylumCase);
         if (homeOfficeReferenceNumber.isEmpty()) {
             throw new IllegalStateException("homeOfficeReferenceNumber and gwfReferenceNumber are both missing - one or other is needed");
+        }
+
+        boolean inUk = asylumCase.read(APPELLANT_IN_UK, YesOrNo.class).orElse(YesOrNo.YES).isYes();
+        boolean isGwfReference = HandlerUtils.isGwfReference(homeOfficeReferenceNumber);
+        if (isGwfReference) {
+            if (inUk) {
+                return new PreSubmitCallbackResponse<>(asylumCase).withError(GWF_IN_UK_ERROR);
+            } else if (!isGwfValidationEnabled) {
+                return new PreSubmitCallbackResponse<>(asylumCase);
+            }
         }
 
         String pageId = callback.getPageId();

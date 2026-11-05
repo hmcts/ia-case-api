@@ -6,7 +6,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
@@ -31,15 +30,19 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.getMismatchErrorMessage;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.HomeOfficeReferenceHandler.GWF_IN_UK_ERROR;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 class HomeOfficeReferenceHandlerTest {
 
-    private static final String VALID_GWF = "GWF123456789";
+    private static final String VALID_UAN = "1234-1234-1234-1234";
     private static final String INVALID_REF = "123";
 
     @Mock
@@ -60,13 +63,13 @@ class HomeOfficeReferenceHandlerTest {
     @Mock
     private HomeOfficeAppellant appellant;
 
-    @InjectMocks
     private HomeOfficeReferenceHandler handler;
 
     @BeforeEach
     void setup() {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        handler = new HomeOfficeReferenceHandler(referenceService, true);
     }
 
     @ParameterizedTest
@@ -166,9 +169,9 @@ class HomeOfficeReferenceHandlerTest {
         when(callback.getPageId()).thenReturn("oocHomeOfficeReferenceNumber");
 
         when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class))
-            .thenReturn(Optional.of(VALID_GWF));
+            .thenReturn(Optional.of(VALID_UAN));
 
-        when(referenceService.getHomeOfficeReferenceData(VALID_GWF, callback))
+        when(referenceService.getHomeOfficeReferenceData(VALID_UAN, callback))
             .thenReturn(List.of());
 
         when(asylumCase.read(HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS, HomeOfficeApiResponseStatusType.class))
@@ -193,9 +196,9 @@ class HomeOfficeReferenceHandlerTest {
         when(callback.getPageId()).thenReturn(pageId);
 
         when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class))
-            .thenReturn(Optional.of(VALID_GWF));
+            .thenReturn(Optional.of(VALID_UAN));
 
-        when(referenceService.getHomeOfficeReferenceData(VALID_GWF, callback))
+        when(referenceService.getHomeOfficeReferenceData(VALID_UAN, callback))
             .thenReturn(Collections.singletonList(idValue));
 
         try (MockedStatic<HandlerUtils> mockedStatic = Mockito.mockStatic(HandlerUtils.class, Mockito.CALLS_REAL_METHODS)) {
@@ -216,9 +219,9 @@ class HomeOfficeReferenceHandlerTest {
         when(callback.getPageId()).thenReturn("appellantBasicDetails");
 
         when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class))
-            .thenReturn(Optional.of(VALID_GWF));
+            .thenReturn(Optional.of(VALID_UAN));
 
-        when(referenceService.getHomeOfficeReferenceData(VALID_GWF, callback))
+        when(referenceService.getHomeOfficeReferenceData(VALID_UAN, callback))
             .thenReturn(Collections.singletonList(idValue));
 
         when(idValue.getValue()).thenReturn(appellant);
@@ -249,12 +252,12 @@ class HomeOfficeReferenceHandlerTest {
         when(callback.getPageId()).thenReturn("cuiAppellantName");
 
         when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class))
-            .thenReturn(Optional.of(VALID_GWF));
+            .thenReturn(Optional.of(VALID_UAN));
 
         when(asylumCase.read(HOME_OFFICE_APPELLANT_API_RESPONSE_STATUS, HomeOfficeApiResponseStatusType.class))
             .thenReturn(Optional.of(HomeOfficeApiResponseStatusType.OK));
 
-        when(referenceService.getHomeOfficeReferenceData(VALID_GWF, callback))
+        when(referenceService.getHomeOfficeReferenceData(VALID_UAN, callback))
             .thenReturn(Collections.singletonList(idValue));
 
         when(idValue.getValue()).thenReturn(appellant);
@@ -276,7 +279,7 @@ class HomeOfficeReferenceHandlerTest {
             handler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
 
         assertFalse(response.getErrors().isEmpty());
-        assertEquals(getMismatchErrorMessage(VALID_GWF, true, false, false), response.getErrors().iterator().next());
+        assertEquals(getMismatchErrorMessage(VALID_UAN, true, false, false), response.getErrors().iterator().next());
     }
 
     @Test
@@ -286,9 +289,9 @@ class HomeOfficeReferenceHandlerTest {
         when(callback.getPageId()).thenReturn("cuiAppellantDob");
 
         when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class))
-            .thenReturn(Optional.of(VALID_GWF));
+            .thenReturn(Optional.of(VALID_UAN));
 
-        when(referenceService.getHomeOfficeReferenceData(VALID_GWF, callback))
+        when(referenceService.getHomeOfficeReferenceData(VALID_UAN, callback))
             .thenReturn(Collections.singletonList(idValue));
 
         when(idValue.getValue()).thenReturn(appellant);
@@ -325,9 +328,9 @@ class HomeOfficeReferenceHandlerTest {
         when(callback.getPageId()).thenReturn(pageId);
 
         when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class))
-            .thenReturn(Optional.of(VALID_GWF));
+            .thenReturn(Optional.of(VALID_UAN));
 
-        when(referenceService.getHomeOfficeReferenceData(VALID_GWF, callback))
+        when(referenceService.getHomeOfficeReferenceData(VALID_UAN, callback))
             .thenReturn(Collections.singletonList(idValue));
 
         when(idValue.getValue()).thenReturn(appellant);
@@ -361,9 +364,9 @@ class HomeOfficeReferenceHandlerTest {
             .thenReturn(Optional.empty());
 
         when(asylumCase.read(GWF_REFERENCE_NUMBER, String.class))
-            .thenReturn(Optional.of(VALID_GWF));
+            .thenReturn(Optional.of(VALID_UAN));
 
-        when(referenceService.getHomeOfficeReferenceData(VALID_GWF, callback))
+        when(referenceService.getHomeOfficeReferenceData(VALID_UAN, callback))
             .thenReturn(Collections.singletonList(idValue));
 
         PreSubmitCallbackResponse<AsylumCase> response =
@@ -402,9 +405,9 @@ class HomeOfficeReferenceHandlerTest {
         when(callback.getPageId()).thenReturn("cuiAppellantName");
 
         when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class))
-            .thenReturn(Optional.of(VALID_GWF));
+            .thenReturn(Optional.of(VALID_UAN));
 
-        when(referenceService.getHomeOfficeReferenceData(VALID_GWF, callback))
+        when(referenceService.getHomeOfficeReferenceData(VALID_UAN, callback))
             .thenReturn(Collections.singletonList(idValue));
 
         when(idValue.getValue()).thenReturn(appellant);
@@ -442,9 +445,9 @@ class HomeOfficeReferenceHandlerTest {
         when(callback.getPageId()).thenReturn("cuiAppellantName");
 
         when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class))
-            .thenReturn(Optional.of(VALID_GWF));
+            .thenReturn(Optional.of(VALID_UAN));
 
-        when(referenceService.getHomeOfficeReferenceData(VALID_GWF, callback))
+        when(referenceService.getHomeOfficeReferenceData(VALID_UAN, callback))
             .thenReturn(Collections.singletonList(idValue));
 
         when(idValue.getValue()).thenReturn(appellant);
@@ -471,7 +474,7 @@ class HomeOfficeReferenceHandlerTest {
         assertTrue(
             response.getErrors()
                 .stream()
-                .anyMatch(error -> error.contains(HomeOfficeApiResponseStatusType.NOT_FOUND.getUserFacingErrorText(VALID_GWF, false, false)))
+                .anyMatch(error -> error.contains(HomeOfficeApiResponseStatusType.NOT_FOUND.getUserFacingErrorText(VALID_UAN, false, false)))
         );
     }
 
@@ -482,9 +485,9 @@ class HomeOfficeReferenceHandlerTest {
         when(callback.getPageId()).thenReturn("cuiAppellantName");
 
         when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class))
-            .thenReturn(Optional.of(VALID_GWF));
+            .thenReturn(Optional.of(VALID_UAN));
 
-        when(referenceService.getHomeOfficeReferenceData(VALID_GWF, callback))
+        when(referenceService.getHomeOfficeReferenceData(VALID_UAN, callback))
             .thenReturn(Collections.singletonList(idValue));
 
         when(idValue.getValue()).thenReturn(appellant);
@@ -514,7 +517,7 @@ class HomeOfficeReferenceHandlerTest {
         assertTrue(
             response.getErrors()
                 .stream()
-                .anyMatch(error -> error.contains(HomeOfficeApiResponseStatusType.NOT_FOUND.getUserFacingErrorText(VALID_GWF, false, true)))
+                .anyMatch(error -> error.contains(HomeOfficeApiResponseStatusType.NOT_FOUND.getUserFacingErrorText(VALID_UAN, false, true)))
         );
     }
 
@@ -525,9 +528,9 @@ class HomeOfficeReferenceHandlerTest {
         when(callback.getPageId()).thenReturn("cuiAppellantName");
 
         when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class))
-            .thenReturn(Optional.of(VALID_GWF));
+            .thenReturn(Optional.of(VALID_UAN));
 
-        when(referenceService.getHomeOfficeReferenceData(VALID_GWF, callback))
+        when(referenceService.getHomeOfficeReferenceData(VALID_UAN, callback))
             .thenReturn(Collections.singletonList(idValue));
 
         when(idValue.getValue()).thenReturn(appellant);
@@ -557,7 +560,7 @@ class HomeOfficeReferenceHandlerTest {
         assertTrue(
             response.getErrors()
                 .stream()
-                .anyMatch(error -> error.contains(HomeOfficeApiResponseStatusType.NOT_FOUND.getUserFacingErrorText(VALID_GWF, false, true)))
+                .anyMatch(error -> error.contains(HomeOfficeApiResponseStatusType.NOT_FOUND.getUserFacingErrorText(VALID_UAN, false, true)))
         );
     }
 
@@ -568,9 +571,9 @@ class HomeOfficeReferenceHandlerTest {
         when(callback.getPageId()).thenReturn("cuiAppellantName");
 
         when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class))
-            .thenReturn(Optional.of(VALID_GWF));
+            .thenReturn(Optional.of(VALID_UAN));
 
-        when(referenceService.getHomeOfficeReferenceData(VALID_GWF, callback))
+        when(referenceService.getHomeOfficeReferenceData(VALID_UAN, callback))
             .thenReturn(Collections.singletonList(idValue));
 
         when(idValue.getValue()).thenReturn(appellant);
@@ -597,7 +600,7 @@ class HomeOfficeReferenceHandlerTest {
         assertTrue(
             response.getErrors()
                 .stream()
-                .anyMatch(error -> error.contains(HomeOfficeApiResponseStatusType.UNKNOWN.getUserFacingErrorText(VALID_GWF, false, false)))
+                .anyMatch(error -> error.contains(HomeOfficeApiResponseStatusType.UNKNOWN.getUserFacingErrorText(VALID_UAN, false, false)))
         );
     }
 
@@ -608,9 +611,9 @@ class HomeOfficeReferenceHandlerTest {
         when(callback.getPageId()).thenReturn("cuiAppellantName");
 
         when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class))
-            .thenReturn(Optional.of(VALID_GWF));
+            .thenReturn(Optional.of(VALID_UAN));
 
-        when(referenceService.getHomeOfficeReferenceData(VALID_GWF, callback))
+        when(referenceService.getHomeOfficeReferenceData(VALID_UAN, callback))
             .thenReturn(Collections.singletonList(idValue));
 
         when(idValue.getValue()).thenReturn(appellant);
@@ -638,7 +641,7 @@ class HomeOfficeReferenceHandlerTest {
         assertTrue(
             response.getErrors()
                 .stream()
-                .anyMatch(error -> error.contains(HomeOfficeApiResponseStatusType.UNKNOWN.getUserFacingErrorText(VALID_GWF, false, true)))
+                .anyMatch(error -> error.contains(HomeOfficeApiResponseStatusType.UNKNOWN.getUserFacingErrorText(VALID_UAN, false, true)))
         );
     }
 
@@ -649,9 +652,9 @@ class HomeOfficeReferenceHandlerTest {
         when(callback.getPageId()).thenReturn("homeOfficeReferenceNumber");
 
         when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class))
-            .thenReturn(Optional.of(VALID_GWF));
+            .thenReturn(Optional.of(VALID_UAN));
 
-        when(referenceService.getHomeOfficeReferenceData(VALID_GWF, callback))
+        when(referenceService.getHomeOfficeReferenceData(VALID_UAN, callback))
             .thenReturn(Collections.singletonList(idValue));
 
         try (MockedStatic<HandlerUtils> mockedStatic = Mockito.mockStatic(HandlerUtils.class, Mockito.CALLS_REAL_METHODS)) {
@@ -672,9 +675,9 @@ class HomeOfficeReferenceHandlerTest {
         when(callback.getPageId()).thenReturn("homeOfficeReferenceNumber");
 
         when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class))
-            .thenReturn(Optional.of(VALID_GWF));
+            .thenReturn(Optional.of(VALID_UAN));
 
-        when(referenceService.getHomeOfficeReferenceData(VALID_GWF, callback))
+        when(referenceService.getHomeOfficeReferenceData(VALID_UAN, callback))
             .thenThrow(new RuntimeException("Boom"));
 
         PreSubmitCallbackResponse<AsylumCase> response =
@@ -683,7 +686,7 @@ class HomeOfficeReferenceHandlerTest {
         assertEquals(1, response.getErrors().size());
         assertTrue(
             response.getErrors().contains(
-                HomeOfficeApiResponseStatusType.UNKNOWN.getUserFacingErrorText(VALID_GWF, false, false)
+                HomeOfficeApiResponseStatusType.UNKNOWN.getUserFacingErrorText(VALID_UAN, false, false)
             )
         );
     }
@@ -696,9 +699,9 @@ class HomeOfficeReferenceHandlerTest {
         when(callback.getPageId()).thenReturn("homeOfficeReferenceNumber");
 
         when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class))
-            .thenReturn(Optional.of(VALID_GWF));
+            .thenReturn(Optional.of(VALID_UAN));
 
-        when(referenceService.getHomeOfficeReferenceData(VALID_GWF, callback))
+        when(referenceService.getHomeOfficeReferenceData(VALID_UAN, callback))
             .thenThrow(new RuntimeException("Boom"));
         when(asylumCase.read(IS_ADMIN, YesOrNo.class))
             .thenReturn(Optional.of(YesOrNo.YES));
@@ -708,7 +711,7 @@ class HomeOfficeReferenceHandlerTest {
         assertEquals(1, response.getErrors().size());
         assertTrue(
             response.getErrors().contains(
-                HomeOfficeApiResponseStatusType.UNKNOWN.getUserFacingErrorText(VALID_GWF, false, true)
+                HomeOfficeApiResponseStatusType.UNKNOWN.getUserFacingErrorText(VALID_UAN, false, true)
             )
         );
     }
@@ -720,16 +723,16 @@ class HomeOfficeReferenceHandlerTest {
         when(callback.getPageId()).thenReturn("cuiAppellantName");
 
         when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class))
-            .thenReturn(Optional.of(VALID_GWF));
+            .thenReturn(Optional.of(VALID_UAN));
 
-        when(referenceService.getHomeOfficeReferenceData(VALID_GWF, callback))
+        when(referenceService.getHomeOfficeReferenceData(VALID_UAN, callback))
             .thenThrow(new RuntimeException("Boom"));
 
         PreSubmitCallbackResponse<AsylumCase> response =
             handler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
 
         assertEquals(
-            HomeOfficeApiResponseStatusType.UNKNOWN.getUserFacingErrorText(VALID_GWF, false, false),
+            HomeOfficeApiResponseStatusType.UNKNOWN.getUserFacingErrorText(VALID_UAN, false, false),
             response.getErrors().iterator().next()
         );
     }
@@ -741,17 +744,17 @@ class HomeOfficeReferenceHandlerTest {
         when(callback.getPageId()).thenReturn("cuiAppellantName");
 
         when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class))
-            .thenReturn(Optional.of(VALID_GWF));
+            .thenReturn(Optional.of(VALID_UAN));
         when(asylumCase.read(IS_ADMIN, YesOrNo.class))
             .thenReturn(Optional.of(YesOrNo.YES));
-        when(referenceService.getHomeOfficeReferenceData(VALID_GWF, callback))
+        when(referenceService.getHomeOfficeReferenceData(VALID_UAN, callback))
             .thenThrow(new RuntimeException("Boom"));
 
         PreSubmitCallbackResponse<AsylumCase> response =
             handler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
 
         assertEquals(
-            HomeOfficeApiResponseStatusType.UNKNOWN.getUserFacingErrorText(VALID_GWF, false, true),
+            HomeOfficeApiResponseStatusType.UNKNOWN.getUserFacingErrorText(VALID_UAN, false, true),
             response.getErrors().iterator().next()
         );
     }
@@ -763,9 +766,9 @@ class HomeOfficeReferenceHandlerTest {
         when(callback.getPageId()).thenReturn("cuiAppellantDob");
 
         when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class))
-            .thenReturn(Optional.of(VALID_GWF));
+            .thenReturn(Optional.of(VALID_UAN));
 
-        when(referenceService.getHomeOfficeReferenceData(VALID_GWF, callback))
+        when(referenceService.getHomeOfficeReferenceData(VALID_UAN, callback))
             .thenThrow(new RuntimeException("Boom"));
 
         PreSubmitCallbackResponse<AsylumCase> response =
@@ -775,7 +778,7 @@ class HomeOfficeReferenceHandlerTest {
 
         assertTrue(
             response.getErrors()
-                .contains(HomeOfficeApiResponseStatusType.UNKNOWN.getUserFacingErrorText(VALID_GWF, false, false))
+                .contains(HomeOfficeApiResponseStatusType.UNKNOWN.getUserFacingErrorText(VALID_UAN, false, false))
         );
     }
 
@@ -788,9 +791,9 @@ class HomeOfficeReferenceHandlerTest {
         when(asylumCase.read(IS_ADMIN, YesOrNo.class))
             .thenReturn(Optional.of(YesOrNo.YES));
         when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class))
-            .thenReturn(Optional.of(VALID_GWF));
+            .thenReturn(Optional.of(VALID_UAN));
 
-        when(referenceService.getHomeOfficeReferenceData(VALID_GWF, callback))
+        when(referenceService.getHomeOfficeReferenceData(VALID_UAN, callback))
             .thenThrow(new RuntimeException("Boom"));
 
         PreSubmitCallbackResponse<AsylumCase> response =
@@ -800,8 +803,67 @@ class HomeOfficeReferenceHandlerTest {
 
         assertTrue(
             response.getErrors()
-                .contains(HomeOfficeApiResponseStatusType.UNKNOWN.getUserFacingErrorText(VALID_GWF, false, true))
+                .contains(HomeOfficeApiResponseStatusType.UNKNOWN.getUserFacingErrorText(VALID_UAN, false, true))
         );
     }
 
+    @Test
+    void handle_should_throw_error_for_gwf_in_uk() {
+        when(callback.getEvent()).thenReturn(Event.START_APPEAL);
+        when(callback.getPageId()).thenReturn("cuiGwfReferenceNumber");
+        when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class))
+            .thenReturn(Optional.of("GWF123456789"));
+        when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class))
+            .thenReturn(Optional.of(YesOrNo.YES));
+
+        PreSubmitCallbackResponse<AsylumCase> response =
+            handler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+
+        assertEquals(1, response.getErrors().size());
+
+        assertTrue(response.getErrors().contains(GWF_IN_UK_ERROR));
+    }
+
+    @Test
+    void handle_should_return_early_for_gwf_ooc_and_gwf_validation_not_enabled() {
+        when(callback.getEvent()).thenReturn(Event.START_APPEAL);
+        when(callback.getPageId()).thenReturn("cuiGwfReferenceNumber");
+        when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class))
+            .thenReturn(Optional.of("GWF123456789"));
+        when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class))
+            .thenReturn(Optional.of(YesOrNo.YES));
+
+        handler = new HomeOfficeReferenceHandler(referenceService, false);
+
+        try (MockedStatic<HandlerUtils> mockedStatic = Mockito.mockStatic(HandlerUtils.class, Mockito.CALLS_REAL_METHODS)) {
+
+            handler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+
+            mockedStatic.verify(() -> HandlerUtils.removeValidationFields(asylumCase), never());
+            mockedStatic.verify(() -> HandlerUtils.validateNameAndDateOfBirth(eq(callback), eq(asylumCase), eq("GWF123456789"), eq(true), any(HomeOfficeReferenceService.class)), never());
+            mockedStatic.verify(() -> HandlerUtils.validateHomeOfficeReference(any(), any(), any(), any()), never());
+            mockedStatic.verify(() -> HandlerUtils.validateName(any(), any(), any(), any()), never());
+        }
+    }
+
+    @Test
+    void handle_should_not_return_early_for_gwf_ooc_and_gwf_validation_enabled() {
+        when(callback.getEvent()).thenReturn(Event.START_APPEAL);
+        when(callback.getPageId()).thenReturn("cuiGwfReferenceNumber");
+        when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class))
+            .thenReturn(Optional.of("GWF123456789"));
+        when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class))
+            .thenReturn(Optional.of(YesOrNo.NO));
+
+        when(referenceService.getHomeOfficeReferenceData(VALID_UAN, callback))
+            .thenReturn(Collections.singletonList(idValue));
+
+        try (MockedStatic<HandlerUtils> mockedStatic = Mockito.mockStatic(HandlerUtils.class, Mockito.CALLS_REAL_METHODS)) {
+
+            handler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+
+            mockedStatic.verify(() -> HandlerUtils.removeValidationFields(asylumCase));
+            mockedStatic.verify(() -> HandlerUtils.validateHomeOfficeReference(any(), any(), any(), any()));
+        }
+    }
 }
