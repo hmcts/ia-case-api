@@ -155,8 +155,9 @@ public class RecordAdjournmentDetailsMidEventHandlerTest {
     @Test
     void should_populate_next_hearing_length() {
 
-        HoursMinutes listingLength = new HoursMinutes(1, 0);
-        when(asylumCase.read(LISTING_LENGTH, HoursMinutes.class)).thenReturn(Optional.of(listingLength));
+        when(asylumCase.read(LISTING_LENGTH, HoursMinutes.class)).thenReturn(Optional.of(
+            new HoursMinutes(1,0)
+        ));
 
         when(callback.getPageId()).thenReturn(INITIALIZE_FIELDS_PAGE_ID);
 
@@ -165,7 +166,7 @@ public class RecordAdjournmentDetailsMidEventHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(asylumCase, times(1)).write(NEXT_HEARING_DURATION, listingLength);
+        verify(asylumCase, times(1)).write(NEXT_HEARING_DURATION, "60");
     }
 
     @Test

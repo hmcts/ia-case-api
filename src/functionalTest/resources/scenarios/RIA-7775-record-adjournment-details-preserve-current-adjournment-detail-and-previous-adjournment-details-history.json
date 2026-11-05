@@ -41,10 +41,7 @@
           "currentAdjournmentDetail": {
             "nextHearingDate": "FirstAvailableDate",
             "nextHearingFormat": "Video",
-            "nextHearingDuration": {
-              "hours": 4,
-              "minutes": 30
-            },
+            "nextHearingDuration": "270",
             "nextHearingVenue": "yarlsWood",
             "nextHearingDateFixed": "",
             "relistCaseImmediately": "Yes",
@@ -102,10 +99,7 @@
         "currentAdjournmentDetail": {
           "nextHearingDate": "ChooseADateRange",
           "nextHearingFormat": "Not in Attendance",
-          "nextHearingDuration": {
-            "hours": 2,
-            "minutes": 0
-          },
+          "nextHearingDuration": "120",
           "nextHearingVenue": "newcastle",
           "nextHearingDateFixed": "",
           "relistCaseImmediately": "Yes",
@@ -127,10 +121,7 @@
             "value": {
               "nextHearingDate": "FirstAvailableDate",
               "nextHearingFormat": "Video",
-              "nextHearingDuration": {
-                "hours": 4,
-                "minutes": 30
-              },
+              "nextHearingDuration": "270",
               "nextHearingVenue": "yarlsWood",
               "nextHearingDateFixed": "",
               "relistCaseImmediately": "Yes",

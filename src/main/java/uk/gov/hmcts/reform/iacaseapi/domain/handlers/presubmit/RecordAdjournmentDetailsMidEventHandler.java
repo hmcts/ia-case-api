@@ -98,7 +98,8 @@ public class RecordAdjournmentDetailsMidEventHandler implements PreSubmitCallbac
     private void prePopulateNextHearingDuration(AsylumCase asylumCase) {
 
         asylumCase.read(LISTING_LENGTH, HoursMinutes.class)
-            .ifPresent(listingLength -> asylumCase.write(NEXT_HEARING_DURATION, listingLength));
+            .ifPresent(listingLength -> asylumCase.write(NEXT_HEARING_DURATION,
+                String.valueOf(listingLength.convertToIntegerMinutes())));
     }
 
     private AsylumCase prePopulateHearingVenue(Callback<AsylumCase> callback) {
