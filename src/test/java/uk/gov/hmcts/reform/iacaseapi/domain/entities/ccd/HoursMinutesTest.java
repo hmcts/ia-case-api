@@ -2,6 +2,8 @@ package uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -88,5 +90,25 @@ public class HoursMinutesTest {
         HoursMinutes result = mapper.readValue(json, HoursMinutes.class);
 
         assertNull(result);
+    }
+
+    @Test
+    void should_deserialize_empty_string_as_null() throws Exception {
+        ObjectMapper mapper = new ObjectMapper();
+        String json = "\"\"";
+
+        HoursMinutes result = mapper.readValue(json, HoursMinutes.class);
+
+        assertNull(result);
+    }
+
+    @Test
+    void should_throw_exception_for_invalid_format() {
+        ObjectMapper mapper = new ObjectMapper();
+        String json = "[1, 2, 3]";
+
+        Exception exception = assertThrows(IllegalArgumentException.class,
+            () -> mapper.readValue(json, HoursMinutes.class));
+        assertTrue(exception.getMessage().contains("Cannot deserialize HoursMinutes"));
     }
 }
