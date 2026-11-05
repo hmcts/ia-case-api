@@ -207,7 +207,7 @@ project.ext {
 }
 
 jacoco {
-    toolVersion = "0.8.15"
+    toolVersion = "0.8.16"
 }
 
 jacocoTestReport {
@@ -289,7 +289,7 @@ dependencyManagement {
         // CVE-2026-33870
         // CVE-2026-33871
         // CVE-2025-67735 - from spring-boot-starter-data-redis@3.5.14
-        mavenBom "io.netty:netty-bom:4.2.19.Final"
+        mavenBom "io.netty:netty-bom:4.2.20.Final"
     }
 
     dependencies {
