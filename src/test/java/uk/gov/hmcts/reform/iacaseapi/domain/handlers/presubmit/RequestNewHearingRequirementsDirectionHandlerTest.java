@@ -133,7 +133,6 @@ class RequestNewHearingRequirementsDirectionHandlerTest {
         when(asylumCase.read(LIST_CASE_HEARING_DATE, String.class)).thenReturn(Optional.of(listCaseHearingDate));
         when(asylumCase.read(IS_INTEGRATED, YesOrNo.class)).thenReturn(Optional.of(isIntegrated));
         when(asylumCase.read(IS_DECISION_WITHOUT_HEARING, YesOrNo.class)).thenReturn(Optional.of(decisionWithoutHearingFlag));
-        when(asylumCase.read(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class)).thenReturn(Optional.of(NO));
 
         if (isIntegrated.equals(YES)) {
             when(asylumCase.read(LISTING_LENGTH, HoursMinutes.class)).thenReturn(Optional.of(new HoursMinutes(6, 0)));
@@ -201,7 +200,6 @@ class RequestNewHearingRequirementsDirectionHandlerTest {
         verify(asylumCase, times(1)).read(FINAL_DECISION_AND_REASONS_DOCUMENTS);
         verify(asylumCase, times(1)).write(PREVIOUS_HEARINGS, Collections.EMPTY_LIST);
         verify(asylumCase, times(1)).write(REHEARD_CASE_LISTED_WITHOUT_HEARING_REQUIREMENTS, NO);
-        verify(asylumCase, times(1)).read(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class);
         verify(asylumCase, times(1)).clear(STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED);
 
     }
