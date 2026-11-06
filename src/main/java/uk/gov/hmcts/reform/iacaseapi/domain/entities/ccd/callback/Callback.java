@@ -3,23 +3,23 @@ package uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback;
 import static java.util.Objects.requireNonNull;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import java.util.Optional;
 import uk.gov.hmcts.reform.iacaseapi.domain.RequiredFieldMissingException;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseData;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 
-@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class Callback<T extends CaseData> {
 
     @JsonProperty("event_id")
     private Event event;
 
+    @JsonProperty("case_details")
     private CaseDetails<T> caseDetails;
+    @JsonProperty("case_details_before")
     private Optional<CaseDetails<T>> caseDetailsBefore = Optional.empty();
 
+    @JsonProperty("page_id")
     private String pageId = "";
 
     private Callback() {

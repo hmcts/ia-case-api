@@ -2,15 +2,12 @@ package uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import java.time.LocalDateTime;
 import java.util.Map;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import uk.gov.hmcts.reform.iacaseapi.domain.RequiredFieldMissingException;
 
-@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 @ToString
 @EqualsAndHashCode
 public class CaseDetails<T extends CaseData> {
@@ -18,8 +15,11 @@ public class CaseDetails<T extends CaseData> {
     private long id;
     private String jurisdiction;
     private State state;
+    @JsonProperty("case_data")
     private T caseData;
+    @JsonProperty("created_date")
     private LocalDateTime createdDate;
+    @JsonProperty("security_classification")
     private String securityClassification;
     @JsonProperty("supplementary_data")
     private Map<String, JsonNode> supplementaryData;

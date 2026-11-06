@@ -1,8 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -14,13 +13,14 @@ import lombok.NoArgsConstructor;
 @Getter
 @EqualsAndHashCode
 @JsonIgnoreProperties(ignoreUnknown = true)
-@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class SubmitEventDetails {
 
     private long id;
     private String jurisdiction;
     private State state;
     private Map<String, Object> data;
+    @JsonProperty("callback_response_status_code")
     private int callbackResponseStatusCode;
+    @JsonProperty("callback_response_status")
     private String callbackResponseStatus;
 }

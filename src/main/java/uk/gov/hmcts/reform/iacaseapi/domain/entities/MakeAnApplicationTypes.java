@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 import java.util.Arrays;
@@ -27,6 +28,7 @@ public enum MakeAnApplicationTypes {
     @JsonValue
     private final String value;
 
+    @JsonCreator
     MakeAnApplicationTypes(String value) {
         this.value = value;
     }

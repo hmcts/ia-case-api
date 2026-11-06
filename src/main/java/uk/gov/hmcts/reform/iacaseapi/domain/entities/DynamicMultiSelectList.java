@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.EqualsAndHashCode;
@@ -9,10 +8,10 @@ import lombok.ToString;
 
 @EqualsAndHashCode
 @ToString
-@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class DynamicMultiSelectList {
 
     private List<Value> value;
+    @JsonProperty("list_items")
     private List<Value> listItems;
 
     public DynamicMultiSelectList(List<String> values) {

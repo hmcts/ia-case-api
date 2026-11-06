@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonEnumDefaultValue;
 import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.List;
@@ -46,6 +47,7 @@ public enum UserRole {
     @JsonValue
     private final String id;
 
+    @JsonCreator
     UserRole(String id) {
         this.id = id;
     }

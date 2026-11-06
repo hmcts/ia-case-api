@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -32,6 +33,9 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.IdamService;
 class CaseWorkerServiceTest {
 
     private static WireMockServer server;
+
+    @MockitoBean
+    protected JwtDecoder jwtDecoder;
 
     @MockitoBean
     private IdamService idamService;

@@ -8,6 +8,11 @@ document_management.url: ${DM_URL:http://127.0.0.1:4506}
 
 spring.flyway.enabled: false
 
+logging.level:
+  root: info
+  org.springframework.web: debug
+  uk.gov.hmcts: debug
+
 idam:
   redirectUrl: ${IA_IDAM_REDIRECT_URI:http://localhost:3002/oauth2/callback}
   scope: "openid profile authorities acr roles create-user manage-user search-user"
@@ -17,9 +22,12 @@ feign:
     enabled: false
   client:
     config:
+      uk.gov.hmcts.reform.ccd.document.am.feign:
+        loggerLevel: full
       default:
         connectTimeout: 160000000
         readTimeout: 160000000
+        loggerLevel: full
 
 citizenEmail: ${TEST_CITIZEN_USERNAME:ia-citizen@fake.hmcts.net}
 

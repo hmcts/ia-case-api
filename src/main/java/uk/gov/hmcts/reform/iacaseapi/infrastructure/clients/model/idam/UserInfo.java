@@ -2,8 +2,6 @@ package uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.idam;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
@@ -16,7 +14,6 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @JsonIgnoreProperties(ignoreUnknown = true)
-@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class UserInfo implements Serializable {
 
     @Serial
@@ -27,6 +24,8 @@ public class UserInfo implements Serializable {
     @Setter
     private List<String> roles;
     private String name;
+    @JsonProperty("given_name")
     private String givenName;
+    @JsonProperty("family_name")
     private String familyName;
 }

@@ -19,15 +19,15 @@ import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
 @Configuration
+@SuppressWarnings("removal")
 public class JacksonConfiguration {
 
     @Bean
     @Primary
-    public Jackson2ObjectMapperBuilder jackson2ObjectMapperBuilder() {
-        return new Jackson2ObjectMapperBuilder()
+    public org.springframework.http.converter.json.Jackson2ObjectMapperBuilder jackson2ObjectMapperBuilder() {
+        return new org.springframework.http.converter.json.Jackson2ObjectMapperBuilder()
             .featuresToEnable(
                 READ_ENUMS_USING_TO_STRING,
                 READ_UNKNOWN_ENUM_VALUES_USING_DEFAULT_VALUE,
@@ -45,7 +45,7 @@ public class JacksonConfiguration {
 
     @Bean
     @Primary
-    public ObjectMapper objectMapper(Jackson2ObjectMapperBuilder builder) {
+    public ObjectMapper objectMapper(org.springframework.http.converter.json.Jackson2ObjectMapperBuilder builder) {
         ObjectMapper objectMapper = builder.createXmlMapper(false).build();
         objectMapper.registerModule(new ParameterNamesModule());
         objectMapper.registerModule(new Jdk8Module());

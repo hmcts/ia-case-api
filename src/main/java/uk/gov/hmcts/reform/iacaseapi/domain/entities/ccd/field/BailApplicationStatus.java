@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum BailApplicationStatus {
@@ -11,6 +12,7 @@ public enum BailApplicationStatus {
     @JsonValue
     private final String id;
 
+    @JsonCreator
     BailApplicationStatus(String id) {
         this.id = id;
     }
