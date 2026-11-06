@@ -395,6 +395,7 @@ security:
       - "joinAppealConfirmation"
       - "generatePinInPost"
       - "queryManagementRespondQuery"
+      - "confirmHOReviewMaintained"
     challenged-access-legal-operations:
       - "appellantInPersonManual"
       - "moveToPaymentPending"
@@ -595,6 +596,7 @@ security:
       - "joinAppealConfirmation"
       - "generatePinInPost"
       - "queryManagementRespondQuery"
+      - "confirmHOReviewMaintained"
     hearing-centre-admin:
       - "appellantInPersonManual"
       - "startAppeal"

@@ -550,7 +550,8 @@ class SendNotificationHandlerTest {
         Event.QUERY_MANAGEMENT_RESPOND_QUERY,
         Event.GENERATE_PIN_IN_POST,
         Event.SEND_LATE_TIMELINE_NOTICE,
-        Event.COMPLETE_CASE_REVIEW
+        Event.COMPLETE_CASE_REVIEW,
+        Event.CONFIRM_HO_REVIEW_MAINTAINED
     );
 
     private static final List<Event> allowedInternalEventTypes = List.of(
@@ -617,7 +618,8 @@ class SendNotificationHandlerTest {
         Event.CHANGE_DIRECTION_DUE_DATE,
         Event.SEND_LATE_TIMELINE_NOTICE,
         Event.COMPLETE_CASE_REVIEW,
-        Event.REVIEW_HEARING_REQUIREMENTS
+        Event.REVIEW_HEARING_REQUIREMENTS,
+        Event.CONFIRM_HO_REVIEW_MAINTAINED
     );
 
     private static Stream<Event> allowedEventsSource() {
