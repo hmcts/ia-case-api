@@ -14,10 +14,13 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isEjpCase;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isInternalCase;
 
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.RequiredFieldMissingException;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -28,7 +31,9 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCall
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PostSubmitCallbackHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.Scheduler;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CcdSupplementaryUpdater;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.TimedEvent;
 
 @Slf4j
 @Component
@@ -74,11 +79,21 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
     private static final String AGE_ASSESSMENT_APPEAL_INTERIM_LINK =
         "\n\nYou can now apply for [interim relief](#).";
 
-
     private final CcdSupplementaryUpdater ccdSupplementaryUpdater;
+    private final Scheduler scheduler;
+    private final DateProvider dateProvider;
+    private final int generateServiceRequestDelaySeconds;
 
-    public AppealSubmittedConfirmation(CcdSupplementaryUpdater ccdSupplementaryUpdater) {
+    public AppealSubmittedConfirmation(
+        CcdSupplementaryUpdater ccdSupplementaryUpdater,
+        Scheduler scheduler,
+        DateProvider dateProvider,
+        @Value("${generateServiceRequest.delaySeconds}") int generateServiceRequestDelaySeconds
+    ) {
         this.ccdSupplementaryUpdater = ccdSupplementaryUpdater;
+        this.scheduler = scheduler;
+        this.dateProvider = dateProvider;
+        this.generateServiceRequestDelaySeconds = generateServiceRequestDelaySeconds;
     }
 
     public boolean canHandle(
@@ -345,6 +360,8 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
                             : OUT_OF_TIME_DO_THIS_NEXT_LABEL + payForAppeal + REVIEW_LABEL
             );
         }
+
+        scheduleGenerateServiceRequest(callback.getCaseDetails().getId());
     }
 
     private void setWaysToPayLabelPaPayLater(PostSubmitCallbackResponse postSubmitCallbackResponse,
@@ -370,6 +387,7 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
             );
         }
 
+        scheduleGenerateServiceRequest(callback.getCaseDetails().getId());
     }
 
     private boolean isWaysToPay(boolean isHuOrEaOrPa, boolean isLegalRepJourney) {
@@ -383,5 +401,27 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
             return List.of(EA, HU, PA, EU).contains(appealType);
         }
         return false;
+    }
+
+    private void scheduleGenerateServiceRequest(long caseId) {
+        try {
+            scheduler.schedule(
+                new TimedEvent(
+                    "",
+                    Event.GENERATE_SERVICE_REQUEST,
+                    dateProvider.nowWithTime().plusSeconds(generateServiceRequestDelaySeconds)
+                        .atZone(ZoneId.systemDefault()),
+                    "IA",
+                    "Asylum",
+                    caseId
+                )
+            );
+            log.info("Scheduled {} for case ID {} with {} seconds delay",
+                Event.GENERATE_SERVICE_REQUEST,
+                caseId, generateServiceRequestDelaySeconds);
+        } catch (Exception e) {
+            log.error("Failed to schedule {} for case ID {}",
+                Event.GENERATE_SERVICE_REQUEST, caseId, e);
+        }
     }
 }
