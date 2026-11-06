@@ -66,7 +66,7 @@ public class EditDocsAboutToSubmitHandler implements PreSubmitCallbackHandler<As
             Optional<List<IdValue<DocumentWithMetadata>>> idValuesOptional = asylumCase.read(field);
             idValuesOptional.ifPresent(idValues -> {
                 List<IdValue<DocumentWithMetadata>> idValuesBefore = getIdValuesBefore(asylumCaseBefore, field);
-                asylumCase.write(field, getIdValuesWithBeforeDocumentTags(idValues, idValuesBefore));
+                asylumCase.write(field, getIdValuesWithBeforeDocumentTags(idValues, idValuesBefore, field));
             });
         });
     }
@@ -103,10 +103,12 @@ public class EditDocsAboutToSubmitHandler implements PreSubmitCallbackHandler<As
     }
 
     private List<IdValue<DocumentWithMetadata>> getIdValuesWithBeforeDocumentTags(
-        List<IdValue<DocumentWithMetadata>> idValues, List<IdValue<DocumentWithMetadata>> idValuesBefore) {
+        List<IdValue<DocumentWithMetadata>> idValues,
+        List<IdValue<DocumentWithMetadata>> idValuesBefore,
+        AsylumCaseFieldDefinition field) {
         List<IdValue<DocumentWithMetadata>> idValuesWithBeforeTag = new ArrayList<>();
         idValues.forEach(idValue -> {
-            DocumentWithMetadata docWithBeforeTags = buildDocWithBeforeTags(idValuesBefore, idValue);
+            DocumentWithMetadata docWithBeforeTags = buildDocWithBeforeTags(idValuesBefore, idValue, field);
             IdValue<DocumentWithMetadata> idValueWithBeforeTag = new IdValue<>(idValue.getId(), docWithBeforeTags);
             idValuesWithBeforeTag.add(idValueWithBeforeTag);
         });
@@ -114,26 +116,35 @@ public class EditDocsAboutToSubmitHandler implements PreSubmitCallbackHandler<As
     }
 
     private DocumentWithMetadata buildDocWithBeforeTags(List<IdValue<DocumentWithMetadata>> idValuesBefore,
-                                                        IdValue<DocumentWithMetadata> idValue) {
+                                                        IdValue<DocumentWithMetadata> idValue,
+                                                        AsylumCaseFieldDefinition field) {
         DocumentWithMetadata value = idValue.getValue();
-        DocumentTag beforeTagForGivenIdValue = getBeforeTagForGivenIdValue(idValue.getId(), idValuesBefore);
+        DocumentTag beforeTagForGivenIdValue = getBeforeTagForGivenIdValue(idValue.getId(), idValuesBefore, field);
         return new DocumentWithMetadata(value.getDocument(),
             value.getDescription() == null ? "" : value.getDescription(), value.getDateUploaded(),
             beforeTagForGivenIdValue, value.getSuppliedBy());
     }
 
     private DocumentTag getBeforeTagForGivenIdValue(String idValueId,
-                                                    List<IdValue<DocumentWithMetadata>> fieldBeforeList) {
+                                                    List<IdValue<DocumentWithMetadata>> fieldBeforeList,
+                                                    AsylumCaseFieldDefinition field) {
         return fieldBeforeList.stream()
             .filter(beforeDoc -> beforeDoc.getId().equals(idValueId))
             .findFirst()
-            .orElse(getIdValueWithDefaultTag(idValueId)).getValue().getTag();
+            .orElse(getIdValueWithDefaultTag(idValueId, field)).getValue().getTag();
     }
 
-    private IdValue<DocumentWithMetadata> getIdValueWithDefaultTag(String idValueId) {
-        DocumentWithMetadata docMeta = new DocumentWithMetadata(null, null, null,
-            DocumentTag.NONE);
+    private IdValue<DocumentWithMetadata> getIdValueWithDefaultTag(String idValueId, AsylumCaseFieldDefinition field) {
+        DocumentTag defaultTag = getDefaultTagForField(field);
+        DocumentWithMetadata docMeta = new DocumentWithMetadata(null, null, null, defaultTag);
         return new IdValue<>(idValueId, docMeta);
+    }
+
+    private DocumentTag getDefaultTagForField(AsylumCaseFieldDefinition field) {
+        if (field == ADDENDUM_EVIDENCE_DOCUMENTS) {
+            return DocumentTag.ADDENDUM_EVIDENCE;
+        }
+        return DocumentTag.NONE;
     }
 
     private void updateEjpDocumentFields(AsylumCase asylumCase) {

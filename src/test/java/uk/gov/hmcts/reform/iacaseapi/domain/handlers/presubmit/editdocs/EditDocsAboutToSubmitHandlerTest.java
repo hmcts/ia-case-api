@@ -22,6 +22,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.TRIBUNAL_DOCUMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPLOAD_EJP_APPEAL_FORM_DOCS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UT_TRANSFER_DOC;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag.ADDENDUM_EVIDENCE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag.ADDITIONAL_EVIDENCE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag.APPEAL_FORM;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag.NONE;
@@ -277,7 +278,7 @@ class EditDocsAboutToSubmitHandlerTest {
             new Object[] {asylumCaseWithLegalRepsDoc, asylumCaseBefore, LEGAL_REPRESENTATIVE_DOCUMENTS,
                 expectedSuppliedBy, DocumentTag.NONE},
             new Object[] {asylumCaseWithAddEndUmDoc, asylumCaseBefore, ADDENDUM_EVIDENCE_DOCUMENTS,
-                expectedSuppliedBy, DocumentTag.NONE},
+                expectedSuppliedBy, ADDENDUM_EVIDENCE},
             new Object[] {asylumCaseWithRespondentDoc, asylumCaseBefore, RESPONDENT_DOCUMENTS,
                 expectedSuppliedBy, DocumentTag.NONE},
             new Object[] {asylumCaseWithDraftDecisionAndReasonsDoc, asylumCaseBefore,
