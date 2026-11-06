@@ -21,10 +21,13 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMITTAL_DOCUMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMITTED_ADDITIONAL_INSTRUCTIONS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SOURCE_OF_REMITTAL;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STF_24W_CURRENT_STATUS_AUTO_GENERATED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPLOAD_OTHER_REMITTAL_DOCS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPLOAD_REMITTAL_DECISION_DOC;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.MARK_APPEAL_AS_REMITTED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.MarkAppealAsRemittedUploadDecisionHandler.STF24W_REMOVAL_REASON;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -54,6 +57,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.statutorytimeframe24weeks.UpdateStatutoryTimeframe24WeeksService;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.Appender;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -102,11 +107,19 @@ class MarkAppealAsRemittedUploadDecisionHandlerTest {
     private List<IdValue<RemittalDocument>> remittalDocuments;
     @Mock
     private Appender<RemittalDocument> remittalDocumentsAppender;
+    @Mock
+    private UpdateStatutoryTimeframe24WeeksService updateStatutoryTimeframe24WeeksService;
 
     @BeforeEach
     public void setUp() {
 
-        markAppealAsRemittedUploadDecisionHandler = new MarkAppealAsRemittedUploadDecisionHandler(caseNoteAppender, dateProvider, remittalDocumentsAppender);
+        markAppealAsRemittedUploadDecisionHandler = new MarkAppealAsRemittedUploadDecisionHandler(
+            caseNoteAppender,
+            dateProvider,
+            remittalDocumentsAppender,
+            updateStatutoryTimeframe24WeeksService
+        );
+
         when(callback.getEvent()).thenReturn(MARK_APPEAL_AS_REMITTED);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -177,6 +190,46 @@ class MarkAppealAsRemittedUploadDecisionHandlerTest {
         assertThat(capturedCaseNote.getDateAdded()).isEqualTo(now.toString());
 
         verify(asylumCase, times(1)).write(CASE_NOTES, allAppendedCaseNotes);
+    }
+
+    @Test
+    void should_update_stf24w_with_NO() {
+
+        when(asylumCase.read(UPLOAD_REMITTAL_DECISION_DOC, Document.class))
+            .thenReturn(Optional.of(remittalDocument));
+        when(asylumCase.read(COURT_REFERENCE_NUMBER, String.class))
+            .thenReturn(Optional.of(courtRefNumber));
+        when(asylumCase.read(SOURCE_OF_REMITTAL, SourceOfRemittal.class))
+            .thenReturn(Optional.of(SourceOfRemittal.UPPER_TRIBUNAL));
+        when(dateProvider.now()).thenReturn(now);
+        when(asylumCase.read(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class)).thenReturn(Optional.of(YES));
+
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            markAppealAsRemittedUploadDecisionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        verify(updateStatutoryTimeframe24WeeksService).updateAsylumCase(asylumCase, NO, STF24W_REMOVAL_REASON);
+    }
+
+    @Test
+    void should_not_update_stf24w_with_NO() {
+
+        when(asylumCase.read(UPLOAD_REMITTAL_DECISION_DOC, Document.class))
+            .thenReturn(Optional.of(remittalDocument));
+        when(asylumCase.read(COURT_REFERENCE_NUMBER, String.class))
+            .thenReturn(Optional.of(courtRefNumber));
+        when(asylumCase.read(SOURCE_OF_REMITTAL, SourceOfRemittal.class))
+            .thenReturn(Optional.of(SourceOfRemittal.UPPER_TRIBUNAL));
+        when(dateProvider.now()).thenReturn(now);
+        when(asylumCase.read(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class)).thenReturn(Optional.of(NO));
+
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            markAppealAsRemittedUploadDecisionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        verify(updateStatutoryTimeframe24WeeksService, times(0)).updateAsylumCase(asylumCase, NO, STF24W_REMOVAL_REASON);
     }
 
     @Test
