@@ -2323,7 +2323,7 @@ public enum AsylumCaseFieldDefinition {
         "nextHearingVenue", new TypeReference<DynamicList>(){}),
 
     NEXT_HEARING_DURATION(
-        "nextHearingDuration", new TypeReference<String>(){}),
+        "nextHearingDuration", new TypeReference<HoursMinutes>(){}),
 
     HEARING_ADJOURNMENT_DECISION_PARTY(
         "hearingAdjournmentDecisionParty", new TypeReference<String>(){}),

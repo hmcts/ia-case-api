@@ -195,7 +195,10 @@
               "listCaseHearingDate": "2020-10-28T10:30:00.000",
               "ariaListingReference": "LP/12345/2019",
               "listCaseHearingCentre": "taylorHouse",
-              "listCaseHearingLength": "360",
+              "listCaseHearingLength": {
+                "hours": 6,
+                "minutes": 0
+              },
               "actualCaseHearingLength": {
                 "hours": "2",
                 "minutes": "30"
