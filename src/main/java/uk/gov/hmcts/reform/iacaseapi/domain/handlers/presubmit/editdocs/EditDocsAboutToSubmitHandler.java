@@ -141,10 +141,16 @@ public class EditDocsAboutToSubmitHandler implements PreSubmitCallbackHandler<As
     }
 
     private DocumentTag getDefaultTagForField(AsylumCaseFieldDefinition field) {
-        if (field == ADDENDUM_EVIDENCE_DOCUMENTS) {
-            return DocumentTag.ADDENDUM_EVIDENCE;
+        switch (field) {
+            case ADDENDUM_EVIDENCE_DOCUMENTS:
+                return DocumentTag.ADDENDUM_EVIDENCE;
+            case FTPA_APPELLANT_DOCUMENTS:
+                return DocumentTag.FTPA_APPELLANT;
+            case DRAFT_DECISION_AND_REASONS_DOCUMENTS:
+                return DocumentTag.DECISION_AND_REASONS_DRAFT;
+            default:
+                return DocumentTag.NONE;
         }
-        return DocumentTag.NONE;
     }
 
     private void updateEjpDocumentFields(AsylumCase asylumCase) {

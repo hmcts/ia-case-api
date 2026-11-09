@@ -15,6 +15,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ADDITIONAL_EVIDENCE_DOCUMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DRAFT_DECISION_AND_REASONS_DOCUMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FINAL_DECISION_AND_REASONS_DOCUMENTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_APPELLANT_DOCUMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_DOCUMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LEGAL_REPRESENTATIVE_DOCUMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REHEARD_HEARING_DOCUMENTS;
@@ -25,6 +26,8 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag.ADDENDUM_EVIDENCE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag.ADDITIONAL_EVIDENCE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag.APPEAL_FORM;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag.DECISION_AND_REASONS_DRAFT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag.FTPA_APPELLANT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag.NONE;
 
 import java.util.Collections;
@@ -263,6 +266,9 @@ class EditDocsAboutToSubmitHandlerTest {
         AsylumCase asylumCaseWithFinalDecisionAndReasonsDoc = buildAsylumCaseGivenParams(expectedSuppliedBy,
             DocumentTag.NONE, FINAL_DECISION_AND_REASONS_DOCUMENTS);
 
+        AsylumCase asylumCaseWithFtpaAppellantDoc = buildAsylumCaseGivenParams(expectedSuppliedBy,
+            DocumentTag.NONE, FTPA_APPELLANT_DOCUMENTS);
+
         AsylumCase asylumCaseBefore = new AsylumCase();
 
         return new Object[] {
@@ -282,9 +288,11 @@ class EditDocsAboutToSubmitHandlerTest {
             new Object[] {asylumCaseWithRespondentDoc, asylumCaseBefore, RESPONDENT_DOCUMENTS,
                 expectedSuppliedBy, DocumentTag.NONE},
             new Object[] {asylumCaseWithDraftDecisionAndReasonsDoc, asylumCaseBefore,
-                DRAFT_DECISION_AND_REASONS_DOCUMENTS, expectedSuppliedBy, DocumentTag.NONE},
+                DRAFT_DECISION_AND_REASONS_DOCUMENTS, expectedSuppliedBy, DECISION_AND_REASONS_DRAFT},
             new Object[] {asylumCaseWithFinalDecisionAndReasonsDoc, asylumCaseBefore,
-                FINAL_DECISION_AND_REASONS_DOCUMENTS, expectedSuppliedBy, DocumentTag.NONE}
+                FINAL_DECISION_AND_REASONS_DOCUMENTS, expectedSuppliedBy, DocumentTag.NONE},
+            new Object[] {asylumCaseWithFtpaAppellantDoc, asylumCaseBefore,
+                FTPA_APPELLANT_DOCUMENTS, expectedSuppliedBy, FTPA_APPELLANT}
         };
     }
 
