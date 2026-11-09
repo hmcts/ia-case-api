@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
 import static java.util.Objects.requireNonNull;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.util.List;
 import lombok.EqualsAndHashCode;
@@ -23,6 +24,7 @@ public class Direction {
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private List<IdValue<ClarifyingQuestion>> clarifyingQuestions;
 
+    @JsonCreator
     private Direction() {
         // noop -- for deserializer
     }
