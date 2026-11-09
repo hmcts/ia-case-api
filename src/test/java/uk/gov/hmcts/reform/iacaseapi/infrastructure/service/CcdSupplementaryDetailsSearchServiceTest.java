@@ -117,5 +117,6 @@ class CcdSupplementaryDetailsSearchServiceTest {
 
     private Map<String, Object> getQueryMapFromString(String query) {
         return new JsonMapper()
-            .readValue(searchSourceBuilder.toString(), new TypeReference<>() {});    }
+            .readValue(query, new TypeReference<>() {});
+    }
 }
