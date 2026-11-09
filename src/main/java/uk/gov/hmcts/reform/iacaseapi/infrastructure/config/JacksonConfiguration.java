@@ -35,8 +35,9 @@ public class JacksonConfiguration {
                 FAIL_ON_UNKNOWN_PROPERTIES,
                 FAIL_ON_IGNORED_PROPERTIES)
             .disable(FAIL_ON_EMPTY_BEANS)
-            .changeDefaultPropertyInclusion(
-                incl -> incl.withValueInclusion(JsonInclude.Include.NON_NULL))
+            .changeDefaultPropertyInclusion(incl -> incl
+                .withValueInclusion(JsonInclude.Include.NON_NULL)
+                .withContentInclusion(JsonInclude.Include.NON_NULL))
             .build();
     }
 }
