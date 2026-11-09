@@ -320,7 +320,8 @@ class IdamServiceTest {
 
     @Test
     void get_user_by_id_should_return_user_when_response_is_successful() {
-        ResponseEntity<List<User>> response = new ResponseEntity<>(List.of(user), HttpStatus.OK);
+        ResponseEntity<List<User>> response =
+            ResponseEntity.status(HttpStatus.OK).body(List.of(user));
 
         when(idamApi.token(anyMap()))
             .thenReturn(new Token("token", "scope"));
@@ -333,7 +334,8 @@ class IdamServiceTest {
 
     @Test
     void get_user_by_id_should_return_null_when_response_status_is_not_2xx() {
-        ResponseEntity<List<User>> response = new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        ResponseEntity<List<User>> response =
+            ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
 
         when(idamApi.token(anyMap()))
             .thenReturn(new Token("token", "scope"));
@@ -346,7 +348,8 @@ class IdamServiceTest {
 
     @Test
     void get_user_by_id_should_return_null_when_response_body_is_null() {
-        ResponseEntity<List<User>> response = new ResponseEntity<>(null, HttpStatus.OK);
+        ResponseEntity<List<User>> response =
+            ResponseEntity.status(HttpStatus.OK).build();
 
         when(idamApi.token(anyMap()))
             .thenReturn(new Token("token", "scope"));
@@ -360,7 +363,8 @@ class IdamServiceTest {
 
     @Test
     void get_user_by_id_should_return_null_when_response_body_is_empty() {
-        ResponseEntity<List<User>> response = new ResponseEntity<>(Collections.emptyList(), HttpStatus.OK);
+        ResponseEntity<List<User>> response =
+            ResponseEntity.status(HttpStatus.OK).body(Collections.emptyList());
 
         when(idamApi.token(anyMap()))
             .thenReturn(new Token("token", "scope"));
@@ -374,7 +378,7 @@ class IdamServiceTest {
 
     @Test
     void get_user_by_email_should_return_user_when_response_is_successful() {
-        ResponseEntity<List<User>> response = new ResponseEntity<>(List.of(user), HttpStatus.OK);
+        ResponseEntity<List<User>> response = ResponseEntity.ok(List.of(user));
 
         when(idamApi.token(anyMap()))
             .thenReturn(new Token("token", "scope"));
@@ -387,7 +391,8 @@ class IdamServiceTest {
 
     @Test
     void get_user_by_email_should_return_null_when_response_status_is_not_2xx() {
-        ResponseEntity<List<User>> response = new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        ResponseEntity<List<User>> response =
+            ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
 
         when(idamApi.token(anyMap()))
             .thenReturn(new Token("token", "scope"));
@@ -400,7 +405,8 @@ class IdamServiceTest {
 
     @Test
     void get_user_by_email_should_return_null_when_response_body_is_null() {
-        ResponseEntity<List<User>> response = new ResponseEntity<>(null, HttpStatus.OK);
+        ResponseEntity<List<User>> response =
+            ResponseEntity.status(HttpStatus.OK).build();
 
         when(idamApi.token(anyMap()))
             .thenReturn(new Token("token", "scope"));
@@ -413,7 +419,8 @@ class IdamServiceTest {
 
     @Test
     void get_user_by_email_should_return_null_when_response_body_is_empty() {
-        ResponseEntity<List<User>> response = new ResponseEntity<>(Collections.emptyList(), HttpStatus.OK);
+        ResponseEntity<List<User>> response =
+            ResponseEntity.status(HttpStatus.OK).body(Collections.emptyList());
 
         when(idamApi.token(anyMap()))
             .thenReturn(new Token("token", "scope"));

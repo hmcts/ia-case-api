@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -109,8 +110,9 @@ public class AppealSubmittedNotifyHomeOfficeHandler implements PreSubmitCallback
         // we need to deserialise the list of newly validated Home Office appellants from the serialised string and
         // write it back to the case record
         // We need the mapper and mix-in to overcome a CCD bug concerning collections during the mid-event (see comments below).
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.addMixIn(IdValue.class, IdValueMixin.class);
+        ObjectMapper mapper = JsonMapper.builder()
+            .addMixIn(IdValue.class, IdValueMixin.class)
+            .build();
         String encodedStr = asylumCase.read(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, String.class)
             .orElse("");
         List<IdValue<HomeOfficeAppellant>> homeOfficeAppellants = deserialiseHomeOfficeAppellantList(encodedStr,

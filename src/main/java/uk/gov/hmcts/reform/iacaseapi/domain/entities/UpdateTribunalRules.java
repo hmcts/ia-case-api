@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum UpdateTribunalRules {
@@ -10,6 +11,7 @@ public enum UpdateTribunalRules {
     @JsonValue
     private final String value;
 
+    @JsonCreator
     UpdateTribunalRules(String value) {
         this.value = value;
     }
