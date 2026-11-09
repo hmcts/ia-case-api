@@ -4,8 +4,6 @@ import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_REFERENCE_NUMBER;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_FAMILY_NAME;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_DECISION_AND_REASONS_DOC_UPLOAD;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_DECISION_UPDATED_CONFIRMATION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPDATE_FTPA_DECISION_AND_REASONS_FINAL_CHECK;
 
 import java.util.Optional;
 import org.springframework.stereotype.Component;
@@ -15,17 +13,23 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.CurrentFtpaDecisionResolver;
 
 @Component
 public class EditFtpaDecisionMidEvent implements PreSubmitCallbackHandler<AsylumCase> {
 
+    private final CurrentFtpaDecisionResolver currentFtpaDecisionResolver;
     static final String DOCUMENT_UPLOAD_PAGE_ID = "ftpaDecisionAndReasonsDocumentUploadPage";
-    static final String DECISION_UPDATED = "ftpaDecisionUpdated";
     static final String NOTHING_CHANGED_ERROR =
         "You must change the decision or Decision and Reasons document to continue";
     static final String NOT_PDF_ERROR = "The Decision and Reasons document must be a PDF file";
+
+    public EditFtpaDecisionMidEvent(
+            CurrentFtpaDecisionResolver currentFtpaDecisionResolver
+    ) {
+        this.currentFtpaDecisionResolver = currentFtpaDecisionResolver;
+    }
 
     public boolean canHandle(
         PreSubmitCallbackStage callbackStage,
@@ -47,25 +51,16 @@ public class EditFtpaDecisionMidEvent implements PreSubmitCallbackHandler<Asylum
             throw new IllegalStateException("Cannot handle callback");
         }
 
-        AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
+        final AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
         PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
 
-        boolean decisionChanged = asylumCase
-            .read(FTPA_DECISION_UPDATED_CONFIRMATION, String.class)
-            .map(DECISION_UPDATED::equals)
-            .orElse(false);
-
-        boolean documentUploaded = asylumCase
-            .read(UPDATE_FTPA_DECISION_AND_REASONS_FINAL_CHECK, YesOrNo.class)
-            .map(answer -> answer == YesOrNo.YES)
-            .orElse(false);
-
-        if (!decisionChanged && !documentUploaded) {
+        if (!(currentFtpaDecisionResolver.isDecisionChanged(asylumCase)) &&
+                !(currentFtpaDecisionResolver.isDocumentUploaded(asylumCase))) {
             response.addError(NOTHING_CHANGED_ERROR);
             return response;
         }
 
-        if (documentUploaded) {
+        if (currentFtpaDecisionResolver.isDocumentUploaded(asylumCase)) {
             Optional<Document> uploadedDocument = asylumCase.read(FTPA_DECISION_AND_REASONS_DOC_UPLOAD, Document.class);
 
             if (uploadedDocument.isPresent()) {

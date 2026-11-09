@@ -265,8 +265,8 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
             Event.CMR_HEARING_CANCELLED,
             Event.REMOVE_STATUTORY_TIMEFRAME_24_WEEKS,
             Event.SEND_LATE_TIMELINE_NOTICE,
-            Event.COMPLETE_CASE_REVIEW,
-            Event.UPDATE_FTPA_DECISION
+            Event.COMPLETE_CASE_REVIEW
+        //  Event.UPDATE_FTPA_DECISION
 
         );
 

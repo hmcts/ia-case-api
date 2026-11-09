@@ -617,8 +617,8 @@ class SendNotificationHandlerTest {
         Event.CHANGE_DIRECTION_DUE_DATE,
         Event.SEND_LATE_TIMELINE_NOTICE,
         Event.COMPLETE_CASE_REVIEW,
-        Event.REVIEW_HEARING_REQUIREMENTS,
-        Event.UPDATE_FTPA_DECISION
+        Event.REVIEW_HEARING_REQUIREMENTS
+        //Event.UPDATE_FTPA_DECISION
     );
 
     private static Stream<Event> allowedEventsSource() {

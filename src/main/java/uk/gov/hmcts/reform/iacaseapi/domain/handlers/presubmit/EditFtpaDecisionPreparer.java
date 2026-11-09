@@ -1,13 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_DECISION_AND_REASONS_DOC_UPLOAD;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_DECISION_UPDATED_CONFIRMATION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SUMMARISE_FTPA_DECISION_AND_REASONS_DOCUMENT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPDATE_FTPA_CURRENT_DECISION_TEXT;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPDATE_FTPA_DECISION_AND_REASONS_FINAL_CHECK;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPDATE_FTPA_DECISION_LIST;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPDATE_FTPA_DECISION_OUTCOME_TYPE;
 
 import java.util.Map;
 import java.util.Optional;
@@ -73,19 +67,10 @@ public class EditFtpaDecisionPreparer implements PreSubmitCallbackHandler<Asylum
             return response;
         }
 
+        currentFtpaDecisionResolver.clearUpdateFtpaDecisionFields(asylumCase);
+
         asylumCase.write(UPDATE_FTPA_CURRENT_DECISION_TEXT, currentDecisionLabel.get());
 
-        clearAnswersFromPreviousRun(asylumCase);
-
         return response;
-    }
-
-    private void clearAnswersFromPreviousRun(AsylumCase asylumCase) {
-        asylumCase.clear(UPDATE_FTPA_DECISION_LIST);
-        asylumCase.clear(FTPA_DECISION_UPDATED_CONFIRMATION);
-        asylumCase.clear(UPDATE_FTPA_DECISION_OUTCOME_TYPE);
-        asylumCase.clear(UPDATE_FTPA_DECISION_AND_REASONS_FINAL_CHECK);
-        asylumCase.clear(FTPA_DECISION_AND_REASONS_DOC_UPLOAD);
-        asylumCase.clear(SUMMARISE_FTPA_DECISION_AND_REASONS_DOCUMENT);
     }
 }
