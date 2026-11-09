@@ -146,8 +146,6 @@ public class EditDocsAboutToSubmitHandler implements PreSubmitCallbackHandler<As
                 return DocumentTag.ADDENDUM_EVIDENCE;
             case FTPA_APPELLANT_DOCUMENTS:
                 return DocumentTag.FTPA_APPELLANT;
-            case DRAFT_DECISION_AND_REASONS_DOCUMENTS:
-                return DocumentTag.DECISION_AND_REASONS_DRAFT;
             default:
                 return DocumentTag.NONE;
         }

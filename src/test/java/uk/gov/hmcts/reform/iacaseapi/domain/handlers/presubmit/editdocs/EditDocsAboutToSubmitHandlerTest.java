@@ -26,7 +26,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag.ADDENDUM_EVIDENCE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag.ADDITIONAL_EVIDENCE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag.APPEAL_FORM;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag.DECISION_AND_REASONS_DRAFT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag.FTPA_APPELLANT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag.NONE;
 
@@ -288,7 +287,7 @@ class EditDocsAboutToSubmitHandlerTest {
             new Object[] {asylumCaseWithRespondentDoc, asylumCaseBefore, RESPONDENT_DOCUMENTS,
                 expectedSuppliedBy, DocumentTag.NONE},
             new Object[] {asylumCaseWithDraftDecisionAndReasonsDoc, asylumCaseBefore,
-                DRAFT_DECISION_AND_REASONS_DOCUMENTS, expectedSuppliedBy, DECISION_AND_REASONS_DRAFT},
+                DRAFT_DECISION_AND_REASONS_DOCUMENTS, expectedSuppliedBy, DocumentTag.NONE},
             new Object[] {asylumCaseWithFinalDecisionAndReasonsDoc, asylumCaseBefore,
                 FINAL_DECISION_AND_REASONS_DOCUMENTS, expectedSuppliedBy, DocumentTag.NONE},
             new Object[] {asylumCaseWithFtpaAppellantDoc, asylumCaseBefore,
