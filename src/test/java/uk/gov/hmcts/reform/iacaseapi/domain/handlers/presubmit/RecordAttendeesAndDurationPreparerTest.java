@@ -22,7 +22,8 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ATTENDEES_AND_DURATION_HEARING_START_TIME;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ATTENDEES_AND_DURATION_PAPER_HEARING;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ATTENDEES_AND_DURATION_PAUSED_TIME_REQUIRED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ATTENDEES_AND_DURATION_PAUSES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ATTENDEES_AND_DURATION_PAUSE_END;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ATTENDEES_AND_DURATION_PAUSE_START;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.AUTO_HEARING_REQUEST_ENABLED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.RECORD_ATTENDEES_AND_DURATION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
@@ -119,7 +120,8 @@ class RecordAttendeesAndDurationPreparerTest {
             ATTENDEES_AND_DURATION_HEARING_START_TIME,
             ATTENDEES_AND_DURATION_HEARING_FINISH_TIME,
             ATTENDEES_AND_DURATION_PAUSED_TIME_REQUIRED,
-            ATTENDEES_AND_DURATION_PAUSES).forEach(field -> inOrder.verify(asylumCase).clear(field));
+            ATTENDEES_AND_DURATION_PAUSE_START,
+            ATTENDEES_AND_DURATION_PAUSE_END).forEach(field -> inOrder.verify(asylumCase).clear(field));
         inOrder.verify(iaHearingsApiService).aboutToStart(callback);
     }
 

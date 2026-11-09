@@ -88,7 +88,8 @@ public class RecordAttendeesAndDurationPreparer implements PreSubmitCallbackHand
             ATTENDEES_AND_DURATION_HEARING_START_TIME,
             ATTENDEES_AND_DURATION_HEARING_FINISH_TIME,
             ATTENDEES_AND_DURATION_PAUSED_TIME_REQUIRED,
-            ATTENDEES_AND_DURATION_PAUSES
+            ATTENDEES_AND_DURATION_PAUSE_START,
+            ATTENDEES_AND_DURATION_PAUSE_END
         ).forEach(asylumCase::clear);
     }
 }
