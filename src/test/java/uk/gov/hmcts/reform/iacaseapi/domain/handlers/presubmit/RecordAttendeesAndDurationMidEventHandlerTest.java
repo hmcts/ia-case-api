@@ -10,6 +10,8 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ATTENDEES_AND_DURATION_HEARING_CANCELLATION_REASON;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ATTENDEES_AND_DURATION_HEARING_PART_HEARD_REASON;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ATTENDEES_AND_DURATION_PAUSED_TIME_REQUIRED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ATTENDEES_AND_DURATION_PAUSES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.RECORD_ATTENDEES_AND_DURATION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.MID_EVENT;
@@ -31,6 +33,9 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.HearingPause;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.CommonRefDataDynamicListProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.IaHearingsApiService;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationRefDataService;
@@ -40,6 +45,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationRefDataService;
 class RecordAttendeesAndDurationMidEventHandlerTest {
 
     private static final String SELECT_HEARING_PAGE_ID = "selectHearingRecordAttendeesAndDuration";
+    private static final String TIMES_PAGE_ID = "timesRecordAttendeesAndDuration";
 
     private final List<Value> cancellationReasons = List.of(
         new Value("cancelled", "Cancelled"),
@@ -126,6 +132,50 @@ class RecordAttendeesAndDurationMidEventHandlerTest {
         verify(updatedAsylumCase).write(
             ATTENDEES_AND_DURATION_HEARING_PART_HEARD_REASON,
             new DynamicList(selectedPartHeardReason, partHeardReasons));
+    }
+
+    @Test
+    void should_reject_more_than_one_pause() {
+        when(callback.getPageId()).thenReturn(TIMES_PAGE_ID);
+        when(asylumCase.read(ATTENDEES_AND_DURATION_PAUSED_TIME_REQUIRED, YesOrNo.class))
+            .thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(ATTENDEES_AND_DURATION_PAUSES)).thenReturn(Optional.of(List.of(
+            new IdValue<>("1", new HearingPause("10:25", "10:35")),
+            new IdValue<>("2", new HearingPause("11:00", "11:15")))));
+
+        PreSubmitCallbackResponse<AsylumCase> response = handler.handle(MID_EVENT, callback);
+
+        assertEquals(asylumCase, response.getData());
+        assertEquals(1, response.getErrors().size());
+        assertTrue(response.getErrors().contains("You can only add one pause"));
+        verifyNoInteractions(provider, locationRefDataService, iaHearingsApiService);
+    }
+
+    @Test
+    void should_accept_one_pause() {
+        when(callback.getPageId()).thenReturn(TIMES_PAGE_ID);
+        when(asylumCase.read(ATTENDEES_AND_DURATION_PAUSED_TIME_REQUIRED, YesOrNo.class))
+            .thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(ATTENDEES_AND_DURATION_PAUSES)).thenReturn(Optional.of(List.of(
+            new IdValue<>("1", new HearingPause("10:25", "10:35")))));
+
+        PreSubmitCallbackResponse<AsylumCase> response = handler.handle(MID_EVENT, callback);
+
+        assertTrue(response.getErrors().isEmpty());
+    }
+
+    @Test
+    void should_ignore_pauses_when_paused_time_is_not_required() {
+        when(callback.getPageId()).thenReturn(TIMES_PAGE_ID);
+        when(asylumCase.read(ATTENDEES_AND_DURATION_PAUSED_TIME_REQUIRED, YesOrNo.class))
+            .thenReturn(Optional.of(YesOrNo.NO));
+        when(asylumCase.read(ATTENDEES_AND_DURATION_PAUSES)).thenReturn(Optional.of(List.of(
+            new IdValue<>("1", new HearingPause("10:25", "10:35")),
+            new IdValue<>("2", new HearingPause("11:00", "11:15")))));
+
+        PreSubmitCallbackResponse<AsylumCase> response = handler.handle(MID_EVENT, callback);
+
+        assertTrue(response.getErrors().isEmpty());
     }
 
     @Test
