@@ -9,12 +9,15 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_STATUS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PAYMENT_STATUS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.RECORD_APPLICATION_ACTION_DISABLED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REINSTATED_DECISION_MAKER;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REINSTATE_APPEAL_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REINSTATE_APPEAL_REASON;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STATE_BEFORE_END_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.REINSTATE_APPEAL;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.APPEAL_SUBMITTED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.PENDING_PAYMENT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.RESPONDENT_REVIEW;
 
 import java.time.LocalDate;
@@ -38,6 +41,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -99,6 +103,60 @@ class ReinstateAppealStateHandlerTest {
         assertNotNull(returnedCallbackResponse);
         assertEquals(asylumCase, returnedCallbackResponse.getData());
         assertEquals("The appeal cannot be reinstated", returnedCallbackResponse.getErrors().iterator().next());
+    }
+
+    @Test
+    void should_set_appeal_submitted_state_when_pending_payment_and_payment_paid() {
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getEvent()).thenReturn(REINSTATE_APPEAL);
+        when(asylumCase.read(STATE_BEFORE_END_APPEAL, State.class)).thenReturn(Optional.of(PENDING_PAYMENT));
+        when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)).thenReturn(Optional.of(PaymentStatus.PAID));
+        when(userDetailsDetails.getLoggedInUserRoleLabel(userDetails)).thenReturn(UserRoleLabel.TRIBUNAL_CASEWORKER);
+
+        PreSubmitCallbackResponse<AsylumCase> returnedCallbackResponse =
+            reinstateAppealStateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse);
+
+        assertNotNull(returnedCallbackResponse);
+        assertEquals(asylumCase, returnedCallbackResponse.getData());
+        assertEquals(APPEAL_SUBMITTED, returnedCallbackResponse.getState());
+    }
+
+    @Test
+    void should_set_pending_payment_state_when_pending_payment_and_payment_not_paid() {
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getEvent()).thenReturn(REINSTATE_APPEAL);
+        when(asylumCase.read(STATE_BEFORE_END_APPEAL, State.class)).thenReturn(Optional.of(PENDING_PAYMENT));
+        when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)).thenReturn(Optional.of(PaymentStatus.PAYMENT_PENDING));
+        when(userDetailsDetails.getLoggedInUserRoleLabel(userDetails)).thenReturn(UserRoleLabel.TRIBUNAL_CASEWORKER);
+
+        PreSubmitCallbackResponse<AsylumCase> returnedCallbackResponse =
+            reinstateAppealStateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse);
+
+        assertNotNull(returnedCallbackResponse);
+        assertEquals(asylumCase, returnedCallbackResponse.getData());
+        assertEquals(PENDING_PAYMENT, returnedCallbackResponse.getState());
+    }
+
+    @Test
+    void should_set_pending_payment_state_when_pending_payment_and_payment_status_not_present() {
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getEvent()).thenReturn(REINSTATE_APPEAL);
+        when(asylumCase.read(STATE_BEFORE_END_APPEAL, State.class)).thenReturn(Optional.of(PENDING_PAYMENT));
+        when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)).thenReturn(Optional.empty());
+        when(userDetailsDetails.getLoggedInUserRoleLabel(userDetails)).thenReturn(UserRoleLabel.TRIBUNAL_CASEWORKER);
+
+        PreSubmitCallbackResponse<AsylumCase> returnedCallbackResponse =
+            reinstateAppealStateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse);
+
+        assertNotNull(returnedCallbackResponse);
+        assertEquals(asylumCase, returnedCallbackResponse.getData());
+        assertEquals(PENDING_PAYMENT, returnedCallbackResponse.getState());
     }
 
     @Test

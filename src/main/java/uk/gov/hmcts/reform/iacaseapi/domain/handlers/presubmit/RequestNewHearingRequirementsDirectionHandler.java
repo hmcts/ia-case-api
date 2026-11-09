@@ -110,6 +110,7 @@ public class RequestNewHearingRequirementsDirectionHandler implements PreSubmitC
         asylumCase.clear(SEND_DIRECTION_DATE_DUE);
 
         writePreviousHearingsToAsylumCase(asylumCase);
+        checkStatutoryTimeframeAndClearFlag(asylumCase);
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 
@@ -137,22 +138,22 @@ public class RequestNewHearingRequirementsDirectionHandler implements PreSubmitC
 
         String listCaseHearingDate = null;
         String ariaListingReference = null;
-        String listCaseHearingLength = null;
+        Optional<HoursMinutes> listCaseHearingLength = Optional.empty();
 
         if (listCaseHearingCentre != null && !listCaseHearingCentre.equals(HearingCentre.DECISION_WITHOUT_HEARING) && !decisionWithoutHearing) {
             listCaseHearingDate = asylumCase.read(LIST_CASE_HEARING_DATE, String.class)
                     .orElseThrow(() -> new IllegalStateException("listCaseHearingDate is missing."));
 
             if (isIntegrated(asylumCase)) {
-                listCaseHearingLength = asylumCase.read(LISTING_LENGTH, HoursMinutes.class)
-                        .map(listingLength -> String.valueOf(listingLength.convertToIntegerMinutes()))
-                        .orElseThrow(() -> new IllegalStateException("listingLength is missing."));
+                listCaseHearingLength = Optional.of(asylumCase.read(LISTING_LENGTH, HoursMinutes.class)
+                        .orElseThrow(() -> new IllegalStateException("listingLength is missing.")));
             } else {
                 ariaListingReference = asylumCase.read(ARIA_LISTING_REFERENCE, String.class)
                         .orElseThrow(() -> new IllegalStateException("ariaListingReference is missing."));
 
-                listCaseHearingLength = asylumCase.read(LIST_CASE_HEARING_LENGTH, String.class)
-                        .orElseThrow(() -> new IllegalStateException("listCaseHearingLength is missing."));
+                listCaseHearingLength = Optional.of(new HoursMinutes(Integer.parseInt(
+                        asylumCase.read(LIST_CASE_HEARING_LENGTH, String.class)
+                                .orElseThrow(() -> new IllegalStateException("listCaseHearingLength is missing.")))));
             }
         }
 
@@ -190,5 +191,13 @@ public class RequestNewHearingRequirementsDirectionHandler implements PreSubmitC
         asylumCase.write(PREVIOUS_HEARINGS, allPreviousHearings);
 
         asylumCase.write(REHEARD_CASE_LISTED_WITHOUT_HEARING_REQUIREMENTS, YesOrNo.NO);
+    }
+
+    private void checkStatutoryTimeframeAndClearFlag(AsylumCase asylumCase) {
+        asylumCase.read(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class).ifPresent(flag -> {
+            if (flag.equals(YesOrNo.NO)) {
+                asylumCase.clear(STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED);
+            }
+        });
     }
 }
