@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.config;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter;
@@ -7,6 +8,7 @@ import org.springframework.web.client.RestOperations;
 import org.springframework.web.client.RestTemplate;
 import tools.jackson.databind.json.JsonMapper;
 
+@Slf4j
 @Configuration
 public class RestTemplateConfiguration {
 
@@ -20,11 +22,7 @@ public class RestTemplateConfiguration {
         RestTemplate restTemplate = new RestTemplate();
         restTemplate.getMessageConverters().removeIf(JacksonJsonHttpMessageConverter.class::isInstance);
         restTemplate.getMessageConverters().add(jacksonConverter);
+        restTemplate.getMessageConverters().forEach(c -> log.info("converter: {}", c.getClass().getSimpleName()));
         return restTemplate;
-    }
-
-    @Bean
-    public JacksonJsonHttpMessageConverter jacksonJsonHttpMessageConverter(JsonMapper jsonMapper) {
-        return new JacksonJsonHttpMessageConverter(jsonMapper);
     }
 }
