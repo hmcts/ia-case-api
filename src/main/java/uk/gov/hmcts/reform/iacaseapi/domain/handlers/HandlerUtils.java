@@ -64,6 +64,8 @@ public class HandlerUtils {
         State.AWAITING_RESPONDENT_EVIDENCE
     );
 
+    private static final ObjectMapper objectMapper = new JsonMapper();
+
     private HandlerUtils() {
     }
 
@@ -319,24 +321,24 @@ public class HandlerUtils {
     }
 
     public static List<String> readJsonFileList(String filePath, String key) throws IOException {
-        ObjectMapper objectMapper = new JsonMapper();
         ClassPathResource fileResource = new ClassPathResource(filePath);
-        InputStream file = fileResource.getInputStream();
+        try (InputStream file = fileResource.getInputStream()) {
 
-        JsonNode rootNode = objectMapper.readTree(file);
+            JsonNode rootNode = objectMapper.readTree(file);
 
-        JsonNode listNode = rootNode.get(key);
-        List<String> valueList = new ArrayList<>();
+            JsonNode listNode = rootNode.get(key);
+            List<String> valueList = new ArrayList<>();
 
-        if (listNode != null && listNode.isArray()) {
-            Iterator<JsonNode> elements = listNode.values().iterator();
-            while (elements.hasNext()) {
-                JsonNode element = elements.next();
-                valueList.add(element.asString());
+            if (listNode != null && listNode.isArray()) {
+                Iterator<JsonNode> elements = listNode.values().iterator();
+                while (elements.hasNext()) {
+                    JsonNode element = elements.next();
+                    valueList.add(element.asString());
+                }
             }
-        }
 
-        return valueList;
+            return valueList;
+        }
     }
 
     public static boolean isCaseUsingLocationRefData(AsylumCase asylumCase) {
