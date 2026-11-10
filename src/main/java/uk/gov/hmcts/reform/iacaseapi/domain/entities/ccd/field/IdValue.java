@@ -13,7 +13,6 @@ public class IdValue<T> {
     private String id = "";
     private T value;
 
-    @JsonCreator
     private IdValue() {
         // noop -- for deserializer
     }

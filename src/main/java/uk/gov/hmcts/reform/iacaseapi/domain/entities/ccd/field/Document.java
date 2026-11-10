@@ -20,7 +20,6 @@ public class Document {
     private String documentBinaryUrl;
     private String documentFilename;
 
-    @JsonCreator
     private Document() {
         super();
         // noop -- for deserializer

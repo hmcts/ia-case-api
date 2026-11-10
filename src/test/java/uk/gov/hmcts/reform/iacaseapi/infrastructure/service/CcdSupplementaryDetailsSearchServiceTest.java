@@ -111,9 +111,4 @@ class CcdSupplementaryDetailsSearchServiceTest {
         verify(idamService).getServiceUserToken();
         verify(coreCaseDataApi).searchCases(authorisation, serviceToken, caseType, searchSourceBuilder.toString());
     }
-
-    private Map<String, Object> getQueryMapFromString(String query) {
-        return new JsonMapper()
-            .readValue(query, new TypeReference<>() {});
-    }
 }

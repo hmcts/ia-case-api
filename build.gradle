@@ -276,12 +276,10 @@ repositories {
     }
 }
 
-ext["tomcat.version"] = "10.1.59"
-
 dependencyManagement {
     imports {
         mavenBom 'org.springframework.cloud:spring-cloud-dependencies:2025.1.4'
-        mavenBom 'com.fasterxml.jackson:jackson-bom:2.21.5'
+        mavenBom 'com.fasterxml.jackson:jackson-bom:2.21.7'
         mavenBom 'tools.jackson:jackson-bom:3.2.0'
         mavenBom 'org.junit:junit-bom:6.1.1'
 

@@ -8,7 +8,6 @@ import org.springframework.web.client.RestOperations;
 import org.springframework.web.client.RestTemplate;
 import tools.jackson.databind.json.JsonMapper;
 
-@Slf4j
 @Configuration
 public class RestTemplateConfiguration {
 
@@ -22,7 +21,6 @@ public class RestTemplateConfiguration {
         RestTemplate restTemplate = new RestTemplate();
         restTemplate.getMessageConverters().removeIf(JacksonJsonHttpMessageConverter.class::isInstance);
         restTemplate.getMessageConverters().add(new JacksonJsonHttpMessageConverter(jsonMapper));
-        restTemplate.getMessageConverters().forEach(c -> log.info("converter: {}", c.getClass().getSimpleName()));
         return restTemplate;
     }
 }
