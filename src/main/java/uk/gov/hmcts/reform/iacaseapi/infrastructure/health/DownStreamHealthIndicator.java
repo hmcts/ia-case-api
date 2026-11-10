@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.health;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.stream.Stream;
 
