@@ -1,9 +1,5 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.clients;
 
-import static org.springframework.http.HttpHeaders.AUTHORIZATION;
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static uk.gov.hmcts.reform.iacaseapi.infrastructure.config.ServiceTokenGeneratorConfiguration.SERVICE_AUTHORIZATION;
-
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,7 +8,9 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.SearchResult;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.config.FeignConfiguration;
 
-import java.util.Map;
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static uk.gov.hmcts.reform.iacaseapi.infrastructure.config.ServiceTokenGeneratorConfiguration.SERVICE_AUTHORIZATION;
 
 @FeignClient(
     name = "case-access-core-case-data-api",
