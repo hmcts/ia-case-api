@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.infrastructure.service;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -88,9 +89,7 @@ public class CcdSupplementaryDetailsSearchService implements SupplementaryDetail
                     searchSourceBuilder.sort("created_date", SortOrder.DESC);
                     searchSourceBuilder.query(termQueryBuilder);
 
-                    Map<String, Object> queryMap = new JsonMapper()
-                        .readValue(searchSourceBuilder.toString(), new TypeReference<>() {});
-                    return search(userToken, s2sToken, queryMap);
+                    return search(userToken, s2sToken, searchSourceBuilder.toString());
                 },
                 executorService
             );
@@ -99,19 +98,22 @@ public class CcdSupplementaryDetailsSearchService implements SupplementaryDetail
 
         List<SupplementaryInfo> allResults = new ArrayList<>();
 
-        for (CompletableFuture<List<SupplementaryInfo>> completableFutureResult : completableFutureList) {
+        for (CompletableFuture<List<SupplementaryInfo>> future : completableFutureList) {
             try {
-                allResults.addAll(completableFutureResult.get());
-            } catch (Exception e) {
+                allResults.addAll(future.get());
+            } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
-                log.error(e.getMessage(), e);
+                throw new IllegalStateException("Interrupted while fetching supplementary details", e);
+            } catch (ExecutionException e) {
+                log.error("Supplementary details chunk failed", e.getCause());
+                throw new IllegalStateException("Failed to fetch supplementary details", e.getCause());
             }
         }
 
         return allResults;
     }
 
-    private List<SupplementaryInfo> search(String userAuthorisation, String serviceAuthToken, Map<String, Object> query) {
+    private List<SupplementaryInfo> search(String userAuthorisation, String serviceAuthToken, String query) {
 
         SearchResult searchResult = ccdDataCaseAccessApi.searchCases(
             userAuthorisation,

@@ -31,7 +31,7 @@ public interface CcdDataCaseAccessApi extends CcdDataApi {
         @RequestHeader(AUTHORIZATION) String authorisation,
         @RequestHeader(SERVICE_AUTHORIZATION) String serviceAuthorisation,
         @PathVariable("caseType") String caseType,
-        @RequestBody Map<String, Object> searchQuery
+        @RequestBody String searchQuery
     );
 }
 

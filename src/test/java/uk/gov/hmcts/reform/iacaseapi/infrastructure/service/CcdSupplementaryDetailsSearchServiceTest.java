@@ -72,8 +72,7 @@ class CcdSupplementaryDetailsSearchServiceTest {
         when(idamService.getServiceUserToken()).thenReturn("Bearer token");
         when(s2sAuthTokenGenerator.generate()).thenReturn(serviceToken);
 
-        when(coreCaseDataApi.searchCases(authorisation, serviceToken, caseType,
-                                         getQueryMapFromString(searchSourceBuilder.toString())
+        when(coreCaseDataApi.searchCases(authorisation, serviceToken, caseType, searchSourceBuilder.toString()
         )).thenReturn(searchResult);
 
         ccdSupplementaryDetailsSearchService = new CcdSupplementaryDetailsSearchService(
@@ -99,8 +98,7 @@ class CcdSupplementaryDetailsSearchServiceTest {
         assertEquals("Johnson", supplementaryInfoList.getFirst().getSupplementaryDetails().getSurname());
 
         verify(idamService).getServiceUserToken();
-        verify(coreCaseDataApi).searchCases(authorisation, serviceToken, caseType,
-                                            getQueryMapFromString(searchSourceBuilder.toString()));
+        verify(coreCaseDataApi).searchCases(authorisation, serviceToken, caseType, searchSourceBuilder.toString());
     }
 
     @Test
@@ -111,8 +109,7 @@ class CcdSupplementaryDetailsSearchServiceTest {
 
         assertEquals(0, supplementaryInfoList.size());
         verify(idamService).getServiceUserToken();
-        verify(coreCaseDataApi).searchCases(authorisation, serviceToken, caseType,
-                                            getQueryMapFromString(searchSourceBuilder.toString()));
+        verify(coreCaseDataApi).searchCases(authorisation, serviceToken, caseType, searchSourceBuilder.toString());
     }
 
     private Map<String, Object> getQueryMapFromString(String query) {
