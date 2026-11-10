@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter;
 import org.springframework.web.client.RestOperations;
 import org.springframework.web.client.RestTemplate;
+import tools.jackson.databind.json.JsonMapper;
 
 @Slf4j
 @Configuration
@@ -17,10 +18,10 @@ public class RestTemplateConfiguration {
     }
 
     @Bean
-    public RestTemplate restTemplate(JacksonJsonHttpMessageConverter jacksonConverter) {
+    public RestTemplate restTemplate(JsonMapper jsonMapper) {
         RestTemplate restTemplate = new RestTemplate();
         restTemplate.getMessageConverters().removeIf(JacksonJsonHttpMessageConverter.class::isInstance);
-        restTemplate.getMessageConverters().add(jacksonConverter);
+        restTemplate.getMessageConverters().add(new JacksonJsonHttpMessageConverter(jsonMapper));
         restTemplate.getMessageConverters().forEach(c -> log.info("converter: {}", c.getClass().getSimpleName()));
         return restTemplate;
     }
