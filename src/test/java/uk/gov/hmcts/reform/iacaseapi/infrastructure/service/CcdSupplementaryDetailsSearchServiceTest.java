@@ -19,8 +19,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import tools.jackson.core.type.TypeReference;
-import tools.jackson.databind.json.JsonMapper;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.SupplementaryInfo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.IdamService;

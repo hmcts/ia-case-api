@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.config;
 
-import static com.fasterxml.jackson.databind.MapperFeature.AUTO_DETECT_CREATORS;
 import static tools.jackson.databind.DeserializationFeature.ACCEPT_EMPTY_ARRAY_AS_NULL_OBJECT;
 import static tools.jackson.databind.DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY;
 import static tools.jackson.databind.DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES;
