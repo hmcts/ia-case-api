@@ -60,25 +60,6 @@ class DownStreamHealthIndicatorTest {
     }
 
     @Test
-    void testIterator() {
-        when(healthCheckConfiguration.getServices()).thenReturn(getHealthCheckConfiguration());
-
-        downStreamHealthIndicator = new DownStreamHealthIndicator(restTemplate, healthCheckConfiguration);
-
-        Iterator<HealthContributors.Entry> iterator = downStreamHealthIndicator.iterator();
-
-        assertNotNull(iterator);
-        int count = 0;
-        while (iterator.hasNext()) {
-            HealthContributors.Entry entry = iterator.next();
-            assertNotNull(entry.name());
-            assertNotNull(entry.contributor());
-            count++;
-        }
-        assertEquals(2, count);
-    }
-
-    @Test
     void testStream() {
         when(healthCheckConfiguration.getServices()).thenReturn(getHealthCheckConfiguration());
 

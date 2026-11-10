@@ -345,7 +345,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-aspectj'
     implementation 'org.springframework.boot:spring-boot-starter-jdbc'
     implementation 'org.springframework.boot:spring-boot-starter-json'
-    implementation "org.springframework.boot:spring-boot-starter-restclient:4.0.9"
+    implementation "org.springframework.boot:spring-boot-starter-restclient"
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-webmvc'
     implementation 'org.springframework.boot:spring-boot-starter-security-oauth2-client'
@@ -354,7 +354,6 @@ dependencies {
     implementation 'org.springframework.security:spring-security-oauth2-jose'
     implementation 'org.springframework.boot:spring-boot-starter-security-oauth2-resource-server'
 
-    implementation 'org.springframework.boot:spring-boot-starter-security-test'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-cache'
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
@@ -365,7 +364,6 @@ dependencies {
     implementation 'org.springframework.retry:spring-retry:2.0.13'
 
     implementation 'tools.jackson.core:jackson-core'
-    implementation 'tools.jackson.core:jackson-databind'
     implementation 'tools.jackson.core:jackson-databind'
     implementation 'tools.jackson.dataformat:jackson-dataformat-csv'
     implementation 'com.fasterxml.jackson.core:jackson-annotations'
@@ -396,9 +394,10 @@ dependencies {
     implementation group: 'com.googlecode.libphonenumber', name: 'libphonenumber', version: '8.13.55'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testImplementation 'org.springframework.cloud:spring-cloud-contract-wiremock:5.0.3'
+    testImplementation 'org.springframework.cloud:spring-cloud-contract-wiremock'
     testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
     testImplementation 'org.springframework.boot:spring-boot-starter-actuator'
+    testImplementation 'org.springframework.boot:spring-boot-starter-security-test'
 
 
     testImplementation group: 'com.github.hmcts', name: 'fortify-client', version: '1.4.10', classifier: 'all', {
@@ -414,7 +413,7 @@ dependencies {
     testImplementation group: 'net.serenity-bdd', name: 'serenity-rest-assured', version: '5.3.11'
     testImplementation group: 'net.serenity-bdd', name: 'serenity-spring', version: '5.3.11'
 
-    functionalTestImplementation group: 'com.github.hmcts', name: 'core-case-data-store-client', version: '5.2.0'
+    functionalTestImplementation group: 'com.github.hmcts', name: 'core-case-data-store-client', version: '6.1.0'
     functionalTestImplementation 'org.springframework.boot:spring-boot-autoconfigure'
 
     functionalTestRuntimeOnly 'org.junit.platform:junit-platform-launcher'
@@ -424,9 +423,9 @@ dependencies {
 
     smokeTestImplementation 'org.flywaydb:flyway-database-postgresql'
 
-    smokeTestImplementation "org.springframework.boot:spring-boot-starter-flyway:4.0.9"
+    smokeTestImplementation "org.springframework.boot:spring-boot-starter-flyway"
 
-    smokeTestImplementation "org.springframework.boot:spring-boot-starter-restclient:4.0.9"
+    smokeTestImplementation "org.springframework.boot:spring-boot-starter-restclient"
 
     contractTestImplementation sourceSets.main.runtimeClasspath
     contractTestImplementation sourceSets.test.runtimeClasspath
