@@ -5,6 +5,9 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -19,6 +22,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -39,7 +43,10 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.Scheduler;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CcdSupplementaryUpdater;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.TimedEvent;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -54,6 +61,12 @@ class AppealSubmittedConfirmationTest {
     private AsylumCase asylumCase;
     @Mock
     private CcdSupplementaryUpdater ccdSupplementaryUpdater;
+    @Mock
+    private Scheduler scheduler;
+    @Mock
+    private DateProvider dateProvider;
+
+    private static final int GENERATE_SERVICE_REQUEST_DELAY_SECONDS = 30;
 
     private AppealSubmittedConfirmation appealSubmittedConfirmation;
 
@@ -62,8 +75,14 @@ class AppealSubmittedConfirmationTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(dateProvider.nowWithTime()).thenReturn(LocalDateTime.now());
 
-        appealSubmittedConfirmation = new AppealSubmittedConfirmation(ccdSupplementaryUpdater);
+        appealSubmittedConfirmation = new AppealSubmittedConfirmation(
+            ccdSupplementaryUpdater,
+            scheduler,
+            dateProvider,
+            GENERATE_SERVICE_REQUEST_DELAY_SECONDS
+        );
 
         when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(NO));
     }
@@ -103,6 +122,8 @@ class AppealSubmittedConfirmationTest {
         assertTrue(callbackResponse.getConfirmationBody().get().contains("What happens next"));
 
         assertTrue(callbackResponse.getConfirmationBody().get().contains("You will receive an email confirming that this appeal has been submitted successfully."));
+
+        verify(scheduler, never()).schedule(any(TimedEvent.class));
     }
 
     @Test
@@ -367,6 +388,8 @@ class AppealSubmittedConfirmationTest {
             callbackResponse.getConfirmationBody().get())
             .contains(
                 "Once you have paid for the appeal, a Tribunal Caseworker will review the reasons your appeal was out of time and you will be notified if it can proceed.");
+
+        verify(scheduler).schedule(any(TimedEvent.class));
     }
 
 
@@ -399,6 +422,8 @@ class AppealSubmittedConfirmationTest {
             callbackResponse.getConfirmationBody().get())
             .contains(
                 "Once you have paid for the appeal, a Tribunal Caseworker will review the reasons your appeal was out of time and you will be notified if it can proceed.");
+
+        verify(scheduler).schedule(any(TimedEvent.class));
     }
 
     @ParameterizedTest
@@ -427,6 +452,8 @@ class AppealSubmittedConfirmationTest {
             .contains(
                 "You must now pay for this appeal. First [create a service request](/case/IA/Asylum/" + callback.getCaseDetails().getId() + "/trigger/generateServiceRequest), you can do this by selecting 'Create a service request' from the 'Next step' dropdown list. Then select 'Go'."
             );
+
+        verify(scheduler).schedule(any(TimedEvent.class));
     }
 
     @Test
@@ -455,6 +482,8 @@ class AppealSubmittedConfirmationTest {
             .contains(
                 "You still have to pay for this appeal. First [create a service request](/case/IA/Asylum/" + callback.getCaseDetails().getId() + "/trigger/generateServiceRequest), you can do this by selecting 'Create a service request' from the 'Next step' dropdown list. Then select 'Go'."
             );
+
+        verify(scheduler).schedule(any(TimedEvent.class));
     }
 
     @ParameterizedTest
@@ -832,6 +861,31 @@ class AppealSubmittedConfirmationTest {
         assertThatThrownBy(() -> appealSubmittedConfirmation.handle(callback))
             .isExactlyInstanceOf(IllegalStateException.class)
             .hasMessage("Appeal type is not present");
+    }
+
+    @Test
+    void should_schedule_generate_service_request_with_30_seconds_delay() {
+        long caseId = 12345L;
+        LocalDateTime now = LocalDateTime.of(2024, 1, 15, 10, 30, 0);
+
+        when(caseDetails.getId()).thenReturn(caseId);
+        when(dateProvider.nowWithTime()).thenReturn(now);
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.empty());
+        when(asylumCase.read(REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.of(RemissionType.NO_REMISSION));
+        when(asylumCase.read(SUBMISSION_OUT_OF_TIME, YesOrNo.class)).thenReturn(Optional.of(NO));
+        when(asylumCase.read(PA_APPEAL_TYPE_PAYMENT_OPTION, String.class)).thenReturn(Optional.of("payNow"));
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.EA));
+        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+
+        appealSubmittedConfirmation.handle(callback);
+
+        verify(scheduler).schedule(argThat(timedEvent ->
+            timedEvent.getEvent() == Event.GENERATE_SERVICE_REQUEST
+                && timedEvent.getCaseId() == caseId
+                && timedEvent.getJurisdiction().equals("IA")
+                && timedEvent.getCaseType().equals("Asylum")
+                && timedEvent.getScheduledDateTime().toLocalDateTime().equals(now.plusSeconds(30))
+        ));
     }
 
     @Test

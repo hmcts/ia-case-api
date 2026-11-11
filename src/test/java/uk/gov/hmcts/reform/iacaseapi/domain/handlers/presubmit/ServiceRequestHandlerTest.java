@@ -1,15 +1,19 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAS_SERVICE_REQUEST_ALREADY;
 
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,6 +25,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeePayment;
 
 @ExtendWith(MockitoExtension.class)
@@ -47,9 +52,12 @@ class ServiceRequestHandlerTest {
     }
 
     @Test
-    void should_make_feePayment_submit_callback() {
+    void should_make_feePayment_submit_callback_when_has_service_request_already_is_empty() {
 
         when(callback.getEvent()).thenReturn(Event.GENERATE_SERVICE_REQUEST);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(HAS_SERVICE_REQUEST_ALREADY, YesOrNo.class)).thenReturn(Optional.empty());
 
         AsylumCase responseAsylumCase = mock(AsylumCase.class);
         when(feePayment.aboutToSubmit(callback)).thenReturn(responseAsylumCase);
@@ -58,8 +66,46 @@ class ServiceRequestHandlerTest {
             serviceRequestHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
+        assertEquals(responseAsylumCase, callbackResponse.getData());
 
         verify(feePayment, times(1)).aboutToSubmit(callback);
+    }
+
+    @Test
+    void should_make_feePayment_submit_callback_when_has_service_request_already_is_no() {
+
+        when(callback.getEvent()).thenReturn(Event.GENERATE_SERVICE_REQUEST);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(HAS_SERVICE_REQUEST_ALREADY, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+
+        AsylumCase responseAsylumCase = mock(AsylumCase.class);
+        when(feePayment.aboutToSubmit(callback)).thenReturn(responseAsylumCase);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            serviceRequestHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(responseAsylumCase, callbackResponse.getData());
+
+        verify(feePayment, times(1)).aboutToSubmit(callback);
+    }
+
+    @Test
+    void should_not_make_feePayment_submit_callback_when_has_service_request_already_is_yes() {
+
+        when(callback.getEvent()).thenReturn(Event.GENERATE_SERVICE_REQUEST);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(HAS_SERVICE_REQUEST_ALREADY, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            serviceRequestHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(feePayment, never()).aboutToSubmit(callback);
     }
 
 
