@@ -91,6 +91,18 @@ class RecordAttendeesAndDurationMidEventHandlerTest {
     }
 
     @Test
+    void should_delegate_to_ia_hearings_api_on_times_page() {
+        when(callback.getPageId()).thenReturn("timesRecordAttendeesAndDuration");
+
+        PreSubmitCallbackResponse<AsylumCase> response = handler.handle(MID_EVENT, callback);
+
+        verify(iaHearingsApiService, times(1)).midEvent(callback);
+        assertEquals(updatedAsylumCase, response.getData());
+        assertTrue(response.getErrors().isEmpty());
+        verifyNoInteractions(provider);
+    }
+
+    @Test
     void should_populate_reason_lists_when_not_already_present() {
         when(callback.getPageId()).thenReturn(SELECT_HEARING_PAGE_ID);
         when(updatedAsylumCase.read(ATTENDEES_AND_DURATION_HEARING_CANCELLATION_REASON, DynamicList.class))
