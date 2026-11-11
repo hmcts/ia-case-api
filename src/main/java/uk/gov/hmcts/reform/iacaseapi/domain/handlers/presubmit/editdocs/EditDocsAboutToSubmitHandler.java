@@ -53,12 +53,41 @@ public class EditDocsAboutToSubmitHandler implements PreSubmitCallbackHandler<As
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
         AsylumCase asylumCaseBefore = caseDetailsBefore == null ? null : caseDetailsBefore.getCaseData();
         long caseId = callback.getCaseDetails().getId();
+
+        PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
+
+        Optional<String> addendumEvidenceError = validateAddendumEvidenceSuppliedBy(asylumCase, asylumCaseBefore);
+        if (addendumEvidenceError.isPresent()) {
+            response.addError(addendumEvidenceError.get());
+            return response;
+        }
+
         restoreDocumentTagForDocs(asylumCase, asylumCaseBefore);
         editDocsCaseNoteService.writeAuditCaseNoteForGivenCaseId(caseId, asylumCase, asylumCaseBefore);
         editDocService.cleanUpOverviewTabDocs(asylumCase, asylumCaseBefore);
         editDocService.cleanUpAppealTabDocs(asylumCase, asylumCaseBefore);
         updateEjpDocumentFields(asylumCase);
-        return new PreSubmitCallbackResponse<>(asylumCase);
+        return response;
+    }
+
+    private Optional<String> validateAddendumEvidenceSuppliedBy(AsylumCase asylumCase, AsylumCase asylumCaseBefore) {
+        Optional<List<IdValue<DocumentWithMetadata>>> currentDocsOptional = asylumCase.read(ADDENDUM_EVIDENCE_DOCUMENTS);
+        List<IdValue<DocumentWithMetadata>> currentDocs = currentDocsOptional.orElse(Collections.emptyList());
+
+        List<String> existingIds = getIdValuesBefore(asylumCaseBefore, ADDENDUM_EVIDENCE_DOCUMENTS)
+            .stream()
+            .map(IdValue::getId)
+            .collect(Collectors.toList());
+
+        for (IdValue<DocumentWithMetadata> doc : currentDocs) {
+            if (!existingIds.contains(doc.getId())) {
+                String suppliedBy = doc.getValue().getSuppliedBy();
+                if (!"The appellant".equals(suppliedBy) && !"The respondent".equals(suppliedBy)) {
+                    return Optional.of("For \"Evidence supplied after the hearing bundle\" documents, the \"Supplied by\" field must be set to either \"The appellant\" or \"The respondent.\"");
+                }
+            }
+        }
+        return Optional.empty();
     }
 
     private void restoreDocumentTagForDocs(AsylumCase asylumCase, AsylumCase asylumCaseBefore) {
