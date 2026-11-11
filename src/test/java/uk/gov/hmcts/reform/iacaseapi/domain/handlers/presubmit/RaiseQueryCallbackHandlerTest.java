@@ -11,6 +11,8 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -18,6 +20,7 @@ import org.mockito.quality.Strictness;
 
 import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsHelper;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserRoleLabel;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
@@ -68,10 +71,14 @@ class RaiseQueryCallbackHandlerTest {
         assertFalse(handler.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback));
     }
 
-    @Test
-    void should_write_latest_query_with_correct_isHearingRelated() {
+    @ParameterizedTest
+    @CsvSource({
+        "LEGAL_REPRESENTATIVE,QM_LEGAL_REPRESENTATIVE_QUERIES",
+        "CITIZEN,QM_CITIZEN_QUERIES"
+    })
+    void should_write_latest_query_with_correct_isHearingRelated(UserRoleLabel label, AsylumCaseFieldDefinition field) {
         when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails))
-                .thenReturn(UserRoleLabel.LEGAL_REPRESENTATIVE);
+                .thenReturn(label);
 
         CaseMessage message = new CaseMessage();
         message.setId("msg1");
@@ -86,7 +93,7 @@ class RaiseQueryCallbackHandlerTest {
                         .caseMessages(caseMessages)
                         .build();
 
-        when(asylumCase.read(QM_LEGAL_REPRESENTATIVE_QUERIES, CaseQueriesCollection.class))
+        when(asylumCase.read(field, CaseQueriesCollection.class))
                 .thenReturn(Optional.of(collection));
 
         handler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -99,15 +106,19 @@ class RaiseQueryCallbackHandlerTest {
         assertEquals(YesOrNo.YES, captured.getIsHearingRelated());
     }
 
-    @Test
-    void should_not_write_latest_query_when_collection_is_empty() {
+    @ParameterizedTest
+    @CsvSource({
+        "LEGAL_REPRESENTATIVE,QM_LEGAL_REPRESENTATIVE_QUERIES",
+        "CITIZEN,QM_CITIZEN_QUERIES"
+    })
+    void should_not_write_latest_query_when_collection_is_empty(UserRoleLabel label, AsylumCaseFieldDefinition field) {
         when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails))
-                .thenReturn(UserRoleLabel.LEGAL_REPRESENTATIVE);
+                .thenReturn(label);
 
         CaseQueriesCollection emptyCollection =
                 CaseQueriesCollection.builder().caseMessages(List.of()).build();
 
-        when(asylumCase.read(QM_LEGAL_REPRESENTATIVE_QUERIES, CaseQueriesCollection.class))
+        when(asylumCase.read(field, CaseQueriesCollection.class))
                 .thenReturn(Optional.of(emptyCollection));
 
         handler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);

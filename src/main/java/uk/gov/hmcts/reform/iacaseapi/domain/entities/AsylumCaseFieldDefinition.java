@@ -3030,9 +3030,15 @@ public enum AsylumCaseFieldDefinition {
 
     SAVE_NOTIFICATIONS_TO_DATA_DATE(
         "saveNotificationsToDataDate", new TypeReference<String>(){}),
-    QM_LEGAL_REPRESENTATIVE_QUERIES("qmLegalRepresentativeQueries", new TypeReference<CaseQueriesCollection>(){}),
-    CASE_MESSAGE("caseMessage", new TypeReference<CaseMessage>(){}),
-    QM_LATEST_QUERY("qmLatestQuery", new TypeReference<List<IdValue<LatestQuery>>>(){}),
+
+    QM_LEGAL_REPRESENTATIVE_QUERIES(
+        "qmLegalRepresentativeQueries", new TypeReference<CaseQueriesCollection>(){}),
+
+    QM_CITIZEN_QUERIES(
+        "qmCitizenQueries", new TypeReference<CaseQueriesCollection>(){}),
+
+    QM_LATEST_QUERY(
+        "qmLatestQuery", new TypeReference<List<IdValue<LatestQuery>>>(){}),
 
     XUI_BANNER_TEXT(
             "xuiBannerText", new TypeReference<String>(){}),
