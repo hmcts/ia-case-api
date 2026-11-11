@@ -1126,6 +1126,7 @@ security:
       - "nlrDetailsUpdated"
       - "removeNonLegalRep"
       - "queryManagementRaiseQuery"
+      - "queryManagementRespondQuery"
     caseworker-ia-iacjudge:
       - "generateDecisionAndReasons"
       - "endAppeal"
