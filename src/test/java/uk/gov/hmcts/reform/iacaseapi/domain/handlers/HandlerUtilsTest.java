@@ -14,6 +14,7 @@ import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsHelper;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -86,6 +87,10 @@ class HandlerUtilsTest {
     private List<IdValue<Subscriber>> mockSubscribers;
     @Mock
     private NonLegalRepDetails mockNlrDetails;
+    @Mock
+    private UserDetailsHelper userDetailsHelper;
+    @Mock
+    private UserDetails userDetails;
     @Captor
     private ArgumentCaptor<List<IdValue<Subscriber>>> subscribersCaptor;
 
@@ -1697,5 +1702,31 @@ class HandlerUtilsTest {
             .contains("This event cannot be run on a case created before 10/01/2024")
             .contains("This event cannot be run on a detained case")
             .contains("This event cannot be run on an out of country case");
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+        "LEGAL_REPRESENTATIVE,QM_LEGAL_REPRESENTATIVE_QUERIES",
+        "CITIZEN,QM_CITIZEN_QUERIES"
+    })
+    void determineQueryCollection_should_return_correct_collection(UserRoleLabel userRoleLabel, AsylumCaseFieldDefinition fieldDefinition) {
+        when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails))
+                .thenReturn(userRoleLabel);
+
+        AsylumCaseFieldDefinition result = HandlerUtils.determineQueryCollection(userDetailsHelper, userDetails);
+
+        assertEquals(fieldDefinition, result);
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = UserRoleLabel.class, names = {"CITIZEN", "LEGAL_REPRESENTATIVE"}, mode = EnumSource.Mode.EXCLUDE)
+    void determineQueryCollection_should_throw_if_not_available_for_user(UserRoleLabel userRoleLabel) {
+        when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails))
+            .thenReturn(userRoleLabel);
+
+        IllegalStateException exception = assertThrows(IllegalStateException.class,
+            () -> HandlerUtils.determineQueryCollection(userDetailsHelper, userDetails));
+
+        assertEquals("Unsupported user role: " + userRoleLabel.toString(), exception.getMessage());
     }
 }

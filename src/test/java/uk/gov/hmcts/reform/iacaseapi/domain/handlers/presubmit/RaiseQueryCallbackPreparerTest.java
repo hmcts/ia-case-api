@@ -9,6 +9,8 @@ import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,6 +18,7 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsHelper;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserRoleLabel;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -28,12 +31,18 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.controllers.model.querymanag
 @ExtendWith(MockitoExtension.class)
 class RaiseQueryCallbackPreparerTest {
 
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase asylumCase;
-    @Mock private UserDetails userDetails;
-    @Mock private UserDetailsHelper userDetailsHelper;
-    @Captor private ArgumentCaptor<CaseQueriesCollection> collectionCaptor;
+    @Mock
+    private Callback<AsylumCase> callback;
+    @Mock
+    private CaseDetails<AsylumCase> caseDetails;
+    @Mock
+    private AsylumCase asylumCase;
+    @Mock
+    private UserDetails userDetails;
+    @Mock
+    private UserDetailsHelper userDetailsHelper;
+    @Captor
+    private ArgumentCaptor<CaseQueriesCollection> collectionCaptor;
 
     private RaiseQueryCallbackPreparer handler;
 
@@ -61,35 +70,40 @@ class RaiseQueryCallbackPreparerTest {
         assertFalse(handler.canHandle(PreSubmitCallbackStage.ABOUT_TO_START, callback));
     }
 
-    @Test
-    void should_initialize_legal_rep_queries_with_empty_collection_if_absent() {
-        when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(UserRoleLabel.LEGAL_REPRESENTATIVE);
+    @ParameterizedTest
+    @CsvSource({
+        "LEGAL_REPRESENTATIVE,QM_LEGAL_REPRESENTATIVE_QUERIES",
+        "CITIZEN,QM_CITIZEN_QUERIES"
+    })
+    void should_initialize_queries_with_empty_collection_if_absent(UserRoleLabel label, AsylumCaseFieldDefinition field) {
+        when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(label);
 
-        when(asylumCase.read(QM_LEGAL_REPRESENTATIVE_QUERIES, CaseQueriesCollection.class))
-                .thenReturn(Optional.empty());
+        when(asylumCase.read(field, CaseQueriesCollection.class))
+            .thenReturn(Optional.empty());
 
         handler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
-        verify(asylumCase).write(eq(QM_LEGAL_REPRESENTATIVE_QUERIES), collectionCaptor.capture());
+        verify(asylumCase).write(eq(field), collectionCaptor.capture());
         assertEquals(emptyList(), collectionCaptor.getValue().getCaseMessages());
-
     }
 
-    @Test
-    void should_preserve_existing_collection_when_already_present() {
-        when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(UserRoleLabel.LEGAL_REPRESENTATIVE);
+    @ParameterizedTest
+    @CsvSource({
+        "LEGAL_REPRESENTATIVE,QM_LEGAL_REPRESENTATIVE_QUERIES",
+        "CITIZEN,QM_CITIZEN_QUERIES"
+    })
+    void should_preserve_existing_collection_when_already_present(UserRoleLabel label, AsylumCaseFieldDefinition field) {
+        when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(label);
 
         CaseQueriesCollection existing = CaseQueriesCollection.builder()
-                .caseMessages(emptyList())
-                .build();
+            .caseMessages(emptyList())
+            .build();
 
         when(asylumCase.read(QM_LEGAL_REPRESENTATIVE_QUERIES, CaseQueriesCollection.class))
-                .thenReturn(Optional.of(existing));
+            .thenReturn(Optional.of(existing));
 
         handler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
-        verify(asylumCase).write(eq(QM_LEGAL_REPRESENTATIVE_QUERIES), collectionCaptor.capture());
-        assertSame(existing, collectionCaptor.getValue());
-
+        verify(asylumCase, never()).write(eq(field), any(CaseQueriesCollection.class));
     }
 }
