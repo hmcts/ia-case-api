@@ -233,78 +233,6 @@ class EditDocsAboutToSubmitHandlerTest {
         return expectedSuppliedBy == null;
     }
 
-    @ParameterizedTest
-    @CsvSource({
-        "The appellant",
-        "The respondent"
-    })
-    void shouldAllowAddendumEvidenceDocumentWithValidSuppliedBy(String suppliedBy) {
-        AsylumCase asylumCase = buildAsylumCaseGivenParams(suppliedBy, ADDENDUM_EVIDENCE, ADDENDUM_EVIDENCE_DOCUMENTS);
-        AsylumCase asylumCaseBefore = new AsylumCase();
-
-        given(callback.getCaseDetails()).willReturn(caseDetails);
-        given(caseDetails.getCaseData()).willReturn(asylumCase);
-        given(callback.getCaseDetailsBefore()).willReturn(Optional.of(caseDetailsBefore));
-        given(caseDetailsBefore.getCaseData()).willReturn(asylumCaseBefore);
-
-        PreSubmitCallbackResponse<AsylumCase> response = editDocsAboutToSubmitHandler
-            .handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
-
-        assertThat(response.getErrors()).isEmpty();
-    }
-
-    @Test
-    void shouldReturnErrorWhenAddendumEvidenceDocumentHasInvalidSuppliedBy() {
-        AsylumCase asylumCase = buildAsylumCaseGivenParams("Invalid supplier", ADDENDUM_EVIDENCE, ADDENDUM_EVIDENCE_DOCUMENTS);
-        AsylumCase asylumCaseBefore = new AsylumCase();
-
-        given(callback.getCaseDetails()).willReturn(caseDetails);
-        given(caseDetails.getCaseData()).willReturn(asylumCase);
-        given(callback.getCaseDetailsBefore()).willReturn(Optional.of(caseDetailsBefore));
-        given(caseDetailsBefore.getCaseData()).willReturn(asylumCaseBefore);
-
-        PreSubmitCallbackResponse<AsylumCase> response = editDocsAboutToSubmitHandler
-            .handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
-
-        assertThat(response.getErrors()).hasSize(1);
-        assertThat(response.getErrors()).contains("For \"Evidence supplied after the hearing bundle\" documents, the \"Supplied by\" field must be set to either \"The appellant\" or \"The respondent.\"");
-    }
-
-    @Test
-    void shouldNotValidateSuppliedByForExistingAddendumEvidenceDocument() {
-        // Existing document with invalid supplied_by should not trigger validation
-        String suppliedBy = "some supplier";
-        AsylumCase asylumCase = buildAsylumCaseGivenParams(suppliedBy, ADDENDUM_EVIDENCE, ADDENDUM_EVIDENCE_DOCUMENTS);
-        AsylumCase asylumCaseBefore = buildAsylumCaseGivenParams(suppliedBy, ADDENDUM_EVIDENCE, ADDENDUM_EVIDENCE_DOCUMENTS);
-
-        given(callback.getCaseDetails()).willReturn(caseDetails);
-        given(caseDetails.getCaseData()).willReturn(asylumCase);
-        given(callback.getCaseDetailsBefore()).willReturn(Optional.of(caseDetailsBefore));
-        given(caseDetailsBefore.getCaseData()).willReturn(asylumCaseBefore);
-
-        PreSubmitCallbackResponse<AsylumCase> response = editDocsAboutToSubmitHandler
-            .handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
-
-        assertThat(response.getErrors()).isEmpty();
-    }
-
-    @Test
-    void shouldReturnErrorWhenAddendumEvidenceDocumentHasNullSuppliedBy() {
-        AsylumCase asylumCase = buildAsylumCaseGivenParams(null, ADDENDUM_EVIDENCE, ADDENDUM_EVIDENCE_DOCUMENTS);
-        AsylumCase asylumCaseBefore = new AsylumCase();
-
-        given(callback.getCaseDetails()).willReturn(caseDetails);
-        given(caseDetails.getCaseData()).willReturn(asylumCase);
-        given(callback.getCaseDetailsBefore()).willReturn(Optional.of(caseDetailsBefore));
-        given(caseDetailsBefore.getCaseData()).willReturn(asylumCaseBefore);
-
-        PreSubmitCallbackResponse<AsylumCase> response = editDocsAboutToSubmitHandler
-            .handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
-
-        assertThat(response.getErrors()).hasSize(1);
-        assertThat(response.getErrors()).contains("For \"Evidence supplied after the hearing bundle\" documents, the \"Supplied by\" field must be set to either \"The appellant\" or \"The respondent.\"");
-    }
-
     /**
      * This method simulates adding new documents.
      *
@@ -327,8 +255,7 @@ class EditDocsAboutToSubmitHandlerTest {
         AsylumCase asylumCaseWithLegalRepsDoc = buildAsylumCaseGivenParams(expectedSuppliedBy, DocumentTag.NONE,
             LEGAL_REPRESENTATIVE_DOCUMENTS);
 
-        String validAddendumSuppliedBy = "The appellant";
-        AsylumCase asylumCaseWithAddEndUmDoc = buildAsylumCaseGivenParams(validAddendumSuppliedBy, DocumentTag.NONE,
+        AsylumCase asylumCaseWithAddEndUmDoc = buildAsylumCaseGivenParams(expectedSuppliedBy, DocumentTag.NONE,
             ADDENDUM_EVIDENCE_DOCUMENTS);
 
         AsylumCase asylumCaseWithRespondentDoc = buildAsylumCaseGivenParams(expectedSuppliedBy, DocumentTag.NONE,
@@ -361,7 +288,7 @@ class EditDocsAboutToSubmitHandlerTest {
             new Object[] {asylumCaseWithLegalRepsDoc, asylumCaseBefore, LEGAL_REPRESENTATIVE_DOCUMENTS,
                 expectedSuppliedBy, DocumentTag.NONE},
             new Object[] {asylumCaseWithAddEndUmDoc, asylumCaseBefore, ADDENDUM_EVIDENCE_DOCUMENTS,
-                validAddendumSuppliedBy, ADDENDUM_EVIDENCE},
+                expectedSuppliedBy, ADDENDUM_EVIDENCE},
             new Object[] {asylumCaseWithRespondentDoc, asylumCaseBefore, RESPONDENT_DOCUMENTS,
                 expectedSuppliedBy, DocumentTag.NONE},
             new Object[] {asylumCaseWithDraftDecisionAndReasonsDoc, asylumCaseBefore,

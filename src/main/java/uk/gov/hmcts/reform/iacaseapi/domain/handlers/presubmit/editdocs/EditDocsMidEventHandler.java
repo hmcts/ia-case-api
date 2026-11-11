@@ -21,6 +21,10 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 @Component
 public class EditDocsMidEventHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
+    private static final String SUPPLIED_BY_APPELLANT = "The appellant";
+    private static final String SUPPLIED_BY_RESPONDENT = "The respondent";
+    private static final String ADDENDUM_EVIDENCE_FIELD_NAME = "Evidence supplied after the hearing bundle";
+
     public boolean canHandle(
         PreSubmitCallbackStage callbackStage,
         Callback<AsylumCase> callback
@@ -57,6 +61,16 @@ public class EditDocsMidEventHandler implements PreSubmitCallbackHandler<AsylumC
                     } catch (NullPointerException npe) {
                         asylumCasePreSubmitCallbackResponse.addError("If you add a new document you must complete the fields related to that document including Date uploaded, or remove it, before you can submit your change.");
                         return asylumCasePreSubmitCallbackResponse;
+                    }
+
+                    if (field == ADDENDUM_EVIDENCE_DOCUMENTS) {
+                        String suppliedBy = documentWithMetadataIdValue.getValue().getSuppliedBy();
+                        if (!SUPPLIED_BY_APPELLANT.equals(suppliedBy) && !SUPPLIED_BY_RESPONDENT.equals(suppliedBy)) {
+                            asylumCasePreSubmitCallbackResponse.addError(
+                                String.format("For \"%s\" documents, the \"Supplied by\" field must be set to either \"%s\" or \"%s.\"",
+                                    ADDENDUM_EVIDENCE_FIELD_NAME, SUPPLIED_BY_APPELLANT, SUPPLIED_BY_RESPONDENT));
+                            return asylumCasePreSubmitCallbackResponse;
+                        }
                     }
                 }
             }

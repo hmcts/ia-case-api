@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ADDENDUM_EVIDENCE_DOCUMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LEGAL_REPRESENTATIVE_DOCUMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
@@ -186,6 +187,72 @@ class EditDocsMidEventHandlerTest {
         assertTrue(errors.contains(
             "If you add a new document you must complete the fields related to that document including Date uploaded, or remove it, before you can submit your change."));
 
+    }
+
+    @Test
+    void should_allow_addendum_evidence_with_valid_supplied_by_appellant() {
+        DocumentWithMetadata validAddendumDoc = new DocumentWithMetadata(document1, null, "22-07-2020", null, "The appellant");
+        List<IdValue<DocumentWithMetadata>> addendumDocs = Arrays.asList(new IdValue<>("1", validAddendumDoc));
+
+        when(asylumCase.read(ADDENDUM_EVIDENCE_DOCUMENTS)).thenReturn(Optional.of(addendumDocs));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            editDocsMidEventHandler.handle(MID_EVENT, callback);
+
+        assertNotNull(callback);
+        assertEquals(asylumCase, callbackResponse.getData());
+        assertThat(callbackResponse.getErrors()).isEmpty();
+    }
+
+    @Test
+    void should_allow_addendum_evidence_with_valid_supplied_by_respondent() {
+        DocumentWithMetadata validAddendumDoc = new DocumentWithMetadata(document1, null, "22-07-2020", null, "The respondent");
+        List<IdValue<DocumentWithMetadata>> addendumDocs = Arrays.asList(new IdValue<>("1", validAddendumDoc));
+
+        when(asylumCase.read(ADDENDUM_EVIDENCE_DOCUMENTS)).thenReturn(Optional.of(addendumDocs));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            editDocsMidEventHandler.handle(MID_EVENT, callback);
+
+        assertNotNull(callback);
+        assertEquals(asylumCase, callbackResponse.getData());
+        assertThat(callbackResponse.getErrors()).isEmpty();
+    }
+
+    @Test
+    void should_error_when_addendum_evidence_has_invalid_supplied_by() {
+        DocumentWithMetadata invalidAddendumDoc = new DocumentWithMetadata(document1, null, "22-07-2020", null, "Invalid supplier");
+        List<IdValue<DocumentWithMetadata>> addendumDocs = Arrays.asList(new IdValue<>("1", invalidAddendumDoc));
+
+        when(asylumCase.read(ADDENDUM_EVIDENCE_DOCUMENTS)).thenReturn(Optional.of(addendumDocs));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            editDocsMidEventHandler.handle(MID_EVENT, callback);
+
+        assertNotNull(callback);
+        assertEquals(asylumCase, callbackResponse.getData());
+        final Set<String> errors = callbackResponse.getErrors();
+        assertThat(errors).hasSize(1);
+        assertTrue(errors.contains(
+            "For \"Evidence supplied after the hearing bundle\" documents, the \"Supplied by\" field must be set to either \"The appellant\" or \"The respondent.\""));
+    }
+
+    @Test
+    void should_error_when_addendum_evidence_has_null_supplied_by() {
+        DocumentWithMetadata invalidAddendumDoc = new DocumentWithMetadata(document1, null, "22-07-2020", null, null);
+        List<IdValue<DocumentWithMetadata>> addendumDocs = Arrays.asList(new IdValue<>("1", invalidAddendumDoc));
+
+        when(asylumCase.read(ADDENDUM_EVIDENCE_DOCUMENTS)).thenReturn(Optional.of(addendumDocs));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            editDocsMidEventHandler.handle(MID_EVENT, callback);
+
+        assertNotNull(callback);
+        assertEquals(asylumCase, callbackResponse.getData());
+        final Set<String> errors = callbackResponse.getErrors();
+        assertThat(errors).hasSize(1);
+        assertTrue(errors.contains(
+            "For \"Evidence supplied after the hearing bundle\" documents, the \"Supplied by\" field must be set to either \"The appellant\" or \"The respondent.\""));
     }
 
 }
