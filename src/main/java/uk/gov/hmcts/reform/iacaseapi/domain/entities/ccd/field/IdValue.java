@@ -27,7 +27,6 @@ public class IdValue<T> {
     }
 
     public String getId() {
-        requireNonNull(id);
         return id;
     }
 
