@@ -15,6 +15,8 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ADDITIONAL_EVIDENCE_DOCUMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DRAFT_DECISION_AND_REASONS_DOCUMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FINAL_DECISION_AND_REASONS_DOCUMENTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_APPELLANT_DOCUMENTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_RESPONDENT_DOCUMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_DOCUMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LEGAL_REPRESENTATIVE_DOCUMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REHEARD_HEARING_DOCUMENTS;
@@ -22,8 +24,11 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.TRIBUNAL_DOCUMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPLOAD_EJP_APPEAL_FORM_DOCS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UT_TRANSFER_DOC;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag.ADDENDUM_EVIDENCE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag.ADDITIONAL_EVIDENCE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag.APPEAL_FORM;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag.FTPA_APPELLANT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag.FTPA_RESPONDENT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag.NONE;
 
 import java.util.Collections;
@@ -262,6 +267,12 @@ class EditDocsAboutToSubmitHandlerTest {
         AsylumCase asylumCaseWithFinalDecisionAndReasonsDoc = buildAsylumCaseGivenParams(expectedSuppliedBy,
             DocumentTag.NONE, FINAL_DECISION_AND_REASONS_DOCUMENTS);
 
+        AsylumCase asylumCaseWithFtpaAppellantDoc = buildAsylumCaseGivenParams(expectedSuppliedBy,
+            DocumentTag.NONE, FTPA_APPELLANT_DOCUMENTS);
+
+        AsylumCase asylumCaseWithFtpaRespondentDoc = buildAsylumCaseGivenParams(expectedSuppliedBy,
+            DocumentTag.NONE, FTPA_RESPONDENT_DOCUMENTS);
+
         AsylumCase asylumCaseBefore = new AsylumCase();
 
         return new Object[] {
@@ -277,13 +288,17 @@ class EditDocsAboutToSubmitHandlerTest {
             new Object[] {asylumCaseWithLegalRepsDoc, asylumCaseBefore, LEGAL_REPRESENTATIVE_DOCUMENTS,
                 expectedSuppliedBy, DocumentTag.NONE},
             new Object[] {asylumCaseWithAddEndUmDoc, asylumCaseBefore, ADDENDUM_EVIDENCE_DOCUMENTS,
-                expectedSuppliedBy, DocumentTag.NONE},
+                expectedSuppliedBy, ADDENDUM_EVIDENCE},
             new Object[] {asylumCaseWithRespondentDoc, asylumCaseBefore, RESPONDENT_DOCUMENTS,
                 expectedSuppliedBy, DocumentTag.NONE},
             new Object[] {asylumCaseWithDraftDecisionAndReasonsDoc, asylumCaseBefore,
                 DRAFT_DECISION_AND_REASONS_DOCUMENTS, expectedSuppliedBy, DocumentTag.NONE},
             new Object[] {asylumCaseWithFinalDecisionAndReasonsDoc, asylumCaseBefore,
-                FINAL_DECISION_AND_REASONS_DOCUMENTS, expectedSuppliedBy, DocumentTag.NONE}
+                FINAL_DECISION_AND_REASONS_DOCUMENTS, expectedSuppliedBy, DocumentTag.NONE},
+            new Object[] {asylumCaseWithFtpaAppellantDoc, asylumCaseBefore,
+                FTPA_APPELLANT_DOCUMENTS, expectedSuppliedBy, FTPA_APPELLANT},
+            new Object[] {asylumCaseWithFtpaRespondentDoc, asylumCaseBefore,
+                FTPA_RESPONDENT_DOCUMENTS, expectedSuppliedBy, FTPA_RESPONDENT}
         };
     }
 
