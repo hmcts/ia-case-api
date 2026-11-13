@@ -1,6 +1,8 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ATTENDEES_AND_DURATION_PARTICIPANTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ATTENDEES_AND_DURATION_PARTICIPANTS_SOURCE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAVE_HEARING_ATTENDEES_AND_DURATION_BEEN_RECORDED;
 
 import lombok.RequiredArgsConstructor;
@@ -44,6 +46,11 @@ public class RecordAttendeesAndDurationHandler implements PreSubmitCallbackHandl
                 .getCaseData();
 
         iaHearingsApiService.aboutToSubmit(callback);
+
+        // the participants have been sent to HMC, so they are not kept on the case; a saved list would make
+        // the next run of the event look like it deletes rows, which needs a delete permission users don't have
+        asylumCase.clear(ATTENDEES_AND_DURATION_PARTICIPANTS);
+        asylumCase.clear(ATTENDEES_AND_DURATION_PARTICIPANTS_SOURCE);
 
         asylumCase.write(HAVE_HEARING_ATTENDEES_AND_DURATION_BEEN_RECORDED, YesOrNo.YES);
 
