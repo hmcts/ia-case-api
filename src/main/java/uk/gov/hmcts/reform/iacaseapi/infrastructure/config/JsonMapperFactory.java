@@ -11,9 +11,7 @@ import static tools.jackson.databind.cfg.EnumFeature.READ_ENUMS_USING_TO_STRING;
 import static tools.jackson.databind.cfg.EnumFeature.READ_UNKNOWN_ENUM_VALUES_USING_DEFAULT_VALUE;
 import static tools.jackson.databind.cfg.EnumFeature.WRITE_ENUMS_USING_TO_STRING;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.PropertyAccessor;
 import tools.jackson.databind.json.JsonMapper;
 
 public final class JsonMapperFactory {
