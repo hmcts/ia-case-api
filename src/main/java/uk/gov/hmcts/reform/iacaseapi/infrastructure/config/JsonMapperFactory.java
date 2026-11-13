@@ -40,10 +40,6 @@ public final class JsonMapperFactory {
             .changeDefaultPropertyInclusion(incl -> incl
                 .withValueInclusion(JsonInclude.Include.NON_NULL)
                 .withContentInclusion(JsonInclude.Include.NON_NULL))
-            .changeDefaultVisibility(vc -> vc.withVisibility(
-                PropertyAccessor.CREATOR,
-                JsonAutoDetect.Visibility.NONE
-            ))
             .build();
     }
 }
