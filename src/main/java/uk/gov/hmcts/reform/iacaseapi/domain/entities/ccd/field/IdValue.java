@@ -20,7 +20,6 @@ public class IdValue<T> {
         String id,
         T value
     ) {
-        requireNonNull(id);
         requireNonNull(value);
 
         this.id = id;
