@@ -70,7 +70,6 @@ public class ApplyForCosts {
         requireNonNull(applyForCostsDecision);
         requireNonNull(appliedCostsType);
         requireNonNull(applyForCostsApplicantType);
-        requireNonNull(tribunalConsideringReason);
         requireNonNull(applyForCostsCreationDate);
         requireNonNull(respondentToCostsOrder);
         requireNonNull(applyForCostsRespondentRole);
