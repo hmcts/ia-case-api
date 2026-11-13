@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.statutorytimeframe24weeks;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -28,7 +27,7 @@ public class Stf24wDeterminationHandler implements PreSubmitCallbackHandler<Asyl
     private final LocalDate stf24wLiveDate;
 
     public Stf24wDeterminationHandler(@Value("${app.statutory-timeframe.live-date}") String stf24wLiveDate,
-                                      @Autowired UpdateStatutoryTimeframe24WeeksService updateStatutoryTimeframe24WeeksService) {
+                                      UpdateStatutoryTimeframe24WeeksService updateStatutoryTimeframe24WeeksService) {
         this.stf24wLiveDate = LocalDate.parse(stf24wLiveDate);
         this.updateStatutoryTimeframe24WeeksService = updateStatutoryTimeframe24WeeksService;
 

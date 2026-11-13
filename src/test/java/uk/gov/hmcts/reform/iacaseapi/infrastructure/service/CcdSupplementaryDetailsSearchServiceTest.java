@@ -70,8 +70,7 @@ class CcdSupplementaryDetailsSearchServiceTest {
         when(idamService.getServiceUserToken()).thenReturn("Bearer token");
         when(s2sAuthTokenGenerator.generate()).thenReturn(serviceToken);
 
-        when(coreCaseDataApi.searchCases(authorisation, serviceToken, caseType,
-                                         searchSourceBuilder.toString()
+        when(coreCaseDataApi.searchCases(authorisation, serviceToken, caseType, searchSourceBuilder.toString()
         )).thenReturn(searchResult);
 
         ccdSupplementaryDetailsSearchService = new CcdSupplementaryDetailsSearchService(

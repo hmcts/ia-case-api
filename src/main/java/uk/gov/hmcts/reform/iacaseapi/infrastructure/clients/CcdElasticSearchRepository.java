@@ -3,8 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi.infrastructure.clients;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static uk.gov.hmcts.reform.iacaseapi.infrastructure.config.ServiceTokenGeneratorConfiguration.SERVICE_AUTHORIZATION;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -15,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+import tools.jackson.core.JacksonException;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.CcdSearchResult;
@@ -72,7 +72,7 @@ public class CcdElasticSearchRepository {
             try {
                 String queryJson = objectMapper.writeValueAsString(query);
                 log.info("Elasticsearch query JSON: {}", queryJson);
-            } catch (JsonProcessingException e) {
+            } catch (JacksonException e) {
                 log.warn("Failed to serialize query to JSON for logging", e);
             }
 

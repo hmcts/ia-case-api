@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum RemissionOption {
@@ -15,6 +16,7 @@ public enum RemissionOption {
     @JsonValue
     private final String value;
 
+    @JsonCreator
     RemissionOption(String value) {
         this.value = value;
     }

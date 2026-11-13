@@ -3,9 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi.component.testutils;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.util.MimeTypeUtils.APPLICATION_JSON_VALUE;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import tools.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -54,8 +52,6 @@ public class IaCaseApiClient {
         this.aboutToSubmitUrl = "/asylum/ccdAboutToSubmit";
         this.aboutToStartUrl = "/asylum/ccdAboutToStart";
         this.ccdSubmittedUrl = "/asylum/ccdSubmitted";
-        objectMapper.registerModule(new Jdk8Module());
-        objectMapper.registerModule(new JavaTimeModule());
     }
 
     public PreSubmitCallbackResponseForTest aboutToSubmit(CallbackForTest.CallbackForTestBuilder callback) {

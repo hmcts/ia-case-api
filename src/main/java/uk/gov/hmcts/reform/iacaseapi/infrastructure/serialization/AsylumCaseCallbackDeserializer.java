@@ -1,9 +1,9 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.serialization;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.IOException;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Component;
+import tools.jackson.core.JacksonException;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 
@@ -29,7 +29,7 @@ public class AsylumCaseCallbackDeserializer implements Deserializer<Callback<Asy
                 }
             );
 
-        } catch (IOException e) {
+        } catch (JacksonException e) {
             throw new IllegalArgumentException("Could not deserialize callback", e);
         }
     }

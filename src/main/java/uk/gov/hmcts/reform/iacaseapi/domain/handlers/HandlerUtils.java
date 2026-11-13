@@ -1,7 +1,8 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.io.ClassPathResource;
@@ -62,6 +63,8 @@ public class HandlerUtils {
         State.APPEAL_SUBMITTED,
         State.AWAITING_RESPONDENT_EVIDENCE
     );
+
+    private static final ObjectMapper objectMapper = new JsonMapper();
 
     private HandlerUtils() {
     }
@@ -318,24 +321,24 @@ public class HandlerUtils {
     }
 
     public static List<String> readJsonFileList(String filePath, String key) throws IOException {
-        ObjectMapper objectMapper = new ObjectMapper();
         ClassPathResource fileResource = new ClassPathResource(filePath);
-        InputStream file = fileResource.getInputStream();
+        try (InputStream file = fileResource.getInputStream()) {
 
-        JsonNode rootNode = objectMapper.readTree(file);
+            JsonNode rootNode = objectMapper.readTree(file);
 
-        JsonNode listNode = rootNode.get(key);
-        List<String> valueList = new ArrayList<>();
+            JsonNode listNode = rootNode.get(key);
+            List<String> valueList = new ArrayList<>();
 
-        if (listNode != null && listNode.isArray()) {
-            Iterator<JsonNode> elements = listNode.elements();
-            while (elements.hasNext()) {
-                JsonNode element = elements.next();
-                valueList.add(element.asText());
+            if (listNode != null && listNode.isArray()) {
+                Iterator<JsonNode> elements = listNode.values().iterator();
+                while (elements.hasNext()) {
+                    JsonNode element = elements.next();
+                    valueList.add(element.asString());
+                }
             }
-        }
 
-        return valueList;
+            return valueList;
+        }
     }
 
     public static boolean isCaseUsingLocationRefData(AsylumCase asylumCase) {

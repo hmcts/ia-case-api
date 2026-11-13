@@ -3,8 +3,8 @@ package uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback;
 import static java.util.Objects.requireNonNull;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import tools.jackson.databind.PropertyNamingStrategies;
+import tools.jackson.databind.annotation.JsonNaming;
 import java.util.Optional;
 import uk.gov.hmcts.reform.iacaseapi.domain.RequiredFieldMissingException;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseData;
