@@ -18,7 +18,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.UpdateTribunalRules.UNDER_RULE_31;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.UpdateTribunalRules.UNDER_RULE_32;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.ResidentJudgeFtpaDecisionHandler.STF24W_FTPA_REMOVAL_REASON;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.UpdateTribunalDecisionHandler.STF24W_RULE32_REMOVAL_REASON;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -469,7 +469,7 @@ class UpdateTribunalDecisionHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
         verify(updateStatutoryTimeframe24WeeksService, times(expectedTimes))
-            .updateAsylumCase(asylumCase, NO, STF24W_FTPA_REMOVAL_REASON);
+            .updateAsylumCase(asylumCase, NO, STF24W_RULE32_REMOVAL_REASON);
     }
 
     @Test
@@ -493,6 +493,6 @@ class UpdateTribunalDecisionHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
         verify(updateStatutoryTimeframe24WeeksService, times(0))
-            .updateAsylumCase(asylumCase, NO, STF24W_FTPA_REMOVAL_REASON);
+            .updateAsylumCase(asylumCase, NO, STF24W_RULE32_REMOVAL_REASON);
     }
 }

@@ -1,21 +1,5 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
-import static java.util.Collections.emptyList;
-import static java.util.Collections.singletonList;
-import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ALL_SET_ASIDE_DOCS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.UpdateTribunalRules.UNDER_RULE_31;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.UpdateTribunalRules.UNDER_RULE_32;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.ResidentJudgeFtpaDecisionHandler.STF24W_FTPA_REMOVAL_REASON;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Optional;
-import java.util.List;
-
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
@@ -33,6 +17,20 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.Appender;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentReceiver;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+
+import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonList;
+import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.UpdateTribunalRules.UNDER_RULE_31;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.UpdateTribunalRules.UNDER_RULE_32;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
+
 @Component
 public class UpdateTribunalDecisionHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
@@ -41,6 +39,8 @@ public class UpdateTribunalDecisionHandler implements PreSubmitCallbackHandler<A
     private final DocumentReceiver documentReceiver;
     private final DocumentsAppender documentsAppender;
     private final UpdateStatutoryTimeframe24WeeksService updateStatutoryTimeframe24WeeksService;
+
+    public static final String STF24W_RULE32_REMOVAL_REASON = "Removed due to rule 32 decision";
 
     public UpdateTribunalDecisionHandler(
         DateProvider dateProvider,
@@ -169,7 +169,7 @@ public class UpdateTribunalDecisionHandler implements PreSubmitCallbackHandler<A
 
             asylumCase.read(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class).ifPresent(flag -> {
                 if (flag.equals(YES)) {
-                    updateStatutoryTimeframe24WeeksService.updateAsylumCase(asylumCase, NO, STF24W_FTPA_REMOVAL_REASON);
+                    updateStatutoryTimeframe24WeeksService.updateAsylumCase(asylumCase, NO, STF24W_RULE32_REMOVAL_REASON);
                 }
             });
         }
