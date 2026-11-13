@@ -1,18 +1,5 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
-import static java.util.Collections.emptyList;
-import static java.util.Collections.singletonList;
-import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ALL_SET_ASIDE_DOCS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.UpdateTribunalRules.UNDER_RULE_31;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.UpdateTribunalRules.UNDER_RULE_32;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Optional;
-import java.util.List;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
@@ -25,9 +12,24 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.statutorytimeframe24weeks.UpdateStatutoryTimeframe24WeeksService;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.Appender;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentReceiver;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+
+import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonList;
+import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.UpdateTribunalRules.UNDER_RULE_31;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.UpdateTribunalRules.UNDER_RULE_32;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 @Component
 public class UpdateTribunalDecisionHandler implements PreSubmitCallbackHandler<AsylumCase> {
@@ -36,17 +38,22 @@ public class UpdateTribunalDecisionHandler implements PreSubmitCallbackHandler<A
     private final Appender<DecisionAndReasons> decisionAndReasonsAppender;
     private final DocumentReceiver documentReceiver;
     private final DocumentsAppender documentsAppender;
+    private final UpdateStatutoryTimeframe24WeeksService updateStatutoryTimeframe24WeeksService;
+
+    public static final String STF24W_RULE32_REMOVAL_REASON = "Removed due to rule 32 decision";
 
     public UpdateTribunalDecisionHandler(
         DateProvider dateProvider,
         Appender<DecisionAndReasons> decisionAndReasonsAppender,
         DocumentReceiver documentReceiver,
-        DocumentsAppender documentsAppender
+        DocumentsAppender documentsAppender,
+        UpdateStatutoryTimeframe24WeeksService updateStatutoryTimeframe24WeeksService
     ) {
         this.dateProvider = dateProvider;
         this.decisionAndReasonsAppender = decisionAndReasonsAppender;
         this.documentReceiver = documentReceiver;
         this.documentsAppender = documentsAppender;
+        this.updateStatutoryTimeframe24WeeksService = updateStatutoryTimeframe24WeeksService;
     }
 
     public boolean canHandle(PreSubmitCallbackStage callbackStage, Callback<AsylumCase> callback) {
@@ -54,7 +61,7 @@ public class UpdateTribunalDecisionHandler implements PreSubmitCallbackHandler<A
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-               && callback.getEvent() == Event.UPDATE_TRIBUNAL_DECISION;
+            && callback.getEvent() == Event.UPDATE_TRIBUNAL_DECISION;
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(PreSubmitCallbackStage callbackStage, Callback<AsylumCase> callback) {
@@ -68,7 +75,7 @@ public class UpdateTribunalDecisionHandler implements PreSubmitCallbackHandler<A
                 .orElseThrow(() -> new IllegalStateException("typesOfUpdateTribunalDecision is not present"));
 
             asylumCase.write(IS_DECISION_RULE31_CHANGED,
-                    updateTribunalDecisionValue.getValue().getLabel().contains("Yes") ? YesOrNo.YES : YesOrNo.NO);
+                updateTribunalDecisionValue.getValue().getLabel().contains("Yes") ? YesOrNo.YES : YesOrNo.NO);
             asylumCase.write(UPDATED_APPEAL_DECISION, StringUtils.capitalize(updateTribunalDecisionValue.getValue().getCode()));
 
             final DecisionAndReasons newDecisionAndReasons =
@@ -154,11 +161,17 @@ public class UpdateTribunalDecisionHandler implements PreSubmitCallbackHandler<A
                     ftpaSetAsideDocuments
                 );
 
-            asylumCase.write(ALL_SET_ASIDE_DOCS,allFtpaSetAsideDocuments);
+            asylumCase.write(ALL_SET_ASIDE_DOCS, allFtpaSetAsideDocuments);
 
             asylumCase.write(UPDATE_TRIBUNAL_DECISION_DATE_RULE_32, dateProvider.now().toString());
             asylumCase.write(REASON_REHEARING_RULE_32, "Set aside and to be reheard under rule 32");
             setFtpaReheardCaseFlag(asylumCase);
+
+            asylumCase.read(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class).ifPresent(flag -> {
+                if (flag.equals(YES)) {
+                    updateStatutoryTimeframe24WeeksService.updateAsylumCase(asylumCase, NO, STF24W_RULE32_REMOVAL_REASON);
+                }
+            });
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
@@ -178,7 +191,7 @@ public class UpdateTribunalDecisionHandler implements PreSubmitCallbackHandler<A
         asylumCase.write(AsylumCaseFieldDefinition.IS_REHEARD_APPEAL_ENABLED, YesOrNo.YES);
 
         asylumCase.write(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YES);
-        asylumCase.write(STITCHING_STATUS,"");
+        asylumCase.write(STITCHING_STATUS, "");
     }
 }
 
