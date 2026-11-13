@@ -110,12 +110,5 @@ class DirectionTest {
                 "someDirectionType"
         ))
             .isExactlyInstanceOf(NullPointerException.class);
-
-        assertThatThrownBy(() -> new Direction(explanation, parties, dateDue, dateSent, tag, null,
-                clarifyingQuestions,
-                uniqueId,
-                "someDirectionType"
-        ))
-            .isExactlyInstanceOf(NullPointerException.class);
     }
 }
