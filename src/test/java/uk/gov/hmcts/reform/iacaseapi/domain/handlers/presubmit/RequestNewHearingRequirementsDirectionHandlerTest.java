@@ -113,7 +113,7 @@ class RequestNewHearingRequirementsDirectionHandlerTest {
         final HoursAndMinutes actualCaseHearingLength = new HoursAndMinutes("5", "30");
         final String ariaListingReference = "LP/12345/2020";
         final String listCaseHearingDate = "13/10/2020";
-        final String listCaseHearingLength = "6 hours";
+        final String listCaseHearingLength = "6";
         final String appealDecision = "Dismissed";
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
