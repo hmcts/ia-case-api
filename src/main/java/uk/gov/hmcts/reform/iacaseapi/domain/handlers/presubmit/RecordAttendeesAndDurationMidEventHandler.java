@@ -24,6 +24,8 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 public class RecordAttendeesAndDurationMidEventHandler implements PreSubmitCallbackHandler<AsylumCase> {
     private static final String SELECT_ATTENDEES_AND_DURATION_HEARING_LIST_PAGE_ID =
             "selectHearingRecordAttendeesAndDuration";
+    private static final String TIMES_ATTENDEES_AND_DURATION_PAGE_ID =
+            "timesRecordAttendeesAndDuration";
 
     private final CommonRefDataDynamicListProvider provider;
     private final LocationRefDataService locationRefDataService;
@@ -57,6 +59,10 @@ public class RecordAttendeesAndDurationMidEventHandler implements PreSubmitCallb
 
                 prePopulateActualHearingCancellationReason(asylumCase);
                 prePopulateActualHearingPartHeardReason(asylumCase);
+            }
+            case TIMES_ATTENDEES_AND_DURATION_PAGE_ID -> {
+                log.info("populating attendees and duration participants");
+                asylumCase = iaHearingsApiService.midEvent(callback);
             }
             default -> { }
         }
