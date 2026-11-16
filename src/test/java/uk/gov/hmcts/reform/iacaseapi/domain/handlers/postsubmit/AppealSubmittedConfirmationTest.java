@@ -5,6 +5,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -39,6 +41,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.AsylumCasePostFeePaymentService;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CcdSupplementaryUpdater;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -53,6 +56,8 @@ class AppealSubmittedConfirmationTest {
     @Mock
     private AsylumCase asylumCase;
     @Mock
+    private AsylumCasePostFeePaymentService asylumCasePostFeePaymentService;
+    @Mock
     private CcdSupplementaryUpdater ccdSupplementaryUpdater;
 
     private AppealSubmittedConfirmation appealSubmittedConfirmation;
@@ -63,7 +68,7 @@ class AppealSubmittedConfirmationTest {
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
-        appealSubmittedConfirmation = new AppealSubmittedConfirmation(ccdSupplementaryUpdater);
+        appealSubmittedConfirmation = new AppealSubmittedConfirmation(asylumCasePostFeePaymentService, ccdSupplementaryUpdater);
 
         when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(NO));
     }
@@ -851,5 +856,66 @@ class AppealSubmittedConfirmationTest {
 
         assertNotNull(callbackResponse);
 
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = AppealType.class, names = {"EA", "HU", "PA", "EU"})
+    void should_call_payment_service_for_legal_rep_journey_with_payment_appeal_types(AppealType appealType) {
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.empty());
+        when(asylumCase.read(SUBMISSION_OUT_OF_TIME, YesOrNo.class)).thenReturn(Optional.of(NO));
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
+        when(asylumCase.read(REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.of(RemissionType.NO_REMISSION));
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(NO));
+        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+
+        appealSubmittedConfirmation.handle(callback);
+
+        verify(asylumCasePostFeePaymentService).ccdSubmitted(any());
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = AppealType.class, names = {"EA", "HU", "PA", "EU"})
+    void should_not_call_payment_service_for_aip_journey(AppealType appealType) {
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
+        when(asylumCase.read(SUBMISSION_OUT_OF_TIME, YesOrNo.class)).thenReturn(Optional.of(NO));
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
+        when(asylumCase.read(REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.of(RemissionType.NO_REMISSION));
+        when(asylumCase.read(EA_HU_APPEAL_TYPE_PAYMENT_OPTION, String.class)).thenReturn(Optional.of("payOffline"));
+        when(asylumCase.read(PA_APPEAL_TYPE_PAYMENT_OPTION, String.class)).thenReturn(Optional.of("payOffline"));
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(NO));
+        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+
+        appealSubmittedConfirmation.handle(callback);
+
+        verify(asylumCasePostFeePaymentService, never()).ccdSubmitted(any());
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = AppealType.class, names = {"EA", "HU", "PA", "EU"})
+    void should_not_call_payment_service_for_internal_cases(AppealType appealType) {
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.empty());
+        when(asylumCase.read(SUBMISSION_OUT_OF_TIME, YesOrNo.class)).thenReturn(Optional.of(NO));
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
+        when(asylumCase.read(REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.of(RemissionType.NO_REMISSION));
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+
+        appealSubmittedConfirmation.handle(callback);
+
+        verify(asylumCasePostFeePaymentService, never()).ccdSubmitted(any());
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = AppealType.class, names = {"DC", "RP", "AG"})
+    void should_not_call_payment_service_for_non_payment_appeal_types(AppealType appealType) {
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.empty());
+        when(asylumCase.read(SUBMISSION_OUT_OF_TIME, YesOrNo.class)).thenReturn(Optional.of(NO));
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(NO));
+        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+
+        appealSubmittedConfirmation.handle(callback);
+
+        verify(asylumCasePostFeePaymentService, never()).ccdSubmitted(any());
     }
 }

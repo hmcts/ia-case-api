@@ -28,6 +28,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCall
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PostSubmitCallbackHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.AsylumCasePostFeePaymentService;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CcdSupplementaryUpdater;
 
 @Slf4j
@@ -75,9 +76,13 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
         "\n\nYou can now apply for [interim relief](#).";
 
 
+    private final AsylumCasePostFeePaymentService asylumCasePostFeePaymentService;
     private final CcdSupplementaryUpdater ccdSupplementaryUpdater;
 
-    public AppealSubmittedConfirmation(CcdSupplementaryUpdater ccdSupplementaryUpdater) {
+    public AppealSubmittedConfirmation(
+            AsylumCasePostFeePaymentService asylumCasePostFeePaymentService,
+            CcdSupplementaryUpdater ccdSupplementaryUpdater) {
+        this.asylumCasePostFeePaymentService = asylumCasePostFeePaymentService;
         this.ccdSupplementaryUpdater = ccdSupplementaryUpdater;
     }
 
@@ -112,6 +117,11 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
 
         AppealType appealType = asylumCase.read(APPEAL_TYPE, AppealType.class)
             .orElseThrow(() -> new IllegalStateException("Appeal type is not present"));
+
+        if (isWaysToPay(isEaHuPaEu(asylumCase), !HandlerUtils.isAipJourney(asylumCase))
+                && !isInternalCase(asylumCase)) {
+            sendPaymentCallback(callback);
+        }
 
         if (isInternalCase(asylumCase)) {
             postSubmitResponse.setConfirmationHeader(
@@ -383,5 +393,17 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
             return List.of(EA, HU, PA, EU).contains(appealType);
         }
         return false;
+    }
+
+    private void sendPaymentCallback(Callback<AsylumCase> callback) {
+
+        Callback<AsylumCase> callbackForPaymentApi = new Callback<>(
+                callback.getCaseDetails(),
+                callback.getCaseDetailsBefore(),
+                Event.SUBMIT_APPEAL
+        );
+        log.debug("PostSubmit Callback to ia-case-payments-api to generate service request");
+        asylumCasePostFeePaymentService.ccdSubmitted(callbackForPaymentApi);
+
     }
 }
