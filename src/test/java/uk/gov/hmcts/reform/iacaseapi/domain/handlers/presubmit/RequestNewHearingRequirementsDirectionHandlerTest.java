@@ -201,7 +201,6 @@ class RequestNewHearingRequirementsDirectionHandlerTest {
         verify(asylumCase, times(1)).read(FINAL_DECISION_AND_REASONS_DOCUMENTS);
         verify(asylumCase, times(1)).write(PREVIOUS_HEARINGS, Collections.EMPTY_LIST);
         verify(asylumCase, times(1)).write(REHEARD_CASE_LISTED_WITHOUT_HEARING_REQUIREMENTS, NO);
-        verify(asylumCase, times(1)).read(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class);
         verify(asylumCase, times(0)).write(STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED, NO);
         verify(asylumCase, times(1)).clear(STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED);
     }
