@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import tools.jackson.databind.annotation.JsonDeserialize;
 import tools.jackson.databind.annotation.JsonSerialize;
 import tools.jackson.databind.ext.javatime.deser.LocalDateDeserializer;
@@ -13,6 +14,7 @@ public class DatesToAvoid {
     private LocalDate dateToAvoid;
     private String dateToAvoidReason;
 
+    @JsonCreator
     public DatesToAvoid() {
         // noop -- for deserializer
     }

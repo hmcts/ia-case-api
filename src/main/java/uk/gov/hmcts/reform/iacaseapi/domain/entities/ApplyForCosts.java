@@ -3,6 +3,8 @@ package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 import static java.util.Objects.requireNonNull;
 
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -53,6 +55,7 @@ public class ApplyForCosts {
     private String tribunalConsideringReason;
     private List<IdValue<Document>> judgeEvidenceForCostsOrder;
 
+    @JsonCreator
     public ApplyForCosts() {
         // noop -- for deserializer
     }

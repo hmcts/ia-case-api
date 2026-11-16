@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd;
 
 import static org.apache.commons.lang3.ObjectUtils.getIfNull;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import tools.jackson.core.JsonParser;
 import tools.jackson.databind.DeserializationContext;
 import tools.jackson.databind.JsonNode;
@@ -14,6 +15,7 @@ public class HoursMinutes {
     private int hours;
     private int minutes;
 
+    @JsonCreator
     public HoursMinutes() {
         // noop -- for deserializer
     }

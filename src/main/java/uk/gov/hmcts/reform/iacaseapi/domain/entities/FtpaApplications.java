@@ -1,6 +1,8 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -38,6 +40,7 @@ public class FtpaApplications {
     private String ftpaDecisionDate;
     private String ftpaAppellantGroundsText;
 
+    @JsonCreator
     private FtpaApplications() {
         // noop -- for deserializer
     }
