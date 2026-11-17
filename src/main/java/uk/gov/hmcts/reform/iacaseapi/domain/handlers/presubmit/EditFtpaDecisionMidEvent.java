@@ -22,7 +22,7 @@ public class EditFtpaDecisionMidEvent implements PreSubmitCallbackHandler<Asylum
     private final CurrentFtpaDecisionResolver currentFtpaDecisionResolver;
     static final String DOCUMENT_UPLOAD_PAGE_ID = "ftpaDecisionAndReasonsDocumentUploadPage";
     static final String NOTHING_CHANGED_ERROR =
-        "You must change the decision or Decision and Reasons document to continue";
+        "You must update the decision or Decision and Reasons document to continue";
     static final String NOT_PDF_ERROR = "The Decision and Reasons document must be a PDF file";
 
     public EditFtpaDecisionMidEvent(
