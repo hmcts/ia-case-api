@@ -44,6 +44,8 @@ class RecordAttendeesAndDurationHandlerTest {
     @Mock
     private AsylumCase asylumCase;
     @Mock
+    private AsylumCase originalAsylumCase;
+    @Mock
     private IaHearingsApiService iaHearingsApiService;
 
     private RecordAttendeesAndDurationHandler recordAttendeesAndDurationHandler;
@@ -59,12 +61,15 @@ class RecordAttendeesAndDurationHandlerTest {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.RECORD_ATTENDEES_AND_DURATION);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(caseDetails.getCaseData()).thenReturn(originalAsylumCase);
+        when(iaHearingsApiService.aboutToSubmit(callback)).thenReturn(asylumCase);
 
         PreSubmitCallbackResponse<AsylumCase> response =
             recordAttendeesAndDurationHandler.handle(ABOUT_TO_SUBMIT, callback);
 
+        // the case data returned by ia-hearings-api (with actual hearing length and attending judge) is kept
         assertEquals(asylumCase, response.getData());
+        verifyNoInteractions(originalAsylumCase);
         assertTrue(response.getErrors().isEmpty());
 
         verify(iaHearingsApiService, times(1)).aboutToSubmit(callback);

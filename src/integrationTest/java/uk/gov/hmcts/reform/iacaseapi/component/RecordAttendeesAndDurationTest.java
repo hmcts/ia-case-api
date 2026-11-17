@@ -29,6 +29,8 @@ import uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.PostSubmitCall
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.PreSubmitCallbackResponseForTest;
 import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
@@ -58,6 +60,9 @@ class RecordAttendeesAndDurationTest extends SpringBootIntegrationTest implement
 
         addServiceAuthStub(server);
         when(userDetailsProvider.getUserDetails()).thenReturn(userDetails);
+        // return the callback's case data, as ia-hearings-api does
+        when(iaHearingsApiService.aboutToSubmit(any()))
+            .thenAnswer(invocation -> invocation.<Callback<AsylumCase>>getArgument(0).getCaseDetails().getCaseData());
 
         PreSubmitCallbackResponseForTest response = iaCaseApiClient.aboutToSubmit(callback()
             .event(Event.RECORD_ATTENDEES_AND_DURATION)
