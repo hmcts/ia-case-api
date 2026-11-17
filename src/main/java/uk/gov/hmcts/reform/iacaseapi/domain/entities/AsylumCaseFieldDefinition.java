@@ -2367,6 +2367,9 @@ public enum AsylumCaseFieldDefinition {
     ATTENDEES_AND_DURATION_HEARING_ID(
             "attendeesAndDurationHearingId", new TypeReference<String>(){}),
 
+    ATTENDEES_AND_DURATION_CASE_REFERENCE(
+            "attendeesAndDurationCaseReference", new TypeReference<String>(){}),
+
     ATTENDEES_AND_DURATION_HEARING_DATE(
             "attendeesAndDurationHearingDate", new TypeReference<String>(){}),
 
