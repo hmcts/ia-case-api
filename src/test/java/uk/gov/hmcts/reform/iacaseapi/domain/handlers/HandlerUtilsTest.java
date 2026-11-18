@@ -3,10 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.CsvSource;
-import org.junit.jupiter.params.provider.EnumSource;
-import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.*;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
@@ -1705,28 +1702,12 @@ class HandlerUtilsTest {
     }
 
     @ParameterizedTest
-    @CsvSource({
-        "LEGAL_REPRESENTATIVE,QM_LEGAL_REPRESENTATIVE_QUERIES",
-        "CITIZEN,QM_CITIZEN_QUERIES"
-    })
-    void determineQueryCollection_should_return_correct_collection(UserRoleLabel userRoleLabel, AsylumCaseFieldDefinition fieldDefinition) {
-        when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails))
-                .thenReturn(userRoleLabel);
+    @ValueSource(booleans = {true, false})
+    void determineQueryCollection_should_return_correct_collection(boolean isRepJourney) {
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(isRepJourney ? JourneyType.REP : JourneyType.AIP));
 
-        AsylumCaseFieldDefinition result = HandlerUtils.determineQueryCollection(userDetailsHelper, userDetails);
+        AsylumCaseFieldDefinition result = HandlerUtils.determineQueryCollection(asylumCase);
 
-        assertEquals(fieldDefinition, result);
-    }
-
-    @ParameterizedTest
-    @EnumSource(value = UserRoleLabel.class, names = {"CITIZEN", "LEGAL_REPRESENTATIVE"}, mode = EnumSource.Mode.EXCLUDE)
-    void determineQueryCollection_should_throw_if_not_available_for_user(UserRoleLabel userRoleLabel) {
-        when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails))
-            .thenReturn(userRoleLabel);
-
-        IllegalStateException exception = assertThrows(IllegalStateException.class,
-            () -> HandlerUtils.determineQueryCollection(userDetailsHelper, userDetails));
-
-        assertEquals("Unsupported user role: " + userRoleLabel.toString(), exception.getMessage());
+        assertEquals(isRepJourney ? QM_LEGAL_REPRESENTATIVE_QUERIES : QM_CITIZEN_QUERIES, result);
     }
 }

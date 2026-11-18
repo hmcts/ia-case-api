@@ -11,15 +11,13 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsHelper;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserRoleLabel;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.controllers.model.querymanagement.CaseQueriesCollection;
 
 import java.util.Optional;
@@ -27,6 +25,7 @@ import java.util.Optional;
 import static java.util.Collections.emptyList;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOURNEY_TYPE;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -38,10 +37,6 @@ class RaiseQueryCallbackPreparerTest {
     private CaseDetails<AsylumCase> caseDetails;
     @Mock
     private AsylumCase asylumCase;
-    @Mock
-    private UserDetails userDetails;
-    @Mock
-    private UserDetailsHelper userDetailsHelper;
     @Captor
     private ArgumentCaptor<CaseQueriesCollection> collectionCaptor;
 
@@ -49,7 +44,7 @@ class RaiseQueryCallbackPreparerTest {
 
     @BeforeEach
     void setUp() {
-        handler = new RaiseQueryCallbackPreparer(userDetails, userDetailsHelper);
+        handler = new RaiseQueryCallbackPreparer();
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(Event.QUERY_MANAGEMENT_RAISE_QUERY);
@@ -73,11 +68,11 @@ class RaiseQueryCallbackPreparerTest {
 
     @ParameterizedTest
     @CsvSource({
-        "LEGAL_REPRESENTATIVE,QM_LEGAL_REPRESENTATIVE_QUERIES",
-        "CITIZEN,QM_CITIZEN_QUERIES"
+        "true,QM_LEGAL_REPRESENTATIVE_QUERIES",
+        "false,QM_CITIZEN_QUERIES"
     })
-    void should_initialize_queries_with_empty_collection_if_absent(UserRoleLabel label, AsylumCaseFieldDefinition field) {
-        when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(label);
+    void should_initialize_queries_with_empty_collection_if_absent(boolean isRepJourney, AsylumCaseFieldDefinition field) {
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(isRepJourney ? JourneyType.REP : JourneyType.AIP));
 
         when(asylumCase.read(field, CaseQueriesCollection.class))
             .thenReturn(Optional.empty());
@@ -90,11 +85,11 @@ class RaiseQueryCallbackPreparerTest {
 
     @ParameterizedTest
     @CsvSource({
-        "LEGAL_REPRESENTATIVE,QM_LEGAL_REPRESENTATIVE_QUERIES",
-        "CITIZEN,QM_CITIZEN_QUERIES"
+        "true,QM_LEGAL_REPRESENTATIVE_QUERIES",
+        "false,QM_CITIZEN_QUERIES"
     })
-    void should_preserve_existing_collection_when_already_present(UserRoleLabel label, AsylumCaseFieldDefinition field) {
-        when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(label);
+    void should_preserve_existing_collection_when_already_present(boolean isRepJourney, AsylumCaseFieldDefinition field) {
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(isRepJourney ? JourneyType.REP : JourneyType.AIP));
 
         CaseQueriesCollection existing = CaseQueriesCollection.builder()
             .caseMessages(emptyList())
