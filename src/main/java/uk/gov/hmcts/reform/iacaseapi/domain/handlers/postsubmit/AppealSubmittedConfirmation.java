@@ -328,9 +328,11 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
                                          YesOrNo submissionOutOfTime,
                                          AsylumCase asylumCase) {
 
-        String payForAppeal = "You must now pay for this appeal. First [create a service request](/case/IA/Asylum/"
-                + callback.getCaseDetails().getId() + "/trigger/generateServiceRequest), you can do this by "
-                + "selecting 'Create a service request' from the 'Next step' dropdown list. Then select 'Go'.\n\n";
+        String payForAppeal = "You must now pay for this appeal. [Pay for appeal](cases/case-details/"
+                + callback.getCaseDetails().getId() + "#Service%20Request)\n\n"
+                + "A service request will be created automatically when your appeal is submitted. "
+                + "If a service request has not been created, select 'Create a service request' "
+                + "from the 'Next step' dropdown list and select 'Go' to create one manually.\n\n";
 
         if (isInternalCase(asylumCase)) {
             postSubmitCallbackResponse.setConfirmationBody(

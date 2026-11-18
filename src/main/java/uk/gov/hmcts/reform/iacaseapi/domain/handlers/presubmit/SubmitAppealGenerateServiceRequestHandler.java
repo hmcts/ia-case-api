@@ -2,15 +2,19 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMISSION_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType.NO_REMISSION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SUBMIT_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isInternalCase;
 
 import java.util.List;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.DispatchPriority;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
@@ -24,8 +28,13 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.FeePayment;
 public class SubmitAppealGenerateServiceRequestHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final FeePayment<AsylumCase> feePayment;
+    private final boolean isFeePaymentEnabled;
 
-    public SubmitAppealGenerateServiceRequestHandler(FeePayment<AsylumCase> feePayment) {
+    public SubmitAppealGenerateServiceRequestHandler(
+        @Value("${featureFlag.isfeePaymentEnabled}") boolean isFeePaymentEnabled,
+        FeePayment<AsylumCase> feePayment
+    ) {
+        this.isFeePaymentEnabled = isFeePaymentEnabled;
         this.feePayment = feePayment;
     }
 
@@ -44,11 +53,16 @@ public class SubmitAppealGenerateServiceRequestHandler implements PreSubmitCallb
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
+        Optional<RemissionType> remissionType = asylumCase.read(REMISSION_TYPE, RemissionType.class);
+
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
                && callback.getEvent() == SUBMIT_APPEAL
                && isWaysToPay(asylumCase)
                && !HandlerUtils.isAipJourney(asylumCase)
-               && !isInternalCase(asylumCase);
+               && !isInternalCase(asylumCase)
+               && isFeePaymentEnabled
+               && remissionType.isPresent()
+               && remissionType.get() == NO_REMISSION;
     }
 
     @Override
