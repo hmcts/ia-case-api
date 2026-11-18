@@ -8,6 +8,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.HoursAndMinutes;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.HoursMinutes;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 
 @EqualsAndHashCode
@@ -33,7 +34,7 @@ public class PreviousHearing {
     private String listCaseHearingDate;
 
     @Getter
-    private String listCaseHearingLength;
+    private Optional<HoursMinutes> listCaseHearingLength;
 
     private HearingCentre listCaseHearingCentre;
     private String appealDecision;
@@ -51,7 +52,7 @@ public class PreviousHearing {
         String ariaListingReference,
         HearingCentre listCaseHearingCentre,
         String listCaseHearingDate,
-        String listCaseHearingLength,
+        Optional<HoursMinutes> listCaseHearingLength,
         String appealDecision,
         List<IdValue<DocumentWithMetadata>> finalDecisionAndReasonsDocuments
 

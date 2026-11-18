@@ -142,7 +142,7 @@ class RequestNewHearingRequirementsDirectionHandlerTest {
         final HoursAndMinutes actualCaseHearingLength = new HoursAndMinutes("5", "30");
         final String ariaListingReference = "LP/12345/2020";
         final String listCaseHearingDate = "13/10/2020";
-        final String listCaseHearingLength = "6 hours";
+        final String listCaseHearingLength = "360";
         final String appealDecision = "Dismissed";
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -252,7 +252,7 @@ class RequestNewHearingRequirementsDirectionHandlerTest {
         final HoursAndMinutes actualCaseHearingLength = new HoursAndMinutes("5", "30");
         final String ariaListingReference = "LP/12345/2020";
         final String listCaseHearingDate = "13/10/2020";
-        final String listCaseHearingLength = "6 hours";
+        final String listCaseHearingLength = "360";
         final String appealDecision = "Dismissed";
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -348,6 +348,7 @@ class RequestNewHearingRequirementsDirectionHandlerTest {
         return Stream.of(
                 Arguments.of(YES, NEWPORT, YES),
                 Arguments.of(YES, NEWPORT, NO),
+                Arguments.of(NO, NEWPORT, NO),
                 Arguments.of(NO, DECISION_WITHOUT_HEARING, YES),
                 Arguments.of(NO, DECISION_WITHOUT_HEARING, NO),
                 Arguments.of(NO, null, NO),
