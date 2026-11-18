@@ -56,6 +56,7 @@ java:
     PA_PAY_LATER_DUE_DATE: 14
     HOME_OFFICE_VALIDATION_ENABLED: "false"
     STATUTORY_TIMEFRAME_LIVE_DATE: "2026-08-12"
+    GENERATE_SERVICE_REQUEST_DELAY_SECONDS: 30
   postgresql:
     auth:
       username: ia_case_api

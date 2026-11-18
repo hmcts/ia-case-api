@@ -8,7 +8,10 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isAppea
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsHelper;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserRoleLabel;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
@@ -20,10 +23,16 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 public class GenerateServiceRequestPreparer implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final boolean isFeePaymentEnabled;
+    private final UserDetails userDetails;
+    private final UserDetailsHelper userDetailsHelper;
 
     public GenerateServiceRequestPreparer(
-        @Value("${featureFlag.isfeePaymentEnabled}") boolean isFeePaymentEnabled) {
+        @Value("${featureFlag.isfeePaymentEnabled}") boolean isFeePaymentEnabled,
+        UserDetails userDetails,
+        UserDetailsHelper userDetailsHelper) {
         this.isFeePaymentEnabled = isFeePaymentEnabled;
+        this.userDetails = userDetails;
+        this.userDetailsHelper = userDetailsHelper;
     }
 
     public boolean canHandle(
@@ -49,23 +58,34 @@ public class GenerateServiceRequestPreparer implements PreSubmitCallbackHandler<
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
         PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
 
-        if (isAppealPaid(asylumCase) && !asylumCase.read(REFUND_CONFIRMATION_APPLIED, YesOrNo.class).orElse(YesOrNo.NO).equals(YesOrNo.YES)) {
+        boolean isSystemUser = userDetailsHelper.getLoggedInUserRoleLabel(userDetails).equals(UserRoleLabel.SYSTEM);
+
+        if (isSystemUser) {
+            return new PreSubmitCallbackResponse<>(asylumCase);
+        }
+
+        boolean refundConfirmed = asylumCase.read(REFUND_CONFIRMATION_APPLIED, YesOrNo.class)
+            .orElse(YesOrNo.NO).equals(YesOrNo.YES);
+        boolean hasServiceRequestRef = !asylumCase.read(SERVICE_REQUEST_REFERENCE, String.class)
+            .orElse("").isEmpty();
+        boolean hasServiceRequestAlready = asylumCase.read(HAS_SERVICE_REQUEST_ALREADY, YesOrNo.class)
+            .orElse(YesOrNo.NO).equals(YesOrNo.YES);
+
+        if (isAppealPaid(asylumCase) && !refundConfirmed) {
             response.addError(
                 "Refund confirmation should be done first to make another service request."
             );
             return response;
         }
 
-        if (!asylumCase.read(REFUND_CONFIRMATION_APPLIED, YesOrNo.class).orElse(YesOrNo.NO).equals(YesOrNo.YES)
-            && (!asylumCase.read(SERVICE_REQUEST_REFERENCE, String.class).orElse("").isEmpty()
-            || asylumCase.read(HAS_SERVICE_REQUEST_ALREADY, YesOrNo.class).orElse(YesOrNo.NO).equals(YesOrNo.YES))
-        ) {
+        if (!refundConfirmed && (hasServiceRequestRef || hasServiceRequestAlready)) {
             response.addError(
                 "A service request has already been created for this case. Pay via the 'Service Request' tab."
             );
             return response;
         }
 
-        return new PreSubmitCallbackResponse<>(asylumCase);
+        return response;
     }
+
 }
