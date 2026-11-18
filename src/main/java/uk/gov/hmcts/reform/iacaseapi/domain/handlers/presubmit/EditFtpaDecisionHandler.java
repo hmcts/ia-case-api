@@ -20,6 +20,7 @@ import java.util.Set;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithDescription;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithMetadata;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.FtpaApplications;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -84,9 +85,7 @@ public class EditFtpaDecisionHandler implements PreSubmitCallbackHandler<AsylumC
 
         final String party = ftpaApplicantType.toUpperCase();
 
-        final boolean isLegacyDecision = asylumCase
-            .read(valueOf("FTPA_APPLICATION_%s_DOCUMENT".formatted(party)), Document.class)
-            .isEmpty();
+        final boolean isLegacyDecision = isLegacyDecision(asylumCase, party);
 
         if (currentFtpaDecisionResolver.isDecisionChanged(asylumCase)) {
             applyNewOutcome(asylumCase, ftpaApplicantType, party);
@@ -101,6 +100,18 @@ public class EditFtpaDecisionHandler implements PreSubmitCallbackHandler<AsylumC
         currentFtpaDecisionResolver.clearUpdateFtpaDecisionFields(asylumCase);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
+    }
+
+    private boolean isLegacyDecision(AsylumCase asylumCase, String party) {
+        boolean hasNewJourneyDocument = asylumCase
+            .read(valueOf("FTPA_APPLICATION_%s_DOCUMENT".formatted(party)), Document.class)
+            .isPresent();
+
+        Optional<List<IdValue<DocumentWithDescription>>> maybeLegacyDecisionDocuments =
+            asylumCase.read(valueOf("FTPA_%s_DECISION_DOCUMENT".formatted(party)));
+
+        return !hasNewJourneyDocument
+            && maybeLegacyDecisionDocuments.map(documents -> !documents.isEmpty()).orElse(false);
     }
 
     private void applyNewOutcome(AsylumCase asylumCase, String ftpaApplicantType, String party) {
