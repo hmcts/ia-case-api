@@ -16,6 +16,10 @@
           "paymentStatus": "Payment pending",
           "paAppealTypePaymentOption": "payNow",
           "decisionHearingFeeOption": "decisionWithHearing",
+          "feeCode": "FEE0238",
+          "feeVersion": "4",
+          "feeAmountGbp": "14400",
+          "feeDescription": "Appeal determined with a hearing",
           "uploadTheNoticeOfDecisionDocs": [
             {
               "id": "1",
