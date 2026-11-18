@@ -1,0 +1,48 @@
+{
+  "description": "DIAC-2873 Submit appeal generates service request automatically for legal rep with no remission",
+  "disabled": "!{$featureFlag.isfeePaymentEnabled}",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "LegalRepresentative",
+    "input": {
+      "eventId": "submitAppeal",
+      "state": "appealStarted",
+      "caseData": {
+        "template": "minimal-appeal-started.json",
+        "replacements": {
+          "homeOfficeDecisionDate": "{$TODAY-14}",
+          "appealType": "protection",
+          "remissionType": "noRemission",
+          "uploadTheNoticeOfDecisionDocs": [
+            {
+              "id": "1",
+              "value": {
+                "document": {
+                  "document_url": "http://dm-store/documents/c78071ff-a011-42c1-99a2-17b0adb9b906",
+                  "document_filename": "some-notice-of-decision-letter.pdf",
+                  "document_binary_url": "http://dm-store/documents/c78071ff-a011-42c1-99a2-17b0adb9b906/binary"
+                },
+                "description": "some notice of decision description"
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-started.json",
+      "replacements": {
+        "appealReferenceNumber": "$/(.+)/",
+        "submissionOutOfTime": "No",
+        "homeOfficeDecisionDate": "{$TODAY-14}",
+        "remissionType": "noRemission",
+        "hasServiceRequestAlready": "Yes",
+        "serviceRequestReference": "$/(.+)/"
+      }
+    }
+  }
+}
