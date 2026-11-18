@@ -44,8 +44,9 @@
       "template": "minimal-appeal-started.json",
       "replacements": {
         "appealReferenceNumber": "$/(.+)/",
-        "legalRepresentativeName": "{$IA_USER_PREFIX}A Test Legal Rep",
-        "legalRepresentativeEmailAddress": "{$TEST_LAW_FIRM_A_USERNAME}",
+        "submissionOutOfTime": "No",
+        "homeOfficeDecisionDate": "{$TODAY-14}",
+        "remissionType": "noRemission",
         "hasServiceRequestAlready": "Yes",
         "serviceRequestReference": "$/(.+)/"
       }
