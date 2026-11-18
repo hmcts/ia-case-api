@@ -6,7 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.io.ClassPathResource;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
-import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsHelper;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -44,7 +43,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfCountryDecision
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfCountryDecisionType.REFUSE_PERMIT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagType.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagType.LITIGATION_FRIEND;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.UserRoleLabel.LEGAL_REPRESENTATIVE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.statutorytimeframe24weeks.STF24WeeksUtils.getEffectiveState;
@@ -1179,16 +1177,11 @@ public class HandlerUtils {
             || (tribunalReceivedDate.isEmpty() && appealSubmissionDate.isPresent() && !LocalDate.parse(appealSubmissionDate.get()).isBefore(stf24wLiveDate));
     }
 
-    public static AsylumCaseFieldDefinition determineQueryCollection(UserDetailsHelper userDetailsHelper, UserDetails userDetails) {
-
-        UserRoleLabel role = userDetailsHelper.getLoggedInUserRoleLabel(userDetails);
-
-        if (role.equals(LEGAL_REPRESENTATIVE)) {
+    public static AsylumCaseFieldDefinition determineQueryCollection(AsylumCase asylumCase) {
+        if (isRepJourney(asylumCase)) {
             return AsylumCaseFieldDefinition.QM_LEGAL_REPRESENTATIVE_QUERIES;
-        } else if (role.equals(UserRoleLabel.CITIZEN)) {
+        } else {
             return AsylumCaseFieldDefinition.QM_CITIZEN_QUERIES;
         }
-
-        throw new IllegalStateException("Unsupported user role: " + role);
     }
 }
