@@ -610,6 +610,7 @@ class HearingCentreFinderTest {
             HearingCentre.NOTTINGHAM,
             HearingCentre.HARMONDSWORTH,
             HearingCentre.HENDON,
+            HearingCentre.KIRKLEES,
             HearingCentre.YARLS_WOOD,
             HearingCentre.BRADFORD_KEIGHLEY,
             HearingCentre.MCC_MINSHULL,
