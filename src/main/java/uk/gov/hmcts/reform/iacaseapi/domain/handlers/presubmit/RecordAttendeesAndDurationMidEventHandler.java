@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,7 +35,6 @@ public class RecordAttendeesAndDurationMidEventHandler implements PreSubmitCallb
             "timesRecordAttendeesAndDuration";
 
     private static final String ATTENDANCE_TYPE = "attendanceType";
-    private static final String ATTENDANCE_TYPE_LIST = "attendanceTypeList";
 
     private final CommonRefDataDynamicListProvider provider;
     private final LocationRefDataService locationRefDataService;
@@ -118,51 +116,44 @@ public class RecordAttendeesAndDurationMidEventHandler implements PreSubmitCallb
     }
 
     /**
-     * Pre-filled attendees choose their attendance type from HearingSubChannel ref data. ExUI shows no options for
-     * a dynamic list in rows added with "Add new", so those rows keep the fixed list in attendanceType.
+     * Every attendee chooses their attendance type from HearingSubChannel ref data, with HMC's sub-channel
+     * preselected. ExUI shows no options for this list in rows added with "Add new".
      */
     @SuppressWarnings("unchecked")
     private void prePopulateAttendanceTypeLists(AsylumCase asylumCase) {
         List<Object> participants = asylumCase.<List<Object>>read(ATTENDEES_AND_DURATION_PARTICIPANTS)
             .orElse(List.of());
-        if (participants.stream().noneMatch(this::isPrefilled)) {
+        if (participants.isEmpty()) {
             return;
         }
 
         List<Value> subChannels = provider.provideHearingSubChannels().getListItems();
         List<Object> updated = new ArrayList<>();
         for (Object item : participants) {
-            if (!isPrefilled(item)) {
+            if (!(item instanceof Map<?, ?> original) || !(original.get("value") instanceof Map<?, ?> value)) {
                 updated.add(item);
                 continue;
             }
-            Map<String, Object> row = new LinkedHashMap<>((Map<String, Object>) item);
-            Map<String, Object> participant = new LinkedHashMap<>((Map<String, Object>) row.get("value"));
-            String selectedCode = selectedCode(participant.get(ATTENDANCE_TYPE_LIST))
-                .orElseGet(() -> Objects.toString(participant.get(ATTENDANCE_TYPE), ""));
+            Map<String, Object> row = new LinkedHashMap<>((Map<String, Object>) original);
+            Map<String, Object> participant = new LinkedHashMap<>((Map<String, Object>) value);
+            String selectedCode = selectedCode(participant.get(ATTENDANCE_TYPE)).orElse("");
             Value selected = subChannels.stream()
                 .filter(subChannel -> selectedCode.equals(subChannel.getCode()))
                 .findFirst()
                 .orElse(new Value("", ""));
-            participant.put(ATTENDANCE_TYPE_LIST, new DynamicList(selected, subChannels));
+            participant.put(ATTENDANCE_TYPE, new DynamicList(selected, subChannels));
             row.put("value", participant);
             updated.add(row);
         }
         asylumCase.write(ATTENDEES_AND_DURATION_PARTICIPANTS, updated);
     }
 
-    private boolean isPrefilled(Object item) {
-        return item instanceof Map<?, ?> row
-            && row.get("value") instanceof Map<?, ?> participant
-            && "Yes".equals(participant.get("prefilled"));
-    }
-
-    private Optional<String> selectedCode(Object attendanceTypeList) {
-        // keeps the caseworker's choice when they come back to the times page
-        if (attendanceTypeList instanceof DynamicList list) {
+    private Optional<String> selectedCode(Object attendanceType) {
+        // HMC's sub-channel from ia-hearings-api, or the caseworker's choice when they come back to the times page
+        if (attendanceType instanceof DynamicList list) {
             return Optional.ofNullable(list.getValue()).map(Value::getCode).filter(code -> !code.isBlank());
         }
-        if (attendanceTypeList instanceof Map<?, ?> list && list.get("value") instanceof Map<?, ?> value) {
+        if (attendanceType instanceof Map<?, ?> list && list.get("value") instanceof Map<?, ?> value) {
             return Optional.ofNullable(value.get("code")).map(Object::toString).filter(code -> !code.isBlank());
         }
         return Optional.empty();

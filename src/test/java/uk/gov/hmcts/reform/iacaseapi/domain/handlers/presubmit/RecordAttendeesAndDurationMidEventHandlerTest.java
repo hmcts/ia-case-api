@@ -155,13 +155,13 @@ class RecordAttendeesAndDurationMidEventHandlerTest {
 
     @Test
     @SuppressWarnings("unchecked")
-    void should_add_sub_channel_lists_to_pre_filled_participants_on_times_page() {
+    void should_add_sub_channel_lists_to_participants_on_times_page() {
         when(callback.getPageId()).thenReturn(TIMES_PAGE_ID);
-        Map<String, Object> fromHmc = row("1", Map.of("prefilled", "Yes", "attendanceType", "TELCVP"));
-        Map<String, Object> alreadyChosen = row("2", Map.of("prefilled", "Yes", "attendanceType", "TELCVP",
-            "attendanceTypeList", Map.of("value", Map.of("code", "VIDCVP", "label", "Video - CVP"))));
-        Map<String, Object> unknownChannel = row("3", Map.of("prefilled", "Yes", "attendanceType", "TELBTM"));
-        Map<String, Object> added = row("4", Map.of("attendanceType", "INTER"));
+        Map<String, Object> fromHmc = row("1", Map.of("prefilled", "Yes", "attendanceType", hmcChannel("TELCVP")));
+        Map<String, Object> alreadyChosen = row("2", Map.of("prefilled", "Yes",
+            "attendanceType", Map.of("value", Map.of("code", "VIDCVP", "label", "Video - CVP"))));
+        Map<String, Object> unknownChannel = row("3", Map.of("prefilled", "Yes", "attendanceType", hmcChannel("TELBTM")));
+        Map<String, Object> added = row("4", Map.of("firstName", "Ann"));
         when(updatedAsylumCase.read(ATTENDEES_AND_DURATION_PARTICIPANTS))
             .thenReturn(Optional.of(List.of(fromHmc, alreadyChosen, unknownChannel, added)));
 
@@ -171,21 +171,20 @@ class RecordAttendeesAndDurationMidEventHandlerTest {
         verify(updatedAsylumCase).write(eq(ATTENDEES_AND_DURATION_PARTICIPANTS), captor.capture());
         List<Object> participants = captor.getValue();
         assertEquals(new DynamicList(new Value("TELCVP", "Telephone - CVP"), subChannels),
-            attendanceTypeList(participants.get(0)));
+            attendanceType(participants.get(0)));
         assertEquals(new DynamicList(new Value("VIDCVP", "Video - CVP"), subChannels),
-            attendanceTypeList(participants.get(1)));
-        assertEquals(new DynamicList(new Value("", ""), subChannels), attendanceTypeList(participants.get(2)));
-        assertEquals("TELCVP", ((Map<String, Object>) ((Map<String, Object>) participants.get(0)).get("value"))
-            .get("attendanceType"));
+            attendanceType(participants.get(1)));
+        assertEquals(new DynamicList(new Value("", ""), subChannels), attendanceType(participants.get(2)));
+        assertEquals(new DynamicList(new Value("", ""), subChannels), attendanceType(participants.get(3)));
         assertEquals("1", ((Map<String, Object>) participants.get(0)).get("id"));
-        assertEquals(added, participants.get(3));
+        assertEquals("Ann", ((Map<String, Object>) ((Map<String, Object>) participants.get(3)).get("value"))
+            .get("firstName"));
     }
 
     @Test
-    void should_not_call_ref_data_when_no_participant_is_pre_filled() {
+    void should_not_call_ref_data_when_there_are_no_participants() {
         when(callback.getPageId()).thenReturn(TIMES_PAGE_ID);
-        when(updatedAsylumCase.read(ATTENDEES_AND_DURATION_PARTICIPANTS))
-            .thenReturn(Optional.of(List.of(row("1", Map.of("attendanceType", "INTER")))));
+        when(updatedAsylumCase.read(ATTENDEES_AND_DURATION_PARTICIPANTS)).thenReturn(Optional.of(List.of()));
 
         handler.handle(MID_EVENT, callback);
 
@@ -193,13 +192,17 @@ class RecordAttendeesAndDurationMidEventHandlerTest {
         verify(updatedAsylumCase, never()).write(eq(ATTENDEES_AND_DURATION_PARTICIPANTS), any());
     }
 
+    private static Map<String, Object> hmcChannel(String code) {
+        return Map.of("value", Map.of("code", code, "label", code), "list_items", List.of());
+    }
+
     private static Map<String, Object> row(String id, Map<String, Object> value) {
         return Map.of("id", id, "value", value);
     }
 
     @SuppressWarnings("unchecked")
-    private static Object attendanceTypeList(Object row) {
-        return ((Map<String, Object>) ((Map<String, Object>) row).get("value")).get("attendanceTypeList");
+    private static Object attendanceType(Object row) {
+        return ((Map<String, Object>) ((Map<String, Object>) row).get("value")).get("attendanceType");
     }
 
     @Test
