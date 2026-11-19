@@ -55,6 +55,10 @@ class RecordAttendeesAndDurationMidEventHandlerTest {
         new Value("INTER", "In Person"),
         new Value("TELCVP", "Telephone - CVP"),
         new Value("VIDCVP", "Video - CVP"));
+    private final List<Value> roles = List.of(
+        new Value("APEL", "Appellant"),
+        new Value("INTP", "Interpreter"),
+        new Value("LGRP", "Legal Representative"));
     private final List<Value> partHeardReasons = List.of(
         new Value("timeRanOut", "Time ran out"),
         new Value("judgeUnwell", "Judge unwell"));
@@ -88,6 +92,7 @@ class RecordAttendeesAndDurationMidEventHandlerTest {
             .thenReturn(new DynamicList(new Value("", ""), partHeardReasons));
 
         when(provider.provideHearingSubChannels()).thenReturn(new DynamicList(new Value("", ""), subChannels));
+        when(provider.provideEntityRoleCodes()).thenReturn(new DynamicList(new Value("", ""), roles));
 
         handler = new RecordAttendeesAndDurationMidEventHandler(provider, locationRefDataService, iaHearingsApiService);
     }
@@ -154,31 +159,54 @@ class RecordAttendeesAndDurationMidEventHandlerTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
-    void should_add_sub_channel_lists_to_participants_on_times_page() {
+    void should_add_ref_data_lists_to_participants_on_times_page() {
         when(callback.getPageId()).thenReturn(TIMES_PAGE_ID);
-        Map<String, Object> fromHmc = row("1", Map.of("prefilled", "Yes", "attendanceType", hmcChannel("TELCVP")));
+        Map<String, Object> fromHmc = row("1", Map.of("prefilled", "Yes", "attendanceType", hmcValue("TELCVP"),
+            "role", hmcValue("INTP"), "roleLabel", "INTP"));
         Map<String, Object> alreadyChosen = row("2", Map.of("prefilled", "Yes",
-            "attendanceType", Map.of("value", Map.of("code", "VIDCVP", "label", "Video - CVP"))));
-        Map<String, Object> unknownChannel = row("3", Map.of("prefilled", "Yes", "attendanceType", hmcChannel("TELBTM")));
-        Map<String, Object> added = row("4", Map.of("firstName", "Ann"));
+            "attendanceType", Map.of("value", Map.of("code", "VIDCVP", "label", "Video - CVP")),
+            "role", hmcValue("APEL"), "roleLabel", "Appellant"));
+        Map<String, Object> unknownValues = row("3", Map.of("prefilled", "Yes", "attendanceType", hmcValue("TELBTM"),
+            "role", hmcValue("XXXX"), "roleLabel", "XXXX"));
+        Map<String, Object> added = row("4", Map.of("firstName", "Ann",
+            "role", Map.of("value", Map.of("code", "LGRP", "label", "Legal Representative")),
+            "representedParty", Map.of("value", Map.of("code", "APEL", "label", "Appellant"))));
         when(updatedAsylumCase.read(ATTENDEES_AND_DURATION_PARTICIPANTS))
-            .thenReturn(Optional.of(List.of(fromHmc, alreadyChosen, unknownChannel, added)));
+            .thenReturn(Optional.of(List.of(fromHmc, alreadyChosen, unknownValues, added)));
 
         handler.handle(MID_EVENT, callback);
 
+        List<Object> participants = writtenParticipants();
+        assertEquals(new DynamicList(new Value("TELCVP", "Telephone - CVP"), subChannels),
+            field(participants.get(0), "attendanceType"));
+        assertEquals(new DynamicList(new Value("INTP", "Interpreter"), roles), field(participants.get(0), "role"));
+        assertEquals("Interpreter", field(participants.get(0), "roleLabel"));
+        DynamicList noRole = new DynamicList(new Value("", ""), roles);
+        assertEquals(noRole, field(participants.get(0), "representedParty"));
+
+        assertEquals(new DynamicList(new Value("VIDCVP", "Video - CVP"), subChannels),
+            field(participants.get(1), "attendanceType"));
+        assertEquals("Appellant", field(participants.get(1), "roleLabel"));
+
+        assertEquals(new DynamicList(new Value("", ""), subChannels), field(participants.get(2), "attendanceType"));
+        assertEquals(noRole, field(participants.get(2), "role"));
+        assertEquals("XXXX", field(participants.get(2), "roleLabel"));
+
+        assertEquals(new DynamicList(new Value("", ""), subChannels), field(participants.get(3), "attendanceType"));
+        assertEquals(new DynamicList(new Value("LGRP", "Legal Representative"), roles),
+            field(participants.get(3), "role"));
+        assertEquals(new DynamicList(new Value("APEL", "Appellant"), roles),
+            field(participants.get(3), "representedParty"));
+        assertEquals(null, field(participants.get(3), "roleLabel"));
+        assertEquals("Ann", field(participants.get(3), "firstName"));
+        assertEquals("1", ((Map<?, ?>) participants.get(0)).get("id"));
+    }
+
+    @SuppressWarnings("unchecked")
+    private List<Object> writtenParticipants() {
         ArgumentCaptor<List<Object>> captor = ArgumentCaptor.forClass(List.class);
         verify(updatedAsylumCase).write(eq(ATTENDEES_AND_DURATION_PARTICIPANTS), captor.capture());
-        List<Object> participants = captor.getValue();
-        assertEquals(new DynamicList(new Value("TELCVP", "Telephone - CVP"), subChannels),
-            attendanceType(participants.get(0)));
-        assertEquals(new DynamicList(new Value("VIDCVP", "Video - CVP"), subChannels),
-            attendanceType(participants.get(1)));
-        assertEquals(new DynamicList(new Value("", ""), subChannels), attendanceType(participants.get(2)));
-        assertEquals(new DynamicList(new Value("", ""), subChannels), attendanceType(participants.get(3)));
-        assertEquals("1", ((Map<String, Object>) participants.get(0)).get("id"));
-        assertEquals("Ann", ((Map<String, Object>) ((Map<String, Object>) participants.get(3)).get("value"))
-            .get("firstName"));
+        return captor.getValue();
     }
 
     @Test
@@ -192,7 +220,7 @@ class RecordAttendeesAndDurationMidEventHandlerTest {
         verify(updatedAsylumCase, never()).write(eq(ATTENDEES_AND_DURATION_PARTICIPANTS), any());
     }
 
-    private static Map<String, Object> hmcChannel(String code) {
+    private static Map<String, Object> hmcValue(String code) {
         return Map.of("value", Map.of("code", code, "label", code), "list_items", List.of());
     }
 
@@ -201,8 +229,8 @@ class RecordAttendeesAndDurationMidEventHandlerTest {
     }
 
     @SuppressWarnings("unchecked")
-    private static Object attendanceType(Object row) {
-        return ((Map<String, Object>) ((Map<String, Object>) row).get("value")).get("attendanceType");
+    private static Object field(Object row, String name) {
+        return ((Map<String, Object>) ((Map<String, Object>) row).get("value")).get(name);
     }
 
     @Test

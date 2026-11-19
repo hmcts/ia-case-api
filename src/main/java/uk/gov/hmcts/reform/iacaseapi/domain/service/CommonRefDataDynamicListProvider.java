@@ -16,6 +16,7 @@ public class CommonRefDataDynamicListProvider {
 
     public static final String HEARING_CHANNEL_CATEGORY = "HearingChannel";
     public static final String HEARING_SUB_CHANNEL_CATEGORY = "HearingSubChannel";
+    public static final String ENTITY_ROLE_CODE = "EntityRoleCode";
     public static final String CASE_MANAGEMENT_CANCELLATION_REASONS = "CaseManagementCancellationReasons";
     public static final String CHANGE_REASONS = "ChangeReasons";
     public static final String ACTUAL_CANCELLATION_REASON_CODES = "ActualCancellationReasonCodes";
@@ -45,6 +46,11 @@ public class CommonRefDataDynamicListProvider {
     public DynamicList provideActualCancellationReasonCodes() {
 
         return provide(ACTUAL_CANCELLATION_REASON_CODES, false);
+    }
+
+    public DynamicList provideEntityRoleCodes() {
+
+        return provide(ENTITY_ROLE_CODE, false);
     }
 
     public DynamicList provideActualPartHeardReasonCodes() {
