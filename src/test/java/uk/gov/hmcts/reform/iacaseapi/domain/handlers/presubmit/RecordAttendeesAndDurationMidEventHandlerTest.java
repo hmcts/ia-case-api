@@ -4,21 +4,27 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ATTENDEES_AND_DURATION_HEARING_CANCELLATION_REASON;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ATTENDEES_AND_DURATION_HEARING_PART_HEARD_REASON;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ATTENDEES_AND_DURATION_PARTICIPANTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.RECORD_ATTENDEES_AND_DURATION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.MID_EVENT;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -40,10 +46,15 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationRefDataService;
 class RecordAttendeesAndDurationMidEventHandlerTest {
 
     private static final String SELECT_HEARING_PAGE_ID = "selectHearingRecordAttendeesAndDuration";
+    private static final String TIMES_PAGE_ID = "timesRecordAttendeesAndDuration";
 
     private final List<Value> cancellationReasons = List.of(
         new Value("cancelled", "Cancelled"),
         new Value("withdrawn", "Withdrawn"));
+    private final List<Value> subChannels = List.of(
+        new Value("INTER", "In Person"),
+        new Value("TELCVP", "Telephone - CVP"),
+        new Value("VIDCVP", "Video - CVP"));
     private final List<Value> partHeardReasons = List.of(
         new Value("timeRanOut", "Time ran out"),
         new Value("judgeUnwell", "Judge unwell"));
@@ -76,6 +87,8 @@ class RecordAttendeesAndDurationMidEventHandlerTest {
         when(provider.provideActualPartHeardReasonCodes())
             .thenReturn(new DynamicList(new Value("", ""), partHeardReasons));
 
+        when(provider.provideHearingSubChannels()).thenReturn(new DynamicList(new Value("", ""), subChannels));
+
         handler = new RecordAttendeesAndDurationMidEventHandler(provider, locationRefDataService, iaHearingsApiService);
     }
 
@@ -92,7 +105,7 @@ class RecordAttendeesAndDurationMidEventHandlerTest {
 
     @Test
     void should_delegate_to_ia_hearings_api_on_times_page() {
-        when(callback.getPageId()).thenReturn("timesRecordAttendeesAndDuration");
+        when(callback.getPageId()).thenReturn(TIMES_PAGE_ID);
 
         PreSubmitCallbackResponse<AsylumCase> response = handler.handle(MID_EVENT, callback);
 
@@ -138,6 +151,55 @@ class RecordAttendeesAndDurationMidEventHandlerTest {
         verify(updatedAsylumCase).write(
             ATTENDEES_AND_DURATION_HEARING_PART_HEARD_REASON,
             new DynamicList(selectedPartHeardReason, partHeardReasons));
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void should_add_sub_channel_lists_to_pre_filled_participants_on_times_page() {
+        when(callback.getPageId()).thenReturn(TIMES_PAGE_ID);
+        Map<String, Object> fromHmc = row("1", Map.of("prefilled", "Yes", "attendanceType", "TELCVP"));
+        Map<String, Object> alreadyChosen = row("2", Map.of("prefilled", "Yes", "attendanceType", "TELCVP",
+            "attendanceTypeList", Map.of("value", Map.of("code", "VIDCVP", "label", "Video - CVP"))));
+        Map<String, Object> unknownChannel = row("3", Map.of("prefilled", "Yes", "attendanceType", "TELBTM"));
+        Map<String, Object> added = row("4", Map.of("attendanceType", "INTER"));
+        when(updatedAsylumCase.read(ATTENDEES_AND_DURATION_PARTICIPANTS))
+            .thenReturn(Optional.of(List.of(fromHmc, alreadyChosen, unknownChannel, added)));
+
+        handler.handle(MID_EVENT, callback);
+
+        ArgumentCaptor<List<Object>> captor = ArgumentCaptor.forClass(List.class);
+        verify(updatedAsylumCase).write(eq(ATTENDEES_AND_DURATION_PARTICIPANTS), captor.capture());
+        List<Object> participants = captor.getValue();
+        assertEquals(new DynamicList(new Value("TELCVP", "Telephone - CVP"), subChannels),
+            attendanceTypeList(participants.get(0)));
+        assertEquals(new DynamicList(new Value("VIDCVP", "Video - CVP"), subChannels),
+            attendanceTypeList(participants.get(1)));
+        assertEquals(new DynamicList(new Value("", ""), subChannels), attendanceTypeList(participants.get(2)));
+        assertEquals("TELCVP", ((Map<String, Object>) ((Map<String, Object>) participants.get(0)).get("value"))
+            .get("attendanceType"));
+        assertEquals("1", ((Map<String, Object>) participants.get(0)).get("id"));
+        assertEquals(added, participants.get(3));
+    }
+
+    @Test
+    void should_not_call_ref_data_when_no_participant_is_pre_filled() {
+        when(callback.getPageId()).thenReturn(TIMES_PAGE_ID);
+        when(updatedAsylumCase.read(ATTENDEES_AND_DURATION_PARTICIPANTS))
+            .thenReturn(Optional.of(List.of(row("1", Map.of("attendanceType", "INTER")))));
+
+        handler.handle(MID_EVENT, callback);
+
+        verifyNoInteractions(provider);
+        verify(updatedAsylumCase, never()).write(eq(ATTENDEES_AND_DURATION_PARTICIPANTS), any());
+    }
+
+    private static Map<String, Object> row(String id, Map<String, Object> value) {
+        return Map.of("id", id, "value", value);
+    }
+
+    @SuppressWarnings("unchecked")
+    private static Object attendanceTypeList(Object row) {
+        return ((Map<String, Object>) ((Map<String, Object>) row).get("value")).get("attendanceTypeList");
     }
 
     @Test
