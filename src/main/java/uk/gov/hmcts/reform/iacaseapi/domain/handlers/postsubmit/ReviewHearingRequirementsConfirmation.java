@@ -44,16 +44,19 @@ public class ReviewHearingRequirementsConfirmation implements PostSubmitCallback
 
         boolean isAcceleratedDetainedAppeal = HandlerUtils.isAcceleratedDetainedAppeal(asylumCase);
 
+        boolean is24WeekCase = HandlerUtils.is24WeekStfCase(asylumCase);
+
         return isAutoRequestHearing
             ? autoRequestHearingService.buildAutoHearingRequestConfirmation(
             asylumCase, "# Hearing listed", callback.getCaseDetails().getId())
             : buildConfirmationResponse(isPanelRequired(asylumCase), callback.getCaseDetails().getId(),
-                isAcceleratedDetainedAppeal);
+                isAcceleratedDetainedAppeal, is24WeekCase);
     }
 
     private PostSubmitCallbackResponse buildConfirmationResponse(boolean panelRequired,
                                                                  long caseId,
-                                                                 boolean isAcceleratedDetainedAppeal) {
+                                                                 boolean isAcceleratedDetainedAppeal,
+                                                                 boolean is24WeekCase) {
 
         PostSubmitCallbackResponse response = new PostSubmitCallbackResponse();
 
@@ -72,14 +75,18 @@ public class ReviewHearingRequirementsConfirmation implements PostSubmitCallback
                 String addCaseFlagUrl = "/case/IA/Asylum/" + caseId + "/trigger/createFlag";
                 String manageCaseFlagUrl = "/case/IA/Asylum/" + caseId + "/trigger/manageFlags";
 
+                String listingTeamText = is24WeekCase
+                    ? "The listing team will now review the hearing.<br><br>"
+                    : "The listing team will now list the case. "
+                        + "All parties will be notified when the Hearing Notice is available to view.<br><br>";
+
                 response.setConfirmationHeader("# You've recorded the agreed hearing adjustments");
                 response.setConfirmationBody(WHAT_HAPPENS_NEXT_LABEL
                         + "You should ensure that the case flags reflect the hearing requests that have been approved. "
                         + "This may require adding new case flags or making active flags inactive.\n\n"
                         + "[Add case flag](" + addCaseFlagUrl + ")<br>"
                         + "[Manage case flags](" + manageCaseFlagUrl + ")<br><br>"
-                        + "The listing team will now list the case. "
-                        + "All parties will be notified when the Hearing Notice is available to view.<br><br>"
+                        + listingTeamText
                 );
             }
         }

@@ -13,6 +13,7 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.AUTO_REQUEST_HEARING;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_PANEL_REQUIRED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MANUAL_CREATE_HEARING_REQUIRED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.REVIEW_HEARING_REQUIREMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
@@ -172,15 +173,15 @@ class ReviewHearingRequirementsConfirmationTest {
     }
 
     @Test
-    void should_return_confirmation_when_panel_not_required() {
+    void should_return_confirmation_when_panel_not_required_bau() {
         final String header = "# You've recorded the agreed hearing adjustments";
         final String body = """
                 #### What happens next
-                
+
                 You should ensure that the case flags reflect \
                 the hearing requests that have been approved. \
                 This may require adding new case flags or making active flags inactive.
-                
+
                 [Add case flag](/case/IA/Asylum/1/trigger/createFlag)<br>\
                 [Manage case flags](/case/IA/Asylum/1/trigger/manageFlags)<br><br>\
                 The listing team will now list the case. \
@@ -188,6 +189,36 @@ class ReviewHearingRequirementsConfirmationTest {
 
         when(autoRequestHearingService.shouldAutoRequestHearing(asylumCase, false)).thenReturn(false);
         when(asylumCase.read(AUTO_REQUEST_HEARING, YesOrNo.class)).thenReturn(Optional.of(NO));
+        when(asylumCase.read(STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED, YesOrNo.class)).thenReturn(Optional.of(NO));
+
+        PostSubmitCallbackResponse callbackResponse =
+                handler.handle(callback);
+
+        assertNotNull(callbackResponse);
+        assertTrue(callbackResponse.getConfirmationHeader().isPresent());
+        assertTrue(callbackResponse.getConfirmationBody().isPresent());
+
+        assertEquals(header, callbackResponse.getConfirmationHeader().get());
+        assertEquals(body, callbackResponse.getConfirmationBody().get());
+    }
+
+    @Test
+    void should_return_24_week_confirmation_when_panel_not_required() {
+        final String header = "# You've recorded the agreed hearing adjustments";
+        final String body = """
+                #### What happens next
+
+                You should ensure that the case flags reflect \
+                the hearing requests that have been approved. \
+                This may require adding new case flags or making active flags inactive.
+
+                [Add case flag](/case/IA/Asylum/1/trigger/createFlag)<br>\
+                [Manage case flags](/case/IA/Asylum/1/trigger/manageFlags)<br><br>\
+                The listing team will now review the hearing.<br><br>""";
+
+        when(autoRequestHearingService.shouldAutoRequestHearing(asylumCase, false)).thenReturn(false);
+        when(asylumCase.read(AUTO_REQUEST_HEARING, YesOrNo.class)).thenReturn(Optional.of(NO));
+        when(asylumCase.read(STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED, YesOrNo.class)).thenReturn(Optional.of(YES));
 
         PostSubmitCallbackResponse callbackResponse =
                 handler.handle(callback);
