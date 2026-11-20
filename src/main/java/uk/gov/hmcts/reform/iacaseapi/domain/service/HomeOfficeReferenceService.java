@@ -1,7 +1,8 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.service;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -38,8 +39,7 @@ public class HomeOfficeReferenceService {
     // Note: don't cache this response, as we want to get fresh data each time in case something changes at the Home Office's end.
     public List<IdValue<HomeOfficeAppellant>> getHomeOfficeReferenceData(String hoReference, Callback<AsylumCase> callback) {
         // We need the mapper and mix-in to overcome a CCD bug concerning collections during the mid-event (see comments below).
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.addMixIn(IdValue.class, IdValueMixin.class);
+
         // Check case for existing data.
         final AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
         Optional<String> homeOfficeAppellantsSerialisedEncrypted = asylumCase.read(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, String.class);
@@ -54,6 +54,9 @@ public class HomeOfficeReferenceService {
             }
         }
 
+        ObjectMapper mapper = JsonMapper.builder()
+            .addMixIn(IdValue.class, IdValueMixin.class)
+            .build();
         // Home Office API has not been called yet (or was unavailable the last time we tried) - call it now
         log.info("Getting Home Office biographic data for case with reference ID {} ...", hoReference);
         // Raise an event in home-office-integration-api
@@ -110,8 +113,9 @@ public class HomeOfficeReferenceService {
                                                                                         String homeOfficeSerialisedEncryptionKey,
                                                                                         AsylumCase asylumCase,
                                                                                         String homeOfficeReferenceNumber) {
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.addMixIn(IdValue.class, IdValueMixin.class);
+        ObjectMapper mapper = JsonMapper.builder()
+            .addMixIn(IdValue.class, IdValueMixin.class)
+            .build();
         try {
             String homeOfficeAppellantsSerialised = HandlerUtils.decrypt(homeOfficeAppellantsSerialisedEncrypted, homeOfficeSerialisedEncryptionKey);
             return mapper.readValue(

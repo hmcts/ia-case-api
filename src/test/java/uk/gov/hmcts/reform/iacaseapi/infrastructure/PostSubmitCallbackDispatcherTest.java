@@ -4,8 +4,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -72,7 +70,6 @@ class PostSubmitCallbackDispatcherTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getId()).thenReturn(123L);
         when(callback.getEvent()).thenReturn(Event.CREATE_FLAG);
-        doNothing().when(ccdEventAuthorizor).throwIfNotAuthorized(any(Event.class));
         Optional<String> expectedConfirmationHeader = Optional.of("header");
         Optional<String> expectedConfirmationBody = Optional.of("body");
 
@@ -103,7 +100,6 @@ class PostSubmitCallbackDispatcherTest {
 
     @Test
     void should_not_error_if_no_handlers_are_provided() {
-        doNothing().when(ccdEventAuthorizor).throwIfNotAuthorized(any(Event.class));
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.CREATE_FLAG);
         when(caseDetails.getId()).thenReturn(123L);
