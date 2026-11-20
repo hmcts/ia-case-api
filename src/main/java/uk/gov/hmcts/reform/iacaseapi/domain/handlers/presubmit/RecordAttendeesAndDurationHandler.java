@@ -40,12 +40,8 @@ public class RecordAttendeesAndDurationHandler implements PreSubmitCallbackHandl
             throw new IllegalStateException("Cannot handle callback");
         }
 
-        final AsylumCase asylumCase =
-            callback
-                .getCaseDetails()
-                .getCaseData();
-
-        iaHearingsApiService.aboutToSubmit(callback);
+        // ia-hearings-api writes the actual hearing length and attending judge, so its response is used
+        final AsylumCase asylumCase = iaHearingsApiService.aboutToSubmit(callback);
 
         // the participants have been sent to HMC, so they are not kept on the case; a saved list would make
         // the next run of the event look like it deletes rows, which needs a delete permission users don't have
