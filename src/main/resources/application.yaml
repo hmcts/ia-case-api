@@ -1126,6 +1126,7 @@ security:
       - "nlrDetailsUpdated"
       - "removeNonLegalRep"
     caseworker-ia-iacjudge:
+      - "updateFtpaDecision"
       - "generateDecisionAndReasons"
       - "endAppeal"
       - "reinstateAppeal"
@@ -1160,6 +1161,7 @@ security:
       - "addStatutoryTimeframe24Weeks"
       - "removeStatutoryTimeframe24Weeks"
     judge:
+      - "updateFtpaDecision"
       - "generateDecisionAndReasons"
       - "endAppeal"
       - "reinstateAppeal"
@@ -1194,6 +1196,7 @@ security:
       - "removeStatutoryTimeframe24Weeks"
       - "updateTribunalDecision"
     senior-judge:
+      - "updateFtpaDecision"
       - "generateDecisionAndReasons"
       - "endAppeal"
       - "reinstateAppeal"
@@ -1228,6 +1231,7 @@ security:
       - "removeStatutoryTimeframe24Weeks"
       - "updateTribunalDecision"
     leadership-judge:
+      - "updateFtpaDecision"
       - "generateDecisionAndReasons"
       - "endAppeal"
       - "reinstateAppeal"
@@ -1262,6 +1266,7 @@ security:
       - "removeStatutoryTimeframe24Weeks"
       - "updateTribunalDecision"
     fee-paid-judge:
+      - "updateFtpaDecision"
       - "generateDecisionAndReasons"
       - "endAppeal"
       - "reinstateAppeal"
@@ -1296,6 +1301,7 @@ security:
       - "removeStatutoryTimeframe24Weeks"
       - "updateTribunalDecision"
     lead-judge:
+      - "updateFtpaDecision"
       - "generateDecisionAndReasons"
       - "endAppeal"
       - "reinstateAppeal"
@@ -1330,6 +1336,7 @@ security:
       - "removeStatutoryTimeframe24Weeks"
       - "updateTribunalDecision"
     hearing-judge:
+      - "updateFtpaDecision"
       - "generateDecisionAndReasons"
       - "endAppeal"
       - "reinstateAppeal"
@@ -1364,6 +1371,7 @@ security:
       - "removeStatutoryTimeframe24Weeks"
       - "updateTribunalDecision"
     ftpa-judge:
+      - "updateFtpaDecision"
       - "generateDecisionAndReasons"
       - "endAppeal"
       - "reinstateAppeal"
@@ -1398,6 +1406,7 @@ security:
       - "removeStatutoryTimeframe24Weeks"
       - "updateTribunalDecision"
     hearing-panel-judge:
+      - "updateFtpaDecision"
       - "generateDecisionAndReasons"
       - "endAppeal"
       - "reinstateAppeal"
