@@ -77,7 +77,7 @@ class AppealSubmittedNotifyHomeOfficeHandlerTest {
     @BeforeEach
     void setup() {
 
-        handler = new AppealSubmittedNotifyHomeOfficeHandler(true, hoReferenceService, homeOfficeApi, key);
+        handler = new AppealSubmittedNotifyHomeOfficeHandler(true, hoReferenceService, homeOfficeApi, true, key);
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
 
@@ -329,7 +329,7 @@ class AppealSubmittedNotifyHomeOfficeHandlerTest {
         handlerUtilsMock.when(
                 () -> HandlerUtils.validateAllDetails(callback, asylumCase, VALID_GWF, hoReferenceService))
             .thenReturn(new PreSubmitCallbackResponse<>(asylumCase));
-        handler = new AppealSubmittedNotifyHomeOfficeHandler(true, hoReferenceService, homeOfficeApi, key);
+        handler = new AppealSubmittedNotifyHomeOfficeHandler(true, hoReferenceService, homeOfficeApi, true, key);
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
         when(caseDetails.getState()).thenReturn(State.APPEAL_STARTED);
         when(asylumCase.read(APPEAL_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of(APPEAL_REF));
@@ -345,6 +345,83 @@ class AppealSubmittedNotifyHomeOfficeHandlerTest {
         assertEquals(1, valueList.size());
         assertEquals("1", valueList.getFirst().getId());
         assertEquals("Smith", valueList.getFirst().getValue().getFamilyName());
+        handlerUtilsMock.close();
+    }
+
+    @Test
+    void handle_should_return_early_if_gwf_validation_not_enabled_and_is_gwf_and_ooc() {
+        MockedStatic<HandlerUtils> handlerUtilsMock = mockStatic(HandlerUtils.class);
+        handlerUtilsMock.when(
+                () -> HandlerUtils.isGwfReferenceAndOoc(asylumCase))
+            .thenReturn(true);
+        handlerUtilsMock.when(
+                () -> HandlerUtils.getUanOrGwf(asylumCase))
+            .thenReturn("123456789");
+        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+
+        handler = new AppealSubmittedNotifyHomeOfficeHandler(true, hoReferenceService, homeOfficeApi, false, key);
+        PreSubmitCallbackResponse<AsylumCase> response = handler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertEquals(asylumCase, response.getData());
+        verify(asylumCase, never()).read(APPEAL_REFERENCE_NUMBER, String.class);
+        handlerUtilsMock.verify(
+                () -> HandlerUtils.removeValidationFields(asylumCase), never());
+        handlerUtilsMock.verify(
+            () -> HandlerUtils.validateAllDetails(any(), any(), any(), any()), never());
+        handlerUtilsMock.close();
+    }
+
+    @Test
+    void handle_should_not_return_early_if_gwf_validation_enabled_and_is_gwf_and_ooc() {
+        MockedStatic<HandlerUtils> handlerUtilsMock = mockStatic(HandlerUtils.class);
+        handlerUtilsMock.when(
+                () -> HandlerUtils.isGwfReferenceAndOoc(asylumCase))
+            .thenReturn(true);
+        handlerUtilsMock.when(
+                () -> HandlerUtils.getUanOrGwf(asylumCase))
+            .thenReturn("123456789");
+        handlerUtilsMock.when(
+            () -> HandlerUtils.validateAllDetails(any(), any(), any(), any()))
+            .thenReturn(new PreSubmitCallbackResponse<>(asylumCase).withError("some error"));
+        when(asylumCase.read(APPEAL_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of(APPEAL_REF));
+        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+
+        PreSubmitCallbackResponse<AsylumCase> response = handler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertEquals(asylumCase, response.getData());
+        verify(asylumCase).read(APPEAL_REFERENCE_NUMBER, String.class);
+        handlerUtilsMock.verify(
+            () -> HandlerUtils.removeValidationFields(asylumCase));
+        handlerUtilsMock.verify(
+            () -> HandlerUtils.validateAllDetails(any(), any(), any(), any()));
+        handlerUtilsMock.close();
+    }
+
+
+    @Test
+    void handle_should_not_return_early_if_gwf_validation_not_enabled_and_is_not_gwf_and_ooc() {
+        MockedStatic<HandlerUtils> handlerUtilsMock = mockStatic(HandlerUtils.class);
+        handlerUtilsMock.when(
+                () -> HandlerUtils.isGwfReferenceAndOoc(asylumCase))
+            .thenReturn(false);
+        handlerUtilsMock.when(
+                () -> HandlerUtils.getUanOrGwf(asylumCase))
+            .thenReturn("123456789");
+        handlerUtilsMock.when(
+                () -> HandlerUtils.validateAllDetails(any(), any(), any(), any()))
+            .thenReturn(new PreSubmitCallbackResponse<>(asylumCase).withError("some error"));
+        when(asylumCase.read(APPEAL_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of(APPEAL_REF));
+        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+
+        handler = new AppealSubmittedNotifyHomeOfficeHandler(true, hoReferenceService, homeOfficeApi, false, key);
+        PreSubmitCallbackResponse<AsylumCase> response = handler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertEquals(asylumCase, response.getData());
+        verify(asylumCase).read(APPEAL_REFERENCE_NUMBER, String.class);
+        handlerUtilsMock.verify(
+            () -> HandlerUtils.removeValidationFields(asylumCase));
+        handlerUtilsMock.verify(
+            () -> HandlerUtils.validateAllDetails(any(), any(), any(), any()));
         handlerUtilsMock.close();
     }
 }
