@@ -328,14 +328,14 @@ class AppealSubmittedNotifyHomeOfficeHandlerTest {
                 .thenReturn(VALID_GWF);
             handlerUtilsMock.when(
                 () -> HandlerUtils.validateAllDetails(callback, asylumCase, VALID_GWF, hoReferenceService))
-            .thenReturn(new PreSubmitCallbackResponse<>(asylumCase));
-        handler = new AppealSubmittedNotifyHomeOfficeHandler(true, hoReferenceService, homeOfficeApi, true, key);
-        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
-        when(caseDetails.getState()).thenReturn(State.APPEAL_STARTED);
-        when(asylumCase.read(APPEAL_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of(APPEAL_REF));
-        when(hoReferenceService.getHomeOfficeReferenceData(VALID_GWF, callback)).thenReturn(List.of(new IdValue<>("id", appellant)));
-        when(asylumCase.read(HOME_OFFICE_APPELLANTS, List.class)).thenReturn(Optional.empty());
-        when(homeOfficeApi.aboutToSubmit(callback)).thenReturn(asylumCase);
+                .thenReturn(new PreSubmitCallbackResponse<>(asylumCase));
+            handler = new AppealSubmittedNotifyHomeOfficeHandler(true, hoReferenceService, homeOfficeApi, true, key);
+            when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+            when(caseDetails.getState()).thenReturn(State.APPEAL_STARTED);
+            when(asylumCase.read(APPEAL_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of(APPEAL_REF));
+            when(hoReferenceService.getHomeOfficeReferenceData(VALID_GWF, callback)).thenReturn(List.of(new IdValue<>("id", appellant)));
+            when(asylumCase.read(HOME_OFFICE_APPELLANTS, List.class)).thenReturn(Optional.empty());
+            when(homeOfficeApi.aboutToSubmit(callback)).thenReturn(asylumCase);
 
             handler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
