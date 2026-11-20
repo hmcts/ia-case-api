@@ -5,6 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.service.CommonRefDataDynamicListProvider.ACTUAL_CANCELLATION_REASON_CODES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.service.CommonRefDataDynamicListProvider.ACTUAL_PART_HEARD_REASON_CODES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.service.CommonRefDataDynamicListProvider.CASE_MANAGEMENT_CANCELLATION_REASONS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.service.CommonRefDataDynamicListProvider.CHANGE_REASONS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.service.CommonRefDataDynamicListProvider.HEARING_CHANNEL_CATEGORY;
@@ -113,4 +115,51 @@ class CommonRefDataDynamicListProviderTest {
         assertEquals(values, reasons.getListItems());
     }
 
+    @Test
+    void should_provide_actual_cancellation_reason_codes_dynamic_list() {
+        when(refDataUserService.retrieveCategoryValues(ACTUAL_CANCELLATION_REASON_CODES, IS_CHILD_REQUIRED))
+            .thenReturn(commonDataResponse);
+        List<CategoryValues> categoryValuesList = List.of(categoryValues);
+        when(refDataUserService.filterCategoryValuesByCategoryId(commonDataResponse, ACTUAL_CANCELLATION_REASON_CODES))
+            .thenReturn(categoryValuesList);
+        List<Value> values = List.of(new Value("abc", "abc"));
+        when(refDataUserService.mapCategoryValuesToDynamicListValues(categoryValuesList)).thenReturn(values);
+
+        DynamicList reasons = provider.provideActualCancellationReasonCodes();
+
+        assertNotNull(reasons);
+
+        verify(refDataUserService, times(1))
+            .retrieveCategoryValues(ACTUAL_CANCELLATION_REASON_CODES, IS_CHILD_REQUIRED);
+        verify(refDataUserService, times(1))
+            .filterCategoryValuesByCategoryId(commonDataResponse, ACTUAL_CANCELLATION_REASON_CODES);
+        verify(refDataUserService, times(1))
+            .mapCategoryValuesToDynamicListValues(categoryValuesList);
+
+        assertEquals(values, reasons.getListItems());
+    }
+
+    @Test
+    void should_provide_actual_part_heard_reason_codes_dynamic_list() {
+        when(refDataUserService.retrieveCategoryValues(ACTUAL_PART_HEARD_REASON_CODES, IS_CHILD_REQUIRED))
+            .thenReturn(commonDataResponse);
+        List<CategoryValues> categoryValuesList = List.of(categoryValues);
+        when(refDataUserService.filterCategoryValuesByCategoryId(commonDataResponse, ACTUAL_PART_HEARD_REASON_CODES))
+            .thenReturn(categoryValuesList);
+        List<Value> values = List.of(new Value("abc", "abc"));
+        when(refDataUserService.mapCategoryValuesToDynamicListValues(categoryValuesList)).thenReturn(values);
+
+        DynamicList reasons = provider.provideActualPartHeardReasonCodes();
+
+        assertNotNull(reasons);
+
+        verify(refDataUserService, times(1))
+            .retrieveCategoryValues(ACTUAL_PART_HEARD_REASON_CODES, IS_CHILD_REQUIRED);
+        verify(refDataUserService, times(1))
+            .filterCategoryValuesByCategoryId(commonDataResponse, ACTUAL_PART_HEARD_REASON_CODES);
+        verify(refDataUserService, times(1))
+            .mapCategoryValuesToDynamicListValues(categoryValuesList);
+
+        assertEquals(values, reasons.getListItems());
+    }
 }

@@ -18,6 +18,8 @@ public class CommonRefDataDynamicListProvider {
     public static final String CASE_MANAGEMENT_CANCELLATION_REASONS = "CaseManagementCancellationReasons";
     public static final String CHANGE_REASONS = "ChangeReasons";
     public static final String LANGUAGE_CATEGORY = "languageCategory";
+    public static final String ACTUAL_CANCELLATION_REASON_CODES = "ActualCancellationReasonCodes";
+    public static final String ACTUAL_PART_HEARD_REASON_CODES = "ActualPartHeardReasonCodes";
     public static final String IS_CHILD_REQUIRED = "N";
 
     public DynamicList provideHearingChannels() {
@@ -33,6 +35,16 @@ public class CommonRefDataDynamicListProvider {
     public DynamicList provideCaseManagementCancellationReasons() {
 
         return provide(CASE_MANAGEMENT_CANCELLATION_REASONS, false);
+    }
+
+    public DynamicList provideActualCancellationReasonCodes() {
+
+        return provide(ACTUAL_CANCELLATION_REASON_CODES, false);
+    }
+
+    public DynamicList provideActualPartHeardReasonCodes() {
+
+        return provide(ACTUAL_PART_HEARD_REASON_CODES, false);
     }
 
     private DynamicList provide(String categoryId, boolean withActiveFlag) {
