@@ -1,24 +1,10 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
-import static java.util.Collections.emptyList;
-import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isIntegrated;
-
 import lombok.extern.slf4j.Slf4j;
-import java.util.List;
-import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.Direction;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.DirectionTag;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithMetadata;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.Parties;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.PreviousHearing;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.HoursAndMinutes;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.HoursMinutes;
@@ -30,6 +16,14 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DirectionAppender;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.PreviousHearingAppender;
+
+import java.util.List;
+import java.util.Optional;
+
+import static java.util.Collections.emptyList;
+import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isIntegrated;
 
 @Component
 @Slf4j
@@ -110,7 +104,7 @@ public class RequestNewHearingRequirementsDirectionHandler implements PreSubmitC
         asylumCase.clear(SEND_DIRECTION_DATE_DUE);
 
         writePreviousHearingsToAsylumCase(asylumCase);
-        checkStatutoryTimeframeAndClearFlag(asylumCase);
+        asylumCase.clear(STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED);
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 
@@ -191,13 +185,5 @@ public class RequestNewHearingRequirementsDirectionHandler implements PreSubmitC
         asylumCase.write(PREVIOUS_HEARINGS, allPreviousHearings);
 
         asylumCase.write(REHEARD_CASE_LISTED_WITHOUT_HEARING_REQUIREMENTS, YesOrNo.NO);
-    }
-
-    private void checkStatutoryTimeframeAndClearFlag(AsylumCase asylumCase) {
-        asylumCase.read(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class).ifPresent(flag -> {
-            if (flag.equals(YesOrNo.NO)) {
-                asylumCase.clear(STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED);
-            }
-        });
     }
 }
