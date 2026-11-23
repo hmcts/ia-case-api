@@ -458,7 +458,7 @@ ia-bail-case-api:
   java:
     imagePullPolicy: Always
     #image: hmctsprod.azurecr.io/ia/bail-case-api:latest
-    image: hmctsprod.azurecr.io/ia/bail-case-api:pr-631
+    image: hmctsprod.azurecr.io/ia/bail-case-api:pr-632
     applicationPort: 8686
     releaseNameOverride: ${SERVICE_NAME}-bail-case-api
     ingressHost: ${SERVICE_NAME}-bail-case-api.preview.platform.hmcts.net
@@ -1469,7 +1469,7 @@ ia-hearings-api:
   java:
     imagePullPolicy: Always
     #image: hmctsprod.azurecr.io/ia/hearings-api:latest
-    image: hmctsprod.azurecr.io/ia/hearings-api:pr-612
+    image: hmctsprod.azurecr.io/ia/hearings-api:pr-613
     releaseNameOverride: ${SERVICE_NAME}-hearings-api
     ingressHost: ${SERVICE_NAME}-hearings-api.preview.platform.hmcts.net
     devcpuRequests: 500m
