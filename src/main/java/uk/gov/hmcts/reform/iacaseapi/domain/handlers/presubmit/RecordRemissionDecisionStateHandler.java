@@ -10,6 +10,8 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isInter
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
+
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
@@ -27,6 +29,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeePayment;
 
 @Component
+@Slf4j
 public class RecordRemissionDecisionStateHandler implements PreSubmitCallbackStateHandler<AsylumCase> {
 
     private final FeatureToggler featureToggler;
@@ -114,6 +117,11 @@ public class RecordRemissionDecisionStateHandler implements PreSubmitCallbackSta
                 if (shouldCreateServiceRequest(asylumCase)) {
                     asylumCase = feePayment.aboutToSubmit(callback);
                 }
+                // TODO Delete logs after QA
+                log.info("Service request response for 'Rejected': reference: {}, hasServiceRequest: {} for case ref: {}",
+                        asylumCase.read(SERVICE_REQUEST_REFERENCE, String.class),
+                        asylumCase.read(HAS_SERVICE_REQUEST_ALREADY, YesOrNo.class),
+                        callback.getCaseDetails().getId());
 
                 asylumCase.write(PAYMENT_STATUS, paymentStatus);
                 asylumCase.write(REMISSION_REJECTED_DATE_PLUS_14DAYS,
