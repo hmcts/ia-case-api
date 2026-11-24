@@ -1,0 +1,58 @@
+{
+  "description": "DIAC-682 Update FTPA Decision Partially Granted",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "Judge",
+    "input": {
+      "id": 682,
+      "eventId": "updateFtpaDecision",
+      "state": "ftpaDecided",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "isNotificationTurnedOff": "Yes",
+          "ftpaApplicantType": "appellant",
+          "ftpaAppellantRjDecisionOutcomeType": "granted",
+          "ftpaFirstDecision": "granted",
+          "ftpaDecisionUpdatedConfirmation": "ftpaDecisionUpdated",
+          "updateFtpaDecisionOutcomeType": "partiallyGranted",
+          "updateFtpaDecisionAndReasonsFinalCheck": "Yes",
+          "summariseFtpaDecisionAndReasonsDocument": "Decision changed to partially granted",
+          "ftpaDecisionAndReasonsDocUpload": {
+            "document_url": "http://document-store/AAA",
+            "document_binary_url": "http://document-store/AAA/binary",
+            "document_filename": "updated-ftpa-decision.pdf"
+          }
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "sendDirectionActionAvailable": "No",
+        "ftpaAppellantRjDecisionOutcomeType": "partiallyGranted",
+        "ftpaFirstDecision": "partiallyGranted",
+        "isAppellantFtpaDecisionVisibleToAll": "Yes",
+        "allFtpaAppellantDecisionDocs": [
+          {
+            "id": "1",
+            "value": {
+              "document": {
+                "document_url": "http://document-store/AAA",
+                "document_binary_url": "http://document-store/AAA/binary",
+                "document_filename": "updated-ftpa-decision.pdf"
+              },
+              "description": "Decision changed to partially granted",
+              "dateUploaded": "{$TODAY}",
+              "tag": "ftpaDecisionAndReasons"
+            }
+          }
+        ]
+      }
+    }
+  }
+}
