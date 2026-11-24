@@ -269,6 +269,22 @@ class RequestCaseBuildingPreparerTest {
 
     }
 
+    @Test
+    void should_set_appellant_as_direction_party_for_aip_manual_non_detained() {
+        when(dateProvider.now()).thenReturn(LocalDate.parse("2019-09-10"));
+        when(asylumCase.read(APPEAL_SUBMISSION_DATE, String.class)).thenReturn(Optional.of("2019-08-10"));
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.REQUEST_CASE_BUILDING);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(NO));
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(asylumCase.read(APPELLANTS_REPRESENTATION, YesOrNo.class)).thenReturn(Optional.of(YES));
+
+        requestCaseBuildingPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        verify(asylumCase, times(1)).write(SEND_DIRECTION_PARTIES, Parties.APPELLANT);
+    }
+
     static Stream<Arguments> caseTypeScenarios() {
         return Stream.of(
             Arguments.of(YES, YES, Parties.APPELLANT),
