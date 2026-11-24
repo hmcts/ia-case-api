@@ -4,6 +4,8 @@ import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.APPEAL_SUBMITTED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.PENDING_PAYMENT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isAipJourney;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isInternalCase;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -100,6 +102,10 @@ public class RecordRemissionDecisionStateHandler implements PreSubmitCallbackSta
                 asylumCase.write(REMISSION_REJECTED_DATE_PLUS_14DAYS,
                     LocalDate.parse(dateProvider.now().plusDays(14).toString()).format(DateTimeFormatter.ofPattern("d MMM yyyy")));
 
+                if (shouldCreateServiceRequest(asylumCase)) {
+                    feePayment.aboutToSubmit(callback);
+                }
+
                 asylumCase.write(IS_SERVICE_REQUEST_TAB_VISIBLE_CONSIDERING_REMISSIONS, YesOrNo.NO);
                 asylumCase.write(DISPLAY_MARK_AS_PAID_EVENT_FOR_PARTIAL_REMISSION, YesOrNo.YES);
 
@@ -110,7 +116,9 @@ public class RecordRemissionDecisionStateHandler implements PreSubmitCallbackSta
                 asylumCase.write(REMISSION_REJECTED_DATE_PLUS_14DAYS,
                     LocalDate.parse(dateProvider.now().plusDays(14).toString()).format(DateTimeFormatter.ofPattern("d MMM yyyy")));
 
-                feePayment.aboutToSubmit(callback);
+                if (shouldCreateServiceRequest(asylumCase)) {
+                    feePayment.aboutToSubmit(callback);
+                }
 
                 asylumCase.write(IS_SERVICE_REQUEST_TAB_VISIBLE_CONSIDERING_REMISSIONS, YesOrNo.YES);
                 asylumCase.write(REQUEST_FEE_REMISSION_FLAG_FOR_SERVICE_REQUEST, YesOrNo.NO);
@@ -121,5 +129,15 @@ public class RecordRemissionDecisionStateHandler implements PreSubmitCallbackSta
             default:
                 return new PreSubmitCallbackResponse<>(asylumCase, currentState);
         }
+    }
+
+    private boolean shouldCreateServiceRequest(AsylumCase asylumCase) {
+        boolean isAppellantsRepresented = asylumCase.read(APPELLANTS_REPRESENTATION, YesOrNo.class)
+            .map(value -> value == YesOrNo.YES)
+            .orElse(false);
+
+        return !isAipJourney(asylumCase)
+               && !isInternalCase(asylumCase)
+               && !isAppellantsRepresented;
     }
 }
