@@ -64,7 +64,7 @@ public class RecordRemissionDecisionStateHandler implements PreSubmitCallbackSta
             throw new IllegalStateException("Cannot handle callback");
         }
 
-        final AsylumCase asylumCase =
+        AsylumCase asylumCase =
             callback
                 .getCaseDetails()
                 .getCaseData();
@@ -98,28 +98,26 @@ public class RecordRemissionDecisionStateHandler implements PreSubmitCallbackSta
                 return new PreSubmitCallbackResponse<>(asylumCase, currentState);
 
             case PARTIALLY_APPROVED:
+                if (shouldCreateServiceRequest(asylumCase)) {
+                    asylumCase = feePayment.aboutToSubmit(callback);
+                }
+
                 asylumCase.write(PAYMENT_STATUS, paymentStatus);
                 asylumCase.write(REMISSION_REJECTED_DATE_PLUS_14DAYS,
                     LocalDate.parse(dateProvider.now().plusDays(14).toString()).format(DateTimeFormatter.ofPattern("d MMM yyyy")));
-
-                if (shouldCreateServiceRequest(asylumCase)) {
-                    feePayment.aboutToSubmit(callback);
-                }
-
                 asylumCase.write(IS_SERVICE_REQUEST_TAB_VISIBLE_CONSIDERING_REMISSIONS, YesOrNo.NO);
                 asylumCase.write(DISPLAY_MARK_AS_PAID_EVENT_FOR_PARTIAL_REMISSION, YesOrNo.YES);
 
                 return new PreSubmitCallbackResponse<>(asylumCase, currentState);
 
             case REJECTED:
+                if (shouldCreateServiceRequest(asylumCase)) {
+                    asylumCase = feePayment.aboutToSubmit(callback);
+                }
+
                 asylumCase.write(PAYMENT_STATUS, paymentStatus);
                 asylumCase.write(REMISSION_REJECTED_DATE_PLUS_14DAYS,
                     LocalDate.parse(dateProvider.now().plusDays(14).toString()).format(DateTimeFormatter.ofPattern("d MMM yyyy")));
-
-                if (shouldCreateServiceRequest(asylumCase)) {
-                    feePayment.aboutToSubmit(callback);
-                }
-
                 asylumCase.write(IS_SERVICE_REQUEST_TAB_VISIBLE_CONSIDERING_REMISSIONS, YesOrNo.YES);
                 asylumCase.write(REQUEST_FEE_REMISSION_FLAG_FOR_SERVICE_REQUEST, YesOrNo.NO);
                 asylumCase.write(DISPLAY_MARK_AS_PAID_EVENT_FOR_PARTIAL_REMISSION, YesOrNo.NO);
