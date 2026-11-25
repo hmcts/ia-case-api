@@ -60,6 +60,7 @@ public class AutomaticGenerateServiceRequestHandler implements PreSubmitCallback
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
         Event event = callback.getEvent();
 
+        log.info("PreSubmit Callback for event: {}, caseID: {}", event, callback.getCaseDetails().getId());
         if (callbackStage != PreSubmitCallbackStage.ABOUT_TO_SUBMIT || !isFeePaymentEnabled) {
             return false;
         }
@@ -69,6 +70,8 @@ public class AutomaticGenerateServiceRequestHandler implements PreSubmitCallback
         }
 
         if (event == RECORD_REMISSION_DECISION) {
+            log.info("PreSubmit Callback for event: {}, canHandle? {}, caseID: {}", event,
+                    canHandleRecordRemissionDecision(asylumCase), callback.getCaseDetails().getId());
             return canHandleRecordRemissionDecision(asylumCase);
         }
 
@@ -88,6 +91,13 @@ public class AutomaticGenerateServiceRequestHandler implements PreSubmitCallback
     private boolean canHandleRecordRemissionDecision(AsylumCase asylumCase) {
         Optional<RemissionDecision> remissionDecision = asylumCase.read(REMISSION_DECISION, RemissionDecision.class);
 
+        boolean isAppellantsRepresented = asylumCase.read(APPELLANTS_REPRESENTATION, YesOrNo.class)
+            .map(value -> value == YesOrNo.YES)
+            .orElse(false);
+
+        log.info("RemissionDecision: {}, isAipJourney? {}, isInternalCase: {}, isAppellantsRepresented: {}",
+                remissionDecision, HandlerUtils.isAipJourney(asylumCase), isInternalCase(asylumCase), isAppellantsRepresented);
+
         if (remissionDecision.isEmpty()) {
             return false;
         }
@@ -96,15 +106,8 @@ public class AutomaticGenerateServiceRequestHandler implements PreSubmitCallback
         boolean isRejectedOrPartiallyApproved = decision == RemissionDecision.REJECTED
                                                  || decision == RemissionDecision.PARTIALLY_APPROVED;
 
-        return isRejectedOrPartiallyApproved && shouldCreateServiceRequest(asylumCase);
-    }
-
-    private boolean shouldCreateServiceRequest(AsylumCase asylumCase) {
-        boolean isAppellantsRepresented = asylumCase.read(APPELLANTS_REPRESENTATION, YesOrNo.class)
-            .map(value -> value == YesOrNo.YES)
-            .orElse(false);
-
-        return !HandlerUtils.isAipJourney(asylumCase)
+        return isRejectedOrPartiallyApproved
+               && !HandlerUtils.isAipJourney(asylumCase)
                && !isInternalCase(asylumCase)
                && !isAppellantsRepresented;
     }
