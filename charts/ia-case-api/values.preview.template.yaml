@@ -480,6 +480,7 @@ ia-bail-case-api:
       COMMON_DATA_API: "http://rd-commondata-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
       IA_CASE_DOCUMENTS_API_URL: https://${SERVICE_NAME}-documents-api.preview.platform.hmcts.net
       IA_CASE_NOTIFICATIONS_API_URL: https://${SERVICE_NAME}-notifications-api.preview.platform.hmcts.net
+      IA_HEARINGS_API_URL: https://${SERVICE_NAME}-hearings-api.preview.platform.hmcts.net
       CASE_DOCUMENT_AM_URL: http://${SERVICE_NAME}-ccd-case-document-am-api
     keyVaults:
       ia:
