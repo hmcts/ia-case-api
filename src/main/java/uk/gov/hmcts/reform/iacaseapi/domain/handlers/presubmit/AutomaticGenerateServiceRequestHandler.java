@@ -70,9 +70,10 @@ public class AutomaticGenerateServiceRequestHandler implements PreSubmitCallback
         }
 
         if (event == RECORD_REMISSION_DECISION) {
+            boolean canHandle = canHandleRecordRemissionDecision(asylumCase);
             log.info("PreSubmit Callback for event: {}, canHandle? {}, caseID: {}", event,
-                    canHandleRecordRemissionDecision(asylumCase), callback.getCaseDetails().getId());
-            return canHandleRecordRemissionDecision(asylumCase);
+                    canHandle, callback.getCaseDetails().getId());
+            return canHandle;
         }
 
         return false;
@@ -107,6 +108,7 @@ public class AutomaticGenerateServiceRequestHandler implements PreSubmitCallback
                                                  || decision == RemissionDecision.PARTIALLY_APPROVED;
 
         return isRejectedOrPartiallyApproved
+               && isWaysToPay(asylumCase)
                && !HandlerUtils.isAipJourney(asylumCase)
                && !isInternalCase(asylumCase)
                && !isAppellantsRepresented;

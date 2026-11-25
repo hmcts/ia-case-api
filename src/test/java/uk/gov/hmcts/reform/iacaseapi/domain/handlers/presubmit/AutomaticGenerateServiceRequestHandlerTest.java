@@ -217,6 +217,7 @@ class AutomaticGenerateServiceRequestHandlerTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
         when(asylumCase.read(REMISSION_DECISION, RemissionDecision.class)).thenReturn(Optional.of(decision));
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.EA));
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.empty());
         when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(NO));
         when(asylumCase.read(APPELLANTS_REPRESENTATION, YesOrNo.class)).thenReturn(Optional.of(NO));
@@ -232,6 +233,7 @@ class AutomaticGenerateServiceRequestHandlerTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
         when(asylumCase.read(REMISSION_DECISION, RemissionDecision.class)).thenReturn(Optional.of(RemissionDecision.APPROVED));
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.EA));
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.empty());
         when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(NO));
         when(asylumCase.read(APPELLANTS_REPRESENTATION, YesOrNo.class)).thenReturn(Optional.of(NO));
@@ -260,6 +262,7 @@ class AutomaticGenerateServiceRequestHandlerTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
         when(asylumCase.read(REMISSION_DECISION, RemissionDecision.class)).thenReturn(Optional.of(decision));
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.EA));
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
         when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(NO));
         when(asylumCase.read(APPELLANTS_REPRESENTATION, YesOrNo.class)).thenReturn(Optional.of(NO));
@@ -276,6 +279,7 @@ class AutomaticGenerateServiceRequestHandlerTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
         when(asylumCase.read(REMISSION_DECISION, RemissionDecision.class)).thenReturn(Optional.of(decision));
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.EA));
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.empty());
         when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YES));
         when(asylumCase.read(APPELLANTS_REPRESENTATION, YesOrNo.class)).thenReturn(Optional.of(NO));
@@ -292,6 +296,7 @@ class AutomaticGenerateServiceRequestHandlerTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
         when(asylumCase.read(REMISSION_DECISION, RemissionDecision.class)).thenReturn(Optional.of(decision));
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.EA));
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.empty());
         when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(NO));
         when(asylumCase.read(APPELLANTS_REPRESENTATION, YesOrNo.class)).thenReturn(Optional.of(YES));
@@ -308,6 +313,7 @@ class AutomaticGenerateServiceRequestHandlerTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
         when(asylumCase.read(REMISSION_DECISION, RemissionDecision.class)).thenReturn(Optional.of(decision));
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.EA));
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.empty());
         when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(NO));
         when(asylumCase.read(APPELLANTS_REPRESENTATION, YesOrNo.class)).thenReturn(Optional.of(NO));
@@ -318,5 +324,22 @@ class AutomaticGenerateServiceRequestHandlerTest {
 
         assertNotNull(response);
         verify(feePayment).aboutToSubmit(callback);
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = AppealType.class, names = {"DC", "RP", "AG"})
+    void should_not_handle_record_remission_decision_for_non_payment_appeal_types(AppealType appealType) {
+        reset(callback);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.RECORD_REMISSION_DECISION);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        when(asylumCase.read(REMISSION_DECISION, RemissionDecision.class)).thenReturn(Optional.of(RemissionDecision.REJECTED));
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.empty());
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(NO));
+        when(asylumCase.read(APPELLANTS_REPRESENTATION, YesOrNo.class)).thenReturn(Optional.of(NO));
+
+        assertFalse(handler.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback));
     }
 }
