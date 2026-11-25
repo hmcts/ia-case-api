@@ -75,6 +75,7 @@ public class RecordAttendeesAndDurationPreparer implements PreSubmitCallbackHand
 
         Arrays.asList(
             ATTENDEES_AND_DURATION_HEARING,
+            ATTENDEES_AND_DURATION_CASE_REFERENCE,
             ATTENDEES_AND_DURATION_HEARING_ID,
             ATTENDEES_AND_DURATION_HEARING_DATE,
             ATTENDEES_AND_DURATION_HEARING_DATE_DISPLAY,

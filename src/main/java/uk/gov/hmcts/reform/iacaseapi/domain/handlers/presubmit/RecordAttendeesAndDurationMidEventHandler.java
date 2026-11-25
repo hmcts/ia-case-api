@@ -1,10 +1,17 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.Value;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
@@ -17,6 +24,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationRefDataService;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ATTENDEES_AND_DURATION_HEARING_CANCELLATION_REASON;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ATTENDEES_AND_DURATION_HEARING_PART_HEARD_REASON;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ATTENDEES_AND_DURATION_PARTICIPANTS;
 
 @Slf4j
 @Component
@@ -26,6 +34,12 @@ public class RecordAttendeesAndDurationMidEventHandler implements PreSubmitCallb
             "selectHearingRecordAttendeesAndDuration";
     private static final String TIMES_ATTENDEES_AND_DURATION_PAGE_ID =
             "timesRecordAttendeesAndDuration";
+
+    private static final String ATTENDANCE_TYPE = "attendanceType";
+    private static final String ROLE = "role";
+    private static final String ROLE_LABEL = "roleLabel";
+    private static final String REPRESENTED_PARTY = "representedParty";
+    private static final String PREFILLED = "prefilled";
 
     private final CommonRefDataDynamicListProvider provider;
     private final LocationRefDataService locationRefDataService;
@@ -63,6 +77,8 @@ public class RecordAttendeesAndDurationMidEventHandler implements PreSubmitCallb
             case TIMES_ATTENDEES_AND_DURATION_PAGE_ID -> {
                 log.info("populating attendees and duration participants");
                 asylumCase = iaHearingsApiService.midEvent(callback);
+
+                prePopulateParticipantLists(asylumCase);
             }
             default -> { }
         }
@@ -102,5 +118,61 @@ public class RecordAttendeesAndDurationMidEventHandler implements PreSubmitCallb
 
         log.info("hearingPartHeardReason = {}", hearingPartHeardReason);
         asylumCase.write(ATTENDEES_AND_DURATION_HEARING_PART_HEARD_REASON, hearingPartHeardReason);
+    }
+
+    /**
+     * Attendance type comes from HearingSubChannel ref data and role / represented party from EntityRoleCode ref
+     * data, with HMC's values preselected. ExUI shows no options for these lists in rows added with "Add new".
+     */
+    @SuppressWarnings("unchecked")
+    private void prePopulateParticipantLists(AsylumCase asylumCase) {
+        List<Object> participants = asylumCase.<List<Object>>read(ATTENDEES_AND_DURATION_PARTICIPANTS)
+            .orElse(List.of());
+        if (participants.isEmpty()) {
+            return;
+        }
+
+        List<Value> subChannels = provider.provideHearingSubChannels().getListItems();
+        List<Value> roles = provider.provideEntityRoleCodes().getListItems();
+        List<Object> updated = new ArrayList<>();
+        for (Object item : participants) {
+            if (!(item instanceof Map<?, ?> original) || !(original.get("value") instanceof Map<?, ?> value)) {
+                updated.add(item);
+                continue;
+            }
+            Map<String, Object> participant = new LinkedHashMap<>((Map<String, Object>) value);
+            participant.put(ATTENDANCE_TYPE, toDynamicList(participant.get(ATTENDANCE_TYPE), subChannels));
+            participant.put(REPRESENTED_PARTY, toDynamicList(participant.get(REPRESENTED_PARTY), roles));
+            DynamicList role = toDynamicList(participant.get(ROLE), roles);
+            participant.put(ROLE, role);
+            if ("Yes".equals(participant.get(PREFILLED)) && !Objects.toString(role.getValue().getCode(), "").isEmpty()) {
+                // read-only role shown on pre-filled rows uses the ref data wording
+                participant.put(ROLE_LABEL, role.getValue().getLabel());
+            }
+            Map<String, Object> row = new LinkedHashMap<>((Map<String, Object>) original);
+            row.put("value", participant);
+            updated.add(row);
+        }
+        asylumCase.write(ATTENDEES_AND_DURATION_PARTICIPANTS, updated);
+    }
+
+    private DynamicList toDynamicList(Object current, List<Value> listItems) {
+        String selectedCode = selectedCode(current).orElse("");
+        Value selected = listItems.stream()
+            .filter(item -> selectedCode.equals(item.getCode()))
+            .findFirst()
+            .orElse(new Value("", ""));
+        return new DynamicList(selected, listItems);
+    }
+
+    private Optional<String> selectedCode(Object current) {
+        // HMC's value from ia-hearings-api, or the caseworker's choice when they come back to the times page
+        if (current instanceof DynamicList list) {
+            return Optional.ofNullable(list.getValue()).map(Value::getCode).filter(code -> !code.isBlank());
+        }
+        if (current instanceof Map<?, ?> list && list.get("value") instanceof Map<?, ?> value) {
+            return Optional.ofNullable(value.get("code")).map(Object::toString).filter(code -> !code.isBlank());
+        }
+        return Optional.empty();
     }
 }

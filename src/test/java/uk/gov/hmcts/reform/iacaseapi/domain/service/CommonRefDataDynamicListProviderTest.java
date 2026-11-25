@@ -9,7 +9,9 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.service.CommonRefDataDynamicL
 import static uk.gov.hmcts.reform.iacaseapi.domain.service.CommonRefDataDynamicListProvider.ACTUAL_PART_HEARD_REASON_CODES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.service.CommonRefDataDynamicListProvider.CASE_MANAGEMENT_CANCELLATION_REASONS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.service.CommonRefDataDynamicListProvider.CHANGE_REASONS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.service.CommonRefDataDynamicListProvider.ENTITY_ROLE_CODE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.service.CommonRefDataDynamicListProvider.HEARING_CHANNEL_CATEGORY;
+import static uk.gov.hmcts.reform.iacaseapi.domain.service.CommonRefDataDynamicListProvider.HEARING_SUB_CHANNEL_CATEGORY;
 import static uk.gov.hmcts.reform.iacaseapi.domain.service.CommonRefDataDynamicListProvider.IS_CHILD_REQUIRED;
 
 import java.util.List;
@@ -65,6 +67,42 @@ class CommonRefDataDynamicListProviderTest {
             .mapCategoryValuesToDynamicListValues(categoryValuesList);
 
         assertEquals(values, hearingChannels.getListItems());
+    }
+
+    @Test
+    void should_provide_hearing_sub_channels_dynamic_list() {
+        when(refDataUserService.retrieveCategoryValues(HEARING_SUB_CHANNEL_CATEGORY, IS_CHILD_REQUIRED))
+            .thenReturn(commonDataResponse);
+        List<CategoryValues> categoryValuesList = List.of(categoryValues);
+        when(refDataUserService.filterCategoryValuesByCategoryIdWithActiveFlag(
+            commonDataResponse, HEARING_SUB_CHANNEL_CATEGORY))
+            .thenReturn(categoryValuesList);
+        List<Value> values = List.of(new Value("TELCVP", "Telephone - CVP"));
+        when(refDataUserService.mapCategoryValuesToDynamicListValues(categoryValuesList)).thenReturn(values);
+
+        DynamicList subChannels = provider.provideHearingSubChannels();
+
+        assertEquals(new Value("", ""), subChannels.getValue());
+        assertEquals(values, subChannels.getListItems());
+        verify(refDataUserService, times(1))
+            .retrieveCategoryValues(HEARING_SUB_CHANNEL_CATEGORY, IS_CHILD_REQUIRED);
+    }
+
+    @Test
+    void should_provide_entity_role_codes_dynamic_list() {
+        when(refDataUserService.retrieveCategoryValues(ENTITY_ROLE_CODE, IS_CHILD_REQUIRED))
+            .thenReturn(commonDataResponse);
+        List<CategoryValues> categoryValuesList = List.of(categoryValues);
+        when(refDataUserService.filterCategoryValuesByCategoryId(commonDataResponse, ENTITY_ROLE_CODE))
+            .thenReturn(categoryValuesList);
+        List<Value> values = List.of(new Value("APEL", "Appellant"));
+        when(refDataUserService.mapCategoryValuesToDynamicListValues(categoryValuesList)).thenReturn(values);
+
+        DynamicList roles = provider.provideEntityRoleCodes();
+
+        assertEquals(new Value("", ""), roles.getValue());
+        assertEquals(values, roles.getListItems());
+        verify(refDataUserService, times(1)).retrieveCategoryValues(ENTITY_ROLE_CODE, IS_CHILD_REQUIRED);
     }
 
     @Test
