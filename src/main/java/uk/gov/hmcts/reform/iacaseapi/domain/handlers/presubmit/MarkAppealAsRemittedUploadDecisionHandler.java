@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMITTAL_DOCUMENTS;
@@ -28,23 +29,30 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.statutorytimeframe24weeks.UpdateStatutoryTimeframe24WeeksService;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.Appender;
 
 @Component
 public class MarkAppealAsRemittedUploadDecisionHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
+    public static final String STF24W_REMOVAL_REASON = "Removed due to UTPA decision";
+
     private final Appender<CaseNote> caseNoteAppender;
     private final DateProvider dateProvider;
 
     private final Appender<RemittalDocument> remittalDocumentsAppender;
+    private final UpdateStatutoryTimeframe24WeeksService updateStatutoryTimeframe24WeeksService;
 
     public MarkAppealAsRemittedUploadDecisionHandler(Appender<CaseNote> caseNoteAppender,
                                                      DateProvider dateProvider,
-                                                     Appender<RemittalDocument> remittalDocumentsAppender) {
+                                                     Appender<RemittalDocument> remittalDocumentsAppender,
+                                                     UpdateStatutoryTimeframe24WeeksService updateStatutoryTimeframe24WeeksService) {
         this.caseNoteAppender = caseNoteAppender;
         this.dateProvider = dateProvider;
         this.remittalDocumentsAppender = remittalDocumentsAppender;
+        this.updateStatutoryTimeframe24WeeksService = updateStatutoryTimeframe24WeeksService;
     }
 
     public boolean canHandle(
@@ -77,6 +85,12 @@ public class MarkAppealAsRemittedUploadDecisionHandler implements PreSubmitCallb
         asylumCase.write(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YES);
         asylumCase.write(IS_REHEARD_APPEAL_ENABLED, YES);
         addRemittedCaseNote(asylumCase);
+
+        asylumCase.read(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class).ifPresent(flag -> {
+            if (flag.equals(YES)) {
+                updateStatutoryTimeframe24WeeksService.updateAsylumCase(asylumCase, NO, STF24W_REMOVAL_REASON);
+            }
+        });
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
