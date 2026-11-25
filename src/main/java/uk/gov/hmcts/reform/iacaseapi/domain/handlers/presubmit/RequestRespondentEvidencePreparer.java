@@ -90,7 +90,7 @@ public class RequestRespondentEvidencePreparer implements PreSubmitCallbackHandl
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse = new PreSubmitCallbackResponse<>(asylumCase);
         if (stf24wLiveDate.isEqual(LocalDate.now()) || stf24wLiveDate.isBefore(LocalDate.now())) {
-            boolean is24WeekStfCase = asylumCase.read(STF_24W_PREVIOUS_STATUS_WAS_YES_AUTO_GENERATED, YesOrNo.class)
+            boolean is24WeekStfCase = asylumCase.read(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class)
                     .map(status -> status == YES)
                     .orElse(false);
             boolean completeCaseReviewDateEmpty = asylumCase.read(COMPLETE_CASE_REVIEW_DATE, String.class).isEmpty();
@@ -98,7 +98,7 @@ public class RequestRespondentEvidencePreparer implements PreSubmitCallbackHandl
                 if (completeCaseReviewDateEmpty) {
                     return callbackResponse.withError("You must run the Complete case review and list the case before running the 'Request respondent evidence' event");
                 }
-                if (isDecisionWithHearing(asylumCase) && asylumCase.read(LIST_CASE_HEARING_DATE, String.class).isEmpty()) {
+                if (asylumCase.read(LIST_CASE_HEARING_DATE, String.class).isEmpty()) {
                     return callbackResponse.withError("You must list the case before running the 'Request respondent evidence' event");
                 }
             } else if (completeCaseReviewDateEmpty) {
