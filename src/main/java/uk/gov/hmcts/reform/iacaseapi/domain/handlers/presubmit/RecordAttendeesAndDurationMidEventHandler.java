@@ -146,7 +146,6 @@ public class RecordAttendeesAndDurationMidEventHandler implements PreSubmitCallb
             DynamicList role = toDynamicList(participant.get(ROLE), roles);
             participant.put(ROLE, role);
             if ("Yes".equals(participant.get(PREFILLED)) && !Objects.toString(role.getValue().getCode(), "").isEmpty()) {
-                // read-only role shown on pre-filled rows uses the ref data wording
                 participant.put(ROLE_LABEL, role.getValue().getLabel());
             }
             Map<String, Object> row = new LinkedHashMap<>((Map<String, Object>) original);
@@ -166,7 +165,6 @@ public class RecordAttendeesAndDurationMidEventHandler implements PreSubmitCallb
     }
 
     private Optional<String> selectedCode(Object current) {
-        // HMC's value from ia-hearings-api, or the caseworker's choice when they come back to the times page
         if (current instanceof DynamicList list) {
             return Optional.ofNullable(list.getValue()).map(Value::getCode).filter(code -> !code.isBlank());
         }

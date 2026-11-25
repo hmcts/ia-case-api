@@ -60,7 +60,6 @@ class RecordAttendeesAndDurationTest extends SpringBootIntegrationTest implement
 
         addServiceAuthStub(server);
         when(userDetailsProvider.getUserDetails()).thenReturn(userDetails);
-        // return the callback's case data, as ia-hearings-api does
         when(iaHearingsApiService.aboutToSubmit(any()))
             .thenAnswer(invocation -> invocation.<Callback<AsylumCase>>getArgument(0).getCaseDetails().getCaseData());
 
