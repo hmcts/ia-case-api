@@ -11,12 +11,10 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.EU;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANTS_REPRESENTATION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DISPLAY_MARK_AS_PAID_EVENT_FOR_PARTIAL_REMISSION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAS_SERVICE_REQUEST_ALREADY;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ADMIN;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_SERVICE_REQUEST_TAB_VISIBLE_CONSIDERING_REMISSIONS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOURNEY_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PAYMENT_STATUS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMISSION_DECISION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMISSION_REJECTED_DATE_PLUS_14DAYS;
@@ -39,6 +37,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
@@ -53,10 +52,9 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.FeePayment;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -70,14 +68,13 @@ class RecordRemissionDecisionStateHandlerTest {
 
     @Mock private FeatureToggler featureToggler;
     @Mock private DateProvider dateProvider;
-    @Mock private FeePayment feePayment;
 
     private RecordRemissionDecisionStateHandler recordRemissionDecisionStateHandler;
 
     @BeforeEach
     public void setUp() {
 
-        recordRemissionDecisionStateHandler = new RecordRemissionDecisionStateHandler(featureToggler, dateProvider, feePayment);
+        recordRemissionDecisionStateHandler = new RecordRemissionDecisionStateHandler(featureToggler, dateProvider);
     }
 
     @Test
@@ -136,11 +133,38 @@ class RecordRemissionDecisionStateHandlerTest {
         assertThat(returnedCallbackResponse.getData()).isEqualTo(asylumCase);
         assertThat(returnedCallbackResponse.getState()).isEqualTo(newState);
         verify(asylumCase, times(1)).write(PAYMENT_STATUS, PAID);
-
-        verify(feePayment, never()).aboutToSubmit(callback);
         verify(asylumCase, times(1)).write(IS_SERVICE_REQUEST_TAB_VISIBLE_CONSIDERING_REMISSIONS, YesOrNo.NO);
         verify(asylumCase, times(1)).write(DISPLAY_MARK_AS_PAID_EVENT_FOR_PARTIAL_REMISSION, YesOrNo.NO);
-        verify(asylumCase, never()).write(HAS_SERVICE_REQUEST_ALREADY, YesOrNo.YES);
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = AppealType.class, names = { "EA", "HU", "EU", "AG" })
+    void should_return_payment_pending_on_remission_partially_approved(AppealType type) {
+        // and service-request tab should be hidden (payment is handled offline, waysToPay not yet supporting partial remissions)
+        // and markAppealAsPaid should be visible, to allow admins to process offline payments
+
+        when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
+
+        when(callback.getEvent()).thenReturn(Event.RECORD_REMISSION_DECISION);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getState()).thenReturn(State.PENDING_PAYMENT);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(dateProvider.now()).thenReturn(LocalDate.now());
+
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(type));
+        when(asylumCase.read(REMISSION_DECISION, RemissionDecision.class)).thenReturn(Optional.of(PARTIALLY_APPROVED));
+
+        PreSubmitCallbackResponse<AsylumCase> returnedCallbackResponse =
+            recordRemissionDecisionStateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse);
+
+        assertThat(returnedCallbackResponse).isNotNull();
+        assertThat(returnedCallbackResponse.getData()).isEqualTo(asylumCase);
+        assertThat(returnedCallbackResponse.getState()).isEqualTo(State.PENDING_PAYMENT);
+        verify(asylumCase, times(1)).write(PAYMENT_STATUS, PAYMENT_PENDING);
+        verify(asylumCase, times(1)).write(REMISSION_REJECTED_DATE_PLUS_14DAYS,
+            LocalDate.parse(dateProvider.now().plusDays(14).toString()).format(DateTimeFormatter.ofPattern("d MMM yyyy")));
+        verify(asylumCase, times(1)).write(IS_SERVICE_REQUEST_TAB_VISIBLE_CONSIDERING_REMISSIONS, YesOrNo.NO);
+        verify(asylumCase, times(1)).write(DISPLAY_MARK_AS_PAID_EVENT_FOR_PARTIAL_REMISSION, YesOrNo.YES);
     }
 
     @Test
@@ -165,8 +189,10 @@ class RecordRemissionDecisionStateHandlerTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = AppealType.class, names = { "EA", "HU", "PA", "EU", "AG" })
-    void handle_should_call_fee_payment_for_lr_journey_when_remission_rejected(AppealType type) {
+    @CsvSource({ "EA, YES", "HU, YES", "PA, YES", "EU, YES", "AG, YES", "EA, NO", "HU, NO", "PA, NO", "EU, NO", "AG, NO" })
+    void handle_should_return_payment_due_for_remission_rejected(AppealType type, String isAdmin) {
+        // and service-request tab should be visible (payment is handled via waysToPay service-request)
+        // and markAppealAsPaid should not be visible, (payment handled via waysToPay service-request)
 
         when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
 
@@ -175,10 +201,7 @@ class RecordRemissionDecisionStateHandlerTest {
         when(caseDetails.getState()).thenReturn(State.PENDING_PAYMENT);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(dateProvider.now()).thenReturn(LocalDate.now());
-        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
-        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.empty());
-        when(asylumCase.read(APPELLANTS_REPRESENTATION, YesOrNo.class)).thenReturn(Optional.empty());
-        when(feePayment.aboutToSubmit(callback)).thenReturn(asylumCase);
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.valueOf(isAdmin)));
 
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(type));
         when(asylumCase.read(REMISSION_DECISION, RemissionDecision.class)).thenReturn(Optional.of(REJECTED));
@@ -189,230 +212,42 @@ class RecordRemissionDecisionStateHandlerTest {
         assertThat(returnedCallbackResponse).isNotNull();
         assertThat(returnedCallbackResponse.getData()).isEqualTo(asylumCase);
         verify(asylumCase, times(1)).write(PAYMENT_STATUS, PAYMENT_PENDING);
-        verify(asylumCase, times(1)).write(REMISSION_REJECTED_DATE_PLUS_14DAYS,
+        verify(asylumCase,times(1)).write(REMISSION_REJECTED_DATE_PLUS_14DAYS,
             LocalDate.parse(dateProvider.now().plusDays(14).toString()).format(DateTimeFormatter.ofPattern("d MMM yyyy")));
-
-        verify(feePayment, times(1)).aboutToSubmit(callback);
         verify(asylumCase, times(1)).write(IS_SERVICE_REQUEST_TAB_VISIBLE_CONSIDERING_REMISSIONS, YesOrNo.YES);
         verify(asylumCase, times(1)).write(REQUEST_FEE_REMISSION_FLAG_FOR_SERVICE_REQUEST, YesOrNo.NO);
         verify(asylumCase, times(1)).write(DISPLAY_MARK_AS_PAID_EVENT_FOR_PARTIAL_REMISSION, YesOrNo.NO);
-        verify(asylumCase, never()).write(HAS_SERVICE_REQUEST_ALREADY, YesOrNo.YES);
     }
 
     @ParameterizedTest
-    @EnumSource(value = AppealType.class, names = { "EA", "HU", "PA", "EU", "AG" })
-    void handle_should_not_call_fee_payment_for_internal_case_when_remission_rejected(AppealType type) {
+    @CsvSource({ "EA, YES", "HU, YES", "PA, YES", "EU, YES", "AG, YES", "EA, NO", "HU, NO", "PA, NO", "EU, NO", "AG, NO" })
+    void handle_should_leave_payment_status_as_is_if_present_for_remission_rejected(AppealType type, String isAdmin) {
+        // payment status gets left alone (e.g. when appeal gets paid for, THEN remissions are requested and decided)
 
         when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
 
         when(callback.getEvent()).thenReturn(Event.RECORD_REMISSION_DECISION);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getState()).thenReturn(State.PENDING_PAYMENT);
+        when(caseDetails.getState()).thenReturn(State.APPEAL_SUBMITTED);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(dateProvider.now()).thenReturn(LocalDate.now());
-        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
-        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.empty());
-        when(asylumCase.read(APPELLANTS_REPRESENTATION, YesOrNo.class)).thenReturn(Optional.empty());
 
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(type));
+        when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)).thenReturn(Optional.of(PAID));
         when(asylumCase.read(REMISSION_DECISION, RemissionDecision.class)).thenReturn(Optional.of(REJECTED));
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.valueOf(isAdmin)));
 
         PreSubmitCallbackResponse<AsylumCase> returnedCallbackResponse =
             recordRemissionDecisionStateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse);
 
         assertThat(returnedCallbackResponse).isNotNull();
         assertThat(returnedCallbackResponse.getData()).isEqualTo(asylumCase);
-        verify(asylumCase, times(1)).write(PAYMENT_STATUS, PAYMENT_PENDING);
-
-        verify(feePayment, never()).aboutToSubmit(callback);
-        verify(asylumCase, times(1)).write(IS_SERVICE_REQUEST_TAB_VISIBLE_CONSIDERING_REMISSIONS, YesOrNo.YES);
-        verify(asylumCase, times(1)).write(REQUEST_FEE_REMISSION_FLAG_FOR_SERVICE_REQUEST, YesOrNo.NO);
-        verify(asylumCase, times(1)).write(DISPLAY_MARK_AS_PAID_EVENT_FOR_PARTIAL_REMISSION, YesOrNo.NO);
-    }
-
-    @ParameterizedTest
-    @EnumSource(value = AppealType.class, names = { "EA", "HU", "PA", "EU", "AG" })
-    void handle_should_not_call_fee_payment_for_aip_journey_when_remission_rejected(AppealType type) {
-        when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
-
-        when(callback.getEvent()).thenReturn(Event.RECORD_REMISSION_DECISION);
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getState()).thenReturn(State.PENDING_PAYMENT);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(dateProvider.now()).thenReturn(LocalDate.now());
-        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
-        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
-        when(asylumCase.read(APPELLANTS_REPRESENTATION, YesOrNo.class)).thenReturn(Optional.empty());
-
-        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(type));
-        when(asylumCase.read(REMISSION_DECISION, RemissionDecision.class)).thenReturn(Optional.of(REJECTED));
-
-        PreSubmitCallbackResponse<AsylumCase> returnedCallbackResponse =
-            recordRemissionDecisionStateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse);
-
-        assertThat(returnedCallbackResponse).isNotNull();
-        assertThat(returnedCallbackResponse.getData()).isEqualTo(asylumCase);
-        verify(asylumCase, times(1)).write(PAYMENT_STATUS, PAYMENT_PENDING);
-
-        verify(feePayment, never()).aboutToSubmit(callback);
-        verify(asylumCase, times(1)).write(IS_SERVICE_REQUEST_TAB_VISIBLE_CONSIDERING_REMISSIONS, YesOrNo.YES);
-        verify(asylumCase, times(1)).write(REQUEST_FEE_REMISSION_FLAG_FOR_SERVICE_REQUEST, YesOrNo.NO);
-        verify(asylumCase, times(1)).write(DISPLAY_MARK_AS_PAID_EVENT_FOR_PARTIAL_REMISSION, YesOrNo.NO);
-    }
-
-    @ParameterizedTest
-    @EnumSource(value = AppealType.class, names = { "EA", "HU", "PA", "EU", "AG" })
-    void handle_should_not_call_fee_payment_when_appellants_represented_for_remission_rejected(AppealType type) {
-
-        when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
-
-        when(callback.getEvent()).thenReturn(Event.RECORD_REMISSION_DECISION);
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getState()).thenReturn(State.PENDING_PAYMENT);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(dateProvider.now()).thenReturn(LocalDate.now());
-        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
-        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.empty());
-        when(asylumCase.read(APPELLANTS_REPRESENTATION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
-
-        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(type));
-        when(asylumCase.read(REMISSION_DECISION, RemissionDecision.class)).thenReturn(Optional.of(REJECTED));
-
-        PreSubmitCallbackResponse<AsylumCase> returnedCallbackResponse =
-            recordRemissionDecisionStateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse);
-
-        assertThat(returnedCallbackResponse).isNotNull();
-        assertThat(returnedCallbackResponse.getData()).isEqualTo(asylumCase);
-        verify(asylumCase, times(1)).write(PAYMENT_STATUS, PAYMENT_PENDING);
-
-        verify(feePayment, never()).aboutToSubmit(callback);
-        verify(asylumCase, times(1)).write(IS_SERVICE_REQUEST_TAB_VISIBLE_CONSIDERING_REMISSIONS, YesOrNo.YES);
-        verify(asylumCase, times(1)).write(REQUEST_FEE_REMISSION_FLAG_FOR_SERVICE_REQUEST, YesOrNo.NO);
-        verify(asylumCase, times(1)).write(DISPLAY_MARK_AS_PAID_EVENT_FOR_PARTIAL_REMISSION, YesOrNo.NO);
-    }
-
-    @ParameterizedTest
-    @EnumSource(value = AppealType.class, names = { "EA", "HU", "PA", "EU", "AG" })
-    void handle_should_call_fee_payment_for_lr_journey_when_remission_partially_approved(AppealType type) {
-        when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
-
-        when(callback.getEvent()).thenReturn(Event.RECORD_REMISSION_DECISION);
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getState()).thenReturn(State.PENDING_PAYMENT);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(dateProvider.now()).thenReturn(LocalDate.now());
-        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
-        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.empty());
-        when(asylumCase.read(APPELLANTS_REPRESENTATION, YesOrNo.class)).thenReturn(Optional.empty());
-        when(feePayment.aboutToSubmit(callback)).thenReturn(asylumCase);
-
-        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(type));
-        when(asylumCase.read(REMISSION_DECISION, RemissionDecision.class)).thenReturn(Optional.of(PARTIALLY_APPROVED));
-
-        PreSubmitCallbackResponse<AsylumCase> returnedCallbackResponse =
-            recordRemissionDecisionStateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse);
-
-        assertThat(returnedCallbackResponse).isNotNull();
-        assertThat(returnedCallbackResponse.getData()).isEqualTo(asylumCase);
-        assertThat(returnedCallbackResponse.getState()).isEqualTo(State.PENDING_PAYMENT);
-        verify(asylumCase, times(1)).write(PAYMENT_STATUS, PAYMENT_PENDING);
-        verify(asylumCase, times(1)).write(REMISSION_REJECTED_DATE_PLUS_14DAYS,
+        verify(asylumCase, times(1)).write(PAYMENT_STATUS, PAID);
+        verify(asylumCase,times(1)).write(REMISSION_REJECTED_DATE_PLUS_14DAYS,
             LocalDate.parse(dateProvider.now().plusDays(14).toString()).format(DateTimeFormatter.ofPattern("d MMM yyyy")));
-
-        verify(feePayment, times(1)).aboutToSubmit(callback);
-        verify(asylumCase, times(1)).write(IS_SERVICE_REQUEST_TAB_VISIBLE_CONSIDERING_REMISSIONS, YesOrNo.NO);
-        verify(asylumCase, times(1)).write(DISPLAY_MARK_AS_PAID_EVENT_FOR_PARTIAL_REMISSION, YesOrNo.YES);
-        verify(asylumCase, never()).write(HAS_SERVICE_REQUEST_ALREADY, YesOrNo.YES);
-    }
-
-    @ParameterizedTest
-    @EnumSource(value = AppealType.class, names = { "EA", "HU", "PA", "EU", "AG" })
-    void handle_should_not_call_fee_payment_for_internal_case_when_remission_partially_approved(AppealType type) {
-
-        when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
-
-        when(callback.getEvent()).thenReturn(Event.RECORD_REMISSION_DECISION);
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getState()).thenReturn(State.PENDING_PAYMENT);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(dateProvider.now()).thenReturn(LocalDate.now());
-        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
-        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.empty());
-        when(asylumCase.read(APPELLANTS_REPRESENTATION, YesOrNo.class)).thenReturn(Optional.empty());
-
-        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(type));
-        when(asylumCase.read(REMISSION_DECISION, RemissionDecision.class)).thenReturn(Optional.of(PARTIALLY_APPROVED));
-
-        PreSubmitCallbackResponse<AsylumCase> returnedCallbackResponse =
-            recordRemissionDecisionStateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse);
-
-        assertThat(returnedCallbackResponse).isNotNull();
-        assertThat(returnedCallbackResponse.getData()).isEqualTo(asylumCase);
-        verify(asylumCase, times(1)).write(PAYMENT_STATUS, PAYMENT_PENDING);
-
-        verify(feePayment, never()).aboutToSubmit(callback);
-        verify(asylumCase, times(1)).write(IS_SERVICE_REQUEST_TAB_VISIBLE_CONSIDERING_REMISSIONS, YesOrNo.NO);
-        verify(asylumCase, times(1)).write(DISPLAY_MARK_AS_PAID_EVENT_FOR_PARTIAL_REMISSION, YesOrNo.YES);
-    }
-
-    @ParameterizedTest
-    @EnumSource(value = AppealType.class, names = { "EA", "HU", "PA", "EU", "AG" })
-    void handle_should_not_call_fee_payment_for_aip_journey_when_remission_partially_approved(AppealType type) {
-
-        when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
-
-        when(callback.getEvent()).thenReturn(Event.RECORD_REMISSION_DECISION);
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getState()).thenReturn(State.PENDING_PAYMENT);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(dateProvider.now()).thenReturn(LocalDate.now());
-        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
-        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
-        when(asylumCase.read(APPELLANTS_REPRESENTATION, YesOrNo.class)).thenReturn(Optional.empty());
-
-        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(type));
-        when(asylumCase.read(REMISSION_DECISION, RemissionDecision.class)).thenReturn(Optional.of(PARTIALLY_APPROVED));
-
-        PreSubmitCallbackResponse<AsylumCase> returnedCallbackResponse =
-            recordRemissionDecisionStateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse);
-
-        assertThat(returnedCallbackResponse).isNotNull();
-        assertThat(returnedCallbackResponse.getData()).isEqualTo(asylumCase);
-        verify(asylumCase, times(1)).write(PAYMENT_STATUS, PAYMENT_PENDING);
-
-        verify(feePayment, never()).aboutToSubmit(callback);
-        verify(asylumCase, times(1)).write(IS_SERVICE_REQUEST_TAB_VISIBLE_CONSIDERING_REMISSIONS, YesOrNo.NO);
-        verify(asylumCase, times(1)).write(DISPLAY_MARK_AS_PAID_EVENT_FOR_PARTIAL_REMISSION, YesOrNo.YES);
-    }
-
-    @ParameterizedTest
-    @EnumSource(value = AppealType.class, names = { "EA", "HU", "PA", "EU", "AG" })
-    void handle_should_not_call_fee_payment_when_appellants_represented_for_remission_partially_approved(AppealType type) {
-
-        when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
-
-        when(callback.getEvent()).thenReturn(Event.RECORD_REMISSION_DECISION);
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getState()).thenReturn(State.PENDING_PAYMENT);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(dateProvider.now()).thenReturn(LocalDate.now());
-        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
-        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.empty());
-        when(asylumCase.read(APPELLANTS_REPRESENTATION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
-
-        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(type));
-        when(asylumCase.read(REMISSION_DECISION, RemissionDecision.class)).thenReturn(Optional.of(PARTIALLY_APPROVED));
-
-        PreSubmitCallbackResponse<AsylumCase> returnedCallbackResponse =
-            recordRemissionDecisionStateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse);
-
-        assertThat(returnedCallbackResponse).isNotNull();
-        assertThat(returnedCallbackResponse.getData()).isEqualTo(asylumCase);
-        verify(asylumCase, times(1)).write(PAYMENT_STATUS, PAYMENT_PENDING);
-
-        verify(feePayment, never()).aboutToSubmit(callback);
-        verify(asylumCase, times(1)).write(IS_SERVICE_REQUEST_TAB_VISIBLE_CONSIDERING_REMISSIONS, YesOrNo.NO);
-        verify(asylumCase, times(1)).write(DISPLAY_MARK_AS_PAID_EVENT_FOR_PARTIAL_REMISSION, YesOrNo.YES);
+        verify(asylumCase, times(1)).write(IS_SERVICE_REQUEST_TAB_VISIBLE_CONSIDERING_REMISSIONS, YesOrNo.YES);
+        verify(asylumCase, times(1)).write(REQUEST_FEE_REMISSION_FLAG_FOR_SERVICE_REQUEST, YesOrNo.NO);
+        verify(asylumCase, times(1)).write(DISPLAY_MARK_AS_PAID_EVENT_FOR_PARTIAL_REMISSION, YesOrNo.NO);
     }
 
     @Test
