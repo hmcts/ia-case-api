@@ -961,7 +961,7 @@ ccd:
         APPLICATION_LOGGING_LEVEL: TRACE
         ROLE_ASSIGNMENT_DB_HOST: ia-preview.postgres.database.azure.com
         ROLE_ASSIGNMENT_DB_NAME: "pr-${CHANGE_ID}-role_assignment"
-        ROLE_ASSIGNMENT_DB_OPTIONS: "?stringtype=unspecified&sslmode=disable&gssEncMode=disable"
+        ROLE_ASSIGNMENT_DB_OPTIONS: "?stringtype=unspecified&reWriteBatchedInserts=true&sslmode=require"
       keyVaults:
         am:
           resourceGroup: am
