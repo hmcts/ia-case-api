@@ -81,7 +81,7 @@ public class RequestCaseBuildingPreparer implements PreSubmitCallbackHandler<Asy
             asylumCase.write(SEND_DIRECTION_DATE_DUE, dueDate.toString());
         }
 
-        if (isInternalDetained || isEjpUnrepNonDetained) {
+        if (isInternalDetained || isEjpUnrepNonDetained || isAipJourney(asylumCase) || isAppellantInPersonManual(asylumCase)) {
             asylumCase.write(SEND_DIRECTION_PARTIES, Parties.APPELLANT);
         } else {
             asylumCase.write(SEND_DIRECTION_PARTIES, Parties.LEGAL_REPRESENTATIVE);
