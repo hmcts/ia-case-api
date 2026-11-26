@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -19,6 +20,7 @@ public class DecisionAndReasons {
     private Document documentAndReasonsDocument;
     private String summariseChanges;
 
+    @JsonCreator
     private DecisionAndReasons() {
         // noop -- for deserializer
     }
