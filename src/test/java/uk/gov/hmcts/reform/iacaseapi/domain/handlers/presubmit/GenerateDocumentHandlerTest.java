@@ -405,6 +405,7 @@ class GenerateDocumentHandlerTest {
                     MARK_APPEAL_AS_REMITTED,
                     DECIDE_FTPA_APPLICATION,
                     DECISION_WITHOUT_HEARING,
+                    UPDATE_FTPA_DECISION,
                     Event.REMOVE_STATUTORY_TIMEFRAME_24_WEEKS,
                     Event.SEND_LATE_TIMELINE_NOTICE,
                     Event.COMPLETE_CASE_REVIEW
@@ -583,6 +584,7 @@ class GenerateDocumentHandlerTest {
                     REMOVE_REPRESENTATION,
                     REMOVE_LEGAL_REPRESENTATIVE,
                     MARK_APPEAL_AS_REMITTED,
+                    UPDATE_FTPA_DECISION,
                     DECIDE_FTPA_APPLICATION,
                     DECISION_WITHOUT_HEARING,
                     Event.REMOVE_STATUTORY_TIMEFRAME_24_WEEKS,

@@ -471,6 +471,27 @@ public enum AsylumCaseFieldDefinition {
     FTPA_FINAL_DECISION_FOR_DISPLAY(
         "ftpaFinalDecisionForDisplay", new TypeReference<String>(){}),
 
+    FTPA_DECISION_UPDATED_CONFIRMATION(
+        "ftpaDecisionUpdatedConfirmation", new TypeReference<String>(){}),
+
+    UPDATE_FTPA_DECISION_AND_REASONS_FINAL_CHECK(
+        "updateFtpaDecisionAndReasonsFinalCheck", new TypeReference<YesOrNo>(){}),
+
+    UPDATE_FTPA_DECISION_LIST(
+        "updateFtpaDecisionList", new TypeReference<String>(){}),
+
+    UPDATE_FTPA_CURRENT_DECISION_TEXT(
+        "updateFtpaCurrentDecisionText", new TypeReference<String>(){}),
+
+    UPDATE_FTPA_DECISION_OUTCOME_TYPE(
+        "updateFtpaDecisionOutcomeType", new TypeReference<String>(){}),
+
+    FTPA_DECISION_AND_REASONS_DOC_UPLOAD(
+        "ftpaDecisionAndReasonsDocUpload", new TypeReference<Document>(){}),
+
+    SUMMARISE_FTPA_DECISION_AND_REASONS_DOCUMENT(
+        "summariseFtpaDecisionAndReasonsDocument", new TypeReference<String>(){}),
+
     UPLOADED_HOME_OFFICE_BUNDLE_DOCS(
         "uploadedHomeOfficeBundleDocs", new TypeReference<String>(){}),
 
