@@ -1,13 +1,14 @@
 package uk.gov.hmcts.reform.iacaseapi.util;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 import java.io.IOException;
 import java.util.Map;
 
 public final class MapSerializer {
 
-    private static ObjectMapper MAPPER = new ObjectMapper();
+    private static ObjectMapper MAPPER = new JsonMapper();
 
     private MapSerializer() {
         // noop

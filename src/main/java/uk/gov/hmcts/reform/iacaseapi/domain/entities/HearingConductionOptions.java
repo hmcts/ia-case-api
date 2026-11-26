@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum HearingConductionOptions {
@@ -13,6 +14,7 @@ public enum HearingConductionOptions {
     @JsonValue
     private final String id;
 
+    @JsonCreator
     HearingConductionOptions(String id) {
         this.id = id;
     }

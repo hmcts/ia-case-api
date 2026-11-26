@@ -6,13 +6,13 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import tools.jackson.core.JacksonException;
 
 @ExtendWith(MockitoExtension.class)
 class StdSerializerTest {
@@ -28,7 +28,7 @@ class StdSerializerTest {
     }
 
     @Test
-    void should_serialize_argument_to_string() throws JsonProcessingException {
+    void should_serialize_argument_to_string() {
 
         Integer source = 123;
         String expectedSerializedSource = "123";
@@ -43,11 +43,11 @@ class StdSerializerTest {
     }
 
     @Test
-    void should_convert_checked_exception_to_runtime_on_error() throws JsonProcessingException {
+    void should_convert_checked_exception_to_runtime_on_error() {
 
         Integer source = 123;
 
-        doThrow(mock(JsonProcessingException.class))
+        doThrow(mock(JacksonException.class))
             .when(mapper)
             .writeValueAsString(source);
 

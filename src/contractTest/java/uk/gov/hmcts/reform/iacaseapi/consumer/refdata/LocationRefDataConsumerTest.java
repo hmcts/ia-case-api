@@ -10,7 +10,6 @@ import au.com.dius.pact.consumer.junit5.PactTestFor;
 import au.com.dius.pact.core.model.V4Pact;
 import au.com.dius.pact.core.model.annotations.Pact;
 import au.com.dius.pact.core.model.annotations.PactFolder;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.apache.hc.core5.http.HttpStatus;
 import org.json.JSONException;
 import org.junit.jupiter.api.Test;
@@ -43,7 +42,7 @@ public class LocationRefDataConsumerTest {
     LocationRefDataApi locationRefDataApi;
 
     @Pact(provider = "referenceData_court_venues", consumer = "ia_caseApi")
-    public V4Pact generatePactFragment(PactDslWithProvider builder) throws JSONException, JsonProcessingException {
+    public V4Pact generatePactFragment(PactDslWithProvider builder) throws JSONException {
 
         return builder
             .given("Service ID")
