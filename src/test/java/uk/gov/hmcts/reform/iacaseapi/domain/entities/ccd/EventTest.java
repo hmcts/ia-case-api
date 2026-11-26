@@ -207,6 +207,7 @@ class EventTest {
             Arguments.of("queryManagementRaiseQuery", Event.QUERY_MANAGEMENT_RAISE_QUERY.toString()),
             Arguments.of("queryManagementRespondQuery", Event.QUERY_MANAGEMENT_RESPOND_QUERY.toString()),
             Arguments.of("generatePinInPost", Event.GENERATE_PIN_IN_POST.toString()),
+            Arguments.of("confirmHOReviewMaintained", Event.CONFIRM_HO_REVIEW_MAINTAINED.toString()),
             Arguments.of("forceCaseToPrepareForHearing", Event.FORCE_CASE_TO_PREPARE_FOR_HEARING.toString()),
             Arguments.of("sendLateTimelineNotice", Event.SEND_LATE_TIMELINE_NOTICE.toString()),
             Arguments.of("stf24wDetermination", Event.STF_24W_DETERMINATION.toString()),
