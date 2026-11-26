@@ -292,6 +292,7 @@ security:
       - "respondToCosts"
       - "addEvidenceForCosts"
       - "queryManagementRaiseQuery"
+      - "queryManagementRespondQuery"
     tribunal-caseworker:
       - "appellantInPersonManual"
       - "moveToPaymentPending"
@@ -392,6 +393,7 @@ security:
       - "sendPipToNonLegalRep"
       - "joinAppealConfirmation"
       - "generatePinInPost"
+      - "queryManagementRaiseQuery"
       - "queryManagementRespondQuery"
     challenged-access-legal-operations:
       - "appellantInPersonManual"
@@ -492,6 +494,7 @@ security:
       - "sendPipToNonLegalRep"
       - "joinAppealConfirmation"
       - "generatePinInPost"
+      - "queryManagementRaiseQuery"
       - "queryManagementRespondQuery"
     senior-tribunal-caseworker:
       - "appellantInPersonManual"
@@ -593,6 +596,7 @@ security:
       - "sendPipToNonLegalRep"
       - "joinAppealConfirmation"
       - "generatePinInPost"
+      - "queryManagementRaiseQuery"
       - "queryManagementRespondQuery"
     hearing-centre-admin:
       - "appellantInPersonManual"
@@ -673,6 +677,7 @@ security:
       - "joinAppealConfirmation"
       - "requestRespondentEvidence"
       - "generatePinInPost"
+      - "queryManagementRaiseQuery"
       - "queryManagementRespondQuery"
     ctsc:
       - "appellantInPersonManual"
@@ -750,6 +755,7 @@ security:
       - "joinAppealConfirmation"
       - "forceDecidedState"
       - "forceFtpaDecidedState"
+      - "queryManagementRaiseQuery"
       - "queryManagementRespondQuery"
       - "requestRespondentEvidence"
       - "generatePinInPost"
@@ -831,6 +837,7 @@ security:
       - "joinAppealConfirmation"
       - "requestRespondentEvidence"
       - "generatePinInPost"
+      - "queryManagementRaiseQuery"
       - "queryManagementRespondQuery"
     national-business-centre:
       - "appellantInPersonManual"
@@ -909,6 +916,7 @@ security:
       - "joinAppealConfirmation"
       - "requestRespondentEvidence"
       - "generatePinInPost"
+      - "queryManagementRaiseQuery"
       - "queryManagementRespondQuery"
     challenged-access-ctsc:
       - "appellantInPersonManual"
@@ -987,6 +995,7 @@ security:
       - "joinAppealConfirmation"
       - "requestRespondentEvidence"
       - "generatePinInPost"
+      - "queryManagementRaiseQuery"
       - "queryManagementRespondQuery"
     challenged-access-admin:
       - "appellantInPersonManual"
@@ -1066,6 +1075,7 @@ security:
       - "joinAppealConfirmation"
       - "requestRespondentEvidence"
       - "generatePinInPost"
+      - "queryManagementRaiseQuery"
       - "queryManagementRespondQuery"
     caseworker-ia-homeofficeapc:
       - "uploadHomeOfficeBundle"
