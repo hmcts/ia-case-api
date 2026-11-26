@@ -10,8 +10,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.HomeOfficeAppellant;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.HomeOfficeAppellant;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
@@ -28,7 +26,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.text.Normalizer;
-import java.text.Normalizer;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -44,8 +41,8 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HelpWithFeesOption.W
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfCountryCircumstances.ENTRY_CLEARANCE_DECISION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfCountryDecisionType.REFUSAL_OF_HUMAN_RIGHTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfCountryDecisionType.REFUSE_PERMIT;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagType.LITIGATION_FRIEND;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagType.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlagType.LITIGATION_FRIEND;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.statutorytimeframe24weeks.STF24WeeksUtils.getEffectiveState;
@@ -921,19 +918,6 @@ public class HandlerUtils {
         return asylumCase
             .read(HOME_OFFICE_REFERENCE_NUMBER, String.class)
             .orElse(asylumCase.read(GWF_REFERENCE_NUMBER, String.class).orElse(""));
-    }
-
-    public static boolean isDecisionWithHearing(AsylumCase asylumCase) {
-        AppealType appealType = asylumCase.read(APPEAL_TYPE, AppealType.class).orElse(null);
-        return switch (appealType) {
-            case PA, EA, EU, HU -> asylumCase.read(DECISION_HEARING_FEE_OPTION, String.class)
-                .orElse("")
-                .equals("decisionWithHearing");
-            case RP, DC -> asylumCase.read(RP_DC_APPEAL_HEARING_OPTION, String.class)
-                .orElse("")
-                .equals("decisionWithHearing");
-            case null, default -> throw new IllegalStateException("Appeal type is not present");
-        };
     }
 
     public static PreSubmitCallbackResponse<AsylumCase> validateHomeOfficeReference(
