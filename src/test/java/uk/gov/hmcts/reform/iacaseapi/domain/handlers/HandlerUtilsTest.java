@@ -3,10 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.CsvSource;
-import org.junit.jupiter.params.provider.EnumSource;
-import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.*;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
@@ -14,6 +11,7 @@ import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsHelper;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -86,6 +84,10 @@ class HandlerUtilsTest {
     private List<IdValue<Subscriber>> mockSubscribers;
     @Mock
     private NonLegalRepDetails mockNlrDetails;
+    @Mock
+    private UserDetailsHelper userDetailsHelper;
+    @Mock
+    private UserDetails userDetails;
     @Captor
     private ArgumentCaptor<List<IdValue<Subscriber>>> subscribersCaptor;
 
@@ -1700,6 +1702,15 @@ class HandlerUtilsTest {
     }
 
     @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void determineQueryCollection_should_return_correct_collection(boolean isRepJourney) {
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(isRepJourney ? JourneyType.REP : JourneyType.AIP));
+
+        AsylumCaseFieldDefinition result = HandlerUtils.determineQueryCollection(asylumCase);
+
+        assertEquals(isRepJourney ? QM_LEGAL_REPRESENTATIVE_QUERIES : QM_CITIZEN_QUERIES, result);
+    }
+  
     @CsvSource(value = {
         "null, null",
         "null, NO",
