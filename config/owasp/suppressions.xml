@@ -30,5 +30,6 @@
         <cve>CVE-2026-133981</cve>
         <cve>CVE-2026-47842</cve>
         <cve>CVE-2026-59276</cve>
+        <cve>CVE-2026-133981</cve>
     </suppress>
 </suppressions>
