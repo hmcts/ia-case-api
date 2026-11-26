@@ -115,7 +115,7 @@ ia-case-payments-api:
   enabled: true #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
-    image: hmctsprod.azurecr.io/ia/case-payments-api:pr-445
+    image: hmctsprod.azurecr.io/ia/case-payments-api:latest
     releaseNameOverride: ${SERVICE_NAME}-case-payments-api
     ingressHost: ${SERVICE_NAME}-payments-api.preview.platform.hmcts.net
     disableTraefikTls: true
@@ -170,7 +170,6 @@ ia-case-documents-api:
   java:
     imagePullPolicy: Always
     image: hmctsprod.azurecr.io/ia/case-documents-api:pr-1286
-    releaseNameOverride: ${SERVICE_NAME}-case-documents-api
     ingressHost: ${SERVICE_NAME}-documents-api.preview.platform.hmcts.net
     devcpuRequests: 500m
     devmemoryRequests: 1Gi
@@ -457,7 +456,7 @@ ia-bail-case-api:
   enabled: true
   java:
     imagePullPolicy: Always
-    image: hmctsprod.azurecr.io/ia/bail-case-api:pr-629
+    image: hmctsprod.azurecr.io/ia/bail-case-api:latest
     applicationPort: 8686
     releaseNameOverride: ${SERVICE_NAME}-bail-case-api
     ingressHost: ${SERVICE_NAME}-bail-case-api.preview.platform.hmcts.net
@@ -519,7 +518,7 @@ ia-timed-event-service:
   enabled: true
   java:
     imagePullPolicy: Always
-    image: hmctsprod.azurecr.io/ia/timed-event-service:pr-273
+    image: hmctsprod.azurecr.io/ia/timed-event-service:latest
     releaseNameOverride: ${SERVICE_NAME}-timed-event-service
     ingressHost: ${SERVICE_NAME}-timed-event-service.preview.platform.hmcts.net
     devcpuRequests: 500m
@@ -576,7 +575,7 @@ ia-home-office-integration-api:
   enabled: true #set to true if testing against a local branch
   java:
     imagePullPolicy: Always
-    image: hmctsprod.azurecr.io/ia/home-office-integration-api:pr-536
+    image: hmctsprod.azurecr.io/ia/home-office-integration-api:latest
     releaseNameOverride: ${SERVICE_NAME}-home-office-integration-api
     ingressHost: ${SERVICE_NAME}-home-office-integration-api.preview.platform.hmcts.net
     devcpuRequests: 500m
@@ -1467,7 +1466,7 @@ ia-hearings-api:
   enabled: true
   java:
     imagePullPolicy: Always
-    image: hmctsprod.azurecr.io/ia/hearings-api:pr-607
+    image: hmctsprod.azurecr.io/ia/hearings-api:latest
     releaseNameOverride: ${SERVICE_NAME}-hearings-api
     ingressHost: ${SERVICE_NAME}-hearings-api.preview.platform.hmcts.net
     devcpuRequests: 500m
