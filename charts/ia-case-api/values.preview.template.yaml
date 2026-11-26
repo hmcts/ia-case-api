@@ -1263,7 +1263,7 @@ em-stitching:
       SPRING_DATASOURCE_USERNAME: hmcts
       SPRING_DATASOURCE_NAME: "pr-${CHANGE_ID}-emstitch"
       SPRING_DATASOURCE_PASSWORD: ${GENERIC_VALUES_PREVIEW_YAML_PASS}
-      SPRING_DATASOURCE_OPTIONS: "?ssl=disable"
+      SPRING_DATASOURCE_OPTIONS: "?sslmode=require&stringtype=unspecified"
       ENABLE_DB_MIGRATE: true
       CALLBACK_HTTP_SCHEME: https
       CALLBACK_HTTP_HOST_PORT: 80
