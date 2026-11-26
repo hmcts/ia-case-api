@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
 import static java.util.Objects.requireNonNull;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -27,6 +28,7 @@ public class DocumentWithMetadata implements HasDocument {
     @Getter
     private String dateTimeUploaded;
 
+    @JsonCreator
     private DocumentWithMetadata() {
         // noop -- for deserializer
     }

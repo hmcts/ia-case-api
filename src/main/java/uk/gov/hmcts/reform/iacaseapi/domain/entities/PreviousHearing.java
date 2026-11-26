@@ -4,6 +4,8 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.List;
 import java.util.Optional;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
@@ -40,6 +42,7 @@ public class PreviousHearing {
     private String appealDecision;
     private List<IdValue<DocumentWithMetadata>> finalDecisionAndReasonsDocuments;
 
+    @JsonCreator
     private PreviousHearing() {
         // noop -- for deserializer
     }
