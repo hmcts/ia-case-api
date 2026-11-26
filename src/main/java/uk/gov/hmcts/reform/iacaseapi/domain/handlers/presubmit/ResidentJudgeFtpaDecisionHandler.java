@@ -43,7 +43,7 @@ public class ResidentJudgeFtpaDecisionHandler implements PreSubmitCallbackHandle
     public static final String FTPA_DECISIONS_AND_REASONS_DOCUMENT_DESCRIPTION =
         "ftpaDecisionsAndReasonsDocumentDescription";
 
-    public static final String STF24W_REMOVAL_REASON = "Removed due to FTPA decision";
+    public static final String STF24W_FTPA_REMOVAL_REASON = "Removed due to FTPA decision";
 
     private final DateProvider dateProvider;
     private final DocumentReceiver documentReceiver;
@@ -105,37 +105,37 @@ public class ResidentJudgeFtpaDecisionHandler implements PreSubmitCallbackHandle
         addFtpaDecisionAndReasonsDocument(asylumCase, ftpaApplicantType, ftpaDecisionAndReasonsDocuments);
 
         final Optional<List<IdValue<DocumentWithDescription>>> maybeFtpaDecisionNoticeDocument = asylumCase.read(
-                valueOf("FTPA_%s_NOTICE_DOCUMENT".formatted(ftpaApplicantUpperCase)));
+            valueOf("FTPA_%s_NOTICE_DOCUMENT".formatted(ftpaApplicantUpperCase)));
         final List<IdValue<DocumentWithDescription>> existingFtpaDecisionNoticeDocuments = maybeFtpaDecisionNoticeDocument.orElse(Collections.emptyList());
 
         ftpaDecisionAndReasonsDocuments.addAll(
-                documentReceiver
-                        .tryReceiveAll(
-                                existingFtpaDecisionNoticeDocuments,
-                                DocumentTag.FTPA_DECISION_AND_REASONS
-                        )
+            documentReceiver
+                .tryReceiveAll(
+                    existingFtpaDecisionNoticeDocuments,
+                    DocumentTag.FTPA_DECISION_AND_REASONS
+                )
         );
 
         final Optional<List<IdValue<DocumentWithMetadata>>> maybeFtpaDecisionDocuments = asylumCase.read(
-                valueOf("ALL_FTPA_%s_DECISION_DOCS".formatted(ftpaApplicantUpperCase)));
+            valueOf("ALL_FTPA_%s_DECISION_DOCS".formatted(ftpaApplicantUpperCase)));
         final List<IdValue<DocumentWithMetadata>> existingAllFtpaDecisionDocuments = maybeFtpaDecisionDocuments.orElse(Collections.emptyList());
 
         List<IdValue<DocumentWithMetadata>> allFtpaDecisionDocuments =
-                documentsAppender.append(
-                        existingAllFtpaDecisionDocuments,
-                        ftpaDecisionAndReasonsDocuments
-                );
+            documentsAppender.append(
+                existingAllFtpaDecisionDocuments,
+                ftpaDecisionAndReasonsDocuments
+            );
 
         asylumCase.write(
-                valueOf("ALL_FTPA_%s_DECISION_DOCS".formatted(ftpaApplicantUpperCase)),
-                allFtpaDecisionDocuments);
+            valueOf("ALL_FTPA_%s_DECISION_DOCS".formatted(ftpaApplicantUpperCase)),
+            allFtpaDecisionDocuments);
 
         String ftpaDecisionOutcomeType = asylumCase.read(
-                        valueOf("FTPA_%s_RJ_DECISION_OUTCOME_TYPE".formatted(ftpaApplicantUpperCase)), String.class)
-                .orElseThrow(() -> new IllegalStateException("ftpaDecisionOutcomeType is not present"));
+                valueOf("FTPA_%s_RJ_DECISION_OUTCOME_TYPE".formatted(ftpaApplicantUpperCase)), String.class)
+            .orElseThrow(() -> new IllegalStateException("ftpaDecisionOutcomeType is not present"));
 
         boolean isDlrmSetAside
-                = featureToggler.getValue(DLRM_SETASIDE_FEATURE_FLAG, false);
+            = featureToggler.getValue(DLRM_SETASIDE_FEATURE_FLAG, false);
 
         if (isDlrmSetAside && ftpaDecisionOutcomeType.equals("reheardRule35")) {
 
@@ -143,7 +143,7 @@ public class ResidentJudgeFtpaDecisionHandler implements PreSubmitCallbackHandle
 
             List<DocumentWithMetadata> ftpaSetAsideParsedDocuments = new ArrayList<>();
 
-            addFtpaSetAsideDocuments(asylumCase, ftpaApplicantType, ftpaSetAsideDocuments,ftpaSetAsideParsedDocuments);
+            addFtpaSetAsideDocuments(asylumCase, ftpaApplicantType, ftpaSetAsideDocuments, ftpaSetAsideParsedDocuments);
 
             final Optional<List<IdValue<DocumentWithMetadata>>> maybeFtpaSetAsideDocuments = asylumCase.read(ALL_SET_ASIDE_DOCS);
             final List<IdValue<DocumentWithMetadata>> existingAllFtpaSetAsideDocuments = maybeFtpaSetAsideDocuments.orElse(Collections.emptyList());
@@ -154,8 +154,7 @@ public class ResidentJudgeFtpaDecisionHandler implements PreSubmitCallbackHandle
                     ftpaSetAsideParsedDocuments
                 );
 
-            asylumCase.write(ALL_SET_ASIDE_DOCS,allFtpaSetAsideDocuments);
-
+            asylumCase.write(ALL_SET_ASIDE_DOCS, allFtpaSetAsideDocuments);
         }
 
         if (ftpaDecisionOutcomeType.equals("granted") || ftpaDecisionOutcomeType.equals("partiallyGranted")
@@ -236,11 +235,11 @@ public class ResidentJudgeFtpaDecisionHandler implements PreSubmitCallbackHandle
 
         addToFtpaList(asylumCase, ftpaApplicantType);
 
-        if (callback.getEvent() == Event.DECIDE_FTPA_APPLICATION &&
-            (ftpaDecisionOutcomeType.equals("granted") || ftpaDecisionOutcomeType.equals("partiallyGranted")
-                || ftpaDecisionOutcomeType.equals("remadeRule32") || ftpaDecisionOutcomeType.equals("reheardRule35"))) {
-            checkStatutoryTimeframeAndRemove(asylumCase);
-        }
+        asylumCase.read(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class).ifPresent(flag -> {
+            if (flag.equals(YES) && ftpaDecisionOutcomeType.equals("reheardRule35")) {
+                updateStatutoryTimeframe24WeeksService.updateAsylumCase(asylumCase, NO, STF24W_FTPA_REMOVAL_REASON);
+            }
+        });
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
@@ -302,7 +301,7 @@ public class ResidentJudgeFtpaDecisionHandler implements PreSubmitCallbackHandle
     }
 
     private void addFtpaSetAsideDocuments(AsylumCase asylumCase, String ftpaApplicantType,
-                                          List<DocumentWithMetadata> ftpaSetAsideDocuments,List<DocumentWithMetadata> ftpaSetAsideParsedDocuments) {
+                                          List<DocumentWithMetadata> ftpaSetAsideDocuments, List<DocumentWithMetadata> ftpaSetAsideParsedDocuments) {
 
         final Document rule35Document =
             asylumCase
@@ -329,15 +328,14 @@ public class ResidentJudgeFtpaDecisionHandler implements PreSubmitCallbackHandle
         final List<IdValue<DocumentWithDescription>> existingAllFtpaSetAsideNoticeDocuments = maybeFtpaSetAsideNoticeDocuments.orElse(Collections.emptyList());
 
         ftpaSetAsideDocuments.addAll(
-                documentReceiver
-                        .tryReceiveAll(
-                                existingAllFtpaSetAsideNoticeDocuments,
-                                DocumentTag.FTPA_SET_ASIDE
-                        ));
+            documentReceiver
+                .tryReceiveAll(
+                    existingAllFtpaSetAsideNoticeDocuments,
+                    DocumentTag.FTPA_SET_ASIDE
+                ));
 
 
         ftpaSetAsideParsedDocuments.addAll(ftpaSetAsideDocuments.stream().map(x -> documentReceiver.receive(x.getDocument(), "", DocumentTag.FTPA_SET_ASIDE)).collect(Collectors.toList()));
-
 
 
     }
@@ -365,13 +363,5 @@ public class ResidentJudgeFtpaDecisionHandler implements PreSubmitCallbackHandle
 
             asylumCase.write(IS_FTPA_LIST_VISIBLE, YES);
         }
-    }
-
-    private void checkStatutoryTimeframeAndRemove(AsylumCase asylumCase) {
-        asylumCase.read(STF_24W_CURRENT_STATUS_AUTO_GENERATED, YesOrNo.class).ifPresent(flag -> {
-            if (flag.equals(YES)) {
-                updateStatutoryTimeframe24WeeksService.updateAsylumCase(asylumCase, NO, STF24W_REMOVAL_REASON);
-            }
-        });
     }
 }

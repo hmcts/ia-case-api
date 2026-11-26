@@ -184,6 +184,7 @@ public enum Event {
     SEND_LATE_TIMELINE_NOTICE("sendLateTimelineNotice"),
     FORCE_CASE_TO_PREPARE_FOR_HEARING("forceCaseToPrepareForHearing"),
     GENERATE_PIN_IN_POST("generatePinInPost"),
+    CONFIRM_HO_REVIEW_MAINTAINED("confirmHOReviewMaintained"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");

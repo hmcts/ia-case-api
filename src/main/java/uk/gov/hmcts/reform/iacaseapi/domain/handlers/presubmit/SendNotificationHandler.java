@@ -177,7 +177,8 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
             Event.REMOVE_NON_LEGAL_REP,
             Event.NLR_DETAILS_UPDATED,
             Event.HEARING_CANCELLED,
-            Event.COMPLETE_CASE_REVIEW
+            Event.COMPLETE_CASE_REVIEW,
+            Event.CONFIRM_HO_REVIEW_MAINTAINED
         );
         if (!isSaveAndContinueEnabled) {
             eventsToHandle.add(Event.BUILD_CASE);
@@ -265,7 +266,8 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
             Event.CMR_HEARING_CANCELLED,
             Event.REMOVE_STATUTORY_TIMEFRAME_24_WEEKS,
             Event.SEND_LATE_TIMELINE_NOTICE,
-            Event.COMPLETE_CASE_REVIEW
+            Event.COMPLETE_CASE_REVIEW,
+            Event.CONFIRM_HO_REVIEW_MAINTAINED
         );
 
         if (!isExAdaCaseWithHearingRequirementsSubmitted(callback)) {
