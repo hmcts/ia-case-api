@@ -1710,4 +1710,29 @@ class HandlerUtilsTest {
 
         assertEquals(isRepJourney ? QM_LEGAL_REPRESENTATIVE_QUERIES : QM_CITIZEN_QUERIES, result);
     }
+  
+    @CsvSource(value = {
+        "null, null",
+        "null, NO",
+        "null, YES",
+        "1234-1234-1234-1234, null",
+        "1234-1234-1234-1234, NO",
+        "1234-1234-1234-1234, YES",
+        "GWF123456789, null",
+        "GWF123456789, YES"
+    }, nullValues = "null")
+    void isGwfReferenceAndOoc_false(String hoRef, YesOrNo inUk) {
+        when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class)).thenReturn(Optional.ofNullable(hoRef));
+        when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.ofNullable(inUk));
+
+        assertFalse(HandlerUtils.isGwfReferenceAndOoc(asylumCase));
+    }
+
+    @Test
+    void isGwfReferenceAndOoc_true() {
+        when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of("GWF123456789"));
+        when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.of(NO));
+
+        assertTrue(HandlerUtils.isGwfReferenceAndOoc(asylumCase));
+    }
 }
