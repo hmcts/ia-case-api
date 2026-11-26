@@ -15,14 +15,22 @@ public class CommonRefDataDynamicListProvider {
     private final RefDataUserService refDataUserService;
 
     public static final String HEARING_CHANNEL_CATEGORY = "HearingChannel";
+    public static final String HEARING_SUB_CHANNEL_CATEGORY = "HearingSubChannel";
+    public static final String ENTITY_ROLE_CODE = "EntityRoleCode";
     public static final String CASE_MANAGEMENT_CANCELLATION_REASONS = "CaseManagementCancellationReasons";
     public static final String CHANGE_REASONS = "ChangeReasons";
-    public static final String LANGUAGE_CATEGORY = "languageCategory";
+    public static final String ACTUAL_CANCELLATION_REASON_CODES = "ActualCancellationReasonCodes";
+    public static final String ACTUAL_PART_HEARD_REASON_CODES = "ActualPartHeardReasonCodes";
     public static final String IS_CHILD_REQUIRED = "N";
 
     public DynamicList provideHearingChannels() {
 
         return provide(HEARING_CHANNEL_CATEGORY, true);
+    }
+
+    public DynamicList provideHearingSubChannels() {
+
+        return provide(HEARING_SUB_CHANNEL_CATEGORY, true);
     }
 
     public DynamicList provideChangeReasons() {
@@ -33,6 +41,21 @@ public class CommonRefDataDynamicListProvider {
     public DynamicList provideCaseManagementCancellationReasons() {
 
         return provide(CASE_MANAGEMENT_CANCELLATION_REASONS, false);
+    }
+
+    public DynamicList provideActualCancellationReasonCodes() {
+
+        return provide(ACTUAL_CANCELLATION_REASON_CODES, false);
+    }
+
+    public DynamicList provideEntityRoleCodes() {
+
+        return provide(ENTITY_ROLE_CODE, false);
+    }
+
+    public DynamicList provideActualPartHeardReasonCodes() {
+
+        return provide(ACTUAL_PART_HEARD_REASON_CODES, false);
     }
 
     private DynamicList provide(String categoryId, boolean withActiveFlag) {

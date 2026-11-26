@@ -1,12 +1,16 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ATTENDEES_AND_DURATION_PARTICIPANTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ATTENDEES_AND_DURATION_PARTICIPANTS_SOURCE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAVE_HEARING_ATTENDEES_AND_DURATION_BEEN_RECORDED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
@@ -23,8 +27,10 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.IaHearingsApiService;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -37,28 +43,56 @@ class RecordAttendeesAndDurationHandlerTest {
     private CaseDetails<AsylumCase> caseDetails;
     @Mock
     private AsylumCase asylumCase;
+    @Mock
+    private AsylumCase originalAsylumCase;
+    @Mock
+    private IaHearingsApiService iaHearingsApiService;
 
     private RecordAttendeesAndDurationHandler recordAttendeesAndDurationHandler;
 
     @BeforeEach
     public void setUp() {
         recordAttendeesAndDurationHandler =
-            new RecordAttendeesAndDurationHandler();
+            new RecordAttendeesAndDurationHandler(iaHearingsApiService);
     }
 
     @Test
-    void should_write_hearing_details_recorded_flag() {
+    void should_call_ia_hearings_api_and_write_hearing_details_recorded_flag() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.RECORD_ATTENDEES_AND_DURATION);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(caseDetails.getCaseData()).thenReturn(originalAsylumCase);
+        when(iaHearingsApiService.aboutToSubmit(callback)).thenReturn(asylumCase);
 
-        recordAttendeesAndDurationHandler.handle(ABOUT_TO_SUBMIT, callback);
+        PreSubmitCallbackResponse<AsylumCase> response =
+            recordAttendeesAndDurationHandler.handle(ABOUT_TO_SUBMIT, callback);
 
+        assertEquals(asylumCase, response.getData());
+        verifyNoInteractions(originalAsylumCase);
+        assertTrue(response.getErrors().isEmpty());
+
+        verify(iaHearingsApiService, times(1)).aboutToSubmit(callback);
         verify(asylumCase, times(1))
             .write(HAVE_HEARING_ATTENDEES_AND_DURATION_BEEN_RECORDED, YesOrNo.YES);
+        verify(asylumCase, times(1)).clear(ATTENDEES_AND_DURATION_PARTICIPANTS);
+        verify(asylumCase, times(1)).clear(ATTENDEES_AND_DURATION_PARTICIPANTS_SOURCE);
+        verifyNoMoreInteractions(asylumCase, iaHearingsApiService);
+    }
 
-        verifyNoMoreInteractions(asylumCase);
+    @Test
+    void handling_should_throw_if_cannot_actually_handle() {
+
+        when(callback.getEvent()).thenReturn(Event.RECORD_ATTENDEES_AND_DURATION);
+        assertThatThrownBy(() -> recordAttendeesAndDurationHandler.handle(ABOUT_TO_START, callback))
+            .hasMessage("Cannot handle callback")
+            .isExactlyInstanceOf(IllegalStateException.class);
+
+        when(callback.getEvent()).thenReturn(Event.SEND_DIRECTION);
+        assertThatThrownBy(() -> recordAttendeesAndDurationHandler.handle(ABOUT_TO_SUBMIT, callback))
+            .hasMessage("Cannot handle callback")
+            .isExactlyInstanceOf(IllegalStateException.class);
+
+        verifyNoInteractions(iaHearingsApiService);
     }
 
     @Test

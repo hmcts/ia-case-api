@@ -1,6 +1,8 @@
 package uk.gov.hmcts.reform.iacaseapi.component;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.AsylumCaseForTest.anAsylumCase;
 import static uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.CallbackForTest.CallbackForTestBuilder.callback;
@@ -27,11 +29,14 @@ import uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.PostSubmitCall
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.PreSubmitCallbackResponseForTest;
 import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.IaHearingsApiService;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -39,6 +44,9 @@ class RecordAttendeesAndDurationTest extends SpringBootIntegrationTest implement
 
     @MockitoBean
     UserDetailsProvider userDetailsProvider;
+
+    @MockitoBean
+    IaHearingsApiService iaHearingsApiService;
 
     @Mock
     private FeatureToggler featureToggler;
@@ -52,6 +60,8 @@ class RecordAttendeesAndDurationTest extends SpringBootIntegrationTest implement
 
         addServiceAuthStub(server);
         when(userDetailsProvider.getUserDetails()).thenReturn(userDetails);
+        when(iaHearingsApiService.aboutToSubmit(any()))
+            .thenAnswer(invocation -> invocation.<Callback<AsylumCase>>getArgument(0).getCaseDetails().getCaseData());
 
         PreSubmitCallbackResponseForTest response = iaCaseApiClient.aboutToSubmit(callback()
             .event(Event.RECORD_ATTENDEES_AND_DURATION)
@@ -66,6 +76,7 @@ class RecordAttendeesAndDurationTest extends SpringBootIntegrationTest implement
             response.getAsylumCase().read(HAVE_HEARING_ATTENDEES_AND_DURATION_BEEN_RECORDED);
 
         assertThat(hearingDetailsRecordedFlag.get()).isEqualTo(YES);
+        verify(iaHearingsApiService).aboutToSubmit(any());
     }
 
     @Test

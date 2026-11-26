@@ -8,7 +8,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -81,7 +80,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DirectionAppender;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.HearingCentreFinder;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.LocationRefDataService;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.NextHearingDateService;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -111,8 +109,6 @@ class ListEditCaseHandlerTest {
     @Mock
     private List<IdValue<Direction>> listOfDirections;
     @Mock
-    private NextHearingDateService nextHearingDateService;
-    @Mock
     private HearingIdListProcessor hearingIdListProcessor;
 
     private final String directionExplanation = """
@@ -139,7 +135,6 @@ class ListEditCaseHandlerTest {
             dueDaysSinceSubmission,
             directionAppender,
             locationRefDataService,
-            nextHearingDateService,
             hearingIdListProcessor
         );
 
@@ -689,7 +684,7 @@ class ListEditCaseHandlerTest {
             listEditCaseHandler.handle(ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
-        verify(nextHearingDateService, never()).calculateNextHearingDateFromHearings(callback, ABOUT_TO_SUBMIT);
+        verify(hearingIdListProcessor).processHearingIdList(asylumCase);
     }
 
     @Test
