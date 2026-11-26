@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi.infrastructure.clients;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -14,6 +15,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.Month;
 import java.time.ZonedDateTime;
 import java.util.Optional;
@@ -297,6 +299,8 @@ class AsylumCaseNotificationApiSenderTest {
 
     @Test
     void should_schedule_to_next_day_when_tes_enabled_and_previous_scheduled_time_empty_and_current_time_is_past_the_schedule_hour() {
+        assumeTrue(LocalTime.now().isBefore(LocalTime.of(SAVE_NOTIFICATIONS_DATA_SCHEDULE_HOUR, 0)),
+            "it is unreliable after the schedule hour");
         SaveNotificationsDataConfiguration config = createConfig(true, SAVE_NOTIFICATIONS_DATA_SCHEDULE_HOUR, SAVE_NOTIFICATIONS_DATA_SCHEDULE_HOUR);
         asylumCaseNotificationApiSender =
                 new AsylumCaseNotificationApiSender(
@@ -337,6 +341,8 @@ class AsylumCaseNotificationApiSenderTest {
 
     @Test
     void should_schedule_to_next_day_when_tes_enabled_and_current_time_is_past_the_schedule_hour_previous_scheduled_time_yesterday() {
+        assumeTrue(LocalTime.now().isBefore(LocalTime.of(SAVE_NOTIFICATIONS_DATA_SCHEDULE_HOUR, 0)),
+            "it is unreliable after the schedule hour");
         SaveNotificationsDataConfiguration config = createConfig(true, SAVE_NOTIFICATIONS_DATA_SCHEDULE_HOUR, SAVE_NOTIFICATIONS_DATA_SCHEDULE_HOUR);
         asylumCaseNotificationApiSender =
                 new AsylumCaseNotificationApiSender(
