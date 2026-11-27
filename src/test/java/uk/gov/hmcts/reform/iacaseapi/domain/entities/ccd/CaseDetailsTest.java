@@ -4,13 +4,14 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
+import tools.jackson.core.JacksonException;
 import uk.gov.hmcts.reform.iacaseapi.domain.RequiredFieldMissingException;
 
 class CaseDetailsTest {
@@ -22,13 +23,13 @@ class CaseDetailsTest {
     private final LocalDateTime createdDate = LocalDateTime.parse("2019-01-31T11:22:33");
     private final String classification = "PUBLIC";
 
-    static ObjectMapper mapper = new ObjectMapper();
+    static ObjectMapper mapper = new JsonMapper();
     static JsonNode serviceIdValue;
 
     static {
         try {
             serviceIdValue = mapper.readValue("\"BFA1\"", JsonNode.class);
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             e.printStackTrace();
         }
     }
@@ -63,7 +64,7 @@ class CaseDetailsTest {
     }
 
     @Test
-    void should_throw_required_field_missing_exception() throws JsonProcessingException {
+    void should_throw_required_field_missing_exception() {
 
         CaseDetails<CaseData> caseDetails = new CaseDetails<>(
             id,

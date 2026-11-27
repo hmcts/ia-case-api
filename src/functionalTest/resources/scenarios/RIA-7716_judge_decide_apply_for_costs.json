@@ -121,7 +121,6 @@
               "costsOralHearingDate": "{$TODAY_FULL_DATE_2}",
               "uploadCostsOrder": [
                 {
-                  "id": "",
                   "value": {
                     "document_url": "{$FIXTURE_DOC1_PDF_URL}",
                     "document_binary_url": "{$FIXTURE_DOC1_PDF_URL_BINARY}",
