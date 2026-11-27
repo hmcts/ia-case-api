@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANTS_REPRESENTATION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOURNEY_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMISSION_DECISION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HELP_WITH_FEES_OPTION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMISSION_OPTION;
@@ -10,6 +11,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType.NO_REMISSION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.RECORD_REMISSION_DECISION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SUBMIT_APPEAL;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isAipJourney;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isInternalCase;
 
 import java.util.List;
@@ -70,7 +72,13 @@ public class AutomaticGenerateServiceRequestHandler implements PreSubmitCallback
         }
 
         if (event == SUBMIT_APPEAL) {
-            return canHandleSubmitAppeal(asylumCase) || canHandleSubmitAppealAip(asylumCase);
+            boolean canHandleLegalRep = canHandleSubmitAppeal(asylumCase);
+            boolean canHandleAiP = canHandleSubmitAppealAip(asylumCase);
+            log.info("SubmitAppeal caseID: {}, journey: {}, AiP remission: {}, LR: {}, AiP: {}",
+                    callback.getCaseDetails().getId(), asylumCase.read(JOURNEY_TYPE, RemissionOption.class),
+                    asylumCase.read(REMISSION_OPTION, RemissionOption.class),
+                    canHandleLegalRep, canHandleAiP);
+            return canHandleLegalRep || canHandleAiP;
         }
 
         if (event == RECORD_REMISSION_DECISION) {
@@ -88,7 +96,7 @@ public class AutomaticGenerateServiceRequestHandler implements PreSubmitCallback
         Optional<RemissionType> remissionType = asylumCase.read(REMISSION_TYPE, RemissionType.class);
 
         return isEaHuPaEu(asylumCase)
-               && !HandlerUtils.isAipJourney(asylumCase)
+               && !isAipJourney(asylumCase)
                && !isInternalCase(asylumCase)
                && remissionType.isPresent()
                && remissionType.get() == NO_REMISSION;
@@ -104,7 +112,7 @@ public class AutomaticGenerateServiceRequestHandler implements PreSubmitCallback
             && helpWithFeesOption.get() == HelpWithFeesOption.WILL_PAY_FOR_APPEAL;
 
         return isEaHuPaEu(asylumCase)
-               && HandlerUtils.isAipJourney(asylumCase)
+               && isAipJourney(asylumCase)
                && !isInternalCase(asylumCase)
                && noRemissionAndWillPay;
     }
@@ -117,7 +125,7 @@ public class AutomaticGenerateServiceRequestHandler implements PreSubmitCallback
             .orElse(false);
 
         log.info("RemissionDecision: {}, isAipJourney? {}, isInternalCase: {}, isAppellantsRepresented: {}",
-                remissionDecision, HandlerUtils.isAipJourney(asylumCase), isInternalCase(asylumCase), isAppellantsRepresented);
+                remissionDecision, isAipJourney(asylumCase), isInternalCase(asylumCase), isAppellantsRepresented);
 
         if (remissionDecision.isEmpty()) {
             return false;
@@ -129,7 +137,7 @@ public class AutomaticGenerateServiceRequestHandler implements PreSubmitCallback
 
         return isRejectedOrPartiallyApproved
                && isEaHuPaEu(asylumCase)
-               && !HandlerUtils.isAipJourney(asylumCase)
+               && !isAipJourney(asylumCase)
                && !isInternalCase(asylumCase)
                && !isAppellantsRepresented;
     }
@@ -147,7 +155,7 @@ public class AutomaticGenerateServiceRequestHandler implements PreSubmitCallback
 
         return isRejectedOrPartiallyApproved
                && isEaHuPaEu(asylumCase)
-               && HandlerUtils.isAipJourney(asylumCase)
+               && isAipJourney(asylumCase)
                && !isInternalCase(asylumCase);
     }
 
@@ -157,6 +165,7 @@ public class AutomaticGenerateServiceRequestHandler implements PreSubmitCallback
         Callback<AsylumCase> callback
     ) {
         if (!canHandle(callbackStage, callback)) {
+            log.info("Can not handle callbackStage: {}, Id: {}", callbackStage, callback.getCaseDetails().getId());
             throw new IllegalStateException("Cannot handle callback");
         }
 
