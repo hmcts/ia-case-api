@@ -15,7 +15,9 @@
           "isRemissionsEnabled": "Yes",
           "remissionDecision": "partiallyApproved",
           "remittedAmount": "10000",
-          "amountLeftToPay": "4000"
+          "amountLeftToPay": "4000",
+          "feeAmountGbp": "14000",
+          "decisionHearingFeeOption": "decisionWithHearing"
         }
       }
     }
@@ -33,7 +35,9 @@
         "sendDirectionActionAvailable": "No",
         "currentCaseStateVisibleToAdminOfficer": "pendingPayment",
         "remittedAmount": "10000",
-        "amountLeftToPay": "4000"
+        "amountLeftToPay": "4000",
+        "hasServiceRequestAlready": "Yes",
+        "serviceRequestReference": "$/(.+)/"
       }
     }
   }
