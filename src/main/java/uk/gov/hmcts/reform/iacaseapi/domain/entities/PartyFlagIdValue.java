@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
 import static java.util.Objects.requireNonNull;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -14,6 +15,7 @@ public class PartyFlagIdValue {
     private String partyId;
     private StrategicCaseFlag value;
 
+    @JsonCreator
     private PartyFlagIdValue() {
         // noop -- for deserializer
     }

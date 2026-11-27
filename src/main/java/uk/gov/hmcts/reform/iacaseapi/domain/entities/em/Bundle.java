@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities.em;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.util.List;
 import java.util.Optional;
@@ -27,6 +28,7 @@ public class Bundle implements CaseData {
     private YesOrNo hasTableOfContents;
     private String filename;
 
+    @JsonCreator
     private Bundle() {
         // noop -- for deserializer
     }

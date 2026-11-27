@@ -1,7 +1,12 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 import org.junit.jupiter.api.Test;
 
 public class HoursMinutesTest {
@@ -43,5 +48,68 @@ public class HoursMinutesTest {
     void should_convert_time_in_total_minutes() {
         HoursMinutes object = new HoursMinutes(3, 10);
         assertEquals(190, object.convertToIntegerMinutes());
+    }
+
+    @Test
+    void should_deserialize_from_object_format() throws Exception {
+        ObjectMapper mapper = new JsonMapper();
+        String json = "{\"hours\": 4, \"minutes\": 30}";
+
+        HoursMinutes result = mapper.readValue(json, HoursMinutes.class);
+
+        assertEquals(4, result.getHours());
+        assertEquals(30, result.getMinutes());
+    }
+
+    @Test
+    void should_deserialize_from_string_format() throws Exception {
+        ObjectMapper mapper = new JsonMapper();
+        String json = "\"270\"";
+
+        HoursMinutes result = mapper.readValue(json, HoursMinutes.class);
+
+        assertEquals(4, result.getHours());
+        assertEquals(30, result.getMinutes());
+    }
+
+    @Test
+    void should_deserialize_from_number_format() throws Exception {
+        ObjectMapper mapper = new JsonMapper();
+        String json = "150";
+
+        HoursMinutes result = mapper.readValue(json, HoursMinutes.class);
+
+        assertEquals(2, result.getHours());
+        assertEquals(30, result.getMinutes());
+    }
+
+    @Test
+    void should_deserialize_null() throws Exception {
+        ObjectMapper mapper = new JsonMapper();
+        String json = "null";
+
+        HoursMinutes result = mapper.readValue(json, HoursMinutes.class);
+
+        assertNull(result);
+    }
+
+    @Test
+    void should_deserialize_empty_string_as_null() throws Exception {
+        ObjectMapper mapper = new JsonMapper();
+        String json = "\"\"";
+
+        HoursMinutes result = mapper.readValue(json, HoursMinutes.class);
+
+        assertNull(result);
+    }
+
+    @Test
+    void should_throw_exception_for_invalid_format() {
+        ObjectMapper mapper = new JsonMapper();
+        String json = "[1, 2, 3]";
+
+        Exception exception = assertThrows(IllegalArgumentException.class,
+            () -> mapper.readValue(json, HoursMinutes.class));
+        assertTrue(exception.getMessage().contains("Cannot deserialize HoursMinutes"));
     }
 }

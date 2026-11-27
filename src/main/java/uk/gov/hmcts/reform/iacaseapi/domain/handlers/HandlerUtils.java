@@ -1,7 +1,8 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.io.ClassPathResource;
@@ -56,12 +57,16 @@ public class HandlerUtils {
 
     public static final String ON_THE_PAPERS = "ONPPRS";
     public static final Pattern HOME_OFFICE_REF_PATTERN = Pattern
-        .compile("^(([0-9]{4}\\-[0-9]{4}\\-[0-9]{4}\\-[0-9]{4})|(GWF[0-9]{9}))$");
+        .compile("^([0-9]{4}\\-[0-9]{4}\\-[0-9]{4}\\-[0-9]{4})$");
+    public static final Pattern GWF_PATTERN = Pattern
+        .compile("^(GWF[0-9]{9})$");
     public static final Set<State> supportedAdd24wFlagStates = Set.of(
         State.PENDING_PAYMENT,
         State.APPEAL_SUBMITTED,
         State.AWAITING_RESPONDENT_EVIDENCE
     );
+
+    private static final ObjectMapper objectMapper = new JsonMapper();
 
     private HandlerUtils() {
     }
@@ -318,24 +323,24 @@ public class HandlerUtils {
     }
 
     public static List<String> readJsonFileList(String filePath, String key) throws IOException {
-        ObjectMapper objectMapper = new ObjectMapper();
         ClassPathResource fileResource = new ClassPathResource(filePath);
-        InputStream file = fileResource.getInputStream();
+        try (InputStream file = fileResource.getInputStream()) {
 
-        JsonNode rootNode = objectMapper.readTree(file);
+            JsonNode rootNode = objectMapper.readTree(file);
 
-        JsonNode listNode = rootNode.get(key);
-        List<String> valueList = new ArrayList<>();
+            JsonNode listNode = rootNode.get(key);
+            List<String> valueList = new ArrayList<>();
 
-        if (listNode != null && listNode.isArray()) {
-            Iterator<JsonNode> elements = listNode.elements();
-            while (elements.hasNext()) {
-                JsonNode element = elements.next();
-                valueList.add(element.asText());
+            if (listNode != null && listNode.isArray()) {
+                Iterator<JsonNode> elements = listNode.values().iterator();
+                while (elements.hasNext()) {
+                    JsonNode element = elements.next();
+                    valueList.add(element.asString());
+                }
             }
-        }
 
-        return valueList;
+            return valueList;
+        }
     }
 
     public static boolean isCaseUsingLocationRefData(AsylumCase asylumCase) {
@@ -1021,16 +1026,23 @@ public class HandlerUtils {
     }
 
     public static boolean isWellFormedHomeOfficeReference(String hoReference) {
-        return hoReference != null && HOME_OFFICE_REF_PATTERN.matcher(hoReference).matches();
+        return hoReference != null && (HOME_OFFICE_REF_PATTERN.matcher(hoReference).matches() || GWF_PATTERN.matcher(hoReference).matches());
+    }
+
+    public static boolean isGwfReference(String hoReference) {
+        return hoReference != null && GWF_PATTERN.matcher(hoReference).matches();
+    }
+
+    public static boolean isGwfReferenceAndOoc(AsylumCase asylumCase) {
+        boolean isOoc = asylumCase.read(APPELLANT_IN_UK, YesOrNo.class).orElse(YesOrNo.YES).isNo();
+        final String homeOfficeReferenceNumber = HandlerUtils.getUanOrGwf(asylumCase);
+
+        return isGwfReference(homeOfficeReferenceNumber) && isOoc;
     }
 
     public static boolean isRealHomeOfficeCaseNumber(String hoReference, Callback<AsylumCase> callback, HomeOfficeReferenceService homeOfficeReferenceService) {
-        if (hoReference == null) {
-            return false;
-        } else {
-            List<IdValue<HomeOfficeAppellant>> homeOfficeAppellants = homeOfficeReferenceService.getHomeOfficeReferenceData(hoReference, callback);
-            return !homeOfficeAppellants.isEmpty();
-        }
+        List<IdValue<HomeOfficeAppellant>> homeOfficeAppellants = homeOfficeReferenceService.getHomeOfficeReferenceData(hoReference, callback);
+        return !homeOfficeAppellants.isEmpty();
     }
 
     public static boolean isMatchingName(String hoReference, AsylumCase asylumCase, Callback<AsylumCase> callback, HomeOfficeReferenceService homeOfficeReferenceService) {

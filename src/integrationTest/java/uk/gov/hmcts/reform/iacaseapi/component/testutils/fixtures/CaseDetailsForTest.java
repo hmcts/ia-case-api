@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.LocalDateTime;
 import java.util.Map;
@@ -20,6 +21,7 @@ public class CaseDetailsForTest {
     @JsonProperty("supplementary_data")
     private Map<String,String> supplementaryData;
 
+    @JsonCreator
     CaseDetailsForTest(long id, String jurisdiction, State state, AsylumCase caseData, LocalDateTime createdDate, Map<String,String> supplementaryData) {
         this.id = id;
         this.jurisdiction = jurisdiction;

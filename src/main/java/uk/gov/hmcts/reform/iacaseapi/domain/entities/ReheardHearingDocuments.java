@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.Setter;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 
@@ -12,6 +13,7 @@ public class ReheardHearingDocuments {
 
     private List<IdValue<DocumentWithMetadata>> reheardHearingDocs;
 
+    @JsonCreator
     private ReheardHearingDocuments() {
         // noop -- for deserializer
     }

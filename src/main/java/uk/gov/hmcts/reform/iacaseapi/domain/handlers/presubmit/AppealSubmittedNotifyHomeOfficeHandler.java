@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -50,6 +51,7 @@ public class AppealSubmittedNotifyHomeOfficeHandler implements PreSubmitCallback
     private final HomeOfficeApi<AsylumCase> homeOfficeApi;
     private final HomeOfficeReferenceService homeOfficeReferenceService;
     private final String homeOfficeSerialisedEncryptionKey;
+    private final boolean isGwfValidationEnabled;
 
     @Override
     public DispatchPriority getDispatchPriority() {
@@ -60,10 +62,12 @@ public class AppealSubmittedNotifyHomeOfficeHandler implements PreSubmitCallback
         @Value("${featureFlag.isHomeOfficeIntegrationEnabled}") boolean isHomeOfficeIntegrationEnabled,
         HomeOfficeReferenceService homeOfficeReferenceService,
         HomeOfficeApi<AsylumCase> homeOfficeApi,
+        @Value("${app.gwf-validation.enabled}") boolean isGwfValidationEnabled,
         @Value("${homeOfficeApi.serialisation.encryption.key}")
         String homeOfficeSerialisedEncryptionKey) {
         this.homeOfficeApi = homeOfficeApi;
         this.homeOfficeReferenceService = homeOfficeReferenceService;
+        this.isGwfValidationEnabled = isGwfValidationEnabled;
         this.homeOfficeSerialisedEncryptionKey = homeOfficeSerialisedEncryptionKey;
     }
 
@@ -94,6 +98,9 @@ public class AppealSubmittedNotifyHomeOfficeHandler implements PreSubmitCallback
         if (homeOfficeReferenceNumber.isEmpty()) {
             throw new IllegalStateException("homeOfficeReferenceNumber and gwfReferenceNumber are both missing - one or other is needed");
         }
+        if (HandlerUtils.isGwfReferenceAndOoc(asylumCase) && !isGwfValidationEnabled) {
+            return new PreSubmitCallbackResponse<>(asylumCase);
+        }
         // Ensure this is present before calling the Home Office API (where it will be needed)
         final String appealReferenceNumber = asylumCase.read(APPEAL_REFERENCE_NUMBER, String.class)
             .orElseThrow(() -> new IllegalStateException("Case ID for the appeal is not present"));
@@ -109,8 +116,9 @@ public class AppealSubmittedNotifyHomeOfficeHandler implements PreSubmitCallback
         // we need to deserialise the list of newly validated Home Office appellants from the serialised string and
         // write it back to the case record
         // We need the mapper and mix-in to overcome a CCD bug concerning collections during the mid-event (see comments below).
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.addMixIn(IdValue.class, IdValueMixin.class);
+        ObjectMapper mapper = JsonMapper.builder()
+            .addMixIn(IdValue.class, IdValueMixin.class)
+            .build();
         String encodedStr = asylumCase.read(HOME_OFFICE_APPELLANTS_SERIALISED_INTERNAL_USE_ONLY, String.class)
             .orElse("");
         List<IdValue<HomeOfficeAppellant>> homeOfficeAppellants = deserialiseHomeOfficeAppellantList(encodedStr,

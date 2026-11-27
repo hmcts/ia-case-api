@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
-import com.fasterxml.jackson.core.type.TypeReference;
+import tools.jackson.core.type.TypeReference;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.em.Bundle;
@@ -2323,7 +2323,7 @@ public enum AsylumCaseFieldDefinition {
         "nextHearingVenue", new TypeReference<DynamicList>(){}),
 
     NEXT_HEARING_DURATION(
-        "nextHearingDuration", new TypeReference<String>(){}),
+        "nextHearingDuration", new TypeReference<HoursMinutes>(){}),
 
     HEARING_ADJOURNMENT_DECISION_PARTY(
         "hearingAdjournmentDecisionParty", new TypeReference<String>(){}),
