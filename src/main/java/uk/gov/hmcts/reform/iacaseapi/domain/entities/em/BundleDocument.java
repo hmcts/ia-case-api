@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities.em;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
@@ -16,6 +17,7 @@ public class BundleDocument implements CaseData {
     private int sortIndex;
     private Document sourceDocument;
 
+    @JsonCreator
     private BundleDocument() {
         // noop -- for deserializer
     }

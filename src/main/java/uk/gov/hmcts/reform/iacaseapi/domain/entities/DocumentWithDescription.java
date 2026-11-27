@@ -3,6 +3,8 @@ package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 import static java.util.Objects.requireNonNull;
 
 import java.util.Optional;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.EqualsAndHashCode;
 import lombok.Setter;
 import lombok.ToString;
@@ -16,6 +18,7 @@ public class DocumentWithDescription {
     @Setter
     private Optional<String> description = Optional.empty();
 
+    @JsonCreator
     private DocumentWithDescription() {
         // noop -- for deserializer
     }

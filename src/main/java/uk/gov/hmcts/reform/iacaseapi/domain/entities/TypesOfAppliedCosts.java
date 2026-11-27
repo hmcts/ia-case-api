@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum TypesOfAppliedCosts {
@@ -10,6 +11,7 @@ public enum TypesOfAppliedCosts {
     @JsonValue
     private final String value;
 
+    @JsonCreator
     TypesOfAppliedCosts(String value) {
         this.value = value;
     }
