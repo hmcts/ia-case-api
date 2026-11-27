@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -19,6 +20,7 @@ public class LegRepAddressUk {
 
     private String country;
 
+    @JsonCreator
     private LegRepAddressUk() {
         // noop -- for deserializer
     }
