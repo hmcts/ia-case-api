@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -12,7 +11,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.EU;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DISPLAY_MARK_AS_PAID_EVENT_FOR_PARTIAL_REMISSION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAS_SERVICE_REQUEST_ALREADY;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ADMIN;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_SERVICE_REQUEST_TAB_VISIBLE_CONSIDERING_REMISSIONS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PAYMENT_STATUS;
@@ -55,7 +53,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.FeePayment;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -69,14 +66,13 @@ class RecordRemissionDecisionStateHandlerTest {
 
     @Mock private FeatureToggler featureToggler;
     @Mock private DateProvider dateProvider;
-    @Mock private FeePayment feePayment;
 
     private RecordRemissionDecisionStateHandler recordRemissionDecisionStateHandler;
 
     @BeforeEach
     public void setUp() {
 
-        recordRemissionDecisionStateHandler = new RecordRemissionDecisionStateHandler(featureToggler, dateProvider, feePayment);
+        recordRemissionDecisionStateHandler = new RecordRemissionDecisionStateHandler(featureToggler, dateProvider);
     }
 
     @Test
@@ -135,11 +131,8 @@ class RecordRemissionDecisionStateHandlerTest {
         assertThat(returnedCallbackResponse.getData()).isEqualTo(asylumCase);
         assertThat(returnedCallbackResponse.getState()).isEqualTo(newState);
         verify(asylumCase, times(1)).write(PAYMENT_STATUS, PAID);
-
-        verify(feePayment, never()).aboutToSubmit(callback);
         verify(asylumCase, times(1)).write(IS_SERVICE_REQUEST_TAB_VISIBLE_CONSIDERING_REMISSIONS, YesOrNo.NO);
         verify(asylumCase, times(1)).write(DISPLAY_MARK_AS_PAID_EVENT_FOR_PARTIAL_REMISSION, YesOrNo.NO);
-        verify(asylumCase, never()).write(HAS_SERVICE_REQUEST_ALREADY, YesOrNo.YES);
     }
 
     @ParameterizedTest
@@ -166,12 +159,10 @@ class RecordRemissionDecisionStateHandlerTest {
         assertThat(returnedCallbackResponse.getData()).isEqualTo(asylumCase);
         assertThat(returnedCallbackResponse.getState()).isEqualTo(State.PENDING_PAYMENT);
         verify(asylumCase, times(1)).write(PAYMENT_STATUS, PAYMENT_PENDING);
-        verify(feePayment, never()).aboutToSubmit(callback);
         verify(asylumCase, times(1)).write(REMISSION_REJECTED_DATE_PLUS_14DAYS,
             LocalDate.parse(dateProvider.now().plusDays(14).toString()).format(DateTimeFormatter.ofPattern("d MMM yyyy")));
         verify(asylumCase, times(1)).write(IS_SERVICE_REQUEST_TAB_VISIBLE_CONSIDERING_REMISSIONS, YesOrNo.NO);
         verify(asylumCase, times(1)).write(DISPLAY_MARK_AS_PAID_EVENT_FOR_PARTIAL_REMISSION, YesOrNo.YES);
-        verify(asylumCase, never()).write(HAS_SERVICE_REQUEST_ALREADY, YesOrNo.YES);
     }
 
     @Test
@@ -221,13 +212,9 @@ class RecordRemissionDecisionStateHandlerTest {
         verify(asylumCase, times(1)).write(PAYMENT_STATUS, PAYMENT_PENDING);
         verify(asylumCase,times(1)).write(REMISSION_REJECTED_DATE_PLUS_14DAYS,
             LocalDate.parse(dateProvider.now().plusDays(14).toString()).format(DateTimeFormatter.ofPattern("d MMM yyyy")));
-
-        verify(feePayment, times(1)).aboutToSubmit(callback);
         verify(asylumCase, times(1)).write(IS_SERVICE_REQUEST_TAB_VISIBLE_CONSIDERING_REMISSIONS, YesOrNo.YES);
         verify(asylumCase, times(1)).write(REQUEST_FEE_REMISSION_FLAG_FOR_SERVICE_REQUEST, YesOrNo.NO);
         verify(asylumCase, times(1)).write(DISPLAY_MARK_AS_PAID_EVENT_FOR_PARTIAL_REMISSION, YesOrNo.NO);
-        verify(asylumCase, never()).write(HAS_SERVICE_REQUEST_ALREADY, YesOrNo.YES);
-
     }
 
     @ParameterizedTest
@@ -256,13 +243,9 @@ class RecordRemissionDecisionStateHandlerTest {
         verify(asylumCase, times(1)).write(PAYMENT_STATUS, PAID);
         verify(asylumCase,times(1)).write(REMISSION_REJECTED_DATE_PLUS_14DAYS,
             LocalDate.parse(dateProvider.now().plusDays(14).toString()).format(DateTimeFormatter.ofPattern("d MMM yyyy")));
-
-        verify(feePayment, times(1)).aboutToSubmit(callback);
         verify(asylumCase, times(1)).write(IS_SERVICE_REQUEST_TAB_VISIBLE_CONSIDERING_REMISSIONS, YesOrNo.YES);
         verify(asylumCase, times(1)).write(REQUEST_FEE_REMISSION_FLAG_FOR_SERVICE_REQUEST, YesOrNo.NO);
         verify(asylumCase, times(1)).write(DISPLAY_MARK_AS_PAID_EVENT_FOR_PARTIAL_REMISSION, YesOrNo.NO);
-        verify(asylumCase, never()).write(HAS_SERVICE_REQUEST_ALREADY, YesOrNo.YES);
-
     }
 
     @Test
