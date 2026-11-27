@@ -1,0 +1,35 @@
+{
+  "description": "DIAC-2874 Submit AIP appeal generates service request for no remission",
+  "disabled": "!{$featureFlag.isfeePaymentEnabled}",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "Citizen",
+    "input": {
+      "eventId": "submitAppeal",
+      "state": "appealStarted",
+      "caseData": {
+        "template": "minimal-aip-appeal-started.json",
+        "replacements": {
+          "appealType": "refusalOfHumanRights",
+          "remissionOption": "noneOfTheseStatements",
+          "helpWithFeesOption": "willPayForAppeal",
+          "paymentStatus": "Payment pending",
+          "feeAmountGbp": "14000",
+          "decisionHearingFeeOption": "decisionWithHearing"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-aip-appeal-started.json",
+      "replacements": {
+        "appealType": "refusalOfHumanRights",
+        "hasServiceRequestAlready": "Yes",
+        "serviceRequestReference": "$/(.+)/"
+      }
+    }
+  }
+}

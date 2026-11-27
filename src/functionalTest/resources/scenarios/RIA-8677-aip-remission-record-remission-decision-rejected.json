@@ -16,6 +16,8 @@
           "appealType": "refusalOfHumanRights",
           "isRemissionsEnabled": "Yes",
           "remissionDecision": "rejected",
+          "feeAmountGbp": "14000",
+          "decisionHearingFeeOption": "decisionWithHearing",
           "sendDirectionActionAvailable": "No"
         }
       }
@@ -31,7 +33,9 @@
         "appealType": "refusalOfHumanRights",
         "homeOfficeDecisionDate": "{$TODAY-14}",
         "remissionDecision": "rejected",
-        "sendDirectionActionAvailable": "No"
+        "sendDirectionActionAvailable": "No",
+        "hasServiceRequestAlready": "Yes",
+        "serviceRequestReference": "$/(.+)/"
       }
     }
   }
