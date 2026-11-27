@@ -157,13 +157,14 @@ class AutomaticGenerateServiceRequestHandlerTest {
     }
 
     @Test
-    void should_not_handle_for_aip_when_remission_option_is_not_present() {
+    void should_handle_for_aip_when_remission_option_is_not_present() {
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.EA));
         when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(NO));
         when(asylumCase.read(REMISSION_OPTION, RemissionOption.class)).thenReturn(Optional.empty());
 
-        assertFalse(handler.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback));
+        // When remission option is not present, user hasn't requested remission, so service request should be created
+        assertTrue(handler.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback));
     }
 
     @ParameterizedTest
@@ -179,14 +180,15 @@ class AutomaticGenerateServiceRequestHandlerTest {
     }
 
     @Test
-    void should_not_handle_for_aip_when_help_with_fees_option_is_not_present() {
+    void should_handle_for_aip_when_help_with_fees_option_is_not_present() {
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.EA));
         when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(NO));
         when(asylumCase.read(REMISSION_OPTION, RemissionOption.class)).thenReturn(Optional.of(RemissionOption.NO_REMISSION));
         when(asylumCase.read(HELP_WITH_FEES_OPTION, HelpWithFeesOption.class)).thenReturn(Optional.empty());
 
-        assertFalse(handler.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback));
+        // When remission is NO_REMISSION and help with fees is not present, user will pay, so service request should be created
+        assertTrue(handler.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback));
     }
 
     @Test

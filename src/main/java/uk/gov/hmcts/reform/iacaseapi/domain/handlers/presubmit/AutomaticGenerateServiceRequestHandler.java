@@ -21,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
+
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.HelpWithFeesOption;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDecision;
@@ -106,17 +107,19 @@ public class AutomaticGenerateServiceRequestHandler implements PreSubmitCallback
         Optional<RemissionOption> remissionOption = asylumCase.read(REMISSION_OPTION, RemissionOption.class);
         Optional<HelpWithFeesOption> helpWithFeesOption = asylumCase.read(HELP_WITH_FEES_OPTION, HelpWithFeesOption.class);
 
-        boolean noRemissionAndWillPay = (remissionOption.isPresent()
+        // Check if user has requested remission or help with fees
+        boolean hasRemission = (remissionOption.isPresent()
                 && remissionOption.get() != RemissionOption.NO_REMISSION)
                 || (helpWithFeesOption.isPresent() && helpWithFeesOption.get() != WILL_PAY_FOR_APPEAL);
 
         log.info("AiP canHandle? remisionOption: {}, hwfOption: {}, hasRemission: {}",
-                remissionOption, helpWithFeesOption, noRemissionAndWillPay);
+                remissionOption, helpWithFeesOption, hasRemission);
 
+        // Create service request only when user will pay (no remission requested)
         return isEaHuPaEu(asylumCase)
                && isAipJourney(asylumCase)
                && !isInternalCase(asylumCase)
-               && noRemissionAndWillPay;
+               && !hasRemission;
     }
 
     private boolean canHandleRecordRemissionDecision(AsylumCase asylumCase) {
