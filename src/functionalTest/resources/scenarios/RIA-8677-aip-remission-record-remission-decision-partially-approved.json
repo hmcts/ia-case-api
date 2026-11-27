@@ -18,6 +18,8 @@
           "remissionDecision": "partiallyApproved",
           "remittedAmount": "10000",
           "amountLeftToPay": "4000",
+          "feeAmountGbp": "14000",
+          "decisionHearingFeeOption": "decisionWithHearing",
           "sendDirectionActionAvailable": "No"
         }
       }
@@ -35,7 +37,9 @@
         "remissionDecision": "partiallyApproved",
         "remittedAmount": "10000",
         "amountLeftToPay": "4000",
-        "sendDirectionActionAvailable": "No"
+        "sendDirectionActionAvailable": "No",
+        "hasServiceRequestAlready": "Yes",
+        "serviceRequestReference": "$/(.+)/"
       }
     }
   }
