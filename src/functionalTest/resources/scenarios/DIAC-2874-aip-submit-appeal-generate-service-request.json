@@ -10,12 +10,16 @@
       "caseData": {
         "template": "minimal-aip-appeal-started.json",
         "replacements": {
+          "homeOfficeDecisionDate": "{$TODAY-14}",
           "appealType": "refusalOfHumanRights",
           "remissionOption": "noneOfTheseStatements",
           "helpWithFeesOption": "willPayForAppeal",
           "paymentStatus": "Payment pending",
+          "decisionHearingFeeOption": "decisionWithHearing",
+          "feeCode": "FEE0238",
+          "feeVersion": "4",
           "feeAmountGbp": "14000",
-          "decisionHearingFeeOption": "decisionWithHearing"
+          "feeDescription": "Appeal determined with a hearing"
         }
       }
     }
@@ -27,6 +31,7 @@
       "template": "minimal-aip-appeal-started.json",
       "replacements": {
         "appealType": "refusalOfHumanRights",
+        "homeOfficeDecisionDate": "{$TODAY-14}",
         "hasServiceRequestAlready": "Yes",
         "serviceRequestReference": "$/(.+)/"
       }
