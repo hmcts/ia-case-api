@@ -8,6 +8,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HELP_WITH_FEES_OPTION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMISSION_OPTION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMISSION_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.HelpWithFeesOption.WILL_PAY_FOR_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType.NO_REMISSION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.RECORD_REMISSION_DECISION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SUBMIT_APPEAL;
@@ -105,10 +106,12 @@ public class AutomaticGenerateServiceRequestHandler implements PreSubmitCallback
         Optional<RemissionOption> remissionOption = asylumCase.read(REMISSION_OPTION, RemissionOption.class);
         Optional<HelpWithFeesOption> helpWithFeesOption = asylumCase.read(HELP_WITH_FEES_OPTION, HelpWithFeesOption.class);
 
-        boolean noRemissionAndWillPay = remissionOption.isPresent()
-            && remissionOption.get() == RemissionOption.NO_REMISSION
-            && helpWithFeesOption.isPresent()
-            && helpWithFeesOption.get() == HelpWithFeesOption.WILL_PAY_FOR_APPEAL;
+        boolean noRemissionAndWillPay = (remissionOption.isPresent()
+                && remissionOption.get() != RemissionOption.NO_REMISSION)
+                || (helpWithFeesOption.isPresent() && helpWithFeesOption.get() != WILL_PAY_FOR_APPEAL);
+
+        log.info("AiP canHandle? remisionOption: {}, hwfOption: {}, hasRemission: {}",
+                remissionOption, helpWithFeesOption, noRemissionAndWillPay);
 
         return isEaHuPaEu(asylumCase)
                && isAipJourney(asylumCase)
