@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+
 import static java.util.Objects.requireNonNull;
 
 public class EditableDirection {
@@ -8,6 +10,7 @@ public class EditableDirection {
     private Parties parties;
     private String dateDue;
 
+    @JsonCreator
     private EditableDirection() {
         // noop -- for deserializer
     }

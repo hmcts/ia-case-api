@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
 import static java.util.Arrays.stream;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import java.util.Optional;
 import com.fasterxml.jackson.annotation.JsonValue;
 
@@ -13,6 +14,7 @@ public enum CostsDecision {
     @JsonValue
     private String value;
 
+    @JsonCreator
     CostsDecision(String value) {
         this.value = value;
     }
